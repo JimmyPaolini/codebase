@@ -1,5 +1,19 @@
 // ♟️ Constants
 
+import type { GraphRunOutcome } from "../delivery/delivery.types";
+
+/**
+ * The outcome of a pass a run's graph-type toggles disabled entirely.
+ *
+ * A frozen, shared constant rather than a fresh object per skipped pass: a
+ * disabled pass built nothing and failed at nothing, so there is exactly one
+ * value every skip needs.
+ */
+export const EMPTY_GRAPH_RUN_OUTCOME: GraphRunOutcome = Object.freeze({
+  failures: [],
+  results: [],
+});
+
 /** Graph type `codependix-file-imports` builds, for either language. */
 export const FILE_IMPORTS_GRAPH_TYPE = "fileImports";
 

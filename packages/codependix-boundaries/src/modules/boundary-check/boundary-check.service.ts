@@ -27,6 +27,7 @@ import type {
 } from "./boundary-check.types";
 import type {
   CodependixBoundaryRule,
+  CodependixGraphType,
   ResolvedCodependixBoundariesConfiguration,
 } from "@codependix/configuration";
 
@@ -73,6 +74,31 @@ export class BoundaryCheckService {
       error: error instanceof Error ? error.message : String(error),
       projectName,
     };
+  }
+
+  /**
+   * The `CodependixGraphType` each boundary level is judged under.
+   *
+   * Finer-grained than `CodependixGraphType` itself: `python` and
+   * `typescript` both fall under `fileImports`, since `codependix-file-imports`
+   * builds and exports both as one graph type even though `boundaries`
+   * still nests their rules by language. `--no-file-imports` therefore skips
+   * both levels together.
+   */
+  private graphTypeForLevel(
+    level: CodependixBoundaryLevel,
+  ): CodependixGraphType {
+    const graphTypesByLevel: Record<
+      CodependixBoundaryLevel,
+      CodependixGraphType
+    > = {
+      nestjsModules: "nestjsModules",
+      nxProjects: "nxProjects",
+      python: "fileImports",
+      typescript: "fileImports",
+    };
+
+    return graphTypesByLevel[level];
   }
 
   /**
@@ -244,13 +270,16 @@ export class BoundaryCheckService {
   // 🌎 Public Methods
 
   /**
-   * Judges every level that has a rule to judge it by.
+   * Judges every level that has a rule to judge it by and whose graph type
+   * this run enabled.
    *
    * The four levels are independent, so a NestJS project failing to boot has
    * no bearing on whether the Nx or import graphs break a rule, and every
    * level is attempted regardless of what an earlier one reported. A level
    * declaring no rule is skipped before anything is built, which is what
-   * keeps the gate affordable.
+   * keeps the gate affordable — and a level whose graph type
+   * `context.enabledGraphTypes` excludes is skipped the same way, so
+   * `--no-nestjs-modules` never boots a single container to judge it.
    */
   public async run(
     context: BoundaryCheckContext,
@@ -259,6 +288,10 @@ export class BoundaryCheckService {
     const outcomes: BoundaryCheckOutcome[] = [];
 
     for (const level of BOUNDARY_LEVEL_ORDER) {
+      if (!context.enabledGraphTypes.has(this.graphTypeForLevel(level))) {
+        continue;
+      }
+
       const rules = this.rulesForLevel(boundaries, level);
 
       if (rules.length > 0) {

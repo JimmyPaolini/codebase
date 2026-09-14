@@ -45,205 +45,355 @@ const PROJECT_GRAPH = {
   },
 };
 
-describe("map command over a fixture tree", () => {
-  let workingDirectory: string;
-  let originalWorkingDirectory: string;
+describe("map command", () => {
+  describe("over a fixture tree", () => {
+    let workingDirectory: string;
+    let originalWorkingDirectory: string;
 
-  /** Runs the map command with the process rooted at the fixture tree. */
-  async function run(
-    options: MapCommandOptions,
-  ): Promise<{ exitCode: number }> {
-    process.chdir(workingDirectory);
-    process.exitCode = 0;
+    /** Runs the map command with the process rooted at the fixture tree. */
+    async function run(
+      options: MapCommandOptions,
+    ): Promise<{ exitCode: number }> {
+      process.chdir(workingDirectory);
+      process.exitCode = 0;
 
-    const module = await Test.createTestingModule({
-      imports: [MainModule],
-    }).compile();
-    const command = module.get(MapCommand, { strict: false });
+      const module = await Test.createTestingModule({
+        imports: [MainModule],
+      }).compile();
+      const command = module.get(MapCommand, { strict: false });
 
-    await command.run([], options);
+      await command.run([], options);
 
-    const exitCode = process.exitCode;
+      const exitCode = process.exitCode;
 
-    process.exitCode = 0;
-    process.chdir(originalWorkingDirectory);
+      process.exitCode = 0;
+      process.chdir(originalWorkingDirectory);
 
-    return {
-      exitCode: typeof exitCode === "string" ? Number(exitCode) : exitCode,
-    };
-  }
+      return {
+        exitCode: typeof exitCode === "string" ? Number(exitCode) : exitCode,
+      };
+    }
 
-  beforeAll(() => {
-    originalWorkingDirectory = process.cwd();
-    workingDirectory = mkdtempSync(path.join(tmpdir(), "codependix-map-"));
+    beforeAll(() => {
+      originalWorkingDirectory = process.cwd();
+      workingDirectory = mkdtempSync(path.join(tmpdir(), "codependix-map-"));
 
-    mkdirSync(path.join(workingDirectory, "packages/project-with-own-file"), {
-      recursive: true,
+      mkdirSync(path.join(workingDirectory, "packages/project-with-own-file"), {
+        recursive: true,
+      });
+      mkdirSync(
+        path.join(workingDirectory, "packages/project-with-defaults-only"),
+        { recursive: true },
+      );
+      mkdirSync(
+        path.join(workingDirectory, "packages/project-without-a-file"),
+        {
+          recursive: true,
+        },
+      );
+
+      writeFileSync(
+        path.join(workingDirectory, "codependix-graph.json"),
+        JSON.stringify(PROJECT_GRAPH),
+      );
+
+      // The workspace root's own configuration: scopes `include` to every
+      // fixture project, points at the fixture project graph above, and
+      // exports `projectDefaults` — the object a project's own file spreads,
+      // mirroring `configuration/codependix.config.ts`'s real shape.
+      writeFileSync(
+        path.join(workingDirectory, "codependix.config.ts"),
+        [
+          "export const projectDefaults = {",
+          '  nxProjects: { json: { path: "nx-neighborhood.json" }, target: "json" },',
+          "};",
+          "",
+          "export default {",
+          '  include: ["packages/*"],',
+          '  projectGraph: "codependix-graph.json",',
+          "  workspace: {",
+          '    nxProjects: { json: { path: "workspace-graph.json" }, target: "json" },',
+          "  },",
+          "};",
+          "",
+        ].join("\n"),
+      );
+
+      // Spreads `projectDefaults` and overrides `nxProjects` outright with its
+      // own destination — the "project with its own file" case.
+      writeFileSync(
+        path.join(
+          workingDirectory,
+          "packages/project-with-own-file/codependix.config.ts",
+        ),
+        [
+          'import { projectDefaults } from "../../codependix.config.js";',
+          "",
+          "export default {",
+          "  ...projectDefaults,",
+          '  nxProjects: { json: { path: "own-neighborhood.json" }, target: "json" },',
+          "};",
+          "",
+        ].join("\n"),
+      );
+
+      // Spreads `projectDefaults` and overrides nothing — the "root defaults
+      // spreading correctly into a project file" case: this project's resolved
+      // output is exactly what the root config's `projectDefaults` says.
+      writeFileSync(
+        path.join(
+          workingDirectory,
+          "packages/project-with-defaults-only/codependix.config.ts",
+        ),
+        [
+          'import { projectDefaults } from "../../codependix.config.js";',
+          "",
+          "export default {",
+          "  ...projectDefaults,",
+          "};",
+          "",
+        ].join("\n"),
+      );
+
+      // `packages/project-without-a-file/` deliberately carries no
+      // `codependix.config.ts` of its own — the "project with no file" case.
     });
-    mkdirSync(
-      path.join(workingDirectory, "packages/project-with-defaults-only"),
-      { recursive: true },
-    );
-    mkdirSync(path.join(workingDirectory, "packages/project-without-a-file"), {
-      recursive: true,
+
+    afterAll(() => {
+      rmSync(workingDirectory, { force: true, recursive: true });
     });
 
-    writeFileSync(
-      path.join(workingDirectory, "codependix-graph.json"),
-      JSON.stringify(PROJECT_GRAPH),
-    );
+    it("writes a project's own file's export, spreading and then overriding projectDefaults", async () => {
+      const { exitCode } = await run({
+        directory: workingDirectory,
+        write: true,
+      });
 
-    // The workspace root's own configuration: scopes `include` to every
-    // fixture project, points at the fixture project graph above, and
-    // exports `projectDefaults` — the object a project's own file spreads,
-    // mirroring `configuration/codependix.config.ts`'s real shape.
-    writeFileSync(
-      path.join(workingDirectory, "codependix.config.ts"),
-      [
-        "export const projectDefaults = {",
-        '  nxProjects: { json: { path: "nx-neighborhood.json" }, target: "json" },',
-        "};",
-        "",
-        "export default {",
-        '  include: ["packages/*"],',
-        '  projectGraph: "codependix-graph.json",',
-        "  workspace: {",
-        '    nxProjects: { json: { path: "workspace-graph.json" }, target: "json" },',
-        "  },",
-        "};",
-        "",
-      ].join("\n"),
-    );
+      expect(exitCode).toBe(0);
 
-    // Spreads `projectDefaults` and overrides `nxProjects` outright with its
-    // own destination — the "project with its own file" case.
-    writeFileSync(
-      path.join(
+      const ownGraphPath = path.join(
         workingDirectory,
-        "packages/project-with-own-file/codependix.config.ts",
-      ),
-      [
-        'import { projectDefaults } from "../../codependix.config.js";',
-        "",
-        "export default {",
-        "  ...projectDefaults,",
-        '  nxProjects: { json: { path: "own-neighborhood.json" }, target: "json" },',
-        "};",
-        "",
-      ].join("\n"),
-    );
+        "packages/project-with-own-file/own-neighborhood.json",
+      );
 
-    // Spreads `projectDefaults` and overrides nothing — the "root defaults
-    // spreading correctly into a project file" case: this project's resolved
-    // output is exactly what the root config's `projectDefaults` says.
-    writeFileSync(
-      path.join(
+      expect(existsSync(ownGraphPath)).toBe(true);
+      expect(
+        JSON.parse(readFileSync(ownGraphPath, "utf8")) as {
+          projectName: string;
+        },
+      ).toMatchObject({ projectName: "project-with-own-file" });
+    });
+
+    it("writes projectDefaults' own destination for a project that spreads it unchanged", () => {
+      const spreadOnlyGraphPath = path.join(
         workingDirectory,
-        "packages/project-with-defaults-only/codependix.config.ts",
-      ),
-      [
-        'import { projectDefaults } from "../../codependix.config.js";',
-        "",
-        "export default {",
-        "  ...projectDefaults,",
-        "};",
-        "",
-      ].join("\n"),
-    );
+        "packages/project-with-defaults-only/nx-neighborhood.json",
+      );
 
-    // `packages/project-without-a-file/` deliberately carries no
-    // `codependix.config.ts` of its own — the "project with no file" case.
-  });
-
-  afterAll(() => {
-    rmSync(workingDirectory, { force: true, recursive: true });
-  });
-
-  it("writes a project's own file's export, spreading and then overriding projectDefaults", async () => {
-    const { exitCode } = await run({
-      directory: workingDirectory,
-      write: true,
+      expect(existsSync(spreadOnlyGraphPath)).toBe(true);
+      expect(
+        JSON.parse(readFileSync(spreadOnlyGraphPath, "utf8")) as {
+          projectName: string;
+        },
+      ).toMatchObject({ projectName: "project-with-defaults-only" });
     });
 
-    expect(exitCode).toBe(0);
+    it("writes nothing at all for an included project with no configuration file of its own", () => {
+      const projectRoot = path.join(
+        workingDirectory,
+        "packages/project-without-a-file",
+      );
 
-    const ownGraphPath = path.join(
-      workingDirectory,
-      "packages/project-with-own-file/own-neighborhood.json",
-    );
-
-    expect(existsSync(ownGraphPath)).toBe(true);
-    expect(
-      JSON.parse(readFileSync(ownGraphPath, "utf8")) as { projectName: string },
-    ).toMatchObject({ projectName: "project-with-own-file" });
-  });
-
-  it("writes projectDefaults' own destination for a project that spreads it unchanged", () => {
-    const spreadOnlyGraphPath = path.join(
-      workingDirectory,
-      "packages/project-with-defaults-only/nx-neighborhood.json",
-    );
-
-    expect(existsSync(spreadOnlyGraphPath)).toBe(true);
-    expect(
-      JSON.parse(readFileSync(spreadOnlyGraphPath, "utf8")) as {
-        projectName: string;
-      },
-    ).toMatchObject({ projectName: "project-with-defaults-only" });
-  });
-
-  it("writes nothing at all for an included project with no configuration file of its own", () => {
-    const projectRoot = path.join(
-      workingDirectory,
-      "packages/project-without-a-file",
-    );
-
-    expect(existsSync(path.join(projectRoot, "nx-neighborhood.json"))).toBe(
-      false,
-    );
-    expect(existsSync(path.join(projectRoot, "own-neighborhood.json"))).toBe(
-      false,
-    );
-  });
-
-  it("still lists a file-less project in the Workspace Graph", () => {
-    const workspaceGraphPath = path.join(
-      workingDirectory,
-      "workspace-graph.json",
-    );
-    const workspaceGraph = JSON.parse(
-      readFileSync(workspaceGraphPath, "utf8"),
-    ) as { projectNames: string[] };
-
-    expect(workspaceGraph.projectNames).toContain("project-without-a-file");
-  });
-
-  it("passes --check reports right after --write", async () => {
-    const { exitCode } = await run({
-      check: "reports",
-      directory: workingDirectory,
+      expect(existsSync(path.join(projectRoot, "nx-neighborhood.json"))).toBe(
+        false,
+      );
+      expect(existsSync(path.join(projectRoot, "own-neighborhood.json"))).toBe(
+        false,
+      );
     });
 
-    expect(exitCode).toBe(0);
-  });
+    it("still lists a file-less project in the Workspace Graph", () => {
+      const workspaceGraphPath = path.join(
+        workingDirectory,
+        "workspace-graph.json",
+      );
+      const workspaceGraph = JSON.parse(
+        readFileSync(workspaceGraphPath, "utf8"),
+      ) as { projectNames: string[] };
 
-  it("fails --check reports once a project's own written export drifts", async () => {
-    const ownGraphPath = path.join(
-      workingDirectory,
-      "packages/project-with-own-file/own-neighborhood.json",
-    );
-
-    writeFileSync(ownGraphPath, JSON.stringify({ drifted: true }));
-
-    const { exitCode } = await run({
-      check: "reports",
-      directory: workingDirectory,
+      expect(workspaceGraph.projectNames).toContain("project-without-a-file");
     });
 
-    expect(exitCode).toBe(1);
+    it("passes --check reports right after --write", async () => {
+      const { exitCode } = await run({
+        check: "reports",
+        directory: workingDirectory,
+      });
 
-    // Restore what --write produced, so later tests in this file are not
-    // affected by this test's drift.
-    await run({ directory: workingDirectory, write: true });
+      expect(exitCode).toBe(0);
+    });
+
+    it("fails --check reports once a project's own written export drifts", async () => {
+      const ownGraphPath = path.join(
+        workingDirectory,
+        "packages/project-with-own-file/own-neighborhood.json",
+      );
+
+      writeFileSync(ownGraphPath, JSON.stringify({ drifted: true }));
+
+      const { exitCode } = await run({
+        check: "reports",
+        directory: workingDirectory,
+      });
+
+      expect(exitCode).toBe(1);
+
+      // Restore what --write produced, so later tests in this file are not
+      // affected by this test's drift.
+      await run({ directory: workingDirectory, write: true });
+    });
+  });
+
+  describe("cli overrides and graph-type toggles", () => {
+    let workingDirectory: string;
+    let originalWorkingDirectory: string;
+    let widgetGraphPath: string;
+
+    /** Runs the map command with the process rooted at the fixture tree. */
+    async function run(
+      options: MapCommandOptions,
+    ): Promise<{ exitCode: number }> {
+      process.chdir(workingDirectory);
+      process.exitCode = 0;
+
+      const module = await Test.createTestingModule({
+        imports: [MainModule],
+      }).compile();
+      const command = module.get(MapCommand, { strict: false });
+
+      await command.run([], options);
+
+      const exitCode = process.exitCode;
+
+      process.exitCode = 0;
+      process.chdir(originalWorkingDirectory);
+
+      return {
+        exitCode: typeof exitCode === "string" ? Number(exitCode) : exitCode,
+      };
+    }
+
+    beforeAll(() => {
+      originalWorkingDirectory = process.cwd();
+      workingDirectory = mkdtempSync(path.join(tmpdir(), "codependix-flags-"));
+      widgetGraphPath = path.join(workingDirectory, "widget-neighborhood.json");
+
+      mkdirSync(path.join(workingDirectory, "packages/widget"), {
+        recursive: true,
+      });
+
+      writeFileSync(
+        path.join(workingDirectory, "codependix-graph.json"),
+        JSON.stringify({
+          dependencies: {},
+          nodes: {
+            widget: {
+              data: { root: "packages/widget" },
+              name: "widget",
+              type: "lib",
+            },
+          },
+        }),
+      );
+
+      // Declares `include` but deliberately never declares `exclude` — the
+      // fixture for the refusal test below. `--include` has something to
+      // override; `--exclude` does not.
+      writeFileSync(
+        path.join(workingDirectory, "codependix.config.ts"),
+        [
+          "export default {",
+          '  include: ["packages/*"],',
+          '  projectGraph: "codependix-graph.json",',
+          "};",
+          "",
+        ].join("\n"),
+      );
+
+      writeFileSync(
+        path.join(workingDirectory, "packages/widget/codependix.config.ts"),
+        [
+          "export default {",
+          '  nxProjects: { json: { path: "../../widget-neighborhood.json" }, target: "json" },',
+          "};",
+          "",
+        ].join("\n"),
+      );
+    });
+
+    afterAll(() => {
+      rmSync(workingDirectory, { force: true, recursive: true });
+    });
+
+    it("still writes every graph type's export when no flag overrides or toggles anything", async () => {
+      const { exitCode } = await run({
+        directory: workingDirectory,
+        write: true,
+      });
+
+      expect(exitCode).toBe(0);
+      expect(existsSync(widgetGraphPath)).toBe(true);
+    });
+
+    it("overrides include for the run, narrowing away the only project it declared", async () => {
+      rmSync(widgetGraphPath, { force: true });
+
+      const { exitCode } = await run({
+        directory: workingDirectory,
+        include: ["packages/nonexistent"],
+        write: true,
+      });
+
+      expect(exitCode).toBe(0);
+      expect(existsSync(widgetGraphPath)).toBe(false);
+    });
+
+    it("refuses to override exclude, which the fixture configuration never declared", async () => {
+      rmSync(widgetGraphPath, { force: true });
+
+      const { exitCode } = await run({
+        directory: workingDirectory,
+        exclude: ["packages/widget"],
+        write: true,
+      });
+
+      expect(exitCode).toBe(1);
+      // Refused before anything ran, so the widget's export is never attempted.
+      expect(existsSync(widgetGraphPath)).toBe(false);
+    });
+
+    it("skips the nxProjects graph type entirely when --no-nx-projects is given", async () => {
+      rmSync(widgetGraphPath, { force: true });
+
+      const { exitCode } = await run({
+        directory: workingDirectory,
+        nxProjects: false,
+        write: true,
+      });
+
+      expect(exitCode).toBe(0);
+      expect(existsSync(widgetGraphPath)).toBe(false);
+    });
+
+    it("writes the nxProjects graph type again once re-enabled", async () => {
+      const { exitCode } = await run({
+        directory: workingDirectory,
+        nxProjects: true,
+        write: true,
+      });
+
+      expect(exitCode).toBe(0);
+      expect(existsSync(widgetGraphPath)).toBe(true);
+    });
   });
 });

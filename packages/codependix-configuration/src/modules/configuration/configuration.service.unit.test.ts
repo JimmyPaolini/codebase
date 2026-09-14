@@ -6,6 +6,8 @@ import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 import { ZodError } from "zod";
 
+import { OverrideResolutionService } from "../override-resolution/override-resolution.service";
+
 import {
   codependixConfigurationSchema,
   ConfigurationFileNotFoundError,
@@ -45,7 +47,7 @@ describe(ConfigurationService, () => {
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [ConfigurationService],
+      providers: [ConfigurationService, OverrideResolutionService],
     }).compile();
 
     service = await module.resolve(ConfigurationService);
@@ -249,6 +251,105 @@ describe(ConfigurationService, () => {
       });
 
       expect(configuration.workspace.nxProjects?.target).toBe("both");
+    });
+  });
+
+  describe("overrides", () => {
+    it("overrides a declared include for the run", async () => {
+      const configurationPath = await writeConfiguration({
+        include: ["packages/**"],
+      });
+
+      const configuration = await service.loadConfiguration({
+        configurationPath,
+        overrides: { include: ["applications/**"] },
+      });
+
+      expect(configuration.include).toStrictEqual(["applications/**"]);
+    });
+
+    it("overrides a declared exclude for the run", async () => {
+      const configurationPath = await writeConfiguration({
+        exclude: ["scratch-*"],
+        include: ["packages/**"],
+      });
+
+      const configuration = await service.loadConfiguration({
+        configurationPath,
+        overrides: { exclude: ["fixtures-*"] },
+      });
+
+      expect(configuration.exclude).toStrictEqual(["fixtures-*"]);
+    });
+
+    it("refuses to override include when the configuration never declared it", async () => {
+      const configurationPath = await writeConfiguration({
+        exclude: ["scratch-*"],
+      });
+
+      await expect(
+        service.loadConfiguration({
+          configurationPath,
+          overrides: { include: ["applications/**"] },
+        }),
+      ).rejects.toThrow(
+        "--include overrides a value the configuration does not declare. Add `include` to the configuration this run reads, then use --include to change it.",
+      );
+    });
+
+    it("refuses to override exclude when the configuration never declared it", async () => {
+      const configurationPath = await writeConfiguration({
+        include: ["packages/**"],
+      });
+
+      await expect(
+        service.loadConfiguration({
+          configurationPath,
+          overrides: { exclude: ["fixtures-*"] },
+        }),
+      ).rejects.toThrow(
+        "--exclude overrides a value the configuration does not declare. Add `exclude` to the configuration this run reads, then use --exclude to change it.",
+      );
+    });
+
+    it("refuses an override when no configuration file exists at all", async () => {
+      const searchDirectory = await mkdtemp(
+        path.join(tmpdir(), "codependix-empty-"),
+      );
+
+      await expect(
+        service.loadConfiguration({
+          overrides: { include: ["applications/**"] },
+          searchDirectory,
+        }),
+      ).rejects.toThrow(
+        "--include overrides a value the configuration does not declare. Add `include` to the configuration this run reads, then use --include to change it.",
+      );
+    });
+
+    it("leaves the configuration untouched when no override is given", async () => {
+      const configurationPath = await writeConfiguration({
+        include: ["packages/**"],
+      });
+
+      const configuration = await service.loadConfiguration({
+        configurationPath,
+      });
+
+      expect(configuration.include).toStrictEqual(["packages/**"]);
+    });
+
+    it("ignores an empty override list, the same as an absent one", async () => {
+      const configurationPath = await writeConfiguration({
+        include: ["packages/**"],
+      });
+
+      const configuration = await service.loadConfiguration({
+        configurationPath,
+        overrides: { include: [] },
+      });
+
+      expect(configuration.include).toStrictEqual(["packages/**"]);
     });
   });
 

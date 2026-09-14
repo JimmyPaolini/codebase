@@ -6,6 +6,8 @@ import { fileURLToPath } from "node:url";
 import { Injectable } from "@nestjs/common";
 import { createJiti } from "jiti";
 
+import { OverrideResolutionService } from "../override-resolution/override-resolution.service";
+
 import {
   codependixConfigurationSchema,
   codependixProjectConfigurationSchema,
@@ -50,7 +52,9 @@ import type {
 export class ConfigurationService {
   // 🏗 Dependency Injection
 
-  constructor() {}
+  constructor(
+    private readonly overrideResolutionService: OverrideResolutionService,
+  ) {}
 
   // 🔐 Private Fields
 
@@ -360,7 +364,11 @@ export class ConfigurationService {
         : this.resolveConfigurationPath(args.configurationPath);
 
     if (resolvedPath === undefined) {
-      return this.resolveConfiguration({}, args.selection);
+      return this.overrideResolutionService.applyOverrides({
+        authored: {},
+        overrides: args.overrides,
+        resolved: this.resolveConfiguration({}, args.selection),
+      });
     }
 
     const extension = path.extname(resolvedPath).toLowerCase();
@@ -373,11 +381,13 @@ export class ConfigurationService {
       configurationPath: resolvedPath,
       extension,
     });
+    const authored = codependixConfigurationSchema.parse(configurationModule);
 
-    return this.resolveConfiguration(
-      codependixConfigurationSchema.parse(configurationModule),
-      args.selection,
-    );
+    return this.overrideResolutionService.applyOverrides({
+      authored,
+      overrides: args.overrides,
+      resolved: this.resolveConfiguration(authored, args.selection),
+    });
   }
 
   /**

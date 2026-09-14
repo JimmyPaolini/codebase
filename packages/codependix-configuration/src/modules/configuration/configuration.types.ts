@@ -187,6 +187,22 @@ export interface CodependixConfiguration {
 }
 
 /**
+ * Strict, per-field CLI overrides for a run's root configuration.
+ *
+ * Mirrors `@callidescope/configuration`'s override philosophy exactly: a
+ * field may be overridden only when the configuration this run reads already
+ * declared it — see `ConfigurationService.loadConfiguration`. An empty list is
+ * read the same as the field being left off entirely, matching how
+ * `--directories`/`--exclude` treat an empty list in callidescope.
+ */
+export interface CodependixConfigurationOverrides {
+  /** Overrides `exclude` for this run. */
+  exclude?: string[] | undefined;
+  /** Overrides `include` for this run. */
+  include?: string[] | undefined;
+}
+
+/**
  * Where a graph type's export lands for a project.
  *
  * `both` writes the JSON and the Markdown export together. Named explicitly
@@ -280,6 +296,8 @@ export interface CodependixWorkspaceConfiguration {
 /** Arguments accepted when loading a configuration file. */
 export interface LoadConfigurationArguments {
   configurationPath?: string | undefined;
+  /** Strict per-field CLI overrides, applied after the file is resolved. */
+  overrides?: CodependixConfigurationOverrides | undefined;
   searchDirectory?: string | undefined;
   /** Command-line project selection, unparsed — see `CodependixSelectionArguments`. */
   selection?: CodependixSelectionArguments | undefined;

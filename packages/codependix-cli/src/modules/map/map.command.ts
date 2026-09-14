@@ -252,6 +252,93 @@ export class MapCommand extends CommandRunner {
   }
 
   /**
+   * Parses `--exclude`, a comma-separated list of globs overriding the
+   * configured `exclude`.
+   *
+   * Refused later, by `ConfigurationService.loadConfiguration`, when the
+   * configuration this run reads never declared `exclude` in the first
+   * place — matching callidescope's `--exclude` refusal exactly.
+   */
+  @Option({
+    description:
+      "Comma-separated globs overriding the configured exclude. Refused when exclude was never configured",
+    flags: "--exclude [exclude]",
+  })
+  public parseExclude(value: string | undefined): string[] {
+    return this.inputService.parseCommaDelimitedOption(value);
+  }
+
+  /** Enables the `fileImports` graph type for this run. */
+  @Option({
+    description: "Build, check, and write the fileImports graph type",
+    flags: "--file-imports",
+  })
+  public parseFileImports(): true {
+    return true;
+  }
+
+  /**
+   * Parses `--include`, a comma-separated list of globs overriding the
+   * configured `include`.
+   *
+   * Refused later, alongside `--exclude`, when the configuration this run
+   * reads never declared `include`.
+   */
+  @Option({
+    description:
+      "Comma-separated globs overriding the configured include. Refused when include was never configured",
+    flags: "--include [include]",
+  })
+  public parseInclude(value: string | undefined): string[] {
+    return this.inputService.parseCommaDelimitedOption(value);
+  }
+
+  /** Enables the `nestjsModules` graph type for this run. */
+  @Option({
+    description: "Build, check, and write the nestjsModules graph type",
+    flags: "--nestjs-modules",
+  })
+  public parseNestjsModules(): true {
+    return true;
+  }
+
+  /** Disables the `fileImports` graph type for this run. */
+  @Option({
+    description: "Skip the fileImports graph type for this run",
+    flags: "--no-file-imports",
+  })
+  public parseNoFileImports(): false {
+    return false;
+  }
+
+  /** Disables the `nestjsModules` graph type for this run. */
+  @Option({
+    description: "Skip the nestjsModules graph type for this run",
+    flags: "--no-nestjs-modules",
+  })
+  public parseNoNestjsModules(): false {
+    return false;
+  }
+
+  /** Disables the `nxProjects` graph type for this run. */
+  @Option({
+    description: "Skip the nxProjects graph type for this run",
+    flags: "--no-nx-projects",
+  })
+  public parseNoNxProjects(): false {
+    return false;
+  }
+
+  /** Enables the `nxProjects` graph type for this run. */
+  @Option({
+    description: "Build, check, and write the nxProjects graph type",
+    flags: "--nx-projects",
+  })
+  public parseNxProjects(): true {
+    return true;
+  }
+
+  /**
    * Parses the projects a run exports for beyond `include`.
    *
    * **Widening, and narrowing.** A named project is added to whatever

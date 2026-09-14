@@ -20,6 +20,7 @@ import type {
 import type { BoundaryCheckContext } from "./boundary-check.types";
 import type {
   CodependixBoundaryRule,
+  CodependixGraphType,
   ResolvedCodependixBoundariesConfiguration,
 } from "@codependix/configuration";
 
@@ -86,6 +87,11 @@ describe(BoundaryCheckService, () => {
   /** Builds a context whose configuration declares the given rules. */
   function buildContext(
     boundaries: BoundariesOverrides = {},
+    enabledGraphTypes: ReadonlySet<CodependixGraphType> = new Set([
+      "fileImports",
+      "nestjsModules",
+      "nxProjects",
+    ]),
   ): BoundaryCheckContext {
     return {
       configuration: {
@@ -96,6 +102,7 @@ describe(BoundaryCheckService, () => {
         selection: { projects: [], tags: [] },
         workspace: {},
       },
+      enabledGraphTypes,
       graph: { dependencies: {}, nodes: {} },
       projects: PROJECTS,
       selectedProjects: PROJECTS,
@@ -434,5 +441,52 @@ describe(BoundaryCheckService, () => {
       "typescript",
       "python",
     ]);
+  });
+
+  // 🎛️ Graph-type toggles
+
+  it("skips the nxProjects level when nxProjects is disabled, even with a declared rule", async () => {
+    const outcome = await service.run(
+      buildContext(
+        { nxProjects: RULE_LIST },
+        new Set(["fileImports", "nestjsModules"]),
+      ),
+    );
+
+    expect(outcome).toStrictEqual({ failures: [], violations: [] });
+    expect(evaluatedGraphs).toStrictEqual([]);
+  });
+
+  it("skips the nestjsModules level when nestjsModules is disabled", async () => {
+    await service.run(
+      buildContext(
+        { nestjsModules: RULE_LIST },
+        new Set(["fileImports", "nxProjects"]),
+      ),
+    );
+
+    expect(nestjsProjectService.discoverProjects).not.toHaveBeenCalled();
+    expect(evaluatedGraphs).toStrictEqual([]);
+  });
+
+  it("skips both fileImports levels when fileImports is disabled", async () => {
+    await service.run(
+      buildContext(
+        { fileImports: { python: RULE_LIST, typescript: RULE_LIST } },
+        new Set(["nestjsModules", "nxProjects"]),
+      ),
+    );
+
+    expect(typescriptService.discoverProjects).not.toHaveBeenCalled();
+    expect(pythonService.discoverProjects).not.toHaveBeenCalled();
+    expect(evaluatedGraphs).toStrictEqual([]);
+  });
+
+  it("still judges every level enabled by default, with no toggle given", async () => {
+    reportedViolations.push(VIOLATION);
+
+    const outcome = await service.run(buildContext({ nxProjects: RULE_LIST }));
+
+    expect(outcome.violations).toStrictEqual([VIOLATION]);
   });
 });

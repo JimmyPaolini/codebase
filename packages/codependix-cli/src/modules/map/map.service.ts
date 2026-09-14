@@ -18,6 +18,7 @@ import { DeliveryService } from "../delivery/delivery.service";
 import { PythonImportsService } from "../python-imports/python-imports.service";
 
 import {
+  EMPTY_GRAPH_RUN_OUTCOME,
   FILE_IMPORTS_GRAPH_TYPE,
   FILE_IMPORTS_MARKDOWN_SUBHEADING,
   MARKDOWN_SECTION_INTRO_LINE,
@@ -337,16 +338,24 @@ export class MapService {
   /**
    * Runs every configured graph export against an already-resolved context.
    *
-   * Every pass is attempted regardless of whether an earlier one reported a
-   * failure: the four graph types are independent, so a NestJS project
-   * failing to boot its container has no bearing on whether the Nx or import
-   * graphs finish.
+   * Every pass is attempted regardless of an earlier failure: the four graph
+   * types are independent. A type `context.enabledGraphTypes` excludes is
+   * skipped entirely, so `--no-nestjs-modules` never boots a container.
    */
   async run(context: GraphRunContext): Promise<GraphRunOutcome> {
-    const nxOutcome = this.runNxGraphs(context);
-    const nestjsOutcome = await this.runNestjsGraphs(context);
-    const importsOutcome = this.runImportGraphs(context);
-    const pythonImportsOutcome = this.runPythonImportGraphs(context);
+    const { enabledGraphTypes } = context;
+    const nxOutcome = enabledGraphTypes.has(NX_PROJECTS_GRAPH_TYPE)
+      ? this.runNxGraphs(context)
+      : EMPTY_GRAPH_RUN_OUTCOME;
+    const nestjsOutcome = enabledGraphTypes.has(NESTJS_MODULES_GRAPH_TYPE)
+      ? await this.runNestjsGraphs(context)
+      : EMPTY_GRAPH_RUN_OUTCOME;
+    const importsOutcome = enabledGraphTypes.has(FILE_IMPORTS_GRAPH_TYPE)
+      ? this.runImportGraphs(context)
+      : EMPTY_GRAPH_RUN_OUTCOME;
+    const pythonImportsOutcome = enabledGraphTypes.has(FILE_IMPORTS_GRAPH_TYPE)
+      ? this.runPythonImportGraphs(context)
+      : EMPTY_GRAPH_RUN_OUTCOME;
 
     return {
       failures: [
