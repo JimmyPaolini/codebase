@@ -1,9 +1,9 @@
 {
   "dependencies": {
     "@codependix/configuration": "workspace:*",
-    "@codependix/imports": "workspace:*",
-    "@codependix/nestjs": "workspace:*",
-    "@codependix/nx": "workspace:*",
+    "@codependix/file-imports": "workspace:*",
+    "@codependix/nestjs-modules": "workspace:*",
+    "@codependix/nx-projects": "workspace:*",
     "@nestjs/common": "catalog:",
     "reflect-metadata": "catalog:",
     "tslib": "catalog:"

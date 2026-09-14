@@ -5,7 +5,10 @@ import { fence } from "./document";
 import { resolveExample } from "./paths";
 
 import type { ExampleDocument, ExampleSection } from "./types";
-import type { NestjsModuleGraph, NestjsProject } from "@codependix/nestjs";
+import type {
+  NestjsModuleGraph,
+  NestjsProject,
+} from "@codependix/nestjs-modules";
 
 // 🏷️ Types
 

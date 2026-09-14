@@ -5,14 +5,14 @@ import type { ResolvedCodependixConfiguration } from "@codependix/configuration"
 import type {
   PythonImportGraph,
   TypescriptImportGraph,
-} from "@codependix/imports";
-import type { NestjsModuleGraph } from "@codependix/nestjs";
+} from "@codependix/file-imports";
+import type { NestjsModuleGraph } from "@codependix/nestjs-modules";
 import type {
   Neighborhood,
   NxProject,
   NxProjectGraph,
   WorkspaceGraph,
-} from "@codependix/nx";
+} from "@codependix/nx-projects";
 
 /**
  * Everything every graph-type pass reads, resolved once per run rather than

@@ -1,8 +1,14 @@
 import { BoundaryCheckModule } from "@codependix/boundaries";
 import { ConfigurationModule, InputModule } from "@codependix/configuration";
-import { TypescriptModule } from "@codependix/imports";
-import { ModuleGraphModule, NestjsProjectModule } from "@codependix/nestjs";
-import { NeighborhoodModule, WorkspaceGraphModule } from "@codependix/nx";
+import { TypescriptModule } from "@codependix/file-imports";
+import {
+  ModuleGraphModule,
+  NestjsProjectModule,
+} from "@codependix/nestjs-modules";
+import {
+  NeighborhoodModule,
+  WorkspaceGraphModule,
+} from "@codependix/nx-projects";
 import { Module } from "@nestjs/common";
 
 import { DeliveryModule } from "../delivery/delivery.module";

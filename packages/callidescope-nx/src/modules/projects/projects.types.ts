@@ -3,7 +3,7 @@
 /**
  * One Nx project, reduced to what a directory resolution needs of it.
  *
- * `codependix-nx` declares a near-identical shape and reads it out of the
+ * `codependix-nx-projects` declares a near-identical shape and reads it out of the
  * graph the same way. They are deliberately not shared: the two packages sit
  * in different toolchains, and `configuration/eslint.config.ts` lets this one
  * depend on nothing but `logger` precisely so `@nx/devkit` cannot spread. A

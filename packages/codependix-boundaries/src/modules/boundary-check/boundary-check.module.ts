@@ -1,6 +1,9 @@
-import { PythonModule, TypescriptModule } from "@codependix/imports";
-import { ModuleGraphModule, NestjsProjectModule } from "@codependix/nestjs";
-import { WorkspaceGraphModule } from "@codependix/nx";
+import { PythonModule, TypescriptModule } from "@codependix/file-imports";
+import {
+  ModuleGraphModule,
+  NestjsProjectModule,
+} from "@codependix/nestjs-modules";
+import { WorkspaceGraphModule } from "@codependix/nx-projects";
 import { Module } from "@nestjs/common";
 
 import { BoundariesModule } from "../boundaries/boundaries.module";

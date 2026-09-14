@@ -230,8 +230,8 @@ callable belongs to a **project** and to a file, and to nothing between them.
 
 **Graph**:
 A dependency structure for one level of the codebase — projects, NestJS
-modules, or files — built by exactly one codependix package (`codependix-nx`,
-`codependix-nestjs`, `codependix-imports` respectively).
+modules, or files — built by exactly one codependix package (`codependix-nx-projects`,
+`codependix-nestjs-modules`, `codependix-file-imports` respectively).
 _Avoid_: Diagram, tree, map
 
 **Neighborhood**:

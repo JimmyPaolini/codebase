@@ -1,7 +1,7 @@
 import path from "node:path";
 
 import { ConfigurationService } from "@codependix/configuration";
-import { PythonService } from "@codependix/imports";
+import { PythonService } from "@codependix/file-imports";
 import { Injectable } from "@nestjs/common";
 
 import { DeliveryService } from "../delivery/delivery.service";
@@ -23,7 +23,7 @@ import type {
   PythonImportGraphExport,
 } from "../map/map.types";
 import type { ResolvedCodependixGraphOutput } from "@codependix/configuration";
-import type { PythonProject } from "@codependix/imports";
+import type { PythonProject } from "@codependix/file-imports";
 
 /**
  * Builds and delivers every configured Python file-level import graph

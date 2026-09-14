@@ -1,0 +1,46 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "codependix-nx-projects",
+  "projectType": "library",
+  "sourceRoot": "packages/codependix-nx-projects",
+  "tags": [
+    "framework:nestjs",
+    "generator:nestjs-service-project",
+    "language:typescript",
+    "name:codependix-nx-projects",
+    "type:package"
+  ],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "options": {
+        "assets": [
+          {
+            "glob": "README.md",
+            "input": "packages/codependix-nx-projects",
+            "output": "."
+          }
+        ],
+        "generatePackageJson": false,
+        "main": "packages/codependix-nx-projects/src/index.ts",
+        "outputPath": "packages/codependix-nx-projects/dist",
+        "tsConfig": "packages/codependix-nx-projects/tsconfig.build.json"
+      },
+      "outputs": ["{options.outputPath}"]
+    },
+    "codometer": {},
+    "dependency-cruiser": {},
+    "knip": {},
+    "lint-codebase": {},
+    "make-projects": {},
+    "markdown-lint": {},
+    "oxfmt": {},
+    "oxlint": {},
+    "prettier": {},
+    "spell-check": {},
+    "test-coverage": {},
+    "type-coverage": {},
+    "typecheck": {},
+    "yaml-lint": {}
+  }
+}

@@ -3,7 +3,7 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 
 import { ConfigurationService } from "@codependix/configuration";
-import { PythonService } from "@codependix/imports";
+import { PythonService } from "@codependix/file-imports";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
@@ -14,7 +14,7 @@ import { DeliveryService } from "../delivery/delivery.service";
 import { PythonImportsService } from "./python-imports.service";
 
 import type { GraphRunContext } from "../map/map.types";
-import type { PythonImportGraph } from "@codependix/imports";
+import type { PythonImportGraph } from "@codependix/file-imports";
 
 const PYTHON_IMPORT_GRAPH: PythonImportGraph = {
   edges: [{ source: "src/index.py", target: "src/helper.py" }],

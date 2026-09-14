@@ -3,9 +3,15 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 
 import { ConfigurationService } from "@codependix/configuration";
-import { TypescriptService } from "@codependix/imports";
-import { ModuleGraphService, NestjsProjectService } from "@codependix/nestjs";
-import { NeighborhoodService, WorkspaceGraphService } from "@codependix/nx";
+import { TypescriptService } from "@codependix/file-imports";
+import {
+  ModuleGraphService,
+  NestjsProjectService,
+} from "@codependix/nestjs-modules";
+import {
+  NeighborhoodService,
+  WorkspaceGraphService,
+} from "@codependix/nx-projects";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
@@ -23,9 +29,9 @@ import type { GraphRunContext } from "./map.types";
 import type {
   TypescriptImportGraph,
   TypescriptProjectProgram,
-} from "@codependix/imports";
-import type { NestjsModuleGraph } from "@codependix/nestjs";
-import type { Neighborhood } from "@codependix/nx";
+} from "@codependix/file-imports";
+import type { NestjsModuleGraph } from "@codependix/nestjs-modules";
+import type { Neighborhood } from "@codependix/nx-projects";
 
 const NEIGHBORHOOD: Neighborhood = {
   dependencies: ["logger"],

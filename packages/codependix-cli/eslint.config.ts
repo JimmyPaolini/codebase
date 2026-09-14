@@ -30,12 +30,12 @@ export default [
         {
           paths: [
             {
-              // Only `@codependix/nx` owns Nx. Everything another package
+              // Only `@codependix/nx-projects` owns Nx. Everything another package
               // wants is already on `NxProject`, and a whole graph travels as
               // the opaque `NxProjectGraph` — reaching for `@nx/devkit` here
               // is how tag reading leaked into four packages before.
               message:
-                "Import NxProject or NxProjectGraph from @codependix/nx instead — only @codependix/nx may depend on Nx.",
+                "Import NxProject or NxProjectGraph from @codependix/nx-projects instead — only @codependix/nx-projects may depend on Nx.",
               name: "@nx/devkit",
             },
           ],

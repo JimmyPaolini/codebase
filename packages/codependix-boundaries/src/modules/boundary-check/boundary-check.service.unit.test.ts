@@ -1,6 +1,9 @@
-import { PythonService, TypescriptService } from "@codependix/imports";
-import { ModuleGraphService, NestjsProjectService } from "@codependix/nestjs";
-import { WorkspaceGraphService } from "@codependix/nx";
+import { PythonService, TypescriptService } from "@codependix/file-imports";
+import {
+  ModuleGraphService,
+  NestjsProjectService,
+} from "@codependix/nestjs-modules";
+import { WorkspaceGraphService } from "@codependix/nx-projects";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";

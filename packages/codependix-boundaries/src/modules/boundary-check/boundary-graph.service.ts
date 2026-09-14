@@ -9,9 +9,9 @@ import type {
 import type {
   PythonImportGraph,
   TypescriptImportGraph,
-} from "@codependix/imports";
-import type { NestjsModuleGraph } from "@codependix/nestjs";
-import type { NxProject, WorkspaceGraph } from "@codependix/nx";
+} from "@codependix/file-imports";
+import type { NestjsModuleGraph } from "@codependix/nestjs-modules";
+import type { NxProject, WorkspaceGraph } from "@codependix/nx-projects";
 
 /**
  * Flattens each of codependix's four graphs into the one shape rules read.
@@ -74,7 +74,7 @@ export class BoundaryGraphService {
    * Nodes carry a name and nothing else, which is the level's real
    * constraint rather than an omission here: `SpelunkerModule.explore`
    * reports class names, so a name glob is the only selector a rule can use
-   * at this level until `codependix-nestjs` learns each module's declaring
+   * at this level until `codependix-nestjs-modules` learns each module's declaring
    * file.
    */
   public buildNestjsGraph(graph: NestjsModuleGraph): BoundaryGraph {

@@ -66,9 +66,9 @@ A modern TypeScript codebase with Nx, featuring automated releases, comprehensiv
   - **[codependix-cli](packages/codependix-cli)** - Command-line host that exports a project's Nx, NestJS, and file-level dependency graphs as JSON and Markdown anchor blocks, and gates the rules over them
   - **[codependix-configuration](packages/codependix-configuration)** - Reads `codependix.config.ts` and resolves per-project export destinations and boundary rules
   - **[codependix-examples](packages/codependix-examples)** - Sixteen subjects built to be graphed, each carrying the guide codependix renders from it
-  - **[codependix-imports](packages/codependix-imports)** - Builds a project's file-level import graph — a `typescript` module walking its own `ts.Program`, and a `python` module parsing `import`/`from ... import` statements
-  - **[codependix-nestjs](packages/codependix-nestjs)** - Explores a NestJS project's container and builds its module graph
-  - **[codependix-nx](packages/codependix-nx)** - Builds a project's one-hop Nx dependency neighborhood from the Nx project graph
+  - **[codependix-file-imports](packages/codependix-file-imports)** - Builds a project's file-level import graph — a `typescript` module walking its own `ts.Program`, and a `python` module parsing `import`/`from ... import` statements
+  - **[codependix-nestjs-modules](packages/codependix-nestjs-modules)** - Explores a NestJS project's container and builds its module graph
+  - **[codependix-nx-projects](packages/codependix-nx-projects)** - Builds a project's one-hop Nx dependency neighborhood from the Nx project graph
 - **⏲️ codometer** - Repository measurement toolchain that counts a codebase and reports what it found
   - **[codometer-agents](packages/codometer-agents)** - Agent skills for the codometer toolchain, published and installed back from the lockfile like any other vendored skill
   - **[codometer-changes](packages/codometer-changes)** - Diffs codometer reports against a baseline snapshot
