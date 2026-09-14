@@ -53,7 +53,7 @@ over is its filename:
 ```text
 output/
   index.html                                        every drawing, linked and captioned
-  lattice-addresses.md                              every drawing's lattice address
+  meanders.sqlite                                   every drawing, as a committed database row
   <family>/
     <rows>-rows/
       <variant>-<repeatCount>-repeats-<address>.svg `plain` where there is no modifier
@@ -305,7 +305,7 @@ materialized its unit space as enumerable tiles, so its regions — `lines`, `da
 latent unit spaces and therefore only modifiers. Evaluating a predicate needs no
 enumeration, though, so a drawing from any of those nine can still **earn** a sub-family
 name from the tile it draws — 85 of the 1,118 swept combinations do, and the
-[lattice address table](output/lattice-addresses.md) reports which.
+committed database reports which.
 
 ### The mosaic family draws no motif
 
@@ -1138,8 +1138,8 @@ then could the contract phase delete the per-family path emission.
 > only the fourth. Every drawing in every family now carries a **lattice address** —
 > `<rows>r<span>c-` and one hexadecimal character per interior lattice point — with its
 > canonical symmetry class beside it, spelled and folded by
-> `LatticeIdentificationService` in `src/modules/lattice-identification/` and tabulated
-> for all 9,877 committed drawings in [`output/lattice-addresses.md`](output/lattice-addresses.md). The
+> `LatticeIdentificationService` in `src/modules/lattice-identification/` and recorded
+> for every committed drawing in the committed `output/meanders.sqlite` database. The
 > other three bullets are untouched: there is no family-agnostic lattice enumerator, the
 > motif services still emit their own path data rather than producing a lattice tile for
 > one shared renderer, and the modifiers are still per-family arithmetic rather than
@@ -2050,37 +2050,6 @@ Double-lined key patterns are real Greek ornament, which is why #340 marks this 
 byte-exact reference asset exists for it as one does for the six oldest families. Its
 committed output in `output/` is its own baseline, pinned by measurement rather than by
 likeness. Every figure in this section is the expected value of an assertion.
-
-## 🗺️ Lattice Addresses
-
-Every one of the 9,877 committed drawings is addressed on the lattice every family is
-drawn on, and the whole table is generated into
-[`output/lattice-addresses.md`](output/lattice-addresses.md). It is filed beside the
-corpus it describes rather than spliced in here: nine thousand rows take a README to
-about a megabyte, and parsing a markdown file that size is most of what
-`nx run meanderaw:markdown-lint` would then spend its time on.
-
-**Family** is the directory a drawing is filed under and **Modifier** the variant within
-it — the modifier's slug for a family drawn from a motif, and the tile's own name in the
-two enumerated halves, all of `mosaic` and `negative`'s `permutations/` subtree, whose
-drawings have no modifier at all. **Rows** is the band's depth and **Span** the column
-span of the true repeat the address is read over. **Address** is the name;
-**Canonical class** is the one string a whole symmetry class shares, and is never
-substituted for it; **Sub-family** is the name the ink earns where it earns one.
-
-A class shared across two families is the discovery rather than a collision: `parallel`'s
-`serpentine-strands-3-offset-1` at three rows is the `mosaic` `zigzag` tile `56a9`, and
-its four-strand, two-offset sibling is `56a933`.
-
-```bash
-nx run meanderaw:address-table         # compare the committed table against a fresh sweep
-nx run meanderaw:address-table:write   # rewrite it
-```
-
-A `check` fails for one of two reasons. The table is **stale** — a drawing changed shape
-without the table following — and a `write` fixes it. Or drawings of one family **share an
-address** at a multiplicity `EXPECTED_ADDRESS_COLLISIONS` does not declare, which is
-duplicate art or an address too coarse to separate the two, and no rewrite fixes it.
 
 ## 👔 Conformetry
 

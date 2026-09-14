@@ -435,7 +435,6 @@
       },
       "defaultConfiguration": "check",
       "dependsOn": [
-        "address-table",
         "check-catalog-manifests",
         "check-lockfile",
         "check-readme-projects",

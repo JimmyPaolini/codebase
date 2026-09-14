@@ -16,13 +16,19 @@ import {
 import { SUPPORTED_SUB_FAMILIES } from "../mosaic-tile/mosaic-tile.constants";
 import { SUPPORTED_SERPENTINE_FLIPS } from "../parallel-motif/parallel-motif.constants";
 
+import { DrawCodeService } from "./draw-code.service";
 import { DrawCombinationsService } from "./draw-combinations.service";
+import { DrawEnumerationService } from "./draw-enumeration.service";
 import { DrawIndexService } from "./draw-index.service";
 import { DrawNegativePermutationsService } from "./draw-negative-permutations.service";
 import { DrawParametersService } from "./draw-parameters.service";
 import { DrawPermutationsService } from "./draw-permutations.service";
 import { DrawRenderingService } from "./draw-rendering.service";
-import { CollidingPathsError, INDEX_FILE_NAME } from "./draw.constants";
+import {
+  CollidingPathsError,
+  IncompleteCodeDrawingError,
+  INDEX_FILE_NAME,
+} from "./draw.constants";
 
 import type { RungDirection } from "../branch-motif/branch-motif.types";
 import type {
@@ -43,7 +49,11 @@ import type {
  *
  * What it draws is decided by whether a drawing was named:
  *
- * - **`draw`** sweeps everything. A bounded, representative sample of the
+ * - **`draw`** sweeps everything. The whole lattice's unit space,
+ *   enumerated by {@link DrawEnumerationService} and written to the
+ *   database — every family's space rather than only `mosaic`'s, with each
+ *   meander's family read off its own structure — beside a bounded,
+ *   representative sample of the
  *   named families' parameter space, enumerated by
  *   {@link DrawCombinationsService} — which the meander charter's property
  *   test also sweeps, so the corpus this writes and the corpus that is gated
@@ -79,7 +89,7 @@ import type {
  */
 @Command({
   description:
-    "Draw meanders: with no drawing named, sweep every one the application can draw (each named family from its own structural minimum through its own maximum rows, with every compatible modifier, plus exhaustive enumerations of the mosaic family's tiles and the negative family's one-column sources) beneath an index page listing them all; with --type and --rows, draw that one",
+    "Draw meanders: with no drawing named, sweep every one the application can draw (the whole lattice's unit space enumerated into the database, classified into a family by each meander's own structure; plus each named family from its own structural minimum through its own maximum rows, with every compatible modifier, and exhaustive enumerations of the mosaic family's tiles and the negative family's one-column sources, beneath an index page listing them all); with --type and --rows, draw that one",
   name: "draw",
   options: { isDefault: true },
 })
@@ -89,8 +99,12 @@ export class DrawCommand extends CommandRunner {
 
   constructor(
     private readonly logger: LoggerService,
+    @Inject(DrawCodeService)
+    private readonly drawCodeService: DrawCodeService,
     @Inject(DrawCombinationsService)
     private readonly drawCombinationsService: DrawCombinationsService,
+    @Inject(DrawEnumerationService)
+    private readonly drawEnumerationService: DrawEnumerationService,
     @Inject(DrawIndexService)
     private readonly drawIndexService: DrawIndexService,
     @Inject(DrawParametersService)
@@ -137,8 +151,55 @@ export class DrawCommand extends CommandRunner {
       .map((parameters) => this.drawRenderingService.render(parameters));
   }
 
-  /** Draws every meander the application can draw, and indexes them all in one page. */
+  /**
+   * Decodes, renders, and persists the one meander `--rows`, `--columns`,
+   * and `--code` name, refusing the request when `--rows` or `--columns` is
+   * missing.
+   *
+   * Takes the three already-narrowed values rather than the whole options
+   * object, so the `rows` and `columns` presence check below is what
+   * TypeScript itself trusts, rather than a check the compiler cannot see
+   * through a wider type.
+   */
+  private async runCodeDrawing(
+    code: string,
+    rows: number | undefined,
+    columns: number | undefined,
+  ): Promise<void> {
+    if (rows === undefined || columns === undefined) {
+      throw new IncompleteCodeDrawingError();
+    }
+
+    const meander = await this.drawCodeService.draw({ code, columns, rows });
+
+    this.logger.log("✨ Generated a meander by code", undefined, {
+      id: meander.id,
+    });
+  }
+
+  /**
+   * Draws every meander the application can draw, and indexes them all in
+   * one page.
+   *
+   * Two corpora, side by side. The lattice-first half enumerates the whole
+   * unit space and writes a database row per meander found — every family's
+   * space now, not only `mosaic`'s, with family membership decided from each
+   * meander's own structure rather than from whichever generator drew it.
+   * The file-writing halves below it are unchanged, and stay that way until
+   * the hardcoded corpus is ingested and issue #819 retires them; the index
+   * page still lists only what they wrote, since nothing yet reads the
+   * database back.
+   *
+   * The enumerated half runs first, so a sweep that cannot decode or render
+   * something it found fails before thousands of files are written.
+   */
   private async sweep(outputDirectory: string): Promise<void> {
+    const enumerated = await this.drawEnumerationService.sweep();
+
+    this.logger.log("✨ Enumerated every family's unit space", undefined, {
+      enumerated,
+    });
+
     const combinations = this.renderCombinations();
 
     this.assertNoPathCollisions(combinations);
@@ -213,6 +274,31 @@ export class DrawCommand extends CommandRunner {
     flags: "-b, --branches <branches>",
   })
   parseBranches(value: string): number {
+    return Number.parseInt(value, 10);
+  }
+
+  /**
+   * Parses `--code`, passed through unchanged: the hexadecimal digits a
+   * decoded grid's own points are read from, one character per interior
+   * lattice point. `MeanderDecodingService.decode` is what refuses a
+   * non-hexadecimal character or a length `--rows`/`--columns` disagree
+   * with, so nothing is validated here.
+   */
+  @Option({
+    description:
+      "Hexadecimal Code a meander's per-point direction bits are decoded from, one character per interior lattice point — draws that one meander and writes it to the database, in place of --type/--rows",
+    flags: "--code <code>",
+  })
+  parseCode(value: string): string {
+    return value;
+  }
+
+  /** Parses `--columns` as an integer, used only with `--code`. */
+  @Option({
+    description: "Column count of one --code drawing",
+    flags: "--columns <columns>",
+  })
+  parseColumns(value: string): number {
     return Number.parseInt(value, 10);
   }
 
@@ -316,11 +402,25 @@ export class DrawCommand extends CommandRunner {
     return this.drawParametersService.type(value);
   }
 
-  /** Sweeps every meander, or draws the one `--type` and `--rows` name. */
+  /**
+   * Sweeps every meander, draws the one `--code` names, or draws the one
+   * `--type` and `--rows` name.
+   *
+   * `--code` is checked first because it selects a mode `--type`/`--rows`
+   * cannot: those two either name a family's own drawing together or, both
+   * absent, ask for the sweep, and neither reading has room left for a bare
+   * Code with no family behind it at all.
+   */
   async run(
     _passedParameters: string[],
     options: DrawCommandOptions,
   ): Promise<void> {
+    if (options.code !== undefined) {
+      await this.runCodeDrawing(options.code, options.rows, options.columns);
+
+      return;
+    }
+
     if (options.rows === undefined && options.type === undefined) {
       await this.sweep(options.outputDirectory);
 

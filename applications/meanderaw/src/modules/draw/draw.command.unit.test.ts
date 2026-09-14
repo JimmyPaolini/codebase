@@ -28,7 +28,9 @@ import { ParallelSerpentineService } from "../parallel-motif/parallel-serpentine
 import { OutputPathService } from "../svg-rendering/output-path.service";
 import { SvgRenderingService } from "../svg-rendering/svg-rendering.service";
 
+import { DrawCodeService } from "./draw-code.service";
 import { DrawCombinationsService } from "./draw-combinations.service";
+import { DrawEnumerationService } from "./draw-enumeration.service";
 import { DrawIndexService } from "./draw-index.service";
 import { DrawNegativePermutationsService } from "./draw-negative-permutations.service";
 import { DrawParametersService } from "./draw-parameters.service";
@@ -97,6 +99,7 @@ const MOCKED_COLUMN_COUNT = 512;
 
 describe(DrawCommand, () => {
   let command: DrawCommand;
+  let drawEnumerationService: DrawEnumerationService;
   let latticeIdentificationService: LatticeIdentificationService;
   let meanderGenerationService: MeanderGenerationService;
   let motifPitchService: MotifPitchService;
@@ -105,6 +108,14 @@ describe(DrawCommand, () => {
     const module = await Test.createTestingModule({
       providers: [
         DrawCommand,
+        {
+          provide: DrawCodeService,
+          useValue: createMock<DrawCodeService>(),
+        },
+        {
+          provide: DrawEnumerationService,
+          useValue: createMock<DrawEnumerationService>(),
+        },
         {
           provide: LoggerService,
           useValue: createMock<LoggerService>(),
@@ -142,6 +153,7 @@ describe(DrawCommand, () => {
     }).compile();
 
     command = await module.resolve(DrawCommand);
+    drawEnumerationService = await module.resolve(DrawEnumerationService);
     latticeIdentificationService = await module.resolve(
       LatticeIdentificationService,
     );
@@ -182,6 +194,14 @@ describe(DrawCommand, () => {
     const module = await Test.createTestingModule({
       providers: [
         DrawCommand,
+        {
+          provide: DrawCodeService,
+          useValue: createMock<DrawCodeService>(),
+        },
+        {
+          provide: DrawEnumerationService,
+          useValue: createMock<DrawEnumerationService>(),
+        },
         {
           provide: LoggerService,
           useValue: createMock<LoggerService>(),
@@ -407,6 +427,19 @@ describe(DrawCommand, () => {
       ]);
     });
 
+    // 🎯 The sweep's lattice-first half runs beside the file-writing ones
+    // rather than in place of them, which is the whole shape of this
+    // migration's middle: two corpora side by side until the hardcoded one
+    // is ingested and issue #819 retires the files. So both are asserted in
+    // one test — a sweep that stopped doing either is a sweep that stopped
+    // doing what it says.
+    it("enumerates every family's unit space into the database beside writing the old corpus to disk", async () => {
+      await command.run([], { outputDirectory: "output", repeatCount: 6 });
+
+      expect(drawEnumerationService.sweep).toHaveBeenCalledWith();
+      expect(vi.mocked(mockWriteFile).mock.calls.length).toBeGreaterThan(0);
+    });
+
     it("writes each combination's path under the requested output directory", async () => {
       await command.run([], {
         outputDirectory: "custom-batch-output",
@@ -430,6 +463,14 @@ describe(DrawCommand, () => {
       const module = await Test.createTestingModule({
         providers: [
           DrawCommand,
+          {
+            provide: DrawCodeService,
+            useValue: createMock<DrawCodeService>(),
+          },
+          {
+            provide: DrawEnumerationService,
+            useValue: createMock<DrawEnumerationService>(),
+          },
           {
             provide: LoggerService,
             useValue: createMock<LoggerService>(),
@@ -729,6 +770,14 @@ describe(DrawCommand, () => {
           DrawNegativePermutationsService,
           DrawPermutationsService,
           DrawRenderingService,
+          {
+            provide: DrawCodeService,
+            useValue: createMock<DrawCodeService>(),
+          },
+          {
+            provide: DrawEnumerationService,
+            useValue: createMock<DrawEnumerationService>(),
+          },
           {
             provide: LoggerService,
             useValue: createMock<LoggerService>(),
