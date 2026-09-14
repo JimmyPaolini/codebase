@@ -6,6 +6,7 @@ import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 import { ZodError } from "zod";
 
+import { ConfigurationLoaderService } from "../configuration-loader/configuration-loader.service";
 import { OverrideResolutionService } from "../override-resolution/override-resolution.service";
 
 import {
@@ -47,7 +48,11 @@ describe(ConfigurationService, () => {
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [ConfigurationService, OverrideResolutionService],
+      providers: [
+        ConfigurationService,
+        ConfigurationLoaderService,
+        OverrideResolutionService,
+      ],
     }).compile();
 
     service = await module.resolve(ConfigurationService);

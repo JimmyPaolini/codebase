@@ -1,3 +1,5 @@
+export { ConfigurationLoaderModule } from "./modules/configuration-loader/configuration-loader.module";
+export { ConfigurationLoaderService } from "./modules/configuration-loader/configuration-loader.service";
 // 📤 Exports
 export {
   CODEPENDIX_EXPORT_TARGETS,

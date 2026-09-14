@@ -6,6 +6,7 @@ import {
 } from "@codependix/boundaries";
 import { AnchorsService, DeliveryService } from "@codependix/cli";
 import {
+  ConfigurationLoaderService,
   ConfigurationService,
   OverrideResolutionService,
 } from "@codependix/configuration";
@@ -77,6 +78,7 @@ export const pythonService = new PythonService(
 
 /** Resolves what a configuration file says about where an export goes. */
 export const configurationService = new ConfigurationService(
+  new ConfigurationLoaderService(),
   new OverrideResolutionService(),
 );
 

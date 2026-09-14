@@ -1,22 +1,15 @@
-import { existsSync } from "node:fs";
-import { readFile } from "node:fs/promises";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
 
 import { Injectable } from "@nestjs/common";
-import { createJiti } from "jiti";
 
+import { ConfigurationLoaderService } from "../configuration-loader/configuration-loader.service";
 import { OverrideResolutionService } from "../override-resolution/override-resolution.service";
 
 import {
-  codependixConfigurationSchema,
   codependixProjectConfigurationSchema,
-  CONFIGURATION_FILE_NAMES,
-  ConfigurationFileNotFoundError,
   DEFAULT_EXPORT_TARGET,
   DEFAULT_INCLUDE_GLOBS,
   DEFAULT_MARKDOWN_PATH,
-  REPOSITORY_ROOT_MARKERS,
   SELECTION_SEPARATOR,
   SUPPORTED_CONFIGURATION_EXTENSIONS,
   UnknownConfigurationFileTypeError,
@@ -53,6 +46,7 @@ export class ConfigurationService {
   // 🏗 Dependency Injection
 
   constructor(
+    private readonly configurationLoaderService: ConfigurationLoaderService,
     private readonly overrideResolutionService: OverrideResolutionService,
   ) {}
 
@@ -61,88 +55,6 @@ export class ConfigurationService {
   // 🔑 Public Fields
 
   // 🔏 Private Methods
-
-  /**
-   * Walks upward from a directory looking for a configuration file.
-   *
-   * Returns `undefined` when the search reaches the filesystem root without
-   * finding one: a workspace that never wrote a configuration file resolves
-   * every graph to `target: "none"` rather than being told to write one.
-   */
-  private findConfigurationFile(searchDirectory: string): string | undefined {
-    let candidateDirectory = path.resolve(searchDirectory);
-
-    for (;;) {
-      for (const fileName of CONFIGURATION_FILE_NAMES) {
-        const candidatePath = path.join(candidateDirectory, fileName);
-
-        if (existsSync(candidatePath)) {
-          return candidatePath;
-        }
-      }
-
-      const parentDirectory = path.dirname(candidateDirectory);
-
-      if (parentDirectory === candidateDirectory) {
-        return undefined;
-      }
-
-      candidateDirectory = parentDirectory;
-    }
-  }
-
-  /**
-   * Looks for a project's own configuration file, exactly at its root.
-   *
-   * Unlike `findConfigurationFile`, this never walks upward: a project's own
-   * file must be colocated with it, and walking upward would find the
-   * workspace root's configuration — or another project's, in a nested
-   * layout — instead of correctly reporting that this project has none.
-   */
-  private findProjectConfigurationFile(
-    projectRoot: string,
-  ): string | undefined {
-    for (const fileName of CONFIGURATION_FILE_NAMES) {
-      const candidatePath = path.join(projectRoot, fileName);
-
-      if (existsSync(candidatePath)) {
-        return candidatePath;
-      }
-    }
-
-    return undefined;
-  }
-
-  /**
-   * Walks upward from the process cwd looking for the workspace root.
-   *
-   * Used to resolve a configuration path given relative to that root even when
-   * the command was invoked from a nested directory, which is what a task
-   * runner does whenever it sets the cwd to a project rather than the
-   * workspace.
-   */
-  private findWorkspaceRoot(): string | undefined {
-    let candidateDirectory = path.resolve(process.cwd());
-
-    for (;;) {
-      const directory = candidateDirectory;
-      const isRoot = REPOSITORY_ROOT_MARKERS.some((marker) =>
-        existsSync(path.join(directory, marker)),
-      );
-
-      if (isRoot) {
-        return candidateDirectory;
-      }
-
-      const parentDirectory = path.dirname(candidateDirectory);
-
-      if (parentDirectory === candidateDirectory) {
-        return undefined;
-      }
-
-      candidateDirectory = parentDirectory;
-    }
-  }
 
   /** Whether `--projects` or `--tags` names a project. */
   private isProjectNamedOnCommandLine(
@@ -156,22 +68,6 @@ export class ConfigurationService {
         args.projectRoot,
         selection.projects,
       ) || (args.projectTags ?? []).some((tag) => selection.tags.includes(tag))
-    );
-  }
-
-  /** Loads a configuration module, choosing the reader by extension. */
-  private async loadConfigurationModule(args: {
-    configurationPath: string;
-    extension: string;
-  }): Promise<unknown> {
-    if (args.extension === ".json") {
-      return JSON.parse(await readFile(args.configurationPath, "utf8"));
-    }
-
-    const jiti = createJiti(fileURLToPath(import.meta.url));
-
-    return this.readDefaultExport(
-      await jiti.import(args.configurationPath, { default: true }),
     );
   }
 
@@ -193,21 +89,6 @@ export class ConfigurationService {
   }
 
   /**
-   * Reads what a configuration module exported, through either interop shape.
-   */
-  private readDefaultExport(importedModule: unknown): unknown {
-    if (typeof importedModule !== "object" || importedModule === null) {
-      return {};
-    }
-
-    const defaultExport = (importedModule as { default?: unknown }).default;
-
-    return typeof defaultExport === "object" && defaultExport !== null
-      ? defaultExport
-      : importedModule;
-  }
-
-  /**
    * Fills in every graph level a `boundaries` block may leave out.
    *
    * Every level resolves to a list rather than to `undefined`, so a caller
@@ -226,31 +107,6 @@ export class ConfigurationService {
       nestjsModules: boundaries?.nestjsModules ?? [],
       nxProjects: boundaries?.nxProjects ?? [],
     };
-  }
-
-  /**
-   * Resolves a configuration path against the cwd, then the workspace root.
-   */
-  private resolveConfigurationPath(configurationPath: string): string {
-    const absolutePath = path.resolve(configurationPath);
-
-    if (existsSync(absolutePath)) {
-      return absolutePath;
-    }
-
-    const workspaceRoot = this.findWorkspaceRoot();
-
-    if (workspaceRoot === undefined) {
-      throw new ConfigurationFileNotFoundError(absolutePath);
-    }
-
-    const rootRelativePath = path.resolve(workspaceRoot, configurationPath);
-
-    if (!existsSync(rootRelativePath)) {
-      throw new ConfigurationFileNotFoundError(absolutePath);
-    }
-
-    return rootRelativePath;
   }
 
   /** Applies defaults to one graph type's export configuration. */
@@ -357,31 +213,8 @@ export class ConfigurationService {
   public async loadConfiguration(
     args: LoadConfigurationArguments = {},
   ): Promise<ResolvedCodependixConfiguration> {
-    const searchDirectory = path.resolve(args.searchDirectory ?? process.cwd());
-    const resolvedPath =
-      args.configurationPath === undefined
-        ? this.findConfigurationFile(searchDirectory)
-        : this.resolveConfigurationPath(args.configurationPath);
-
-    if (resolvedPath === undefined) {
-      return this.overrideResolutionService.applyOverrides({
-        authored: {},
-        overrides: args.overrides,
-        resolved: this.resolveConfiguration({}, args.selection),
-      });
-    }
-
-    const extension = path.extname(resolvedPath).toLowerCase();
-
-    if (!SUPPORTED_CONFIGURATION_EXTENSIONS.has(extension)) {
-      throw new UnknownConfigurationFileTypeError(resolvedPath);
-    }
-
-    const configurationModule = await this.loadConfigurationModule({
-      configurationPath: resolvedPath,
-      extension,
-    });
-    const authored = codependixConfigurationSchema.parse(configurationModule);
+    const authored =
+      await this.configurationLoaderService.readAuthoredConfiguration(args);
 
     return this.overrideResolutionService.applyOverrides({
       authored,
@@ -394,17 +227,19 @@ export class ConfigurationService {
    * Loads and validates one project's own `codependix.config.ts`, or
    * `undefined` when it has none.
    *
-   * Searched for exactly at `projectRoot` — see `findProjectConfigurationFile`
-   * — rather than the upward search `loadConfiguration` performs for the
-   * workspace root's own file: a project's file is either colocated with it
-   * or it does not exist, and a project with none produces no per-project
-   * output rather than inheriting one from a parent directory.
+   * Searched for exactly at `projectRoot` — see
+   * `ConfigurationLoaderService.findProjectConfigurationFile` — rather than
+   * the upward search `loadConfiguration` performs for the workspace root's
+   * own file: a project's file is either colocated with it or it does not
+   * exist, and a project with none produces no per-project output rather than
+   * inheriting one from a parent directory.
    */
   public async loadProjectConfiguration(
     args: LoadProjectConfigurationArguments,
   ): Promise<CodependixProjectConfiguration | undefined> {
     const projectRoot = path.resolve(args.projectRoot);
-    const resolvedPath = this.findProjectConfigurationFile(projectRoot);
+    const resolvedPath =
+      this.configurationLoaderService.findProjectConfigurationFile(projectRoot);
 
     if (resolvedPath === undefined) {
       return undefined;
@@ -416,10 +251,11 @@ export class ConfigurationService {
       throw new UnknownConfigurationFileTypeError(resolvedPath);
     }
 
-    const configurationModule = await this.loadConfigurationModule({
-      configurationPath: resolvedPath,
-      extension,
-    });
+    const configurationModule =
+      await this.configurationLoaderService.loadConfigurationModule({
+        configurationPath: resolvedPath,
+        extension,
+      });
 
     return codependixProjectConfigurationSchema.parse(configurationModule);
   }
