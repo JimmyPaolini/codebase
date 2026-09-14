@@ -16,12 +16,12 @@ graph LR
   codependix_boundaries["codependix-boundaries"]
   codependix_cli["codependix-cli"]
   codependix_examples["codependix-examples"]
-  codependix_nx["codependix-nx"]
-  codependix_boundaries --> codependix_nx
-  codependix_cli --> codependix_nx
-  codependix_examples --> codependix_nx
+  codependix_nx_projects["codependix-nx-projects"]
+  codependix_boundaries --> codependix_nx_projects
+  codependix_cli --> codependix_nx_projects
+  codependix_examples --> codependix_nx_projects
   classDef subject fill:#7c3aed,color:#fff,stroke:#4c1d95,stroke-width:2px
-  class codependix_nx subject
+  class codependix_nx_projects subject
 ```
 <!-- codependix:end name="codependix-nx" -->
 
@@ -90,7 +90,7 @@ graph LR
 
 ## 🔭 Callidescope
 
-Call stacks traced through `packages/codependix-nx`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
+Call stacks traced through `packages/codependix-nx-projects`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
 
 | Measure | Value |
 | --- | --- |
@@ -119,27 +119,27 @@ None.
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `NeighborhoodService.buildNeighborhoods` | 8 | `NeighborhoodService.map(…)`, `NeighborhoodService.collectEdges`, `NeighborhoodService.sortNames`, `NeighborhoodService.map(…)`, `NeighborhoodService.filter(…)`, `NeighborhoodService.map(…)`, `NeighborhoodService.filter(…)`, `NeighborhoodService.toSorted(…)` | `packages/codependix-nx/src/modules/neighborhood/neighborhood.service.ts:76` |
-| `NeighborhoodService.renderMermaid` | 5 | `NeighborhoodService.sortNames`, `NeighborhoodService.map(…)`, `NeighborhoodService.map(…)`, `NeighborhoodService.toNodeIdentifier`, `NeighborhoodService.some(…)` | `packages/codependix-nx/src/modules/neighborhood/neighborhood.service.ts:205` |
-| `WorkspaceGraphService.buildWorkspaceGraph` | 5 | `WorkspaceGraphService.map(…)`, `NeighborhoodService.collectEdges`, `WorkspaceGraphService.toSorted(…)`, `NeighborhoodService.sortNames`, `WorkspaceGraphService.map(…)` | `packages/codependix-nx/src/modules/workspace-graph/workspace-graph.service.ts:42` |
+| `NeighborhoodService.buildNeighborhoods` | 8 | `NeighborhoodService.map(…)`, `NeighborhoodService.collectEdges`, `NeighborhoodService.sortNames`, `NeighborhoodService.map(…)`, `NeighborhoodService.filter(…)`, `NeighborhoodService.map(…)`, `NeighborhoodService.filter(…)`, `NeighborhoodService.toSorted(…)` | `packages/codependix-nx-projects/src/modules/neighborhood/neighborhood.service.ts:76` |
+| `NeighborhoodService.renderMermaid` | 5 | `NeighborhoodService.sortNames`, `NeighborhoodService.map(…)`, `NeighborhoodService.map(…)`, `NeighborhoodService.toNodeIdentifier`, `NeighborhoodService.some(…)` | `packages/codependix-nx-projects/src/modules/neighborhood/neighborhood.service.ts:205` |
+| `WorkspaceGraphService.buildWorkspaceGraph` | 5 | `WorkspaceGraphService.map(…)`, `NeighborhoodService.collectEdges`, `WorkspaceGraphService.toSorted(…)`, `NeighborhoodService.sortNames`, `WorkspaceGraphService.map(…)` | `packages/codependix-nx-projects/src/modules/workspace-graph/workspace-graph.service.ts:42` |
 
 <details>
 <summary>12 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `NeighborhoodService.readProjects` | 3 | `NeighborhoodService.toSorted(…)`, `NeighborhoodService.map(…)`, `NeighborhoodService.filter(…)` | `packages/codependix-nx/src/modules/neighborhood/neighborhood.service.ts:186` |
-| `WorkspaceGraphService.renderMermaid` | 3 | `WorkspaceGraphService.map(…)`, `WorkspaceGraphService.map(…)`, `WorkspaceGraphService.some(…)` | `packages/codependix-nx/src/modules/workspace-graph/workspace-graph.service.ts:60` |
-| `NeighborhoodService.readProjectGraph` | 2 | `NeighborhoodService.isProjectGraph`, `InvalidProjectGraphError.constructor` | `packages/codependix-nx/src/modules/neighborhood/neighborhood.service.ts:171` |
-| `NeighborhoodService.toSorted(…)` | 1 | `NeighborhoodService.compareEdges` | `packages/codependix-nx/src/modules/neighborhood/neighborhood.service.ts:97` |
-| `NeighborhoodService.renderEdge` | 1 | `NeighborhoodService.toNodeIdentifier` | `packages/codependix-nx/src/modules/neighborhood/neighborhood.service.ts:198` |
-| `NeighborhoodService.map(…)` | 1 | `NeighborhoodService.renderNode` | `packages/codependix-nx/src/modules/neighborhood/neighborhood.service.ts:218` |
-| `NeighborhoodService.map(…)` | 1 | `NeighborhoodService.renderEdge` | `packages/codependix-nx/src/modules/neighborhood/neighborhood.service.ts:219` |
-| `NeighborhoodService.renderNode` | 1 | `NeighborhoodService.toNodeIdentifier` | `packages/codependix-nx/src/modules/neighborhood/neighborhood.service.ts:233` |
-| `NeighborhoodService.sortNames` | 1 | `NeighborhoodService.toSorted(…)` | `packages/codependix-nx/src/modules/neighborhood/neighborhood.service.ts:238` |
-| `WorkspaceGraphService.toSorted(…)` | 1 | `NeighborhoodService.compareEdges` | `packages/codependix-nx/src/modules/workspace-graph/workspace-graph.service.ts:50` |
-| `WorkspaceGraphService.map(…)` | 1 | `NeighborhoodService.renderNode` | `packages/codependix-nx/src/modules/workspace-graph/workspace-graph.service.ts:68` |
-| `WorkspaceGraphService.map(…)` | 1 | `NeighborhoodService.renderEdge` | `packages/codependix-nx/src/modules/workspace-graph/workspace-graph.service.ts:71` |
+| `NeighborhoodService.readProjects` | 3 | `NeighborhoodService.toSorted(…)`, `NeighborhoodService.map(…)`, `NeighborhoodService.filter(…)` | `packages/codependix-nx-projects/src/modules/neighborhood/neighborhood.service.ts:186` |
+| `WorkspaceGraphService.renderMermaid` | 3 | `WorkspaceGraphService.map(…)`, `WorkspaceGraphService.map(…)`, `WorkspaceGraphService.some(…)` | `packages/codependix-nx-projects/src/modules/workspace-graph/workspace-graph.service.ts:60` |
+| `NeighborhoodService.readProjectGraph` | 2 | `NeighborhoodService.isProjectGraph`, `InvalidProjectGraphError.constructor` | `packages/codependix-nx-projects/src/modules/neighborhood/neighborhood.service.ts:171` |
+| `NeighborhoodService.toSorted(…)` | 1 | `NeighborhoodService.compareEdges` | `packages/codependix-nx-projects/src/modules/neighborhood/neighborhood.service.ts:97` |
+| `NeighborhoodService.renderEdge` | 1 | `NeighborhoodService.toNodeIdentifier` | `packages/codependix-nx-projects/src/modules/neighborhood/neighborhood.service.ts:198` |
+| `NeighborhoodService.map(…)` | 1 | `NeighborhoodService.renderNode` | `packages/codependix-nx-projects/src/modules/neighborhood/neighborhood.service.ts:218` |
+| `NeighborhoodService.map(…)` | 1 | `NeighborhoodService.renderEdge` | `packages/codependix-nx-projects/src/modules/neighborhood/neighborhood.service.ts:219` |
+| `NeighborhoodService.renderNode` | 1 | `NeighborhoodService.toNodeIdentifier` | `packages/codependix-nx-projects/src/modules/neighborhood/neighborhood.service.ts:233` |
+| `NeighborhoodService.sortNames` | 1 | `NeighborhoodService.toSorted(…)` | `packages/codependix-nx-projects/src/modules/neighborhood/neighborhood.service.ts:238` |
+| `WorkspaceGraphService.toSorted(…)` | 1 | `NeighborhoodService.compareEdges` | `packages/codependix-nx-projects/src/modules/workspace-graph/workspace-graph.service.ts:50` |
+| `WorkspaceGraphService.map(…)` | 1 | `NeighborhoodService.renderNode` | `packages/codependix-nx-projects/src/modules/workspace-graph/workspace-graph.service.ts:68` |
+| `WorkspaceGraphService.map(…)` | 1 | `NeighborhoodService.renderEdge` | `packages/codependix-nx-projects/src/modules/workspace-graph/workspace-graph.service.ts:71` |
 
 </details>
 <!-- CALL_STACKS_END -->
@@ -150,8 +150,8 @@ None.
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-1348-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-53.39_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-1350-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-53.59_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-5-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-20-3178c6?style=flat-square)
 
