@@ -108,9 +108,9 @@ Call stacks traced through `tools/validation`, deepest first. Each frame shows w
 
 | Measure | Value |
 | --- | --- |
-| Callables | 162 |
+| Callables | 163 |
 | Files | 46 |
-| Calls traced | 204 |
+| Calls traced | 206 |
 | Call stacks | 7 |
 | Deepest stack | 8 |
 | Stacks through recursion | 0 |
@@ -228,9 +228,10 @@ What this project is judged against, as declared in its own `callidescope.config
 ```text
 🚀 ReadmeProjectsCommand.run(): Promise<void> [tools/validation/src/modules/readme-projects/readme-projects.command.ts:43]
    ↳ Checks every workspace project and exits 0 or 1 on the verdict.
-  └─> ReadmeProjectsService.findUndocumentedProjectPaths(projectPaths: string[], readmeContents: string): string[] [tools/validation/src/modules/readme-projects/readme-projects.service.ts:36]
-     ↳ Every project path the README does not link to.
-    └─> ReadmeProjectsService.filter(…)(projectPath: string): boolean [tools/validation/src/modules/readme-projects/readme-projects.service.ts:41]
+  └─> ReadmeProjectsService.resolveWorkspaceProjectPaths(workspaceRoot: string): string[] [tools/validation/src/modules/readme-projects/readme-projects.service.ts:82]
+     ↳ Every workspace project's scope-relative path, e.g. `packages/logger`.
+    └─> ReadmeProjectsService.findProjectPaths(workspaceRoot: string, directoryPath: string): string[] [tools/validation/src/modules/readme-projects/readme-projects.service.ts:41]
+       ↳ Every project path nested under `directoryPath`, at any depth.
 ```
 
 </details>
@@ -244,7 +245,7 @@ What this project is judged against, as declared in its own `callidescope.config
 | `PullRequestMetadataCommand.run` | 8 | `PullRequestMetadataCommand.resolveMetadata`, `PullRequestMetadataCommand.failWithMessage`, `PullRequestMetadataService.parseTitle`, `PullRequestMetadataService.checkMetadata`, `PullRequestMetadataCommand.resolvePullRequestNumber`, `PullRequestMetadataCommand.reportFailures`, `PullRequestMetadataCommand.appendToReport`, `PullRequestMetadataCommand.mirrorToStepSummary` | `tools/validation/src/modules/pull-request-metadata/pull-request-metadata.command.ts:264` |
 
 <details>
-<summary>73 more callables</summary>
+<summary>74 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
@@ -320,7 +321,8 @@ What this project is judged against, as declared in its own `callidescope.config
 | `PullRequestReleaseSignificanceService.readReleaseRules` | 1 | `PullRequestReleaseSignificanceService.find(…)` | `tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.service.ts:284` |
 | `PullRequestReleaseSignificanceService.map(…)` | 1 | `PullRequestReleaseSignificanceService.readRawCommit` | `tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.service.ts:325` |
 | `PullRequestReleaseSignificanceCommand.resolvePullRequestNumber` | 1 | `PullRequestReleaseSignificanceCommand.failWithUsageError` | `tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.command.ts:173` |
-| `ReadmeProjectsService.findUndocumentedProjectPaths` | 1 | `ReadmeProjectsService.filter(…)` | `tools/validation/src/modules/readme-projects/readme-projects.service.ts:36` |
+| `ReadmeProjectsService.findUndocumentedProjectPaths` | 1 | `ReadmeProjectsService.filter(…)` | `tools/validation/src/modules/readme-projects/readme-projects.service.ts:67` |
+| `ReadmeProjectsService.resolveWorkspaceProjectPaths` | 1 | `ReadmeProjectsService.findProjectPaths` | `tools/validation/src/modules/readme-projects/readme-projects.service.ts:82` |
 
 </details>
 <!-- CALL_STACKS_END -->
