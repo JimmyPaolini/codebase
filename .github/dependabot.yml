@@ -40,8 +40,6 @@ updates:
     commit-message:
       prefix: "chore(dependencies): 🔧 "
     labels:
-      - dependencies
-      - automated
       - type:chore
       - scope:dependencies
       - source:agent
@@ -93,8 +91,6 @@ updates:
     commit-message:
       prefix: "chore(dependencies): 🔧 "
     labels:
-      - dependencies
-      - automated
       - type:chore
       - scope:dependencies
       - source:agent
@@ -123,8 +119,6 @@ updates:
     commit-message:
       prefix: "chore(deployments): 🔧 "
     labels:
-      - dependencies
-      - automated
       - type:chore
       - scope:deployments
       - source:agent
@@ -146,8 +140,6 @@ updates:
     commit-message:
       prefix: "chore(infrastructure): 🔧 "
     labels:
-      - dependencies
-      - automated
       - type:chore
       - scope:infrastructure
       - source:agent
@@ -166,8 +158,6 @@ updates:
     commit-message:
       prefix: "chore(configuration): 🔧 "
     labels:
-      - dependencies
-      - automated
       - type:chore
       - scope:configuration
       - source:agent
@@ -188,8 +178,6 @@ updates:
     commit-message:
       prefix: "chore(configuration): 🔧 "
     labels:
-      - dependencies
-      - automated
       - type:chore
       - scope:configuration
       - source:agent
