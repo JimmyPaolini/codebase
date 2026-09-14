@@ -183,7 +183,7 @@ Dependency graphs exported by [codependix](https://github.com/JimmyPaolini/codeb
 
 ### Nx Neighborhood
 
-<!-- codependix:start name="codependix-nx" -->
+<!-- codependix:start name="codependix-nx-projects" -->
 ```mermaid
 graph LR
   lexico_entities["lexico-entities"]
@@ -192,11 +192,11 @@ graph LR
   classDef subject fill:#7c3aed,color:#fff,stroke:#4c1d95,stroke-width:2px
   class lexico_entities subject
 ```
-<!-- codependix:end name="codependix-nx" -->
+<!-- codependix:end name="codependix-nx-projects" -->
 
 ### NestJS Module Graph
 
-<!-- codependix:start name="codependix-nestjs" -->
+<!-- codependix:start name="codependix-nestjs-modules" -->
 ```mermaid
 flowchart LR
   DatabaseModule
@@ -204,11 +204,11 @@ flowchart LR
   TypeOrmModule
   DatabaseModule --> TypeOrmModule
 ```
-<!-- codependix:end name="codependix-nestjs" -->
+<!-- codependix:end name="codependix-nestjs-modules" -->
 
 ### File Imports
 
-<!-- codependix:start name="codependix-imports" -->
+<!-- codependix:start name="codependix-file-imports" -->
 ```mermaid
 graph LR
   file_callidescope_config_ts["callidescope.config.ts"]
@@ -382,7 +382,7 @@ graph LR
   file_src_modules_entities_literature_Token_entity_ts --> file_src_modules_entities_literature_Text_entity_ts
   file_testing_integration_test_data_source_ts --> file_src_modules_database_data_source_constants_ts
 ```
-<!-- codependix:end name="codependix-imports" -->
+<!-- codependix:end name="codependix-file-imports" -->
 
 <!-- CODE_STATISTICS_START -->
 

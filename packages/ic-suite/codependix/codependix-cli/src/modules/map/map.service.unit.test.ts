@@ -3,9 +3,15 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 
 import { ConfigurationService } from "@codependix/configuration";
-import { TypescriptService } from "@codependix/imports";
-import { ModuleGraphService, NestjsProjectService } from "@codependix/nestjs";
-import { NeighborhoodService, WorkspaceGraphService } from "@codependix/nx";
+import { TypescriptService } from "@codependix/file-imports";
+import {
+  ModuleGraphService,
+  NestjsProjectService,
+} from "@codependix/nestjs-modules";
+import {
+  NeighborhoodService,
+  WorkspaceGraphService,
+} from "@codependix/nx-projects";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
@@ -23,15 +29,17 @@ import type { GraphRunContext } from "./map.types";
 import type {
   TypescriptImportGraph,
   TypescriptProjectProgram,
-} from "@codependix/imports";
-import type { NestjsModuleGraph } from "@codependix/nestjs";
-import type { Neighborhood } from "@codependix/nx";
+} from "@codependix/file-imports";
+import type { NestjsModuleGraph } from "@codependix/nestjs-modules";
+import type { Neighborhood } from "@codependix/nx-projects";
 
 const NEIGHBORHOOD: Neighborhood = {
   dependencies: ["logger"],
   dependents: [],
-  edges: [{ implicit: false, source: "codependix-nx", target: "logger" }],
-  projectName: "codependix-nx",
+  edges: [
+    { implicit: false, source: "codependix-nx-projects", target: "logger" },
+  ],
+  projectName: "codependix-nx-projects",
 };
 
 const MODULE_GRAPH: NestjsModuleGraph = {
@@ -46,7 +54,7 @@ const TYPESCRIPT_IMPORT_GRAPH: TypescriptImportGraph = {
   edges: [{ source: "src/index.ts", target: "src/helper.ts" }],
   fileNames: ["src/helper.ts", "src/index.ts"],
   isolatedFileNames: [],
-  projectName: "codependix-imports",
+  projectName: "codependix-file-imports",
 };
 
 describe(MapService, () => {
@@ -70,7 +78,7 @@ describe(MapService, () => {
     overrides: Partial<GraphRunContext> = {},
   ): GraphRunContext {
     const projects = overrides.projects ?? [
-      { absoluteRoot: projectRoot, name: "codependix-nx", tags: [] },
+      { absoluteRoot: projectRoot, name: "codependix-nx-projects", tags: [] },
     ];
 
     return {
@@ -147,10 +155,10 @@ describe(MapService, () => {
       nodes: {},
     });
     vi.mocked(neighborhoodService.readProjects).mockReturnValue([
-      { absoluteRoot: projectRoot, name: "codependix-nx", tags: [] },
+      { absoluteRoot: projectRoot, name: "codependix-nx-projects", tags: [] },
     ]);
     vi.mocked(neighborhoodService.buildNeighborhoods).mockReturnValue(
-      new Map([["codependix-nx", NEIGHBORHOOD]]),
+      new Map([["codependix-nx-projects", NEIGHBORHOOD]]),
     );
     vi.mocked(neighborhoodService.renderMermaid).mockReturnValue(
       "```mermaid\ngraph LR\n```",
@@ -177,7 +185,7 @@ describe(MapService, () => {
     vi.mocked(typescriptService.discoverProjects).mockReturnValue([
       {
         absoluteRoot: projectRoot,
-        name: "codependix-imports",
+        name: "codependix-file-imports",
         tsconfigPath: path.join(projectRoot, "tsconfig.json"),
       },
     ]);
@@ -215,7 +223,7 @@ describe(MapService, () => {
 
     it("writes a project's JSON export", async () => {
       vi.mocked(configurationService.resolveForProject).mockReturnValue({
-        json: { path: "codependix-nx.json" },
+        json: { path: "codependix-nx-projects.json" },
         markdown: undefined,
         target: "json",
       });
@@ -225,25 +233,38 @@ describe(MapService, () => {
       expect(outcome).toStrictEqual({
         failures: [],
         results: [
-          { isCurrent: true, projectName: "codependix-nx", stalePaths: [] },
+          {
+            isCurrent: true,
+            projectName: "codependix-nx-projects",
+            stalePaths: [],
+          },
         ],
       });
 
       const written = JSON.parse(
-        await readFile(path.join(projectRoot, "codependix-nx.json"), "utf8"),
+        await readFile(
+          path.join(projectRoot, "codependix-nx-projects.json"),
+          "utf8",
+        ),
       ) as unknown;
 
       expect(written).toStrictEqual({
         dependencies: ["logger"],
         dependents: [],
-        edges: [{ implicit: false, source: "codependix-nx", target: "logger" }],
-        projectName: "codependix-nx",
+        edges: [
+          {
+            implicit: false,
+            source: "codependix-nx-projects",
+            target: "logger",
+          },
+        ],
+        projectName: "codependix-nx-projects",
       });
     });
 
     it("reports a missing JSON export as stale in check mode", () => {
       vi.mocked(configurationService.resolveForProject).mockReturnValue({
-        json: { path: "codependix-nx.json" },
+        json: { path: "codependix-nx-projects.json" },
         markdown: undefined,
         target: "json",
       });
@@ -255,8 +276,8 @@ describe(MapService, () => {
         results: [
           {
             isCurrent: false,
-            projectName: "codependix-nx",
-            stalePaths: ["codependix-nx.json"],
+            projectName: "codependix-nx-projects",
+            stalePaths: ["codependix-nx-projects.json"],
           },
         ],
       });
@@ -268,7 +289,7 @@ describe(MapService, () => {
       await writeFile(
         readmePath,
         [
-          "# codependix-nx",
+          "# codependix-nx-projects",
           '<!-- codependix:start name="nx" -->',
           "stale",
           '<!-- codependix:end name="nx" -->',
@@ -295,19 +316,19 @@ describe(MapService, () => {
       const otherProjectRoot = path.join(projectRoot, "other-project");
 
       await mkdir(otherProjectRoot, { recursive: true });
-      // No README.md is written for `codependix-nx`'s root here, on purpose:
+      // No README.md is written for `codependix-nx-projects`'s root here, on purpose:
       // a missing anchor in a file that exists now auto-creates the section
       // rather than failing, so the file itself must be absent to still
       // exercise a hard failure — see `AnchorNotFoundError`'s updated JSDoc.
       vi.mocked(neighborhoodService.buildNeighborhoods).mockReturnValue(
         new Map([
-          ["codependix-nx", NEIGHBORHOOD],
+          ["codependix-nx-projects", NEIGHBORHOOD],
           ["other-project", { ...NEIGHBORHOOD, projectName: "other-project" }],
         ]),
       );
       vi.mocked(configurationService.resolveForProject).mockImplementation(
         ({ projectName }) =>
-          projectName === "codependix-nx"
+          projectName === "codependix-nx-projects"
             ? {
                 json: undefined,
                 markdown: { anchor: "nx", path: "README.md" },
@@ -323,7 +344,11 @@ describe(MapService, () => {
       const outcome = service.runNxGraphs(
         buildContext({
           projects: [
-            { absoluteRoot: projectRoot, name: "codependix-nx", tags: [] },
+            {
+              absoluteRoot: projectRoot,
+              name: "codependix-nx-projects",
+              tags: [],
+            },
             { absoluteRoot: otherProjectRoot, name: "other-project", tags: [] },
           ],
         }),
@@ -332,7 +357,7 @@ describe(MapService, () => {
       expect(outcome.failures).toStrictEqual([
         {
           error: expect.stringContaining('Anchor "nx" not found') as string,
-          projectName: "codependix-nx",
+          projectName: "codependix-nx-projects",
         },
       ]);
       expect(outcome.results).toStrictEqual([
@@ -372,7 +397,11 @@ describe(MapService, () => {
         });
 
         const selected = [
-          { absoluteRoot: projectRoot, name: "codependix-nx", tags: [] },
+          {
+            absoluteRoot: projectRoot,
+            name: "codependix-nx-projects",
+            tags: [],
+          },
         ];
 
         service.runNxGraphs(
@@ -655,13 +684,17 @@ describe(MapService, () => {
   });
 
   describe("runImportGraphs", () => {
-    /** Builds a context whose one project is `codependix-imports`. */
+    /** Builds a context whose one project is `codependix-file-imports`. */
     function buildImportsContext(
       overrides: Partial<GraphRunContext> = {},
     ): GraphRunContext {
       return buildContext({
         projects: [
-          { absoluteRoot: projectRoot, name: "codependix-imports", tags: [] },
+          {
+            absoluteRoot: projectRoot,
+            name: "codependix-file-imports",
+            tags: [],
+          },
         ],
         ...overrides,
       });
@@ -681,7 +714,7 @@ describe(MapService, () => {
 
     it("builds a program only for the discovered typescript projects", () => {
       vi.mocked(configurationService.resolveForProject).mockReturnValue({
-        json: { path: "codependix-imports.json" },
+        json: { path: "codependix-file-imports.json" },
         markdown: undefined,
         target: "json",
       });
@@ -690,14 +723,14 @@ describe(MapService, () => {
 
       expect(typescriptService.buildProgram).toHaveBeenCalledWith({
         absoluteRoot: projectRoot,
-        name: "codependix-imports",
+        name: "codependix-file-imports",
         tsconfigPath: path.join(projectRoot, "tsconfig.json"),
       });
     });
 
     it("writes a project's JSON export", async () => {
       vi.mocked(configurationService.resolveForProject).mockReturnValue({
-        json: { path: "codependix-imports.json" },
+        json: { path: "codependix-file-imports.json" },
         markdown: undefined,
         target: "json",
       });
@@ -709,7 +742,7 @@ describe(MapService, () => {
         results: [
           {
             isCurrent: true,
-            projectName: "codependix-imports",
+            projectName: "codependix-file-imports",
             stalePaths: [],
           },
         ],
@@ -717,7 +750,7 @@ describe(MapService, () => {
 
       const written = JSON.parse(
         await readFile(
-          path.join(projectRoot, "codependix-imports.json"),
+          path.join(projectRoot, "codependix-file-imports.json"),
           "utf8",
         ),
       ) as unknown;
@@ -727,7 +760,7 @@ describe(MapService, () => {
 
     it("reports a missing JSON export as stale in check mode", () => {
       vi.mocked(configurationService.resolveForProject).mockReturnValue({
-        json: { path: "codependix-imports.json" },
+        json: { path: "codependix-file-imports.json" },
         markdown: undefined,
         target: "json",
       });
@@ -741,8 +774,8 @@ describe(MapService, () => {
         results: [
           {
             isCurrent: false,
-            projectName: "codependix-imports",
-            stalePaths: ["codependix-imports.json"],
+            projectName: "codependix-file-imports",
+            stalePaths: ["codependix-file-imports.json"],
           },
         ],
       });
@@ -754,7 +787,7 @@ describe(MapService, () => {
       await writeFile(
         readmePath,
         [
-          "# codependix-imports",
+          "# codependix-file-imports",
           '<!-- codependix:start name="imports" -->',
           "stale",
           '<!-- codependix:end name="imports" -->',
@@ -779,7 +812,7 @@ describe(MapService, () => {
 
     it("writes both a JSON and a markdown export for a both target", async () => {
       vi.mocked(configurationService.resolveForProject).mockReturnValue({
-        json: { path: "codependix-imports.json" },
+        json: { path: "codependix-file-imports.json" },
         markdown: { anchor: undefined, path: "import-graph.md" },
         target: "both",
       });
@@ -787,8 +820,11 @@ describe(MapService, () => {
       service.runImportGraphs(buildImportsContext());
 
       await expect(
-        readFile(path.join(projectRoot, "codependix-imports.json"), "utf8"),
-      ).resolves.toContain("codependix-imports");
+        readFile(
+          path.join(projectRoot, "codependix-file-imports.json"),
+          "utf8",
+        ),
+      ).resolves.toContain("codependix-file-imports");
       await expect(
         readFile(path.join(projectRoot, "import-graph.md"), "utf8"),
       ).resolves.toContain("mermaid");
@@ -801,7 +837,7 @@ describe(MapService, () => {
       vi.mocked(typescriptService.discoverProjects).mockReturnValue([
         {
           absoluteRoot: projectRoot,
-          name: "codependix-imports",
+          name: "codependix-file-imports",
           tsconfigPath: path.join(projectRoot, "tsconfig.json"),
         },
         {
@@ -812,7 +848,7 @@ describe(MapService, () => {
       ]);
       vi.mocked(typescriptService.buildProgram).mockImplementation(
         (project) => {
-          if (project.name === "codependix-imports") {
+          if (project.name === "codependix-file-imports") {
             throw new Error("failed to build program");
           }
 
@@ -828,7 +864,11 @@ describe(MapService, () => {
       const outcome = service.runImportGraphs(
         buildImportsContext({
           projects: [
-            { absoluteRoot: projectRoot, name: "codependix-imports", tags: [] },
+            {
+              absoluteRoot: projectRoot,
+              name: "codependix-file-imports",
+              tags: [],
+            },
             {
               absoluteRoot: otherProjectRoot,
               name: "other-imports-project",
@@ -841,7 +881,7 @@ describe(MapService, () => {
       expect(outcome.failures).toStrictEqual([
         {
           error: "failed to build program",
-          projectName: "codependix-imports",
+          projectName: "codependix-file-imports",
         },
       ]);
       expect(outcome.results).toStrictEqual([
@@ -860,7 +900,7 @@ describe(MapService, () => {
         throw nonErrorFailure;
       });
       vi.mocked(configurationService.resolveForProject).mockReturnValue({
-        json: { path: "codependix-imports.json" },
+        json: { path: "codependix-file-imports.json" },
         markdown: undefined,
         target: "json",
       });
@@ -868,7 +908,7 @@ describe(MapService, () => {
       const outcome = service.runImportGraphs(buildImportsContext());
 
       expect(outcome.failures).toStrictEqual([
-        { error: "boom", projectName: "codependix-imports" },
+        { error: "boom", projectName: "codependix-file-imports" },
       ]);
     });
   });

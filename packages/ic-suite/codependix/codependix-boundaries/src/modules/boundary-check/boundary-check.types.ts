@@ -6,7 +6,7 @@ import type {
   CodependixGraphType,
   ResolvedCodependixConfiguration,
 } from "@codependix/configuration";
-import type { NxProject, NxProjectGraph } from "@codependix/nx";
+import type { NxProject, NxProjectGraph } from "@codependix/nx-projects";
 
 /**
  * Everything a boundary check reads about the workspace it is judging.

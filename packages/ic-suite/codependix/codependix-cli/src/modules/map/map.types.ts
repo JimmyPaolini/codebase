@@ -5,14 +5,14 @@ import type { ResolvedCodependixConfiguration } from "@codependix/configuration"
 import type {
   PythonImportGraph,
   TypescriptImportGraph,
-} from "@codependix/imports";
-import type { NestjsModuleGraph } from "@codependix/nestjs";
+} from "@codependix/file-imports";
+import type { NestjsModuleGraph } from "@codependix/nestjs-modules";
 import type {
   Neighborhood,
   NxProject,
   NxProjectGraph,
   WorkspaceGraph,
-} from "@codependix/nx";
+} from "@codependix/nx-projects";
 
 /**
  * Everything every graph-type pass reads, resolved once per run rather than
@@ -64,7 +64,7 @@ export interface MapCommandOptions {
  *
  * Identical in shape to `NestjsModuleGraph` itself — kept as its own named
  * type so the export's JSON shape can evolve independently of
- * `codependix-nestjs`'s internal representation, the same reasoning
+ * `codependix-nestjs-modules`'s internal representation, the same reasoning
  * `NxWorkspaceGraphExport` follows for the Nx Workspace Graph.
  */
 export type NestjsModuleGraphExport = NestjsModuleGraph;
@@ -83,7 +83,7 @@ export interface NxNeighborhoodExport {
  * Identical in shape to `WorkspaceGraph` itself — no extra field is added the
  * way `NxNeighborhoodExport` adds none beyond `Neighborhood` either — kept as
  * its own named type so the export's JSON shape can evolve independently of
- * `codependix-nx`'s internal `WorkspaceGraph` representation.
+ * `codependix-nx-projects`'s internal `WorkspaceGraph` representation.
  */
 export type NxWorkspaceGraphExport = WorkspaceGraph;
 
@@ -102,7 +102,7 @@ export type PythonImportGraphExport = PythonImportGraph;
  *
  * Identical in shape to `TypescriptImportGraph` itself — kept as its own
  * named type for the same reason `NestjsModuleGraphExport` is: so the
- * export's JSON shape can evolve independently of `codependix-imports`'s
+ * export's JSON shape can evolve independently of `codependix-file-imports`'s
  * internal representation.
  */
 export type TypescriptImportGraphExport = TypescriptImportGraph;

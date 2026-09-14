@@ -99,9 +99,9 @@ every other one.
 | [`@codependix/boundaries`](../codependix-boundaries/README.md) | Builds each level's graph for a workspace, judges it against the declared rules, and reports what breaks them. `--check boundaries` delegates to it wholesale |
 | [`@codependix/configuration`](../codependix-configuration/README.md) | Reads `codependix.config.ts` and resolves per-project export destinations and boundary rules |
 | [`@codependix/examples`](../codependix-examples/README.md) | Sixteen subjects built to be graphed, each with the guide codependix renders from it |
-| [`@codependix/nx`](../codependix-nx/README.md) | Builds a project's Nx Neighborhood and the whole-workspace Workspace Graph |
-| [`@codependix/nestjs`](../codependix-nestjs/README.md) | Explores a NestJS project's container and builds its module graph |
-| [`@codependix/imports`](../codependix-imports/README.md) | Builds a project's file-level import graph — a `typescript` module walking its own `ts.Program`, and a `python` module parsing `import`/`from ... import` statements |
+| [`@codependix/nx-projects`](../codependix-nx-projects/README.md) | Builds a project's Nx Neighborhood and the whole-workspace Workspace Graph |
+| [`@codependix/nestjs-modules`](../codependix-nestjs-modules/README.md) | Explores a NestJS project's container and builds its module graph |
+| [`@codependix/file-imports`](../codependix-file-imports/README.md) | Builds a project's file-level import graph — a `typescript` module walking its own `ts.Program`, and a `python` module parsing `import`/`from ... import` statements |
 
 ## Examples
 
@@ -139,16 +139,16 @@ Dependency graphs exported by [codependix](https://github.com/JimmyPaolini/codeb
 
 ### Nx Neighborhood
 
-<!-- codependix:start name="codependix-nx" -->
+<!-- codependix:start name="codependix-nx-projects" -->
 ```mermaid
 graph LR
   codependix_boundaries["codependix-boundaries"]
   codependix_cli["codependix-cli"]
   codependix_configuration["codependix-configuration"]
   codependix_examples["codependix-examples"]
-  codependix_imports["codependix-imports"]
-  codependix_nestjs["codependix-nestjs"]
-  codependix_nx["codependix-nx"]
+  codependix_imports["codependix-file-imports"]
+  codependix_nestjs["codependix-nestjs-modules"]
+  codependix_nx["codependix-nx-projects"]
   logger["logger"]
   codependix_cli --> codependix_boundaries
   codependix_cli --> codependix_configuration
@@ -160,11 +160,11 @@ graph LR
   classDef subject fill:#7c3aed,color:#fff,stroke:#4c1d95,stroke-width:2px
   class codependix_cli subject
 ```
-<!-- codependix:end name="codependix-nx" -->
+<!-- codependix:end name="codependix-nx-projects" -->
 
 ### NestJS Module Graph
 
-<!-- codependix:start name="codependix-nestjs" -->
+<!-- codependix:start name="codependix-nestjs-modules" -->
 ```mermaid
 flowchart LR
   AnchorsModule
@@ -218,11 +218,11 @@ flowchart LR
 ```
 
 _Rounded modules are global: every module can inject them, so their edges are left out._
-<!-- codependix:end name="codependix-nestjs" -->
+<!-- codependix:end name="codependix-nestjs-modules" -->
 
 ### File Imports
 
-<!-- codependix:start name="codependix-imports" -->
+<!-- codependix:start name="codependix-file-imports" -->
 ```mermaid
 graph LR
   file_callidescope_config_ts["callidescope.config.ts"]
@@ -365,7 +365,7 @@ graph LR
   file_src_modules_run_plan_run_plan_service_unit_test_ts --> file_src_modules_run_plan_run_plan_types_ts
   file_src_repl_ts --> file_src_main_module_ts
 ```
-<!-- codependix:end name="codependix-imports" -->
+<!-- codependix:end name="codependix-file-imports" -->
 
 <!-- CALL_STACKS_START -->
 
@@ -411,20 +411,20 @@ What this project is judged against, as declared in its own `callidescope.config
              ↳ Builds and delivers every configured Python file-level import graph export.
             └─> PythonImportsService.runProject(…): ProjectRunResult [packages/ic-suite/codependix/codependix-cli/src/modules/python-imports/python-imports.service.ts:100]
                ↳ Builds, renders, and delivers one project's Python import graph.
-              └─> PythonService.buildGraph(project: PythonProject): PythonImportGraph [packages/ic-suite/codependix/codependix-imports/src/modules/python/python.service.ts:39]
+              └─> PythonService.buildGraph(project: PythonProject): PythonImportGraph [packages/ic-suite/codependix/codependix-file-imports/src/modules/python/python.service.ts:39]
                  ↳ Builds a Python project's internal file-level import Graph.
-                └─> PythonImportGraphService.buildGraph(project: PythonProject): PythonImportGraph [packages/ic-suite/codependix/codependix-imports/src/modules/python/python-import-graph.service.ts:180]
+                └─> PythonImportGraphService.buildGraph(project: PythonProject): PythonImportGraph [packages/ic-suite/codependix/codependix-file-imports/src/modules/python/python-import-graph.service.ts:180]
                    ↳ Builds a Python project's internal file-level import Graph.
-                  └─> PythonImportGraphService.flatMap(…)(this: undefined, sourceFileName: string): PythonImportGraphEdge[] [packages/ic-suite/codependix/codependix-imports/src/modules/python/python-import-graph.service.ts:185]
-                    └─> PythonImportGraphService.collectEdgesForFile(…): PythonImportGraphEdge[] [packages/ic-suite/codependix/codependix-imports/src/modules/python/python-import-graph.service.ts:64]
+                  └─> PythonImportGraphService.flatMap(…)(this: undefined, sourceFileName: string): PythonImportGraphEdge[] [packages/ic-suite/codependix/codependix-file-imports/src/modules/python/python-import-graph.service.ts:185]
+                    └─> PythonImportGraphService.collectEdgesForFile(…): PythonImportGraphEdge[] [packages/ic-suite/codependix/codependix-file-imports/src/modules/python/python-import-graph.service.ts:64]
                        ↳ Collects every internal import edge one source file declares.
-                      └─> PythonImportParserService.parseImportSpecifiers(source: string): PythonImportSpecifier[] [packages/ic-suite/codependix/codependix-imports/src/modules/python/python-import-parser.service.ts:158]
+                      └─> PythonImportParserService.parseImportSpecifiers(source: string): PythonImportSpecifier[] [packages/ic-suite/codependix/codependix-file-imports/src/modules/python/python-import-parser.service.ts:158]
                          ↳ Parses every module-level import statement in a Python source file.
-                        └─> PythonImportParserService.parseStatement(statement: string): PythonImportSpecifier[] [packages/ic-suite/codependix/codependix-imports/src/modules/python/python-import-parser.service.ts:126]
+                        └─> PythonImportParserService.parseStatement(statement: string): PythonImportSpecifier[] [packages/ic-suite/codependix/codependix-file-imports/src/modules/python/python-import-parser.service.ts:126]
                            ↳ Parses one joined statement into the module(s) it names.
-                          └─> PythonImportParserService.parseImportStatement(statement: string): PythonImportSpecifier[] [packages/ic-suite/codependix/codependix-imports/src/modules/python/python-import-parser.service.ts:105]
+                          └─> PythonImportParserService.parseImportStatement(statement: string): PythonImportSpecifier[] [packages/ic-suite/codependix/codependix-file-imports/src/modules/python/python-import-parser.service.ts:105]
                              ↳ Parses a joined `import <specifiers>` statement.
-                            └─> PythonImportParserService.map(…)(modulePath: string): { level: number; modulePath: string; } [packages/ic-suite/codependix/codependix-imports/src/modules/python/python-import-parser.service.ts:122]
+                            └─> PythonImportParserService.map(…)(modulePath: string): { level: number; modulePath: string; } [packages/ic-suite/codependix/codependix-file-imports/src/modules/python/python-import-parser.service.ts:122]
 ```
 
 **2. `MapCommand.parseDirectory`** — depth 3 · decorated-method

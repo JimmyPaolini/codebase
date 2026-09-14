@@ -458,7 +458,7 @@ Dependency graphs exported by [codependix](https://github.com/JimmyPaolini/codeb
 
 ### Nx Neighborhood
 
-<!-- codependix:start name="codependix-nx" -->
+<!-- codependix:start name="codependix-nx-projects" -->
 ```mermaid
 graph LR
   codometer_cli["codometer-cli"]
@@ -469,11 +469,11 @@ graph LR
   classDef subject fill:#7c3aed,color:#fff,stroke:#4c1d95,stroke-width:2px
   class codometer_examples subject
 ```
-<!-- codependix:end name="codependix-nx" -->
+<!-- codependix:end name="codependix-nx-projects" -->
 
 ### File Imports
 
-<!-- codependix:start name="codependix-imports" -->
+<!-- codependix:start name="codependix-file-imports" -->
 ```mermaid
 graph LR
   file_codometer_config_ts["codometer.config.ts"]
@@ -519,4 +519,4 @@ graph LR
   file_testing_examples_integration_test_ts --> file_testing_codometer_ts
   file_testing_run_examples_ts --> file_testing_codometer_ts
 ```
-<!-- codependix:end name="codependix-imports" -->
+<!-- codependix:end name="codependix-file-imports" -->

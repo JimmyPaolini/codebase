@@ -73,9 +73,9 @@ A modern TypeScript codebase with Nx, featuring automated releases, comprehensiv
 &nbsp;&nbsp;&nbsp;&nbsp;**[codependix-cli](packages/ic-suite/codependix/codependix-cli)** - Command-line host that exports a project's Nx, NestJS, and file-level dependency graphs as JSON and Markdown anchor blocks, and gates the rules over them\
 &nbsp;&nbsp;&nbsp;&nbsp;**[codependix-configuration](packages/ic-suite/codependix/codependix-configuration)** - Reads `codependix.config.ts` and resolves per-project export destinations and boundary rules\
 &nbsp;&nbsp;&nbsp;&nbsp;**[codependix-examples](packages/ic-suite/codependix/codependix-examples)** - Sixteen subjects built to be graphed, each carrying the guide codependix renders from it\
-&nbsp;&nbsp;&nbsp;&nbsp;**[codependix-imports](packages/ic-suite/codependix/codependix-imports)** - Builds a project's file-level import graph — a `typescript` module walking its own `ts.Program`, and a `python` module parsing `import`/`from ... import` statements\
-&nbsp;&nbsp;&nbsp;&nbsp;**[codependix-nestjs](packages/ic-suite/codependix/codependix-nestjs)** - Explores a NestJS project's container and builds its module graph\
-&nbsp;&nbsp;&nbsp;&nbsp;**[codependix-nx](packages/ic-suite/codependix/codependix-nx)** - Builds a project's one-hop Nx dependency neighborhood from the Nx project graph
+&nbsp;&nbsp;&nbsp;&nbsp;**[codependix-file-imports](packages/ic-suite/codependix/codependix-file-imports)** - Builds a project's file-level import graph — a `typescript` module walking its own `ts.Program`, and a `python` module parsing `import`/`from ... import` statements\
+&nbsp;&nbsp;&nbsp;&nbsp;**[codependix-nestjs-modules](packages/ic-suite/codependix/codependix-nestjs-modules)** - Explores a NestJS project's container and builds its module graph\
+&nbsp;&nbsp;&nbsp;&nbsp;**[codependix-nx-projects](packages/ic-suite/codependix/codependix-nx-projects)** - Builds a project's one-hop Nx dependency neighborhood from the Nx project graph
 
 </details>
 
@@ -199,9 +199,9 @@ graph LR
   codependix_cli["codependix-cli"]
   codependix_configuration["codependix-configuration"]
   codependix_examples["codependix-examples"]
-  codependix_imports["codependix-imports"]
-  codependix_nestjs["codependix-nestjs"]
-  codependix_nx["codependix-nx"]
+  codependix_imports["codependix-file-imports"]
+  codependix_nestjs["codependix-nestjs-modules"]
+  codependix_nx["codependix-nx-projects"]
   codometer_agents["codometer-agents"]
   codometer_changes["codometer-changes"]
   codometer_cli["codometer-cli"]
@@ -579,8 +579,8 @@ The workspace's call graph, traced by [callidescope](packages/ic-suite/callidesc
 | `packages/ic-suite/codometer/codometer-size` | 0 | 3 | 3 | 2 |
 | `packages/ic-suite/conformetry/conformetry-configuration` | 10 | 13 | 3 | 5 |
 | `packages/ic-suite/codependix/codependix-configuration` | 2 | 6 | 4 | 5 |
-| `packages/ic-suite/codependix/codependix-nx` | 0 | 4 | 4 | 8 |
-| `packages/ic-suite/codependix/codependix-nestjs` | 0 | 5 | 5 | 5 |
+| `packages/ic-suite/codependix/codependix-nx-projects` | 0 | 4 | 4 | 8 |
+| `packages/ic-suite/codependix/codependix-nestjs-modules` | 0 | 5 | 5 | 5 |
 | `packages/ic-suite/codometer/codometer-configuration` | 3 | 8 | 5 | 4 |
 | `packages/ic-suite/codometer/codometer-customization` | 0 | 5 | 5 | 2 |
 | `packages/ic-suite/conformetry/conformetry-generation` | 2 | 7 | 5 | 4 |
@@ -590,7 +590,7 @@ The workspace's call graph, traced by [callidescope](packages/ic-suite/callidesc
 | `packages/ic-suite/conformetry/conformetry-core` | 0 | 6 | 6 | 4 |
 | `packages/ic-suite/codometer/codometer-discovery` | 0 | 7 | 7 | 7 |
 | `packages/ic-suite/codometer/codometer-output` | 4 | 11 | 7 | 16 |
-| `packages/ic-suite/codependix/codependix-imports` | 0 | 8 | 8 | 8 |
+| `packages/ic-suite/codependix/codependix-file-imports` | 0 | 8 | 8 | 8 |
 | `packages/ic-suite/conformetry/conformetry-files` | 0 | 9 | 9 | 3 |
 | `packages/ic-suite/codometer/codometer-changes` | 0 | 10 | 10 | 7 |
 | `packages/ic-suite/conformetry/conformetry-validation` | 0 | 12 | 12 | 10 |

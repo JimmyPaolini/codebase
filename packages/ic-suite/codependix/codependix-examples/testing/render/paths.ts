@@ -36,8 +36,8 @@ export const resolveExample = (...segments: string[]): string =>
  * Prefix every anchor name used anywhere in this package carries.
  *
  * `codebase:codependix:write` claims the anchors named in
- * `configuration/codependix.config.ts` — `codependix-nx`, `codependix-nestjs`,
- * `codependix-imports`, `codependix-imports-python`, and
+ * `configuration/codependix.config.ts` — `codependix-nx-projects`, `codependix-nestjs-modules`,
+ * `codependix-file-imports`, `codependix-imports-python`, and
  * `codependix-workspace` — in every `README.md` in the workspace. An example
  * that printed one of those names inside a Markdown file here would be an
  * anchor the real run could claim and overwrite, so every example uses a name

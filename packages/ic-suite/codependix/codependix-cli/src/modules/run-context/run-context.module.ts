@@ -1,5 +1,5 @@
 import { ConfigurationModule } from "@codependix/configuration";
-import { NeighborhoodModule } from "@codependix/nx";
+import { NeighborhoodModule } from "@codependix/nx-projects";
 import { Module } from "@nestjs/common";
 
 import { RunContextService } from "./run-context.service";

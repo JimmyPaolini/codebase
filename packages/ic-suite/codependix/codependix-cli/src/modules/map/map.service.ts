@@ -1,9 +1,15 @@
 import path from "node:path";
 
 import { ConfigurationService } from "@codependix/configuration";
-import { TypescriptService } from "@codependix/imports";
-import { ModuleGraphService, NestjsProjectService } from "@codependix/nestjs";
-import { NeighborhoodService, WorkspaceGraphService } from "@codependix/nx";
+import { TypescriptService } from "@codependix/file-imports";
+import {
+  ModuleGraphService,
+  NestjsProjectService,
+} from "@codependix/nestjs-modules";
+import {
+  NeighborhoodService,
+  WorkspaceGraphService,
+} from "@codependix/nx-projects";
 import { Injectable } from "@nestjs/common";
 
 import { LoggerService } from "@codebase/logger";
@@ -40,9 +46,13 @@ import type {
   CodependixGraphType,
   ResolvedCodependixGraphOutput,
 } from "@codependix/configuration";
-import type { TypescriptProject } from "@codependix/imports";
-import type { NestjsProject } from "@codependix/nestjs";
-import type { Neighborhood, NxProject, WorkspaceGraph } from "@codependix/nx";
+import type { TypescriptProject } from "@codependix/file-imports";
+import type { NestjsProject } from "@codependix/nestjs-modules";
+import type {
+  Neighborhood,
+  NxProject,
+  WorkspaceGraph,
+} from "@codependix/nx-projects";
 
 /**
  * Builds and delivers every configured graph export.

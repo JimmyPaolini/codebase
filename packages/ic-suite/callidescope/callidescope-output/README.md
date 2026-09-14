@@ -147,7 +147,7 @@ Dependency graphs exported by [codependix](https://github.com/JimmyPaolini/codeb
 
 ### Nx Neighborhood
 
-<!-- codependix:start name="codependix-nx" -->
+<!-- codependix:start name="codependix-nx-projects" -->
 ```mermaid
 graph LR
   callidescope_cli["callidescope-cli"]
@@ -164,11 +164,11 @@ graph LR
   classDef subject fill:#7c3aed,color:#fff,stroke:#4c1d95,stroke-width:2px
   class callidescope_output subject
 ```
-<!-- codependix:end name="codependix-nx" -->
+<!-- codependix:end name="codependix-nx-projects" -->
 
 ### NestJS Module Graph
 
-<!-- codependix:start name="codependix-nestjs" -->
+<!-- codependix:start name="codependix-nestjs-modules" -->
 ```mermaid
 flowchart LR
   CallablesModule
@@ -199,11 +199,11 @@ flowchart LR
 ```
 
 _Rounded modules are global: every module can inject them, so their edges are left out._
-<!-- codependix:end name="codependix-nestjs" -->
+<!-- codependix:end name="codependix-nestjs-modules" -->
 
 ### File Imports
 
-<!-- codependix:start name="codependix-imports" -->
+<!-- codependix:start name="codependix-file-imports" -->
 ```mermaid
 graph LR
   file_callidescope_config_ts["callidescope.config.ts"]
@@ -294,7 +294,7 @@ graph LR
   file_testing_modules_ts --> file_src_modules_project_reports_project_reports_module_ts
   file_testing_modules_ts --> file_src_modules_report_report_module_ts
 ```
-<!-- codependix:end name="codependix-imports" -->
+<!-- codependix:end name="codependix-file-imports" -->
 
 <!-- CODE_STATISTICS_START -->
 

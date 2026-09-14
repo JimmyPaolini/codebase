@@ -288,7 +288,7 @@ describe(DeliveryService, () => {
 
       const resolvedOutput: ResolvedCodependixGraphOutput = {
         json: undefined,
-        markdown: { anchor: "codependix-nx", path: "README.md" },
+        markdown: { anchor: "codependix-nx-projects", path: "README.md" },
         target: "markdown",
       };
 
@@ -311,7 +311,7 @@ describe(DeliveryService, () => {
       expect(written).toContain("## 🕸️ Codependix");
       expect(written).toContain("### Nx Neighborhood");
       expect(written).toContain(
-        '<!-- codependix:start name="codependix-nx" -->\n```mermaid\ngraph LR\n```\n<!-- codependix:end name="codependix-nx" -->',
+        '<!-- codependix:start name="codependix-nx-projects" -->\n```mermaid\ngraph LR\n```\n<!-- codependix:end name="codependix-nx-projects" -->',
       );
     });
 
@@ -329,16 +329,16 @@ describe(DeliveryService, () => {
           "",
           "### Nx Neighborhood",
           "",
-          '<!-- codependix:start name="codependix-nx" -->',
+          '<!-- codependix:start name="codependix-nx-projects" -->',
           "graph",
-          '<!-- codependix:end name="codependix-nx" -->',
+          '<!-- codependix:end name="codependix-nx-projects" -->',
         ].join("\n"),
         "utf8",
       );
 
       const resolvedOutput: ResolvedCodependixGraphOutput = {
         json: undefined,
-        markdown: { anchor: "codependix-imports", path: "README.md" },
+        markdown: { anchor: "codependix-file-imports", path: "README.md" },
         target: "markdown",
       };
 
@@ -366,7 +366,7 @@ describe(DeliveryService, () => {
 
       const resolvedOutput: ResolvedCodependixGraphOutput = {
         json: undefined,
-        markdown: { anchor: "codependix-nx", path: "README.md" },
+        markdown: { anchor: "codependix-nx-projects", path: "README.md" },
         target: "markdown",
       };
 

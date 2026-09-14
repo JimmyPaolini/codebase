@@ -89,7 +89,7 @@ const codependixConfiguration: CodependixConfiguration = {
    * ConfigurationModule` for exactly that reason. A cycle rule there reports
    * those name collisions as self-loops, which is a backlog about the
    * graph's identity model rather than a finding about the code. It can be
-   * seeded once `codependix-nestjs` learns each module's declaring file.
+   * seeded once `codependix-nestjs-modules` learns each module's declaring file.
    */
   boundaries: {
     imports: [
@@ -421,9 +421,9 @@ const codependixConfiguration: CodependixConfiguration = {
         from: {
           id: [
             "codependix-configuration",
-            "codependix-imports",
-            "codependix-nestjs",
-            "codependix-nx",
+            "codependix-file-imports",
+            "codependix-nestjs-modules",
+            "codependix-nx-projects",
           ],
         },
         kind: "forbid",
@@ -444,15 +444,15 @@ const codependixConfiguration: CodependixConfiguration = {
   },
   defaults: {
     imports: {
-      markdown: { anchor: "codependix-imports" },
+      markdown: { anchor: "codependix-file-imports" },
       target: "markdown",
     },
     nestjs: {
-      markdown: { anchor: "codependix-nestjs" },
+      markdown: { anchor: "codependix-nestjs-modules" },
       target: "markdown",
     },
     nx: {
-      markdown: { anchor: "codependix-nx" },
+      markdown: { anchor: "codependix-nx-projects" },
       target: "markdown",
     },
     pythonImports: {

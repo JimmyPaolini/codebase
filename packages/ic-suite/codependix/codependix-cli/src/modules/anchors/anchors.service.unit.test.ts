@@ -5,7 +5,7 @@ import { AnchorNotFoundError } from "./anchors.constants";
 import { AnchorsService } from "./anchors.service";
 
 const README_WITH_ANCHOR = [
-  "# codependix-nx",
+  "# codependix-nx-projects",
   "",
   "## Dependencies",
   "",
@@ -122,7 +122,7 @@ describe(AnchorsService, () => {
 
       expect(result).toBe(
         [
-          "# codependix-nx",
+          "# codependix-nx-projects",
           "",
           "## Dependencies",
           "",
@@ -227,7 +227,7 @@ describe(AnchorsService, () => {
   describe("insertAnchorSection", () => {
     it("appends a brand-new Codependix section to a file with none", () => {
       const result = service.insertAnchorSection({
-        anchorName: "codependix-nx",
+        anchorName: "codependix-nx-projects",
         content: "```mermaid\ngraph LR\n```",
         fileContent: "# my-project\n\nSome existing content.\n",
         introLine: "Dependency graphs exported by codependix.",
@@ -246,11 +246,11 @@ describe(AnchorsService, () => {
           "",
           "### Nx Neighborhood",
           "",
-          '<!-- codependix:start name="codependix-nx" -->',
+          '<!-- codependix:start name="codependix-nx-projects" -->',
           "```mermaid",
           "graph LR",
           "```",
-          '<!-- codependix:end name="codependix-nx" -->',
+          '<!-- codependix:end name="codependix-nx-projects" -->',
           "",
         ].join("\n"),
       );
@@ -293,9 +293,9 @@ describe(AnchorsService, () => {
         "",
         "### Nx Neighborhood",
         "",
-        '<!-- codependix:start name="codependix-nx" -->',
+        '<!-- codependix:start name="codependix-nx-projects" -->',
         "graph",
-        '<!-- codependix:end name="codependix-nx" -->',
+        '<!-- codependix:end name="codependix-nx-projects" -->',
         "",
         "## Other Section",
         "",
@@ -303,7 +303,7 @@ describe(AnchorsService, () => {
       ].join("\n");
 
       const result = service.insertAnchorSection({
-        anchorName: "codependix-imports",
+        anchorName: "codependix-file-imports",
         content: "```mermaid\ngraph LR\n```",
         fileContent,
         introLine: "Dependency graphs exported by codependix.",
@@ -320,17 +320,17 @@ describe(AnchorsService, () => {
           "",
           "### Nx Neighborhood",
           "",
-          '<!-- codependix:start name="codependix-nx" -->',
+          '<!-- codependix:start name="codependix-nx-projects" -->',
           "graph",
-          '<!-- codependix:end name="codependix-nx" -->',
+          '<!-- codependix:end name="codependix-nx-projects" -->',
           "",
           "### File Imports",
           "",
-          '<!-- codependix:start name="codependix-imports" -->',
+          '<!-- codependix:start name="codependix-file-imports" -->',
           "```mermaid",
           "graph LR",
           "```",
-          '<!-- codependix:end name="codependix-imports" -->',
+          '<!-- codependix:end name="codependix-file-imports" -->',
           "",
           "## Other Section",
           "",
@@ -349,13 +349,13 @@ describe(AnchorsService, () => {
         "",
         "### Nx Neighborhood",
         "",
-        '<!-- codependix:start name="codependix-nx" -->',
+        '<!-- codependix:start name="codependix-nx-projects" -->',
         "graph",
-        '<!-- codependix:end name="codependix-nx" -->',
+        '<!-- codependix:end name="codependix-nx-projects" -->',
       ].join("\n");
 
       const result = service.insertAnchorSection({
-        anchorName: "codependix-imports",
+        anchorName: "codependix-file-imports",
         content: "content",
         fileContent,
         introLine: "Dependency graphs exported by codependix.",
@@ -372,15 +372,15 @@ describe(AnchorsService, () => {
           "",
           "### Nx Neighborhood",
           "",
-          '<!-- codependix:start name="codependix-nx" -->',
+          '<!-- codependix:start name="codependix-nx-projects" -->',
           "graph",
-          '<!-- codependix:end name="codependix-nx" -->',
+          '<!-- codependix:end name="codependix-nx-projects" -->',
           "",
           "### File Imports",
           "",
-          '<!-- codependix:start name="codependix-imports" -->',
+          '<!-- codependix:start name="codependix-file-imports" -->',
           "content",
-          '<!-- codependix:end name="codependix-imports" -->',
+          '<!-- codependix:end name="codependix-file-imports" -->',
           "",
         ].join("\n"),
       );
@@ -388,7 +388,7 @@ describe(AnchorsService, () => {
 
     it("appends a Codependix section to a completely empty file", () => {
       const result = service.insertAnchorSection({
-        anchorName: "codependix-nx",
+        anchorName: "codependix-nx-projects",
         content: "content",
         fileContent: "",
         introLine: "intro",
@@ -401,9 +401,9 @@ describe(AnchorsService, () => {
           "",
           "intro",
           "",
-          '<!-- codependix:start name="codependix-nx" -->',
+          '<!-- codependix:start name="codependix-nx-projects" -->',
           "content",
-          '<!-- codependix:end name="codependix-nx" -->',
+          '<!-- codependix:end name="codependix-nx-projects" -->',
           "",
         ].join("\n"),
       );
@@ -415,13 +415,13 @@ describe(AnchorsService, () => {
         "",
         "intro",
         "",
-        '<!-- codependix:start name="codependix-nx" -->',
+        '<!-- codependix:start name="codependix-nx-projects" -->',
         "graph",
-        '<!-- codependix:end name="codependix-nx" -->',
+        '<!-- codependix:end name="codependix-nx-projects" -->',
       ].join("\n");
 
       const result = service.insertAnchorSection({
-        anchorName: "codependix-nestjs",
+        anchorName: "codependix-nestjs-modules",
         content: "content",
         fileContent,
         introLine: "intro",

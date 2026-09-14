@@ -35,7 +35,7 @@ describe(BoundaryGraphService, () => {
           {
             implicit: false,
             source: "codependix-cli",
-            target: "codependix-nx",
+            target: "codependix-nx-projects",
           },
         ],
         projectNames: ["codependix-cli"],
@@ -44,7 +44,11 @@ describe(BoundaryGraphService, () => {
 
     expect(graph).toStrictEqual({
       edges: [
-        { implicit: false, source: "codependix-cli", target: "codependix-nx" },
+        {
+          implicit: false,
+          source: "codependix-cli",
+          target: "codependix-nx-projects",
+        },
       ],
       level: "nx",
       nodes: [
@@ -64,13 +68,13 @@ describe(BoundaryGraphService, () => {
       projects: [],
       scope: "workspace",
       workingDirectory: "/workspace",
-      workspaceGraph: { edges: [], projectNames: ["codependix-nx"] },
+      workspaceGraph: { edges: [], projectNames: ["codependix-nx-projects"] },
     });
 
     expect(graph.nodes[0]).toStrictEqual({
-      id: "codependix-nx",
+      id: "codependix-nx-projects",
       path: undefined,
-      project: "codependix-nx",
+      project: "codependix-nx-projects",
       tags: undefined,
     });
   });

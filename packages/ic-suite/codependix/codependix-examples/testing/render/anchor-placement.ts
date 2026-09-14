@@ -268,8 +268,8 @@ function buildModesDocument(): ExampleDocument {
       {
         body: fence(
           [
-            'markdown: { anchor: "codependix-nx" }                       // → README.md',
-            'markdown: { anchor: "codependix-nx", path: "docs/graphs.md" } // → docs/graphs.md',
+            'markdown: { anchor: "codependix-nx-projects" }                       // → README.md',
+            'markdown: { anchor: "codependix-nx-projects", path: "docs/graphs.md" } // → docs/graphs.md',
             'markdown: { path: "docs/atlas-service-graph.md" }            // → a standalone file',
             "markdown: {}                                                 // → refused",
           ].join("\n"),

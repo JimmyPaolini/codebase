@@ -352,8 +352,8 @@ describe(MapCommand, () => {
       results: [
         {
           isCurrent: false,
-          projectName: "codependix-nx",
-          stalePaths: ["codependix-nx.json"],
+          projectName: "codependix-nx-projects",
+          stalePaths: ["codependix-nx-projects.json"],
         },
       ],
     };
@@ -366,9 +366,13 @@ describe(MapCommand, () => {
 
   it("fails and logs when a project fails, without a thrown error", async () => {
     const outcome: GraphRunOutcome = {
-      failures: [{ error: "boom", projectName: "codependix-nestjs" }],
+      failures: [{ error: "boom", projectName: "codependix-nestjs-modules" }],
       results: [
-        { isCurrent: true, projectName: "codependix-nx", stalePaths: [] },
+        {
+          isCurrent: true,
+          projectName: "codependix-nx-projects",
+          stalePaths: [],
+        },
       ],
     };
     vi.mocked(codependixService.run).mockResolvedValue(outcome);
@@ -386,12 +390,12 @@ describe(MapCommand, () => {
   it("reports both a failed project and a stale export together", async () => {
     selectMode({ checksReports: true, writes: false });
     const outcome: GraphRunOutcome = {
-      failures: [{ error: "boom", projectName: "codependix-nestjs" }],
+      failures: [{ error: "boom", projectName: "codependix-nestjs-modules" }],
       results: [
         {
           isCurrent: false,
-          projectName: "codependix-nx",
-          stalePaths: ["codependix-nx.json"],
+          projectName: "codependix-nx-projects",
+          stalePaths: ["codependix-nx-projects.json"],
         },
       ],
     };
@@ -408,7 +412,7 @@ describe(MapCommand, () => {
     expect(loggerService.error).toHaveBeenCalledWith(
       "🕸️ Found stale codependix exports",
       undefined,
-      { projects: ["codependix-nx"] },
+      { projects: ["codependix-nx-projects"] },
     );
   });
 
@@ -455,7 +459,11 @@ describe(MapCommand, () => {
     vi.mocked(codependixService.run).mockResolvedValue({
       failures: [],
       results: [
-        { isCurrent: false, projectName: "codependix-nx", stalePaths: ["a"] },
+        {
+          isCurrent: false,
+          projectName: "codependix-nx-projects",
+          stalePaths: ["a"],
+        },
       ],
     });
     vi.mocked(boundaryCheckService.run).mockResolvedValue({
@@ -469,7 +477,7 @@ describe(MapCommand, () => {
     expect(loggerService.error).toHaveBeenCalledWith(
       "🕸️ Found stale codependix exports",
       undefined,
-      { projects: ["codependix-nx"] },
+      { projects: ["codependix-nx-projects"] },
     );
     expect(loggerService.error).toHaveBeenCalledWith(
       "🕸️ Found codependix boundary violations",

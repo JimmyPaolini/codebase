@@ -56,8 +56,8 @@ graph LR
 The last one names nowhere for the export to go, and is refused by the schema — see [refusals](../refusals).
 
 ```ts
-markdown: { anchor: "codependix-nx" }                       // → README.md
-markdown: { anchor: "codependix-nx", path: "docs/graphs.md" } // → docs/graphs.md
+markdown: { anchor: "codependix-nx-projects" }                       // → README.md
+markdown: { anchor: "codependix-nx-projects", path: "docs/graphs.md" } // → docs/graphs.md
 markdown: { path: "docs/atlas-service-graph.md" }            // → a standalone file
 markdown: {}                                                 // → refused
 ```

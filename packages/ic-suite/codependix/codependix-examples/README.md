@@ -77,7 +77,7 @@ import { type CodependixConfiguration } from "@codependix/configuration";
 
 const codependixConfiguration: CodependixConfiguration = {
   defaults: {
-    nx: { markdown: { anchor: "codependix-nx" }, target: "markdown" },
+    nx: { markdown: { anchor: "codependix-nx-projects" }, target: "markdown" },
   },
 };
 
@@ -189,16 +189,16 @@ Dependency graphs exported by [codependix](https://github.com/JimmyPaolini/codeb
 
 ### Nx Neighborhood
 
-<!-- codependix:start name="codependix-nx" -->
+<!-- codependix:start name="codependix-nx-projects" -->
 ```mermaid
 graph LR
   codependix_boundaries["codependix-boundaries"]
   codependix_cli["codependix-cli"]
   codependix_configuration["codependix-configuration"]
   codependix_examples["codependix-examples"]
-  codependix_imports["codependix-imports"]
-  codependix_nestjs["codependix-nestjs"]
-  codependix_nx["codependix-nx"]
+  codependix_imports["codependix-file-imports"]
+  codependix_nestjs["codependix-nestjs-modules"]
+  codependix_nx["codependix-nx-projects"]
   logger["logger"]
   codependix_examples --> codependix_boundaries
   codependix_examples --> codependix_cli
@@ -210,11 +210,11 @@ graph LR
   classDef subject fill:#7c3aed,color:#fff,stroke:#4c1d95,stroke-width:2px
   class codependix_examples subject
 ```
-<!-- codependix:end name="codependix-nx" -->
+<!-- codependix:end name="codependix-nx-projects" -->
 
 ### File Imports
 
-<!-- codependix:start name="codependix-imports" -->
+<!-- codependix:start name="codependix-file-imports" -->
 ```mermaid
 graph LR
   file_codometer_config_ts["codometer.config.ts"]
@@ -311,13 +311,13 @@ graph LR
   file_testing_render_typescript_imports_ts --> file_testing_render_paths_ts
   file_testing_render_typescript_imports_ts --> file_testing_render_types_ts
 ```
-<!-- codependix:end name="codependix-imports" -->
+<!-- codependix:end name="codependix-file-imports" -->
 
 ### NestJS Module Graph
 
-<!-- codependix:start name="codependix-nestjs" -->
+<!-- codependix:start name="codependix-nestjs-modules" -->
 _This project defines no NestJS modules to graph._
-<!-- codependix:end name="codependix-nestjs" -->
+<!-- codependix:end name="codependix-nestjs-modules" -->
 
 <!-- CODE_STATISTICS_START -->
 

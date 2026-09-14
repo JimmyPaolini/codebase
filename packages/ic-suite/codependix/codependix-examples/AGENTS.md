@@ -135,7 +135,7 @@ regression the `examples` check exists to catch.
   `pyright`, `ty`, and `vulture` never run over input that exists precisely to
   look malformed.
 - **Every anchor this package prints is named `example-*`.** An example printing
-  `codependix-nx` inside a Markdown file would be an anchor
+  `codependix-nx-projects` inside a Markdown file would be an anchor
   `codebase:codependix:write` could claim and overwrite.
 - **A committed guide must not carry an absolute path.** The
   `typescript-resolution` and `refusals` renderers redact theirs; anything new

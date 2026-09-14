@@ -1239,7 +1239,7 @@ Dependency graphs exported by [codependix](https://github.com/JimmyPaolini/codeb
 
 ### Nx Neighborhood
 
-<!-- codependix:start name="codependix-nx" -->
+<!-- codependix:start name="codependix-nx-projects" -->
 ```mermaid
 graph LR
   callidescope_cli["callidescope-cli"]
@@ -1260,11 +1260,11 @@ graph LR
 ```
 
 _Dashed edges are dependencies Nx inferred from configuration rather than from code._
-<!-- codependix:end name="codependix-nx" -->
+<!-- codependix:end name="codependix-nx-projects" -->
 
 ### NestJS Module Graph
 
-<!-- codependix:start name="codependix-nestjs" -->
+<!-- codependix:start name="codependix-nestjs-modules" -->
 ```mermaid
 flowchart LR
   AddressLookupModule
@@ -1354,11 +1354,11 @@ flowchart LR
 ```
 
 _Rounded modules are global: every module can inject them, so their edges are left out._
-<!-- codependix:end name="codependix-nestjs" -->
+<!-- codependix:end name="codependix-nestjs-modules" -->
 
 ### File Imports
 
-<!-- codependix:start name="codependix-imports" -->
+<!-- codependix:start name="codependix-file-imports" -->
 ```mermaid
 graph LR
   file_callidescope_config_ts["callidescope.config.ts"]
@@ -1544,7 +1544,7 @@ graph LR
   file_src_modules_write_destinations_write_destinations_service_unit_test_ts --> file_testing_mocks_ts
   file_src_repl_ts --> file_src_main_module_ts
 ```
-<!-- codependix:end name="codependix-imports" -->
+<!-- codependix:end name="codependix-file-imports" -->
 
 <!-- CODE_STATISTICS_START -->
 

@@ -14,9 +14,9 @@ import {
   TypescriptImportGraphService,
   TypescriptProjectService,
   TypescriptService,
-} from "@codependix/imports";
-import { ModuleGraphService, NestjsProjectService } from "@codependix/nestjs";
-import { NeighborhoodService, WorkspaceGraphService } from "@codependix/nx";
+} from "@codependix/file-imports";
+import { ModuleGraphService, NestjsProjectService } from "@codependix/nestjs-modules";
+import { NeighborhoodService, WorkspaceGraphService } from "@codependix/nx-projects";
 
 import { LoggerService } from "@codebase/logger";
 

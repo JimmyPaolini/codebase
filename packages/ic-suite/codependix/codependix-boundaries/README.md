@@ -142,16 +142,16 @@ Dependency graphs exported by [codependix](https://github.com/JimmyPaolini/codeb
 
 ### Nx Neighborhood
 
-<!-- codependix:start name="codependix-nx" -->
+<!-- codependix:start name="codependix-nx-projects" -->
 ```mermaid
 graph LR
   codependix_boundaries["codependix-boundaries"]
   codependix_cli["codependix-cli"]
   codependix_configuration["codependix-configuration"]
   codependix_examples["codependix-examples"]
-  codependix_imports["codependix-imports"]
-  codependix_nestjs["codependix-nestjs"]
-  codependix_nx["codependix-nx"]
+  codependix_imports["codependix-file-imports"]
+  codependix_nestjs["codependix-nestjs-modules"]
+  codependix_nx["codependix-nx-projects"]
   codependix_boundaries --> codependix_configuration
   codependix_boundaries --> codependix_imports
   codependix_boundaries --> codependix_nestjs
@@ -161,11 +161,11 @@ graph LR
   classDef subject fill:#7c3aed,color:#fff,stroke:#4c1d95,stroke-width:2px
   class codependix_boundaries subject
 ```
-<!-- codependix:end name="codependix-nx" -->
+<!-- codependix:end name="codependix-nx-projects" -->
 
 ### NestJS Module Graph
 
-<!-- codependix:start name="codependix-nestjs" -->
+<!-- codependix:start name="codependix-nestjs-modules" -->
 ```mermaid
 flowchart LR
   BoundariesModule
@@ -187,11 +187,11 @@ flowchart LR
 ```
 
 _Rounded modules are global: every module can inject them, so their edges are left out._
-<!-- codependix:end name="codependix-nestjs" -->
+<!-- codependix:end name="codependix-nestjs-modules" -->
 
 ### File Imports
 
-<!-- codependix:start name="codependix-imports" -->
+<!-- codependix:start name="codependix-file-imports" -->
 ```mermaid
 graph LR
   file_callidescope_config_ts["callidescope.config.ts"]
@@ -267,7 +267,7 @@ graph LR
   file_src_modules_boundary_check_boundary_graph_service_ts --> file_src_modules_boundaries_boundaries_types_ts
   file_src_modules_boundary_check_boundary_graph_service_unit_test_ts --> file_src_modules_boundary_check_boundary_graph_service_ts
 ```
-<!-- codependix:end name="codependix-imports" -->
+<!-- codependix:end name="codependix-file-imports" -->
 
 <!-- CODE_STATISTICS_START -->
 
@@ -613,36 +613,36 @@ What this project is judged against, as declared in its own `callidescope.config
 
 ```text
 🚀 BoundaryCheckService.buildGraph(project: PythonProject): BoundaryGraph [packages/ic-suite/codependix/codependix-boundaries/src/modules/boundary-check/boundary-check.service.ts:185]
-  └─> PythonService.buildGraph(project: PythonProject): PythonImportGraph [packages/ic-suite/codependix/codependix-imports/src/modules/python/python.service.ts:39]
+  └─> PythonService.buildGraph(project: PythonProject): PythonImportGraph [packages/ic-suite/codependix/codependix-file-imports/src/modules/python/python.service.ts:39]
      ↳ Builds a Python project's internal file-level import Graph.
-    └─> PythonImportGraphService.buildGraph(project: PythonProject): PythonImportGraph [packages/ic-suite/codependix/codependix-imports/src/modules/python/python-import-graph.service.ts:180]
+    └─> PythonImportGraphService.buildGraph(project: PythonProject): PythonImportGraph [packages/ic-suite/codependix/codependix-file-imports/src/modules/python/python-import-graph.service.ts:180]
        ↳ Builds a Python project's internal file-level import Graph.
-      └─> PythonImportGraphService.flatMap(…)(this: undefined, sourceFileName: string): PythonImportGraphEdge[] [packages/ic-suite/codependix/codependix-imports/src/modules/python/python-import-graph.service.ts:185]
-        └─> PythonImportGraphService.collectEdgesForFile(…): PythonImportGraphEdge[] [packages/ic-suite/codependix/codependix-imports/src/modules/python/python-import-graph.service.ts:64]
+      └─> PythonImportGraphService.flatMap(…)(this: undefined, sourceFileName: string): PythonImportGraphEdge[] [packages/ic-suite/codependix/codependix-file-imports/src/modules/python/python-import-graph.service.ts:185]
+        └─> PythonImportGraphService.collectEdgesForFile(…): PythonImportGraphEdge[] [packages/ic-suite/codependix/codependix-file-imports/src/modules/python/python-import-graph.service.ts:64]
            ↳ Collects every internal import edge one source file declares.
-          └─> PythonImportParserService.parseImportSpecifiers(source: string): PythonImportSpecifier[] [packages/ic-suite/codependix/codependix-imports/src/modules/python/python-import-parser.service.ts:158]
+          └─> PythonImportParserService.parseImportSpecifiers(source: string): PythonImportSpecifier[] [packages/ic-suite/codependix/codependix-file-imports/src/modules/python/python-import-parser.service.ts:158]
              ↳ Parses every module-level import statement in a Python source file.
-            └─> PythonImportParserService.parseStatement(statement: string): PythonImportSpecifier[] [packages/ic-suite/codependix/codependix-imports/src/modules/python/python-import-parser.service.ts:126]
+            └─> PythonImportParserService.parseStatement(statement: string): PythonImportSpecifier[] [packages/ic-suite/codependix/codependix-file-imports/src/modules/python/python-import-parser.service.ts:126]
                ↳ Parses one joined statement into the module(s) it names.
-              └─> PythonImportParserService.parseImportStatement(statement: string): PythonImportSpecifier[] [packages/ic-suite/codependix/codependix-imports/src/modules/python/python-import-parser.service.ts:105]
+              └─> PythonImportParserService.parseImportStatement(statement: string): PythonImportSpecifier[] [packages/ic-suite/codependix/codependix-file-imports/src/modules/python/python-import-parser.service.ts:105]
                  ↳ Parses a joined `import <specifiers>` statement.
-                └─> PythonImportParserService.map(…)(modulePath: string): { level: number; modulePath: string; } [packages/ic-suite/codependix/codependix-imports/src/modules/python/python-import-parser.service.ts:122]
+                └─> PythonImportParserService.map(…)(modulePath: string): { level: number; modulePath: string; } [packages/ic-suite/codependix/codependix-file-imports/src/modules/python/python-import-parser.service.ts:122]
 ```
 
 **6. `BoundaryCheckService.buildGraph`** — depth ≥ 7 · orphan-root
 
 ```text
 🚀 BoundaryCheckService.buildGraph(project: TypescriptProject): BoundaryGraph [packages/ic-suite/codependix/codependix-boundaries/src/modules/boundary-check/boundary-check.service.ts:201]
-  └─> TypescriptService.buildGraph(projectProgram: TypescriptProjectProgram): TypescriptImportGraph [packages/ic-suite/codependix/codependix-imports/src/modules/typescript/typescript.service.ts:44]
+  └─> TypescriptService.buildGraph(projectProgram: TypescriptProjectProgram): TypescriptImportGraph [packages/ic-suite/codependix/codependix-file-imports/src/modules/typescript/typescript.service.ts:44]
      ↳ Builds a project's internal file-level import Graph from its program.
-    └─> TypescriptImportGraphService.buildGraph(projectProgram: TypescriptProjectProgram): TypescriptImportGraph [packages/ic-suite/codependix/codependix-imports/src/modules/typescript/typescript-import-graph.service.ts:185]
+    └─> TypescriptImportGraphService.buildGraph(projectProgram: TypescriptProjectProgram): TypescriptImportGraph [packages/ic-suite/codependix/codependix-file-imports/src/modules/typescript/typescript-import-graph.service.ts:185]
        ↳ Builds a project's internal file-level import Graph from its program.
-      └─> TypescriptImportGraphService.listOwnedSourceFileNames(projectProgram: TypescriptProjectProgram): string[] [packages/ic-suite/codependix/codependix-imports/src/modules/typescript/typescript-import-graph.service.ts:122]
+      └─> TypescriptImportGraphService.listOwnedSourceFileNames(projectProgram: TypescriptProjectProgram): string[] [packages/ic-suite/codependix/codependix-file-imports/src/modules/typescript/typescript-import-graph.service.ts:122]
          ↳ Lists a program's own source files, excluding declaration files. `program.getRootFileNames()` is the same file list…
-        └─> TypescriptImportGraphService.resolveOwnedFileNames(projectProgram: TypescriptProjectProgram): Set<string> [packages/ic-suite/codependix/codependix-imports/src/modules/typescript/typescript-import-graph.service.ts:156]
+        └─> TypescriptImportGraphService.resolveOwnedFileNames(projectProgram: TypescriptProjectProgram): Set<string> [packages/ic-suite/codependix/codependix-file-imports/src/modules/typescript/typescript-import-graph.service.ts:156]
            ↳ Resolves the real, absolute file names a program owns.
-          └─> TypescriptImportGraphService.map(…)(fileName: string): string [packages/ic-suite/codependix/codependix-imports/src/modules/typescript/typescript-import-graph.service.ts:162]
-            └─> TypescriptProjectService.toRealPath(filePath: string): string [packages/ic-suite/codependix/codependix-imports/src/modules/typescript/typescript-project.service.ts:122]
+          └─> TypescriptImportGraphService.map(…)(fileName: string): string [packages/ic-suite/codependix/codependix-file-imports/src/modules/typescript/typescript-import-graph.service.ts:162]
+            └─> TypescriptProjectService.toRealPath(filePath: string): string [packages/ic-suite/codependix/codependix-file-imports/src/modules/typescript/typescript-project.service.ts:122]
                ↳ Resolves a path through symlinks, which is how pnpm workspaces link.
 ```
 
@@ -650,14 +650,14 @@ What this project is judged against, as declared in its own `callidescope.config
 
 ```text
 🚀 BoundaryCheckService.buildGraph(project: NestjsProject): Promise<BoundaryGraph> [packages/ic-suite/codependix/codependix-boundaries/src/modules/boundary-check/boundary-check.service.ts:106]
-  └─> NestjsProjectService.exploreProject(project: NestjsProject): Promise<SpelunkedTree[]> [packages/ic-suite/codependix/codependix-nestjs/src/modules/nestjs-project/nestjs-project.service.ts:153]
+  └─> NestjsProjectService.exploreProject(project: NestjsProject): Promise<SpelunkedTree[]> [packages/ic-suite/codependix/codependix-nestjs-modules/src/modules/nestjs-project/nestjs-project.service.ts:153]
      ↳ Explores a project's container in preview mode and returns its tree.
-    └─> NestjsProjectService.buildSyntheticRootModule(project: NestjsProject): Promise<DynamicModule> [packages/ic-suite/codependix/codependix-nestjs/src/modules/nestjs-project/nestjs-project.service.ts:54]
+    └─> NestjsProjectService.buildSyntheticRootModule(project: NestjsProject): Promise<DynamicModule> [packages/ic-suite/codependix/codependix-nestjs-modules/src/modules/nestjs-project/nestjs-project.service.ts:54]
        ↳ Roots a package that bootstraps nothing in every module it defines.
-      └─> NestjsProjectService.map(…)(file: string): Promise<Type<unknown>[]> [packages/ic-suite/codependix/codependix-nestjs/src/modules/nestjs-project/nestjs-project.service.ts:61]
-        └─> NestjsProjectService.loadModuleClasses(file: string): Promise<Type<unknown>[]> [packages/ic-suite/codependix/codependix-nestjs/src/modules/nestjs-project/nestjs-project.service.ts:87]
+      └─> NestjsProjectService.map(…)(file: string): Promise<Type<unknown>[]> [packages/ic-suite/codependix/codependix-nestjs-modules/src/modules/nestjs-project/nestjs-project.service.ts:61]
+        └─> NestjsProjectService.loadModuleClasses(file: string): Promise<Type<unknown>[]> [packages/ic-suite/codependix/codependix-nestjs-modules/src/modules/nestjs-project/nestjs-project.service.ts:87]
            ↳ Imports a module file and returns every module class it exports.
-          └─> NestjsProjectService.map(…)([, moduleClass]: [string, Type<unknown>]): Type<unknown> [packages/ic-suite/codependix/codependix-nestjs/src/modules/nestjs-project/nestjs-project.service.ts:98]
+          └─> NestjsProjectService.map(…)([, moduleClass]: [string, Type<unknown>]): Type<unknown> [packages/ic-suite/codependix/codependix-nestjs-modules/src/modules/nestjs-project/nestjs-project.service.ts:98]
 ```
 
 </details>

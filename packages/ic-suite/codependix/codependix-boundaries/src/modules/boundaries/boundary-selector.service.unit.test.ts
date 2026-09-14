@@ -6,9 +6,9 @@ import { BoundarySelectorService } from "./boundary-selector.service";
 import type { BoundaryNode } from "./boundaries.types";
 
 const PROJECT_NODE: BoundaryNode = {
-  id: "codependix-nx",
-  path: "packages/ic-suite/codependix/codependix-nx",
-  project: "codependix-nx",
+  id: "codependix-nx-projects",
+  path: "packages/ic-suite/codependix/codependix-nx-projects",
+  project: "codependix-nx-projects",
   tags: ["language:typescript", "type:package"],
 };
 
@@ -56,7 +56,7 @@ describe(BoundarySelectorService, () => {
     expect(
       service.matches(FILE_NODE, {
         path: ["**/*.types.ts"],
-        project: ["codependix-nx"],
+        project: ["codependix-nx-projects"],
       }),
     ).toBe(false);
   });
@@ -77,7 +77,7 @@ describe(BoundarySelectorService, () => {
   it("selects every node when a scope names no selector", () => {
     expect(
       service.selectIds([PROJECT_NODE, MODULE_NODE], undefined),
-    ).toStrictEqual(new Set(["codependix-nx", "MapModule"]));
+    ).toStrictEqual(new Set(["codependix-nx-projects", "MapModule"]));
   });
 
   it("selects only the nodes a scope claims", () => {

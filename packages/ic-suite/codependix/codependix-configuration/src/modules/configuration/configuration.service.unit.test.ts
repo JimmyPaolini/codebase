@@ -216,7 +216,7 @@ describe(ConfigurationService, () => {
     it("rejects a both target missing either destination", async () => {
       const configurationPath = await writeConfiguration({
         defaults: {
-          nx: { json: { path: "codependix-nx.json" }, target: "both" },
+          nx: { json: { path: "codependix-nx-projects.json" }, target: "both" },
         },
       });
 
@@ -239,8 +239,8 @@ describe(ConfigurationService, () => {
       const configurationPath = await writeConfiguration({
         defaults: {
           nx: {
-            json: { path: "codependix-nx.json" },
-            markdown: { anchor: "codependix-nx" },
+            json: { path: "codependix-nx-projects.json" },
+            markdown: { anchor: "codependix-nx-projects" },
             target: "both",
           },
         },
@@ -344,7 +344,7 @@ describe(ConfigurationService, () => {
         service.resolveForProject({
           configuration,
           graphType: "nx",
-          projectName: "codependix-nx",
+          projectName: "codependix-nx-projects",
         }),
       ).toStrictEqual({ json: undefined, markdown: undefined, target: "none" });
     });
@@ -356,7 +356,7 @@ describe(ConfigurationService, () => {
         service.resolveForProject({
           configuration,
           graphType: "nx",
-          projectName: "codependix-nx",
+          projectName: "codependix-nx-projects",
         }),
       ).toStrictEqual({ json: undefined, markdown: undefined, target: "none" });
     });
@@ -370,7 +370,7 @@ describe(ConfigurationService, () => {
       const resolved = service.resolveForProject({
         configuration,
         graphType: "nx",
-        projectName: "codependix-nx",
+        projectName: "codependix-nx-projects",
       });
 
       expect(resolved).toStrictEqual({
@@ -385,7 +385,7 @@ describe(ConfigurationService, () => {
         defaults: { nx: { markdown: { anchor: "nx" }, target: "markdown" } },
         include: ["**"],
         projects: {
-          "codependix-nx": {
+          "codependix-nx-projects": {
             nx: { json: { path: "graph.json" }, target: "json" },
           },
         },
@@ -394,7 +394,7 @@ describe(ConfigurationService, () => {
       const resolved = service.resolveForProject({
         configuration,
         graphType: "nx",
-        projectName: "codependix-nx",
+        projectName: "codependix-nx-projects",
       });
 
       expect(resolved).toStrictEqual({
@@ -481,7 +481,7 @@ describe(ConfigurationService, () => {
       expect(
         service.isProjectIncluded({
           configuration,
-          projectName: "packages/codependix-nx",
+          projectName: "packages/codependix-nx-projects",
         }),
       ).toBe(true);
     });
@@ -495,8 +495,8 @@ describe(ConfigurationService, () => {
       const resolved = service.resolveForProject({
         configuration,
         graphType: "nx",
-        projectName: "codependix-nx",
-        projectRoot: "packages/codependix-nx",
+        projectName: "codependix-nx-projects",
+        projectRoot: "packages/codependix-nx-projects",
       });
 
       expect(resolved.target).not.toBe("none");
@@ -574,7 +574,7 @@ describe(ConfigurationService, () => {
         expect(
           service.isProjectIncluded({
             configuration,
-            projectName: "packages/codependix-nx",
+            projectName: "packages/codependix-nx-projects",
           }),
         ).toBe(true);
         expect(
@@ -649,7 +649,7 @@ describe(ConfigurationService, () => {
         expect(
           service.isProjectSelected({
             configuration,
-            projectName: "packages/codependix-nx",
+            projectName: "packages/codependix-nx-projects",
           }),
         ).toBe(false);
       });
