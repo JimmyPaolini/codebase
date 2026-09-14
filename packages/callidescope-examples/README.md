@@ -515,7 +515,7 @@ Call stacks traced through `packages/callidescope-examples`, deepest first. Each
 | --- | --- |
 | Callables | 80 |
 | Files | 39 |
-| Calls traced | 54 |
+| Calls traced | 53 |
 | Call stacks | 19 |
 | Deepest stack | 8 |
 | Stacks through recursion | 1 |
@@ -634,20 +634,7 @@ What this project is judged against, as declared in its own `callidescope.config
              ↳ Reads the file the number the verdict used was written in.
 ```
 
-**6. `DependencyClosureService.allowsDepth`** — depth 4 · orphan-root
-
-```text
-🚀 DependencyClosureService.allowsDepth(args: { configuration: CallidescopeConfiguration; depth: number; }): boolean [packages/callidescope-examples/examples/dependency-closure/dependency-closure.ts:32]
-   ↳ Whether a configuration allows a stack as deep as the one asked about.
-  └─> DependencyClosureService.readDepthLimit(configuration: CallidescopeConfiguration): number [packages/callidescope-examples/examples/dependency-closure/dependency-closure.ts:24]
-     ↳ Reads the depth limit the dependency's own defaulting settles on.
-    └─> ConfigurationService.resolveConfiguration(configuration: CallidescopeConfiguration): ResolvedCallidescopeConfiguration [packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:369]
-       ↳ Fills in every field a configuration file may leave out.
-      └─> ConfigurationService.resolveEntryPoints(…): ResolvedCallidescopeEntryPoints [packages/callidescope-configuration/src/modules/configuration/configuration.service.ts:190]
-         ↳ Applies defaults to the entry-point rules.
-```
-
-**7. `FrameAnnotationsService.legacyRender`** — depth 4 · orphan-root
+**6. `FrameAnnotationsService.legacyRender`** — depth 4 · orphan-root
 
 ```text
 🚀 FrameAnnotationsService.legacyRender(value: string): string ⚠ deprecated [packages/callidescope-examples/examples/frame-annotations/frame-annotations.ts:74]
@@ -660,7 +647,7 @@ What this project is judged against, as declared in its own `callidescope.config
          ↳ Finishes the chain and hands back what the layers above it built.
 ```
 
-**8. `MutualRecursionService.traverse`** — depth 4 · orphan-root
+**7. `MutualRecursionService.traverse`** — depth 4 · orphan-root
 
 ```text
 🚀 MutualRecursionService.traverse(remaining: number): number [packages/callidescope-examples/examples/mutual-recursion/mutual-recursion.ts:45]
@@ -673,7 +660,7 @@ What this project is judged against, as declared in its own `callidescope.config
          ↳ First of the three, and the way into the cycle.
 ```
 
-**9. `bootstrap`** — depth 3 · module-bootstrap
+**8. `bootstrap`** — depth 3 · module-bootstrap
 
 ```text
 🚀 bootstrap(): number [packages/callidescope-examples/src/main.ts:14]
@@ -684,7 +671,7 @@ What this project is judged against, as declared in its own `callidescope.config
        ↳ Reserves one unit and reports the count left behind.
 ```
 
-**10. `CallbackArgumentService.shoutAll`** — depth 3 · orphan-root
+**9. `CallbackArgumentService.shoutAll`** — depth 3 · orphan-root
 
 ```text
 🚀 CallbackArgumentService.shoutAll(entries: readonly string[]): string[] [packages/callidescope-examples/examples/callback-argument/callback-argument.ts:22]
@@ -694,7 +681,7 @@ What this project is judged against, as declared in its own `callidescope.config
        ↳ Upper-cases one entry.
 ```
 
-**11. `DeclaredEntryPointsService.publish`** — depth 3 · orphan-root
+**10. `DeclaredEntryPointsService.publish`** — depth 3 · orphan-root
 
 ```text
 🚀 DeclaredEntryPointsService.publish(entries: string): string [packages/callidescope-examples/examples/declared-entry-points/declared-entry-points.ts:29]
@@ -705,7 +692,7 @@ What this project is judged against, as declared in its own `callidescope.config
        ↳ Renders whatever was collected, and ends both stacks.
 ```
 
-**12. `EntryPointsService.onModuleInit`** — depth 2 · lifecycle
+**11. `EntryPointsService.onModuleInit`** — depth 2 · lifecycle
 
 ```text
 🚀 EntryPointsService.onModuleInit(): string [packages/callidescope-examples/examples/entry-points/entry-points.ts:29]
@@ -714,7 +701,7 @@ What this project is judged against, as declared in its own `callidescope.config
      ↳ Does the work a lifecycle hook is called to do.
 ```
 
-**13. `EntryPointsService.readReport`** — depth 2 · decorated-method
+**12. `EntryPointsService.readReport`** — depth 2 · decorated-method
 
 ```text
 🚀 EntryPointsService.readReport(): string [packages/callidescope-examples/examples/entry-points/entry-points.ts:34]
@@ -723,7 +710,7 @@ What this project is judged against, as declared in its own `callidescope.config
      ↳ Builds the body a decorated request handler answers with.
 ```
 
-**14. `normalizeExampleLabel`** — depth 2 · exported-function
+**13. `normalizeExampleLabel`** — depth 2 · exported-function
 
 ```text
 🚀 normalizeExampleLabel(label: string): string [packages/callidescope-examples/src/index.ts:15]
@@ -732,7 +719,7 @@ What this project is judged against, as declared in its own `callidescope.config
      ↳ Trims a label and collapses the whitespace inside it.
 ```
 
-**15. `DeclaredEntryPointsService.collect`** — depth 2 · declared
+**14. `DeclaredEntryPointsService.collect`** — depth 2 · declared
 
 ```text
 🚀 DeclaredEntryPointsService.collect(entries: string): string [packages/callidescope-examples/examples/declared-entry-points/declared-entry-points.ts:24]
@@ -741,7 +728,7 @@ What this project is judged against, as declared in its own `callidescope.config
      ↳ Renders whatever was collected, and ends both stacks.
 ```
 
-**16. `BaseClassService.run`** — depth 2 · orphan-root
+**15. `BaseClassService.run`** — depth 2 · orphan-root
 
 ```text
 🚀 BaseClassService.run(): string [packages/callidescope-examples/examples/base-class/base-class.ts:16]
@@ -750,12 +737,21 @@ What this project is judged against, as declared in its own `callidescope.config
      ↳ Reports the work the base class claims to have done.
 ```
 
-**17. `ConstructedClassService.count`** — depth 2 · orphan-root
+**16. `ConstructedClassService.count`** — depth 2 · orphan-root
 
 ```text
 🚀 ConstructedClassService.count(source: string): number [packages/callidescope-examples/examples/constructed-class/constructed-class.ts:17]
    ↳ Counts the tokens the constructed parser produced.
   └─> ParserService.constructor(source: string): ParserService [packages/callidescope-examples/examples/constructed-class/parser.ts:9]
+```
+
+**17. `DependencyClosureService.allowsDepth`** — depth 2 · orphan-root
+
+```text
+🚀 DependencyClosureService.allowsDepth(args: { configuration: CallidescopeConfiguration; depth: number; }): boolean [packages/callidescope-examples/examples/dependency-closure/dependency-closure.ts:32]
+   ↳ Whether a configuration allows a stack as deep as the one asked about.
+  └─> DependencyClosureService.readDepthLimit(configuration: CallidescopeConfiguration): number [packages/callidescope-examples/examples/dependency-closure/dependency-closure.ts:24]
+     ↳ Reads the depth limit the dependency's own defaulting settles on.
 ```
 
 **18. `PlainCallService.render`** — depth 2 · orphan-root
@@ -787,7 +783,7 @@ What this project is judged against, as declared in its own `callidescope.config
 | `CallbackArgumentService.shoutAll` | 1 | `CallbackArgumentService.map(…)` | `packages/callidescope-examples/examples/callback-argument/callback-argument.ts:22` |
 
 <details>
-<summary>49 more callables</summary>
+<summary>48 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
@@ -809,7 +805,6 @@ What this project is judged against, as declared in its own `callidescope.config
 | `DeepStackService.resolveTier` | 1 | `DeepStackService.loadRate` | `packages/callidescope-examples/examples/deep-stack/deep-stack.ts:38` |
 | `DeepStackService.validate` | 1 | `DeepStackService.removeDiscount` | `packages/callidescope-examples/examples/deep-stack/deep-stack.ts:43` |
 | `DeepStackService.quote` | 1 | `DeepStackService.validate` | `packages/callidescope-examples/examples/deep-stack/deep-stack.ts:50` |
-| `DependencyClosureService.readDepthLimit` | 1 | `ConfigurationService.resolveConfiguration` | `packages/callidescope-examples/examples/dependency-closure/dependency-closure.ts:24` |
 | `DependencyClosureService.allowsDepth` | 1 | `DependencyClosureService.readDepthLimit` | `packages/callidescope-examples/examples/dependency-closure/dependency-closure.ts:32` |
 | `EntryPointsService.onModuleInit` | 1 | `EntryPointsService.prepareCache` | `packages/callidescope-examples/examples/entry-points/entry-points.ts:29` |
 | `EntryPointsService.readReport` | 1 | `EntryPointsService.buildReport` | `packages/callidescope-examples/examples/entry-points/entry-points.ts:34` |
@@ -942,9 +937,9 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-2258-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-556.92_kB-6b7280?style=flat-square)
-![Folders](https://img.shields.io/badge/Folders-22-4a4a4a?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-2416-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-587.53_kB-6b7280?style=flat-square)
+![Folders](https://img.shields.io/badge/Folders-27-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-44-3178c6?style=flat-square)
 
 ### TypeScript
@@ -953,8 +948,8 @@ graph LR
 ![Interfaces](https://img.shields.io/badge/Interfaces-4-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-0-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
-![Decorators](https://img.shields.io/badge/Decorators-32-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-134-6366f1?style=flat-square)
+![Decorators](https://img.shields.io/badge/Decorators-30-db2777?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-130-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-0-166534?style=flat-square)
 
 ### JavaScript
@@ -962,16 +957,16 @@ graph LR
 ![JavaScript Files](https://img.shields.io/badge/JavaScript_Files-0-f7df1e?style=flat-square)
 ![Test Files](https://img.shields.io/badge/Test_Files-1-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-8-8b5cf6?style=flat-square)
-![Classes](https://img.shields.io/badge/Classes-31-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-113-16a34a?style=flat-square)
-![Methods](https://img.shields.io/badge/Methods-76-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-189-4ade80?style=flat-square)
+![Classes](https://img.shields.io/badge/Classes-29-7c3aed?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-122-16a34a?style=flat-square)
+![Methods](https://img.shields.io/badge/Methods-77-15803d?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-199-4ade80?style=flat-square)
 ![Async Functions](https://img.shields.io/badge/Async_Functions-0-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-53-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-62-0284c7?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-58-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-68-0284c7?style=flat-square)
 ![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-39-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-193-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-537-475569?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-191-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-603-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python
@@ -991,17 +986,17 @@ graph LR
 
 ### JSON
 
-![JSON Files](https://img.shields.io/badge/JSON_Files-5-a16207?style=flat-square)
-![JSON Lines](https://img.shields.io/badge/JSON_Lines-10318-ca8a04?style=flat-square)
-![JSON Objects](https://img.shields.io/badge/JSON_Objects-1882-7c3aed?style=flat-square)
-![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-738-8b5cf6?style=flat-square)
-![JSON Properties](https://img.shields.io/badge/JSON_Properties-6917-0284c7?style=flat-square)
-![JSON Strings](https://img.shields.io/badge/JSON_Strings-3176-16a34a?style=flat-square)
-![JSON Numbers](https://img.shields.io/badge/JSON_Numbers-929-059669?style=flat-square)
-![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-1208-0ea5e9?style=flat-square)
+![JSON Files](https://img.shields.io/badge/JSON_Files-6-a16207?style=flat-square)
+![JSON Lines](https://img.shields.io/badge/JSON_Lines-10866-ca8a04?style=flat-square)
+![JSON Objects](https://img.shields.io/badge/JSON_Objects-1949-7c3aed?style=flat-square)
+![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-756-8b5cf6?style=flat-square)
+![JSON Properties](https://img.shields.io/badge/JSON_Properties-7325-0284c7?style=flat-square)
+![JSON Strings](https://img.shields.io/badge/JSON_Strings-3315-16a34a?style=flat-square)
+![JSON Numbers](https://img.shields.io/badge/JSON_Numbers-1190-059669?style=flat-square)
+![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-1206-0ea5e9?style=flat-square)
 ![JSON Nulls](https://img.shields.io/badge/JSON_Nulls-0-64748b?style=flat-square)
-![JSON Items](https://img.shields.io/badge/JSON_Items-1011-475569?style=flat-square)
-![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-7933-dc2626?style=flat-square)
+![JSON Items](https://img.shields.io/badge/JSON_Items-1085-475569?style=flat-square)
+![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-8416-dc2626?style=flat-square)
 ![JSON Max Depth](https://img.shields.io/badge/JSON_Max_Depth-11-ea580c?style=flat-square)
 
 ### YAML
@@ -1092,14 +1087,6 @@ graph LR
 ![Unit Tests](https://img.shields.io/badge/Unit_Tests-0-ca8a04?style=flat-square)
 ![Integration Tests](https://img.shields.io/badge/Integration_Tests-1-7c3aed?style=flat-square)
 ![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-0-0284c7?style=flat-square)
-![CSS Comment Budget](https://img.shields.io/badge/CSS_Comment_Budget-0-16a34a?style=flat-square)
-![HCL Comment Budget](https://img.shields.io/badge/HCL_Comment_Budget-0-ea580c?style=flat-square)
-![Python Comment Budget](https://img.shields.io/badge/Python_Comment_Budget-0-db2777?style=flat-square)
-![SQL Comment Budget](https://img.shields.io/badge/SQL_Comment_Budget-0-0ea5e9?style=flat-square)
-![TOML Comment Budget](https://img.shields.io/badge/TOML_Comment_Budget-0-059669?style=flat-square)
-![TypeScript Comment Budget](https://img.shields.io/badge/TypeScript_Comment_Budget-0-ca8a04?style=flat-square)
-![YAML Comment Budget](https://img.shields.io/badge/YAML_Comment_Budget-0-7c3aed?style=flat-square)
-![Shell Comment Budget](https://img.shields.io/badge/Shell_Comment_Budget-0-0284c7?style=flat-square)
 
 ### Jupyter
 
@@ -1126,24 +1113,24 @@ graph LR
 
 ### Markdown
 
-![Markdown Files](https://img.shields.io/badge/Markdown_Files-21-083fa1?style=flat-square)
-![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-1514-1f6feb?style=flat-square)
-![H1](https://img.shields.io/badge/H1-21-7c3aed?style=flat-square)
-![H2](https://img.shields.io/badge/H2-70-8b5cf6?style=flat-square)
-![H3](https://img.shields.io/badge/H3-3-a78bfa?style=flat-square)
+![Markdown Files](https://img.shields.io/badge/Markdown_Files-26-083fa1?style=flat-square)
+![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-1880-1f6feb?style=flat-square)
+![H1](https://img.shields.io/badge/H1-26-7c3aed?style=flat-square)
+![H2](https://img.shields.io/badge/H2-89-8b5cf6?style=flat-square)
+![H3](https://img.shields.io/badge/H3-10-a78bfa?style=flat-square)
 ![H4](https://img.shields.io/badge/H4-0-c4b5fd?style=flat-square)
 ![H5](https://img.shields.io/badge/H5-0-ddd6fe?style=flat-square)
 ![H6](https://img.shields.io/badge/H6-0-ede9fe?style=flat-square)
-![Paragraphs](https://img.shields.io/badge/Paragraphs-192-64748b?style=flat-square)
+![Paragraphs](https://img.shields.io/badge/Paragraphs-238-64748b?style=flat-square)
 ![Lists](https://img.shields.io/badge/Lists-7-16a34a?style=flat-square)
 ![List Items](https://img.shields.io/badge/List_Items-28-22c55e?style=flat-square)
 ![Task List Items](https://img.shields.io/badge/Task_List_Items-0-4ade80?style=flat-square)
-![Tables](https://img.shields.io/badge/Tables-19-0284c7?style=flat-square)
-![Table Rows](https://img.shields.io/badge/Table_Rows-118-0ea5e9?style=flat-square)
-![Links](https://img.shields.io/badge/Links-119-059669?style=flat-square)
+![Tables](https://img.shields.io/badge/Tables-29-0284c7?style=flat-square)
+![Table Rows](https://img.shields.io/badge/Table_Rows-155-0ea5e9?style=flat-square)
+![Links](https://img.shields.io/badge/Links-144-059669?style=flat-square)
 ![Images](https://img.shields.io/badge/Images-0-10b981?style=flat-square)
-![Code Blocks](https://img.shields.io/badge/Code_Blocks-46-dc2626?style=flat-square)
-![Inline Code](https://img.shields.io/badge/Inline_Code-433-ef4444?style=flat-square)
+![Code Blocks](https://img.shields.io/badge/Code_Blocks-55-dc2626?style=flat-square)
+![Inline Code](https://img.shields.io/badge/Inline_Code-531-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-0-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-0-a16207?style=flat-square)
 <!-- CODE_STATISTICS_END -->

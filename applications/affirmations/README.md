@@ -179,6 +179,39 @@ Dependency graphs exported by [codependix](https://github.com/JimmyPaolini/codeb
 _This project has no immediate Nx dependencies or dependents._
 <!-- codependix:end name="codependix-nx" -->
 
+### Python File Imports
+
+<!-- codependix:start name="codependix-imports-python" -->
+```mermaid
+graph LR
+  file__vulture_whitelist_py[".vulture_whitelist.py"]
+  file_src___init___py["src/__init__.py"]
+  file_src_grammars_py["src/grammars.py"]
+  file_src_models_py["src/models.py"]
+  file_src_output_py["src/output.py"]
+  file_src_prompts_py["src/prompts.py"]
+  file_src_subjects_py["src/subjects.py"]
+  file_testing___init___py["testing/__init__.py"]
+  file_testing_test_grammars_py["testing/test_grammars.py"]
+  file_testing_test_models_py["testing/test_models.py"]
+  file_testing_test_output_py["testing/test_output.py"]
+  file_testing_test_prompts_py["testing/test_prompts.py"]
+  file_testing_test_subjects_py["testing/test_subjects.py"]
+  file_src_models_py --> file_src_grammars_py
+  file_src_models_py --> file_src_subjects_py
+  file_testing_test_grammars_py --> file_src_grammars_py
+  file_testing_test_models_py --> file_src_grammars_py
+  file_testing_test_models_py --> file_src_models_py
+  file_testing_test_models_py --> file_src_subjects_py
+  file_testing_test_output_py --> file_src_grammars_py
+  file_testing_test_output_py --> file_src_models_py
+  file_testing_test_output_py --> file_src_output_py
+  file_testing_test_output_py --> file_src_subjects_py
+  file_testing_test_prompts_py --> file_src_prompts_py
+  file_testing_test_subjects_py --> file_src_subjects_py
+```
+<!-- codependix:end name="codependix-imports-python" -->
+
 <!-- CODE_STATISTICS_START -->
 
 ## ⏲️ Codometer
@@ -335,14 +368,6 @@ _This project has no immediate Nx dependencies or dependents._
 ![Unit Tests](https://img.shields.io/badge/Unit_Tests-0-ca8a04?style=flat-square)
 ![Integration Tests](https://img.shields.io/badge/Integration_Tests-0-7c3aed?style=flat-square)
 ![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-0-0284c7?style=flat-square)
-![CSS Comment Budget](https://img.shields.io/badge/CSS_Comment_Budget-0-16a34a?style=flat-square)
-![HCL Comment Budget](https://img.shields.io/badge/HCL_Comment_Budget-0-ea580c?style=flat-square)
-![Python Comment Budget](https://img.shields.io/badge/Python_Comment_Budget-0-db2777?style=flat-square)
-![SQL Comment Budget](https://img.shields.io/badge/SQL_Comment_Budget-0-0ea5e9?style=flat-square)
-![TOML Comment Budget](https://img.shields.io/badge/TOML_Comment_Budget-0-059669?style=flat-square)
-![TypeScript Comment Budget](https://img.shields.io/badge/TypeScript_Comment_Budget-0-ca8a04?style=flat-square)
-![YAML Comment Budget](https://img.shields.io/badge/YAML_Comment_Budget-0-7c3aed?style=flat-square)
-![Shell Comment Budget](https://img.shields.io/badge/Shell_Comment_Budget-0-0284c7?style=flat-square)
 
 ### Jupyter
 

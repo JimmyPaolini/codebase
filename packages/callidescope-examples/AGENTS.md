@@ -227,6 +227,6 @@ about fixtures.
 | ---- | ---------- |
 | [README.md](README.md) | The human guide — how to read a stack, and how to act on each finding |
 | [callidescope.workspace.config.ts](callidescope.workspace.config.ts) | Why this package's limits differ from the workspace's |
-| [callidescope.config.ts](callidescope.config.ts) | What this package declares about itself, and why a project never spreads the workspace limits |
+| [callidescope.config.ts](callidescope.config.ts) | What this package declares about itself — a complete project configuration, every field written out inline rather than spread from a shared default |
 | [../callidescope-cli/README.md](../callidescope-cli/README.md) | The behavior being demonstrated |
 | [../callidescope-configuration/README.md](../callidescope-configuration/README.md) | Every configuration field |
