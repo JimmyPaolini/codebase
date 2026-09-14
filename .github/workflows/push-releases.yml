@@ -80,14 +80,19 @@ jobs:
     # finishes in 6–7 minutes. A push that does release spends 8–10 minutes in
     # that step, because `@semantic-release/git` makes the version commit with a
     # plain `git commit` and the pre-commit hook runs the whole `lint-codebase`
-    # gate over it. Measured end to end, releasing runs have taken 14m24s to
-    # 16m18s.
+    # gate over it. Measured end to end, ordinary releasing runs have taken
+    # 14m24s to 16m18s, against an 18-minute budget that left only 2–4 minutes
+    # of slack.
     #
-    # So 12 minutes is not available, however comfortably the common run fits
-    # inside it: it would pass every no-op and kill every real release, inside
-    # the publish step — precisely what the concurrency note above exists to
-    # prevent. 18 leaves roughly 10% over the slowest release yet seen.
-    timeout-minutes: 18
+    # That slack disappears entirely for the rarer release whose merge commit
+    # is itself a workspace-wide callidescope, codometer, or codependix config
+    # change (`#660`, `#583`, `#774`): every project's `README.md`/`AGENTS.md`
+    # gets a genuinely new badge or diagram section, which invalidates
+    # `eslint`'s per-project cache for all of them at once and forces a much
+    # larger re-lint fan-out than the ordinary run this budget was sized for.
+    # `#774`'s release timed out this way. 24 leaves real headroom over both
+    # populations rather than just the common one.
+    timeout-minutes: 24
 
     steps:
       - name: 📥 Checkout Repository
