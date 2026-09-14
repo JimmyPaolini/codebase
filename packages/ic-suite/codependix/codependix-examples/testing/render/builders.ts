@@ -5,7 +5,11 @@ import {
   BoundarySelectorService,
 } from "@codependix/boundaries";
 import { AnchorsService, DeliveryService } from "@codependix/cli";
-import { ConfigurationService } from "@codependix/configuration";
+import {
+  ConfigurationLoaderService,
+  ConfigurationService,
+  OverrideResolutionService,
+} from "@codependix/configuration";
 import {
   PythonImportGraphService,
   PythonImportParserService,
@@ -73,7 +77,10 @@ export const pythonService = new PythonService(
 );
 
 /** Resolves what a configuration file says about where an export goes. */
-export const configurationService = new ConfigurationService();
+export const configurationService = new ConfigurationService(
+  new ConfigurationLoaderService(),
+  new OverrideResolutionService(),
+);
 
 /** Reads and rewrites codependix's own named anchor blocks. */
 export const anchorsService = new AnchorsService();

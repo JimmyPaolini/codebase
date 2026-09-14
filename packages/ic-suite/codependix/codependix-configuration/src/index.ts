@@ -1,3 +1,5 @@
+export { ConfigurationLoaderModule } from "./modules/configuration-loader/configuration-loader.module";
+export { ConfigurationLoaderService } from "./modules/configuration-loader/configuration-loader.service";
 // 📤 Exports
 export {
   CODEPENDIX_EXPORT_TARGETS,
@@ -22,6 +24,7 @@ export type {
   CodependixBoundaryRule,
   CodependixBoundarySelector,
   CodependixConfiguration,
+  CodependixConfigurationOverrides,
   CodependixExportTarget,
   CodependixFileImportsBoundariesConfiguration,
   CodependixGraphOutput,
@@ -50,3 +53,6 @@ export {
 } from "./modules/input/input.constants";
 export { InputModule } from "./modules/input/input.module";
 export { InputService } from "./modules/input/input.service";
+export { OverrideResolutionModule } from "./modules/override-resolution/override-resolution.module";
+export { OverrideResolutionService } from "./modules/override-resolution/override-resolution.service";
+export type { ApplyOverridesArguments } from "./modules/override-resolution/override-resolution.types";

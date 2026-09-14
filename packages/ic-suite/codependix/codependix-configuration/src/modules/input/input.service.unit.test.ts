@@ -34,6 +34,26 @@ describe(InputService, () => {
     expect(service).toBeDefined();
   });
 
+  // 📋 Comma-delimited option
+
+  it("splits a comma-delimited option, trimming each entry", () => {
+    expect(service.parseCommaDelimitedOption("alpha, beta")).toStrictEqual([
+      "alpha",
+      "beta",
+    ]);
+  });
+
+  it("drops blank entries from a comma-delimited option", () => {
+    expect(service.parseCommaDelimitedOption("alpha,,beta,")).toStrictEqual([
+      "alpha",
+      "beta",
+    ]);
+  });
+
+  it("reads an absent comma-delimited option as an empty list", () => {
+    expect(service.parseCommaDelimitedOption(undefined)).toStrictEqual([]);
+  });
+
   // 🚩 Flag option
 
   it("reads a valueless boolean flag as present", () => {

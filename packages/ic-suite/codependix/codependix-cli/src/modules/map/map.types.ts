@@ -2,6 +2,7 @@
 
 import type { CodependixRunMode } from "../delivery/delivery.types";
 import type {
+  CodependixGraphType,
   CodependixProjectConfiguration,
   ResolvedCodependixConfiguration,
 } from "@codependix/configuration";
@@ -23,6 +24,16 @@ import type {
  */
 export interface GraphRunContext {
   configuration: ResolvedCodependixConfiguration;
+  /**
+   * The graph types this run builds, checks, and writes.
+   *
+   * All three unless `--no-file-imports`, `--no-nestjs-modules`, or
+   * `--no-nx-projects` narrowed it — see `RunContextService.build`. Read by
+   * `MapService.run` to skip a whole pass, and by
+   * `BoundaryCheckService.run` to skip a boundary level, so a developer can
+   * run a narrower, faster check locally without editing configuration.
+   */
+  enabledGraphTypes: ReadonlySet<CodependixGraphType>;
   graph: NxProjectGraph;
   mode: CodependixRunMode;
   /**
@@ -63,6 +74,22 @@ export interface MapCommandOptions {
   check?: string | true | undefined;
   config?: string | undefined;
   directory?: string | undefined;
+  /** Overrides `exclude` for this run. Refused when never configured. */
+  exclude?: string[] | undefined;
+  /**
+   * Builds, checks, and writes the `fileImports` graph type for this run.
+   *
+   * `undefined` when neither `--file-imports` nor `--no-file-imports` was
+   * given, which leaves the graph type enabled — the behavior every run had
+   * before this flag existed.
+   */
+  fileImports?: boolean | undefined;
+  /** Overrides `include` for this run. Refused when never configured. */
+  include?: string[] | undefined;
+  /** Builds, checks, and writes the `nestjsModules` graph type for this run. */
+  nestjsModules?: boolean | undefined;
+  /** Builds, checks, and writes the `nxProjects` graph type for this run. */
+  nxProjects?: boolean | undefined;
   /**
    * Projects to export for beyond what `include` already selects, unparsed.
    *

@@ -44,6 +44,23 @@ export class InputService {
   // 🌎 Public Methods
 
   /**
+   * Parses a comma-separated list option, dropping blank entries.
+   *
+   * Mirrors `@callidescope/configuration`'s `InputService` exactly: an absent
+   * flag resolves to an empty list rather than `undefined`, so a caller
+   * overriding a configured list treats "the flag was left off" and "the flag
+   * named nothing" the same way.
+   */
+  public parseCommaDelimitedOption(value: string | undefined): string[] {
+    return value === undefined
+      ? []
+      : value
+          .split(",")
+          .map((entry) => entry.trim())
+          .filter(Boolean);
+  }
+
+  /**
    * Parses a valueless boolean flag, which is present or it is not.
    *
    * Commander passes `undefined` for a flag carrying no value, so the flag
