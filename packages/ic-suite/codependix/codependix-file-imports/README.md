@@ -10,34 +10,34 @@ Dependency graphs exported by [codependix](https://github.com/JimmyPaolini/codeb
 
 ### Nx Neighborhood
 
-<!-- codependix:start name="codependix-nx-projects" -->
+<!-- codependix:start name="codependix-nx" -->
 ```mermaid
 graph LR
   codependix_boundaries["codependix-boundaries"]
   codependix_cli["codependix-cli"]
   codependix_examples["codependix-examples"]
-  codependix_imports["codependix-file-imports"]
-  codependix_boundaries --> codependix_imports
-  codependix_cli --> codependix_imports
-  codependix_examples --> codependix_imports
+  codependix_file_imports["codependix-file-imports"]
+  codependix_boundaries --> codependix_file_imports
+  codependix_cli --> codependix_file_imports
+  codependix_examples --> codependix_file_imports
   classDef subject fill:#7c3aed,color:#fff,stroke:#4c1d95,stroke-width:2px
-  class codependix_imports subject
+  class codependix_file_imports subject
 ```
-<!-- codependix:end name="codependix-nx-projects" -->
+<!-- codependix:end name="codependix-nx" -->
 
 ### NestJS Module Graph
 
-<!-- codependix:start name="codependix-nestjs-modules" -->
+<!-- codependix:start name="codependix-nestjs" -->
 ```mermaid
 flowchart LR
   PythonModule
   TypescriptModule
 ```
-<!-- codependix:end name="codependix-nestjs-modules" -->
+<!-- codependix:end name="codependix-nestjs" -->
 
 ### File Imports
 
-<!-- codependix:start name="codependix-file-imports" -->
+<!-- codependix:start name="codependix-imports" -->
 ```mermaid
 graph LR
   file_callidescope_config_ts["callidescope.config.ts"]
@@ -127,7 +127,7 @@ graph LR
   file_src_modules_typescript_typescript_service_unit_test_ts --> file_src_modules_typescript_typescript_types_ts
   file_testing_programs_ts --> file_src_modules_typescript_typescript_types_ts
 ```
-<!-- codependix:end name="codependix-file-imports" -->
+<!-- codependix:end name="codependix-imports" -->
 
 <!-- CALL_STACKS_START -->
 
@@ -224,13 +224,13 @@ None.
 ### Project
 
 ![Lines of Code](https://img.shields.io/badge/Lines_of_Code-2534-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-92.36_kB-6b7280?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-92.56_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-5-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-32-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-14.48_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-14.49_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 

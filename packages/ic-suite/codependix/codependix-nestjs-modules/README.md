@@ -10,26 +10,26 @@ Dependency graphs exported by [codependix](https://github.com/JimmyPaolini/codeb
 
 ### Nx Neighborhood
 
-<!-- codependix:start name="codependix-nx-projects" -->
+<!-- codependix:start name="codependix-nx" -->
 ```mermaid
 graph LR
   codependix_boundaries["codependix-boundaries"]
   codependix_cli["codependix-cli"]
   codependix_examples["codependix-examples"]
-  codependix_nestjs["codependix-nestjs-modules"]
+  codependix_nestjs_modules["codependix-nestjs-modules"]
   logger["logger"]
-  codependix_boundaries --> codependix_nestjs
-  codependix_cli --> codependix_nestjs
-  codependix_examples --> codependix_nestjs
-  codependix_nestjs --> logger
+  codependix_boundaries --> codependix_nestjs_modules
+  codependix_cli --> codependix_nestjs_modules
+  codependix_examples --> codependix_nestjs_modules
+  codependix_nestjs_modules --> logger
   classDef subject fill:#7c3aed,color:#fff,stroke:#4c1d95,stroke-width:2px
-  class codependix_nestjs subject
+  class codependix_nestjs_modules subject
 ```
-<!-- codependix:end name="codependix-nx-projects" -->
+<!-- codependix:end name="codependix-nx" -->
 
 ### NestJS Module Graph
 
-<!-- codependix:start name="codependix-nestjs-modules" -->
+<!-- codependix:start name="codependix-nestjs" -->
 ```mermaid
 flowchart LR
   LoggerModule
@@ -38,11 +38,11 @@ flowchart LR
   ModuleGraphModule --> LoggerModule
   NestjsProjectModule --> LoggerModule
 ```
-<!-- codependix:end name="codependix-nestjs-modules" -->
+<!-- codependix:end name="codependix-nestjs" -->
 
 ### File Imports
 
-<!-- codependix:start name="codependix-file-imports" -->
+<!-- codependix:start name="codependix-imports" -->
 ```mermaid
 graph LR
   file_callidescope_config_ts["callidescope.config.ts"]
@@ -84,7 +84,7 @@ graph LR
   file_src_modules_nestjs_project_nestjs_project_service_unit_test_ts --> file_src_modules_nestjs_project_nestjs_project_types_ts
   file_src_modules_nestjs_project_nestjs_project_service_unit_test_ts --> file_testing_main_module_ts
 ```
-<!-- codependix:end name="codependix-file-imports" -->
+<!-- codependix:end name="codependix-imports" -->
 
 <!-- CALL_STACKS_START -->
 
@@ -151,7 +151,7 @@ None.
 ### Project
 
 ![Lines of Code](https://img.shields.io/badge/Lines_of_Code-1386-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-54.96_kB-6b7280?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-55.16_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-5-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-22-3178c6?style=flat-square)
 

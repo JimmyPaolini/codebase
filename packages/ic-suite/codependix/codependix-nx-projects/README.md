@@ -10,35 +10,35 @@ Dependency graphs exported by [codependix](https://github.com/JimmyPaolini/codeb
 
 ### Nx Neighborhood
 
-<!-- codependix:start name="codependix-nx-projects" -->
+<!-- codependix:start name="codependix-nx" -->
 ```mermaid
 graph LR
   codependix_boundaries["codependix-boundaries"]
   codependix_cli["codependix-cli"]
   codependix_examples["codependix-examples"]
-  codependix_nx["codependix-nx-projects"]
-  codependix_boundaries --> codependix_nx
-  codependix_cli --> codependix_nx
-  codependix_examples --> codependix_nx
+  codependix_nx_projects["codependix-nx-projects"]
+  codependix_boundaries --> codependix_nx_projects
+  codependix_cli --> codependix_nx_projects
+  codependix_examples --> codependix_nx_projects
   classDef subject fill:#7c3aed,color:#fff,stroke:#4c1d95,stroke-width:2px
-  class codependix_nx subject
+  class codependix_nx_projects subject
 ```
-<!-- codependix:end name="codependix-nx-projects" -->
+<!-- codependix:end name="codependix-nx" -->
 
 ### NestJS Module Graph
 
-<!-- codependix:start name="codependix-nestjs-modules" -->
+<!-- codependix:start name="codependix-nestjs" -->
 ```mermaid
 flowchart LR
   NeighborhoodModule
   WorkspaceGraphModule
   WorkspaceGraphModule --> NeighborhoodModule
 ```
-<!-- codependix:end name="codependix-nestjs-modules" -->
+<!-- codependix:end name="codependix-nestjs" -->
 
 ### File Imports
 
-<!-- codependix:start name="codependix-file-imports" -->
+<!-- codependix:start name="codependix-imports" -->
 ```mermaid
 graph LR
   file_callidescope_config_ts["callidescope.config.ts"]
@@ -84,7 +84,7 @@ graph LR
   file_src_modules_workspace_graph_workspace_graph_service_unit_test_ts --> file_src_modules_workspace_graph_workspace_graph_service_ts
   file_src_modules_workspace_graph_workspace_graph_types_ts --> file_src_modules_neighborhood_neighborhood_types_ts
 ```
-<!-- codependix:end name="codependix-file-imports" -->
+<!-- codependix:end name="codependix-imports" -->
 
 <!-- CALL_STACKS_START -->
 
@@ -150,8 +150,8 @@ None.
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-1348-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-53.39_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-1350-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-53.59_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-5-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-20-3178c6?style=flat-square)
 

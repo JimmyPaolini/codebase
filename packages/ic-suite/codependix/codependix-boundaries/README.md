@@ -30,7 +30,7 @@ Three facts it structurally cannot see:
 
 What this deliberately does **not** replace: the layered `depConstraints`
 graph in
-[`configuration/eslint.config.ts`](../../../../configuration/eslint.config.ts), which
+[`configuration/eslint.config.ts`](../../configuration/eslint.config.ts), which
 reports at the import site with a line number, and `dependency-cruiser`'s
 `no-circular`, which is already this repository's file-cycle gate.
 
@@ -134,7 +134,7 @@ nx run codependix-boundaries:vitest
 
 ## 👔 Conformetry
 
-This project was generated from the [nestjs-service-project](../../../../configuration/conformetry-templates/nestjs-service-project) conformetry template.
+This project was generated from the [nestjs-service-project](../../configuration/conformetry-templates/nestjs-service-project) conformetry template.
 
 ## 🕸️ Codependix
 
@@ -142,30 +142,30 @@ Dependency graphs exported by [codependix](https://github.com/JimmyPaolini/codeb
 
 ### Nx Neighborhood
 
-<!-- codependix:start name="codependix-nx-projects" -->
+<!-- codependix:start name="codependix-nx" -->
 ```mermaid
 graph LR
   codependix_boundaries["codependix-boundaries"]
   codependix_cli["codependix-cli"]
   codependix_configuration["codependix-configuration"]
   codependix_examples["codependix-examples"]
-  codependix_imports["codependix-file-imports"]
-  codependix_nestjs["codependix-nestjs-modules"]
-  codependix_nx["codependix-nx-projects"]
+  codependix_file_imports["codependix-file-imports"]
+  codependix_nestjs_modules["codependix-nestjs-modules"]
+  codependix_nx_projects["codependix-nx-projects"]
   codependix_boundaries --> codependix_configuration
-  codependix_boundaries --> codependix_imports
-  codependix_boundaries --> codependix_nestjs
-  codependix_boundaries --> codependix_nx
+  codependix_boundaries --> codependix_file_imports
+  codependix_boundaries --> codependix_nestjs_modules
+  codependix_boundaries --> codependix_nx_projects
   codependix_cli --> codependix_boundaries
   codependix_examples --> codependix_boundaries
   classDef subject fill:#7c3aed,color:#fff,stroke:#4c1d95,stroke-width:2px
   class codependix_boundaries subject
 ```
-<!-- codependix:end name="codependix-nx-projects" -->
+<!-- codependix:end name="codependix-nx" -->
 
 ### NestJS Module Graph
 
-<!-- codependix:start name="codependix-nestjs-modules" -->
+<!-- codependix:start name="codependix-nestjs" -->
 ```mermaid
 flowchart LR
   BoundariesModule
@@ -187,11 +187,11 @@ flowchart LR
 ```
 
 _Rounded modules are global: every module can inject them, so their edges are left out._
-<!-- codependix:end name="codependix-nestjs-modules" -->
+<!-- codependix:end name="codependix-nestjs" -->
 
 ### File Imports
 
-<!-- codependix:start name="codependix-file-imports" -->
+<!-- codependix:start name="codependix-imports" -->
 ```mermaid
 graph LR
   file_callidescope_config_ts["callidescope.config.ts"]
@@ -267,7 +267,7 @@ graph LR
   file_src_modules_boundary_check_boundary_graph_service_ts --> file_src_modules_boundaries_boundaries_types_ts
   file_src_modules_boundary_check_boundary_graph_service_unit_test_ts --> file_src_modules_boundary_check_boundary_graph_service_ts
 ```
-<!-- codependix:end name="codependix-file-imports" -->
+<!-- codependix:end name="codependix-imports" -->
 
 <!-- CODE_STATISTICS_START -->
 
@@ -275,14 +275,14 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-2687-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-94.13_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-2696-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-94.30_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-5-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-27-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-12.85_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-12.88_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 

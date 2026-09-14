@@ -132,7 +132,7 @@ Dependency graphs exported by [codependix](https://github.com/JimmyPaolini/codeb
 
 ### Nx Neighborhood
 
-<!-- codependix:start name="codependix-nx-projects" -->
+<!-- codependix:start name="codependix-nx" -->
 ```mermaid
 graph LR
   caelundas["caelundas"]
@@ -142,7 +142,7 @@ graph LR
   callidescope_output["callidescope-output"]
   codependix_cli["codependix-cli"]
   codependix_examples["codependix-examples"]
-  codependix_nestjs["codependix-nestjs-modules"]
+  codependix_nestjs_modules["codependix-nestjs-modules"]
   codometer_changes["codometer-changes"]
   codometer_cli["codometer-cli"]
   codometer_discovery["codometer-discovery"]
@@ -163,7 +163,7 @@ graph LR
   callidescope_output --> logger
   codependix_cli --> logger
   codependix_examples --> logger
-  codependix_nestjs --> logger
+  codependix_nestjs_modules --> logger
   codometer_changes --> logger
   codometer_cli --> logger
   codometer_discovery --> logger
@@ -179,20 +179,20 @@ graph LR
   classDef subject fill:#7c3aed,color:#fff,stroke:#4c1d95,stroke-width:2px
   class logger subject
 ```
-<!-- codependix:end name="codependix-nx-projects" -->
+<!-- codependix:end name="codependix-nx" -->
 
 ### NestJS Module Graph
 
-<!-- codependix:start name="codependix-nestjs-modules" -->
+<!-- codependix:start name="codependix-nestjs" -->
 ```mermaid
 flowchart LR
   LoggerModule
 ```
-<!-- codependix:end name="codependix-nestjs-modules" -->
+<!-- codependix:end name="codependix-nestjs" -->
 
 ### File Imports
 
-<!-- codependix:start name="codependix-file-imports" -->
+<!-- codependix:start name="codependix-imports" -->
 ```mermaid
 graph LR
   file_callidescope_config_ts["callidescope.config.ts"]
@@ -219,7 +219,7 @@ graph LR
   file_src_modules_logger_logger_service_ts --> file_src_modules_logger_logger_types_ts
   file_src_modules_logger_logger_service_unit_test_ts --> file_src_modules_logger_logger_service_ts
 ```
-<!-- codependix:end name="codependix-file-imports" -->
+<!-- codependix:end name="codependix-imports" -->
 
 <!-- CODE_STATISTICS_START -->
 

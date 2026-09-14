@@ -24,7 +24,7 @@ codependix map --write
 One command, `map`, and no per-graph-type subcommand. Which graphs run for a
 project, where its export lands, and which rules judge it is entirely a
 function of the configuration file; see
-[`configuration/codependix.config.ts`](../../../../configuration/codependix.config.ts)
+[`configuration/codependix.config.ts`](../../configuration/codependix.config.ts)
 for this repository's own.
 
 | Flag | Meaning |
@@ -49,7 +49,7 @@ gates every pull request. A stale export moves with the workspace it
 describes and would fail every branch that changed a project graph rather
 than anything the branch itself did, so it is published on the default branch
 and gated nowhere. That is the same split
-[`callidescope`](../../callidescope/callidescope-cli/README.md) makes between `--check depth`
+[`callidescope`](../callidescope-cli/README.md) makes between `--check depth`
 and `--check reports`, and `reports` is deliberately spelled the same in both:
 it is the same finding, and two names for it would make the two reports
 unreadable together.
@@ -131,7 +131,7 @@ nx run codependix-cli:vitest
 
 ## 👔 Conformetry
 
-This project was generated from the [nestjs-command-project](../../../../configuration/conformetry-templates/nestjs-command-project) conformetry template.
+This project was generated from the [nestjs-command-project](../../configuration/conformetry-templates/nestjs-command-project) conformetry template.
 
 ## 🕸️ Codependix
 
@@ -139,32 +139,32 @@ Dependency graphs exported by [codependix](https://github.com/JimmyPaolini/codeb
 
 ### Nx Neighborhood
 
-<!-- codependix:start name="codependix-nx-projects" -->
+<!-- codependix:start name="codependix-nx" -->
 ```mermaid
 graph LR
   codependix_boundaries["codependix-boundaries"]
   codependix_cli["codependix-cli"]
   codependix_configuration["codependix-configuration"]
   codependix_examples["codependix-examples"]
-  codependix_imports["codependix-file-imports"]
-  codependix_nestjs["codependix-nestjs-modules"]
-  codependix_nx["codependix-nx-projects"]
+  codependix_file_imports["codependix-file-imports"]
+  codependix_nestjs_modules["codependix-nestjs-modules"]
+  codependix_nx_projects["codependix-nx-projects"]
   logger["logger"]
   codependix_cli --> codependix_boundaries
   codependix_cli --> codependix_configuration
-  codependix_cli --> codependix_imports
-  codependix_cli --> codependix_nestjs
-  codependix_cli --> codependix_nx
+  codependix_cli --> codependix_file_imports
+  codependix_cli --> codependix_nestjs_modules
+  codependix_cli --> codependix_nx_projects
   codependix_cli --> logger
   codependix_examples --> codependix_cli
   classDef subject fill:#7c3aed,color:#fff,stroke:#4c1d95,stroke-width:2px
   class codependix_cli subject
 ```
-<!-- codependix:end name="codependix-nx-projects" -->
+<!-- codependix:end name="codependix-nx" -->
 
 ### NestJS Module Graph
 
-<!-- codependix:start name="codependix-nestjs-modules" -->
+<!-- codependix:start name="codependix-nestjs" -->
 ```mermaid
 flowchart LR
   AnchorsModule
@@ -218,11 +218,11 @@ flowchart LR
 ```
 
 _Rounded modules are global: every module can inject them, so their edges are left out._
-<!-- codependix:end name="codependix-nestjs-modules" -->
+<!-- codependix:end name="codependix-nestjs" -->
 
 ### File Imports
 
-<!-- codependix:start name="codependix-file-imports" -->
+<!-- codependix:start name="codependix-imports" -->
 ```mermaid
 graph LR
   file_callidescope_config_ts["callidescope.config.ts"]
@@ -365,7 +365,7 @@ graph LR
   file_src_modules_run_plan_run_plan_service_unit_test_ts --> file_src_modules_run_plan_run_plan_types_ts
   file_src_repl_ts --> file_src_main_module_ts
 ```
-<!-- codependix:end name="codependix-file-imports" -->
+<!-- codependix:end name="codependix-imports" -->
 
 <!-- CALL_STACKS_START -->
 
@@ -544,14 +544,14 @@ What this project is judged against, as declared in its own `callidescope.config
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-5842-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-199.36_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-5864-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-199.71_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-9-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-52-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-25.44_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-25.48_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 

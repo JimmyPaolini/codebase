@@ -77,7 +77,7 @@ import { type CodependixConfiguration } from "@codependix/configuration";
 
 const codependixConfiguration: CodependixConfiguration = {
   defaults: {
-    nx: { markdown: { anchor: "codependix-nx-projects" }, target: "markdown" },
+    nx: { markdown: { anchor: "codependix-nx" }, target: "markdown" },
   },
 };
 
@@ -181,7 +181,7 @@ nx run codependix-examples:vitest
 
 ## License
 
-MIT — see [LICENSE](../../../../LICENSE).
+MIT — see [LICENSE](../../LICENSE).
 
 ## 🕸️ Codependix
 
@@ -189,32 +189,32 @@ Dependency graphs exported by [codependix](https://github.com/JimmyPaolini/codeb
 
 ### Nx Neighborhood
 
-<!-- codependix:start name="codependix-nx-projects" -->
+<!-- codependix:start name="codependix-nx" -->
 ```mermaid
 graph LR
   codependix_boundaries["codependix-boundaries"]
   codependix_cli["codependix-cli"]
   codependix_configuration["codependix-configuration"]
   codependix_examples["codependix-examples"]
-  codependix_imports["codependix-file-imports"]
-  codependix_nestjs["codependix-nestjs-modules"]
-  codependix_nx["codependix-nx-projects"]
+  codependix_file_imports["codependix-file-imports"]
+  codependix_nestjs_modules["codependix-nestjs-modules"]
+  codependix_nx_projects["codependix-nx-projects"]
   logger["logger"]
   codependix_examples --> codependix_boundaries
   codependix_examples --> codependix_cli
   codependix_examples --> codependix_configuration
-  codependix_examples --> codependix_imports
-  codependix_examples --> codependix_nestjs
-  codependix_examples --> codependix_nx
+  codependix_examples --> codependix_file_imports
+  codependix_examples --> codependix_nestjs_modules
+  codependix_examples --> codependix_nx_projects
   codependix_examples --> logger
   classDef subject fill:#7c3aed,color:#fff,stroke:#4c1d95,stroke-width:2px
   class codependix_examples subject
 ```
-<!-- codependix:end name="codependix-nx-projects" -->
+<!-- codependix:end name="codependix-nx" -->
 
 ### File Imports
 
-<!-- codependix:start name="codependix-file-imports" -->
+<!-- codependix:start name="codependix-imports" -->
 ```mermaid
 graph LR
   file_codometer_config_ts["codometer.config.ts"]
@@ -311,13 +311,13 @@ graph LR
   file_testing_render_typescript_imports_ts --> file_testing_render_paths_ts
   file_testing_render_typescript_imports_ts --> file_testing_render_types_ts
 ```
-<!-- codependix:end name="codependix-file-imports" -->
+<!-- codependix:end name="codependix-imports" -->
 
 ### NestJS Module Graph
 
-<!-- codependix:start name="codependix-nestjs-modules" -->
+<!-- codependix:start name="codependix-nestjs" -->
 _This project defines no NestJS modules to graph._
-<!-- codependix:end name="codependix-nestjs-modules" -->
+<!-- codependix:end name="codependix-nestjs" -->
 
 <!-- CODE_STATISTICS_START -->
 
@@ -325,8 +325,8 @@ _This project defines no NestJS modules to graph._
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-4123-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-204.77_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-4135-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-204.89_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-59-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-80-3178c6?style=flat-square)
 
