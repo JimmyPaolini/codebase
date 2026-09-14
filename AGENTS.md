@@ -121,47 +121,35 @@ general-purpose equivalent, and see the [Skills](#skills) list for the full set.
 ### Multiple Pull Requests
 
 **A spec is done when every ticket under it is merged or open as a pull
-request — never when the first one is.** The usual failure of an implementation
-session is to build the first ticket beautifully, open its pull request,
-report the work complete, and leave the rest of the spec on the floor with
-nobody holding it. One ticket is one pull request; the whole ticket set is the
-assignment.
+request — never when the first one is.** The usual failure is a session that
+builds the first ticket well, opens its pull request, reports the work complete,
+and leaves the rest of the spec with nobody holding it. One ticket is one pull
+request; the whole ticket set is the assignment.
 
 Read the parent issues and their sub-issues before the first test and write the
-dependency order down — which tickets build against `main`, and which need
-another ticket's branch underneath them. That order, rather than the issue
-numbering, decides the shape of the run:
+dependency order down. That order, rather than the issue numbering, decides the
+shape of the run:
 
-- **Independent tickets run in parallel.** Each takes its own worktree cut from
-  `main` via [using-git-worktrees](.agents/skills/using-git-worktrees/SKILL.md)
-  and its own pull request, dispatched with
+- **Independent tickets run in parallel** — each in its own worktree cut from
+  `main` via [using-git-worktrees](.agents/skills/using-git-worktrees/SKILL.md),
+  dispatched with
   [dispatching-parallel-agents](.agents/skills/dispatching-parallel-agents/SKILL.md).
-  Tickets touching different projects are the clearest case — see
-  [Work Scope](#work-scope).
-- **Dependent tickets stack.** Each branches off the ticket it needs rather than
-  off `main`, and the set is submitted with
-  [gh-stack](.agents/skills/gh-stack/SKILL.md) so every pull request still
-  reviews as its own diff. Rebase the stack whenever a lower layer changes, and
-  typecheck the layers above it afterwards: a replay can be conflict-free and
-  still leave an upper branch broken.
-- **A mixed set is both** — stack each chain, and run the chains against each
-  other in parallel.
+- **Dependent tickets stack** — each branched off the ticket it needs rather
+  than off `main` and submitted with
+  [gh-stack](.agents/skills/gh-stack/SKILL.md), so every pull request still
+  reviews as its own diff. Typecheck the upper layers after rebasing a lower
+  one: a replay can be conflict-free and still leave them broken.
 
-Two rules keep such a run moving:
+Two things keep the run from stalling. **An open pull request is a finished
+ticket**, so do not idle waiting for a review or a merge before starting the
+next one — the only thing that forces an order is a ticket whose branch
+another must sit on, which is what the stack is for. And **a blocked ticket
+does not end the run**, so build every ticket that is not blocked, then say
+plainly which were left and why. Quietly narrowing a spec to its first ticket
+is the failure this section exists to prevent.
 
-- **An open pull request is a finished ticket.** Do not idle waiting for a
-  review or a merge before starting the next one. The only thing that forces an
-  order is a ticket whose branch another ticket must sit on, and that is what
-  the stack is for.
-- **A blocked ticket does not end the run.** Build every ticket that is not
-  blocked, then say plainly which were left and why. Quietly narrowing a spec to
-  its first ticket is the failure this section exists to prevent.
-
-Close by reporting the set as a whole — one row per ticket with its branch,
-its pull request, and its status — so what remains is visible without reopening
-the spec. Each pull request's title takes the type and scope of **its own**
-ticket, because each is squashed separately: see
-[Release Significance](#release-significance).
+Close by reporting the set — one row per ticket with its branch, its pull
+request, and its status.
 
 ### Handoffs
 
