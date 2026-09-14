@@ -16,29 +16,44 @@ import { HardcodedMeandersService } from "../hardcoded-meanders/hardcoded-meande
 
 import { DrawCodeService } from "./draw-code.service";
 import { DrawEnumerationService } from "./draw-enumeration.service";
+import { DrawIndexService } from "./draw-index.service";
 import { DrawCommand } from "./draw.command";
+import { DEFAULT_INDEX_PATH } from "./draw.constants";
 
 import type { Meander } from "../meander-database/entities/Meander.entity";
 
+const { writeFileMock } = vi.hoisted(() => ({
+  writeFileMock: vi.fn<() => Promise<void>>(),
+}));
+
+vi.mock("node:fs/promises", () => ({
+  writeFile: writeFileMock,
+}));
+
 /**
  * Covers what `DrawCommand` decides rather than what it produces: which of
- * its two modes an option set selects, and how each flag is parsed.
+ * its two modes an option set selects, how each flag is parsed, and — since
+ * the sweep writes `output/index.html` again — that it does so with
+ * `DrawIndexService`'s own built page, once, at the path spec #813's
+ * committed artifact lives at.
  *
- * Everything the command actually writes is asserted against a real database
+ * Everything else the command produces is asserted against a real database
  * instead — `draw-sweep.command.integration.test.ts` for the sweep and
  * `draw.command.integration.test.ts` for the `--code` path — per spec #813's
- * Testing Decisions. This file used to mock `node:fs/promises` and assert on
- * the `output/<family>` tree the per-family procedural pipeline wrote; there
- * is no tree left to assert on, and a persisted row is a better witness than
- * an intercepted write ever was.
+ * Testing Decisions. `node:fs/promises` is mocked here rather than left real,
+ * the same way this file used to mock it while the per-family procedural
+ * pipeline still wrote a whole tree through it: a unit test has no business
+ * touching the committed `output/index.html` a real write would clobber.
  */
 describe(DrawCommand, () => {
+  let build: Mock<() => Promise<string>>;
   let command: DrawCommand;
   let draw: Mock<() => Promise<Meander>>;
   let ingest: Mock<() => Promise<Meander[]>>;
   let sweep: Mock<() => Promise<number>>;
 
   beforeAll(async () => {
+    build = vi.fn<() => Promise<string>>().mockResolvedValue("<!doctype html>");
     draw = vi
       .fn<() => Promise<Meander>>()
       .mockResolvedValue(createMock<Meander>({ id: 1 }));
@@ -57,6 +72,10 @@ describe(DrawCommand, () => {
           useValue: createMock<DrawEnumerationService>({ sweep }),
         },
         {
+          provide: DrawIndexService,
+          useValue: createMock<DrawIndexService>({ build }),
+        },
+        {
           provide: HardcodedMeandersService,
           useValue: createMock<HardcodedMeandersService>({ ingest }),
         },
@@ -71,9 +90,11 @@ describe(DrawCommand, () => {
   });
 
   beforeEach(() => {
+    build.mockClear();
     draw.mockClear();
     ingest.mockClear();
     sweep.mockClear();
+    writeFileMock.mockClear();
   });
 
   it("is defined", () => {
@@ -91,6 +112,10 @@ describe(DrawCommand, () => {
         {
           provide: DrawEnumerationService,
           useValue: createMock<DrawEnumerationService>(),
+        },
+        {
+          provide: DrawIndexService,
+          useValue: createMock<DrawIndexService>(),
         },
         {
           provide: HardcodedMeandersService,
@@ -127,11 +152,28 @@ describe(DrawCommand, () => {
     expect(enumerated).toBeLessThan(hardcoded ?? 0);
   });
 
-  it("draws the one meander a Code names, sweeping nothing", async () => {
+  it("rebuilds the index page from the sweep's own rows, once both halves have committed", async () => {
+    await command.run([], {});
+
+    expect(build).toHaveBeenCalledTimes(1);
+    expect(writeFileMock).toHaveBeenCalledWith(
+      DEFAULT_INDEX_PATH,
+      "<!doctype html>",
+    );
+
+    const [hardcoded] = ingest.mock.invocationCallOrder;
+    const [written] = writeFileMock.mock.invocationCallOrder;
+
+    expect(hardcoded ?? 0).toBeLessThan(written ?? 0);
+  });
+
+  it("draws the one meander a Code names, sweeping nothing and never rebuilding the index page", async () => {
     await command.run([], { code: "3c9a", columns: 2, rows: 3 });
 
     expect(draw).toHaveBeenCalledWith({ code: "3c9a", columns: 2, rows: 3 });
     expect(sweep).not.toHaveBeenCalled();
+    expect(build).not.toHaveBeenCalled();
+    expect(writeFileMock).not.toHaveBeenCalled();
   });
 
   it("refuses a Code given without both --rows and --columns", async () => {

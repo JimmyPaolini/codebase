@@ -76,6 +76,23 @@ describe(MeanderDatabaseService, () => {
     ...overrides,
   });
 
+  describe("findAll", () => {
+    it("resolves with an empty array before anything is committed", async () => {
+      await expect(service.findAll()).resolves.toStrictEqual([]);
+    });
+
+    it("reads every committed row", async () => {
+      await service.save(record({ code: "findAll-first-row" }));
+      await service.save(record({ code: "findAll-second-row" }));
+
+      const rows = await service.findAll();
+
+      expect(rows.map((row) => row.code)).toStrictEqual(
+        expect.arrayContaining(["findAll-first-row", "findAll-second-row"]),
+      );
+    });
+  });
+
   describe("save", () => {
     it("persists a meander row with every field it was given", async () => {
       const saved = await service.save({

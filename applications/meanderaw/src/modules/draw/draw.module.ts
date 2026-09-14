@@ -10,14 +10,16 @@ import { MeanderRenderingModule } from "../meander-rendering/meander-rendering.m
 
 import { DrawCodeService } from "./draw-code.service";
 import { DrawEnumerationService } from "./draw-enumeration.service";
+import { DrawIndexService } from "./draw-index.service";
 import { DrawRecordService } from "./draw-record.service";
 import { DrawCommand } from "./draw.command";
 
 /**
  * Registers the `draw` CLI command — the application's only command — the
  * service that enumerates the whole unit space its sweep covers, the service
- * that persists the one meander a `--code` drawing names, and the one place
- * either of them builds a database row.
+ * that persists the one meander a `--code` drawing names, the service that
+ * rebuilds the static index page from the committed rows, and the one place
+ * any of them builds a database row.
  *
  * Every import here serves the one lattice-first pipeline both paths share:
  * `MeanderDecodingModule` and `MeanderRenderingModule` are the generic
@@ -26,15 +28,16 @@ import { DrawCommand } from "./draw.command";
  * `MeanderClassificationModule` reads a family off those Characteristics,
  * `MeanderEnumerationModule` walks the space the sweep covers, and
  * `MeanderDatabaseModule` is the committed sqlite database all of it
- * persists to. `HardcodedMeandersModule` wraps the same decoder, renderer,
- * and Characteristic computation beneath one service `DrawCommand` calls
- * once per sweep with the historical corpus, trusting its family/subFamily
- * rather than classifying them.
+ * persists to and `DrawIndexService` reads back from. `HardcodedMeandersModule`
+ * wraps the same decoder, renderer, and Characteristic computation beneath
+ * one service `DrawCommand` calls once per sweep with the historical corpus,
+ * trusting its family/subFamily rather than classifying them.
  *
  * `MeanderDatabaseModule` always opens the one committed database file — a
  * test exercising `DrawCommand`, `DrawCodeService`, `DrawEnumerationService`,
- * or `HardcodedMeandersService` builds its own `TestingModule` against a
- * temporary or in-memory connection instead of importing this module.
+ * `DrawIndexService`, or `HardcodedMeandersService` builds its own
+ * `TestingModule` against a temporary or in-memory connection instead of
+ * importing this module.
  */
 @Module({
   controllers: [],
@@ -52,6 +55,7 @@ import { DrawCommand } from "./draw.command";
     DrawCodeService,
     DrawCommand,
     DrawEnumerationService,
+    DrawIndexService,
     DrawRecordService,
   ],
 })
