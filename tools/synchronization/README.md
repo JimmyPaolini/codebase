@@ -201,12 +201,12 @@ Call stacks traced through `tools/synchronization`, deepest first. Each frame sh
 
 ### Limits
 
-What this project is judged against. `declared` is the number in this project's own `callidescope.config.ts`; `inherited` is the one the run supplies for every project that names none.
+What this project is judged against, as declared in its own `callidescope.config.ts`.
 
-| Limit | Value | Origin |
-| --- | --- | --- |
-| `maximumDepth` | 10 | declared |
-| `maximumBreadth` | none | — |
+| Limit | Value |
+| --- | --- |
+| `maximumDepth` | 10 |
+| `maximumBreadth` | none |
 
 ### Call stacks (depth)
 
@@ -299,11 +299,11 @@ What this project is judged against. `declared` is the number in this project's 
 **5. `ConformetryGeneratorsCommand.run`** — depth ≥ 6 · decorated-method
 
 ```text
-🚀 ConformetryGeneratorsCommand.run(passedParameters: string[], _options?: Record<string, unknown>): Promise<void> [tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:181]
+🚀 ConformetryGeneratorsCommand.run(passedParameters: string[], _options?: Record<string, unknown>): Promise<void> [tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:188]
    ↳ Runs the conformetry-generators sync command in check or write mode.
-  └─> ConformetryGeneratorsCommand.synchronize(mode: SynchronizationMode): Promise<boolean> [tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:199]
+  └─> ConformetryGeneratorsCommand.synchronize(mode: SynchronizationMode): Promise<boolean> [tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:206]
      ↳ Synchronizes the generators table and reports success without exiting.
-    └─> ConformetryGeneratorsCommand.readGenerators(): Promise<ConformetryGeneratorMetadata[]> [tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:104]
+    └─> ConformetryGeneratorsCommand.readGenerators(): Promise<ConformetryGeneratorMetadata[]> [tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:111]
        ↳ Reads configuration/conformetry.config.ts and returns the list of generator metadata.
       └─> ConfigurationService.loadConformetryConfiguration(configurationPath: string): Promise<ConformetryConfiguration> [packages/conformetry-configuration/src/modules/configuration/configuration.service.ts:169]
          ↳ Loads, validates, and normalizes a conformetry configuration file.
@@ -384,10 +384,6 @@ What this project is judged against. `declared` is the number in this project's 
 
 </details>
 
-### Module spread
-
-None.
-
 ### Breadth
 
 | Callable | Breadth | Calls directly | Location |
@@ -413,7 +409,7 @@ None.
 | `PullRequestLabelsCommand.synchronize` | 4 | `PullRequestLabelsCommand.reconcile`, `PullRequestLabelsCommand.appendToReport`, `PullRequestLabelsCommand.describeError`, `PullRequestLabelsCommand.mirrorToStepSummary` | `tools/synchronization/src/modules/pull-request-labels/pull-request-labels.command.ts:300` |
 | `PullRequestTemplateCommand.synchronize` | 4 | `PullRequestTemplateCommand.map(…)`, `PullRequestTemplateCommand.loadTemplate`, `PullRequestTemplateCommand.handleCheckMode`, `PullRequestTemplateCommand.handleWriteMode` | `tools/synchronization/src/modules/pull-request-template/pull-request-template.command.ts:221` |
 | `IssueLabelsCommand.run` | 3 | `IssueLabelsCommand.resolvePlan`, `IssueLabelsGithubService.isAvailable`, `IssueLabelsCommand.addLabel` | `tools/synchronization/src/modules/issue-labels/issue-labels.command.ts:158` |
-| `ConformetryGeneratorsCommand.synchronize` | 3 | `ConformetryGeneratorsCommand.readGenerators`, `ConformetryGeneratorsCommand.checkSync`, `ConformetryGeneratorsCommand.writeSync` | `tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:199` |
+| `ConformetryGeneratorsCommand.synchronize` | 3 | `ConformetryGeneratorsCommand.readGenerators`, `ConformetryGeneratorsCommand.checkSync`, `ConformetryGeneratorsCommand.writeSync` | `tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:206` |
 | `ConventionalConfigIoService.writeIssueTemplateSync` | 3 | `ConventionalConfigIoService.writeIssueTemplateDropdown`, `ConventionalConfigIoService.map(…)`, `ConventionalConfigIoService.map(…)` | `tools/synchronization/src/modules/conventional-config/conventional-config-io.service.ts:258` |
 | `ConventionalConfigValidatorsService.checkMarkerSync` | 3 | `ConventionalConfigValidatorsService.readMarkerValues`, `ConventionalConfigValidatorsService.getSourceValuesForMarker`, `ConventionalConfigValidatorsService.validateMarkerValues` | `tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:41` |
 | `ConventionalConfigValidatorsService.checkIssueTemplateSync` | 3 | `ConventionalConfigValidatorsService.getSourceValuesForMarker`, `ConventionalConfigIoService.parseIssueTemplateDropdown`, `ConventionalConfigValidatorsService.validateMarkerValues` | `tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:185` |
@@ -427,10 +423,10 @@ None.
 | `IssueLabelsCommand.addLabel` | 2 | `IssueLabelsGithubService.run`, `IssueLabelsGithubService.describeFailure` | `tools/synchronization/src/modules/issue-labels/issue-labels.command.ts:57` |
 | `IssueLabelsCommand.readLabelNames` | 2 | `IssueLabelsCommand.filter(…)`, `IssueLabelsCommand.map(…)` | `tools/synchronization/src/modules/issue-labels/issue-labels.command.ts:118` |
 | `SynchronizationService.resolveSynchronizationModeOrExit` | 2 | `SynchronizationService.resolveModeValue`, `SynchronizationService.exitInvalidMode` | `tools/synchronization/src/modules/synchronization/synchronization.service.ts:59` |
-| `ConformetryGeneratorsCommand.checkSync` | 2 | `ConformetryGeneratorsCommand.generateGeneratorsTable`, `ConformetryGeneratorsCommand.filter(…)` | `tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:57` |
-| `ConformetryGeneratorsCommand.readGenerators` | 2 | `ConfigurationService.loadConformetryConfiguration`, `ConformetryGeneratorsCommand.map(…)` | `tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:104` |
-| `ConformetryGeneratorsCommand.writeSync` | 2 | `ConformetryGeneratorsCommand.generateGeneratorsTable`, `ConformetryGeneratorsCommand.readMarkedFile` | `tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:159` |
-| `ConformetryGeneratorsCommand.run` | 2 | `SynchronizationService.resolveSynchronizationModeOrExit`, `ConformetryGeneratorsCommand.synchronize` | `tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:181` |
+| `ConformetryGeneratorsCommand.checkSync` | 2 | `ConformetryGeneratorsCommand.generateGeneratorsTable`, `ConformetryGeneratorsCommand.filter(…)` | `tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:64` |
+| `ConformetryGeneratorsCommand.readGenerators` | 2 | `ConfigurationService.loadConformetryConfiguration`, `ConformetryGeneratorsCommand.map(…)` | `tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:111` |
+| `ConformetryGeneratorsCommand.writeSync` | 2 | `ConformetryGeneratorsCommand.generateGeneratorsTable`, `ConformetryGeneratorsCommand.readMarkedFile` | `tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:166` |
+| `ConformetryGeneratorsCommand.run` | 2 | `SynchronizationService.resolveSynchronizationModeOrExit`, `ConformetryGeneratorsCommand.synchronize` | `tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:188` |
 | `ConventionalConfigIoService.map(…)` | 2 | `ConventionalConfigIoService.find(…)`, `ConventionalConfigIoService.capitalize` | `tools/synchronization/src/modules/conventional-config/conventional-config-io.service.ts:93` |
 | `ConventionalConfigIoService.getReleaseRulesTypes` | 2 | `ConventionalConfigIoService.filter(…)`, `ConventionalConfigIoService.map(…)` | `tools/synchronization/src/modules/conventional-config/conventional-config-io.service.ts:184` |
 | `ConventionalConfigValidatorsService.getSourceValuesForMarker` | 2 | `ConventionalConfigValidatorsService.map(…)`, `ConventionalConfigValidatorsService.map(…)` | `tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:64` |
@@ -458,8 +454,8 @@ None.
 | `IssueLabelsCommand.readExistingLabelNames` | 1 | `IssueLabelsCommand.readLabelNames` | `tools/synchronization/src/modules/issue-labels/issue-labels.command.ts:94` |
 | `IssueLabelsCommand.map(…)` | 1 | `IssueLabelsCommand.nameOf` | `tools/synchronization/src/modules/issue-labels/issue-labels.command.ts:120` |
 | `SynchronizationService.resolveModeValue` | 1 | `SynchronizationService.isSynchronizationMode` | `tools/synchronization/src/modules/synchronization/synchronization.service.ts:40` |
-| `ConformetryGeneratorsCommand.filter(…)` | 1 | `ConformetryGeneratorsCommand.readMarkedFile` | `tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:59` |
-| `ConformetryGeneratorsCommand.generateGeneratorsTable` | 1 | `ConformetryGeneratorsCommand.map(…)` | `tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:91` |
+| `ConformetryGeneratorsCommand.filter(…)` | 1 | `ConformetryGeneratorsCommand.readMarkedFile` | `tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:66` |
+| `ConformetryGeneratorsCommand.generateGeneratorsTable` | 1 | `ConformetryGeneratorsCommand.map(…)` | `tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:98` |
 | `ConventionalConfigIoService.writeIssueTemplateDropdown` | 1 | `ConventionalConfigIoService.generateYamlDropdownOptions` | `tools/synchronization/src/modules/conventional-config/conventional-config-io.service.ts:62` |
 | `ConventionalConfigIoService.appendToPresetTypes` | 1 | `ConventionalConfigIoService.map(…)` | `tools/synchronization/src/modules/conventional-config/conventional-config-io.service.ts:86` |
 | `ConventionalConfigIoService.appendToReleaseRules` | 1 | `ConventionalConfigIoService.map(…)` | `tools/synchronization/src/modules/conventional-config/conventional-config-io.service.ts:110` |
@@ -490,10 +486,6 @@ None.
 | `SynchronizationMarkersService.replaceContent` | 1 | `SynchronizationMarkersService.locateMarkers` | `tools/synchronization/src/modules/synchronization/synchronization-markers.service.ts:65` |
 
 </details>
-
-### Possibly misplaced
-
-None.
 <!-- CALL_STACKS_END -->
 
 ## 🕸️ Codependix
@@ -572,6 +564,7 @@ graph LR
   file_src_modules_conventional_config_conventional_config_validators_service_unit_test_ts["src/modules/conventional-config/conventional-config-validators.service.unit.test.ts"]
   file_src_modules_conventional_config_conventional_config_command_ts["src/modules/conventional-config/conventional-config.command.ts"]
   file_src_modules_conventional_config_conventional_config_command_unit_test_ts["src/modules/conventional-config/conventional-config.command.unit.test.ts"]
+  file_src_modules_conventional_config_conventional_config_constants_integration_test_ts["src/modules/conventional-config/conventional-config.constants.integration.test.ts"]
   file_src_modules_conventional_config_conventional_config_constants_ts["src/modules/conventional-config/conventional-config.constants.ts"]
   file_src_modules_conventional_config_conventional_config_module_ts["src/modules/conventional-config/conventional-config.module.ts"]
   file_src_modules_conventional_config_conventional_config_service_ts["src/modules/conventional-config/conventional-config.service.ts"]
@@ -658,6 +651,7 @@ graph LR
   file_src_modules_conventional_config_conventional_config_command_unit_test_ts --> file_src_modules_conventional_config_conventional_config_service_ts
   file_src_modules_conventional_config_conventional_config_command_unit_test_ts --> file_src_modules_synchronization_synchronization_service_ts
   file_src_modules_conventional_config_conventional_config_command_unit_test_ts --> file_testing_mocks_ts
+  file_src_modules_conventional_config_conventional_config_constants_integration_test_ts --> file_src_modules_conventional_config_conventional_config_constants_ts
   file_src_modules_conventional_config_conventional_config_module_ts --> file_src_modules_conventional_config_conventional_config_io_service_ts
   file_src_modules_conventional_config_conventional_config_module_ts --> file_src_modules_conventional_config_conventional_config_validators_service_ts
   file_src_modules_conventional_config_conventional_config_module_ts --> file_src_modules_conventional_config_conventional_config_command_ts
@@ -797,36 +791,36 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-8897-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-295.10_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-9000-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-298.84_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-11-4a4a4a?style=flat-square)
-![Source Files](https://img.shields.io/badge/Source_Files-73-3178c6?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-74-3178c6?style=flat-square)
 
 ### TypeScript
 
-![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-73-3178c6?style=flat-square)
+![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-74-3178c6?style=flat-square)
 ![Interfaces](https://img.shields.io/badge/Interfaces-21-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-0-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
 ![Decorators](https://img.shields.io/badge/Decorators-34-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-179-6366f1?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-180-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-0-166534?style=flat-square)
 
 ### JavaScript
 
 ![JavaScript Files](https://img.shields.io/badge/JavaScript_Files-0-f7df1e?style=flat-square)
-![Test Files](https://img.shields.io/badge/Test_Files-22-10b981?style=flat-square)
+![Test Files](https://img.shields.io/badge/Test_Files-23-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-18-8b5cf6?style=flat-square)
 ![Classes](https://img.shields.io/badge/Classes-27-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-409-16a34a?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-422-16a34a?style=flat-square)
 ![Methods](https://img.shields.io/badge/Methods-178-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-448-4ade80?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-461-4ade80?style=flat-square)
 ![Async Functions](https://img.shields.io/badge/Async_Functions-139-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-446-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-352-0284c7?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-456-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-358-0284c7?style=flat-square)
 ![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-81-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-305-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-689-475569?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-310-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-715-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-3-ca8a04?style=flat-square)
 
 ### Python
@@ -847,16 +841,16 @@ graph LR
 ### JSON
 
 ![JSON Files](https://img.shields.io/badge/JSON_Files-3-a16207?style=flat-square)
-![JSON Lines](https://img.shields.io/badge/JSON_Lines-260-ca8a04?style=flat-square)
+![JSON Lines](https://img.shields.io/badge/JSON_Lines-261-ca8a04?style=flat-square)
 ![JSON Objects](https://img.shields.io/badge/JSON_Objects-60-7c3aed?style=flat-square)
 ![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-13-8b5cf6?style=flat-square)
 ![JSON Properties](https://img.shields.io/badge/JSON_Properties-159-0284c7?style=flat-square)
-![JSON Strings](https://img.shields.io/badge/JSON_Strings-127-16a34a?style=flat-square)
+![JSON Strings](https://img.shields.io/badge/JSON_Strings-128-16a34a?style=flat-square)
 ![JSON Numbers](https://img.shields.io/badge/JSON_Numbers-1-059669?style=flat-square)
 ![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-11-0ea5e9?style=flat-square)
 ![JSON Nulls](https://img.shields.io/badge/JSON_Nulls-0-64748b?style=flat-square)
-![JSON Items](https://img.shields.io/badge/JSON_Items-50-475569?style=flat-square)
-![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-212-dc2626?style=flat-square)
+![JSON Items](https://img.shields.io/badge/JSON_Items-51-475569?style=flat-square)
+![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-213-dc2626?style=flat-square)
 ![JSON Max Depth](https://img.shields.io/badge/JSON_Max_Depth-6-ea580c?style=flat-square)
 
 ### YAML
@@ -945,8 +939,16 @@ graph LR
 ![Utilities Files](https://img.shields.io/badge/Utilities_Files-0-0ea5e9?style=flat-square)
 ![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-0-059669?style=flat-square)
 ![Unit Tests](https://img.shields.io/badge/Unit_Tests-21-ca8a04?style=flat-square)
-![Integration Tests](https://img.shields.io/badge/Integration_Tests-0-7c3aed?style=flat-square)
+![Integration Tests](https://img.shields.io/badge/Integration_Tests-1-7c3aed?style=flat-square)
 ![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-1-0284c7?style=flat-square)
+![CSS Comment Budget](https://img.shields.io/badge/CSS_Comment_Budget-0-16a34a?style=flat-square)
+![HCL Comment Budget](https://img.shields.io/badge/HCL_Comment_Budget-0-ea580c?style=flat-square)
+![Python Comment Budget](https://img.shields.io/badge/Python_Comment_Budget-0-db2777?style=flat-square)
+![SQL Comment Budget](https://img.shields.io/badge/SQL_Comment_Budget-0-0ea5e9?style=flat-square)
+![TOML Comment Budget](https://img.shields.io/badge/TOML_Comment_Budget-0-059669?style=flat-square)
+![TypeScript Comment Budget](https://img.shields.io/badge/TypeScript_Comment_Budget-0-ca8a04?style=flat-square)
+![YAML Comment Budget](https://img.shields.io/badge/YAML_Comment_Budget-0-7c3aed?style=flat-square)
+![Shell Comment Budget](https://img.shields.io/badge/Shell_Comment_Budget-0-0284c7?style=flat-square)
 
 ### Jupyter
 

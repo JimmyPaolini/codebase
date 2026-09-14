@@ -22,18 +22,14 @@ Call stacks traced through `packages/codometer-discovery`, deepest first. Each f
 
 ### Limits
 
-What this project is judged against. `declared` is the number in this project's own `callidescope.config.ts`; `inherited` is the one the run supplies for every project that names none.
+What this project is judged against, as declared in its own `callidescope.config.ts`.
 
-| Limit | Value | Origin |
-| --- | --- | --- |
-| `maximumDepth` | 7 | declared |
-| `maximumBreadth` | 7 | declared |
+| Limit | Value |
+| --- | --- |
+| `maximumDepth` | 7 |
+| `maximumBreadth` | 7 |
 
 ### Call stacks (depth)
-
-None.
-
-### Module spread
 
 None.
 
@@ -41,7 +37,7 @@ None.
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `TargetsService.matchFiles` | 7 | `TargetsService.findBoundary`, `TargetsService.sitsInsideBoundary`, `TargetOutsideRepositoryError.constructor`, `TargetsService.readTargetPrefix`, `TargetsService.walk`, `TargetsService.map(…)`, `TargetsService.map(…)` | `packages/codometer-discovery/src/modules/targets/targets.service.ts:282` |
+| `InputsService.matchFiles` | 7 | `InputsService.findBoundary`, `InputsService.sitsInsideBoundary`, `InputOutsideRepositoryError.constructor`, `InputsService.readInputPrefix`, `InputsService.walk`, `InputsService.map(…)`, `InputsService.map(…)` | `packages/codometer-discovery/src/modules/inputs/inputs.service.ts:282` |
 | `DiscoveryService.categorize` | 6 | `DiscoveryService.filter(…)`, `DiscoveryService.filterByExtension`, `DiscoveryService.filter(…)`, `DiscoveryService.filter(…)`, `DiscoveryService.filter(…)`, `DiscoveryService.filter(…)` | `packages/codometer-discovery/src/modules/discovery/discovery.service.ts:285` |
 | `DiscoveryService.walkDirectory` | 4 | `DiscoveryService.readDirectoryEntries`, `DiscoveryService.applyDirectoryIgnoreFile`, `DiscoveryService.walkSubdirectory`, `DiscoveryService.isIgnoredPath` | `packages/codometer-discovery/src/modules/discovery/discovery.service.ts:217` |
 
@@ -50,13 +46,13 @@ None.
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `TargetsService.walk` | 4 | `TargetsService.readEntries`, `TargetsService.resolveEntryKind`, `TargetsService.canDescend`, `TargetsService.isMatched` | `packages/codometer-discovery/src/modules/targets/targets.service.ts:239` |
+| `InputsService.walk` | 4 | `InputsService.readEntries`, `InputsService.resolveEntryKind`, `InputsService.canDescend`, `InputsService.isMatched` | `packages/codometer-discovery/src/modules/inputs/inputs.service.ts:239` |
 | `DiscoveryService.listDiscoveredFiles` | 3 | `DiscoveryService.walkDirectory`, `DiscoveryService.readExcludeFromScopes`, `DiscoveryService.filter(…)` | `packages/codometer-discovery/src/modules/discovery/discovery.service.ts:145` |
 | `DiscoveryService.walkSubdirectory` | 3 | `DiscoveryService.isExhaustivelyExcluded`, `DiscoveryService.isIgnoredPath`, `DiscoveryService.walkDirectory` | `packages/codometer-discovery/src/modules/discovery/discovery.service.ts:261` |
 | `DiscoveryService.discoverFiles` | 2 | `DiscoveryService.categorize`, `DiscoveryService.listDiscoveredFiles` | `packages/codometer-discovery/src/modules/discovery/discovery.service.ts:317` |
-| `TargetsService.canDescend` | 2 | `TargetsService.isHidden`, `TargetsService.some(…)` | `packages/codometer-discovery/src/modules/targets/targets.service.ts:50` |
-| `TargetsService.some(…)` | 2 | `TargetsService.leadsToBase`, `TargetsService.sitsInsideBase` | `packages/codometer-discovery/src/modules/targets/targets.service.ts:56` |
-| `TargetsService.isMatched` | 2 | `TargetsService.some(…)`, `TargetsService.some(…)` | `packages/codometer-discovery/src/modules/targets/targets.service.ts:126` |
+| `InputsService.canDescend` | 2 | `InputsService.isHidden`, `InputsService.some(…)` | `packages/codometer-discovery/src/modules/inputs/inputs.service.ts:50` |
+| `InputsService.some(…)` | 2 | `InputsService.leadsToBase`, `InputsService.sitsInsideBase` | `packages/codometer-discovery/src/modules/inputs/inputs.service.ts:56` |
+| `InputsService.isMatched` | 2 | `InputsService.some(…)`, `InputsService.some(…)` | `packages/codometer-discovery/src/modules/inputs/inputs.service.ts:126` |
 | `IgnoreRulesService.isIgnored` | 1 | `IgnoreRulesService.toScopedPath` | `packages/codometer-discovery/src/modules/discovery/ignore-rules.service.ts:84` |
 | `IgnoreRulesService.readScope` | 1 | `IgnoreRulesService.createScope` | `packages/codometer-discovery/src/modules/discovery/ignore-rules.service.ts:115` |
 | `DiscoveryService.applyDirectoryIgnoreFile` | 1 | `IgnoreRulesService.readScope` | `packages/codometer-discovery/src/modules/discovery/discovery.service.ts:59` |
@@ -66,15 +62,11 @@ None.
 | `DiscoveryService.isIgnoredPath` | 1 | `IgnoreRulesService.isIgnored` | `packages/codometer-discovery/src/modules/discovery/discovery.service.ts:128` |
 | `DiscoveryService.filter(…)` | 1 | `DiscoveryService.isExcluded` | `packages/codometer-discovery/src/modules/discovery/discovery.service.ts:155` |
 | `DiscoveryService.readExcludeFromScopes` | 1 | `IgnoreRulesService.readScope` | `packages/codometer-discovery/src/modules/discovery/discovery.service.ts:187` |
-| `TargetsService.findBoundary` | 1 | `TargetsService.some(…)` | `packages/codometer-discovery/src/modules/targets/targets.service.ts:72` |
-| `TargetsService.resolveEntryKind` | 1 | `TargetsService.isLinkedFile` | `packages/codometer-discovery/src/modules/targets/targets.service.ts:184` |
-| `TargetsService.map(…)` | 1 | `TargetsService.toIncludeBase` | `packages/codometer-discovery/src/modules/targets/targets.service.ts:300` |
+| `InputsService.findBoundary` | 1 | `InputsService.some(…)` | `packages/codometer-discovery/src/modules/inputs/inputs.service.ts:72` |
+| `InputsService.resolveEntryKind` | 1 | `InputsService.isLinkedFile` | `packages/codometer-discovery/src/modules/inputs/inputs.service.ts:184` |
+| `InputsService.map(…)` | 1 | `InputsService.toIncludeBase` | `packages/codometer-discovery/src/modules/inputs/inputs.service.ts:300` |
 
 </details>
-
-### Possibly misplaced
-
-None.
 <!-- CALL_STACKS_END -->
 
 ## 🕸️ Codependix
@@ -104,10 +96,10 @@ graph LR
 ```mermaid
 flowchart LR
   DiscoveryModule
+  InputsModule
   LoggerModule
-  TargetsModule
   DiscoveryModule --> LoggerModule
-  TargetsModule --> LoggerModule
+  InputsModule --> LoggerModule
 ```
 <!-- codependix:end name="codependix-nestjs" -->
 
@@ -129,16 +121,16 @@ graph LR
   file_src_modules_discovery_ignore_rules_service_ts["src/modules/discovery/ignore-rules.service.ts"]
   file_src_modules_discovery_ignore_rules_service_unit_test_ts["src/modules/discovery/ignore-rules.service.unit.test.ts"]
   file_src_modules_discovery_ignore_rules_types_ts["src/modules/discovery/ignore-rules.types.ts"]
-  file_src_modules_targets_targets_constants_ts["src/modules/targets/targets.constants.ts"]
-  file_src_modules_targets_targets_module_ts["src/modules/targets/targets.module.ts"]
-  file_src_modules_targets_targets_service_integration_test_ts["src/modules/targets/targets.service.integration.test.ts"]
-  file_src_modules_targets_targets_service_ts["src/modules/targets/targets.service.ts"]
-  file_src_modules_targets_targets_service_unit_test_ts["src/modules/targets/targets.service.unit.test.ts"]
-  file_src_modules_targets_targets_types_ts["src/modules/targets/targets.types.ts"]
+  file_src_modules_inputs_inputs_constants_ts["src/modules/inputs/inputs.constants.ts"]
+  file_src_modules_inputs_inputs_module_ts["src/modules/inputs/inputs.module.ts"]
+  file_src_modules_inputs_inputs_service_integration_test_ts["src/modules/inputs/inputs.service.integration.test.ts"]
+  file_src_modules_inputs_inputs_service_ts["src/modules/inputs/inputs.service.ts"]
+  file_src_modules_inputs_inputs_service_unit_test_ts["src/modules/inputs/inputs.service.unit.test.ts"]
+  file_src_modules_inputs_inputs_types_ts["src/modules/inputs/inputs.types.ts"]
   file_testing_fixture_tree_ts["testing/fixture-tree.ts"]
+  file_testing_input_tree_ts["testing/input-tree.ts"]
   file_testing_mocks_ts["testing/mocks.ts"]
   file_testing_setup_ts["testing/setup.ts"]
-  file_testing_target_tree_ts["testing/target-tree.ts"]
   file_vitest_config_ts["vitest.config.ts"]
   file_src_modules_discovery_discovery_module_ts --> file_src_modules_discovery_discovery_service_ts
   file_src_modules_discovery_discovery_module_ts --> file_src_modules_discovery_ignore_rules_service_ts
@@ -157,13 +149,13 @@ graph LR
   file_src_modules_discovery_ignore_rules_service_ts --> file_src_modules_discovery_ignore_rules_types_ts
   file_src_modules_discovery_ignore_rules_service_unit_test_ts --> file_src_modules_discovery_ignore_rules_service_ts
   file_src_modules_discovery_ignore_rules_service_unit_test_ts --> file_src_modules_discovery_ignore_rules_types_ts
-  file_src_modules_targets_targets_module_ts --> file_src_modules_targets_targets_service_ts
-  file_src_modules_targets_targets_service_integration_test_ts --> file_src_modules_targets_targets_service_ts
-  file_src_modules_targets_targets_service_integration_test_ts --> file_testing_target_tree_ts
-  file_src_modules_targets_targets_service_ts --> file_src_modules_targets_targets_constants_ts
-  file_src_modules_targets_targets_service_ts --> file_src_modules_targets_targets_types_ts
-  file_src_modules_targets_targets_service_unit_test_ts --> file_src_modules_targets_targets_constants_ts
-  file_src_modules_targets_targets_service_unit_test_ts --> file_src_modules_targets_targets_service_ts
+  file_src_modules_inputs_inputs_module_ts --> file_src_modules_inputs_inputs_service_ts
+  file_src_modules_inputs_inputs_service_integration_test_ts --> file_src_modules_inputs_inputs_service_ts
+  file_src_modules_inputs_inputs_service_integration_test_ts --> file_testing_input_tree_ts
+  file_src_modules_inputs_inputs_service_ts --> file_src_modules_inputs_inputs_constants_ts
+  file_src_modules_inputs_inputs_service_ts --> file_src_modules_inputs_inputs_types_ts
+  file_src_modules_inputs_inputs_service_unit_test_ts --> file_src_modules_inputs_inputs_constants_ts
+  file_src_modules_inputs_inputs_service_unit_test_ts --> file_src_modules_inputs_inputs_service_ts
 ```
 <!-- codependix:end name="codependix-imports" -->
 
@@ -173,8 +165,8 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-2302-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-83.34_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-2305-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-83.35_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-5-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-24-3178c6?style=flat-square)
 
@@ -198,15 +190,15 @@ graph LR
 ![Test Files](https://img.shields.io/badge/Test_Files-5-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-11-8b5cf6?style=flat-square)
 ![Classes](https://img.shields.io/badge/Classes-6-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-104-16a34a?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-105-16a34a?style=flat-square)
 ![Methods](https://img.shields.io/badge/Methods-45-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-142-4ade80?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-143-4ade80?style=flat-square)
 ![Async Functions](https://img.shields.io/badge/Async_Functions-7-059669?style=flat-square)
 ![Constants](https://img.shields.io/badge/Constants-86-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-82-0284c7?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-83-0284c7?style=flat-square)
 ![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-40-ea580c?style=flat-square)
 ![Comments](https://img.shields.io/badge/Comments-127-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-293-475569?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-292-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python
@@ -327,6 +319,14 @@ graph LR
 ![Unit Tests](https://img.shields.io/badge/Unit_Tests-3-ca8a04?style=flat-square)
 ![Integration Tests](https://img.shields.io/badge/Integration_Tests-2-7c3aed?style=flat-square)
 ![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-0-0284c7?style=flat-square)
+![CSS Comment Budget](https://img.shields.io/badge/CSS_Comment_Budget-0-16a34a?style=flat-square)
+![HCL Comment Budget](https://img.shields.io/badge/HCL_Comment_Budget-0-ea580c?style=flat-square)
+![Python Comment Budget](https://img.shields.io/badge/Python_Comment_Budget-0-db2777?style=flat-square)
+![SQL Comment Budget](https://img.shields.io/badge/SQL_Comment_Budget-0-0ea5e9?style=flat-square)
+![TOML Comment Budget](https://img.shields.io/badge/TOML_Comment_Budget-0-059669?style=flat-square)
+![TypeScript Comment Budget](https://img.shields.io/badge/TypeScript_Comment_Budget-0-ca8a04?style=flat-square)
+![YAML Comment Budget](https://img.shields.io/badge/YAML_Comment_Budget-0-7c3aed?style=flat-square)
+![Shell Comment Budget](https://img.shields.io/badge/Shell_Comment_Budget-0-0284c7?style=flat-square)
 
 ### Jupyter
 

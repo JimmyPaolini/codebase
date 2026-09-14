@@ -1,0 +1,197 @@
+# Dependabot owns per-package version bumps for the npm workspace, the uv
+# Python workspace, GitHub Actions pins (workflows and composite actions),
+# the Terraform provider, devcontainer feature versions, and the devcontainer
+# base image. Each is its own entry below.
+#
+# One pull request per dependency, or per group below, is what fixes the
+# actual failure mode this replaces: `pnpm update --latest --recursive`
+# bumped every dependency in one commit gated behind the full lint-codebase
+# pre-commit hook, so one breaking major anywhere silently blocked every
+# other update — eslint-plugin-unicorn did exactly that for sixteen weeks
+# (2026-05-31 through 2026-09-11). Isolating each update into its own pull
+# request means a breaking major fails that pull request's own checks,
+# visibly, instead of taking every other update down with it.
+
+# validate-conventions.yml no longer exempts dependabot from title, label, or
+# release-significance checks — only its pull request body check still does,
+# since there is no dependabot.yml field for body content. Every entry below
+# therefore carries the `type:`, `scope:`, and `source:agent` labels its
+# commit-message prefix implies, statically, since nothing derives them for
+# a pull request Dependabot itself opens. `type:chore` matches this
+# repository's own existing `chore(dependencies): ⬆️ Upgrade` convention for
+# routine version bumps: `release.config.cjs` maps `chore` to no release
+# significance, so these pull requests don't trigger a version bump on
+# their own.
+
+# The `commit-message.prefix` on every entry makes the generated commit and
+# pull request title read like this repository's own `<type>(<scope>):
+# <gitmoji> <subject>` convention — confirmed against commitlint directly,
+# it passes. The generated subject itself ("Bump x from y to z") keeps
+# Dependabot's own wording and capitalization; there is no field that
+# reshapes that part, but commitlint's `subject-case` rule accepts it as is.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: friday
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: "chore(dependencies): 🔧 "
+    labels:
+      - dependencies
+      - automated
+      - type:chore
+      - scope:dependencies
+      - source:agent
+    assignees:
+      - JimmyPaolini
+    groups:
+      # Routine patch/minor churn across the ~200-entry catalog lands as one
+      # pull request instead of dozens; a major always gets its own, so it
+      # can fail its own checks without blocking anything grouped here.
+      minor-and-patch:
+        applies-to: version-updates
+        update-types:
+          - minor
+          - patch
+    ignore:
+      # typescript 7 is the native compiler: its entrypoint exports only a
+      # version string, so the JavaScript compiler API nx, typescript-eslint,
+      # knip, and type-coverage all read is gone. Crossing that major is a
+      # deliberate migration, never an unattended bump — see project.json's
+      # upgrade-dependencies target for the fuller history of this hold.
+      - dependency-name: typescript
+        update-types: [version-update:semver-major]
+      # eslint-plugin-unicorn v68 renamed `prevent-abbreviations` to
+      # `name-replacements`, and the majors since add or change dozens of
+      # other rules. See configuration/eslint.config.ts and
+      # .github/workflows/upgrade-dependencies.yml for the incident this
+      # ignore rule replaces.
+      - dependency-name: eslint-plugin-unicorn
+        update-types: [version-update:semver-major]
+
+  # One lockfile covers every uv workspace member (root plus
+  # applications/affirmations), so a single root entry reaches both.
+  #
+  # This ecosystem is newer than the npm one above, and its workspace
+  # handling has an open upstream bug (dependabot/dependabot-core#14004:
+  # Dependabot trying to update the workspace itself rather than a
+  # dependency in it) that matches this repository's exact shape — one
+  # shared lockfile, multiple pyproject.toml members. Treat the first few
+  # pull requests this opens as a trial, not a proven mechanism: if it
+  # misbehaves, .github/workflows/upgrade-dependencies.yml's own
+  # `uv lock --upgrade` step is the fallback, kept running weekly rather
+  # than removed, until this entry has proven itself.
+  - package-ecosystem: uv
+    directory: /
+    schedule:
+      interval: weekly
+      day: friday
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: "chore(dependencies): 🔧 "
+    labels:
+      - dependencies
+      - automated
+      - type:chore
+      - scope:dependencies
+      - source:agent
+    assignees:
+      - JimmyPaolini
+    groups:
+      minor-and-patch:
+        applies-to: version-updates
+        update-types:
+          - minor
+          - patch
+
+  # A single `directory: /` entry only scans workflow files in
+  # .github/workflows — it does not reach action.yml files elsewhere, so
+  # each composite action this repository ships needs its own path named
+  # explicitly here or its pinned actions go stale silently.
+  - package-ecosystem: github-actions
+    directories:
+      - /
+      - /.github/actions/setup-codebase
+      - /.github/actions/setup-pnpm
+    schedule:
+      interval: weekly
+      day: friday
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: "chore(deployments): 🔧 "
+    labels:
+      - dependencies
+      - automated
+      - type:chore
+      - scope:deployments
+      - source:agent
+    assignees:
+      - JimmyPaolini
+    groups:
+      # Action version bumps are low-risk, small diffs — one pull request for
+      # all of them keeps this from adding weekly PR noise on its own.
+      actions:
+        patterns:
+          - "*"
+
+  # infrastructure/terraform pins the linode/linode provider version.
+  - package-ecosystem: terraform
+    directory: /infrastructure/terraform
+    schedule:
+      interval: weekly
+      day: friday
+    commit-message:
+      prefix: "chore(infrastructure): 🔧 "
+    labels:
+      - dependencies
+      - automated
+      - type:chore
+      - scope:infrastructure
+      - source:agent
+    assignees:
+      - JimmyPaolini
+
+  # Both devcontainer.json files pin roughly a dozen versioned features
+  # (ghcr.io/devcontainers/features/*), untouched by anything else here.
+  - package-ecosystem: devcontainers
+    directories:
+      - /.devcontainer/local
+      - /.devcontainer/cloud
+    schedule:
+      interval: weekly
+      day: friday
+    commit-message:
+      prefix: "chore(configuration): 🔧 "
+    labels:
+      - dependencies
+      - automated
+      - type:chore
+      - scope:configuration
+      - source:agent
+    assignees:
+      - JimmyPaolini
+
+  # Both directories also carry a docker-compose.yml pinning the same
+  # mcr.microsoft.com/devcontainers/typescript-node base image, which the
+  # devcontainers ecosystem above does not reach — a separate ecosystem
+  # covers docker-compose's own image references.
+  - package-ecosystem: docker-compose
+    directories:
+      - /.devcontainer/local
+      - /.devcontainer/cloud
+    schedule:
+      interval: weekly
+      day: friday
+    commit-message:
+      prefix: "chore(configuration): 🔧 "
+    labels:
+      - dependencies
+      - automated
+      - type:chore
+      - scope:configuration
+      - source:agent
+    assignees:
+      - JimmyPaolini

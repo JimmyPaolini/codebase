@@ -78,7 +78,10 @@ fix.
    [subagent-driven-development](.agents/skills/subagent-driven-development/SKILL.md)
    — one fresh subagent per task — and use
    [dispatching-parallel-agents](.agents/skills/dispatching-parallel-agents/SKILL.md)
-   when tasks are genuinely independent. Debug regressions with
+   when tasks are genuinely independent. Carry that orchestration through every
+   ticket the spec holds rather than only the first, the way
+   [Multiple Pull Requests](#multiple-pull-requests) describes. Debug
+   regressions with
    [systematic-debugging](.agents/skills/systematic-debugging/SKILL.md) and
    [diagnosing-bugs](.agents/skills/diagnosing-bugs/SKILL.md) in tandem, split
    the way the TDD pair is: systematic-debugging is the gate — no fix proposed
@@ -106,9 +109,47 @@ fix.
    as `nx affected --target=vitest --base=main`. Decline its worktree cleanup
    when the harness created the worktree: the session is running inside it.
 
+Steps 4 through 7 are one ticket's lap, not the whole race. A pull request
+opened for one ticket sends you back to step 4 with the next one, and the
+session ends when the spec has no ticket left — see
+[Multiple Pull Requests](#multiple-pull-requests).
+
 The codebase-native skills still own this repository's mechanics — branch
 names, commits, pull requests, Nx targets, and validation. Prefer them over any
 general-purpose equivalent, and see the [Skills](#skills) list for the full set.
+
+### Multiple Pull Requests
+
+**A spec is done when every ticket under it is merged or open as a pull
+request — never when the first one is.** The usual failure is a session that
+builds the first ticket well, opens its pull request, reports the work complete,
+and leaves the rest of the spec with nobody holding it. One ticket is one pull
+request; the whole ticket set is the assignment.
+
+Read the parent issues and their sub-issues before the first test and write the
+dependency order down. That order, rather than the issue numbering, decides the
+shape of the run:
+
+- **Independent tickets run in parallel** — each in its own worktree cut from
+  `main` via [using-git-worktrees](.agents/skills/using-git-worktrees/SKILL.md),
+  dispatched with
+  [dispatching-parallel-agents](.agents/skills/dispatching-parallel-agents/SKILL.md).
+- **Dependent tickets stack** — each branched off the ticket it needs rather
+  than off `main` and submitted with
+  [gh-stack](.agents/skills/gh-stack/SKILL.md), so every pull request still
+  reviews as its own diff. Typecheck the upper layers after rebasing a lower
+  one: a replay can be conflict-free and still leave them broken.
+
+Two things keep the run from stalling. **An open pull request is a finished
+ticket**, so do not idle waiting for a review or a merge before starting the
+next one — the only thing that forces an order is a ticket whose branch
+another must sit on, which is what the stack is for. And **a blocked ticket
+does not end the run**, so build every ticket that is not blocked, then say
+plainly which were left and why. Quietly narrowing a spec to its first ticket
+is the failure this section exists to prevent.
+
+Close by reporting the set — one row per ticket with its branch, its pull
+request, and its status.
 
 ### Handoffs
 
@@ -136,11 +177,17 @@ implementation run legitimate. Five repository rules override
   `tdd` will not write a test at an unconfirmed seam, so point it at the spec's
   Testing Decisions and say to treat those as the confirmation — otherwise a
   session told to run uninterrupted stops before its first test.
-- **Say how the work is cut into pull requests.** One ticket per pull request,
-  stacked with [gh-stack](.agents/skills/gh-stack/SKILL.md), and name each
-  branch or at least the type and scope every branch must take — a squashed title
-  is all semantic-release ever sees, so the ticket split decides
-  [Release Significance](#release-significance).
+- **Say how the work is cut into pull requests, and that every one of them is
+  this session's job.** One ticket per pull request, and name each branch or at
+  least the type and scope every branch must take — a squashed title is all
+  semantic-release ever sees, so the ticket split decides
+  [Release Significance](#release-significance). Then give the dependency order:
+  which tickets are independent and run in parallel off `main`, and which stack
+  with [gh-stack](.agents/skills/gh-stack/SKILL.md) because one needs another's
+  branch underneath it. A brief that lists tickets without stating that the
+  session owns **all** of them is a brief that returns one pull request and
+  nothing else, so write the exit condition out — every ticket merged or open —
+  and point at [Multiple Pull Requests](#multiple-pull-requests).
 - **Assign a model and thinking level per role.** Orchestrating a ticket set,
   implementing one ticket, and reviewing a diff are different problems and should
   not draw the same reasoning budget. No table of model names lives here on
@@ -488,7 +535,6 @@ pnpm exec nx run synchronization:conventional-config:write
 | `configuration` | Workspace root config files (tsconfig, eslint, vitest, nx.json, etc.) |
 | `conformetry` | Code generator templates and validation tests for generated instances |
 | `dependencies` | Dependency version changes (upgrades, additions, removals via pnpm) |
-| `deps` | Dependency version changes (upgrades, additions, removals via pnpm) |
 | `deployments` | GitHub Actions workflows and CI/CD pipeline configuration |
 | `documentation` | Markdown docs, skills, planning files, and AGENTS.md files |
 | `infrastructure` | Helm charts, Terraform configs, and Kubernetes resources |
