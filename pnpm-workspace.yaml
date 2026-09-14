@@ -89,14 +89,14 @@ catalog:
   "@tanstack/react-router-devtools": ^1.167.0
   "@tanstack/react-start": ^1.168.10
   "@testcontainers/postgresql": ^12.0.3
-  "@testing-library/jest-dom": ^6.9.1
+  "@testing-library/jest-dom": ^7.0.1
   "@testing-library/react": ^16.3.2
   "@types/cheerio-tableparser": ^1.0.0
   "@types/eslint-plugin-jsx-a11y": ^6.10.1
   "@types/lodash": ^4.17.24
   "@types/mdast": ^4.0.4
   "@types/mustache": ^4.2.6
-  "@types/node": ^25.9.1
+  "@types/node": ^26.5.1
   "@types/number-to-words": ^1.2.3
   "@types/pluralize": ^0.0.33
   "@types/prompts": ^2.4.9
@@ -130,7 +130,7 @@ catalog:
   eslint-plugin-tsdoc: ^0.5.2
   eslint-plugin-unicorn: ^64.0.0
   eslint-plugin-yml: ^3.3.2
-  fallow: ^2.102.0
+  fallow: ^3.24.1
   husky: ^9.1.7
   ignore: ^7.0.6
   input-otp: ^1.4.2

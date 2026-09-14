@@ -121,12 +121,12 @@ Call stacks traced through `applications/lexico-ingestion`, deepest first. Each 
 
 ### Limits
 
-What this project is judged against. `declared` is the number in this project's own `callidescope.config.ts`; `inherited` is the one the run supplies for every project that names none.
+What this project is judged against, as declared in its own `callidescope.config.ts`.
 
-| Limit | Value | Origin |
-| --- | --- | --- |
-| `maximumDepth` | 17 | declared |
-| `maximumBreadth` | none | — |
+| Limit | Value |
+| --- | --- |
+| `maximumDepth` | 17 |
+| `maximumBreadth` | none |
 
 ### Call stacks (depth)
 
@@ -637,13 +637,6 @@ What this project is judged against. `declared` is the number in this project's 
 
 </details>
 
-### Module spread
-
-| Callable | Spread | Calls directly | Location |
-| --- | --- | --- | --- |
-| `LexemesService.enrichLexeme` | 8 | `applications/lexico-ingestion:modules/etymology`, `applications/lexico-ingestion:modules/forms`, `applications/lexico-ingestion:modules/part-of-speech`, `applications/lexico-ingestion:modules/principal-parts`, `applications/lexico-ingestion:modules/pronunciation`, `applications/lexico-ingestion:modules/translations` | `applications/lexico-ingestion/src/modules/lexemes/lexemes.service.ts:73` |
-| `LexemesService.saveLexemeRelations` | 6 | `applications/lexico-ingestion:modules/forms`, `applications/lexico-ingestion:modules/principal-parts`, `applications/lexico-ingestion:modules/pronunciation`, `applications/lexico-ingestion:modules/words` | `applications/lexico-ingestion/src/modules/lexemes/lexemes.service.ts:218` |
-
 ### Breadth
 
 | Callable | Breadth | Calls directly | Location |
@@ -939,12 +932,6 @@ What this project is judged against. `declared` is the number in this project's 
 | `LexicoIngestionCommand.promptForMissingOptions` | 1 | `LexicoIngestionCommand.promptOption` | `applications/lexico-ingestion/src/modules/lexico-ingestion/lexico-ingestion.command.ts:96` |
 
 </details>
-
-### Possibly misplaced
-
-| Callable | Declared in | Called from | Callers |
-| --- | --- | --- | --- |
-| `NumeralsService.toDecimal` | `applications/lexico-ingestion:modules/numerals` | `applications/lexico-ingestion:modules/literature` | 2/2 |
 <!-- CALL_STACKS_END -->
 
 ## 🕸️ Codependix
@@ -1506,7 +1493,7 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-33537-22c55e?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-33541-22c55e?style=flat-square)
 ![Repository Size](https://img.shields.io/badge/Repository_Size-138.17_MB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-219-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-156-3178c6?style=flat-square)
@@ -1536,10 +1523,10 @@ graph LR
 ![Sync Functions](https://img.shields.io/badge/Sync_Functions-1201-4ade80?style=flat-square)
 ![Async Functions](https://img.shields.io/badge/Async_Functions-542-059669?style=flat-square)
 ![Constants](https://img.shields.io/badge/Constants-2459-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-790-0284c7?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-791-0284c7?style=flat-square)
 ![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-166-ea580c?style=flat-square)
 ![Comments](https://img.shields.io/badge/Comments-604-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-1068-475569?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-1067-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-10-ca8a04?style=flat-square)
 
 ### Python
@@ -1660,6 +1647,14 @@ graph LR
 ![Unit Tests](https://img.shields.io/badge/Unit_Tests-43-ca8a04?style=flat-square)
 ![Integration Tests](https://img.shields.io/badge/Integration_Tests-0-7c3aed?style=flat-square)
 ![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-1-0284c7?style=flat-square)
+![CSS Comment Budget](https://img.shields.io/badge/CSS_Comment_Budget-0-16a34a?style=flat-square)
+![HCL Comment Budget](https://img.shields.io/badge/HCL_Comment_Budget-0-ea580c?style=flat-square)
+![Python Comment Budget](https://img.shields.io/badge/Python_Comment_Budget-0-db2777?style=flat-square)
+![SQL Comment Budget](https://img.shields.io/badge/SQL_Comment_Budget-0-0ea5e9?style=flat-square)
+![TOML Comment Budget](https://img.shields.io/badge/TOML_Comment_Budget-0-059669?style=flat-square)
+![TypeScript Comment Budget](https://img.shields.io/badge/TypeScript_Comment_Budget-0-ca8a04?style=flat-square)
+![YAML Comment Budget](https://img.shields.io/badge/YAML_Comment_Budget-0-7c3aed?style=flat-square)
+![Shell Comment Budget](https://img.shields.io/badge/Shell_Comment_Budget-0-0284c7?style=flat-square)
 
 ### Jupyter
 

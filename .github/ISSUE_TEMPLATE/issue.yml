@@ -46,7 +46,6 @@ body:
         - configuration
         - conformetry
         - dependencies
-        - deps
         - deployments
         - documentation
         - infrastructure
