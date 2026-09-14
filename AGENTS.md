@@ -61,7 +61,24 @@ fix.
    request, and the sub-issue for the commit — to `status:in-progress` before
    the first test, the way
    [`docs/agents/issue-tracker.md`](docs/agents/issue-tracker.md) describes.
-   Then build with [implement](.agents/skills/implement/SKILL.md), which drives
+
+   **A spec with more than one ticket is dispatched, not implemented in this
+   session.** Hand each parent issue — the whole pull request, not one task
+   inside it — to a fresh subagent: independent tickets together, dependent
+   ones one at a time down a stack. See
+   [Multiple Pull Requests](#multiple-pull-requests) for the dependency-order
+   mechanics and why dispatching this way, rather than implementing each
+   ticket here in turn, is what keeps this session's own context usable for
+   the run's length. This is
+   [subagent-driven-development](.agents/skills/subagent-driven-development/SKILL.md)'s
+   core principle — a fresh subagent per unit of work — applied one level up,
+   at ticket granularity instead of task granularity. Brief each dispatched
+   subagent with its ticket, the spec, and everything below through step 7:
+   it owns that ticket's whole lap and reports back only its branch, pull
+   request URL, and status. Only when the spec holds exactly one ticket does
+   this session run the process below directly rather than dispatching it.
+
+   Build with [implement](.agents/skills/implement/SKILL.md), which drives
    red-green-refactor through two TDD skills used in tandem, both read before
    the first test.
    [test-driven-development](.agents/skills/test-driven-development/SKILL.md)
@@ -74,13 +91,12 @@ fix.
    they disagree, `test-driven-development` owns the loop's strictness and
    `tdd` owns refactoring: it belongs to step 5's review rather than to the
    cycle. Its `npm test` invocations are `nx run <project>:vitest:<kind>` here
-   — see [Testing](#testing). For a multi-task ticket set, orchestrate with
+   — see [Testing](#testing). If the one ticket in front of you — this
+   session's own, or the one a dispatched subagent owns — still splits into
+   several independent tasks, orchestrate those with
    [subagent-driven-development](.agents/skills/subagent-driven-development/SKILL.md)
-   — one fresh subagent per task — and use
-   [dispatching-parallel-agents](.agents/skills/dispatching-parallel-agents/SKILL.md)
-   when tasks are genuinely independent. Carry that orchestration through every
-   ticket the spec holds rather than only the first, the way
-   [Multiple Pull Requests](#multiple-pull-requests) describes. Debug
+   again, one level down — one fresh subagent per task — and use
+   dispatching-parallel-agents when the tasks are genuinely independent. Debug
    regressions with
    [systematic-debugging](.agents/skills/systematic-debugging/SKILL.md) and
    [diagnosing-bugs](.agents/skills/diagnosing-bugs/SKILL.md) in tandem, split
@@ -109,9 +125,13 @@ fix.
    as `nx affected --target=vitest --base=main`. Decline its worktree cleanup
    when the harness created the worktree: the session is running inside it.
 
-Steps 4 through 7 are one ticket's lap, not the whole race. A pull request
-opened for one ticket sends you back to step 4 with the next one, and the
-session ends when the spec has no ticket left — see
+Steps 4 through 7 are one ticket's lap, not the whole race — run directly by
+this session for a single-ticket spec, or run inside each dispatched
+subagent for a multi-ticket one. Either way the session's job does not end
+until the spec has no ticket left: for a single ticket, a pull request
+opened sends you back to step 4 with the next one; for a multi-ticket spec,
+a subagent's report sends you back to step 4 to dispatch the next
+independent batch or the next stack link. See
 [Multiple Pull Requests](#multiple-pull-requests).
 
 The codebase-native skills still own this repository's mechanics — branch
@@ -138,7 +158,18 @@ shape of the run:
   than off `main` and submitted with
   [gh-stack](.agents/skills/gh-stack/SKILL.md), so every pull request still
   reviews as its own diff. Typecheck the upper layers after rebasing a lower
-  one: a replay can be conflict-free and still leave them broken.
+  one: a replay can be conflict-free and still leave them broken. Dispatch the
+  next link in the chain once the ticket beneath it has an open pull request —
+  not once it merges, per the rule below.
+
+Each dispatched ticket subagent is self-contained: its own worktree, branch,
+implementation, tests, validation, and pull request, all inside that
+subagent's context. This orchestrating session never reads the files a
+dispatched ticket touches — only the report the subagent returns. That
+separation, not just the parallelism, is why tickets are dispatched rather
+than implemented here one after another: it is what keeps this session able
+to re-plan the remaining tickets, answer a subagent's mid-task question, or
+reorder the stack without running out of room.
 
 Two things keep the run from stalling. **An open pull request is a finished
 ticket**, so do not idle waiting for a review or a merge before starting the
@@ -166,11 +197,21 @@ implementation run legitimate. Five repository rules override
 - **Prescribe the workflow skills, do not suggest them.** A list of skills an
   agent "may find useful" is a list an agent skips. Write a numbered "How to run
   this" section naming each skill in call order:
-  [using-git-worktrees](.agents/skills/using-git-worktrees/SKILL.md),
-  [subagent-driven-development](.agents/skills/subagent-driven-development/SKILL.md),
-  then [implement](.agents/skills/implement/SKILL.md) and
-  [tdd](.agents/skills/tdd/SKILL.md) inside each dispatched task, then steps 5–7
-  above.
+  [using-git-worktrees](.agents/skills/using-git-worktrees/SKILL.md) for each
+  ticket's own worktree, then
+  [subagent-driven-development](.agents/skills/subagent-driven-development/SKILL.md)
+  at ticket granularity — a fresh subagent per parent issue, dispatched
+  together with
+  [dispatching-parallel-agents](.agents/skills/dispatching-parallel-agents/SKILL.md)
+  for the tickets that are independent, or one at a time down a
+  [gh-stack](.agents/skills/gh-stack/SKILL.md) chain for the ones that are
+  not — and, inside each dispatched ticket,
+  [implement](.agents/skills/implement/SKILL.md) and
+  [tdd](.agents/skills/tdd/SKILL.md), with subagent-driven-development invoked
+  again at task granularity if that ticket itself splits into several tasks,
+  then steps 5–7 above. Say plainly that this session is the orchestrator: it
+  dispatches tickets and reads their reports back, and implements a ticket in
+  its own context only when the spec holds exactly one.
 - **Answer the two questions those skills otherwise stop and ask.**
   `subagent-driven-development` keys its workspace and ledger off a **plan file
   path**, so say to export the issue's plan to a local scratch file first. And
@@ -184,10 +225,13 @@ implementation run legitimate. Five repository rules override
   [Release Significance](#release-significance). Then give the dependency order:
   which tickets are independent and run in parallel off `main`, and which stack
   with [gh-stack](.agents/skills/gh-stack/SKILL.md) because one needs another's
-  branch underneath it. A brief that lists tickets without stating that the
-  session owns **all** of them is a brief that returns one pull request and
-  nothing else, so write the exit condition out — every ticket merged or open —
-  and point at [Multiple Pull Requests](#multiple-pull-requests).
+  branch underneath it. "This session's job" means dispatching and
+  orchestrating every one of them — see
+  [Multiple Pull Requests](#multiple-pull-requests) for why that, not
+  implementing each ticket directly, is the rule. A brief that lists tickets
+  without stating that the session owns **all** of them is a brief that
+  returns one pull request and nothing else, so write the exit condition
+  out — every ticket merged or open — and point at that same section.
 - **Assign a model and thinking level per role.** Orchestrating a ticket set,
   implementing one ticket, and reviewing a diff are different problems and should
   not draw the same reasoning budget. No table of model names lives here on
