@@ -1,71 +1,30 @@
-import { mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
+import { mkdtemp } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
-import { ConfigurationService } from "@codependix/configuration";
-import { TypescriptService } from "@codependix/file-imports";
-import {
-  ModuleGraphService,
-  NestjsProjectService,
-} from "@codependix/nestjs-modules";
-import {
-  NeighborhoodService,
-  WorkspaceGraphService,
-} from "@codependix/nx-projects";
+import { NeighborhoodService } from "@codependix/nx-projects";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { LoggerService } from "@codebase/logger";
 
-import { AnchorsService } from "../anchors/anchors.service";
-import { DeliveryService } from "../delivery/delivery.service";
+import { ProjectGraphsService } from "../project-graphs/project-graphs.service";
 import { PythonImportsService } from "../python-imports/python-imports.service";
+import { WorkspaceGraphsService } from "../workspace-graphs/workspace-graphs.service";
 
 import { MapService } from "./map.service";
 
 import type { GraphRunOutcome } from "../delivery/delivery.types";
 import type { GraphRunContext } from "./map.types";
-import type {
-  TypescriptImportGraph,
-  TypescriptProjectProgram,
-} from "@codependix/file-imports";
-import type { NestjsModuleGraph } from "@codependix/nestjs-modules";
 import type { Neighborhood } from "@codependix/nx-projects";
-
-const NEIGHBORHOOD: Neighborhood = {
-  dependencies: ["logger"],
-  dependents: [],
-  edges: [
-    { implicit: false, source: "codependix-nx-projects", target: "logger" },
-  ],
-  projectName: "codependix-nx-projects",
-};
-
-const MODULE_GRAPH: NestjsModuleGraph = {
-  ambientModuleNames: [],
-  edges: [{ source: "MainModule", target: "LoggerModule" }],
-  isolatedModuleNames: [],
-  moduleNames: ["LoggerModule", "MainModule"],
-  projectName: "codependix-cli",
-};
-
-const TYPESCRIPT_IMPORT_GRAPH: TypescriptImportGraph = {
-  edges: [{ source: "src/index.ts", target: "src/helper.ts" }],
-  fileNames: ["src/helper.ts", "src/index.ts"],
-  isolatedFileNames: [],
-  projectName: "codependix-file-imports",
-};
 
 describe(MapService, () => {
   let service: MapService;
-  let configurationService: ConfigurationService;
-  let moduleGraphService: ModuleGraphService;
   let neighborhoodService: NeighborhoodService;
-  let nestjsProjectService: NestjsProjectService;
+  let projectGraphsService: ProjectGraphsService;
   let pythonImportsService: PythonImportsService;
-  let typescriptService: TypescriptService;
-  let workspaceGraphService: WorkspaceGraphService;
+  let workspaceGraphsService: WorkspaceGraphsService;
   let projectRoot: string;
 
   /**
@@ -78,7 +37,7 @@ describe(MapService, () => {
     overrides: Partial<GraphRunContext> = {},
   ): GraphRunContext {
     const projects = overrides.projects ?? [
-      { absoluteRoot: projectRoot, name: "codependix-nx-projects", tags: [] },
+      { absoluteRoot: projectRoot, name: "codependix-nx", tags: [] },
     ];
 
     return {
@@ -109,31 +68,29 @@ describe(MapService, () => {
     };
   }
 
+  /**
+   * A fresh, empty `GraphRunOutcome` — never shared, since `MapService`
+   * mutates the arrays it reads off a mocked pass's return value in place
+   * (pushing the workspace graph's own delivery result onto them).
+   */
+  function emptyOutcome(): GraphRunOutcome {
+    return { failures: [], results: [] };
+  }
+
   beforeAll(async () => {
-    configurationService = createMock<ConfigurationService>();
-    moduleGraphService = createMock<ModuleGraphService>();
     neighborhoodService = createMock<NeighborhoodService>();
-    nestjsProjectService = createMock<NestjsProjectService>();
+    projectGraphsService = createMock<ProjectGraphsService>();
     pythonImportsService = createMock<PythonImportsService>();
-    typescriptService = createMock<TypescriptService>();
-    workspaceGraphService = createMock<WorkspaceGraphService>();
+    workspaceGraphsService = createMock<WorkspaceGraphsService>();
 
     const module = await Test.createTestingModule({
       providers: [
-        AnchorsService,
         MapService,
-        DeliveryService,
-        {
-          provide: ConfigurationService,
-          useValue: configurationService,
-        },
         { provide: LoggerService, useValue: createMock<LoggerService>() },
-        { provide: ModuleGraphService, useValue: moduleGraphService },
         { provide: NeighborhoodService, useValue: neighborhoodService },
-        { provide: NestjsProjectService, useValue: nestjsProjectService },
+        { provide: ProjectGraphsService, useValue: projectGraphsService },
         { provide: PythonImportsService, useValue: pythonImportsService },
-        { provide: TypescriptService, useValue: typescriptService },
-        { provide: WorkspaceGraphService, useValue: workspaceGraphService },
+        { provide: WorkspaceGraphsService, useValue: workspaceGraphsService },
       ],
     }).compile();
 
@@ -141,77 +98,31 @@ describe(MapService, () => {
   });
 
   beforeEach(async () => {
-    projectRoot = await mkdtemp(path.join(tmpdir(), "codependix-service-"));
+    projectRoot = await mkdtemp(path.join(tmpdir(), "map-service-"));
 
-    vi.mocked(configurationService.loadConfiguration).mockResolvedValue({
-      boundaries: {
-        fileImports: { python: [], typescript: [] },
-        nestjsModules: [],
-        nxProjects: [],
-      },
-      exclude: [],
-      include: ["**"],
-      projectGraph: undefined,
-      selection: { projects: [], tags: [] },
-      workspace: {},
-    });
-    vi.mocked(configurationService.resolveForWorkspace).mockReturnValue({
-      json: undefined,
-      markdown: undefined,
-      target: "none",
-    });
-    vi.mocked(neighborhoodService.readProjectGraph).mockResolvedValue({
-      dependencies: {},
-      nodes: {},
-    });
-    vi.mocked(neighborhoodService.readProjects).mockReturnValue([
-      { absoluteRoot: projectRoot, name: "codependix-nx-projects", tags: [] },
-    ]);
     vi.mocked(neighborhoodService.buildNeighborhoods).mockReturnValue(
-      new Map([["codependix-nx-projects", NEIGHBORHOOD]]),
+      new Map<string, Neighborhood>(),
     );
-    vi.mocked(neighborhoodService.renderMermaid).mockReturnValue(
-      "```mermaid\ngraph LR\n```",
+    vi.mocked(projectGraphsService.runNxProjectsGraphs).mockReturnValue(
+      emptyOutcome(),
     );
-    vi.mocked(workspaceGraphService.buildWorkspaceGraph).mockReturnValue({
-      edges: [],
-      projectNames: [],
+    vi.mocked(projectGraphsService.runFileImportsProjects).mockReturnValue(
+      emptyOutcome(),
+    );
+    vi.mocked(projectGraphsService.runNestjsModulesProjects).mockResolvedValue(
+      emptyOutcome(),
+    );
+    vi.mocked(workspaceGraphsService.runNxWorkspaceGraph).mockReturnValue({
+      entry: undefined,
+      result: undefined,
     });
-    vi.mocked(workspaceGraphService.renderMermaid).mockReturnValue(
-      "```mermaid\ngraph LR\n```",
-    );
-    vi.mocked(nestjsProjectService.discoverProjects).mockReturnValue([
-      {
-        absoluteRoot: projectRoot,
-        name: "codependix-cli",
-        rootModuleFile: undefined,
-      },
-    ]);
-    vi.mocked(nestjsProjectService.exploreProject).mockResolvedValue([]);
-    vi.mocked(moduleGraphService.buildGraph).mockReturnValue(MODULE_GRAPH);
-    vi.mocked(moduleGraphService.renderMermaid).mockReturnValue(
-      "```mermaid\nflowchart LR\n```",
-    );
-    vi.mocked(typescriptService.discoverProjects).mockReturnValue([
-      {
-        absoluteRoot: projectRoot,
-        name: "codependix-file-imports",
-        tsconfigPath: path.join(projectRoot, "tsconfig.json"),
-      },
-    ]);
-    vi.mocked(typescriptService.buildProgram).mockReturnValue(
-      createMock<TypescriptProjectProgram>(),
-    );
-    vi.mocked(typescriptService.buildGraph).mockReturnValue(
-      TYPESCRIPT_IMPORT_GRAPH,
-    );
-    vi.mocked(typescriptService.renderMermaid).mockReturnValue(
-      "```mermaid\ngraph LR\n```",
-    );
-    vi.mocked(pythonImportsService.runGraphs).mockReturnValue({
-      failures: [],
-      results: [],
-    });
+    vi.mocked(
+      workspaceGraphsService.runFileImportsWorkspaceGraph,
+    ).mockReturnValue({ entry: undefined, result: undefined });
+    vi.mocked(
+      workspaceGraphsService.runNestjsModulesWorkspaceGraph,
+    ).mockResolvedValue({ entry: undefined, result: undefined });
+    vi.mocked(pythonImportsService.runGraphs).mockReturnValue(emptyOutcome());
   });
 
   it("is defined", () => {
@@ -219,23 +130,29 @@ describe(MapService, () => {
   });
 
   describe("runNxGraphs", () => {
-    it("skips a project whose resolved target is none", () => {
-      vi.mocked(configurationService.resolveForProject).mockReturnValue({
-        json: undefined,
-        markdown: undefined,
-        target: "none",
+    it("builds neighborhoods and delegates the per-project pass to ProjectGraphsService", () => {
+      const context = buildContext();
+
+      service.runNxGraphs(context);
+
+      expect(neighborhoodService.buildNeighborhoods).toHaveBeenCalledWith(
+        context.graph,
+        context.projects,
+      );
+      expect(projectGraphsService.runNxProjectsGraphs).toHaveBeenCalledWith({
+        context,
+        neighborhoods: new Map<string, Neighborhood>(),
       });
-
-      const outcome = service.runNxGraphs(buildContext());
-
-      expect(outcome).toStrictEqual({ failures: [], results: [] });
     });
 
-    it("writes a project's JSON export", async () => {
-      vi.mocked(configurationService.resolveForProject).mockReturnValue({
-        json: { path: "codependix-nx-projects.json" },
-        markdown: undefined,
-        target: "json",
+    it("combines the per-project outcome with the workspace graph's entry and result", () => {
+      vi.mocked(projectGraphsService.runNxProjectsGraphs).mockReturnValue({
+        failures: [],
+        results: [{ isCurrent: true, projectName: "a", stalePaths: [] }],
+      });
+      vi.mocked(workspaceGraphsService.runNxWorkspaceGraph).mockReturnValue({
+        entry: { json: { projectNames: [] }, markdown: "```mermaid\n```" },
+        result: { isCurrent: true, projectName: "workspace", stalePaths: [] },
       });
 
       const outcome = service.runNxGraphs(buildContext());
@@ -243,683 +160,152 @@ describe(MapService, () => {
       expect(outcome).toStrictEqual({
         failures: [],
         results: [
-          {
-            isCurrent: true,
-            projectName: "codependix-nx-projects",
-            stalePaths: [],
-          },
+          { isCurrent: true, projectName: "a", stalePaths: [] },
+          { isCurrent: true, projectName: "workspace", stalePaths: [] },
         ],
-      });
-
-      const written = JSON.parse(
-        await readFile(
-          path.join(projectRoot, "codependix-nx-projects.json"),
-          "utf8",
-        ),
-      ) as unknown;
-
-      expect(written).toStrictEqual({
-        dependencies: ["logger"],
-        dependents: [],
-        edges: [
-          {
-            implicit: false,
-            source: "codependix-nx-projects",
-            target: "logger",
-          },
-        ],
-        projectName: "codependix-nx-projects",
-      });
-    });
-
-    it("reports a missing JSON export as stale in check mode", () => {
-      vi.mocked(configurationService.resolveForProject).mockReturnValue({
-        json: { path: "codependix-nx-projects.json" },
-        markdown: undefined,
-        target: "json",
-      });
-
-      const outcome = service.runNxGraphs(buildContext({ mode: "check" }));
-
-      expect(outcome).toStrictEqual({
-        failures: [],
-        results: [
-          {
-            isCurrent: false,
-            projectName: "codependix-nx-projects",
-            stalePaths: ["codependix-nx-projects.json"],
-          },
-        ],
-      });
-    });
-
-    it("splices a diagram into an existing anchor block", async () => {
-      const readmePath = path.join(projectRoot, "README.md");
-
-      await writeFile(
-        readmePath,
-        [
-          "# codependix-nx-projects",
-          '<!-- codependix:start name="nx" -->',
-          "stale",
-          '<!-- codependix:end name="nx" -->',
-        ].join("\n"),
-        "utf8",
-      );
-      vi.mocked(configurationService.resolveForProject).mockReturnValue({
-        json: undefined,
-        markdown: { anchor: "nx", path: "README.md" },
-        target: "markdown",
-      });
-
-      const outcome = service.runNxGraphs(buildContext());
-
-      expect(outcome.results[0]?.isCurrent).toBe(true);
-
-      const written = await readFile(readmePath, "utf8");
-
-      expect(written).toContain("```mermaid\ngraph LR\n```");
-      expect(written).not.toContain("stale");
-    });
-
-    it("records a project's failure as opposed to raising, and still processes the rest", async () => {
-      const otherProjectRoot = path.join(projectRoot, "other-project");
-
-      await mkdir(otherProjectRoot, { recursive: true });
-      // No README.md is written for `codependix-nx-projects`'s root here, on purpose:
-      // a missing anchor in a file that exists now auto-creates the section
-      // rather than failing, so the file itself must be absent to still
-      // exercise a hard failure — see `AnchorNotFoundError`'s updated JSDoc.
-      vi.mocked(neighborhoodService.buildNeighborhoods).mockReturnValue(
-        new Map([
-          ["codependix-nx-projects", NEIGHBORHOOD],
-          ["other-project", { ...NEIGHBORHOOD, projectName: "other-project" }],
-        ]),
-      );
-      vi.mocked(configurationService.resolveForProject).mockImplementation(
-        ({ projectName }) =>
-          projectName === "codependix-nx-projects"
-            ? {
-                json: undefined,
-                markdown: { anchor: "nx", path: "README.md" },
-                target: "markdown",
-              }
-            : {
-                json: { path: "other-project.json" },
-                markdown: undefined,
-                target: "json",
-              },
-      );
-
-      const outcome = service.runNxGraphs(
-        buildContext({
-          projects: [
-            {
-              absoluteRoot: projectRoot,
-              name: "codependix-nx-projects",
-              tags: [],
-            },
-            { absoluteRoot: otherProjectRoot, name: "other-project", tags: [] },
-          ],
-        }),
-      );
-
-      expect(outcome.failures).toStrictEqual([
-        {
-          error: expect.stringContaining('Anchor "nx" not found') as string,
-          projectName: "codependix-nx-projects",
+        workspaceEntry: {
+          json: { projectNames: [] },
+          markdown: "```mermaid\n```",
         },
-      ]);
+      });
+    });
+
+    it("records a failure building the workspace graph without losing the project results", () => {
+      vi.mocked(projectGraphsService.runNxProjectsGraphs).mockReturnValue({
+        failures: [],
+        results: [{ isCurrent: true, projectName: "a", stalePaths: [] }],
+      });
+      vi.mocked(workspaceGraphsService.runNxWorkspaceGraph).mockImplementation(
+        () => {
+          throw new Error("failed to build workspace graph");
+        },
+      );
+
+      const outcome = service.runNxGraphs(buildContext());
+
       expect(outcome.results).toStrictEqual([
-        { isCurrent: true, projectName: "other-project", stalePaths: [] },
+        { isCurrent: true, projectName: "a", stalePaths: [] },
       ]);
-
-      const written = JSON.parse(
-        await readFile(
-          path.join(otherProjectRoot, "other-project.json"),
-          "utf8",
-        ),
-      ) as unknown;
-
-      expect(written).toMatchObject({ projectName: "other-project" });
-    });
-
-    describe("workspace graph", () => {
-      beforeEach(() => {
-        vi.mocked(configurationService.resolveForProject).mockReturnValue({
-          json: undefined,
-          markdown: undefined,
-          target: "none",
-        });
-        vi.mocked(workspaceGraphService.buildWorkspaceGraph).mockReturnValue({
-          edges: [{ implicit: false, source: "lexico", target: "logger" }],
-          projectNames: ["lexico", "logger"],
-        });
-      });
-
-      // Its node set is what a --projects/--tags run narrows, which is the
-      // one thing include/exclude have never reached.
-      it("draws the workspace graph over the selected projects only", () => {
-        vi.mocked(configurationService.resolveForWorkspace).mockReturnValue({
-          json: { path: "codependix-workspace-graph.json" },
-          markdown: undefined,
-          target: "json",
-        });
-
-        const selected = [
-          {
-            absoluteRoot: projectRoot,
-            name: "codependix-nx-projects",
-            tags: [],
-          },
-        ];
-
-        service.runNxGraphs(
-          buildContext({
-            projects: [
-              ...selected,
-              { absoluteRoot: projectRoot, name: "unselected", tags: [] },
-            ],
-            selectedProjects: selected,
-          }),
-        );
-
-        expect(workspaceGraphService.buildWorkspaceGraph).toHaveBeenCalledWith(
-          expect.anything(),
-          selected,
-        );
-      });
-
-      it("leaves the workspace graph out of the results when its target is none", () => {
-        const outcome = service.runNxGraphs(buildContext());
-
-        expect(outcome).toStrictEqual({ failures: [], results: [] });
-      });
-
-      it("writes the workspace graph's JSON export at the workspace root", async () => {
-        vi.mocked(configurationService.resolveForWorkspace).mockReturnValue({
-          json: { path: "codependix-workspace-graph.json" },
-          markdown: undefined,
-          target: "json",
-        });
-
-        const outcome = service.runNxGraphs(buildContext());
-
-        expect(outcome).toStrictEqual({
-          failures: [],
-          results: [
-            { isCurrent: true, projectName: "workspace", stalePaths: [] },
-          ],
-        });
-
-        const written = JSON.parse(
-          await readFile(
-            path.join(projectRoot, "codependix-workspace-graph.json"),
-            "utf8",
-          ),
-        ) as unknown;
-
-        expect(written).toStrictEqual({
-          edges: [{ implicit: false, source: "lexico", target: "logger" }],
-          projectNames: ["lexico", "logger"],
-        });
-      });
-
-      it("records a failure building the workspace graph without losing the project results", () => {
-        vi.mocked(configurationService.resolveForWorkspace).mockReturnValue({
-          json: undefined,
-          markdown: { anchor: "workspace", path: "README.md" },
-          target: "markdown",
-        });
-
-        const outcome = service.runNxGraphs(buildContext());
-
-        expect(outcome.results).toStrictEqual([]);
-        expect(outcome.failures).toStrictEqual([
-          { error: expect.any(String) as string, projectName: "workspace" },
-        ]);
-      });
-
-      it("reports a missing workspace JSON export as stale in check mode", () => {
-        vi.mocked(configurationService.resolveForWorkspace).mockReturnValue({
-          json: { path: "codependix-workspace-graph.json" },
-          markdown: undefined,
-          target: "json",
-        });
-
-        const outcome = service.runNxGraphs(buildContext({ mode: "check" }));
-
-        expect(outcome).toStrictEqual({
-          failures: [],
-          results: [
-            {
-              isCurrent: false,
-              projectName: "workspace",
-              stalePaths: ["codependix-workspace-graph.json"],
-            },
-          ],
-        });
-      });
-    });
-  });
-
-  describe("runNestjsGraphs", () => {
-    /** Builds a context whose one project is `codependix-cli`. */
-    function buildNestjsContext(
-      overrides: Partial<GraphRunContext> = {},
-    ): GraphRunContext {
-      return buildContext({
-        projects: [
-          { absoluteRoot: projectRoot, name: "codependix-cli", tags: [] },
-        ],
-        ...overrides,
-      });
-    }
-
-    it("skips a project whose resolved target is none", async () => {
-      vi.mocked(configurationService.resolveForProject).mockReturnValue({
-        json: undefined,
-        markdown: undefined,
-        target: "none",
-      });
-
-      const outcome = await service.runNestjsGraphs(buildNestjsContext());
-
-      expect(outcome).toStrictEqual({ failures: [], results: [] });
-    });
-
-    it("explores only the discovered nestjs projects", async () => {
-      vi.mocked(configurationService.resolveForProject).mockReturnValue({
-        json: { path: "codependix-cli.json" },
-        markdown: undefined,
-        target: "json",
-      });
-
-      await service.runNestjsGraphs(buildNestjsContext());
-
-      expect(nestjsProjectService.exploreProject).toHaveBeenCalledWith({
-        absoluteRoot: projectRoot,
-        name: "codependix-cli",
-        rootModuleFile: undefined,
-      });
-    });
-
-    it("writes a project's JSON export", async () => {
-      vi.mocked(configurationService.resolveForProject).mockReturnValue({
-        json: { path: "codependix-cli.json" },
-        markdown: undefined,
-        target: "json",
-      });
-
-      const outcome = await service.runNestjsGraphs(buildNestjsContext());
-
-      expect(outcome).toStrictEqual({
-        failures: [],
-        results: [
-          { isCurrent: true, projectName: "codependix-cli", stalePaths: [] },
-        ],
-      });
-
-      const written = JSON.parse(
-        await readFile(path.join(projectRoot, "codependix-cli.json"), "utf8"),
-      ) as unknown;
-
-      expect(written).toStrictEqual(MODULE_GRAPH);
-    });
-
-    it("reports a missing JSON export as stale in check mode", async () => {
-      vi.mocked(configurationService.resolveForProject).mockReturnValue({
-        json: { path: "codependix-cli.json" },
-        markdown: undefined,
-        target: "json",
-      });
-
-      const outcome = await service.runNestjsGraphs(
-        buildNestjsContext({ mode: "check" }),
-      );
-
-      expect(outcome).toStrictEqual({
-        failures: [],
-        results: [
-          {
-            isCurrent: false,
-            projectName: "codependix-cli",
-            stalePaths: ["codependix-cli.json"],
-          },
-        ],
-      });
-    });
-
-    it("splices a diagram into an existing anchor block", async () => {
-      const readmePath = path.join(projectRoot, "README.md");
-
-      await writeFile(
-        readmePath,
-        [
-          "# codependix-cli",
-          '<!-- codependix:start name="nestjs" -->',
-          "stale",
-          '<!-- codependix:end name="nestjs" -->',
-        ].join("\n"),
-        "utf8",
-      );
-      vi.mocked(configurationService.resolveForProject).mockReturnValue({
-        json: undefined,
-        markdown: { anchor: "nestjs", path: "README.md" },
-        target: "markdown",
-      });
-
-      const outcome = await service.runNestjsGraphs(buildNestjsContext());
-
-      expect(outcome.results[0]?.isCurrent).toBe(true);
-
-      const written = await readFile(readmePath, "utf8");
-
-      expect(written).toContain("```mermaid\nflowchart LR\n```");
-      expect(written).not.toContain("stale");
-    });
-
-    it("writes both a JSON and a markdown export for a both target", async () => {
-      vi.mocked(configurationService.resolveForProject).mockReturnValue({
-        json: { path: "codependix-cli.json" },
-        markdown: { anchor: undefined, path: "module-graph.md" },
-        target: "both",
-      });
-
-      await service.runNestjsGraphs(buildNestjsContext());
-
-      await expect(
-        readFile(path.join(projectRoot, "codependix-cli.json"), "utf8"),
-      ).resolves.toContain("codependix-cli");
-      await expect(
-        readFile(path.join(projectRoot, "module-graph.md"), "utf8"),
-      ).resolves.toContain("mermaid");
-    });
-
-    it("records a project's failure without preventing other projects from being processed", async () => {
-      const otherProjectRoot = path.join(projectRoot, "other-nestjs-project");
-
-      await mkdir(otherProjectRoot, { recursive: true });
-      vi.mocked(nestjsProjectService.discoverProjects).mockReturnValue([
-        {
-          absoluteRoot: projectRoot,
-          name: "codependix-cli",
-          rootModuleFile: undefined,
-        },
-        {
-          absoluteRoot: otherProjectRoot,
-          name: "other-nestjs-project",
-          rootModuleFile: undefined,
-        },
-      ]);
-      vi.mocked(nestjsProjectService.exploreProject).mockImplementation(
-        async (project) =>
-          project.name === "codependix-cli"
-            ? Promise.reject(new Error("failed to boot container"))
-            : Promise.resolve([]),
-      );
-      vi.mocked(configurationService.resolveForProject).mockReturnValue({
-        json: { path: "graph.json" },
-        markdown: undefined,
-        target: "json",
-      });
-
-      const outcome = await service.runNestjsGraphs(
-        buildNestjsContext({
-          projects: [
-            { absoluteRoot: projectRoot, name: "codependix-cli", tags: [] },
-            {
-              absoluteRoot: otherProjectRoot,
-              name: "other-nestjs-project",
-              tags: [],
-            },
-          ],
-        }),
-      );
-
       expect(outcome.failures).toStrictEqual([
-        {
-          error: "failed to boot container",
-          projectName: "codependix-cli",
-        },
+        { error: "failed to build workspace graph", projectName: "workspace" },
       ]);
-      expect(outcome.results).toStrictEqual([
-        {
-          isCurrent: true,
-          projectName: "other-nestjs-project",
-          stalePaths: [],
-        },
-      ]);
+      expect(outcome.workspaceEntry).toBeUndefined();
     });
   });
 
   describe("runImportGraphs", () => {
-    /** Builds a context whose one project is `codependix-file-imports`. */
-    function buildImportsContext(
-      overrides: Partial<GraphRunContext> = {},
-    ): GraphRunContext {
-      return buildContext({
-        projects: [
-          {
-            absoluteRoot: projectRoot,
-            name: "codependix-file-imports",
-            tags: [],
-          },
-        ],
-        ...overrides,
-      });
-    }
+    it("delegates the per-project pass to ProjectGraphsService", () => {
+      const context = buildContext();
 
-    it("skips a project whose resolved target is none", () => {
-      vi.mocked(configurationService.resolveForProject).mockReturnValue({
-        json: undefined,
-        markdown: undefined,
-        target: "none",
-      });
+      service.runImportGraphs(context);
 
-      const outcome = service.runImportGraphs(buildImportsContext());
-
-      expect(outcome).toStrictEqual({ failures: [], results: [] });
+      expect(projectGraphsService.runFileImportsProjects).toHaveBeenCalledWith(
+        context,
+      );
     });
 
-    it("builds a program only for the discovered typescript projects", () => {
-      vi.mocked(configurationService.resolveForProject).mockReturnValue({
-        json: { path: "codependix-file-imports.json" },
-        markdown: undefined,
-        target: "json",
+    it("combines the per-project outcome with the workspace graph's entry and result", () => {
+      vi.mocked(projectGraphsService.runFileImportsProjects).mockReturnValue({
+        failures: [],
+        results: [{ isCurrent: true, projectName: "a", stalePaths: [] }],
+      });
+      vi.mocked(
+        workspaceGraphsService.runFileImportsWorkspaceGraph,
+      ).mockReturnValue({
+        entry: {
+          json: { edges: [], fileNames: [] },
+          markdown: "```mermaid\n```",
+        },
+        result: { isCurrent: true, projectName: "workspace", stalePaths: [] },
       });
 
-      service.runImportGraphs(buildImportsContext());
-
-      expect(typescriptService.buildProgram).toHaveBeenCalledWith({
-        absoluteRoot: projectRoot,
-        name: "codependix-file-imports",
-        tsconfigPath: path.join(projectRoot, "tsconfig.json"),
-      });
-    });
-
-    it("writes a project's JSON export", async () => {
-      vi.mocked(configurationService.resolveForProject).mockReturnValue({
-        json: { path: "codependix-file-imports.json" },
-        markdown: undefined,
-        target: "json",
-      });
-
-      const outcome = service.runImportGraphs(buildImportsContext());
+      const outcome = service.runImportGraphs(buildContext());
 
       expect(outcome).toStrictEqual({
         failures: [],
         results: [
-          {
-            isCurrent: true,
-            projectName: "codependix-file-imports",
-            stalePaths: [],
-          },
+          { isCurrent: true, projectName: "a", stalePaths: [] },
+          { isCurrent: true, projectName: "workspace", stalePaths: [] },
         ],
+        workspaceEntry: {
+          json: { edges: [], fileNames: [] },
+          markdown: "```mermaid\n```",
+        },
       });
-
-      const written = JSON.parse(
-        await readFile(
-          path.join(projectRoot, "codependix-file-imports.json"),
-          "utf8",
-        ),
-      ) as unknown;
-
-      expect(written).toStrictEqual(TYPESCRIPT_IMPORT_GRAPH);
     });
 
-    it("reports a missing JSON export as stale in check mode", () => {
-      vi.mocked(configurationService.resolveForProject).mockReturnValue({
-        json: { path: "codependix-file-imports.json" },
-        markdown: undefined,
-        target: "json",
+    it("records a failure building the workspace graph without losing the project results", () => {
+      vi.mocked(
+        workspaceGraphsService.runFileImportsWorkspaceGraph,
+      ).mockImplementation(() => {
+        throw new Error("failed to build workspace graph");
       });
 
-      const outcome = service.runImportGraphs(
-        buildImportsContext({ mode: "check" }),
-      );
+      const outcome = service.runImportGraphs(buildContext());
+
+      expect(outcome.results).toStrictEqual([]);
+      expect(outcome.failures).toStrictEqual([
+        { error: "failed to build workspace graph", projectName: "workspace" },
+      ]);
+      expect(outcome.workspaceEntry).toBeUndefined();
+    });
+  });
+
+  describe("runNestjsGraphs", () => {
+    it("delegates the per-project pass to ProjectGraphsService", async () => {
+      const context = buildContext();
+
+      await service.runNestjsGraphs(context);
+
+      expect(
+        projectGraphsService.runNestjsModulesProjects,
+      ).toHaveBeenCalledWith(context);
+    });
+
+    it("combines the per-project outcome with the workspace graph's entry and result", async () => {
+      vi.mocked(
+        projectGraphsService.runNestjsModulesProjects,
+      ).mockResolvedValue({
+        failures: [],
+        results: [{ isCurrent: true, projectName: "a", stalePaths: [] }],
+      });
+      vi.mocked(
+        workspaceGraphsService.runNestjsModulesWorkspaceGraph,
+      ).mockResolvedValue({
+        entry: {
+          json: { edges: [], moduleNames: [] },
+          markdown: "```mermaid\n```",
+        },
+        result: { isCurrent: true, projectName: "workspace", stalePaths: [] },
+      });
+
+      const outcome = await service.runNestjsGraphs(buildContext());
 
       expect(outcome).toStrictEqual({
         failures: [],
         results: [
-          {
-            isCurrent: false,
-            projectName: "codependix-file-imports",
-            stalePaths: ["codependix-file-imports.json"],
-          },
+          { isCurrent: true, projectName: "a", stalePaths: [] },
+          { isCurrent: true, projectName: "workspace", stalePaths: [] },
         ],
+        workspaceEntry: {
+          json: { edges: [], moduleNames: [] },
+          markdown: "```mermaid\n```",
+        },
       });
     });
 
-    it("splices a diagram into an existing anchor block", async () => {
-      const readmePath = path.join(projectRoot, "README.md");
+    it("records a failure building the workspace graph without losing the project results", async () => {
+      vi.mocked(
+        workspaceGraphsService.runNestjsModulesWorkspaceGraph,
+      ).mockRejectedValue(new Error("failed to boot container"));
 
-      await writeFile(
-        readmePath,
-        [
-          "# codependix-file-imports",
-          '<!-- codependix:start name="imports" -->',
-          "stale",
-          '<!-- codependix:end name="imports" -->',
-        ].join("\n"),
-        "utf8",
-      );
-      vi.mocked(configurationService.resolveForProject).mockReturnValue({
-        json: undefined,
-        markdown: { anchor: "imports", path: "README.md" },
-        target: "markdown",
-      });
+      const outcome = await service.runNestjsGraphs(buildContext());
 
-      const outcome = service.runImportGraphs(buildImportsContext());
-
-      expect(outcome.results[0]?.isCurrent).toBe(true);
-
-      const written = await readFile(readmePath, "utf8");
-
-      expect(written).toContain("```mermaid\ngraph LR\n```");
-      expect(written).not.toContain("stale");
-    });
-
-    it("writes both a JSON and a markdown export for a both target", async () => {
-      vi.mocked(configurationService.resolveForProject).mockReturnValue({
-        json: { path: "codependix-file-imports.json" },
-        markdown: { anchor: undefined, path: "import-graph.md" },
-        target: "both",
-      });
-
-      service.runImportGraphs(buildImportsContext());
-
-      await expect(
-        readFile(
-          path.join(projectRoot, "codependix-file-imports.json"),
-          "utf8",
-        ),
-      ).resolves.toContain("codependix-file-imports");
-      await expect(
-        readFile(path.join(projectRoot, "import-graph.md"), "utf8"),
-      ).resolves.toContain("mermaid");
-    });
-
-    it("records a project's failure without preventing other projects from being processed", async () => {
-      const otherProjectRoot = path.join(projectRoot, "other-imports-project");
-
-      await mkdir(otherProjectRoot, { recursive: true });
-      vi.mocked(typescriptService.discoverProjects).mockReturnValue([
-        {
-          absoluteRoot: projectRoot,
-          name: "codependix-file-imports",
-          tsconfigPath: path.join(projectRoot, "tsconfig.json"),
-        },
-        {
-          absoluteRoot: otherProjectRoot,
-          name: "other-imports-project",
-          tsconfigPath: path.join(otherProjectRoot, "tsconfig.json"),
-        },
-      ]);
-      vi.mocked(typescriptService.buildProgram).mockImplementation(
-        (project) => {
-          if (project.name === "codependix-file-imports") {
-            throw new Error("failed to build program");
-          }
-
-          return createMock<TypescriptProjectProgram>();
-        },
-      );
-      vi.mocked(configurationService.resolveForProject).mockReturnValue({
-        json: { path: "graph.json" },
-        markdown: undefined,
-        target: "json",
-      });
-
-      const outcome = service.runImportGraphs(
-        buildImportsContext({
-          projects: [
-            {
-              absoluteRoot: projectRoot,
-              name: "codependix-file-imports",
-              tags: [],
-            },
-            {
-              absoluteRoot: otherProjectRoot,
-              name: "other-imports-project",
-              tags: [],
-            },
-          ],
-        }),
-      );
-
+      expect(outcome.results).toStrictEqual([]);
       expect(outcome.failures).toStrictEqual([
-        {
-          error: "failed to build program",
-          projectName: "codependix-file-imports",
-        },
+        { error: "failed to boot container", projectName: "workspace" },
       ]);
-      expect(outcome.results).toStrictEqual([
-        {
-          isCurrent: true,
-          projectName: "other-imports-project",
-          stalePaths: [],
-        },
-      ]);
-    });
-
-    it("records a non-Error rejection as its string form", () => {
-      const nonErrorFailure: unknown = "boom";
-
-      vi.mocked(typescriptService.buildProgram).mockImplementation(() => {
-        throw nonErrorFailure;
-      });
-      vi.mocked(configurationService.resolveForProject).mockReturnValue({
-        json: { path: "codependix-file-imports.json" },
-        markdown: undefined,
-        target: "json",
-      });
-
-      const outcome = service.runImportGraphs(buildImportsContext());
-
-      expect(outcome.failures).toStrictEqual([
-        { error: "boom", projectName: "codependix-file-imports" },
-      ]);
+      expect(outcome.workspaceEntry).toBeUndefined();
     });
   });
 
@@ -942,149 +328,126 @@ describe(MapService, () => {
 
   describe("run", () => {
     it("aggregates the results and failures from all four passes", async () => {
-      const nxOutcome: GraphRunOutcome = {
+      vi.mocked(projectGraphsService.runNxProjectsGraphs).mockReturnValue({
         failures: [{ error: "nx-boom", projectName: "a" }],
         results: [{ isCurrent: true, projectName: "b", stalePaths: [] }],
-      };
-      const nestjsOutcome: GraphRunOutcome = {
+      });
+      vi.mocked(
+        projectGraphsService.runNestjsModulesProjects,
+      ).mockResolvedValue({
         failures: [],
         results: [{ isCurrent: false, projectName: "c", stalePaths: ["c"] }],
-      };
-      const importsOutcome: GraphRunOutcome = {
+      });
+      vi.mocked(projectGraphsService.runFileImportsProjects).mockReturnValue({
         failures: [{ error: "import-boom", projectName: "d" }],
         results: [],
-      };
-      const pythonImportsOutcome: GraphRunOutcome = {
+      });
+      vi.mocked(pythonImportsService.runGraphs).mockReturnValue({
         failures: [],
         results: [{ isCurrent: true, projectName: "e", stalePaths: [] }],
-      };
+      });
 
-      vi.spyOn(service, "runNxGraphs").mockReturnValue(nxOutcome);
-      vi.spyOn(service, "runNestjsGraphs").mockResolvedValue(nestjsOutcome);
-      vi.spyOn(service, "runImportGraphs").mockReturnValue(importsOutcome);
-      vi.spyOn(service, "runPythonImportGraphs").mockReturnValue(
-        pythonImportsOutcome,
-      );
-
-      const outcome = await service.run(buildContext());
+      const { outcome } = await service.run(buildContext());
 
       expect(outcome).toStrictEqual({
         failures: [
-          ...nxOutcome.failures,
-          ...nestjsOutcome.failures,
-          ...importsOutcome.failures,
-          ...pythonImportsOutcome.failures,
+          { error: "nx-boom", projectName: "a" },
+          { error: "import-boom", projectName: "d" },
         ],
         results: [
-          ...nxOutcome.results,
-          ...nestjsOutcome.results,
-          ...importsOutcome.results,
-          ...pythonImportsOutcome.results,
+          { isCurrent: true, projectName: "b", stalePaths: [] },
+          { isCurrent: false, projectName: "c", stalePaths: ["c"] },
+          { isCurrent: true, projectName: "e", stalePaths: [] },
         ],
       });
     });
 
-    it("still runs the nestjs, import, and python-import passes when the nx pass reports a failure", async () => {
-      vi.spyOn(service, "runNxGraphs").mockReturnValue({
-        failures: [{ error: "boom", projectName: "a" }],
-        results: [],
+    it("collects each active type's whole-workspace entry into combinedGraphs, keyed by graph type", async () => {
+      vi.mocked(workspaceGraphsService.runNxWorkspaceGraph).mockReturnValue({
+        entry: { json: { nx: true }, markdown: "nx-markdown" },
+        result: undefined,
+      });
+      vi.mocked(
+        workspaceGraphsService.runFileImportsWorkspaceGraph,
+      ).mockReturnValue({
+        entry: { json: { fileImports: true }, markdown: "imports-markdown" },
+        result: undefined,
+      });
+      vi.mocked(
+        workspaceGraphsService.runNestjsModulesWorkspaceGraph,
+      ).mockResolvedValue({
+        entry: { json: { nestjsModules: true }, markdown: "nestjs-markdown" },
+        result: undefined,
       });
 
-      await service.run(buildContext());
+      const { combinedGraphs } = await service.run(buildContext());
 
-      expect(service.runNestjsGraphs).toHaveBeenCalledTimes(1);
-      expect(service.runImportGraphs).toHaveBeenCalledTimes(1);
-      expect(service.runPythonImportGraphs).toHaveBeenCalledTimes(1);
+      expect(combinedGraphs).toStrictEqual({
+        fileImports: {
+          json: { fileImports: true },
+          markdown: "imports-markdown",
+        },
+        nestjsModules: {
+          json: { nestjsModules: true },
+          markdown: "nestjs-markdown",
+        },
+        nxProjects: { json: { nx: true }, markdown: "nx-markdown" },
+      });
+    });
+
+    it("drops a graph type from combinedGraphs when its workspace entry is undefined", async () => {
+      const { combinedGraphs } = await service.run(buildContext());
+
+      expect(combinedGraphs).toStrictEqual({});
     });
 
     it("hands every pass the context it was given", async () => {
-      const runNxGraphsSpy = vi
-        .spyOn(service, "runNxGraphs")
-        .mockReturnValue({ failures: [], results: [] });
       const context = buildContext({ mode: "check" });
 
       await service.run(context);
 
-      expect(runNxGraphsSpy.mock.calls[0]?.[0]).toBe(context);
+      expect(projectGraphsService.runNxProjectsGraphs).toHaveBeenCalledWith({
+        context,
+        neighborhoods: expect.anything() as Map<string, Neighborhood>,
+      });
     });
 
     // 🎛️ Graph-type toggles
 
     it("skips the nx pass entirely when nxProjects is disabled", async () => {
-      vi.spyOn(service, "runNxGraphs").mockReturnValue({
-        failures: [],
-        results: [{ isCurrent: true, projectName: "b", stalePaths: [] }],
-      });
-      vi.spyOn(service, "runNestjsGraphs").mockResolvedValue({
-        failures: [],
-        results: [],
-      });
-      vi.spyOn(service, "runImportGraphs").mockReturnValue({
-        failures: [],
-        results: [],
-      });
-      vi.spyOn(service, "runPythonImportGraphs").mockReturnValue({
-        failures: [],
-        results: [],
-      });
-
-      const outcome = await service.run(
+      const { outcome } = await service.run(
         buildContext({
           enabledGraphTypes: new Set(["fileImports", "nestjsModules"]),
         }),
       );
 
-      expect(service.runNxGraphs).not.toHaveBeenCalled();
+      expect(projectGraphsService.runNxProjectsGraphs).not.toHaveBeenCalled();
       expect(outcome).toStrictEqual({ failures: [], results: [] });
     });
 
     it("skips the nestjs pass entirely when nestjsModules is disabled", async () => {
-      vi.spyOn(service, "runNxGraphs").mockReturnValue({
-        failures: [],
-        results: [],
-      });
-      const runNestjsGraphsSpy = vi.spyOn(service, "runNestjsGraphs");
-      vi.spyOn(service, "runImportGraphs").mockReturnValue({
-        failures: [],
-        results: [],
-      });
-      vi.spyOn(service, "runPythonImportGraphs").mockReturnValue({
-        failures: [],
-        results: [],
-      });
-
       await service.run(
         buildContext({
           enabledGraphTypes: new Set(["fileImports", "nxProjects"]),
         }),
       );
 
-      expect(runNestjsGraphsSpy).not.toHaveBeenCalled();
+      expect(
+        projectGraphsService.runNestjsModulesProjects,
+      ).not.toHaveBeenCalled();
     });
 
     it("skips both import passes entirely when fileImports is disabled", async () => {
-      vi.spyOn(service, "runNxGraphs").mockReturnValue({
-        failures: [],
-        results: [],
-      });
-      vi.spyOn(service, "runNestjsGraphs").mockResolvedValue({
-        failures: [],
-        results: [],
-      });
-      const runImportGraphsSpy = vi.spyOn(service, "runImportGraphs");
-      const runPythonImportGraphsSpy = vi.spyOn(
-        service,
-        "runPythonImportGraphs",
-      );
-
       await service.run(
         buildContext({
           enabledGraphTypes: new Set(["nestjsModules", "nxProjects"]),
         }),
       );
 
-      expect(runImportGraphsSpy).not.toHaveBeenCalled();
-      expect(runPythonImportGraphsSpy).not.toHaveBeenCalled();
+      expect(
+        projectGraphsService.runFileImportsProjects,
+      ).not.toHaveBeenCalled();
+      expect(pythonImportsService.runGraphs).not.toHaveBeenCalled();
     });
   });
 });

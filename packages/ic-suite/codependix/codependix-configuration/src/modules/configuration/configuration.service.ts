@@ -19,6 +19,7 @@ import type {
   CodependixBoundariesConfiguration,
   CodependixConfiguration,
   CodependixGraphOutput,
+  CodependixGraphType,
   CodependixProjectConfiguration,
   CodependixSelectionArguments,
   LoadConfigurationArguments,
@@ -129,6 +130,8 @@ export class ConfigurationService {
     };
   }
 
+  // 🌎 Public Methods
+
   /**
    * Splits the `--projects` and `--tags` arguments into lists.
    *
@@ -151,8 +154,6 @@ export class ConfigurationService {
       .map((entry) => entry.trim())
       .filter((entry) => entry.length > 0);
   }
-
-  // 🌎 Public Methods
 
   /**
    * Whether a project participates in graph export at all.
@@ -326,20 +327,21 @@ export class ConfigurationService {
   }
 
   /**
-   * Resolves the Workspace Graph's export configuration.
+   * Resolves the Workspace Graph's export configuration for one graph type.
    *
-   * The Workspace Graph is exported once for the whole repository rather than
+   * A Workspace Graph is exported once for the whole repository rather than
    * once per project, so it has no per-project override and is unaffected by
    * `include`/`exclude` — those two apply only to `resolveForProject`.
    *
    * `--projects` and `--tags` do reach it, through the node set rather than
    * through this: a run naming a selection draws the graph over the projects
-   * it named. Where that graph lands is still read from
-   * `workspace.nxProjects`.
+   * it named. Where that graph lands is still read from `workspace`, keyed by
+   * `graphType`.
    */
   public resolveForWorkspace(
     configuration: ResolvedCodependixConfiguration,
+    graphType: CodependixGraphType,
   ): ResolvedCodependixGraphOutput {
-    return this.resolveGraphOutput(configuration.workspace.nxProjects);
+    return this.resolveGraphOutput(configuration.workspace[graphType]);
   }
 }

@@ -8,6 +8,7 @@ import { MeanderDecodingModule } from "../meander-decoding/meander-decoding.modu
 import { MeanderEnumerationModule } from "../meander-enumeration/meander-enumeration.module";
 import { MeanderRenderingModule } from "../meander-rendering/meander-rendering.module";
 
+import { DrawCheckService } from "./draw-check.service";
 import { DrawCodeService } from "./draw-code.service";
 import { DrawEnumerationService } from "./draw-enumeration.service";
 import { DrawIndexService } from "./draw-index.service";
@@ -38,6 +39,14 @@ import { DrawCommand } from "./draw.command";
  * `DrawIndexService`, or `HardcodedMeandersService` builds its own
  * `TestingModule` against a temporary or in-memory connection instead of
  * importing this module.
+ *
+ * `DrawCheckService` reads the committed connection through
+ * `MeanderDatabaseModule`'s own exported `TypeOrmModule`, exactly as
+ * `MeanderDatabaseService` does — no wiring of its own is needed for that
+ * half. Its other half, regenerating a throwaway sweep, needs none of this
+ * module's imports at all: `--check` mode's whole point is regenerating into
+ * a connection this module never opens, so it boots its own throwaway
+ * application context instead — see `DrawCheckService`'s own doc comment.
  */
 @Module({
   controllers: [],
@@ -52,6 +61,7 @@ import { DrawCommand } from "./draw.command";
     MeanderRenderingModule,
   ],
   providers: [
+    DrawCheckService,
     DrawCodeService,
     DrawCommand,
     DrawEnumerationService,

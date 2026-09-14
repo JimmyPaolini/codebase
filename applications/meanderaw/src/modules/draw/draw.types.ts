@@ -17,10 +17,12 @@ export interface CodeDrawingOptions {
  *
  * Every field is optional, and that is the command's whole contract: `draw`
  * with no Code named sweeps every meander the application can draw into the
- * database, and `draw --rows <n> --columns <n> --code <code>` draws that
- * one. The three are checked together rather than declared `required`,
- * because passing none of them is how the sweep is asked for — see
- * `IncompleteCodeDrawingError`.
+ * database, `draw --rows <n> --columns <n> --code <code>` draws that one, and
+ * `draw --check` regenerates the whole corpus into a throwaway database and
+ * fails loudly if it disagrees with the committed one — see
+ * `DrawCheckService`. `--rows`, `--columns`, and `--code` are checked
+ * together rather than declared `required`, because passing none of them is
+ * how the sweep is asked for — see `IncompleteCodeDrawingError`.
  *
  * The `--type`, `--modifier`, `--sub-family`, `--strands`, `--branches`,
  * `--direction`, `--flip`, `--offset`, `--repeat-count`, and
@@ -30,6 +32,7 @@ export interface CodeDrawingOptions {
  * is `DEFAULT_DATABASE_PATH` rather than somewhere a flag points.
  */
 export interface DrawCommandOptions {
+  check?: boolean;
   code?: string;
   columns?: number;
   rows?: number;

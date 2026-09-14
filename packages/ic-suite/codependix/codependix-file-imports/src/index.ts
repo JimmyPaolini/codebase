@@ -1,4 +1,14 @@
 // 📤 Exports
+export {
+  FILE_IMPORTS_WORKSPACE_GRAPH_MERMAID_HEADER,
+  FILE_IMPORTS_WORKSPACE_GRAPH_UNCONNECTED,
+} from "./modules/file-imports-workspace-graph/file-imports-workspace-graph.constants";
+export { FileImportsWorkspaceGraphModule } from "./modules/file-imports-workspace-graph/file-imports-workspace-graph.module";
+export { FileImportsWorkspaceGraphService } from "./modules/file-imports-workspace-graph/file-imports-workspace-graph.service";
+export type {
+  FileImportsWorkspaceGraph,
+  FileImportsWorkspaceGraphEdge,
+} from "./modules/file-imports-workspace-graph/file-imports-workspace-graph.types";
 export { PythonImportGraphService } from "./modules/python/python-import-graph.service";
 export { PythonImportParserService } from "./modules/python/python-import-parser.service";
 export { PythonProjectService } from "./modules/python/python-project.service";

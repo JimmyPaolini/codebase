@@ -1,6 +1,7 @@
 // ♟️ Constants
 
 import type { GraphRunOutcome } from "../delivery/delivery.types";
+import type { GraphTypePassOutcome } from "./map.types";
 
 /**
  * The outcome of a pass a run's graph-type toggles disabled entirely.
@@ -13,6 +14,18 @@ export const EMPTY_GRAPH_RUN_OUTCOME: GraphRunOutcome = Object.freeze({
   failures: [],
   results: [],
 });
+
+/**
+ * The outcome of a graph-type pass a run's toggles disabled entirely —
+ * `EMPTY_GRAPH_RUN_OUTCOME` plus the `workspaceEntry` field
+ * `runNxGraphs`/`runImportGraphs`/`runNestjsGraphs` also carry.
+ */
+export const EMPTY_GRAPH_TYPE_PASS_OUTCOME: GraphTypePassOutcome =
+  Object.freeze({
+    failures: [],
+    results: [],
+    workspaceEntry: undefined,
+  });
 
 /** Graph type `codependix-file-imports` builds, for either language. */
 export const FILE_IMPORTS_GRAPH_TYPE = "fileImports";

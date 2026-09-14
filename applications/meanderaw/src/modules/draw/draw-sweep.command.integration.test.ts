@@ -17,6 +17,7 @@ import { MeanderEnumerationModule } from "../meander-enumeration/meander-enumera
 import { MeanderEnumerationService } from "../meander-enumeration/meander-enumeration.service";
 import { MeanderRenderingModule } from "../meander-rendering/meander-rendering.module";
 
+import { DrawCheckService } from "./draw-check.service";
 import { DrawCodeService } from "./draw-code.service";
 import { DrawEnumerationService } from "./draw-enumeration.service";
 import { DrawIndexService } from "./draw-index.service";
@@ -93,6 +94,10 @@ describe("drawCommand sweep mode", () => {
         DrawRecordService,
         HardcodedMeandersService,
         MeanderDatabaseService,
+        {
+          provide: DrawCheckService,
+          useValue: createMock<DrawCheckService>(),
+        },
         {
           provide: DrawCodeService,
           useValue: createMock<DrawCodeService>(),

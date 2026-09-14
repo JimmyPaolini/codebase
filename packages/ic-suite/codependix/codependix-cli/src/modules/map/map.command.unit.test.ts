@@ -15,6 +15,8 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { LoggerService } from "@codebase/logger";
 
+import { CombinedOutputService } from "../combined-output/combined-output.service";
+import { ReportingService } from "../reporting/reporting.service";
 import { RunContextService } from "../run-context/run-context.service";
 import { RUN_MODE_SUBJECT } from "../run-plan/run-plan.constants";
 import { RunPlanService } from "../run-plan/run-plan.service";
@@ -24,7 +26,22 @@ import { MapService } from "./map.service";
 
 import type { GraphRunOutcome } from "../delivery/delivery.types";
 import type { RunMode } from "../run-plan/run-plan.types";
-import type { GraphRunContext, MapCommandOptions } from "./map.types";
+import type {
+  CombinedGraphExports,
+  GraphRunContext,
+  MapCommandOptions,
+} from "./map.types";
+
+/**
+ * Builds the shape `MapService.run` resolves — a `GraphRunOutcome` and every
+ * active graph type's combined-output data, empty unless a test names one.
+ */
+function buildMapRun(
+  outcome: GraphRunOutcome,
+  combinedGraphs: CombinedGraphExports = {},
+): { combinedGraphs: CombinedGraphExports; outcome: GraphRunOutcome } {
+  return { combinedGraphs, outcome };
+}
 
 /** Builds a run mode, defaulting every flag a test does not name. */
 function buildMode(overrides: Partial<RunMode> = {}): RunMode {
@@ -49,21 +66,31 @@ const VIOLATION: BoundaryViolation = {
 describe(MapCommand, () => {
   let command: MapCommand;
   let boundaryCheckService: BoundaryCheckService;
-  let boundaryReportService: BoundaryReportService;
   let codependixService: MapService;
+  let combinedOutputService: CombinedOutputService;
   let inputService: InputService;
   let loggerService: LoggerService;
+  let reportingService: ReportingService;
   let runContextService: RunContextService;
   let runPlanService: RunPlanService;
 
-  /** Builds a command whose collaborators are freshly mocked. */
+  /**
+   * Builds a command whose collaborators are freshly mocked.
+   *
+   * `reportingService` is a real instance built over the same mocked
+   * `loggerService`/`BoundaryReportService` this file already asserts
+   * against, so every existing assertion on `loggerService.error`/`.warn`/
+   * `.info` still reads what the run actually logged — `ReportingService`'s
+   * own unit tests cover its formatting in isolation.
+   */
   function buildCommand(): MapCommand {
     return new MapCommand(
       codependixService,
       boundaryCheckService,
-      boundaryReportService,
+      combinedOutputService,
       inputService,
       loggerService,
+      reportingService,
       runContextService,
       runPlanService,
     );
@@ -126,13 +153,17 @@ describe(MapCommand, () => {
           provide: BoundaryCheckService,
           useValue: createMock<BoundaryCheckService>(),
         },
-        {
-          provide: BoundaryReportService,
-          useValue: new BoundaryReportService(),
-        },
         { provide: MapService, useValue: createMock<MapService>() },
+        {
+          provide: CombinedOutputService,
+          useValue: createMock<CombinedOutputService>(),
+        },
         { provide: InputService, useValue: createMock<InputService>() },
         { provide: LoggerService, useValue: createMock<LoggerService>() },
+        {
+          provide: ReportingService,
+          useValue: createMock<ReportingService>(),
+        },
         {
           provide: RunContextService,
           useValue: createMock<RunContextService>(),
@@ -147,18 +178,25 @@ describe(MapCommand, () => {
   beforeEach(() => {
     process.exitCode = 0;
     boundaryCheckService = createMock<BoundaryCheckService>();
-    boundaryReportService = new BoundaryReportService();
     codependixService = createMock<MapService>();
+    combinedOutputService = createMock<CombinedOutputService>();
     inputService = createMock<InputService>();
     loggerService = createMock<LoggerService>();
+    reportingService = new ReportingService(
+      new BoundaryReportService(),
+      loggerService,
+    );
     runContextService = createMock<RunContextService>();
     runPlanService = createMock<RunPlanService>();
     vi.mocked(runContextService.build).mockResolvedValue(
       buildContextWithInclude(["**"]),
     );
-    vi.mocked(codependixService.run).mockResolvedValue({
-      failures: [],
-      results: [],
+    vi.mocked(codependixService.run).mockResolvedValue(
+      buildMapRun({ failures: [], results: [] }),
+    );
+    vi.mocked(combinedOutputService.resolveFormat).mockReturnValue({
+      errors: [],
+      format: "markdown",
     });
     vi.mocked(boundaryCheckService.run).mockResolvedValue({
       failures: [],
@@ -228,13 +266,17 @@ describe(MapCommand, () => {
           provide: BoundaryCheckService,
           useValue: createMock<BoundaryCheckService>(),
         },
-        {
-          provide: BoundaryReportService,
-          useValue: new BoundaryReportService(),
-        },
         { provide: MapService, useValue: createMock<MapService>() },
+        {
+          provide: CombinedOutputService,
+          useValue: createMock<CombinedOutputService>(),
+        },
         { provide: InputService, useValue: createMock<InputService>() },
         { provide: LoggerService, useValue: createMock<LoggerService>() },
+        {
+          provide: ReportingService,
+          useValue: createMock<ReportingService>(),
+        },
         {
           provide: RunContextService,
           useValue: createMock<RunContextService>(),
@@ -364,12 +406,12 @@ describe(MapCommand, () => {
       results: [
         {
           isCurrent: false,
-          projectName: "codependix-nx-projects",
-          stalePaths: ["codependix-nx-projects.json"],
+          projectName: "codependix-nx",
+          stalePaths: ["codependix-nx.json"],
         },
       ],
     };
-    vi.mocked(codependixService.run).mockResolvedValue(outcome);
+    vi.mocked(codependixService.run).mockResolvedValue(buildMapRun(outcome));
 
     await run({ check: "reports" });
 
@@ -378,16 +420,12 @@ describe(MapCommand, () => {
 
   it("fails and logs when a project fails, without a thrown error", async () => {
     const outcome: GraphRunOutcome = {
-      failures: [{ error: "boom", projectName: "codependix-nestjs-modules" }],
+      failures: [{ error: "boom", projectName: "codependix-nestjs" }],
       results: [
-        {
-          isCurrent: true,
-          projectName: "codependix-nx-projects",
-          stalePaths: [],
-        },
+        { isCurrent: true, projectName: "codependix-nx", stalePaths: [] },
       ],
     };
-    vi.mocked(codependixService.run).mockResolvedValue(outcome);
+    vi.mocked(codependixService.run).mockResolvedValue(buildMapRun(outcome));
 
     await run({ write: true });
 
@@ -402,16 +440,16 @@ describe(MapCommand, () => {
   it("reports both a failed project and a stale export together", async () => {
     selectMode({ checksReports: true, writes: false });
     const outcome: GraphRunOutcome = {
-      failures: [{ error: "boom", projectName: "codependix-nestjs-modules" }],
+      failures: [{ error: "boom", projectName: "codependix-nestjs" }],
       results: [
         {
           isCurrent: false,
-          projectName: "codependix-nx-projects",
-          stalePaths: ["codependix-nx-projects.json"],
+          projectName: "codependix-nx",
+          stalePaths: ["codependix-nx.json"],
         },
       ],
     };
-    vi.mocked(codependixService.run).mockResolvedValue(outcome);
+    vi.mocked(codependixService.run).mockResolvedValue(buildMapRun(outcome));
 
     await run({ check: "reports" });
 
@@ -424,7 +462,7 @@ describe(MapCommand, () => {
     expect(loggerService.error).toHaveBeenCalledWith(
       "🕸️ Found stale codependix exports",
       undefined,
-      { projects: ["codependix-nx-projects"] },
+      { projects: ["codependix-nx"] },
     );
   });
 
@@ -468,16 +506,18 @@ describe(MapCommand, () => {
 
   it("reports a stale export and a broken boundary in the same run", async () => {
     selectMode({ checksBoundaries: true, writes: true });
-    vi.mocked(codependixService.run).mockResolvedValue({
-      failures: [],
-      results: [
-        {
-          isCurrent: false,
-          projectName: "codependix-nx-projects",
-          stalePaths: ["a"],
-        },
-      ],
-    });
+    vi.mocked(codependixService.run).mockResolvedValue(
+      buildMapRun({
+        failures: [],
+        results: [
+          {
+            isCurrent: false,
+            projectName: "codependix-nx",
+            stalePaths: ["a"],
+          },
+        ],
+      }),
+    );
     vi.mocked(boundaryCheckService.run).mockResolvedValue({
       failures: [],
       violations: [VIOLATION],
@@ -489,7 +529,7 @@ describe(MapCommand, () => {
     expect(loggerService.error).toHaveBeenCalledWith(
       "🕸️ Found stale codependix exports",
       undefined,
-      { projects: ["codependix-nx-projects"] },
+      { projects: ["codependix-nx"] },
     );
     expect(loggerService.error).toHaveBeenCalledWith(
       "🕸️ Found codependix boundary violations",
@@ -654,5 +694,105 @@ describe(MapCommand, () => {
         options: expect.objectContaining({ fileImports: false }) as unknown,
       }),
     );
+  });
+
+  // 🧾 Combined output and format flags
+
+  it("delegates --json-output to the shared input service", () => {
+    vi.mocked(inputService.parseOptionalOption).mockReturnValue("out.json");
+
+    expect(buildCommand().parseJsonOutput("out.json")).toBe("out.json");
+    expect(inputService.parseOptionalOption).toHaveBeenCalledWith("out.json");
+  });
+
+  it("delegates --markdown-output to the shared input service", () => {
+    vi.mocked(inputService.parseOptionalOption).mockReturnValue("out.md");
+
+    expect(buildCommand().parseMarkdownOutput("out.md")).toBe("out.md");
+    expect(inputService.parseOptionalOption).toHaveBeenCalledWith("out.md");
+  });
+
+  it("delegates --format to the shared input service", () => {
+    vi.mocked(inputService.parseOptionalOption).mockReturnValue("json");
+
+    expect(buildCommand().parseFormat("json")).toBe("json");
+    expect(inputService.parseOptionalOption).toHaveBeenCalledWith("json");
+  });
+
+  it("rejects the command line when --format names something CombinedOutputService refuses", async () => {
+    vi.mocked(combinedOutputService.resolveFormat).mockReturnValue({
+      errors: ['--format does not accept "yaml".'],
+      format: "markdown",
+    });
+
+    await run({ format: "yaml", write: true });
+
+    expect(process.exitCode).toBe(1);
+    expect(codependixService.run).not.toHaveBeenCalled();
+    expect(loggerService.error).toHaveBeenCalledWith(
+      "🕸️ Rejected the command line",
+      undefined,
+      { reasons: ['--format does not accept "yaml".'] },
+    );
+  });
+
+  it("combines a --format rejection with a --check rejection in the same report", async () => {
+    vi.mocked(runPlanService.selectMode).mockResolvedValue({
+      errors: ["--check needs a value."],
+      mode: buildMode({ writes: false }),
+    });
+    vi.mocked(combinedOutputService.resolveFormat).mockReturnValue({
+      errors: ['--format does not accept "yaml".'],
+      format: "markdown",
+    });
+
+    await run({ check: true, format: "yaml" });
+
+    expect(loggerService.error).toHaveBeenCalledWith(
+      "🕸️ Rejected the command line",
+      undefined,
+      {
+        reasons: ["--check needs a value.", '--format does not accept "yaml".'],
+      },
+    );
+  });
+
+  it("prints and writes the combined output whenever the export pass ran", async () => {
+    vi.mocked(codependixService.run).mockResolvedValue(
+      buildMapRun(
+        { failures: [], results: [] },
+        {
+          nxProjects: {
+            json: { projectNames: [] },
+            markdown: "```mermaid\n```",
+          },
+        },
+      ),
+    );
+
+    await run({
+      directory: "/workspace",
+      jsonOutput: "combined.json",
+      markdownOutput: "combined.md",
+      write: true,
+    });
+
+    expect(combinedOutputService.run).toHaveBeenCalledWith({
+      format: "markdown",
+      graphs: {
+        nxProjects: { json: { projectNames: [] }, markdown: "```mermaid\n```" },
+      },
+      jsonOutputPath: "combined.json",
+      markdownOutputPath: "combined.md",
+      workingDirectory: "/workspace",
+    });
+  });
+
+  it("never calls CombinedOutputService on a boundaries-only run, which built no export to combine", async () => {
+    selectMode({ checksBoundaries: true, writes: false });
+
+    await run({ check: "boundaries" });
+
+    expect(combinedOutputService.run).not.toHaveBeenCalled();
   });
 });

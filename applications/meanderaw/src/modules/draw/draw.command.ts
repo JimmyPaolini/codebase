@@ -8,6 +8,7 @@ import { LoggerService } from "@codebase/logger";
 import { HARDCODED_MEANDERS_BY_FAMILY } from "../hardcoded-meanders/hardcoded-meanders.constants";
 import { HardcodedMeandersService } from "../hardcoded-meanders/hardcoded-meanders.service";
 
+import { DrawCheckService } from "./draw-check.service";
 import { DrawCodeService } from "./draw-code.service";
 import { DrawEnumerationService } from "./draw-enumeration.service";
 import { DrawIndexService } from "./draw-index.service";
@@ -23,7 +24,7 @@ import type { DrawCommandOptions } from "./draw.types";
  * application's only command, and its default, so running it with no
  * arguments at all runs this.
  *
- * What it draws is decided by whether a Code was named:
+ * What it draws is decided by which flags were given:
  *
  * - **`draw`** sweeps everything, in two halves that between them are the
  *   whole corpus. {@link DrawEnumerationService} walks the lattice's unit
@@ -37,6 +38,12 @@ import type { DrawCommandOptions } from "./draw.types";
  * - **`draw --rows <n> --columns <n> --code <code>`** decodes, renders, and
  *   persists that one meander, through the same generic pipeline both halves
  *   of the sweep use.
+ * - **`draw --check`** runs that same sweep into a throwaway database instead
+ *   of the committed one, diffs the result against the committed database,
+ *   and fails loudly on any new, missing, or changed row — see
+ *   {@link DrawCheckService}. This is what CI runs to catch drift in the
+ *   generic renderer, the enumerator, or a Characteristic's own logic before
+ *   it reaches the committed corpus.
  *
  * **The per-family SVG tree is gone for good.** The nine per-family
  * procedural motif services, the `output/<family>/*.svg` tree they wrote,
@@ -54,7 +61,7 @@ import type { DrawCommandOptions } from "./draw.types";
  */
 @Command({
   description:
-    "Draw meanders into the committed sqlite database: with no Code named, sweep every one the application can draw (the whole lattice's unit space, enumerated and classified into a family by each meander's own structure, plus the historical corpus's hardcoded constants beyond the enumeration's budget); with --rows, --columns, and --code, draw that one",
+    "Draw meanders into the committed sqlite database: with no Code named, sweep every one the application can draw (the whole lattice's unit space, enumerated and classified into a family by each meander's own structure, plus the historical corpus's hardcoded constants beyond the enumeration's budget); with --rows, --columns, and --code, draw that one; with --check, regenerate the whole sweep into a throwaway database and fail if it disagrees with the committed one",
   name: "draw",
   options: { isDefault: true },
 })
@@ -64,6 +71,8 @@ export class DrawCommand extends CommandRunner {
 
   constructor(
     private readonly logger: LoggerService,
+    @Inject(DrawCheckService)
+    private readonly drawCheckService: DrawCheckService,
     @Inject(DrawCodeService)
     private readonly drawCodeService: DrawCodeService,
     @Inject(DrawEnumerationService)
@@ -153,6 +162,21 @@ export class DrawCommand extends CommandRunner {
   // 🌎 Public Methods
 
   /**
+   * Parses `--check`; returns true/false. Absent no different from
+   * `--check=false`, since only `run` checking `options.check === true`
+   * decides whether the flag was ever given.
+   */
+  @Option({
+    description:
+      "Regenerate the whole sweep into a throwaway database and fail if it disagrees with the committed one, rather than sweeping or drawing anything",
+    flags: "--check [boolean]",
+  })
+  parseCheck(value: string | undefined): boolean {
+    if (value === undefined) return true;
+    return value !== "false" && value !== "0";
+  }
+
+  /**
    * Parses `--code`, passed through unchanged: the hexadecimal digits a
    * decoded grid's own points are read from, one character per interior
    * lattice point. `MeanderDecodingService.decode` is what refuses a
@@ -186,11 +210,39 @@ export class DrawCommand extends CommandRunner {
     return Number.parseInt(value, 10);
   }
 
-  /** Sweeps every meander into the database, or draws the one `--code` names. */
+  /**
+   * Checks for drift when `--check` is given, sweeps every meander into the
+   * database when no Code is named, or draws the one `--code` names.
+   *
+   * The `--check` branch calls `DrawCheckService.check` directly rather than
+   * through a private wrapper of its own — unlike the other two branches —
+   * because `check` already sits on this project's deepest traced stack, and
+   * a forwarding-only method here would push it past `callidescope`'s own
+   * `maximumDepth` gate for nothing a reader could not already see at the
+   * call site. `MeanderDriftDetectedError` propagates uncaught when the two
+   * databases disagree, the same way a hardcoded Code colliding with an
+   * enumerated one already fails a real sweep loudly rather than being
+   * swallowed here.
+   */
   async run(
     _passedParameters: string[],
     options: DrawCommandOptions,
   ): Promise<void> {
+    if (options.check === true) {
+      const report = await this.drawCheckService.check();
+
+      this.logger.log(
+        "✅ Regenerated sweep matches the committed database",
+        undefined,
+        {
+          committed: report.committedCount,
+          regenerated: report.regeneratedCount,
+        },
+      );
+
+      return;
+    }
+
     if (options.code === undefined) {
       await this.sweep();
 

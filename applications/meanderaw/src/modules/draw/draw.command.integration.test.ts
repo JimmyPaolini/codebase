@@ -21,6 +21,7 @@ import { MosaicNamingService } from "../mosaic-naming/mosaic-naming.service";
 import { MosaicTileService } from "../mosaic-tile/mosaic-tile.service";
 import { SvgRenderingService } from "../svg-rendering/svg-rendering.service";
 
+import { DrawCheckService } from "./draw-check.service";
 import { DrawCodeService } from "./draw-code.service";
 import { DrawEnumerationService } from "./draw-enumeration.service";
 import { DrawIndexService } from "./draw-index.service";
@@ -61,6 +62,10 @@ describe("drawCommand --code mode", () => {
         DrawCommand,
         DrawCodeService,
         DrawRecordService,
+        {
+          provide: DrawCheckService,
+          useValue: createMock<DrawCheckService>(),
+        },
         GridGeometryService,
         MeanderCharacteristicsService,
         MeanderClassificationService,
