@@ -37,6 +37,11 @@ updates:
       interval: weekly
       day: friday
     open-pull-requests-limit: 10
+    # Matches pnpm-workspace.yaml's minimumReleaseAge: 1440 (1 day), so
+    # Dependabot doesn't propose a version before pnpm itself would resolve
+    # it.
+    cooldown:
+      default-days: 1
     commit-message:
       prefix: "chore(dependencies): 🔧 "
     labels:
