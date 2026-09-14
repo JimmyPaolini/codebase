@@ -49,31 +49,23 @@ jobs:
           sed -i "s/pythonVersion = \"3\.[0-9][0-9]*/pythonVersion = \"${LATEST_PYTHON}/" pyproject.toml
           sed -i "s/requires-python = \">=3\.[0-9][0-9]*/requires-python = \">=${LATEST_PYTHON}/" applications/affirmations/pyproject.toml
 
-      # `pnpm update --latest --recursive "!typescript"` then `pnpm dedupe`,
-      # via the Nx target, so a human upgrading locally gets the same two
-      # commands and the same hold.
-      #
-      # The hold on typescript is what unblocked this workflow. typescript 7 is
-      # the native compiler: its entrypoint exports a version string and
-      # nothing else, so the JavaScript compiler API is gone, and everything
-      # reading it breaks when `--latest` crosses that major — nx loudest,
-      # with `tsModule.readConfigFile is not a function`. That
-      # migration is deliberate, never a weekly bump. `check` still reports
-      # typescript outdated, so the hold stays visible.
-      #
-      # The dedupe is what reaches transitive dependencies: `--latest` moves
-      # direct and catalog entries, while a transitive one satisfying its
-      # parents' ranges stays pinned — how a vulnerable copy survives a
-      # successful upgrade.
-      - name: 📦 Upgrade Dependencies
-        run: pnpm exec nx run codebase:upgrade-dependencies:write
+      # Per-package npm and GitHub Actions version bumps now come from
+      # Dependabot (.github/dependabot.yml) as their own isolated pull
+      # requests, not from a bulk `pnpm update --latest --recursive` here —
+      # see that file for why, and for where the typescript and
+      # eslint-plugin-unicorn holds now live. This step only dedupes: it
+      # reaches transitive dependencies that individual Dependabot bumps
+      # cannot, since a transitive package satisfying its parents' ranges
+      # stays pinned even as its parents move — how a vulnerable copy
+      # survives a run of successful upgrades.
+      - name: 📦 Deduplicate Lockfile
+        run: pnpm dedupe
 
-      # The cheapest thing that proves the upgrade did not break Nx itself.
-      # Loading the project graph loads every workspace plugin, which is the
-      # step that died for 13 weeks — and it died inside the husky pre-commit
-      # hook of `🔀 Open Pull Request`, reported as `Unexpected error:
-      # pre-commit` five steps after the upgrade that caused it. Failing here
-      # names the upgrade as the cause while the diff is still on disk.
+      # The cheapest thing that proves the dedupe did not break Nx itself.
+      # Loading the project graph loads every workspace plugin — failing here
+      # names the dedupe as the cause while the diff is still on disk, rather
+      # than five steps later inside the husky pre-commit hook of `🔀 Open
+      # Pull Request`, reported as `Unexpected error: pre-commit`.
       #
       # No `--configuration=check` lint gate here: the commit below fires
       # pre-commit, which runs the whole gate already. This only has to catch
@@ -118,14 +110,12 @@ jobs:
           body: |
             ## 🌰 Summary
 
-            Automated dependency updates detected by the weekly dependency check.
+            Automated toolchain updates detected by the weekly dependency check. Per-package npm and GitHub Actions bumps arrive separately, as their own Dependabot pull requests.
 
             ## 📝 Details
 
             - Update node to latest patch of current major
             - Update pnpm to latest version
-            - Update dependencies across all workspace projects,
-              holding typescript back
             - Deduplicate the lockfile so in-range transitive upgrades land
             - Update pnpm lockfile
             - Update Python to latest stable 3.x
