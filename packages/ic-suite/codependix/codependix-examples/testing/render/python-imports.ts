@@ -5,7 +5,10 @@ import { fence, table } from "./document";
 import { resolveExample } from "./paths";
 
 import type { ExampleDocument } from "./types";
-import type { PythonImportGraph, PythonProject } from "@codependix/file-imports";
+import type {
+  PythonImportGraph,
+  PythonProject,
+} from "@codependix/file-imports";
 
 // 🏷️ Types
 
