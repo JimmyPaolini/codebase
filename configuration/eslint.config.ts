@@ -1620,10 +1620,14 @@ export default [
       // `details`/`summary` is the one disclosure GitHub renders and markdown
       // cannot express, and generated sections long enough to need it — the
       // callidescope call stacks — are exactly where it earns its place.
-      // `markdownlint`'s MD033 already permits inline HTML here.
+      // `strong` is allowed because `**bold**` markdown is never reprocessed
+      // inside a `<summary>` on the same line as its opening `<details>` tag
+      // (CommonMark treats them as one raw HTML block), so `<strong>` is the
+      // only way to bold a summary's text. `markdownlint`'s MD033 already
+      // permits inline HTML here.
       "markdown/no-html": [
         "error",
-        { allowed: ["a", "details", "img", "summary"] },
+        { allowed: ["a", "details", "img", "strong", "summary"] },
       ],
       "markdown/no-invalid-label-refs": "error",
       "markdown/no-missing-atx-heading-space": "error",
