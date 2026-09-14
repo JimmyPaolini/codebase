@@ -1,3 +1,4 @@
+// 📤 Exports
 export {
   FILE_IMPORTS_WORKSPACE_GRAPH_MERMAID_HEADER,
   FILE_IMPORTS_WORKSPACE_GRAPH_UNCONNECTED,
@@ -8,7 +9,6 @@ export type {
   FileImportsWorkspaceGraph,
   FileImportsWorkspaceGraphEdge,
 } from "./modules/file-imports-workspace-graph/file-imports-workspace-graph.types";
-// 📤 Exports
 export { PythonImportGraphService } from "./modules/python/python-import-graph.service";
 export { PythonImportParserService } from "./modules/python/python-import-parser.service";
 export { PythonProjectService } from "./modules/python/python-project.service";
