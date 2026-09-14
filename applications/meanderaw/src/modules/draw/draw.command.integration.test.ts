@@ -7,6 +7,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { LoggerService } from "@codebase/logger";
 
 import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
+import { MeanderCharacteristicsService } from "../meander-characteristics/meander-characteristics.service";
 import { Meander } from "../meander-database/entities/Meander.entity";
 import { MeanderDatabaseService } from "../meander-database/meander-database.service";
 import { MeanderDecodingModule } from "../meander-decoding/meander-decoding.module";
@@ -56,6 +57,7 @@ describe("drawCommand --code mode", () => {
         DrawCommand,
         DrawCodeService,
         GridGeometryService,
+        MeanderCharacteristicsService,
         MeanderDatabaseService,
         SvgRenderingService,
         {
@@ -113,11 +115,40 @@ describe("drawCommand --code mode", () => {
     expect(rows[0]).toMatchObject({
       code: "3c9a",
       columns: 2,
+      hasBranching: false,
+      hasCrossing: false,
+      inkTJunctions: 0,
+      inkXJunctions: 0,
+      negativeTJunctions: 0,
+      negativeXJunctions: 0,
       pitch: 2,
       provenance: "hardcoded",
       rows: 3,
     });
     expect(rows[0]?.svg).toContain("<svg");
+  });
+
+  it("populates a row's Characteristics from its decoded grid, for a code with a three-armed ink junction", async () => {
+    await command.run([], {
+      code: "e",
+      columns: 1,
+      outputDirectory: "output",
+      repeatCount: 6,
+      rows: 2,
+    });
+
+    const rows = await repository.find();
+
+    expect(rows).toHaveLength(1);
+    expect(rows[0]).toMatchObject({
+      code: "e",
+      hasBranching: true,
+      hasCrossing: false,
+      inkTJunctions: 1,
+      inkXJunctions: 0,
+      negativeTJunctions: 0,
+      negativeXJunctions: 0,
+    });
   });
 
   it("refuses a --code drawing missing --columns", async () => {
