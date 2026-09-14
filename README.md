@@ -521,13 +521,13 @@ The workspace's call graph, traced by [callidescope](packages/callidescope-cli),
 
 | Measure | Value |
 | --- | --- |
-| Callables | 5042 |
-| Files | 1321 |
-| Calls traced | 5751 |
+| Callables | 5043 |
+| Files | 1322 |
+| Calls traced | 5733 |
 | Call stacks | 1302 |
 | Deepest stack | 17 |
 | Stacks through recursion | 12 |
-| Unfollowable calls | 365 |
+| Unfollowable calls | 361 |
 
 ### Projects
 
@@ -542,7 +542,6 @@ The workspace's call graph, traced by [callidescope](packages/callidescope-cli),
 | `packages/callidescope-nx` | 17 | 17 | 0 | 7 |
 | `packages/codependix-boundaries` | 12 | 12 | 0 | 5 |
 | `packages/codependix-cli` | 15 | 15 | 0 | 7 |
-| `packages/codometer-cli` | 16 | 16 | 0 | 11 |
 | `packages/conformetry-cli` | 14 | 14 | 0 | 9 |
 | `packages/conformetry-nx` | 14 | 14 | 0 | 9 |
 | `packages/lexico-components` | 3 | 3 | 0 | 7 |
@@ -551,16 +550,17 @@ The workspace's call graph, traced by [callidescope](packages/callidescope-cli),
 | `tools/synchronization` | 10 | 10 | 0 | 9 |
 | `tools/validation` | 8 | 8 | 0 | 9 |
 | `packages/callidescope-configuration` | 5 | 6 | 1 | 7 |
+| `packages/codometer-cli` | 15 | 16 | 1 | 10 |
 | `packages/codometer-size` | 0 | 3 | 3 | 2 |
 | `packages/conformetry-configuration` | 10 | 13 | 3 | 5 |
 | `packages/codependix-configuration` | 2 | 6 | 4 | 5 |
 | `packages/codependix-nx` | 0 | 4 | 4 | 8 |
 | `packages/codependix-nestjs` | 0 | 5 | 5 | 5 |
-| `packages/codometer-customization` | 0 | 5 | 5 | 1 |
+| `packages/codometer-configuration` | 3 | 8 | 5 | 4 |
+| `packages/codometer-customization` | 0 | 5 | 5 | 2 |
 | `packages/conformetry-generation` | 2 | 7 | 5 | 4 |
 | `packages/callidescope-graph` | 5 | 11 | 6 | 8 |
 | `packages/callidescope-output` | 4 | 10 | 6 | 7 |
-| `packages/codometer-configuration` | 2 | 8 | 6 | 7 |
 | `packages/codometer-languages` | 5 | 11 | 6 | 12 |
 | `packages/conformetry-core` | 0 | 6 | 6 | 4 |
 | `packages/codometer-discovery` | 0 | 7 | 7 | 7 |
@@ -576,8 +576,8 @@ The workspace's call graph, traced by [callidescope](packages/callidescope-cli),
 | Headroom | Projects |
 | --- | --- |
 | over limit | 1 |
-| 0 — at limit | 16 |
-| 1 | 1 |
+| 0 — at limit | 15 |
+| 1 | 2 |
 | 2–3 | 1 |
 | 4+ | 8 |
 | no stacks | 10 |

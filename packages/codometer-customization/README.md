@@ -12,9 +12,9 @@ Call stacks traced through `packages/codometer-customization`, deepest first. Ea
 
 | Measure | Value |
 | --- | --- |
-| Callables | 8 |
+| Callables | 12 |
 | Files | 9 |
-| Calls traced | 5 |
+| Calls traced | 8 |
 | Call stacks | 0 |
 | Deepest stack | 0 |
 | Stacks through recursion | 0 |
@@ -27,7 +27,7 @@ What this project is judged against, as declared in its own `callidescope.config
 | Limit | Value |
 | --- | --- |
 | `maximumDepth` | 5 |
-| `maximumBreadth` | 1 |
+| `maximumBreadth` | 2 |
 
 ### Call stacks (depth)
 
@@ -37,17 +37,18 @@ None.
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `CustomizationService.countMatches` | 1 | `CustomizationService.filter(…)` | `packages/codometer-customization/src/modules/customization/customization.service.ts:40` |
-| `CustomizationService.filter(…)` | 1 | `CustomizationService.some(…)` | `packages/codometer-customization/src/modules/customization/customization.service.ts:41` |
-| `CustomizationService.analyze` | 1 | `CustomizationService.map(…)` | `packages/codometer-customization/src/modules/customization/customization.service.ts:49` |
+| `CustomizationService.buildCommentResult` | 2 | `CustomizationService.filter(…)`, `CustomizationService.map(…)` | `packages/codometer-customization/src/modules/customization/customization.service.ts:43` |
+| `CustomizationService.map(…)` | 2 | `CustomizationService.buildCommentResult`, `CustomizationService.countMatches` | `packages/codometer-customization/src/modules/customization/customization.service.ts:86` |
+| `CustomizationService.countMatches` | 1 | `CustomizationService.filter(…)` | `packages/codometer-customization/src/modules/customization/customization.service.ts:71` |
 
 <details>
-<summary>2 more callables</summary>
+<summary>3 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `CustomizationService.map(…)` | 1 | `CustomizationService.countMatches` | `packages/codometer-customization/src/modules/customization/customization.service.ts:54` |
-| `CustomizationService.buildSymbolCounters` | 1 | `CustomizationService.flatMap(…)` | `packages/codometer-customization/src/modules/customization/customization.service.ts:72` |
+| `CustomizationService.filter(…)` | 1 | `CustomizationService.some(…)` | `packages/codometer-customization/src/modules/customization/customization.service.ts:72` |
+| `CustomizationService.analyze` | 1 | `CustomizationService.map(…)` | `packages/codometer-customization/src/modules/customization/customization.service.ts:80` |
+| `CustomizationService.buildSymbolCounters` | 1 | `CustomizationService.flatMap(…)` | `packages/codometer-customization/src/modules/customization/customization.service.ts:148` |
 
 </details>
 <!-- CALL_STACKS_END -->
