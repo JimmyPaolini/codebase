@@ -88,9 +88,9 @@ Call stacks traced through `packages/ic-suite/codependix/codependix-configuratio
 
 | Measure | Value |
 | --- | --- |
-| Callables | 42 |
-| Files | 13 |
-| Calls traced | 41 |
+| Callables | 51 |
+| Files | 21 |
+| Calls traced | 48 |
 | Call stacks | 1 |
 | Deepest stack | 2 |
 | Stacks through recursion | 0 |
@@ -118,33 +118,38 @@ What this project is judged against, as declared in its own `callidescope.config
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `ConfigurationService.loadConfiguration` | 5 | `ConfigurationService.findConfigurationFile`, `ConfigurationService.resolveConfigurationPath`, `ConfigurationService.resolveConfiguration`, `UnknownConfigurationFileTypeError.constructor`, `ConfigurationService.loadConfigurationModule` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:353` |
-| `InputService.promptForSelect` | 4 | `InputService.assertCanPrompt`, `InputService.map(…)`, `promptCancelledError`, `InputService.find(…)` | `packages/ic-suite/codependix/codependix-configuration/src/modules/input/input.service.ts:75` |
-| `ConfigurationService.loadProjectConfiguration` | 3 | `ConfigurationService.findProjectConfigurationFile`, `UnknownConfigurationFileTypeError.constructor`, `ConfigurationService.loadConfigurationModule` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:393` |
+| `InputService.promptForSelect` | 4 | `InputService.assertCanPrompt`, `InputService.map(…)`, `promptCancelledError`, `InputService.find(…)` | `packages/ic-suite/codependix/codependix-configuration/src/modules/input/input.service.ts:92` |
+| `ConfigurationLoaderService.readAuthoredConfiguration` | 3 | `ConfigurationLoaderService.findConfigurationFile`, `ConfigurationLoaderService.resolveConfigurationPath`, `ConfigurationLoaderService.parseConfigurationFile` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration-loader/configuration-loader.service.ts:169` |
+| `ConfigurationService.loadConfiguration` | 3 | `ConfigurationLoaderService.readAuthoredConfiguration`, `OverrideResolutionService.applyOverrides`, `ConfigurationService.resolveConfiguration` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:213` |
 
 <details>
-<summary>18 more callables</summary>
+<summary>23 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `ConfigurationService.isProjectNamedOnCommandLine` | 2 | `ConfigurationService.matchesAnyName`, `ConfigurationService.some(…)` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:144` |
-| `ConfigurationService.resolveConfigurationPath` | 2 | `ConfigurationService.findWorkspaceRoot`, `ConfigurationFileNotFoundError.constructor` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:230` |
-| `ConfigurationService.splitSelectionArgument` | 2 | `ConfigurationService.filter(…)`, `ConfigurationService.map(…)` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:288` |
-| `ConfigurationService.isProjectIncluded` | 2 | `ConfigurationService.matchesAnyName`, `ConfigurationService.isProjectNamedOnCommandLine` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:310` |
-| `ConfigurationService.resolveConfiguration` | 2 | `ConfigurationService.resolveBoundaries`, `ConfigurationService.resolveSelection` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:424` |
-| `ConfigurationService.resolveForProject` | 2 | `ConfigurationService.isProjectIncluded`, `ConfigurationService.resolveGraphOutput` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:452` |
+| `ConfigurationService.loadProjectConfiguration` | 3 | `ConfigurationLoaderService.findProjectConfigurationFile`, `UnknownConfigurationFileTypeError.constructor`, `ConfigurationLoaderService.loadConfigurationModule` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:237` |
+| `ConfigurationLoaderService.parseConfigurationFile` | 2 | `UnknownConfigurationFileTypeError.constructor`, `ConfigurationLoaderService.loadConfigurationModule` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration-loader/configuration-loader.service.ts:151` |
+| `ConfigurationLoaderService.resolveConfigurationPath` | 2 | `ConfigurationLoaderService.findWorkspaceRoot`, `ConfigurationFileNotFoundError.constructor` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration-loader/configuration-loader.service.ts:187` |
+| `OverrideResolutionService.resolveOverride` | 2 | `InputError.constructor`, `buildUndeclaredOverrideMessage` | `packages/ic-suite/codependix/codependix-configuration/src/modules/override-resolution/override-resolution.service.ts:48` |
+| `ConfigurationService.isProjectNamedOnCommandLine` | 2 | `ConfigurationService.matchesAnyName`, `ConfigurationService.some(…)` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:60` |
+| `ConfigurationService.splitSelectionArgument` | 2 | `ConfigurationService.filter(…)`, `ConfigurationService.map(…)` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:148` |
+| `ConfigurationService.isProjectIncluded` | 2 | `ConfigurationService.matchesAnyName`, `ConfigurationService.isProjectNamedOnCommandLine` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:170` |
+| `ConfigurationService.resolveConfiguration` | 2 | `ConfigurationService.resolveBoundaries`, `ConfigurationService.resolveSelection` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:270` |
+| `ConfigurationService.resolveForProject` | 2 | `ConfigurationService.isProjectIncluded`, `ConfigurationService.resolveGraphOutput` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:298` |
 | `refine(…)` | 1 | `some(…)` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.constants.ts:103` |
-| `ConfigurationService.findWorkspaceRoot` | 1 | `ConfigurationService.some(…)` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:120` |
-| `ConfigurationService.loadConfigurationModule` | 1 | `ConfigurationService.readDefaultExport` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:159` |
-| `ConfigurationService.matchesAnyGlob` | 1 | `ConfigurationService.some(…)` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:175` |
-| `ConfigurationService.matchesAnyName` | 1 | `ConfigurationService.matchesAnyGlob` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:180` |
-| `ConfigurationService.resolveSelection` | 1 | `ConfigurationService.splitSelectionArgument` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:278` |
-| `ConfigurationService.isProjectSelected` | 1 | `ConfigurationService.isProjectNamedOnCommandLine` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:335` |
-| `ConfigurationService.resolveForWorkspace` | 1 | `ConfigurationService.resolveGraphOutput` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:494` |
+| `ConfigurationLoaderService.findWorkspaceRoot` | 1 | `ConfigurationLoaderService.some(…)` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration-loader/configuration-loader.service.ts:111` |
+| `ConfigurationLoaderService.loadConfigurationModule` | 1 | `ConfigurationLoaderService.readDefaultExport` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration-loader/configuration-loader.service.ts:135` |
 | `missingInputError` | 1 | `InputError.constructor` | `packages/ic-suite/codependix/codependix-configuration/src/modules/input/input.constants.ts:29` |
 | `promptCancelledError` | 1 | `InputError.constructor` | `packages/ic-suite/codependix/codependix-configuration/src/modules/input/input.constants.ts:41` |
+| `OverrideResolutionService.applyOverrides` | 1 | `OverrideResolutionService.resolveOverride` | `packages/ic-suite/codependix/codependix-configuration/src/modules/override-resolution/override-resolution.service.ts:74` |
+| `ConfigurationService.matchesAnyGlob` | 1 | `ConfigurationService.some(…)` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:75` |
+| `ConfigurationService.matchesAnyName` | 1 | `ConfigurationService.matchesAnyGlob` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:80` |
+| `ConfigurationService.resolveSelection` | 1 | `ConfigurationService.splitSelectionArgument` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:138` |
+| `ConfigurationService.isProjectSelected` | 1 | `ConfigurationService.isProjectNamedOnCommandLine` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:195` |
+| `ConfigurationService.resolveForWorkspace` | 1 | `ConfigurationService.resolveGraphOutput` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:340` |
 | `InputService.assertCanPrompt` | 1 | `missingInputError` | `packages/ic-suite/codependix/codependix-configuration/src/modules/input/input.service.ts:38` |
-| `InputService.parsePathOption` | 1 | `InputService.parseOptionalOption` | `packages/ic-suite/codependix/codependix-configuration/src/modules/input/input.service.ts:70` |
+| `InputService.parseCommaDelimitedOption` | 1 | `InputService.map(…)` | `packages/ic-suite/codependix/codependix-configuration/src/modules/input/input.service.ts:54` |
+| `InputService.parsePathOption` | 1 | `InputService.parseOptionalOption` | `packages/ic-suite/codependix/codependix-configuration/src/modules/input/input.service.ts:87` |
 
 </details>
 <!-- CALL_STACKS_END -->

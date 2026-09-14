@@ -546,10 +546,10 @@ The workspace's call graph, traced by [callidescope](packages/ic-suite/callidesc
 
 | Measure | Value |
 | --- | --- |
-| Callables | 4847 |
-| Files | 1313 |
-| Calls traced | 5437 |
-| Call stacks | 1275 |
+| Callables | 4867 |
+| Files | 1321 |
+| Calls traced | 5449 |
+| Call stacks | 1285 |
 | Deepest stack | 17 |
 | Stacks through recursion | 12 |
 | Unfollowable calls | 334 |
@@ -578,7 +578,7 @@ The workspace's call graph, traced by [callidescope](packages/ic-suite/callidesc
 | `packages/ic-suite/codometer/codometer-cli` | 15 | 16 | 1 | 9 |
 | `packages/ic-suite/codometer/codometer-size` | 0 | 3 | 3 | 2 |
 | `packages/ic-suite/conformetry/conformetry-configuration` | 10 | 13 | 3 | 5 |
-| `packages/ic-suite/codependix/codependix-configuration` | 2 | 6 | 4 | 5 |
+| `packages/ic-suite/codependix/codependix-configuration` | 2 | 6 | 4 | 4 |
 | `packages/ic-suite/codependix/codependix-nx-projects` | 0 | 4 | 4 | 8 |
 | `packages/ic-suite/codependix/codependix-nestjs-modules` | 0 | 5 | 5 | 5 |
 | `packages/ic-suite/codometer/codometer-configuration` | 3 | 8 | 5 | 4 |
