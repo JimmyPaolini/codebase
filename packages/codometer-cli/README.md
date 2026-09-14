@@ -312,31 +312,23 @@ exit would claim otherwise.
 ## Custom statistics
 
 A repository that names files by convention has a vocabulary no analyzer knows
-about. The top-level `custom` array is what measures these counters,
-regardless of whether — or where — any output renders them:
-
-```ts
-custom: [
-  { label: "Service Files", patterns: ["**/*.service.ts"] },
-  { label: "Unit Tests", patterns: ["**/*.unit.test.ts"] },
-  { color: "16a34a", label: "Migrations", patterns: ["**/migrations/*.sql"] },
-],
-```
-
-An output's own `custom` array is a separate, later concern: it selects, by
-label, which of these counters that destination renders — a JSON report and a
-markdown report may still select entirely different labels:
+about. Each output destination carries its own `custom` list to count them —
+there is no longer one shared `statistics` array, so a JSON report and a
+markdown report may count entirely different things:
 
 ```ts
 outputs: [
-  { custom: ["Service Files"], path: "codometer-report.json", type: "json" },
-  { custom: ["Unit Tests"], path: "README.md", type: "markdown" },
+  {
+    custom: [
+      { label: "Service Files", patterns: ["**/*.service.ts"] },
+      { label: "Unit Tests", patterns: ["**/*.unit.test.ts"] },
+      { color: "16a34a", label: "Migrations", patterns: ["**/migrations/*.sql"] },
+    ],
+    path: "codometer-report.json",
+    type: "json",
+  },
 ],
 ```
-
-A label an output selects that `custom` never declared is refused when the
-configuration loads. A counter `custom` declares but no output selects is
-still measured and still gates a limit — it simply renders nowhere.
 
 Counters can also match _declarations_ rather than files, by shape:
 
@@ -628,9 +620,9 @@ Call stacks traced through `packages/codometer-cli`, deepest first. Each frame s
 
 | Measure | Value |
 | --- | --- |
-| Callables | 139 |
+| Callables | 140 |
 | Files | 42 |
-| Calls traced | 165 |
+| Calls traced | 167 |
 | Call stacks | 11 |
 | Deepest stack | 15 |
 | Stacks through recursion | 0 |
@@ -650,7 +642,7 @@ What this project is judged against, as declared in its own `callidescope.config
 **1. `MeasureCommand.run`** — depth ≥ 15 · decorated-method
 
 ```text
-🚀 MeasureCommand.run(_passedParameters: string[], options: MeasureCommandOptions): Promise<void> [packages/codometer-cli/src/modules/measure/measure.command.ts:393]
+🚀 MeasureCommand.run(_passedParameters: string[], options: MeasureCommandOptions): Promise<void> [packages/codometer-cli/src/modules/measure/measure.command.ts:399]
    ↳ Measure the repository and produce every resolved output.
   └─> MeasureService.measure(args: MeasureArguments): MeasurementResult [packages/codometer-cli/src/modules/measure/measure.service.ts:338]
      ↳ Measure every input the configuration declares.
@@ -819,15 +811,15 @@ What this project is judged against, as declared in its own `callidescope.config
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
 | `MeasureService.measure` | 10 | `MeasureService.collectStatistics`, `CustomizationService.buildCommentCounters`, `CustomizationService.buildSymbolCounters`, `MeasureService.measureInput`, `MeasureService.describeFailure`, `MetricIndexService.index`, `LimitsService.evaluate`, `MeasureService.find(…)`, `MeasureService.map(…)`, `MeasureService.readLimitFailures` | `packages/codometer-cli/src/modules/measure/measure.service.ts:338` |
-| `MeasureCommand.run` | 9 | `MeasureCommand.resolveWorkingDirectory`, `MeasureCommand.resolveRunPlan`, `RunPlanService.listOutputPaths`, `MeasureCommand.announceOutputPaths`, `MeasureService.measure`, `ReportService.build`, `DeliveryService.deliver`, `RunPlanService.selectScope`, `MeasureCommand.reportFindings` | `packages/codometer-cli/src/modules/measure/measure.command.ts:393` |
-| `MeasureService.analyzeFiles` | 6 | `LanguagesService.analyze`, `SizeService.analyze`, `CustomizationService.analyze`, `MeasureService.getFolderCount`, `MeasureService.buildJavascriptStatistics`, `MeasureService.buildTypescriptStatistics` | `packages/codometer-cli/src/modules/measure/measure.service.ts:78` |
+| `MeasureCommand.run` | 9 | `MeasureCommand.resolveWorkingDirectory`, `MeasureCommand.resolveRunPlan`, `RunPlanService.listOutputPaths`, `MeasureCommand.announceOutputPaths`, `MeasureService.measure`, `ReportService.build`, `DeliveryService.deliver`, `RunPlanService.selectScope`, `MeasureCommand.reportFindings` | `packages/codometer-cli/src/modules/measure/measure.command.ts:399` |
+| `MeasureCommand.resolveRunPlan` | 7 | `RunPlanService.selectMode`, `MeasureCommand.rejectCommandLine`, `MeasureCommand.readConfiguration`, `MeasureCommand.applyInputsOverride`, `RunPlanService.resolveFormat`, `RunPlanService.resolveDestinations`, `RunPlanService.resolveConsoleMarkdown` | `packages/codometer-cli/src/modules/measure/measure.command.ts:227` |
 
 <details>
-<summary>62 more callables</summary>
+<summary>63 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `MeasureCommand.resolveRunPlan` | 6 | `RunPlanService.selectMode`, `MeasureCommand.rejectCommandLine`, `MeasureCommand.readConfiguration`, `MeasureCommand.applyInputsOverride`, `RunPlanService.resolveFormat`, `RunPlanService.resolveDestinations` | `packages/codometer-cli/src/modules/measure/measure.command.ts:227` |
+| `MeasureService.analyzeFiles` | 6 | `LanguagesService.analyze`, `SizeService.analyze`, `CustomizationService.analyze`, `MeasureService.getFolderCount`, `MeasureService.buildJavascriptStatistics`, `MeasureService.buildTypescriptStatistics` | `packages/codometer-cli/src/modules/measure/measure.service.ts:78` |
 | `ChangesCommand.run` | 5 | `InputService.parseOptionalOption`, `InputService.parseDirectoryOption`, `ChangesService.collect`, `RenderService.renderSection`, `DocumentsService.emit` | `packages/codometer-cli/src/modules/changes/changes.command.ts:97` |
 | `LimitsService.resolve` | 5 | `LimitsService.findCandidates`, `UnboundMetricError.constructor`, `LimitsService.describeTargets`, `LimitsService.map(…)`, `EmptyTargetError.constructor` | `packages/codometer-cli/src/modules/limits/limits.service.ts:156` |
 | `MeasureService.measureInput` | 5 | `MeasureService.discoverInputFiles`, `MeasureService.runsAnalysis`, `MeasureService.analyzeFiles`, `DiscoveryService.categorize`, `SizeService.analyze` | `packages/codometer-cli/src/modules/measure/measure.service.ts:279` |
@@ -857,8 +849,8 @@ What this project is judged against, as declared in its own `callidescope.config
 | `ReportService.build` | 2 | `ReportService.indexLimits`, `ReportService.buildMetrics` | `packages/codometer-cli/src/modules/report/report.service.ts:121` |
 | `RunPlanService.resolveMarkdown` | 2 | `RunPlanService.findConfiguredOutput`, `RunPlanService.resolvePath` | `packages/codometer-cli/src/modules/run-plan/run-plan.service.ts:172` |
 | `RunPlanService.listOutputPaths` | 2 | `RunPlanService.map(…)`, `RunPlanService.filter(…)` | `packages/codometer-cli/src/modules/run-plan/run-plan.service.ts:262` |
-| `RunPlanService.resolveDestinations` | 2 | `RunPlanService.resolveJson`, `RunPlanService.resolveMarkdown` | `packages/codometer-cli/src/modules/run-plan/run-plan.service.ts:287` |
-| `RunPlanService.resolveFormat` | 2 | `RunPlanService.find(…)`, `RunPlanService.map(…)` | `packages/codometer-cli/src/modules/run-plan/run-plan.service.ts:310` |
+| `RunPlanService.resolveDestinations` | 2 | `RunPlanService.resolveJson`, `RunPlanService.resolveMarkdown` | `packages/codometer-cli/src/modules/run-plan/run-plan.service.ts:305` |
+| `RunPlanService.resolveFormat` | 2 | `RunPlanService.find(…)`, `RunPlanService.map(…)` | `packages/codometer-cli/src/modules/run-plan/run-plan.service.ts:328` |
 | `ChangesCommand.parseBaseline` | 1 | `InputService.parseOptionalOption` | `packages/codometer-cli/src/modules/changes/changes.command.ts:52` |
 | `ChangesCommand.parseBaselineUrl` | 1 | `InputService.parseOptionalOption` | `packages/codometer-cli/src/modules/changes/changes.command.ts:61` |
 | `ChangesCommand.parseDirectory` | 1 | `InputService.parseDirectoryOption` | `packages/codometer-cli/src/modules/changes/changes.command.ts:70` |
@@ -883,8 +875,9 @@ What this project is judged against, as declared in its own `callidescope.config
 | `RunPlanService.findConfiguredOutput` | 1 | `RunPlanService.find(…)` | `packages/codometer-cli/src/modules/run-plan/run-plan.service.ts:65` |
 | `RunPlanService.resolveJson` | 1 | `RunPlanService.findConfiguredOutput` | `packages/codometer-cli/src/modules/run-plan/run-plan.service.ts:114` |
 | `RunPlanService.validateCheckNames` | 1 | `RunPlanService.describeAcceptedCheckNames` | `packages/codometer-cli/src/modules/run-plan/run-plan.service.ts:237` |
-| `RunPlanService.selectMode` | 1 | `RunPlanService.readCheckNames` | `packages/codometer-cli/src/modules/run-plan/run-plan.service.ts:340` |
-| `RunPlanService.selectScope` | 1 | `RunPlanService.some(…)` | `packages/codometer-cli/src/modules/run-plan/run-plan.service.ts:368` |
+| `RunPlanService.resolveConsoleMarkdown` | 1 | `RunPlanService.resolveMarkdown` | `packages/codometer-cli/src/modules/run-plan/run-plan.service.ts:290` |
+| `RunPlanService.selectMode` | 1 | `RunPlanService.readCheckNames` | `packages/codometer-cli/src/modules/run-plan/run-plan.service.ts:358` |
+| `RunPlanService.selectScope` | 1 | `RunPlanService.some(…)` | `packages/codometer-cli/src/modules/run-plan/run-plan.service.ts:386` |
 | `MeasureService.excludeOutputPaths` | 1 | `MeasureService.filter(…)` | `packages/codometer-cli/src/modules/measure/measure.service.ts:242` |
 | `MeasureService.readLimitFailures` | 1 | `MeasureService.map(…)` | `packages/codometer-cli/src/modules/measure/measure.service.ts:308` |
 | `MeasureCommand.readConfiguration` | 1 | `ConfigurationService.loadConfiguration` | `packages/codometer-cli/src/modules/measure/measure.command.ts:112` |

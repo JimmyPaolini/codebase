@@ -98,7 +98,7 @@ _This project has no internal file imports._
 ### Project
 
 ![Lines of Code](https://img.shields.io/badge/Lines_of_Code-191-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-86.08_kB-6b7280?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-86.10_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-5-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-5-3178c6?style=flat-square)
 
@@ -282,7 +282,7 @@ _This project has no internal file imports._
 ### Markdown
 
 ![Markdown Files](https://img.shields.io/badge/Markdown_Files-4-083fa1?style=flat-square)
-![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-1386-1f6feb?style=flat-square)
+![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-1387-1f6feb?style=flat-square)
 ![H1](https://img.shields.io/badge/H1-4-7c3aed?style=flat-square)
 ![H2](https://img.shields.io/badge/H2-32-8b5cf6?style=flat-square)
 ![H3](https://img.shields.io/badge/H3-19-a78bfa?style=flat-square)

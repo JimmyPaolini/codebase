@@ -65,12 +65,13 @@ permissions:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  # Deliberately not cancelling. One `gh pr edit` that adds a few labels and
-  # an assignee fires several of the events above within a second, and this
-  # workflow is a required check: were a `cancelled` conclusion to land after
-  # a successful one, the check would sit red with no further event left to
-  # clear it, leaving the pull request unmergeable. These runs take about
-  # thirty seconds and build no Nx graph, so cancelling saves almost nothing.
+  # Still not cancelling. This only trims the ordinary case — one pending run
+  # queued behind whatever is in progress — and is not what keeps the check
+  # from getting stuck: GitHub does not serialize a burst of same-second
+  # events reliably (see the "🚦 Skip If Superseded" step below, which is the
+  # part that actually makes this safe). Cancelling here would race that step
+  # for no benefit, since these runs take about thirty seconds and build no
+  # Nx graph.
   cancel-in-progress: false
 
 jobs:
@@ -83,13 +84,43 @@ jobs:
       !startsWith(github.head_ref, 'renovate/')
 
     steps:
+      # `gh pr create --label a --label b --assignee @me` fires `opened` plus
+      # one `labeled` event per label plus `assigned`, all within a second or
+      # two — each one a `pull_request` trigger above. The `concurrency`
+      # block below only queues one pending run behind whatever is in
+      # progress; it does not serialize a burst like this reliably, and a
+      # stale `cancelled` conclusion can land after a later `success` with no
+      # further event left to replace it, leaving the required check stuck.
+      # Deciding this in-job rather than trusting GitHub's queue ordering
+      # makes it deterministic: bail out if a newer run of this workflow
+      # already exists for this branch.
+      - name: 🚦 Skip If Superseded
+        id: supersession
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_BRANCH: ${{ github.head_ref }}
+          RUNS_ENDPOINT: repos/${{ github.repository }}/actions/workflows/validate-conventions.yml/runs
+        run: |
+          LATEST_RUN_ID="$(gh api \
+            "${RUNS_ENDPOINT}?event=pull_request&branch=${HEAD_BRANCH}&per_page=1" \
+            --jq '.workflow_runs[0].id')"
+          if [ "$LATEST_RUN_ID" != "${{ github.run_id }}" ]; then
+            echo "⏭️ Run ${LATEST_RUN_ID} is newer for this pull request."
+            echo "superseded=true" >>"$GITHUB_OUTPUT"
+          else
+            echo "superseded=false" >>"$GITHUB_OUTPUT"
+          fi
+
       - name: 📥 Checkout Repository
+        if: steps.supersession.outputs.superseded == 'false'
         uses: actions/checkout@v7
 
       - name: 📦 Setup pnpm
+        if: steps.supersession.outputs.superseded == 'false'
         uses: ./.github/actions/setup-pnpm
 
       - name: 🟢 Setup node
+        if: steps.supersession.outputs.superseded == 'false'
         uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
@@ -104,12 +135,14 @@ jobs:
       # Still no Nx cache, no uv, and no Homebrew: there is no project graph to
       # build.
       - name: 📚 Install Root Dependencies
+        if: steps.supersession.outputs.superseded == 'false'
         run: |
           CI=true pnpm install --frozen-lockfile --reporter=append-only \
             --filter . --filter synchronization... --filter validation... \
             --ignore-scripts
 
       - name: 🎋 Validate Branch Name
+        if: steps.supersession.outputs.superseded == 'false'
         env:
           BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
         run: |
@@ -120,6 +153,7 @@ jobs:
           pnpm exec validate-branch-name -t "$BRANCH_NAME"
 
       - name: 📝 Validate Pull Request Title
+        if: steps.supersession.outputs.superseded == 'false'
         env:
           PULL_REQUEST_TITLE: ${{ github.event.pull_request.title }}
           NODE_OPTIONS: --import=tsx
@@ -145,7 +179,9 @@ jobs:
       # request can never carry the four required headings. Everything else
       # in this job still runs against it.
       - name: 🪢 Validate Pull Request Body
-        if: github.actor != 'dependabot[bot]'
+        if: >-
+          steps.supersession.outputs.superseded == 'false' &&
+          github.actor != 'dependabot[bot]'
         env:
           GH_TOKEN: ${{ github.token }}
           PULL_REQUEST: ${{ github.event.pull_request.number }}
@@ -158,8 +194,8 @@ jobs:
 
       - name: 🏷️ Ensure Pull Request Labels
         if: >-
-          github.event.action == 'opened' ||
-          github.event.action == 'reopened'
+          steps.supersession.outputs.superseded == 'false' &&
+          (github.event.action == 'opened' || github.event.action == 'reopened')
         continue-on-error: true
         env:
           GH_TOKEN: ${{ github.token }}
@@ -180,6 +216,7 @@ jobs:
       # It also drops the full JSON label array from the environment, the same
       # argv-and-environment size ceiling the body step avoids.
       - name: 🧾 Validate Pull Request Metadata
+        if: steps.supersession.outputs.superseded == 'false'
         env:
           GH_TOKEN: ${{ github.token }}
           PULL_REQUEST_NUMBER: ${{ github.event.pull_request.number }}
@@ -189,6 +226,7 @@ jobs:
             "${PULL_REQUEST_NUMBER}"
 
       - name: 📈 Validate Pull Request Release Significance
+        if: steps.supersession.outputs.superseded == 'false'
         env:
           GH_TOKEN: ${{ github.token }}
           PULL_REQUEST_NUMBER: ${{ github.event.pull_request.number }}
