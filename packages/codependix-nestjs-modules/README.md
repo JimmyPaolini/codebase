@@ -32,12 +32,13 @@ graph LR
 <!-- codependix:start name="codependix-nestjs" -->
 ```mermaid
 flowchart LR
-  LoggerModule
+  LoggerModule([LoggerModule])
   ModuleGraphModule
+  NestjsModulesWorkspaceGraphModule
   NestjsProjectModule
-  ModuleGraphModule --> LoggerModule
-  NestjsProjectModule --> LoggerModule
 ```
+
+_Rounded modules are global: every module can inject them, so their edges are left out._
 <!-- codependix:end name="codependix-nestjs" -->
 
 ### File Imports
@@ -46,6 +47,7 @@ flowchart LR
 ```mermaid
 graph LR
   file_callidescope_config_ts["callidescope.config.ts"]
+  file_codependix_config_ts["codependix.config.ts"]
   file_codometer_config_ts["codometer.config.ts"]
   file_eslint_config_ts["eslint.config.ts"]
   file_src_index_ts["src/index.ts"]
@@ -56,6 +58,12 @@ graph LR
   file_src_modules_module_graph_module_graph_service_ts["src/modules/module-graph/module-graph.service.ts"]
   file_src_modules_module_graph_module_graph_service_unit_test_ts["src/modules/module-graph/module-graph.service.unit.test.ts"]
   file_src_modules_module_graph_module_graph_types_ts["src/modules/module-graph/module-graph.types.ts"]
+  file_src_modules_nestjs_modules_workspace_graph_nestjs_modules_workspace_graph_constants_ts["src/modules/nestjs-modules-workspace-graph/nestjs-modules-workspace-graph.constants.ts"]
+  file_src_modules_nestjs_modules_workspace_graph_nestjs_modules_workspace_graph_module_ts["src/modules/nestjs-modules-workspace-graph/nestjs-modules-workspace-graph.module.ts"]
+  file_src_modules_nestjs_modules_workspace_graph_nestjs_modules_workspace_graph_module_unit_test_ts["src/modules/nestjs-modules-workspace-graph/nestjs-modules-workspace-graph.module.unit.test.ts"]
+  file_src_modules_nestjs_modules_workspace_graph_nestjs_modules_workspace_graph_service_ts["src/modules/nestjs-modules-workspace-graph/nestjs-modules-workspace-graph.service.ts"]
+  file_src_modules_nestjs_modules_workspace_graph_nestjs_modules_workspace_graph_service_unit_test_ts["src/modules/nestjs-modules-workspace-graph/nestjs-modules-workspace-graph.service.unit.test.ts"]
+  file_src_modules_nestjs_modules_workspace_graph_nestjs_modules_workspace_graph_types_ts["src/modules/nestjs-modules-workspace-graph/nestjs-modules-workspace-graph.types.ts"]
   file_src_modules_nestjs_project_nestjs_project_synthetic_module_ts["src/modules/nestjs-project/nestjs-project-synthetic.module.ts"]
   file_src_modules_nestjs_project_nestjs_project_constants_ts["src/modules/nestjs-project/nestjs-project.constants.ts"]
   file_src_modules_nestjs_project_nestjs_project_module_ts["src/modules/nestjs-project/nestjs-project.module.ts"]
@@ -74,6 +82,14 @@ graph LR
   file_src_modules_module_graph_module_graph_service_ts --> file_src_modules_module_graph_module_graph_constants_ts
   file_src_modules_module_graph_module_graph_service_ts --> file_src_modules_module_graph_module_graph_types_ts
   file_src_modules_module_graph_module_graph_service_unit_test_ts --> file_src_modules_module_graph_module_graph_service_ts
+  file_src_modules_nestjs_modules_workspace_graph_nestjs_modules_workspace_graph_module_ts --> file_src_modules_nestjs_modules_workspace_graph_nestjs_modules_workspace_graph_service_ts
+  file_src_modules_nestjs_modules_workspace_graph_nestjs_modules_workspace_graph_module_unit_test_ts --> file_src_modules_nestjs_modules_workspace_graph_nestjs_modules_workspace_graph_module_ts
+  file_src_modules_nestjs_modules_workspace_graph_nestjs_modules_workspace_graph_module_unit_test_ts --> file_src_modules_nestjs_modules_workspace_graph_nestjs_modules_workspace_graph_service_ts
+  file_src_modules_nestjs_modules_workspace_graph_nestjs_modules_workspace_graph_service_ts --> file_src_modules_module_graph_module_graph_types_ts
+  file_src_modules_nestjs_modules_workspace_graph_nestjs_modules_workspace_graph_service_ts --> file_src_modules_nestjs_modules_workspace_graph_nestjs_modules_workspace_graph_constants_ts
+  file_src_modules_nestjs_modules_workspace_graph_nestjs_modules_workspace_graph_service_ts --> file_src_modules_nestjs_modules_workspace_graph_nestjs_modules_workspace_graph_types_ts
+  file_src_modules_nestjs_modules_workspace_graph_nestjs_modules_workspace_graph_service_unit_test_ts --> file_src_modules_module_graph_module_graph_types_ts
+  file_src_modules_nestjs_modules_workspace_graph_nestjs_modules_workspace_graph_service_unit_test_ts --> file_src_modules_nestjs_modules_workspace_graph_nestjs_modules_workspace_graph_service_ts
   file_src_modules_nestjs_project_nestjs_project_module_ts --> file_src_modules_nestjs_project_nestjs_project_service_ts
   file_src_modules_nestjs_project_nestjs_project_module_unit_test_ts --> file_src_modules_nestjs_project_nestjs_project_module_ts
   file_src_modules_nestjs_project_nestjs_project_module_unit_test_ts --> file_src_modules_nestjs_project_nestjs_project_service_ts

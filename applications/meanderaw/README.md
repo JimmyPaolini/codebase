@@ -2671,11 +2671,7 @@ graph LR
 <!-- codependix:start name="codependix-nestjs" -->
 ```mermaid
 flowchart LR
-  BoxesMotifModule
-  BranchMotifModule
-  ChainMotifModule
   ConfigModule([ConfigModule])
-  CrossMotifModule
   DiscoveryModule
   DrawModule
   GridGeometryModule
@@ -2688,38 +2684,20 @@ flowchart LR
   MeanderDatabaseModule
   MeanderDecodingModule
   MeanderEnumerationModule
-  MeanderGenerationModule
   MeanderLatticeModule
   MeanderRenderingModule
   MeanderTopologyModule
   MosaicNamingModule
   MosaicTileModule
-  MotifTransformsModule
-  NegativeMotifModule
-  ParallelMotifModule
-  SnakeMotifModule
   SvgRenderingModule
-  SwirlMotifModule
   TypeOrmModule
-  WhirlMotifModule
-  BoxesMotifModule --> GridGeometryModule
-  BoxesMotifModule --> MotifTransformsModule
-  BranchMotifModule --> GridGeometryModule
-  ChainMotifModule --> GridGeometryModule
-  ChainMotifModule --> MotifTransformsModule
-  ChainMotifModule --> SnakeMotifModule
-  CrossMotifModule --> GridGeometryModule
   DrawModule --> HardcodedMeandersModule
-  DrawModule --> LatticeIdentificationModule
   DrawModule --> MeanderCharacteristicsModule
   DrawModule --> MeanderClassificationModule
   DrawModule --> MeanderDatabaseModule
   DrawModule --> MeanderDecodingModule
   DrawModule --> MeanderEnumerationModule
-  DrawModule --> MeanderGenerationModule
   DrawModule --> MeanderRenderingModule
-  DrawModule --> MosaicNamingModule
-  DrawModule --> ParallelMotifModule
   HardcodedMeandersModule --> MeanderCharacteristicsModule
   HardcodedMeandersModule --> MeanderDatabaseModule
   HardcodedMeandersModule --> MeanderDecodingModule
@@ -2736,18 +2714,6 @@ flowchart LR
   MeanderDatabaseModule --> TypeOrmModule
   MeanderEnumerationModule --> LatticeIdentificationModule
   MeanderEnumerationModule --> MosaicTileModule
-  MeanderGenerationModule --> BoxesMotifModule
-  MeanderGenerationModule --> BranchMotifModule
-  MeanderGenerationModule --> ChainMotifModule
-  MeanderGenerationModule --> CrossMotifModule
-  MeanderGenerationModule --> GridGeometryModule
-  MeanderGenerationModule --> MosaicTileModule
-  MeanderGenerationModule --> NegativeMotifModule
-  MeanderGenerationModule --> ParallelMotifModule
-  MeanderGenerationModule --> SnakeMotifModule
-  MeanderGenerationModule --> SvgRenderingModule
-  MeanderGenerationModule --> SwirlMotifModule
-  MeanderGenerationModule --> WhirlMotifModule
   MeanderRenderingModule --> GridGeometryModule
   MeanderRenderingModule --> SvgRenderingModule
   MeanderTopologyModule --> MeanderLatticeModule
@@ -2755,16 +2721,6 @@ flowchart LR
   MosaicTileModule --> GridGeometryModule
   MosaicTileModule --> MeanderTopologyModule
   MosaicTileModule --> SvgRenderingModule
-  NegativeMotifModule --> GridGeometryModule
-  NegativeMotifModule --> MosaicTileModule
-  NegativeMotifModule --> SvgRenderingModule
-  ParallelMotifModule --> GridGeometryModule
-  SnakeMotifModule --> GridGeometryModule
-  SnakeMotifModule --> MotifTransformsModule
-  SwirlMotifModule --> GridGeometryModule
-  SwirlMotifModule --> MotifTransformsModule
-  WhirlMotifModule --> GridGeometryModule
-  WhirlMotifModule --> MotifTransformsModule
 ```
 
 _Rounded modules are global: every module can inject them, so their edges are left out._
@@ -2776,54 +2732,33 @@ _Rounded modules are global: every module can inject them, so their edges are le
 ```mermaid
 graph LR
   file_callidescope_config_ts["callidescope.config.ts"]
+  file_codependix_config_ts["codependix.config.ts"]
   file_codometer_config_ts["codometer.config.ts"]
   file_eslint_config_ts["eslint.config.ts"]
-  file_scripts_generate_hardcoded_corpus_ts["scripts/generate-hardcoded-corpus.ts"]
   file_src_constants_ts["src/constants.ts"]
   file_src_main_end_to_end_test_ts["src/main.end-to-end.test.ts"]
   file_src_main_module_ts["src/main.module.ts"]
   file_src_main_ts["src/main.ts"]
   file_src_main_unit_test_ts["src/main.unit.test.ts"]
-  file_src_modules_boxes_motif_boxes_motif_constants_ts["src/modules/boxes-motif/boxes-motif.constants.ts"]
-  file_src_modules_boxes_motif_boxes_motif_module_ts["src/modules/boxes-motif/boxes-motif.module.ts"]
-  file_src_modules_boxes_motif_boxes_motif_service_ts["src/modules/boxes-motif/boxes-motif.service.ts"]
-  file_src_modules_boxes_motif_boxes_motif_service_unit_test_ts["src/modules/boxes-motif/boxes-motif.service.unit.test.ts"]
-  file_src_modules_boxes_motif_boxes_motif_types_ts["src/modules/boxes-motif/boxes-motif.types.ts"]
-  file_src_modules_branch_motif_branch_motif_constants_ts["src/modules/branch-motif/branch-motif.constants.ts"]
-  file_src_modules_branch_motif_branch_motif_module_ts["src/modules/branch-motif/branch-motif.module.ts"]
-  file_src_modules_branch_motif_branch_motif_service_ts["src/modules/branch-motif/branch-motif.service.ts"]
-  file_src_modules_branch_motif_branch_motif_service_unit_test_ts["src/modules/branch-motif/branch-motif.service.unit.test.ts"]
-  file_src_modules_branch_motif_branch_motif_types_ts["src/modules/branch-motif/branch-motif.types.ts"]
-  file_src_modules_chain_motif_chain_motif_constants_ts["src/modules/chain-motif/chain-motif.constants.ts"]
-  file_src_modules_chain_motif_chain_motif_module_ts["src/modules/chain-motif/chain-motif.module.ts"]
-  file_src_modules_chain_motif_chain_motif_service_ts["src/modules/chain-motif/chain-motif.service.ts"]
-  file_src_modules_chain_motif_chain_motif_service_unit_test_ts["src/modules/chain-motif/chain-motif.service.unit.test.ts"]
-  file_src_modules_chain_motif_chain_motif_types_ts["src/modules/chain-motif/chain-motif.types.ts"]
-  file_src_modules_cross_motif_cross_motif_constants_ts["src/modules/cross-motif/cross-motif.constants.ts"]
-  file_src_modules_cross_motif_cross_motif_module_ts["src/modules/cross-motif/cross-motif.module.ts"]
-  file_src_modules_cross_motif_cross_motif_service_ts["src/modules/cross-motif/cross-motif.service.ts"]
-  file_src_modules_cross_motif_cross_motif_service_unit_test_ts["src/modules/cross-motif/cross-motif.service.unit.test.ts"]
-  file_src_modules_cross_motif_cross_motif_types_ts["src/modules/cross-motif/cross-motif.types.ts"]
+  file_src_modules_draw_draw_check_sweep_module_ts["src/modules/draw/draw-check-sweep.module.ts"]
+  file_src_modules_draw_draw_check_command_integration_test_ts["src/modules/draw/draw-check.command.integration.test.ts"]
+  file_src_modules_draw_draw_check_constants_ts["src/modules/draw/draw-check.constants.ts"]
+  file_src_modules_draw_draw_check_service_ts["src/modules/draw/draw-check.service.ts"]
+  file_src_modules_draw_draw_check_service_unit_test_ts["src/modules/draw/draw-check.service.unit.test.ts"]
+  file_src_modules_draw_draw_check_types_ts["src/modules/draw/draw-check.types.ts"]
   file_src_modules_draw_draw_code_service_ts["src/modules/draw/draw-code.service.ts"]
   file_src_modules_draw_draw_code_service_unit_test_ts["src/modules/draw/draw-code.service.unit.test.ts"]
-  file_src_modules_draw_draw_combinations_service_ts["src/modules/draw/draw-combinations.service.ts"]
-  file_src_modules_draw_draw_combinations_service_unit_test_ts["src/modules/draw/draw-combinations.service.unit.test.ts"]
   file_src_modules_draw_draw_enumeration_service_integration_test_ts["src/modules/draw/draw-enumeration.service.integration.test.ts"]
   file_src_modules_draw_draw_enumeration_service_ts["src/modules/draw/draw-enumeration.service.ts"]
   file_src_modules_draw_draw_enumeration_service_unit_test_ts["src/modules/draw/draw-enumeration.service.unit.test.ts"]
+  file_src_modules_draw_draw_index_constants_ts["src/modules/draw/draw-index.constants.ts"]
+  file_src_modules_draw_draw_index_service_integration_test_ts["src/modules/draw/draw-index.service.integration.test.ts"]
   file_src_modules_draw_draw_index_service_ts["src/modules/draw/draw-index.service.ts"]
   file_src_modules_draw_draw_index_service_unit_test_ts["src/modules/draw/draw-index.service.unit.test.ts"]
-  file_src_modules_draw_draw_negative_permutations_service_ts["src/modules/draw/draw-negative-permutations.service.ts"]
-  file_src_modules_draw_draw_negative_permutations_service_unit_test_ts["src/modules/draw/draw-negative-permutations.service.unit.test.ts"]
-  file_src_modules_draw_draw_parameters_service_ts["src/modules/draw/draw-parameters.service.ts"]
-  file_src_modules_draw_draw_parameters_service_unit_test_ts["src/modules/draw/draw-parameters.service.unit.test.ts"]
-  file_src_modules_draw_draw_permutations_service_integration_test_ts["src/modules/draw/draw-permutations.service.integration.test.ts"]
-  file_src_modules_draw_draw_permutations_service_ts["src/modules/draw/draw-permutations.service.ts"]
-  file_src_modules_draw_draw_permutations_service_unit_test_ts["src/modules/draw/draw-permutations.service.unit.test.ts"]
+  file_src_modules_draw_draw_index_types_ts["src/modules/draw/draw-index.types.ts"]
   file_src_modules_draw_draw_record_service_ts["src/modules/draw/draw-record.service.ts"]
   file_src_modules_draw_draw_record_service_unit_test_ts["src/modules/draw/draw-record.service.unit.test.ts"]
-  file_src_modules_draw_draw_rendering_service_ts["src/modules/draw/draw-rendering.service.ts"]
-  file_src_modules_draw_draw_rendering_service_unit_test_ts["src/modules/draw/draw-rendering.service.unit.test.ts"]
+  file_src_modules_draw_draw_sweep_command_integration_test_ts["src/modules/draw/draw-sweep.command.integration.test.ts"]
   file_src_modules_draw_draw_command_integration_test_ts["src/modules/draw/draw.command.integration.test.ts"]
   file_src_modules_draw_draw_command_ts["src/modules/draw/draw.command.ts"]
   file_src_modules_draw_draw_command_unit_test_ts["src/modules/draw/draw.command.unit.test.ts"]
@@ -2839,7 +2774,6 @@ graph LR
   file_src_modules_hardcoded_meanders_branch_constants_ts["src/modules/hardcoded-meanders/branch.constants.ts"]
   file_src_modules_hardcoded_meanders_chain_constants_ts["src/modules/hardcoded-meanders/chain.constants.ts"]
   file_src_modules_hardcoded_meanders_cross_constants_ts["src/modules/hardcoded-meanders/cross.constants.ts"]
-  file_src_modules_hardcoded_meanders_hardcoded_ingestion_command_integration_test_ts["src/modules/hardcoded-meanders/hardcoded-ingestion.command.integration.test.ts"]
   file_src_modules_hardcoded_meanders_hardcoded_meanders_constants_ts["src/modules/hardcoded-meanders/hardcoded-meanders.constants.ts"]
   file_src_modules_hardcoded_meanders_hardcoded_meanders_module_ts["src/modules/hardcoded-meanders/hardcoded-meanders.module.ts"]
   file_src_modules_hardcoded_meanders_hardcoded_meanders_service_ts["src/modules/hardcoded-meanders/hardcoded-meanders.service.ts"]
@@ -2851,14 +2785,12 @@ graph LR
   file_src_modules_hardcoded_meanders_parallel_3_constants_ts["src/modules/hardcoded-meanders/parallel-3.constants.ts"]
   file_src_modules_hardcoded_meanders_parallel_4_constants_ts["src/modules/hardcoded-meanders/parallel-4.constants.ts"]
   file_src_modules_hardcoded_meanders_parallel_5_constants_ts["src/modules/hardcoded-meanders/parallel-5.constants.ts"]
-  file_src_modules_hardcoded_meanders_parallel_6_constants_ts["src/modules/hardcoded-meanders/parallel-6.constants.ts"]
   file_src_modules_hardcoded_meanders_parallel_constants_ts["src/modules/hardcoded-meanders/parallel.constants.ts"]
   file_src_modules_hardcoded_meanders_snake_constants_ts["src/modules/hardcoded-meanders/snake.constants.ts"]
   file_src_modules_hardcoded_meanders_swirl_constants_ts["src/modules/hardcoded-meanders/swirl.constants.ts"]
   file_src_modules_hardcoded_meanders_whirl_constants_ts["src/modules/hardcoded-meanders/whirl.constants.ts"]
   file_src_modules_lattice_identification_lattice_identification_constants_ts["src/modules/lattice-identification/lattice-identification.constants.ts"]
   file_src_modules_lattice_identification_lattice_identification_module_ts["src/modules/lattice-identification/lattice-identification.module.ts"]
-  file_src_modules_lattice_identification_lattice_identification_service_integration_test_ts["src/modules/lattice-identification/lattice-identification.service.integration.test.ts"]
   file_src_modules_lattice_identification_lattice_identification_service_ts["src/modules/lattice-identification/lattice-identification.service.ts"]
   file_src_modules_lattice_identification_lattice_identification_service_unit_test_ts["src/modules/lattice-identification/lattice-identification.service.unit.test.ts"]
   file_src_modules_lattice_identification_lattice_identification_types_ts["src/modules/lattice-identification/lattice-identification.types.ts"]
@@ -2891,18 +2823,6 @@ graph LR
   file_src_modules_meander_enumeration_meander_enumeration_service_ts["src/modules/meander-enumeration/meander-enumeration.service.ts"]
   file_src_modules_meander_enumeration_meander_enumeration_service_unit_test_ts["src/modules/meander-enumeration/meander-enumeration.service.unit.test.ts"]
   file_src_modules_meander_enumeration_meander_enumeration_types_ts["src/modules/meander-enumeration/meander-enumeration.types.ts"]
-  file_src_modules_meander_generation_meander_generation_constants_ts["src/modules/meander-generation/meander-generation.constants.ts"]
-  file_src_modules_meander_generation_meander_generation_constants_unit_test_ts["src/modules/meander-generation/meander-generation.constants.unit.test.ts"]
-  file_src_modules_meander_generation_meander_generation_module_ts["src/modules/meander-generation/meander-generation.module.ts"]
-  file_src_modules_meander_generation_meander_generation_service_ts["src/modules/meander-generation/meander-generation.service.ts"]
-  file_src_modules_meander_generation_meander_generation_service_unit_test_ts["src/modules/meander-generation/meander-generation.service.unit.test.ts"]
-  file_src_modules_meander_generation_meander_generation_types_ts["src/modules/meander-generation/meander-generation.types.ts"]
-  file_src_modules_meander_generation_meander_generation_utilities_ts["src/modules/meander-generation/meander-generation.utilities.ts"]
-  file_src_modules_meander_generation_motif_pitch_service_ts["src/modules/meander-generation/motif-pitch.service.ts"]
-  file_src_modules_meander_generation_motif_pitch_service_unit_test_ts["src/modules/meander-generation/motif-pitch.service.unit.test.ts"]
-  file_src_modules_meander_generation_motif_registry_service_ts["src/modules/meander-generation/motif-registry.service.ts"]
-  file_src_modules_meander_generation_motif_registry_service_unit_test_ts["src/modules/meander-generation/motif-registry.service.unit.test.ts"]
-  file_src_modules_meander_generation_sub_family_constants_ts["src/modules/meander-generation/sub-family.constants.ts"]
   file_src_modules_meander_lattice_meander_lattice_constants_ts["src/modules/meander-lattice/meander-lattice.constants.ts"]
   file_src_modules_meander_lattice_meander_lattice_module_ts["src/modules/meander-lattice/meander-lattice.module.ts"]
   file_src_modules_meander_lattice_meander_lattice_service_ts["src/modules/meander-lattice/meander-lattice.service.ts"]
@@ -2915,7 +2835,6 @@ graph LR
   file_src_modules_meander_rendering_meander_rendering_types_ts["src/modules/meander-rendering/meander-rendering.types.ts"]
   file_src_modules_meander_topology_meander_topology_constants_ts["src/modules/meander-topology/meander-topology.constants.ts"]
   file_src_modules_meander_topology_meander_topology_module_ts["src/modules/meander-topology/meander-topology.module.ts"]
-  file_src_modules_meander_topology_meander_topology_service_integration_test_ts["src/modules/meander-topology/meander-topology.service.integration.test.ts"]
   file_src_modules_meander_topology_meander_topology_service_ts["src/modules/meander-topology/meander-topology.service.ts"]
   file_src_modules_meander_topology_meander_topology_service_unit_test_ts["src/modules/meander-topology/meander-topology.service.unit.test.ts"]
   file_src_modules_meander_topology_meander_topology_types_ts["src/modules/meander-topology/meander-topology.types.ts"]
@@ -2942,170 +2861,52 @@ graph LR
   file_src_modules_mosaic_tile_mosaic_tile_types_ts["src/modules/mosaic-tile/mosaic-tile.types.ts"]
   file_src_modules_mosaic_tile_mosaic_tiles_service_ts["src/modules/mosaic-tile/mosaic-tiles.service.ts"]
   file_src_modules_mosaic_tile_mosaic_tiles_service_unit_test_ts["src/modules/mosaic-tile/mosaic-tiles.service.unit.test.ts"]
-  file_src_modules_motif_transforms_motif_transforms_constants_ts["src/modules/motif-transforms/motif-transforms.constants.ts"]
-  file_src_modules_motif_transforms_motif_transforms_module_ts["src/modules/motif-transforms/motif-transforms.module.ts"]
-  file_src_modules_motif_transforms_motif_transforms_service_ts["src/modules/motif-transforms/motif-transforms.service.ts"]
-  file_src_modules_motif_transforms_motif_transforms_service_unit_test_ts["src/modules/motif-transforms/motif-transforms.service.unit.test.ts"]
-  file_src_modules_motif_transforms_motif_transforms_types_ts["src/modules/motif-transforms/motif-transforms.types.ts"]
-  file_src_modules_negative_motif_negative_motif_constants_ts["src/modules/negative-motif/negative-motif.constants.ts"]
-  file_src_modules_negative_motif_negative_motif_module_ts["src/modules/negative-motif/negative-motif.module.ts"]
-  file_src_modules_negative_motif_negative_motif_service_ts["src/modules/negative-motif/negative-motif.service.ts"]
-  file_src_modules_negative_motif_negative_motif_service_unit_test_ts["src/modules/negative-motif/negative-motif.service.unit.test.ts"]
-  file_src_modules_negative_motif_negative_motif_types_ts["src/modules/negative-motif/negative-motif.types.ts"]
-  file_src_modules_negative_motif_negative_source_service_ts["src/modules/negative-motif/negative-source.service.ts"]
-  file_src_modules_negative_motif_negative_source_service_unit_test_ts["src/modules/negative-motif/negative-source.service.unit.test.ts"]
-  file_src_modules_negative_motif_negative_tile_generation_service_ts["src/modules/negative-motif/negative-tile-generation.service.ts"]
-  file_src_modules_negative_motif_negative_tile_generation_service_unit_test_ts["src/modules/negative-motif/negative-tile-generation.service.unit.test.ts"]
-  file_src_modules_parallel_motif_parallel_motif_constants_ts["src/modules/parallel-motif/parallel-motif.constants.ts"]
-  file_src_modules_parallel_motif_parallel_motif_module_ts["src/modules/parallel-motif/parallel-motif.module.ts"]
-  file_src_modules_parallel_motif_parallel_motif_service_ts["src/modules/parallel-motif/parallel-motif.service.ts"]
-  file_src_modules_parallel_motif_parallel_motif_service_unit_test_ts["src/modules/parallel-motif/parallel-motif.service.unit.test.ts"]
-  file_src_modules_parallel_motif_parallel_motif_types_ts["src/modules/parallel-motif/parallel-motif.types.ts"]
-  file_src_modules_parallel_motif_parallel_serpentine_service_ts["src/modules/parallel-motif/parallel-serpentine.service.ts"]
-  file_src_modules_parallel_motif_parallel_serpentine_service_unit_test_ts["src/modules/parallel-motif/parallel-serpentine.service.unit.test.ts"]
-  file_src_modules_snake_motif_snake_motif_constants_ts["src/modules/snake-motif/snake-motif.constants.ts"]
-  file_src_modules_snake_motif_snake_motif_module_ts["src/modules/snake-motif/snake-motif.module.ts"]
-  file_src_modules_snake_motif_snake_motif_service_ts["src/modules/snake-motif/snake-motif.service.ts"]
-  file_src_modules_snake_motif_snake_motif_service_unit_test_ts["src/modules/snake-motif/snake-motif.service.unit.test.ts"]
-  file_src_modules_snake_motif_snake_motif_types_ts["src/modules/snake-motif/snake-motif.types.ts"]
-  file_src_modules_snake_motif_snake_sequence_service_ts["src/modules/snake-motif/snake-sequence.service.ts"]
-  file_src_modules_snake_motif_snake_sequence_service_unit_test_ts["src/modules/snake-motif/snake-sequence.service.unit.test.ts"]
-  file_src_modules_svg_rendering_output_path_service_integration_test_ts["src/modules/svg-rendering/output-path.service.integration.test.ts"]
-  file_src_modules_svg_rendering_output_path_service_ts["src/modules/svg-rendering/output-path.service.ts"]
-  file_src_modules_svg_rendering_output_path_service_unit_test_ts["src/modules/svg-rendering/output-path.service.unit.test.ts"]
   file_src_modules_svg_rendering_svg_rendering_constants_ts["src/modules/svg-rendering/svg-rendering.constants.ts"]
   file_src_modules_svg_rendering_svg_rendering_module_ts["src/modules/svg-rendering/svg-rendering.module.ts"]
   file_src_modules_svg_rendering_svg_rendering_service_ts["src/modules/svg-rendering/svg-rendering.service.ts"]
   file_src_modules_svg_rendering_svg_rendering_service_unit_test_ts["src/modules/svg-rendering/svg-rendering.service.unit.test.ts"]
   file_src_modules_svg_rendering_svg_rendering_types_ts["src/modules/svg-rendering/svg-rendering.types.ts"]
-  file_src_modules_swirl_motif_swirl_motif_constants_ts["src/modules/swirl-motif/swirl-motif.constants.ts"]
-  file_src_modules_swirl_motif_swirl_motif_module_ts["src/modules/swirl-motif/swirl-motif.module.ts"]
-  file_src_modules_swirl_motif_swirl_motif_service_ts["src/modules/swirl-motif/swirl-motif.service.ts"]
-  file_src_modules_swirl_motif_swirl_motif_service_unit_test_ts["src/modules/swirl-motif/swirl-motif.service.unit.test.ts"]
-  file_src_modules_swirl_motif_swirl_motif_types_ts["src/modules/swirl-motif/swirl-motif.types.ts"]
-  file_src_modules_whirl_motif_whirl_motif_constants_ts["src/modules/whirl-motif/whirl-motif.constants.ts"]
-  file_src_modules_whirl_motif_whirl_motif_module_ts["src/modules/whirl-motif/whirl-motif.module.ts"]
-  file_src_modules_whirl_motif_whirl_motif_service_ts["src/modules/whirl-motif/whirl-motif.service.ts"]
-  file_src_modules_whirl_motif_whirl_motif_service_unit_test_ts["src/modules/whirl-motif/whirl-motif.service.unit.test.ts"]
-  file_src_modules_whirl_motif_whirl_motif_types_ts["src/modules/whirl-motif/whirl-motif.types.ts"]
   file_src_repl_ts["src/repl.ts"]
-  file_testing_hardcoded_corpus_integration_test_ts["testing/hardcoded-corpus.integration.test.ts"]
-  file_testing_hardcoded_corpus_constants_ts["testing/hardcoded-corpus/constants.ts"]
-  file_testing_hardcoded_corpus_corpus_ts["testing/hardcoded-corpus/corpus.ts"]
-  file_testing_hardcoded_corpus_types_ts["testing/hardcoded-corpus/types.ts"]
   file_testing_mocks_ts["testing/mocks.ts"]
   file_testing_mosaic_tiles_ts["testing/mosaic-tiles.ts"]
   file_testing_path_data_ts["testing/path-data.ts"]
   file_testing_setup_ts["testing/setup.ts"]
   file_vitest_config_ts["vitest.config.ts"]
-  file_scripts_generate_hardcoded_corpus_ts --> file_testing_hardcoded_corpus_corpus_ts
-  file_scripts_generate_hardcoded_corpus_ts --> file_testing_hardcoded_corpus_types_ts
   file_src_main_end_to_end_test_ts --> file_src_constants_ts
   file_src_main_module_ts --> file_src_constants_ts
   file_src_main_module_ts --> file_src_modules_draw_draw_module_ts
   file_src_main_module_ts --> file_src_modules_meander_topology_meander_topology_module_ts
   file_src_main_ts --> file_src_main_module_ts
   file_src_main_unit_test_ts --> file_src_main_module_ts
-  file_src_modules_boxes_motif_boxes_motif_module_ts --> file_src_modules_boxes_motif_boxes_motif_service_ts
-  file_src_modules_boxes_motif_boxes_motif_module_ts --> file_src_modules_grid_geometry_grid_geometry_module_ts
-  file_src_modules_boxes_motif_boxes_motif_module_ts --> file_src_modules_motif_transforms_motif_transforms_module_ts
-  file_src_modules_boxes_motif_boxes_motif_service_ts --> file_src_modules_boxes_motif_boxes_motif_types_ts
-  file_src_modules_boxes_motif_boxes_motif_service_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
-  file_src_modules_boxes_motif_boxes_motif_service_ts --> file_src_modules_grid_geometry_grid_geometry_types_ts
-  file_src_modules_boxes_motif_boxes_motif_service_ts --> file_src_modules_meander_generation_meander_generation_constants_ts
-  file_src_modules_boxes_motif_boxes_motif_service_ts --> file_src_modules_meander_generation_meander_generation_types_ts
-  file_src_modules_boxes_motif_boxes_motif_service_ts --> file_src_modules_motif_transforms_motif_transforms_service_ts
-  file_src_modules_boxes_motif_boxes_motif_service_ts --> file_src_modules_motif_transforms_motif_transforms_types_ts
-  file_src_modules_boxes_motif_boxes_motif_service_unit_test_ts --> file_src_modules_boxes_motif_boxes_motif_service_ts
-  file_src_modules_boxes_motif_boxes_motif_service_unit_test_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
-  file_src_modules_boxes_motif_boxes_motif_service_unit_test_ts --> file_src_modules_motif_transforms_motif_transforms_service_ts
-  file_src_modules_boxes_motif_boxes_motif_service_unit_test_ts --> file_testing_path_data_ts
-  file_src_modules_branch_motif_branch_motif_constants_ts --> file_src_modules_branch_motif_branch_motif_types_ts
-  file_src_modules_branch_motif_branch_motif_module_ts --> file_src_modules_branch_motif_branch_motif_service_ts
-  file_src_modules_branch_motif_branch_motif_module_ts --> file_src_modules_grid_geometry_grid_geometry_module_ts
-  file_src_modules_branch_motif_branch_motif_service_ts --> file_src_modules_branch_motif_branch_motif_constants_ts
-  file_src_modules_branch_motif_branch_motif_service_ts --> file_src_modules_branch_motif_branch_motif_types_ts
-  file_src_modules_branch_motif_branch_motif_service_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
-  file_src_modules_branch_motif_branch_motif_service_ts --> file_src_modules_grid_geometry_grid_geometry_types_ts
-  file_src_modules_branch_motif_branch_motif_service_ts --> file_src_modules_meander_generation_meander_generation_types_ts
-  file_src_modules_branch_motif_branch_motif_service_unit_test_ts --> file_src_modules_boxes_motif_boxes_motif_service_ts
-  file_src_modules_branch_motif_branch_motif_service_unit_test_ts --> file_src_modules_branch_motif_branch_motif_constants_ts
-  file_src_modules_branch_motif_branch_motif_service_unit_test_ts --> file_src_modules_branch_motif_branch_motif_service_ts
-  file_src_modules_branch_motif_branch_motif_service_unit_test_ts --> file_src_modules_branch_motif_branch_motif_types_ts
-  file_src_modules_branch_motif_branch_motif_service_unit_test_ts --> file_src_modules_chain_motif_chain_motif_service_ts
-  file_src_modules_branch_motif_branch_motif_service_unit_test_ts --> file_src_modules_cross_motif_cross_motif_service_ts
-  file_src_modules_branch_motif_branch_motif_service_unit_test_ts --> file_src_modules_grid_geometry_grid_geometry_constants_ts
-  file_src_modules_branch_motif_branch_motif_service_unit_test_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
-  file_src_modules_branch_motif_branch_motif_service_unit_test_ts --> file_src_modules_meander_generation_meander_generation_constants_ts
-  file_src_modules_branch_motif_branch_motif_service_unit_test_ts --> file_src_modules_meander_generation_meander_generation_service_ts
-  file_src_modules_branch_motif_branch_motif_service_unit_test_ts --> file_src_modules_meander_generation_meander_generation_types_ts
-  file_src_modules_branch_motif_branch_motif_service_unit_test_ts --> file_src_modules_meander_generation_motif_registry_service_ts
-  file_src_modules_branch_motif_branch_motif_service_unit_test_ts --> file_src_modules_meander_lattice_meander_lattice_service_ts
-  file_src_modules_branch_motif_branch_motif_service_unit_test_ts --> file_src_modules_meander_topology_meander_topology_service_ts
-  file_src_modules_branch_motif_branch_motif_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_sub_family_service_ts
-  file_src_modules_branch_motif_branch_motif_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_generation_service_ts
-  file_src_modules_branch_motif_branch_motif_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_motif_service_ts
-  file_src_modules_branch_motif_branch_motif_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_service_ts
-  file_src_modules_branch_motif_branch_motif_service_unit_test_ts --> file_src_modules_motif_transforms_motif_transforms_service_ts
-  file_src_modules_branch_motif_branch_motif_service_unit_test_ts --> file_src_modules_negative_motif_negative_motif_service_ts
-  file_src_modules_branch_motif_branch_motif_service_unit_test_ts --> file_src_modules_negative_motif_negative_source_service_ts
-  file_src_modules_branch_motif_branch_motif_service_unit_test_ts --> file_src_modules_parallel_motif_parallel_motif_service_ts
-  file_src_modules_branch_motif_branch_motif_service_unit_test_ts --> file_src_modules_parallel_motif_parallel_serpentine_service_ts
-  file_src_modules_branch_motif_branch_motif_service_unit_test_ts --> file_src_modules_snake_motif_snake_motif_service_ts
-  file_src_modules_branch_motif_branch_motif_service_unit_test_ts --> file_src_modules_snake_motif_snake_sequence_service_ts
-  file_src_modules_branch_motif_branch_motif_service_unit_test_ts --> file_src_modules_svg_rendering_svg_rendering_service_ts
-  file_src_modules_branch_motif_branch_motif_service_unit_test_ts --> file_src_modules_swirl_motif_swirl_motif_service_ts
-  file_src_modules_branch_motif_branch_motif_service_unit_test_ts --> file_src_modules_whirl_motif_whirl_motif_service_ts
-  file_src_modules_chain_motif_chain_motif_module_ts --> file_src_modules_chain_motif_chain_motif_service_ts
-  file_src_modules_chain_motif_chain_motif_module_ts --> file_src_modules_grid_geometry_grid_geometry_module_ts
-  file_src_modules_chain_motif_chain_motif_module_ts --> file_src_modules_motif_transforms_motif_transforms_module_ts
-  file_src_modules_chain_motif_chain_motif_module_ts --> file_src_modules_snake_motif_snake_motif_module_ts
-  file_src_modules_chain_motif_chain_motif_service_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
-  file_src_modules_chain_motif_chain_motif_service_ts --> file_src_modules_grid_geometry_grid_geometry_types_ts
-  file_src_modules_chain_motif_chain_motif_service_ts --> file_src_modules_meander_generation_meander_generation_types_ts
-  file_src_modules_chain_motif_chain_motif_service_ts --> file_src_modules_motif_transforms_motif_transforms_service_ts
-  file_src_modules_chain_motif_chain_motif_service_ts --> file_src_modules_motif_transforms_motif_transforms_types_ts
-  file_src_modules_chain_motif_chain_motif_service_ts --> file_src_modules_snake_motif_snake_motif_constants_ts
-  file_src_modules_chain_motif_chain_motif_service_ts --> file_src_modules_snake_motif_snake_motif_service_ts
-  file_src_modules_chain_motif_chain_motif_service_ts --> file_src_modules_snake_motif_snake_sequence_service_ts
-  file_src_modules_chain_motif_chain_motif_service_unit_test_ts --> file_src_modules_chain_motif_chain_motif_service_ts
-  file_src_modules_chain_motif_chain_motif_service_unit_test_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
-  file_src_modules_chain_motif_chain_motif_service_unit_test_ts --> file_src_modules_motif_transforms_motif_transforms_service_ts
-  file_src_modules_chain_motif_chain_motif_service_unit_test_ts --> file_src_modules_snake_motif_snake_motif_service_ts
-  file_src_modules_chain_motif_chain_motif_service_unit_test_ts --> file_src_modules_snake_motif_snake_sequence_service_ts
-  file_src_modules_chain_motif_chain_motif_service_unit_test_ts --> file_testing_path_data_ts
-  file_src_modules_cross_motif_cross_motif_module_ts --> file_src_modules_cross_motif_cross_motif_service_ts
-  file_src_modules_cross_motif_cross_motif_module_ts --> file_src_modules_grid_geometry_grid_geometry_module_ts
-  file_src_modules_cross_motif_cross_motif_service_ts --> file_src_modules_cross_motif_cross_motif_constants_ts
-  file_src_modules_cross_motif_cross_motif_service_ts --> file_src_modules_cross_motif_cross_motif_types_ts
-  file_src_modules_cross_motif_cross_motif_service_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
-  file_src_modules_cross_motif_cross_motif_service_ts --> file_src_modules_grid_geometry_grid_geometry_types_ts
-  file_src_modules_cross_motif_cross_motif_service_ts --> file_src_modules_meander_generation_meander_generation_types_ts
-  file_src_modules_cross_motif_cross_motif_service_unit_test_ts --> file_src_modules_boxes_motif_boxes_motif_service_ts
-  file_src_modules_cross_motif_cross_motif_service_unit_test_ts --> file_src_modules_branch_motif_branch_motif_service_ts
-  file_src_modules_cross_motif_cross_motif_service_unit_test_ts --> file_src_modules_chain_motif_chain_motif_service_ts
-  file_src_modules_cross_motif_cross_motif_service_unit_test_ts --> file_src_modules_cross_motif_cross_motif_constants_ts
-  file_src_modules_cross_motif_cross_motif_service_unit_test_ts --> file_src_modules_cross_motif_cross_motif_service_ts
-  file_src_modules_cross_motif_cross_motif_service_unit_test_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
-  file_src_modules_cross_motif_cross_motif_service_unit_test_ts --> file_src_modules_meander_generation_meander_generation_service_ts
-  file_src_modules_cross_motif_cross_motif_service_unit_test_ts --> file_src_modules_meander_generation_meander_generation_types_ts
-  file_src_modules_cross_motif_cross_motif_service_unit_test_ts --> file_src_modules_meander_generation_motif_registry_service_ts
-  file_src_modules_cross_motif_cross_motif_service_unit_test_ts --> file_src_modules_meander_lattice_meander_lattice_service_ts
-  file_src_modules_cross_motif_cross_motif_service_unit_test_ts --> file_src_modules_meander_topology_meander_topology_service_ts
-  file_src_modules_cross_motif_cross_motif_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_sub_family_service_ts
-  file_src_modules_cross_motif_cross_motif_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_generation_service_ts
-  file_src_modules_cross_motif_cross_motif_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_motif_service_ts
-  file_src_modules_cross_motif_cross_motif_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_service_ts
-  file_src_modules_cross_motif_cross_motif_service_unit_test_ts --> file_src_modules_motif_transforms_motif_transforms_service_ts
-  file_src_modules_cross_motif_cross_motif_service_unit_test_ts --> file_src_modules_negative_motif_negative_motif_service_ts
-  file_src_modules_cross_motif_cross_motif_service_unit_test_ts --> file_src_modules_negative_motif_negative_source_service_ts
-  file_src_modules_cross_motif_cross_motif_service_unit_test_ts --> file_src_modules_parallel_motif_parallel_motif_service_ts
-  file_src_modules_cross_motif_cross_motif_service_unit_test_ts --> file_src_modules_parallel_motif_parallel_serpentine_service_ts
-  file_src_modules_cross_motif_cross_motif_service_unit_test_ts --> file_src_modules_snake_motif_snake_motif_service_ts
-  file_src_modules_cross_motif_cross_motif_service_unit_test_ts --> file_src_modules_snake_motif_snake_sequence_service_ts
-  file_src_modules_cross_motif_cross_motif_service_unit_test_ts --> file_src_modules_svg_rendering_svg_rendering_service_ts
-  file_src_modules_cross_motif_cross_motif_service_unit_test_ts --> file_src_modules_swirl_motif_swirl_motif_service_ts
-  file_src_modules_cross_motif_cross_motif_service_unit_test_ts --> file_src_modules_whirl_motif_whirl_motif_service_ts
+  file_src_modules_draw_draw_check_sweep_module_ts --> file_src_modules_draw_draw_enumeration_service_ts
+  file_src_modules_draw_draw_check_sweep_module_ts --> file_src_modules_draw_draw_record_service_ts
+  file_src_modules_draw_draw_check_sweep_module_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_service_ts
+  file_src_modules_draw_draw_check_sweep_module_ts --> file_src_modules_meander_characteristics_meander_characteristics_module_ts
+  file_src_modules_draw_draw_check_sweep_module_ts --> file_src_modules_meander_classification_meander_classification_module_ts
+  file_src_modules_draw_draw_check_sweep_module_ts --> file_src_modules_meander_database_entities_Meander_entity_ts
+  file_src_modules_draw_draw_check_sweep_module_ts --> file_src_modules_meander_database_meander_database_service_ts
+  file_src_modules_draw_draw_check_sweep_module_ts --> file_src_modules_meander_decoding_meander_decoding_module_ts
+  file_src_modules_draw_draw_check_sweep_module_ts --> file_src_modules_meander_enumeration_meander_enumeration_module_ts
+  file_src_modules_draw_draw_check_sweep_module_ts --> file_src_modules_meander_rendering_meander_rendering_module_ts
+  file_src_modules_draw_draw_check_command_integration_test_ts --> file_src_modules_draw_draw_check_service_ts
+  file_src_modules_draw_draw_check_command_integration_test_ts --> file_src_modules_draw_draw_code_service_ts
+  file_src_modules_draw_draw_check_command_integration_test_ts --> file_src_modules_draw_draw_enumeration_service_ts
+  file_src_modules_draw_draw_check_command_integration_test_ts --> file_src_modules_draw_draw_index_service_ts
+  file_src_modules_draw_draw_check_command_integration_test_ts --> file_src_modules_draw_draw_command_ts
+  file_src_modules_draw_draw_check_command_integration_test_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_constants_ts
+  file_src_modules_draw_draw_check_command_integration_test_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_service_ts
+  file_src_modules_draw_draw_check_command_integration_test_ts --> file_src_modules_meander_database_entities_Meander_entity_ts
+  file_src_modules_draw_draw_check_constants_ts --> file_src_modules_draw_draw_check_types_ts
+  file_src_modules_draw_draw_check_constants_ts --> file_src_modules_meander_database_meander_database_types_ts
+  file_src_modules_draw_draw_check_service_ts --> file_src_modules_draw_draw_check_sweep_module_ts
+  file_src_modules_draw_draw_check_service_ts --> file_src_modules_draw_draw_check_constants_ts
+  file_src_modules_draw_draw_check_service_ts --> file_src_modules_draw_draw_check_types_ts
+  file_src_modules_draw_draw_check_service_ts --> file_src_modules_draw_draw_enumeration_service_ts
+  file_src_modules_draw_draw_check_service_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_constants_ts
+  file_src_modules_draw_draw_check_service_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_service_ts
+  file_src_modules_draw_draw_check_service_ts --> file_src_modules_meander_database_entities_Meander_entity_ts
+  file_src_modules_draw_draw_check_service_unit_test_ts --> file_src_modules_draw_draw_check_service_ts
+  file_src_modules_draw_draw_check_service_unit_test_ts --> file_src_modules_meander_database_entities_Meander_entity_ts
   file_src_modules_draw_draw_code_service_ts --> file_src_modules_draw_draw_record_service_ts
   file_src_modules_draw_draw_code_service_ts --> file_src_modules_draw_draw_types_ts
   file_src_modules_draw_draw_code_service_ts --> file_src_modules_meander_database_entities_Meander_entity_ts
@@ -3115,17 +2916,6 @@ graph LR
   file_src_modules_draw_draw_code_service_unit_test_ts --> file_src_modules_meander_database_entities_Meander_entity_ts
   file_src_modules_draw_draw_code_service_unit_test_ts --> file_src_modules_meander_database_meander_database_service_ts
   file_src_modules_draw_draw_code_service_unit_test_ts --> file_src_modules_meander_database_meander_database_types_ts
-  file_src_modules_draw_draw_combinations_service_ts --> file_src_modules_branch_motif_branch_motif_constants_ts
-  file_src_modules_draw_draw_combinations_service_ts --> file_src_modules_draw_draw_constants_ts
-  file_src_modules_draw_draw_combinations_service_ts --> file_src_modules_meander_generation_meander_generation_constants_ts
-  file_src_modules_draw_draw_combinations_service_ts --> file_src_modules_meander_generation_meander_generation_types_ts
-  file_src_modules_draw_draw_combinations_service_ts --> file_src_modules_parallel_motif_parallel_serpentine_service_ts
-  file_src_modules_draw_draw_combinations_service_unit_test_ts --> file_src_modules_draw_draw_combinations_service_ts
-  file_src_modules_draw_draw_combinations_service_unit_test_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
-  file_src_modules_draw_draw_combinations_service_unit_test_ts --> file_src_modules_meander_generation_meander_generation_constants_ts
-  file_src_modules_draw_draw_combinations_service_unit_test_ts --> file_src_modules_meander_generation_meander_generation_types_ts
-  file_src_modules_draw_draw_combinations_service_unit_test_ts --> file_src_modules_parallel_motif_parallel_motif_constants_ts
-  file_src_modules_draw_draw_combinations_service_unit_test_ts --> file_src_modules_parallel_motif_parallel_serpentine_service_ts
   file_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_src_modules_draw_draw_enumeration_service_ts
   file_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_src_modules_draw_draw_record_service_ts
   file_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
@@ -3155,80 +2945,21 @@ graph LR
   file_src_modules_draw_draw_enumeration_service_unit_test_ts --> file_src_modules_meander_database_meander_database_service_ts
   file_src_modules_draw_draw_enumeration_service_unit_test_ts --> file_src_modules_meander_database_meander_database_types_ts
   file_src_modules_draw_draw_enumeration_service_unit_test_ts --> file_src_modules_meander_enumeration_meander_enumeration_service_ts
-  file_src_modules_draw_draw_index_service_ts --> file_src_modules_draw_draw_types_ts
-  file_src_modules_draw_draw_index_service_ts --> file_src_modules_meander_generation_meander_generation_constants_ts
+  file_src_modules_draw_draw_index_service_integration_test_ts --> file_src_modules_draw_draw_index_service_ts
+  file_src_modules_draw_draw_index_service_integration_test_ts --> file_src_modules_meander_database_entities_Meander_entity_ts
+  file_src_modules_draw_draw_index_service_integration_test_ts --> file_src_modules_meander_database_meander_database_service_ts
+  file_src_modules_draw_draw_index_service_integration_test_ts --> file_src_modules_meander_database_meander_database_types_ts
+  file_src_modules_draw_draw_index_service_ts --> file_src_modules_draw_draw_index_constants_ts
+  file_src_modules_draw_draw_index_service_ts --> file_src_modules_draw_draw_index_types_ts
+  file_src_modules_draw_draw_index_service_ts --> file_src_modules_meander_classification_meander_classification_constants_ts
+  file_src_modules_draw_draw_index_service_ts --> file_src_modules_meander_classification_meander_classification_types_ts
+  file_src_modules_draw_draw_index_service_ts --> file_src_modules_meander_database_entities_Meander_entity_ts
+  file_src_modules_draw_draw_index_service_ts --> file_src_modules_meander_database_meander_database_service_ts
   file_src_modules_draw_draw_index_service_unit_test_ts --> file_src_modules_draw_draw_index_service_ts
-  file_src_modules_draw_draw_index_service_unit_test_ts --> file_src_modules_draw_draw_types_ts
-  file_src_modules_draw_draw_negative_permutations_service_ts --> file_src_modules_draw_draw_constants_ts
-  file_src_modules_draw_draw_negative_permutations_service_ts --> file_src_modules_draw_draw_types_ts
-  file_src_modules_draw_draw_negative_permutations_service_ts --> file_src_modules_lattice_identification_lattice_identification_service_ts
-  file_src_modules_draw_draw_negative_permutations_service_ts --> file_src_modules_meander_generation_meander_generation_constants_ts
-  file_src_modules_draw_draw_negative_permutations_service_ts --> file_src_modules_mosaic_tile_mosaic_tile_constants_ts
-  file_src_modules_draw_draw_negative_permutations_service_ts --> file_src_modules_mosaic_tile_mosaic_tile_service_ts
-  file_src_modules_draw_draw_negative_permutations_service_ts --> file_src_modules_mosaic_tile_mosaic_tile_types_ts
-  file_src_modules_draw_draw_negative_permutations_service_ts --> file_src_modules_mosaic_tile_mosaic_tiles_service_ts
-  file_src_modules_draw_draw_negative_permutations_service_ts --> file_src_modules_negative_motif_negative_motif_constants_ts
-  file_src_modules_draw_draw_negative_permutations_service_ts --> file_src_modules_negative_motif_negative_motif_types_ts
-  file_src_modules_draw_draw_negative_permutations_service_ts --> file_src_modules_negative_motif_negative_source_service_ts
-  file_src_modules_draw_draw_negative_permutations_service_ts --> file_src_modules_negative_motif_negative_tile_generation_service_ts
-  file_src_modules_draw_draw_negative_permutations_service_ts --> file_src_modules_svg_rendering_output_path_service_ts
-  file_src_modules_draw_draw_negative_permutations_service_unit_test_ts --> file_src_modules_draw_draw_negative_permutations_service_ts
-  file_src_modules_draw_draw_negative_permutations_service_unit_test_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
-  file_src_modules_draw_draw_negative_permutations_service_unit_test_ts --> file_src_modules_lattice_identification_lattice_identification_service_ts
-  file_src_modules_draw_draw_negative_permutations_service_unit_test_ts --> file_src_modules_meander_lattice_meander_lattice_service_ts
-  file_src_modules_draw_draw_negative_permutations_service_unit_test_ts --> file_src_modules_mosaic_naming_mosaic_naming_service_ts
-  file_src_modules_draw_draw_negative_permutations_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_symmetry_service_ts
-  file_src_modules_draw_draw_negative_permutations_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_service_ts
-  file_src_modules_draw_draw_negative_permutations_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tiles_service_ts
-  file_src_modules_draw_draw_negative_permutations_service_unit_test_ts --> file_src_modules_negative_motif_negative_motif_service_ts
-  file_src_modules_draw_draw_negative_permutations_service_unit_test_ts --> file_src_modules_negative_motif_negative_source_service_ts
-  file_src_modules_draw_draw_negative_permutations_service_unit_test_ts --> file_src_modules_negative_motif_negative_tile_generation_service_ts
-  file_src_modules_draw_draw_negative_permutations_service_unit_test_ts --> file_src_modules_svg_rendering_output_path_service_ts
-  file_src_modules_draw_draw_negative_permutations_service_unit_test_ts --> file_src_modules_svg_rendering_svg_rendering_service_ts
-  file_src_modules_draw_draw_parameters_service_ts --> file_src_modules_branch_motif_branch_motif_constants_ts
-  file_src_modules_draw_draw_parameters_service_ts --> file_src_modules_branch_motif_branch_motif_types_ts
-  file_src_modules_draw_draw_parameters_service_ts --> file_src_modules_draw_draw_constants_ts
-  file_src_modules_draw_draw_parameters_service_ts --> file_src_modules_draw_draw_types_ts
-  file_src_modules_draw_draw_parameters_service_ts --> file_src_modules_meander_generation_meander_generation_constants_ts
-  file_src_modules_draw_draw_parameters_service_ts --> file_src_modules_meander_generation_meander_generation_types_ts
-  file_src_modules_draw_draw_parameters_service_ts --> file_src_modules_mosaic_tile_mosaic_tile_constants_ts
-  file_src_modules_draw_draw_parameters_service_ts --> file_src_modules_mosaic_tile_mosaic_tile_types_ts
-  file_src_modules_draw_draw_parameters_service_ts --> file_src_modules_parallel_motif_parallel_motif_constants_ts
-  file_src_modules_draw_draw_parameters_service_unit_test_ts --> file_src_modules_branch_motif_branch_motif_constants_ts
-  file_src_modules_draw_draw_parameters_service_unit_test_ts --> file_src_modules_draw_draw_parameters_service_ts
-  file_src_modules_draw_draw_parameters_service_unit_test_ts --> file_src_modules_draw_draw_types_ts
-  file_src_modules_draw_draw_permutations_service_integration_test_ts --> file_src_modules_draw_draw_permutations_service_ts
-  file_src_modules_draw_draw_permutations_service_integration_test_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
-  file_src_modules_draw_draw_permutations_service_integration_test_ts --> file_src_modules_lattice_identification_lattice_identification_service_ts
-  file_src_modules_draw_draw_permutations_service_integration_test_ts --> file_src_modules_meander_lattice_meander_lattice_service_ts
-  file_src_modules_draw_draw_permutations_service_integration_test_ts --> file_src_modules_mosaic_naming_mosaic_naming_service_ts
-  file_src_modules_draw_draw_permutations_service_integration_test_ts --> file_src_modules_mosaic_tile_mosaic_symmetry_service_ts
-  file_src_modules_draw_draw_permutations_service_integration_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_generation_service_ts
-  file_src_modules_draw_draw_permutations_service_integration_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_motif_service_ts
-  file_src_modules_draw_draw_permutations_service_integration_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_service_ts
-  file_src_modules_draw_draw_permutations_service_integration_test_ts --> file_src_modules_mosaic_tile_mosaic_tiles_service_ts
-  file_src_modules_draw_draw_permutations_service_integration_test_ts --> file_src_modules_svg_rendering_output_path_service_ts
-  file_src_modules_draw_draw_permutations_service_integration_test_ts --> file_src_modules_svg_rendering_svg_rendering_service_ts
-  file_src_modules_draw_draw_permutations_service_ts --> file_src_modules_draw_draw_constants_ts
-  file_src_modules_draw_draw_permutations_service_ts --> file_src_modules_draw_draw_types_ts
-  file_src_modules_draw_draw_permutations_service_ts --> file_src_modules_lattice_identification_lattice_identification_service_ts
-  file_src_modules_draw_draw_permutations_service_ts --> file_src_modules_mosaic_naming_mosaic_naming_service_ts
-  file_src_modules_draw_draw_permutations_service_ts --> file_src_modules_mosaic_tile_mosaic_tile_generation_service_ts
-  file_src_modules_draw_draw_permutations_service_ts --> file_src_modules_mosaic_tile_mosaic_tile_constants_ts
-  file_src_modules_draw_draw_permutations_service_ts --> file_src_modules_mosaic_tile_mosaic_tiles_service_ts
-  file_src_modules_draw_draw_permutations_service_ts --> file_src_modules_svg_rendering_output_path_service_ts
-  file_src_modules_draw_draw_permutations_service_unit_test_ts --> file_src_modules_draw_draw_permutations_service_ts
-  file_src_modules_draw_draw_permutations_service_unit_test_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
-  file_src_modules_draw_draw_permutations_service_unit_test_ts --> file_src_modules_lattice_identification_lattice_identification_service_ts
-  file_src_modules_draw_draw_permutations_service_unit_test_ts --> file_src_modules_meander_lattice_meander_lattice_service_ts
-  file_src_modules_draw_draw_permutations_service_unit_test_ts --> file_src_modules_mosaic_naming_mosaic_naming_service_ts
-  file_src_modules_draw_draw_permutations_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_symmetry_service_ts
-  file_src_modules_draw_draw_permutations_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_generation_service_ts
-  file_src_modules_draw_draw_permutations_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_motif_service_ts
-  file_src_modules_draw_draw_permutations_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_service_ts
-  file_src_modules_draw_draw_permutations_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tiles_service_ts
-  file_src_modules_draw_draw_permutations_service_unit_test_ts --> file_src_modules_svg_rendering_output_path_service_ts
-  file_src_modules_draw_draw_permutations_service_unit_test_ts --> file_src_modules_svg_rendering_svg_rendering_service_ts
+  file_src_modules_draw_draw_index_service_unit_test_ts --> file_src_modules_meander_database_entities_Meander_entity_ts
+  file_src_modules_draw_draw_index_service_unit_test_ts --> file_src_modules_meander_database_meander_database_service_ts
+  file_src_modules_draw_draw_index_types_ts --> file_src_modules_meander_classification_meander_classification_types_ts
+  file_src_modules_draw_draw_index_types_ts --> file_src_modules_meander_database_entities_Meander_entity_ts
   file_src_modules_draw_draw_record_service_ts --> file_src_modules_meander_characteristics_meander_characteristics_service_ts
   file_src_modules_draw_draw_record_service_ts --> file_src_modules_meander_classification_meander_classification_service_ts
   file_src_modules_draw_draw_record_service_ts --> file_src_modules_meander_classification_meander_classification_types_ts
@@ -3247,33 +2978,28 @@ graph LR
   file_src_modules_draw_draw_record_service_unit_test_ts --> file_src_modules_mosaic_naming_mosaic_naming_service_ts
   file_src_modules_draw_draw_record_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_service_ts
   file_src_modules_draw_draw_record_service_unit_test_ts --> file_src_modules_svg_rendering_svg_rendering_service_ts
-  file_src_modules_draw_draw_rendering_service_ts --> file_src_modules_draw_draw_constants_ts
-  file_src_modules_draw_draw_rendering_service_ts --> file_src_modules_draw_draw_types_ts
-  file_src_modules_draw_draw_rendering_service_ts --> file_src_modules_lattice_identification_lattice_identification_constants_ts
-  file_src_modules_draw_draw_rendering_service_ts --> file_src_modules_lattice_identification_lattice_identification_service_ts
-  file_src_modules_draw_draw_rendering_service_ts --> file_src_modules_lattice_identification_lattice_identification_types_ts
-  file_src_modules_draw_draw_rendering_service_ts --> file_src_modules_meander_generation_meander_generation_constants_ts
-  file_src_modules_draw_draw_rendering_service_ts --> file_src_modules_meander_generation_meander_generation_service_ts
-  file_src_modules_draw_draw_rendering_service_ts --> file_src_modules_meander_generation_meander_generation_types_ts
-  file_src_modules_draw_draw_rendering_service_ts --> file_src_modules_meander_generation_meander_generation_utilities_ts
-  file_src_modules_draw_draw_rendering_service_ts --> file_src_modules_meander_generation_motif_pitch_service_ts
-  file_src_modules_draw_draw_rendering_service_ts --> file_src_modules_svg_rendering_output_path_service_ts
-  file_src_modules_draw_draw_rendering_service_unit_test_ts --> file_src_modules_draw_draw_rendering_service_ts
-  file_src_modules_draw_draw_rendering_service_unit_test_ts --> file_src_modules_draw_draw_constants_ts
-  file_src_modules_draw_draw_rendering_service_unit_test_ts --> file_src_modules_lattice_identification_lattice_identification_service_ts
-  file_src_modules_draw_draw_rendering_service_unit_test_ts --> file_src_modules_lattice_identification_lattice_identification_types_ts
-  file_src_modules_draw_draw_rendering_service_unit_test_ts --> file_src_modules_meander_generation_meander_generation_service_ts
-  file_src_modules_draw_draw_rendering_service_unit_test_ts --> file_src_modules_meander_generation_motif_pitch_service_ts
-  file_src_modules_draw_draw_rendering_service_unit_test_ts --> file_src_modules_svg_rendering_output_path_service_ts
+  file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_draw_draw_check_service_ts
+  file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_draw_draw_code_service_ts
+  file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_draw_draw_enumeration_service_ts
+  file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_draw_draw_index_service_ts
+  file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_draw_draw_record_service_ts
+  file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_draw_draw_command_ts
+  file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_draw_draw_constants_ts
+  file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_constants_ts
+  file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_service_ts
+  file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_meander_characteristics_meander_characteristics_module_ts
+  file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_meander_classification_meander_classification_module_ts
+  file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_meander_database_entities_Meander_entity_ts
+  file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_meander_database_meander_database_service_ts
+  file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_meander_decoding_meander_decoding_module_ts
+  file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_meander_enumeration_meander_enumeration_module_ts
+  file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_meander_enumeration_meander_enumeration_service_ts
+  file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_meander_rendering_meander_rendering_module_ts
+  file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_draw_draw_check_service_ts
   file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_draw_draw_code_service_ts
-  file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_draw_draw_combinations_service_ts
   file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_draw_draw_enumeration_service_ts
   file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_draw_draw_index_service_ts
-  file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_draw_draw_negative_permutations_service_ts
-  file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_draw_draw_parameters_service_ts
-  file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_draw_draw_permutations_service_ts
   file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_draw_draw_record_service_ts
-  file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_draw_draw_rendering_service_ts
   file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_draw_draw_command_ts
   file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
   file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_service_ts
@@ -3289,84 +3015,36 @@ graph LR
   file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_mosaic_naming_mosaic_naming_service_ts
   file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_service_ts
   file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_svg_rendering_svg_rendering_service_ts
-  file_src_modules_draw_draw_command_ts --> file_src_modules_branch_motif_branch_motif_constants_ts
-  file_src_modules_draw_draw_command_ts --> file_src_modules_branch_motif_branch_motif_types_ts
+  file_src_modules_draw_draw_command_ts --> file_src_modules_draw_draw_check_service_ts
   file_src_modules_draw_draw_command_ts --> file_src_modules_draw_draw_code_service_ts
-  file_src_modules_draw_draw_command_ts --> file_src_modules_draw_draw_combinations_service_ts
   file_src_modules_draw_draw_command_ts --> file_src_modules_draw_draw_enumeration_service_ts
   file_src_modules_draw_draw_command_ts --> file_src_modules_draw_draw_index_service_ts
-  file_src_modules_draw_draw_command_ts --> file_src_modules_draw_draw_negative_permutations_service_ts
-  file_src_modules_draw_draw_command_ts --> file_src_modules_draw_draw_parameters_service_ts
-  file_src_modules_draw_draw_command_ts --> file_src_modules_draw_draw_permutations_service_ts
-  file_src_modules_draw_draw_command_ts --> file_src_modules_draw_draw_rendering_service_ts
   file_src_modules_draw_draw_command_ts --> file_src_modules_draw_draw_constants_ts
   file_src_modules_draw_draw_command_ts --> file_src_modules_draw_draw_types_ts
   file_src_modules_draw_draw_command_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_constants_ts
   file_src_modules_draw_draw_command_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_service_ts
-  file_src_modules_draw_draw_command_ts --> file_src_modules_meander_generation_meander_generation_constants_ts
-  file_src_modules_draw_draw_command_ts --> file_src_modules_meander_generation_meander_generation_types_ts
-  file_src_modules_draw_draw_command_ts --> file_src_modules_mosaic_tile_mosaic_tile_constants_ts
-  file_src_modules_draw_draw_command_ts --> file_src_modules_mosaic_tile_mosaic_tile_types_ts
-  file_src_modules_draw_draw_command_ts --> file_src_modules_parallel_motif_parallel_motif_constants_ts
-  file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_branch_motif_branch_motif_constants_ts
+  file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_draw_draw_check_service_ts
+  file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_draw_draw_check_types_ts
   file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_draw_draw_code_service_ts
-  file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_draw_draw_combinations_service_ts
   file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_draw_draw_enumeration_service_ts
   file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_draw_draw_index_service_ts
-  file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_draw_draw_negative_permutations_service_ts
-  file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_draw_draw_parameters_service_ts
-  file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_draw_draw_permutations_service_ts
-  file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_draw_draw_rendering_service_ts
   file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_draw_draw_command_ts
   file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_draw_draw_constants_ts
-  file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
   file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_service_ts
-  file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_lattice_identification_lattice_identification_module_ts
-  file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_lattice_identification_lattice_identification_service_ts
-  file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_lattice_identification_lattice_identification_types_ts
   file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_meander_database_entities_Meander_entity_ts
-  file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_meander_generation_meander_generation_module_ts
-  file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_meander_generation_meander_generation_service_ts
-  file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_meander_generation_motif_pitch_service_ts
-  file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_meander_lattice_meander_lattice_service_ts
-  file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_mosaic_naming_mosaic_naming_module_ts
-  file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_mosaic_naming_mosaic_naming_service_ts
-  file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_symmetry_service_ts
-  file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_generation_service_ts
-  file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_motif_service_ts
-  file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_service_ts
-  file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tiles_service_ts
-  file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_negative_motif_negative_motif_service_ts
-  file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_negative_motif_negative_source_service_ts
-  file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_negative_motif_negative_tile_generation_service_ts
-  file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_parallel_motif_parallel_serpentine_service_ts
-  file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_svg_rendering_output_path_service_ts
-  file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_svg_rendering_svg_rendering_service_ts
-  file_src_modules_draw_draw_constants_ts --> file_src_modules_meander_generation_meander_generation_types_ts
+  file_src_modules_draw_draw_module_ts --> file_src_modules_draw_draw_check_service_ts
   file_src_modules_draw_draw_module_ts --> file_src_modules_draw_draw_code_service_ts
-  file_src_modules_draw_draw_module_ts --> file_src_modules_draw_draw_combinations_service_ts
   file_src_modules_draw_draw_module_ts --> file_src_modules_draw_draw_enumeration_service_ts
   file_src_modules_draw_draw_module_ts --> file_src_modules_draw_draw_index_service_ts
-  file_src_modules_draw_draw_module_ts --> file_src_modules_draw_draw_negative_permutations_service_ts
-  file_src_modules_draw_draw_module_ts --> file_src_modules_draw_draw_parameters_service_ts
-  file_src_modules_draw_draw_module_ts --> file_src_modules_draw_draw_permutations_service_ts
   file_src_modules_draw_draw_module_ts --> file_src_modules_draw_draw_record_service_ts
-  file_src_modules_draw_draw_module_ts --> file_src_modules_draw_draw_rendering_service_ts
   file_src_modules_draw_draw_module_ts --> file_src_modules_draw_draw_command_ts
   file_src_modules_draw_draw_module_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_module_ts
-  file_src_modules_draw_draw_module_ts --> file_src_modules_lattice_identification_lattice_identification_module_ts
   file_src_modules_draw_draw_module_ts --> file_src_modules_meander_characteristics_meander_characteristics_module_ts
   file_src_modules_draw_draw_module_ts --> file_src_modules_meander_classification_meander_classification_module_ts
   file_src_modules_draw_draw_module_ts --> file_src_modules_meander_database_meander_database_module_ts
   file_src_modules_draw_draw_module_ts --> file_src_modules_meander_decoding_meander_decoding_module_ts
   file_src_modules_draw_draw_module_ts --> file_src_modules_meander_enumeration_meander_enumeration_module_ts
-  file_src_modules_draw_draw_module_ts --> file_src_modules_meander_generation_meander_generation_module_ts
   file_src_modules_draw_draw_module_ts --> file_src_modules_meander_rendering_meander_rendering_module_ts
-  file_src_modules_draw_draw_module_ts --> file_src_modules_mosaic_naming_mosaic_naming_module_ts
-  file_src_modules_draw_draw_module_ts --> file_src_modules_parallel_motif_parallel_motif_module_ts
-  file_src_modules_draw_draw_types_ts --> file_src_modules_branch_motif_branch_motif_types_ts
-  file_src_modules_draw_draw_types_ts --> file_src_modules_meander_generation_meander_generation_types_ts
-  file_src_modules_draw_draw_types_ts --> file_src_modules_mosaic_tile_mosaic_tile_types_ts
   file_src_modules_grid_geometry_grid_geometry_module_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
   file_src_modules_grid_geometry_grid_geometry_service_ts --> file_src_modules_grid_geometry_grid_geometry_constants_ts
   file_src_modules_grid_geometry_grid_geometry_service_ts --> file_src_modules_grid_geometry_grid_geometry_types_ts
@@ -3375,24 +3053,6 @@ graph LR
   file_src_modules_hardcoded_meanders_branch_constants_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_types_ts
   file_src_modules_hardcoded_meanders_chain_constants_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_types_ts
   file_src_modules_hardcoded_meanders_cross_constants_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_types_ts
-  file_src_modules_hardcoded_meanders_hardcoded_ingestion_command_integration_test_ts --> file_src_modules_draw_draw_code_service_ts
-  file_src_modules_hardcoded_meanders_hardcoded_ingestion_command_integration_test_ts --> file_src_modules_draw_draw_combinations_service_ts
-  file_src_modules_hardcoded_meanders_hardcoded_ingestion_command_integration_test_ts --> file_src_modules_draw_draw_enumeration_service_ts
-  file_src_modules_hardcoded_meanders_hardcoded_ingestion_command_integration_test_ts --> file_src_modules_draw_draw_index_service_ts
-  file_src_modules_hardcoded_meanders_hardcoded_ingestion_command_integration_test_ts --> file_src_modules_draw_draw_negative_permutations_service_ts
-  file_src_modules_hardcoded_meanders_hardcoded_ingestion_command_integration_test_ts --> file_src_modules_draw_draw_parameters_service_ts
-  file_src_modules_hardcoded_meanders_hardcoded_ingestion_command_integration_test_ts --> file_src_modules_draw_draw_permutations_service_ts
-  file_src_modules_hardcoded_meanders_hardcoded_ingestion_command_integration_test_ts --> file_src_modules_draw_draw_rendering_service_ts
-  file_src_modules_hardcoded_meanders_hardcoded_ingestion_command_integration_test_ts --> file_src_modules_draw_draw_command_ts
-  file_src_modules_hardcoded_meanders_hardcoded_ingestion_command_integration_test_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
-  file_src_modules_hardcoded_meanders_hardcoded_ingestion_command_integration_test_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_constants_ts
-  file_src_modules_hardcoded_meanders_hardcoded_ingestion_command_integration_test_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_service_ts
-  file_src_modules_hardcoded_meanders_hardcoded_ingestion_command_integration_test_ts --> file_src_modules_meander_characteristics_meander_characteristics_module_ts
-  file_src_modules_hardcoded_meanders_hardcoded_ingestion_command_integration_test_ts --> file_src_modules_meander_database_entities_Meander_entity_ts
-  file_src_modules_hardcoded_meanders_hardcoded_ingestion_command_integration_test_ts --> file_src_modules_meander_database_meander_database_service_ts
-  file_src_modules_hardcoded_meanders_hardcoded_ingestion_command_integration_test_ts --> file_src_modules_meander_decoding_meander_decoding_module_ts
-  file_src_modules_hardcoded_meanders_hardcoded_ingestion_command_integration_test_ts --> file_src_modules_meander_rendering_meander_rendering_module_ts
-  file_src_modules_hardcoded_meanders_hardcoded_ingestion_command_integration_test_ts --> file_src_modules_svg_rendering_svg_rendering_service_ts
   file_src_modules_hardcoded_meanders_hardcoded_meanders_constants_ts --> file_src_modules_hardcoded_meanders_boxes_constants_ts
   file_src_modules_hardcoded_meanders_hardcoded_meanders_constants_ts --> file_src_modules_hardcoded_meanders_branch_constants_ts
   file_src_modules_hardcoded_meanders_hardcoded_meanders_constants_ts --> file_src_modules_hardcoded_meanders_chain_constants_ts
@@ -3432,14 +3092,12 @@ graph LR
   file_src_modules_hardcoded_meanders_parallel_3_constants_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_types_ts
   file_src_modules_hardcoded_meanders_parallel_4_constants_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_types_ts
   file_src_modules_hardcoded_meanders_parallel_5_constants_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_types_ts
-  file_src_modules_hardcoded_meanders_parallel_6_constants_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_types_ts
   file_src_modules_hardcoded_meanders_parallel_constants_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_types_ts
   file_src_modules_hardcoded_meanders_parallel_constants_ts --> file_src_modules_hardcoded_meanders_parallel_1_constants_ts
   file_src_modules_hardcoded_meanders_parallel_constants_ts --> file_src_modules_hardcoded_meanders_parallel_2_constants_ts
   file_src_modules_hardcoded_meanders_parallel_constants_ts --> file_src_modules_hardcoded_meanders_parallel_3_constants_ts
   file_src_modules_hardcoded_meanders_parallel_constants_ts --> file_src_modules_hardcoded_meanders_parallel_4_constants_ts
   file_src_modules_hardcoded_meanders_parallel_constants_ts --> file_src_modules_hardcoded_meanders_parallel_5_constants_ts
-  file_src_modules_hardcoded_meanders_parallel_constants_ts --> file_src_modules_hardcoded_meanders_parallel_6_constants_ts
   file_src_modules_hardcoded_meanders_snake_constants_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_types_ts
   file_src_modules_hardcoded_meanders_swirl_constants_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_types_ts
   file_src_modules_hardcoded_meanders_whirl_constants_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_types_ts
@@ -3447,27 +3105,6 @@ graph LR
   file_src_modules_lattice_identification_lattice_identification_module_ts --> file_src_modules_meander_lattice_meander_lattice_module_ts
   file_src_modules_lattice_identification_lattice_identification_module_ts --> file_src_modules_mosaic_naming_mosaic_naming_module_ts
   file_src_modules_lattice_identification_lattice_identification_module_ts --> file_src_modules_mosaic_tile_mosaic_tile_module_ts
-  file_src_modules_lattice_identification_lattice_identification_service_integration_test_ts --> file_src_modules_draw_draw_combinations_service_ts
-  file_src_modules_lattice_identification_lattice_identification_service_integration_test_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
-  file_src_modules_lattice_identification_lattice_identification_service_integration_test_ts --> file_src_modules_lattice_identification_lattice_identification_constants_ts
-  file_src_modules_lattice_identification_lattice_identification_service_integration_test_ts --> file_src_modules_lattice_identification_lattice_identification_module_ts
-  file_src_modules_lattice_identification_lattice_identification_service_integration_test_ts --> file_src_modules_lattice_identification_lattice_identification_service_ts
-  file_src_modules_lattice_identification_lattice_identification_service_integration_test_ts --> file_src_modules_meander_generation_meander_generation_constants_ts
-  file_src_modules_lattice_identification_lattice_identification_service_integration_test_ts --> file_src_modules_meander_generation_meander_generation_module_ts
-  file_src_modules_lattice_identification_lattice_identification_service_integration_test_ts --> file_src_modules_meander_generation_meander_generation_service_ts
-  file_src_modules_lattice_identification_lattice_identification_service_integration_test_ts --> file_src_modules_meander_generation_meander_generation_types_ts
-  file_src_modules_lattice_identification_lattice_identification_service_integration_test_ts --> file_src_modules_meander_generation_meander_generation_utilities_ts
-  file_src_modules_lattice_identification_lattice_identification_service_integration_test_ts --> file_src_modules_meander_generation_motif_pitch_service_ts
-  file_src_modules_lattice_identification_lattice_identification_service_integration_test_ts --> file_src_modules_meander_lattice_meander_lattice_module_ts
-  file_src_modules_lattice_identification_lattice_identification_service_integration_test_ts --> file_src_modules_meander_lattice_meander_lattice_service_ts
-  file_src_modules_lattice_identification_lattice_identification_service_integration_test_ts --> file_src_modules_mosaic_naming_mosaic_naming_service_ts
-  file_src_modules_lattice_identification_lattice_identification_service_integration_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_generation_service_ts
-  file_src_modules_lattice_identification_lattice_identification_service_integration_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_constants_ts
-  file_src_modules_lattice_identification_lattice_identification_service_integration_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_module_ts
-  file_src_modules_lattice_identification_lattice_identification_service_integration_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_types_ts
-  file_src_modules_lattice_identification_lattice_identification_service_integration_test_ts --> file_src_modules_mosaic_tile_mosaic_tiles_service_ts
-  file_src_modules_lattice_identification_lattice_identification_service_integration_test_ts --> file_src_modules_parallel_motif_parallel_motif_constants_ts
-  file_src_modules_lattice_identification_lattice_identification_service_integration_test_ts --> file_src_modules_parallel_motif_parallel_serpentine_service_ts
   file_src_modules_lattice_identification_lattice_identification_service_ts --> file_src_modules_lattice_identification_lattice_identification_constants_ts
   file_src_modules_lattice_identification_lattice_identification_service_ts --> file_src_modules_lattice_identification_lattice_identification_types_ts
   file_src_modules_lattice_identification_lattice_identification_service_ts --> file_src_modules_meander_lattice_meander_lattice_service_ts
@@ -3506,13 +3143,14 @@ graph LR
   file_src_modules_meander_characteristics_meander_connectivity_service_unit_test_ts --> file_src_modules_meander_decoding_meander_decoding_service_ts
   file_src_modules_meander_characteristics_meander_connectivity_service_unit_test_ts --> file_src_modules_meander_lattice_meander_lattice_service_ts
   file_src_modules_meander_characteristics_meander_connectivity_service_unit_test_ts --> file_src_modules_meander_topology_meander_topology_service_ts
+  file_src_modules_meander_classification_meander_classification_constants_ts --> file_src_modules_meander_classification_meander_classification_types_ts
+  file_src_modules_meander_classification_meander_classification_constants_ts --> file_src_modules_mosaic_tile_mosaic_tile_constants_ts
   file_src_modules_meander_classification_meander_classification_module_ts --> file_src_modules_meander_classification_meander_classification_service_ts
   file_src_modules_meander_classification_meander_classification_module_ts --> file_src_modules_mosaic_naming_mosaic_naming_module_ts
   file_src_modules_meander_classification_meander_classification_service_ts --> file_src_modules_meander_characteristics_meander_characteristics_types_ts
+  file_src_modules_meander_classification_meander_classification_service_ts --> file_src_modules_meander_classification_meander_classification_constants_ts
   file_src_modules_meander_classification_meander_classification_service_ts --> file_src_modules_meander_classification_meander_classification_types_ts
   file_src_modules_meander_classification_meander_classification_service_ts --> file_src_modules_meander_decoding_meander_decoding_types_ts
-  file_src_modules_meander_classification_meander_classification_service_ts --> file_src_modules_meander_generation_meander_generation_constants_ts
-  file_src_modules_meander_classification_meander_classification_service_ts --> file_src_modules_meander_generation_meander_generation_types_ts
   file_src_modules_meander_classification_meander_classification_service_ts --> file_src_modules_mosaic_naming_mosaic_naming_service_ts
   file_src_modules_meander_classification_meander_classification_service_ts --> file_src_modules_mosaic_tile_mosaic_tile_types_ts
   file_src_modules_meander_classification_meander_classification_service_unit_test_ts --> file_src_modules_meander_characteristics_meander_characteristics_service_ts
@@ -3520,18 +3158,16 @@ graph LR
   file_src_modules_meander_classification_meander_classification_service_unit_test_ts --> file_src_modules_meander_classification_meander_classification_service_ts
   file_src_modules_meander_classification_meander_classification_service_unit_test_ts --> file_src_modules_meander_classification_meander_classification_types_ts
   file_src_modules_meander_classification_meander_classification_service_unit_test_ts --> file_src_modules_meander_decoding_meander_decoding_service_ts
-  file_src_modules_meander_classification_meander_classification_service_unit_test_ts --> file_src_modules_meander_generation_meander_generation_types_ts
   file_src_modules_meander_classification_meander_classification_service_unit_test_ts --> file_src_modules_meander_lattice_meander_lattice_service_ts
   file_src_modules_meander_classification_meander_classification_service_unit_test_ts --> file_src_modules_meander_topology_meander_topology_service_ts
   file_src_modules_meander_classification_meander_classification_service_unit_test_ts --> file_src_modules_mosaic_naming_mosaic_naming_service_ts
   file_src_modules_meander_classification_meander_classification_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_service_ts
   file_src_modules_meander_classification_meander_classification_types_ts --> file_src_modules_meander_characteristics_meander_characteristics_types_ts
-  file_src_modules_meander_classification_meander_classification_types_ts --> file_src_modules_meander_generation_meander_generation_types_ts
   file_src_modules_meander_classification_meander_classification_types_ts --> file_src_modules_mosaic_tile_mosaic_tile_types_ts
+  file_src_modules_meander_database_entities_Meander_entity_ts --> file_src_modules_meander_classification_meander_classification_constants_ts
+  file_src_modules_meander_database_entities_Meander_entity_ts --> file_src_modules_meander_classification_meander_classification_types_ts
   file_src_modules_meander_database_entities_Meander_entity_ts --> file_src_modules_meander_database_meander_database_constants_ts
   file_src_modules_meander_database_entities_Meander_entity_ts --> file_src_modules_meander_database_meander_database_types_ts
-  file_src_modules_meander_database_entities_Meander_entity_ts --> file_src_modules_meander_generation_meander_generation_constants_ts
-  file_src_modules_meander_database_entities_Meander_entity_ts --> file_src_modules_meander_generation_meander_generation_types_ts
   file_src_modules_meander_database_entities_Meander_entity_ts --> file_src_modules_mosaic_tile_mosaic_tile_constants_ts
   file_src_modules_meander_database_entities_Meander_entity_ts --> file_src_modules_mosaic_tile_mosaic_tile_types_ts
   file_src_modules_meander_database_meander_database_module_ts --> file_src_modules_meander_database_entities_Meander_entity_ts
@@ -3546,8 +3182,8 @@ graph LR
   file_src_modules_meander_database_meander_database_service_unit_test_ts --> file_src_modules_meander_database_entities_Meander_entity_ts
   file_src_modules_meander_database_meander_database_service_unit_test_ts --> file_src_modules_meander_database_meander_database_service_ts
   file_src_modules_meander_database_meander_database_service_unit_test_ts --> file_src_modules_meander_database_meander_database_types_ts
+  file_src_modules_meander_database_meander_database_types_ts --> file_src_modules_meander_classification_meander_classification_types_ts
   file_src_modules_meander_database_meander_database_types_ts --> file_src_modules_meander_database_meander_database_constants_ts
-  file_src_modules_meander_database_meander_database_types_ts --> file_src_modules_meander_generation_meander_generation_types_ts
   file_src_modules_meander_database_meander_database_types_ts --> file_src_modules_mosaic_tile_mosaic_tile_types_ts
   file_src_modules_meander_decoding_meander_decoding_module_ts --> file_src_modules_meander_decoding_meander_decoding_service_ts
   file_src_modules_meander_decoding_meander_decoding_service_ts --> file_src_modules_meander_decoding_meander_decoding_constants_ts
@@ -3568,132 +3204,6 @@ graph LR
   file_src_modules_meander_enumeration_meander_enumeration_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_symmetry_service_ts
   file_src_modules_meander_enumeration_meander_enumeration_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_service_ts
   file_src_modules_meander_enumeration_meander_enumeration_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tiles_service_ts
-  file_src_modules_meander_generation_meander_generation_constants_ts --> file_src_modules_meander_generation_meander_generation_types_ts
-  file_src_modules_meander_generation_meander_generation_constants_ts --> file_src_modules_mosaic_tile_mosaic_tile_constants_ts
-  file_src_modules_meander_generation_meander_generation_constants_unit_test_ts --> file_src_modules_meander_generation_meander_generation_constants_ts
-  file_src_modules_meander_generation_meander_generation_constants_unit_test_ts --> file_src_modules_meander_generation_sub_family_constants_ts
-  file_src_modules_meander_generation_meander_generation_module_ts --> file_src_modules_boxes_motif_boxes_motif_module_ts
-  file_src_modules_meander_generation_meander_generation_module_ts --> file_src_modules_branch_motif_branch_motif_module_ts
-  file_src_modules_meander_generation_meander_generation_module_ts --> file_src_modules_chain_motif_chain_motif_module_ts
-  file_src_modules_meander_generation_meander_generation_module_ts --> file_src_modules_cross_motif_cross_motif_module_ts
-  file_src_modules_meander_generation_meander_generation_module_ts --> file_src_modules_grid_geometry_grid_geometry_module_ts
-  file_src_modules_meander_generation_meander_generation_module_ts --> file_src_modules_meander_generation_meander_generation_service_ts
-  file_src_modules_meander_generation_meander_generation_module_ts --> file_src_modules_meander_generation_motif_pitch_service_ts
-  file_src_modules_meander_generation_meander_generation_module_ts --> file_src_modules_meander_generation_motif_registry_service_ts
-  file_src_modules_meander_generation_meander_generation_module_ts --> file_src_modules_mosaic_tile_mosaic_tile_module_ts
-  file_src_modules_meander_generation_meander_generation_module_ts --> file_src_modules_negative_motif_negative_motif_module_ts
-  file_src_modules_meander_generation_meander_generation_module_ts --> file_src_modules_parallel_motif_parallel_motif_module_ts
-  file_src_modules_meander_generation_meander_generation_module_ts --> file_src_modules_snake_motif_snake_motif_module_ts
-  file_src_modules_meander_generation_meander_generation_module_ts --> file_src_modules_svg_rendering_svg_rendering_module_ts
-  file_src_modules_meander_generation_meander_generation_module_ts --> file_src_modules_swirl_motif_swirl_motif_module_ts
-  file_src_modules_meander_generation_meander_generation_module_ts --> file_src_modules_whirl_motif_whirl_motif_module_ts
-  file_src_modules_meander_generation_meander_generation_service_ts --> file_src_modules_branch_motif_branch_motif_constants_ts
-  file_src_modules_meander_generation_meander_generation_service_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
-  file_src_modules_meander_generation_meander_generation_service_ts --> file_src_modules_grid_geometry_grid_geometry_types_ts
-  file_src_modules_meander_generation_meander_generation_service_ts --> file_src_modules_meander_generation_meander_generation_constants_ts
-  file_src_modules_meander_generation_meander_generation_service_ts --> file_src_modules_meander_generation_meander_generation_types_ts
-  file_src_modules_meander_generation_meander_generation_service_ts --> file_src_modules_meander_generation_motif_registry_service_ts
-  file_src_modules_meander_generation_meander_generation_service_ts --> file_src_modules_meander_generation_sub_family_constants_ts
-  file_src_modules_meander_generation_meander_generation_service_ts --> file_src_modules_mosaic_tile_mosaic_sub_family_service_ts
-  file_src_modules_meander_generation_meander_generation_service_ts --> file_src_modules_mosaic_tile_mosaic_tile_generation_service_ts
-  file_src_modules_meander_generation_meander_generation_service_ts --> file_src_modules_mosaic_tile_mosaic_tile_types_ts
-  file_src_modules_meander_generation_meander_generation_service_ts --> file_src_modules_svg_rendering_svg_rendering_service_ts
-  file_src_modules_meander_generation_meander_generation_service_unit_test_ts --> file_src_modules_boxes_motif_boxes_motif_service_ts
-  file_src_modules_meander_generation_meander_generation_service_unit_test_ts --> file_src_modules_branch_motif_branch_motif_constants_ts
-  file_src_modules_meander_generation_meander_generation_service_unit_test_ts --> file_src_modules_branch_motif_branch_motif_service_ts
-  file_src_modules_meander_generation_meander_generation_service_unit_test_ts --> file_src_modules_chain_motif_chain_motif_service_ts
-  file_src_modules_meander_generation_meander_generation_service_unit_test_ts --> file_src_modules_cross_motif_cross_motif_service_ts
-  file_src_modules_meander_generation_meander_generation_service_unit_test_ts --> file_src_modules_draw_draw_constants_ts
-  file_src_modules_meander_generation_meander_generation_service_unit_test_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
-  file_src_modules_meander_generation_meander_generation_service_unit_test_ts --> file_src_modules_meander_generation_meander_generation_constants_ts
-  file_src_modules_meander_generation_meander_generation_service_unit_test_ts --> file_src_modules_meander_generation_meander_generation_service_ts
-  file_src_modules_meander_generation_meander_generation_service_unit_test_ts --> file_src_modules_meander_generation_meander_generation_types_ts
-  file_src_modules_meander_generation_meander_generation_service_unit_test_ts --> file_src_modules_meander_generation_motif_registry_service_ts
-  file_src_modules_meander_generation_meander_generation_service_unit_test_ts --> file_src_modules_meander_generation_sub_family_constants_ts
-  file_src_modules_meander_generation_meander_generation_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_sub_family_service_ts
-  file_src_modules_meander_generation_meander_generation_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_generation_service_ts
-  file_src_modules_meander_generation_meander_generation_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_motif_service_ts
-  file_src_modules_meander_generation_meander_generation_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_service_ts
-  file_src_modules_meander_generation_meander_generation_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_types_ts
-  file_src_modules_meander_generation_meander_generation_service_unit_test_ts --> file_src_modules_motif_transforms_motif_transforms_service_ts
-  file_src_modules_meander_generation_meander_generation_service_unit_test_ts --> file_src_modules_negative_motif_negative_motif_service_ts
-  file_src_modules_meander_generation_meander_generation_service_unit_test_ts --> file_src_modules_negative_motif_negative_source_service_ts
-  file_src_modules_meander_generation_meander_generation_service_unit_test_ts --> file_src_modules_parallel_motif_parallel_motif_service_ts
-  file_src_modules_meander_generation_meander_generation_service_unit_test_ts --> file_src_modules_parallel_motif_parallel_serpentine_service_ts
-  file_src_modules_meander_generation_meander_generation_service_unit_test_ts --> file_src_modules_snake_motif_snake_motif_service_ts
-  file_src_modules_meander_generation_meander_generation_service_unit_test_ts --> file_src_modules_snake_motif_snake_sequence_service_ts
-  file_src_modules_meander_generation_meander_generation_service_unit_test_ts --> file_src_modules_svg_rendering_svg_rendering_service_ts
-  file_src_modules_meander_generation_meander_generation_service_unit_test_ts --> file_src_modules_swirl_motif_swirl_motif_service_ts
-  file_src_modules_meander_generation_meander_generation_service_unit_test_ts --> file_src_modules_whirl_motif_whirl_motif_service_ts
-  file_src_modules_meander_generation_meander_generation_service_unit_test_ts --> file_testing_path_data_ts
-  file_src_modules_meander_generation_meander_generation_types_ts --> file_src_modules_branch_motif_branch_motif_types_ts
-  file_src_modules_meander_generation_meander_generation_types_ts --> file_src_modules_grid_geometry_grid_geometry_types_ts
-  file_src_modules_meander_generation_meander_generation_types_ts --> file_src_modules_mosaic_tile_mosaic_tile_types_ts
-  file_src_modules_meander_generation_meander_generation_utilities_ts --> file_src_modules_meander_generation_meander_generation_constants_ts
-  file_src_modules_meander_generation_meander_generation_utilities_ts --> file_src_modules_meander_generation_meander_generation_types_ts
-  file_src_modules_meander_generation_motif_pitch_service_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
-  file_src_modules_meander_generation_motif_pitch_service_ts --> file_src_modules_meander_generation_meander_generation_constants_ts
-  file_src_modules_meander_generation_motif_pitch_service_ts --> file_src_modules_meander_generation_meander_generation_types_ts
-  file_src_modules_meander_generation_motif_pitch_service_ts --> file_src_modules_meander_generation_motif_registry_service_ts
-  file_src_modules_meander_generation_motif_pitch_service_unit_test_ts --> file_src_modules_boxes_motif_boxes_motif_service_ts
-  file_src_modules_meander_generation_motif_pitch_service_unit_test_ts --> file_src_modules_branch_motif_branch_motif_service_ts
-  file_src_modules_meander_generation_motif_pitch_service_unit_test_ts --> file_src_modules_chain_motif_chain_motif_service_ts
-  file_src_modules_meander_generation_motif_pitch_service_unit_test_ts --> file_src_modules_cross_motif_cross_motif_service_ts
-  file_src_modules_meander_generation_motif_pitch_service_unit_test_ts --> file_src_modules_draw_draw_combinations_service_ts
-  file_src_modules_meander_generation_motif_pitch_service_unit_test_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
-  file_src_modules_meander_generation_motif_pitch_service_unit_test_ts --> file_src_modules_meander_generation_meander_generation_constants_ts
-  file_src_modules_meander_generation_motif_pitch_service_unit_test_ts --> file_src_modules_meander_generation_meander_generation_service_ts
-  file_src_modules_meander_generation_motif_pitch_service_unit_test_ts --> file_src_modules_meander_generation_meander_generation_types_ts
-  file_src_modules_meander_generation_motif_pitch_service_unit_test_ts --> file_src_modules_meander_generation_meander_generation_utilities_ts
-  file_src_modules_meander_generation_motif_pitch_service_unit_test_ts --> file_src_modules_meander_generation_motif_pitch_service_ts
-  file_src_modules_meander_generation_motif_pitch_service_unit_test_ts --> file_src_modules_meander_generation_motif_registry_service_ts
-  file_src_modules_meander_generation_motif_pitch_service_unit_test_ts --> file_src_modules_meander_lattice_meander_lattice_service_ts
-  file_src_modules_meander_generation_motif_pitch_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_sub_family_service_ts
-  file_src_modules_meander_generation_motif_pitch_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_symmetry_service_ts
-  file_src_modules_meander_generation_motif_pitch_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_generation_service_ts
-  file_src_modules_meander_generation_motif_pitch_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_motif_service_ts
-  file_src_modules_meander_generation_motif_pitch_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_service_ts
-  file_src_modules_meander_generation_motif_pitch_service_unit_test_ts --> file_src_modules_motif_transforms_motif_transforms_service_ts
-  file_src_modules_meander_generation_motif_pitch_service_unit_test_ts --> file_src_modules_negative_motif_negative_motif_service_ts
-  file_src_modules_meander_generation_motif_pitch_service_unit_test_ts --> file_src_modules_negative_motif_negative_source_service_ts
-  file_src_modules_meander_generation_motif_pitch_service_unit_test_ts --> file_src_modules_parallel_motif_parallel_motif_service_ts
-  file_src_modules_meander_generation_motif_pitch_service_unit_test_ts --> file_src_modules_parallel_motif_parallel_serpentine_service_ts
-  file_src_modules_meander_generation_motif_pitch_service_unit_test_ts --> file_src_modules_snake_motif_snake_motif_service_ts
-  file_src_modules_meander_generation_motif_pitch_service_unit_test_ts --> file_src_modules_snake_motif_snake_sequence_service_ts
-  file_src_modules_meander_generation_motif_pitch_service_unit_test_ts --> file_src_modules_svg_rendering_svg_rendering_service_ts
-  file_src_modules_meander_generation_motif_pitch_service_unit_test_ts --> file_src_modules_swirl_motif_swirl_motif_service_ts
-  file_src_modules_meander_generation_motif_pitch_service_unit_test_ts --> file_src_modules_whirl_motif_whirl_motif_service_ts
-  file_src_modules_meander_generation_motif_registry_service_ts --> file_src_modules_boxes_motif_boxes_motif_service_ts
-  file_src_modules_meander_generation_motif_registry_service_ts --> file_src_modules_branch_motif_branch_motif_service_ts
-  file_src_modules_meander_generation_motif_registry_service_ts --> file_src_modules_chain_motif_chain_motif_service_ts
-  file_src_modules_meander_generation_motif_registry_service_ts --> file_src_modules_cross_motif_cross_motif_service_ts
-  file_src_modules_meander_generation_motif_registry_service_ts --> file_src_modules_meander_generation_meander_generation_types_ts
-  file_src_modules_meander_generation_motif_registry_service_ts --> file_src_modules_negative_motif_negative_motif_service_ts
-  file_src_modules_meander_generation_motif_registry_service_ts --> file_src_modules_parallel_motif_parallel_motif_service_ts
-  file_src_modules_meander_generation_motif_registry_service_ts --> file_src_modules_snake_motif_snake_motif_service_ts
-  file_src_modules_meander_generation_motif_registry_service_ts --> file_src_modules_swirl_motif_swirl_motif_service_ts
-  file_src_modules_meander_generation_motif_registry_service_ts --> file_src_modules_whirl_motif_whirl_motif_service_ts
-  file_src_modules_meander_generation_motif_registry_service_unit_test_ts --> file_src_modules_boxes_motif_boxes_motif_service_ts
-  file_src_modules_meander_generation_motif_registry_service_unit_test_ts --> file_src_modules_branch_motif_branch_motif_service_ts
-  file_src_modules_meander_generation_motif_registry_service_unit_test_ts --> file_src_modules_chain_motif_chain_motif_service_ts
-  file_src_modules_meander_generation_motif_registry_service_unit_test_ts --> file_src_modules_cross_motif_cross_motif_service_ts
-  file_src_modules_meander_generation_motif_registry_service_unit_test_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
-  file_src_modules_meander_generation_motif_registry_service_unit_test_ts --> file_src_modules_meander_generation_meander_generation_constants_ts
-  file_src_modules_meander_generation_motif_registry_service_unit_test_ts --> file_src_modules_meander_generation_meander_generation_types_ts
-  file_src_modules_meander_generation_motif_registry_service_unit_test_ts --> file_src_modules_meander_generation_motif_registry_service_ts
-  file_src_modules_meander_generation_motif_registry_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_motif_service_ts
-  file_src_modules_meander_generation_motif_registry_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_service_ts
-  file_src_modules_meander_generation_motif_registry_service_unit_test_ts --> file_src_modules_motif_transforms_motif_transforms_service_ts
-  file_src_modules_meander_generation_motif_registry_service_unit_test_ts --> file_src_modules_negative_motif_negative_motif_service_ts
-  file_src_modules_meander_generation_motif_registry_service_unit_test_ts --> file_src_modules_negative_motif_negative_source_service_ts
-  file_src_modules_meander_generation_motif_registry_service_unit_test_ts --> file_src_modules_parallel_motif_parallel_motif_service_ts
-  file_src_modules_meander_generation_motif_registry_service_unit_test_ts --> file_src_modules_parallel_motif_parallel_serpentine_service_ts
-  file_src_modules_meander_generation_motif_registry_service_unit_test_ts --> file_src_modules_snake_motif_snake_motif_service_ts
-  file_src_modules_meander_generation_motif_registry_service_unit_test_ts --> file_src_modules_snake_motif_snake_sequence_service_ts
-  file_src_modules_meander_generation_motif_registry_service_unit_test_ts --> file_src_modules_swirl_motif_swirl_motif_service_ts
-  file_src_modules_meander_generation_motif_registry_service_unit_test_ts --> file_src_modules_whirl_motif_whirl_motif_service_ts
-  file_src_modules_meander_generation_sub_family_constants_ts --> file_src_modules_meander_generation_meander_generation_types_ts
-  file_src_modules_meander_generation_sub_family_constants_ts --> file_src_modules_mosaic_tile_mosaic_tile_constants_ts
   file_src_modules_meander_lattice_meander_lattice_module_ts --> file_src_modules_meander_lattice_meander_lattice_service_ts
   file_src_modules_meander_lattice_meander_lattice_service_ts --> file_src_modules_meander_lattice_meander_lattice_constants_ts
   file_src_modules_meander_lattice_meander_lattice_service_ts --> file_src_modules_meander_lattice_meander_lattice_types_ts
@@ -3713,39 +3223,6 @@ graph LR
   file_src_modules_meander_rendering_meander_rendering_service_unit_test_ts --> file_src_modules_svg_rendering_svg_rendering_service_ts
   file_src_modules_meander_topology_meander_topology_module_ts --> file_src_modules_meander_lattice_meander_lattice_module_ts
   file_src_modules_meander_topology_meander_topology_module_ts --> file_src_modules_meander_topology_meander_topology_service_ts
-  file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_boxes_motif_boxes_motif_service_ts
-  file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_branch_motif_branch_motif_service_ts
-  file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_chain_motif_chain_motif_service_ts
-  file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_cross_motif_cross_motif_service_ts
-  file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_draw_draw_combinations_service_ts
-  file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_draw_draw_constants_ts
-  file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
-  file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_lattice_identification_lattice_identification_service_ts
-  file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_meander_generation_meander_generation_constants_ts
-  file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_meander_generation_meander_generation_service_ts
-  file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_meander_generation_meander_generation_types_ts
-  file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_meander_generation_motif_registry_service_ts
-  file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_meander_lattice_meander_lattice_service_ts
-  file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_meander_lattice_meander_lattice_types_ts
-  file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_meander_topology_meander_topology_service_ts
-  file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_mosaic_naming_mosaic_naming_service_ts
-  file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_mosaic_tile_mosaic_sub_family_service_ts
-  file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_mosaic_tile_mosaic_symmetry_service_ts
-  file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_generation_service_ts
-  file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_motif_service_ts
-  file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_service_ts
-  file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_mosaic_tile_mosaic_tiles_service_ts
-  file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_motif_transforms_motif_transforms_service_ts
-  file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_negative_motif_negative_motif_service_ts
-  file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_negative_motif_negative_source_service_ts
-  file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_parallel_motif_parallel_motif_service_ts
-  file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_parallel_motif_parallel_serpentine_service_ts
-  file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_snake_motif_snake_motif_service_ts
-  file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_snake_motif_snake_sequence_service_ts
-  file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_svg_rendering_svg_rendering_constants_ts
-  file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_svg_rendering_svg_rendering_service_ts
-  file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_swirl_motif_swirl_motif_service_ts
-  file_src_modules_meander_topology_meander_topology_service_integration_test_ts --> file_src_modules_whirl_motif_whirl_motif_service_ts
   file_src_modules_meander_topology_meander_topology_service_ts --> file_src_modules_meander_lattice_meander_lattice_service_ts
   file_src_modules_meander_topology_meander_topology_service_ts --> file_src_modules_meander_lattice_meander_lattice_types_ts
   file_src_modules_meander_topology_meander_topology_service_ts --> file_src_modules_meander_topology_meander_topology_types_ts
@@ -3810,13 +3287,11 @@ graph LR
   file_src_modules_mosaic_tile_mosaic_symmetry_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_service_ts
   file_src_modules_mosaic_tile_mosaic_symmetry_service_unit_test_ts --> file_testing_mosaic_tiles_ts
   file_src_modules_mosaic_tile_mosaic_tile_generation_service_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
-  file_src_modules_mosaic_tile_mosaic_tile_generation_service_ts --> file_src_modules_meander_generation_meander_generation_constants_ts
   file_src_modules_mosaic_tile_mosaic_tile_generation_service_ts --> file_src_modules_mosaic_tile_mosaic_tile_motif_service_ts
   file_src_modules_mosaic_tile_mosaic_tile_generation_service_ts --> file_src_modules_mosaic_tile_mosaic_tile_constants_ts
   file_src_modules_mosaic_tile_mosaic_tile_generation_service_ts --> file_src_modules_mosaic_tile_mosaic_tile_types_ts
   file_src_modules_mosaic_tile_mosaic_tile_generation_service_ts --> file_src_modules_svg_rendering_svg_rendering_service_ts
   file_src_modules_mosaic_tile_mosaic_tile_generation_service_unit_test_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
-  file_src_modules_mosaic_tile_mosaic_tile_generation_service_unit_test_ts --> file_src_modules_meander_generation_meander_generation_constants_ts
   file_src_modules_mosaic_tile_mosaic_tile_generation_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_symmetry_service_ts
   file_src_modules_mosaic_tile_mosaic_tile_generation_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_generation_service_ts
   file_src_modules_mosaic_tile_mosaic_tile_generation_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_motif_service_ts
@@ -3863,215 +3338,11 @@ graph LR
   file_src_modules_mosaic_tile_mosaic_tiles_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_constants_ts
   file_src_modules_mosaic_tile_mosaic_tiles_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_service_ts
   file_src_modules_mosaic_tile_mosaic_tiles_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tiles_service_ts
-  file_src_modules_motif_transforms_motif_transforms_module_ts --> file_src_modules_motif_transforms_motif_transforms_service_ts
-  file_src_modules_motif_transforms_motif_transforms_service_ts --> file_src_modules_motif_transforms_motif_transforms_types_ts
-  file_src_modules_motif_transforms_motif_transforms_service_unit_test_ts --> file_src_modules_motif_transforms_motif_transforms_service_ts
-  file_src_modules_motif_transforms_motif_transforms_service_unit_test_ts --> file_src_modules_motif_transforms_motif_transforms_types_ts
-  file_src_modules_negative_motif_negative_motif_constants_ts --> file_src_modules_negative_motif_negative_motif_types_ts
-  file_src_modules_negative_motif_negative_motif_module_ts --> file_src_modules_grid_geometry_grid_geometry_module_ts
-  file_src_modules_negative_motif_negative_motif_module_ts --> file_src_modules_mosaic_tile_mosaic_tile_module_ts
-  file_src_modules_negative_motif_negative_motif_module_ts --> file_src_modules_negative_motif_negative_motif_service_ts
-  file_src_modules_negative_motif_negative_motif_module_ts --> file_src_modules_negative_motif_negative_source_service_ts
-  file_src_modules_negative_motif_negative_motif_module_ts --> file_src_modules_negative_motif_negative_tile_generation_service_ts
-  file_src_modules_negative_motif_negative_motif_module_ts --> file_src_modules_svg_rendering_svg_rendering_module_ts
-  file_src_modules_negative_motif_negative_motif_service_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
-  file_src_modules_negative_motif_negative_motif_service_ts --> file_src_modules_grid_geometry_grid_geometry_types_ts
-  file_src_modules_negative_motif_negative_motif_service_ts --> file_src_modules_meander_generation_meander_generation_types_ts
-  file_src_modules_negative_motif_negative_motif_service_ts --> file_src_modules_mosaic_tile_mosaic_tile_types_ts
-  file_src_modules_negative_motif_negative_motif_service_ts --> file_src_modules_negative_motif_negative_motif_types_ts
-  file_src_modules_negative_motif_negative_motif_service_ts --> file_src_modules_negative_motif_negative_source_service_ts
-  file_src_modules_negative_motif_negative_motif_service_unit_test_ts --> file_src_modules_boxes_motif_boxes_motif_service_ts
-  file_src_modules_negative_motif_negative_motif_service_unit_test_ts --> file_src_modules_branch_motif_branch_motif_service_ts
-  file_src_modules_negative_motif_negative_motif_service_unit_test_ts --> file_src_modules_chain_motif_chain_motif_service_ts
-  file_src_modules_negative_motif_negative_motif_service_unit_test_ts --> file_src_modules_cross_motif_cross_motif_service_ts
-  file_src_modules_negative_motif_negative_motif_service_unit_test_ts --> file_src_modules_grid_geometry_grid_geometry_constants_ts
-  file_src_modules_negative_motif_negative_motif_service_unit_test_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
-  file_src_modules_negative_motif_negative_motif_service_unit_test_ts --> file_src_modules_meander_generation_meander_generation_constants_ts
-  file_src_modules_negative_motif_negative_motif_service_unit_test_ts --> file_src_modules_meander_generation_meander_generation_service_ts
-  file_src_modules_negative_motif_negative_motif_service_unit_test_ts --> file_src_modules_meander_generation_meander_generation_types_ts
-  file_src_modules_negative_motif_negative_motif_service_unit_test_ts --> file_src_modules_meander_generation_motif_registry_service_ts
-  file_src_modules_negative_motif_negative_motif_service_unit_test_ts --> file_src_modules_meander_lattice_meander_lattice_service_ts
-  file_src_modules_negative_motif_negative_motif_service_unit_test_ts --> file_src_modules_meander_topology_meander_topology_service_ts
-  file_src_modules_negative_motif_negative_motif_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_sub_family_service_ts
-  file_src_modules_negative_motif_negative_motif_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_generation_service_ts
-  file_src_modules_negative_motif_negative_motif_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_motif_service_ts
-  file_src_modules_negative_motif_negative_motif_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_service_ts
-  file_src_modules_negative_motif_negative_motif_service_unit_test_ts --> file_src_modules_motif_transforms_motif_transforms_service_ts
-  file_src_modules_negative_motif_negative_motif_service_unit_test_ts --> file_src_modules_negative_motif_negative_motif_service_ts
-  file_src_modules_negative_motif_negative_motif_service_unit_test_ts --> file_src_modules_negative_motif_negative_source_service_ts
-  file_src_modules_negative_motif_negative_motif_service_unit_test_ts --> file_src_modules_parallel_motif_parallel_motif_service_ts
-  file_src_modules_negative_motif_negative_motif_service_unit_test_ts --> file_src_modules_parallel_motif_parallel_serpentine_service_ts
-  file_src_modules_negative_motif_negative_motif_service_unit_test_ts --> file_src_modules_snake_motif_snake_motif_service_ts
-  file_src_modules_negative_motif_negative_motif_service_unit_test_ts --> file_src_modules_snake_motif_snake_sequence_service_ts
-  file_src_modules_negative_motif_negative_motif_service_unit_test_ts --> file_src_modules_svg_rendering_svg_rendering_service_ts
-  file_src_modules_negative_motif_negative_motif_service_unit_test_ts --> file_src_modules_swirl_motif_swirl_motif_service_ts
-  file_src_modules_negative_motif_negative_motif_service_unit_test_ts --> file_src_modules_whirl_motif_whirl_motif_service_ts
-  file_src_modules_negative_motif_negative_source_service_ts --> file_src_modules_meander_generation_meander_generation_types_ts
-  file_src_modules_negative_motif_negative_source_service_ts --> file_src_modules_mosaic_tile_mosaic_tile_service_ts
-  file_src_modules_negative_motif_negative_source_service_ts --> file_src_modules_mosaic_tile_mosaic_tile_types_ts
-  file_src_modules_negative_motif_negative_source_service_ts --> file_src_modules_negative_motif_negative_motif_constants_ts
-  file_src_modules_negative_motif_negative_source_service_ts --> file_src_modules_negative_motif_negative_motif_types_ts
-  file_src_modules_negative_motif_negative_source_service_unit_test_ts --> file_src_modules_lattice_identification_lattice_identification_service_ts
-  file_src_modules_negative_motif_negative_source_service_unit_test_ts --> file_src_modules_meander_generation_meander_generation_constants_ts
-  file_src_modules_negative_motif_negative_source_service_unit_test_ts --> file_src_modules_meander_lattice_meander_lattice_service_ts
-  file_src_modules_negative_motif_negative_source_service_unit_test_ts --> file_src_modules_mosaic_naming_mosaic_naming_service_ts
-  file_src_modules_negative_motif_negative_source_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_sub_family_service_ts
-  file_src_modules_negative_motif_negative_source_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_symmetry_service_ts
-  file_src_modules_negative_motif_negative_source_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_service_ts
-  file_src_modules_negative_motif_negative_source_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_types_ts
-  file_src_modules_negative_motif_negative_source_service_unit_test_ts --> file_src_modules_negative_motif_negative_motif_constants_ts
-  file_src_modules_negative_motif_negative_source_service_unit_test_ts --> file_src_modules_negative_motif_negative_motif_types_ts
-  file_src_modules_negative_motif_negative_source_service_unit_test_ts --> file_src_modules_negative_motif_negative_source_service_ts
-  file_src_modules_negative_motif_negative_tile_generation_service_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
-  file_src_modules_negative_motif_negative_tile_generation_service_ts --> file_src_modules_meander_generation_meander_generation_constants_ts
-  file_src_modules_negative_motif_negative_tile_generation_service_ts --> file_src_modules_mosaic_tile_mosaic_tile_types_ts
-  file_src_modules_negative_motif_negative_tile_generation_service_ts --> file_src_modules_negative_motif_negative_motif_constants_ts
-  file_src_modules_negative_motif_negative_tile_generation_service_ts --> file_src_modules_negative_motif_negative_motif_service_ts
-  file_src_modules_negative_motif_negative_tile_generation_service_ts --> file_src_modules_svg_rendering_svg_rendering_service_ts
-  file_src_modules_negative_motif_negative_tile_generation_service_unit_test_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
-  file_src_modules_negative_motif_negative_tile_generation_service_unit_test_ts --> file_src_modules_meander_generation_meander_generation_constants_ts
-  file_src_modules_negative_motif_negative_tile_generation_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_service_ts
-  file_src_modules_negative_motif_negative_tile_generation_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_types_ts
-  file_src_modules_negative_motif_negative_tile_generation_service_unit_test_ts --> file_src_modules_negative_motif_negative_motif_constants_ts
-  file_src_modules_negative_motif_negative_tile_generation_service_unit_test_ts --> file_src_modules_negative_motif_negative_motif_service_ts
-  file_src_modules_negative_motif_negative_tile_generation_service_unit_test_ts --> file_src_modules_negative_motif_negative_source_service_ts
-  file_src_modules_negative_motif_negative_tile_generation_service_unit_test_ts --> file_src_modules_negative_motif_negative_tile_generation_service_ts
-  file_src_modules_negative_motif_negative_tile_generation_service_unit_test_ts --> file_src_modules_svg_rendering_svg_rendering_service_ts
-  file_src_modules_negative_motif_negative_tile_generation_service_unit_test_ts --> file_testing_mosaic_tiles_ts
-  file_src_modules_parallel_motif_parallel_motif_constants_ts --> file_src_modules_meander_generation_meander_generation_types_ts
-  file_src_modules_parallel_motif_parallel_motif_module_ts --> file_src_modules_grid_geometry_grid_geometry_module_ts
-  file_src_modules_parallel_motif_parallel_motif_module_ts --> file_src_modules_parallel_motif_parallel_motif_service_ts
-  file_src_modules_parallel_motif_parallel_motif_module_ts --> file_src_modules_parallel_motif_parallel_serpentine_service_ts
-  file_src_modules_parallel_motif_parallel_motif_service_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
-  file_src_modules_parallel_motif_parallel_motif_service_ts --> file_src_modules_grid_geometry_grid_geometry_types_ts
-  file_src_modules_parallel_motif_parallel_motif_service_ts --> file_src_modules_meander_generation_meander_generation_types_ts
-  file_src_modules_parallel_motif_parallel_motif_service_ts --> file_src_modules_parallel_motif_parallel_motif_constants_ts
-  file_src_modules_parallel_motif_parallel_motif_service_ts --> file_src_modules_parallel_motif_parallel_motif_types_ts
-  file_src_modules_parallel_motif_parallel_motif_service_ts --> file_src_modules_parallel_motif_parallel_serpentine_service_ts
-  file_src_modules_parallel_motif_parallel_motif_service_unit_test_ts --> file_src_modules_boxes_motif_boxes_motif_service_ts
-  file_src_modules_parallel_motif_parallel_motif_service_unit_test_ts --> file_src_modules_branch_motif_branch_motif_service_ts
-  file_src_modules_parallel_motif_parallel_motif_service_unit_test_ts --> file_src_modules_chain_motif_chain_motif_service_ts
-  file_src_modules_parallel_motif_parallel_motif_service_unit_test_ts --> file_src_modules_cross_motif_cross_motif_service_ts
-  file_src_modules_parallel_motif_parallel_motif_service_unit_test_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
-  file_src_modules_parallel_motif_parallel_motif_service_unit_test_ts --> file_src_modules_meander_generation_meander_generation_constants_ts
-  file_src_modules_parallel_motif_parallel_motif_service_unit_test_ts --> file_src_modules_meander_generation_meander_generation_service_ts
-  file_src_modules_parallel_motif_parallel_motif_service_unit_test_ts --> file_src_modules_meander_generation_meander_generation_types_ts
-  file_src_modules_parallel_motif_parallel_motif_service_unit_test_ts --> file_src_modules_meander_generation_motif_registry_service_ts
-  file_src_modules_parallel_motif_parallel_motif_service_unit_test_ts --> file_src_modules_meander_lattice_meander_lattice_service_ts
-  file_src_modules_parallel_motif_parallel_motif_service_unit_test_ts --> file_src_modules_meander_topology_meander_topology_service_ts
-  file_src_modules_parallel_motif_parallel_motif_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_sub_family_service_ts
-  file_src_modules_parallel_motif_parallel_motif_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_generation_service_ts
-  file_src_modules_parallel_motif_parallel_motif_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_motif_service_ts
-  file_src_modules_parallel_motif_parallel_motif_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_service_ts
-  file_src_modules_parallel_motif_parallel_motif_service_unit_test_ts --> file_src_modules_motif_transforms_motif_transforms_service_ts
-  file_src_modules_parallel_motif_parallel_motif_service_unit_test_ts --> file_src_modules_negative_motif_negative_motif_service_ts
-  file_src_modules_parallel_motif_parallel_motif_service_unit_test_ts --> file_src_modules_negative_motif_negative_source_service_ts
-  file_src_modules_parallel_motif_parallel_motif_service_unit_test_ts --> file_src_modules_parallel_motif_parallel_motif_constants_ts
-  file_src_modules_parallel_motif_parallel_motif_service_unit_test_ts --> file_src_modules_parallel_motif_parallel_motif_service_ts
-  file_src_modules_parallel_motif_parallel_motif_service_unit_test_ts --> file_src_modules_parallel_motif_parallel_serpentine_service_ts
-  file_src_modules_parallel_motif_parallel_motif_service_unit_test_ts --> file_src_modules_snake_motif_snake_motif_service_ts
-  file_src_modules_parallel_motif_parallel_motif_service_unit_test_ts --> file_src_modules_snake_motif_snake_sequence_service_ts
-  file_src_modules_parallel_motif_parallel_motif_service_unit_test_ts --> file_src_modules_svg_rendering_svg_rendering_service_ts
-  file_src_modules_parallel_motif_parallel_motif_service_unit_test_ts --> file_src_modules_swirl_motif_swirl_motif_service_ts
-  file_src_modules_parallel_motif_parallel_motif_service_unit_test_ts --> file_src_modules_whirl_motif_whirl_motif_service_ts
-  file_src_modules_parallel_motif_parallel_motif_types_ts --> file_src_modules_meander_generation_meander_generation_types_ts
-  file_src_modules_parallel_motif_parallel_serpentine_service_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
-  file_src_modules_parallel_motif_parallel_serpentine_service_ts --> file_src_modules_grid_geometry_grid_geometry_types_ts
-  file_src_modules_parallel_motif_parallel_serpentine_service_ts --> file_src_modules_meander_generation_meander_generation_types_ts
-  file_src_modules_parallel_motif_parallel_serpentine_service_ts --> file_src_modules_parallel_motif_parallel_motif_constants_ts
-  file_src_modules_parallel_motif_parallel_serpentine_service_ts --> file_src_modules_parallel_motif_parallel_motif_types_ts
-  file_src_modules_parallel_motif_parallel_serpentine_service_unit_test_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
-  file_src_modules_parallel_motif_parallel_serpentine_service_unit_test_ts --> file_src_modules_parallel_motif_parallel_motif_constants_ts
-  file_src_modules_parallel_motif_parallel_serpentine_service_unit_test_ts --> file_src_modules_parallel_motif_parallel_serpentine_service_ts
-  file_src_modules_snake_motif_snake_motif_constants_ts --> file_src_modules_meander_generation_meander_generation_types_ts
-  file_src_modules_snake_motif_snake_motif_module_ts --> file_src_modules_grid_geometry_grid_geometry_module_ts
-  file_src_modules_snake_motif_snake_motif_module_ts --> file_src_modules_motif_transforms_motif_transforms_module_ts
-  file_src_modules_snake_motif_snake_motif_module_ts --> file_src_modules_snake_motif_snake_motif_service_ts
-  file_src_modules_snake_motif_snake_motif_module_ts --> file_src_modules_snake_motif_snake_sequence_service_ts
-  file_src_modules_snake_motif_snake_motif_service_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
-  file_src_modules_snake_motif_snake_motif_service_ts --> file_src_modules_grid_geometry_grid_geometry_types_ts
-  file_src_modules_snake_motif_snake_motif_service_ts --> file_src_modules_meander_generation_meander_generation_types_ts
-  file_src_modules_snake_motif_snake_motif_service_ts --> file_src_modules_motif_transforms_motif_transforms_service_ts
-  file_src_modules_snake_motif_snake_motif_service_ts --> file_src_modules_snake_motif_snake_sequence_service_ts
-  file_src_modules_snake_motif_snake_motif_service_unit_test_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
-  file_src_modules_snake_motif_snake_motif_service_unit_test_ts --> file_src_modules_motif_transforms_motif_transforms_service_ts
-  file_src_modules_snake_motif_snake_motif_service_unit_test_ts --> file_src_modules_snake_motif_snake_motif_service_ts
-  file_src_modules_snake_motif_snake_motif_service_unit_test_ts --> file_src_modules_snake_motif_snake_sequence_service_ts
-  file_src_modules_snake_motif_snake_motif_service_unit_test_ts --> file_testing_path_data_ts
-  file_src_modules_snake_motif_snake_sequence_service_ts --> file_src_modules_meander_generation_meander_generation_types_ts
-  file_src_modules_snake_motif_snake_sequence_service_ts --> file_src_modules_motif_transforms_motif_transforms_service_ts
-  file_src_modules_snake_motif_snake_sequence_service_ts --> file_src_modules_motif_transforms_motif_transforms_types_ts
-  file_src_modules_snake_motif_snake_sequence_service_ts --> file_src_modules_snake_motif_snake_motif_constants_ts
-  file_src_modules_snake_motif_snake_sequence_service_unit_test_ts --> file_src_modules_meander_generation_meander_generation_constants_ts
-  file_src_modules_snake_motif_snake_sequence_service_unit_test_ts --> file_src_modules_motif_transforms_motif_transforms_service_ts
-  file_src_modules_snake_motif_snake_sequence_service_unit_test_ts --> file_src_modules_snake_motif_snake_sequence_service_ts
-  file_src_modules_svg_rendering_output_path_service_integration_test_ts --> file_src_modules_draw_draw_combinations_service_ts
-  file_src_modules_svg_rendering_output_path_service_integration_test_ts --> file_src_modules_draw_draw_rendering_service_ts
-  file_src_modules_svg_rendering_output_path_service_integration_test_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
-  file_src_modules_svg_rendering_output_path_service_integration_test_ts --> file_src_modules_lattice_identification_lattice_identification_module_ts
-  file_src_modules_svg_rendering_output_path_service_integration_test_ts --> file_src_modules_meander_generation_meander_generation_module_ts
-  file_src_modules_svg_rendering_output_path_service_integration_test_ts --> file_src_modules_meander_generation_meander_generation_types_ts
-  file_src_modules_svg_rendering_output_path_service_integration_test_ts --> file_src_modules_meander_generation_meander_generation_utilities_ts
-  file_src_modules_svg_rendering_output_path_service_integration_test_ts --> file_src_modules_mosaic_naming_mosaic_naming_module_ts
-  file_src_modules_svg_rendering_output_path_service_integration_test_ts --> file_src_modules_parallel_motif_parallel_serpentine_service_ts
-  file_src_modules_svg_rendering_output_path_service_integration_test_ts --> file_src_modules_svg_rendering_output_path_service_ts
-  file_src_modules_svg_rendering_output_path_service_integration_test_ts --> file_src_modules_svg_rendering_svg_rendering_constants_ts
-  file_src_modules_svg_rendering_output_path_service_integration_test_ts --> file_src_modules_svg_rendering_svg_rendering_types_ts
-  file_src_modules_svg_rendering_output_path_service_ts --> file_src_modules_lattice_identification_lattice_identification_types_ts
-  file_src_modules_svg_rendering_output_path_service_ts --> file_src_modules_meander_generation_meander_generation_types_ts
-  file_src_modules_svg_rendering_output_path_service_ts --> file_src_modules_svg_rendering_svg_rendering_constants_ts
-  file_src_modules_svg_rendering_output_path_service_unit_test_ts --> file_src_modules_lattice_identification_lattice_identification_types_ts
-  file_src_modules_svg_rendering_output_path_service_unit_test_ts --> file_src_modules_svg_rendering_output_path_service_ts
-  file_src_modules_svg_rendering_output_path_service_unit_test_ts --> file_src_modules_svg_rendering_svg_rendering_constants_ts
-  file_src_modules_svg_rendering_svg_rendering_constants_ts --> file_src_modules_meander_generation_meander_generation_types_ts
-  file_src_modules_svg_rendering_svg_rendering_constants_ts --> file_src_modules_svg_rendering_svg_rendering_types_ts
-  file_src_modules_svg_rendering_svg_rendering_module_ts --> file_src_modules_svg_rendering_output_path_service_ts
   file_src_modules_svg_rendering_svg_rendering_module_ts --> file_src_modules_svg_rendering_svg_rendering_service_ts
   file_src_modules_svg_rendering_svg_rendering_service_ts --> file_src_modules_svg_rendering_svg_rendering_constants_ts
   file_src_modules_svg_rendering_svg_rendering_service_ts --> file_src_modules_svg_rendering_svg_rendering_types_ts
   file_src_modules_svg_rendering_svg_rendering_service_unit_test_ts --> file_src_modules_svg_rendering_svg_rendering_service_ts
-  file_src_modules_swirl_motif_swirl_motif_module_ts --> file_src_modules_grid_geometry_grid_geometry_module_ts
-  file_src_modules_swirl_motif_swirl_motif_module_ts --> file_src_modules_motif_transforms_motif_transforms_module_ts
-  file_src_modules_swirl_motif_swirl_motif_module_ts --> file_src_modules_swirl_motif_swirl_motif_service_ts
-  file_src_modules_swirl_motif_swirl_motif_service_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
-  file_src_modules_swirl_motif_swirl_motif_service_ts --> file_src_modules_grid_geometry_grid_geometry_types_ts
-  file_src_modules_swirl_motif_swirl_motif_service_ts --> file_src_modules_meander_generation_meander_generation_types_ts
-  file_src_modules_swirl_motif_swirl_motif_service_ts --> file_src_modules_motif_transforms_motif_transforms_service_ts
-  file_src_modules_swirl_motif_swirl_motif_service_ts --> file_src_modules_motif_transforms_motif_transforms_types_ts
-  file_src_modules_swirl_motif_swirl_motif_service_unit_test_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
-  file_src_modules_swirl_motif_swirl_motif_service_unit_test_ts --> file_src_modules_motif_transforms_motif_transforms_service_ts
-  file_src_modules_swirl_motif_swirl_motif_service_unit_test_ts --> file_src_modules_snake_motif_snake_motif_service_ts
-  file_src_modules_swirl_motif_swirl_motif_service_unit_test_ts --> file_src_modules_snake_motif_snake_sequence_service_ts
-  file_src_modules_swirl_motif_swirl_motif_service_unit_test_ts --> file_src_modules_swirl_motif_swirl_motif_service_ts
-  file_src_modules_swirl_motif_swirl_motif_service_unit_test_ts --> file_testing_path_data_ts
-  file_src_modules_whirl_motif_whirl_motif_module_ts --> file_src_modules_grid_geometry_grid_geometry_module_ts
-  file_src_modules_whirl_motif_whirl_motif_module_ts --> file_src_modules_motif_transforms_motif_transforms_module_ts
-  file_src_modules_whirl_motif_whirl_motif_module_ts --> file_src_modules_whirl_motif_whirl_motif_service_ts
-  file_src_modules_whirl_motif_whirl_motif_service_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
-  file_src_modules_whirl_motif_whirl_motif_service_ts --> file_src_modules_grid_geometry_grid_geometry_types_ts
-  file_src_modules_whirl_motif_whirl_motif_service_ts --> file_src_modules_meander_generation_meander_generation_types_ts
-  file_src_modules_whirl_motif_whirl_motif_service_ts --> file_src_modules_motif_transforms_motif_transforms_service_ts
-  file_src_modules_whirl_motif_whirl_motif_service_ts --> file_src_modules_motif_transforms_motif_transforms_types_ts
-  file_src_modules_whirl_motif_whirl_motif_service_unit_test_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
-  file_src_modules_whirl_motif_whirl_motif_service_unit_test_ts --> file_src_modules_motif_transforms_motif_transforms_service_ts
-  file_src_modules_whirl_motif_whirl_motif_service_unit_test_ts --> file_src_modules_snake_motif_snake_motif_service_ts
-  file_src_modules_whirl_motif_whirl_motif_service_unit_test_ts --> file_src_modules_snake_motif_snake_sequence_service_ts
-  file_src_modules_whirl_motif_whirl_motif_service_unit_test_ts --> file_src_modules_whirl_motif_whirl_motif_service_ts
-  file_src_modules_whirl_motif_whirl_motif_service_unit_test_ts --> file_testing_path_data_ts
   file_src_repl_ts --> file_src_main_module_ts
-  file_testing_hardcoded_corpus_integration_test_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_constants_ts
-  file_testing_hardcoded_corpus_integration_test_ts --> file_testing_hardcoded_corpus_corpus_ts
-  file_testing_hardcoded_corpus_integration_test_ts --> file_testing_hardcoded_corpus_types_ts
-  file_testing_hardcoded_corpus_corpus_ts --> file_src_main_module_ts
-  file_testing_hardcoded_corpus_corpus_ts --> file_src_modules_draw_draw_combinations_service_ts
-  file_testing_hardcoded_corpus_corpus_ts --> file_src_modules_lattice_identification_lattice_identification_service_ts
-  file_testing_hardcoded_corpus_corpus_ts --> file_src_modules_lattice_identification_lattice_identification_types_ts
-  file_testing_hardcoded_corpus_corpus_ts --> file_src_modules_meander_generation_meander_generation_utilities_ts
-  file_testing_hardcoded_corpus_corpus_ts --> file_src_modules_meander_generation_motif_pitch_service_ts
-  file_testing_hardcoded_corpus_corpus_ts --> file_src_modules_svg_rendering_output_path_service_ts
-  file_testing_hardcoded_corpus_corpus_ts --> file_src_modules_svg_rendering_svg_rendering_constants_ts
-  file_testing_hardcoded_corpus_corpus_ts --> file_testing_hardcoded_corpus_constants_ts
-  file_testing_hardcoded_corpus_corpus_ts --> file_testing_hardcoded_corpus_types_ts
   file_testing_mosaic_tiles_ts --> file_src_modules_mosaic_tile_mosaic_tile_service_ts
   file_testing_mosaic_tiles_ts --> file_src_modules_mosaic_tile_mosaic_tile_types_ts
 ```

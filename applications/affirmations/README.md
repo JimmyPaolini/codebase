@@ -179,9 +179,11 @@ Dependency graphs exported by [codependix](https://github.com/JimmyPaolini/codeb
 _This project has no immediate Nx dependencies or dependents._
 <!-- codependix:end name="codependix-nx" -->
 
+<!-- CODE_STATISTICS_START -->
+
 ### Python File Imports
 
-<!-- codependix:start name="codependix-imports-python" -->
+<!-- codependix:start name="codependix-imports" -->
 ```mermaid
 graph LR
   file__vulture_whitelist_py[".vulture_whitelist.py"]
@@ -210,9 +212,7 @@ graph LR
   file_testing_test_prompts_py --> file_src_prompts_py
   file_testing_test_subjects_py --> file_src_subjects_py
 ```
-<!-- codependix:end name="codependix-imports-python" -->
-
-<!-- CODE_STATISTICS_START -->
+<!-- codependix:end name="codependix-imports" -->
 
 ## ⏲️ Codometer
 

@@ -30,9 +30,22 @@ for this repository's own.
 | Flag | Meaning |
 | ---- | ------- |
 | `--check [check]` | Fail on a comma-separated set drawn from `boundaries` and `reports` |
-| `--write` | Writes every configured export |
 | `--config [config]` | Path to a `codependix.config.ts`. Searched for upward from `--directory` when omitted |
 | `-d, --directory [directory]` | Workspace root whose Nx project graph this run reads. Defaults to the working directory |
+| `--exclude [exclude]` | Comma-separated globs overriding the configured `exclude`. Refused when `exclude` was never configured |
+| `--file-imports` | Build, check, and write the `fileImports` graph type for this run |
+| `--no-file-imports` | Skip the `fileImports` graph type for this run |
+| `-f, --format [format]` | What to print to standard output, one of `json` and `markdown` (default: `markdown`). A graph type prints only when the run also configured a workspace destination for it, even if its own toggle flag enabled it |
+| `--include [include]` | Comma-separated globs overriding the configured `include`. Refused when `include` was never configured |
+| `--json-output [jsonOutput]` | Write every active graph type's data, combined into one JSON file at this path, keyed by graph type name. A type appears only when the run also configured a workspace destination for it |
+| `--markdown-output [markdownOutput]` | Write every active graph type's rendered diagram, combined into one Markdown file at this path. A type appears only when the run also configured a workspace destination for it |
+| `--nestjs-modules` | Build, check, and write the `nestjsModules` graph type for this run |
+| `--no-nestjs-modules` | Skip the `nestjsModules` graph type for this run |
+| `--nx-projects` | Build, check, and write the `nxProjects` graph type for this run |
+| `--no-nx-projects` | Skip the `nxProjects` graph type for this run |
+| `--projects [projects]` | Comma-separated project names or roots to export for, as globs, beyond those `include` already selects. Also narrows the Workspace Graph and `--check boundaries` to the named set |
+| `--tags [tags]` | Comma-separated Nx tags to export for, beyond what `include` already selects. Also narrows the Workspace Graph and `--check boundaries` to the tagged projects |
+| `--write` | Writes every configured export |
 
 ### The two `--check` names
 
@@ -170,51 +183,77 @@ flowchart LR
   AnchorsModule
   BoundariesModule
   BoundaryCheckModule
+  CombinedOutputModule
   ConfigModule([ConfigModule])
+  ConfigurationLoaderModule
   ConfigurationModule
   DeliveryModule
   DiscoveryModule
+  FileImportsWorkspaceGraphModule
   InputModule
   LoggerModule([LoggerModule])
   MainModule
   MapModule
   ModuleGraphModule
   NeighborhoodModule
+  NestjsModulesWorkspaceGraphModule
   NestjsProjectModule
+  OverrideResolutionModule
+  ProjectGraphsModule
   PythonImportsModule
   PythonModule
+  ReportingModule
   RunContextModule
   RunPlanModule
   TypescriptModule
   WorkspaceGraphModule
+  WorkspaceGraphsModule
   BoundaryCheckModule --> BoundariesModule
   BoundaryCheckModule --> ModuleGraphModule
   BoundaryCheckModule --> NestjsProjectModule
   BoundaryCheckModule --> PythonModule
   BoundaryCheckModule --> TypescriptModule
   BoundaryCheckModule --> WorkspaceGraphModule
+  CombinedOutputModule --> AnchorsModule
+  ConfigurationModule --> ConfigurationLoaderModule
+  ConfigurationModule --> OverrideResolutionModule
   DeliveryModule --> AnchorsModule
   MainModule --> DiscoveryModule
   MainModule --> MapModule
   MapModule --> BoundaryCheckModule
+  MapModule --> CombinedOutputModule
   MapModule --> ConfigurationModule
-  MapModule --> DeliveryModule
   MapModule --> InputModule
-  MapModule --> ModuleGraphModule
   MapModule --> NeighborhoodModule
-  MapModule --> NestjsProjectModule
+  MapModule --> ProjectGraphsModule
   MapModule --> PythonImportsModule
+  MapModule --> ReportingModule
   MapModule --> RunContextModule
   MapModule --> RunPlanModule
-  MapModule --> TypescriptModule
-  MapModule --> WorkspaceGraphModule
+  MapModule --> WorkspaceGraphsModule
+  ProjectGraphsModule --> ConfigurationModule
+  ProjectGraphsModule --> DeliveryModule
+  ProjectGraphsModule --> ModuleGraphModule
+  ProjectGraphsModule --> NeighborhoodModule
+  ProjectGraphsModule --> NestjsProjectModule
+  ProjectGraphsModule --> TypescriptModule
   PythonImportsModule --> ConfigurationModule
   PythonImportsModule --> DeliveryModule
   PythonImportsModule --> PythonModule
+  ReportingModule --> BoundaryCheckModule
   RunContextModule --> ConfigurationModule
   RunContextModule --> NeighborhoodModule
   RunPlanModule --> InputModule
   WorkspaceGraphModule --> NeighborhoodModule
+  WorkspaceGraphsModule --> ConfigurationModule
+  WorkspaceGraphsModule --> DeliveryModule
+  WorkspaceGraphsModule --> FileImportsWorkspaceGraphModule
+  WorkspaceGraphsModule --> ModuleGraphModule
+  WorkspaceGraphsModule --> NestjsModulesWorkspaceGraphModule
+  WorkspaceGraphsModule --> NestjsProjectModule
+  WorkspaceGraphsModule --> PythonModule
+  WorkspaceGraphsModule --> TypescriptModule
+  WorkspaceGraphsModule --> WorkspaceGraphModule
 ```
 
 _Rounded modules are global: every module can inject them, so their edges are left out._
@@ -226,6 +265,7 @@ _Rounded modules are global: every module can inject them, so their edges are le
 ```mermaid
 graph LR
   file_callidescope_config_ts["callidescope.config.ts"]
+  file_codependix_config_ts["codependix.config.ts"]
   file_codometer_config_ts["codometer.config.ts"]
   file_eslint_config_ts["eslint.config.ts"]
   file_src_constants_ts["src/constants.ts"]
@@ -240,12 +280,19 @@ graph LR
   file_src_modules_anchors_anchors_service_ts["src/modules/anchors/anchors.service.ts"]
   file_src_modules_anchors_anchors_service_unit_test_ts["src/modules/anchors/anchors.service.unit.test.ts"]
   file_src_modules_anchors_anchors_types_ts["src/modules/anchors/anchors.types.ts"]
+  file_src_modules_combined_output_combined_output_constants_ts["src/modules/combined-output/combined-output.constants.ts"]
+  file_src_modules_combined_output_combined_output_module_ts["src/modules/combined-output/combined-output.module.ts"]
+  file_src_modules_combined_output_combined_output_module_unit_test_ts["src/modules/combined-output/combined-output.module.unit.test.ts"]
+  file_src_modules_combined_output_combined_output_service_ts["src/modules/combined-output/combined-output.service.ts"]
+  file_src_modules_combined_output_combined_output_service_unit_test_ts["src/modules/combined-output/combined-output.service.unit.test.ts"]
+  file_src_modules_combined_output_combined_output_types_ts["src/modules/combined-output/combined-output.types.ts"]
   file_src_modules_delivery_delivery_constants_ts["src/modules/delivery/delivery.constants.ts"]
   file_src_modules_delivery_delivery_module_ts["src/modules/delivery/delivery.module.ts"]
   file_src_modules_delivery_delivery_module_unit_test_ts["src/modules/delivery/delivery.module.unit.test.ts"]
   file_src_modules_delivery_delivery_service_ts["src/modules/delivery/delivery.service.ts"]
   file_src_modules_delivery_delivery_service_unit_test_ts["src/modules/delivery/delivery.service.unit.test.ts"]
   file_src_modules_delivery_delivery_types_ts["src/modules/delivery/delivery.types.ts"]
+  file_src_modules_map_map_command_integration_test_ts["src/modules/map/map.command.integration.test.ts"]
   file_src_modules_map_map_command_ts["src/modules/map/map.command.ts"]
   file_src_modules_map_map_command_unit_test_ts["src/modules/map/map.command.unit.test.ts"]
   file_src_modules_map_map_constants_ts["src/modules/map/map.constants.ts"]
@@ -254,12 +301,24 @@ graph LR
   file_src_modules_map_map_service_ts["src/modules/map/map.service.ts"]
   file_src_modules_map_map_service_unit_test_ts["src/modules/map/map.service.unit.test.ts"]
   file_src_modules_map_map_types_ts["src/modules/map/map.types.ts"]
+  file_src_modules_project_graphs_project_graphs_constants_ts["src/modules/project-graphs/project-graphs.constants.ts"]
+  file_src_modules_project_graphs_project_graphs_module_ts["src/modules/project-graphs/project-graphs.module.ts"]
+  file_src_modules_project_graphs_project_graphs_module_unit_test_ts["src/modules/project-graphs/project-graphs.module.unit.test.ts"]
+  file_src_modules_project_graphs_project_graphs_service_ts["src/modules/project-graphs/project-graphs.service.ts"]
+  file_src_modules_project_graphs_project_graphs_service_unit_test_ts["src/modules/project-graphs/project-graphs.service.unit.test.ts"]
+  file_src_modules_project_graphs_project_graphs_types_ts["src/modules/project-graphs/project-graphs.types.ts"]
   file_src_modules_python_imports_python_imports_constants_ts["src/modules/python-imports/python-imports.constants.ts"]
   file_src_modules_python_imports_python_imports_module_ts["src/modules/python-imports/python-imports.module.ts"]
   file_src_modules_python_imports_python_imports_module_unit_test_ts["src/modules/python-imports/python-imports.module.unit.test.ts"]
   file_src_modules_python_imports_python_imports_service_ts["src/modules/python-imports/python-imports.service.ts"]
   file_src_modules_python_imports_python_imports_service_unit_test_ts["src/modules/python-imports/python-imports.service.unit.test.ts"]
   file_src_modules_python_imports_python_imports_types_ts["src/modules/python-imports/python-imports.types.ts"]
+  file_src_modules_reporting_reporting_constants_ts["src/modules/reporting/reporting.constants.ts"]
+  file_src_modules_reporting_reporting_module_ts["src/modules/reporting/reporting.module.ts"]
+  file_src_modules_reporting_reporting_module_unit_test_ts["src/modules/reporting/reporting.module.unit.test.ts"]
+  file_src_modules_reporting_reporting_service_ts["src/modules/reporting/reporting.service.ts"]
+  file_src_modules_reporting_reporting_service_unit_test_ts["src/modules/reporting/reporting.service.unit.test.ts"]
+  file_src_modules_reporting_reporting_types_ts["src/modules/reporting/reporting.types.ts"]
   file_src_modules_run_context_run_context_constants_ts["src/modules/run-context/run-context.constants.ts"]
   file_src_modules_run_context_run_context_module_ts["src/modules/run-context/run-context.module.ts"]
   file_src_modules_run_context_run_context_module_unit_test_ts["src/modules/run-context/run-context.module.unit.test.ts"]
@@ -272,6 +331,12 @@ graph LR
   file_src_modules_run_plan_run_plan_service_ts["src/modules/run-plan/run-plan.service.ts"]
   file_src_modules_run_plan_run_plan_service_unit_test_ts["src/modules/run-plan/run-plan.service.unit.test.ts"]
   file_src_modules_run_plan_run_plan_types_ts["src/modules/run-plan/run-plan.types.ts"]
+  file_src_modules_workspace_graphs_workspace_graphs_constants_ts["src/modules/workspace-graphs/workspace-graphs.constants.ts"]
+  file_src_modules_workspace_graphs_workspace_graphs_module_ts["src/modules/workspace-graphs/workspace-graphs.module.ts"]
+  file_src_modules_workspace_graphs_workspace_graphs_module_unit_test_ts["src/modules/workspace-graphs/workspace-graphs.module.unit.test.ts"]
+  file_src_modules_workspace_graphs_workspace_graphs_service_ts["src/modules/workspace-graphs/workspace-graphs.service.ts"]
+  file_src_modules_workspace_graphs_workspace_graphs_service_unit_test_ts["src/modules/workspace-graphs/workspace-graphs.service.unit.test.ts"]
+  file_src_modules_workspace_graphs_workspace_graphs_types_ts["src/modules/workspace-graphs/workspace-graphs.types.ts"]
   file_src_repl_ts["src/repl.ts"]
   file_src_repl_unit_test_ts["src/repl.unit.test.ts"]
   file_testing_mocks_ts["testing/mocks.ts"]
@@ -289,6 +354,22 @@ graph LR
   file_src_modules_anchors_anchors_service_ts --> file_src_modules_anchors_anchors_types_ts
   file_src_modules_anchors_anchors_service_unit_test_ts --> file_src_modules_anchors_anchors_constants_ts
   file_src_modules_anchors_anchors_service_unit_test_ts --> file_src_modules_anchors_anchors_service_ts
+  file_src_modules_combined_output_combined_output_constants_ts --> file_src_modules_map_map_constants_ts
+  file_src_modules_combined_output_combined_output_module_ts --> file_src_modules_anchors_anchors_module_ts
+  file_src_modules_combined_output_combined_output_module_ts --> file_src_modules_combined_output_combined_output_service_ts
+  file_src_modules_combined_output_combined_output_module_unit_test_ts --> file_src_modules_combined_output_combined_output_module_ts
+  file_src_modules_combined_output_combined_output_module_unit_test_ts --> file_src_modules_combined_output_combined_output_service_ts
+  file_src_modules_combined_output_combined_output_service_ts --> file_src_modules_anchors_anchors_service_ts
+  file_src_modules_combined_output_combined_output_service_ts --> file_src_modules_combined_output_combined_output_constants_ts
+  file_src_modules_combined_output_combined_output_service_ts --> file_src_modules_combined_output_combined_output_types_ts
+  file_src_modules_combined_output_combined_output_service_ts --> file_src_modules_delivery_delivery_constants_ts
+  file_src_modules_combined_output_combined_output_service_ts --> file_src_modules_map_map_constants_ts
+  file_src_modules_combined_output_combined_output_service_ts --> file_src_modules_map_map_types_ts
+  file_src_modules_combined_output_combined_output_service_unit_test_ts --> file_src_modules_anchors_anchors_service_ts
+  file_src_modules_combined_output_combined_output_service_unit_test_ts --> file_src_modules_combined_output_combined_output_service_ts
+  file_src_modules_combined_output_combined_output_service_unit_test_ts --> file_src_modules_map_map_types_ts
+  file_src_modules_combined_output_combined_output_types_ts --> file_src_modules_combined_output_combined_output_constants_ts
+  file_src_modules_combined_output_combined_output_types_ts --> file_src_modules_map_map_types_ts
   file_src_modules_delivery_delivery_module_ts --> file_src_modules_anchors_anchors_module_ts
   file_src_modules_delivery_delivery_module_ts --> file_src_modules_delivery_delivery_service_ts
   file_src_modules_delivery_delivery_module_unit_test_ts --> file_src_modules_delivery_delivery_module_ts
@@ -300,42 +381,69 @@ graph LR
   file_src_modules_delivery_delivery_service_unit_test_ts --> file_src_modules_anchors_anchors_constants_ts
   file_src_modules_delivery_delivery_service_unit_test_ts --> file_src_modules_anchors_anchors_service_ts
   file_src_modules_delivery_delivery_service_unit_test_ts --> file_src_modules_delivery_delivery_service_ts
-  file_src_modules_map_map_command_ts --> file_src_modules_delivery_delivery_types_ts
+  file_src_modules_map_map_command_integration_test_ts --> file_src_main_module_ts
+  file_src_modules_map_map_command_integration_test_ts --> file_src_modules_map_map_command_ts
+  file_src_modules_map_map_command_integration_test_ts --> file_src_modules_map_map_types_ts
+  file_src_modules_map_map_command_ts --> file_src_modules_combined_output_combined_output_constants_ts
+  file_src_modules_map_map_command_ts --> file_src_modules_combined_output_combined_output_service_ts
+  file_src_modules_map_map_command_ts --> file_src_modules_combined_output_combined_output_types_ts
   file_src_modules_map_map_command_ts --> file_src_modules_map_map_service_ts
   file_src_modules_map_map_command_ts --> file_src_modules_map_map_types_ts
+  file_src_modules_map_map_command_ts --> file_src_modules_reporting_reporting_service_ts
   file_src_modules_map_map_command_ts --> file_src_modules_run_context_run_context_service_ts
   file_src_modules_map_map_command_ts --> file_src_modules_run_plan_run_plan_constants_ts
   file_src_modules_map_map_command_ts --> file_src_modules_run_plan_run_plan_service_ts
   file_src_modules_map_map_command_ts --> file_src_modules_run_plan_run_plan_types_ts
+  file_src_modules_map_map_command_unit_test_ts --> file_src_modules_combined_output_combined_output_service_ts
   file_src_modules_map_map_command_unit_test_ts --> file_src_modules_delivery_delivery_types_ts
   file_src_modules_map_map_command_unit_test_ts --> file_src_modules_map_map_command_ts
   file_src_modules_map_map_command_unit_test_ts --> file_src_modules_map_map_service_ts
   file_src_modules_map_map_command_unit_test_ts --> file_src_modules_map_map_types_ts
+  file_src_modules_map_map_command_unit_test_ts --> file_src_modules_reporting_reporting_service_ts
   file_src_modules_map_map_command_unit_test_ts --> file_src_modules_run_context_run_context_service_ts
   file_src_modules_map_map_command_unit_test_ts --> file_src_modules_run_plan_run_plan_constants_ts
   file_src_modules_map_map_command_unit_test_ts --> file_src_modules_run_plan_run_plan_service_ts
   file_src_modules_map_map_command_unit_test_ts --> file_src_modules_run_plan_run_plan_types_ts
-  file_src_modules_map_map_module_ts --> file_src_modules_delivery_delivery_module_ts
+  file_src_modules_map_map_constants_ts --> file_src_modules_delivery_delivery_types_ts
+  file_src_modules_map_map_constants_ts --> file_src_modules_map_map_types_ts
+  file_src_modules_map_map_module_ts --> file_src_modules_combined_output_combined_output_module_ts
   file_src_modules_map_map_module_ts --> file_src_modules_map_map_command_ts
   file_src_modules_map_map_module_ts --> file_src_modules_map_map_service_ts
+  file_src_modules_map_map_module_ts --> file_src_modules_project_graphs_project_graphs_module_ts
   file_src_modules_map_map_module_ts --> file_src_modules_python_imports_python_imports_module_ts
+  file_src_modules_map_map_module_ts --> file_src_modules_reporting_reporting_module_ts
   file_src_modules_map_map_module_ts --> file_src_modules_run_context_run_context_module_ts
   file_src_modules_map_map_module_ts --> file_src_modules_run_plan_run_plan_module_ts
+  file_src_modules_map_map_module_ts --> file_src_modules_workspace_graphs_workspace_graphs_module_ts
   file_src_modules_map_map_module_unit_test_ts --> file_src_modules_map_map_command_ts
   file_src_modules_map_map_module_unit_test_ts --> file_src_modules_map_map_module_ts
   file_src_modules_map_map_module_unit_test_ts --> file_src_modules_map_map_service_ts
-  file_src_modules_map_map_service_ts --> file_src_modules_delivery_delivery_service_ts
   file_src_modules_map_map_service_ts --> file_src_modules_delivery_delivery_types_ts
   file_src_modules_map_map_service_ts --> file_src_modules_map_map_constants_ts
   file_src_modules_map_map_service_ts --> file_src_modules_map_map_types_ts
+  file_src_modules_map_map_service_ts --> file_src_modules_project_graphs_project_graphs_service_ts
   file_src_modules_map_map_service_ts --> file_src_modules_python_imports_python_imports_service_ts
-  file_src_modules_map_map_service_unit_test_ts --> file_src_modules_anchors_anchors_service_ts
-  file_src_modules_map_map_service_unit_test_ts --> file_src_modules_delivery_delivery_service_ts
+  file_src_modules_map_map_service_ts --> file_src_modules_workspace_graphs_workspace_graphs_service_ts
+  file_src_modules_map_map_service_ts --> file_src_modules_workspace_graphs_workspace_graphs_types_ts
   file_src_modules_map_map_service_unit_test_ts --> file_src_modules_delivery_delivery_types_ts
   file_src_modules_map_map_service_unit_test_ts --> file_src_modules_map_map_service_ts
   file_src_modules_map_map_service_unit_test_ts --> file_src_modules_map_map_types_ts
+  file_src_modules_map_map_service_unit_test_ts --> file_src_modules_project_graphs_project_graphs_service_ts
   file_src_modules_map_map_service_unit_test_ts --> file_src_modules_python_imports_python_imports_service_ts
+  file_src_modules_map_map_service_unit_test_ts --> file_src_modules_workspace_graphs_workspace_graphs_service_ts
   file_src_modules_map_map_types_ts --> file_src_modules_delivery_delivery_types_ts
+  file_src_modules_project_graphs_project_graphs_module_ts --> file_src_modules_delivery_delivery_module_ts
+  file_src_modules_project_graphs_project_graphs_module_ts --> file_src_modules_project_graphs_project_graphs_service_ts
+  file_src_modules_project_graphs_project_graphs_module_unit_test_ts --> file_src_modules_project_graphs_project_graphs_module_ts
+  file_src_modules_project_graphs_project_graphs_module_unit_test_ts --> file_src_modules_project_graphs_project_graphs_service_ts
+  file_src_modules_project_graphs_project_graphs_service_ts --> file_src_modules_delivery_delivery_service_ts
+  file_src_modules_project_graphs_project_graphs_service_ts --> file_src_modules_delivery_delivery_types_ts
+  file_src_modules_project_graphs_project_graphs_service_ts --> file_src_modules_map_map_constants_ts
+  file_src_modules_project_graphs_project_graphs_service_ts --> file_src_modules_map_map_types_ts
+  file_src_modules_project_graphs_project_graphs_service_unit_test_ts --> file_src_modules_anchors_anchors_service_ts
+  file_src_modules_project_graphs_project_graphs_service_unit_test_ts --> file_src_modules_delivery_delivery_service_ts
+  file_src_modules_project_graphs_project_graphs_service_unit_test_ts --> file_src_modules_map_map_types_ts
+  file_src_modules_project_graphs_project_graphs_service_unit_test_ts --> file_src_modules_project_graphs_project_graphs_service_ts
   file_src_modules_python_imports_python_imports_module_ts --> file_src_modules_delivery_delivery_module_ts
   file_src_modules_python_imports_python_imports_module_ts --> file_src_modules_python_imports_python_imports_service_ts
   file_src_modules_python_imports_python_imports_module_unit_test_ts --> file_src_modules_python_imports_python_imports_module_ts
@@ -348,6 +456,14 @@ graph LR
   file_src_modules_python_imports_python_imports_service_unit_test_ts --> file_src_modules_delivery_delivery_service_ts
   file_src_modules_python_imports_python_imports_service_unit_test_ts --> file_src_modules_map_map_types_ts
   file_src_modules_python_imports_python_imports_service_unit_test_ts --> file_src_modules_python_imports_python_imports_service_ts
+  file_src_modules_reporting_reporting_module_ts --> file_src_modules_reporting_reporting_service_ts
+  file_src_modules_reporting_reporting_module_unit_test_ts --> file_src_modules_reporting_reporting_module_ts
+  file_src_modules_reporting_reporting_module_unit_test_ts --> file_src_modules_reporting_reporting_service_ts
+  file_src_modules_reporting_reporting_service_ts --> file_src_modules_delivery_delivery_types_ts
+  file_src_modules_reporting_reporting_service_ts --> file_src_modules_map_map_types_ts
+  file_src_modules_reporting_reporting_service_unit_test_ts --> file_src_modules_delivery_delivery_types_ts
+  file_src_modules_reporting_reporting_service_unit_test_ts --> file_src_modules_map_map_types_ts
+  file_src_modules_reporting_reporting_service_unit_test_ts --> file_src_modules_reporting_reporting_service_ts
   file_src_modules_run_context_run_context_module_ts --> file_src_modules_run_context_run_context_service_ts
   file_src_modules_run_context_run_context_module_unit_test_ts --> file_src_modules_run_context_run_context_module_ts
   file_src_modules_run_context_run_context_module_unit_test_ts --> file_src_modules_run_context_run_context_service_ts
@@ -363,6 +479,22 @@ graph LR
   file_src_modules_run_plan_run_plan_service_unit_test_ts --> file_src_modules_run_plan_run_plan_constants_ts
   file_src_modules_run_plan_run_plan_service_unit_test_ts --> file_src_modules_run_plan_run_plan_service_ts
   file_src_modules_run_plan_run_plan_service_unit_test_ts --> file_src_modules_run_plan_run_plan_types_ts
+  file_src_modules_workspace_graphs_workspace_graphs_module_ts --> file_src_modules_delivery_delivery_module_ts
+  file_src_modules_workspace_graphs_workspace_graphs_module_ts --> file_src_modules_workspace_graphs_workspace_graphs_service_ts
+  file_src_modules_workspace_graphs_workspace_graphs_module_unit_test_ts --> file_src_modules_workspace_graphs_workspace_graphs_module_ts
+  file_src_modules_workspace_graphs_workspace_graphs_module_unit_test_ts --> file_src_modules_workspace_graphs_workspace_graphs_service_ts
+  file_src_modules_workspace_graphs_workspace_graphs_service_ts --> file_src_modules_delivery_delivery_service_ts
+  file_src_modules_workspace_graphs_workspace_graphs_service_ts --> file_src_modules_delivery_delivery_types_ts
+  file_src_modules_workspace_graphs_workspace_graphs_service_ts --> file_src_modules_map_map_constants_ts
+  file_src_modules_workspace_graphs_workspace_graphs_service_ts --> file_src_modules_map_map_types_ts
+  file_src_modules_workspace_graphs_workspace_graphs_service_ts --> file_src_modules_workspace_graphs_workspace_graphs_types_ts
+  file_src_modules_workspace_graphs_workspace_graphs_service_unit_test_ts --> file_src_modules_anchors_anchors_service_ts
+  file_src_modules_workspace_graphs_workspace_graphs_service_unit_test_ts --> file_src_modules_delivery_delivery_service_ts
+  file_src_modules_workspace_graphs_workspace_graphs_service_unit_test_ts --> file_src_modules_map_map_constants_ts
+  file_src_modules_workspace_graphs_workspace_graphs_service_unit_test_ts --> file_src_modules_map_map_types_ts
+  file_src_modules_workspace_graphs_workspace_graphs_service_unit_test_ts --> file_src_modules_workspace_graphs_workspace_graphs_service_ts
+  file_src_modules_workspace_graphs_workspace_graphs_types_ts --> file_src_modules_delivery_delivery_types_ts
+  file_src_modules_workspace_graphs_workspace_graphs_types_ts --> file_src_modules_map_map_types_ts
   file_src_repl_ts --> file_src_main_module_ts
 ```
 <!-- codependix:end name="codependix-imports" -->

@@ -476,6 +476,7 @@ graph LR
 <!-- codependix:start name="codependix-imports" -->
 ```mermaid
 graph LR
+  file_codependix_config_ts["codependix.config.ts"]
   file_codometer_config_ts["codometer.config.ts"]
   file_eslint_config_ts["eslint.config.ts"]
   file_examples_compression_brotli_config_ts["examples/compression/brotli.config.ts"]

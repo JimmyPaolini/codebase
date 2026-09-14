@@ -15,6 +15,7 @@
   "include": [
     "*.config.mts",
     "callidescope.config.ts",
+    "codependix.config.ts",
     "codometer.config.ts",
     "eslint.config.ts",
     "scripts/**/*.ts",

@@ -601,18 +601,22 @@ describe("callidescope examples (integration)", () => {
   describe("what the run measured", () => {
     it("traces this package and the projects its imports reach", () => {
       // The closure, stated as a set. What is absent asserts the narrowing
-      // rule this run exercises: the package's program really reads four
-      // files under `configuration/`, a project root holding a
-      // `tsconfig.json` and no `package.json`, and admitting it would reach
-      // every toolchain the repository configures. The other refusal — the
-      // workspace root — is only reachable through that one here, so this
-      // list stands for the first rule rather than for both.
+      // rule this run exercises: the package's program really reads five
+      // files under `configuration/` — its own `codependix.config.ts`
+      // scaffold added a fifth, spreading `configuration/codependix.config.ts`
+      // and so reaching `packages/codependix-configuration` alongside the
+      // four it already read — a project root holding a `tsconfig.json` and
+      // no `package.json`, and admitting it would reach every toolchain the
+      // repository configures. The other refusal — the workspace root — is
+      // only reachable through that one here, so this list stands for the
+      // first rule rather than for both.
       expect(
         result.projects.map((project) => project.projectName),
       ).toStrictEqual([
         "packages/callidescope-configuration",
         EXAMPLES_DIRECTORY,
         GATED_LEAF_DIRECTORY,
+        "packages/codependix-configuration",
         "packages/codometer-configuration",
         "packages/logger",
       ]);
@@ -624,7 +628,7 @@ describe("callidescope examples (integration)", () => {
         cyclicComponentCount: 1,
         edgeCount: 54,
         entryPointCount: 19,
-        fileCount: 39,
+        fileCount: 40,
         maximumDepth: 8,
         projectCount: 1,
         unresolvedCallCount: 2,

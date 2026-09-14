@@ -217,6 +217,7 @@ graph LR
 <!-- codependix:start name="codependix-imports" -->
 ```mermaid
 graph LR
+  file_codependix_config_ts["codependix.config.ts"]
   file_codometer_config_ts["codometer.config.ts"]
   file_eslint_config_ts["eslint.config.ts"]
   file_testing_examples_integration_test_ts["testing/examples.integration.test.ts"]
