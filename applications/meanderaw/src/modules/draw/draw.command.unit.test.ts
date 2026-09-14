@@ -8,6 +8,7 @@ import { LoggerService } from "@codebase/logger";
 
 import { SUPPORTED_RUNG_DIRECTIONS } from "../branch-motif/branch-motif.constants";
 import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
+import { HardcodedMeandersService } from "../hardcoded-meanders/hardcoded-meanders.service";
 import { LatticeIdentificationModule } from "../lattice-identification/lattice-identification.module";
 import { LatticeIdentificationService } from "../lattice-identification/lattice-identification.service";
 import { MeanderGenerationModule } from "../meander-generation/meander-generation.module";
@@ -40,6 +41,7 @@ import { DrawCommand } from "./draw.command";
 import { COLUMN_SPAN_PATTERN } from "./draw.constants";
 
 import type { LatticeAddress } from "../lattice-identification/lattice-identification.types";
+import type { Meander } from "../meander-database/entities/Meander.entity";
 
 const { mockMkdir, mockWriteFile } = vi.hoisted(() => ({
   mockMkdir: vi
@@ -115,6 +117,12 @@ describe(DrawCommand, () => {
         {
           provide: DrawEnumerationService,
           useValue: createMock<DrawEnumerationService>(),
+        },
+        {
+          provide: HardcodedMeandersService,
+          useValue: createMock<HardcodedMeandersService>({
+            ingest: vi.fn<() => Promise<Meander[]>>().mockResolvedValue([]),
+          }),
         },
         {
           provide: LoggerService,
@@ -201,6 +209,12 @@ describe(DrawCommand, () => {
         {
           provide: DrawEnumerationService,
           useValue: createMock<DrawEnumerationService>(),
+        },
+        {
+          provide: HardcodedMeandersService,
+          useValue: createMock<HardcodedMeandersService>({
+            ingest: vi.fn<() => Promise<Meander[]>>().mockResolvedValue([]),
+          }),
         },
         {
           provide: LoggerService,
@@ -470,6 +484,12 @@ describe(DrawCommand, () => {
           {
             provide: DrawEnumerationService,
             useValue: createMock<DrawEnumerationService>(),
+          },
+          {
+            provide: HardcodedMeandersService,
+            useValue: createMock<HardcodedMeandersService>({
+              ingest: vi.fn<() => Promise<Meander[]>>().mockResolvedValue([]),
+            }),
           },
           {
             provide: LoggerService,
@@ -777,6 +797,12 @@ describe(DrawCommand, () => {
           {
             provide: DrawEnumerationService,
             useValue: createMock<DrawEnumerationService>(),
+          },
+          {
+            provide: HardcodedMeandersService,
+            useValue: createMock<HardcodedMeandersService>({
+              ingest: vi.fn<() => Promise<Meander[]>>().mockResolvedValue([]),
+            }),
           },
           {
             provide: LoggerService,

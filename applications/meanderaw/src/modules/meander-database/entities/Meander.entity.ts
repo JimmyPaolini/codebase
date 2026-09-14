@@ -45,11 +45,17 @@ import type { MeanderProvenance } from "../meander-database.types";
  * column exists now so that row does not need a migration to state it.
  *
  * `provenance` distinguishes a row produced by the generalized enumerator
- * from one ingested from the historical corpus's hardcoded constants — both
- * added in later tickets. This ticket's own single-drawing rows are
- * recorded `"hardcoded"` too: a Code typed at the command line is authored
- * the same way a corpus constant is, named by a person rather than found by
- * a search.
+ * from one ingested from the historical corpus's hardcoded constants. This
+ * ticket's own single-drawing rows are recorded `"hardcoded"` too: a Code
+ * typed at the command line is authored the same way a corpus constant is,
+ * named by a person rather than found by a search.
+ *
+ * `family` and `subFamily` are both nullable: an Enumerated row leaves them
+ * null when no family's Characteristic combination matches its structure,
+ * and a Hardcoded row carries whichever of the two the historical corpus
+ * already recorded for it, trusted rather than re-derived — see
+ * `HardcodedMeandersService`'s own doc comment for why a Hardcoded row's
+ * metadata is trusted rather than classified.
  *
  * `family` and `subFamily` are both nullable, and for opposite reasons.
  * A `family` is null where a meander's structure satisfies no family's

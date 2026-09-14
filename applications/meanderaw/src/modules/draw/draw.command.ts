@@ -7,6 +7,8 @@ import { Command, CommandRunner, Option } from "nest-commander";
 import { LoggerService } from "@codebase/logger";
 
 import { SUPPORTED_RUNG_DIRECTIONS } from "../branch-motif/branch-motif.constants";
+import { HARDCODED_MEANDERS_BY_FAMILY } from "../hardcoded-meanders/hardcoded-meanders.constants";
+import { HardcodedMeandersService } from "../hardcoded-meanders/hardcoded-meanders.service";
 import {
   DEFAULT_OUTPUT_DIRECTORY,
   DEFAULT_REPEAT_COUNT,
@@ -62,7 +64,13 @@ import type {
  *   the whole of what that family draws — and of the
  *   `negative` family's one-column sources. Those run to thousands of files
  *   and so are written one row count at a time. An index page listing every
- *   drawing is written at the root of the output directory.
+ *   drawing is written at the root of the output directory. Alongside the
+ *   file tree, the sweep also ingests the historical corpus's hardcoded Code
+ *   constants into the committed database through
+ *   {@link HardcodedMeandersService} — see that service's own doc comment
+ *   for why the nine named types are preserved this way rather than
+ *   redrawn, and `hardcoded-meanders.constants.ts` for the boundary it draws
+ *   against `mosaic` and `negative`'s own enumerated halves.
  * - **`draw --type <family> --rows <n>`** draws that one, to the same path
  *   the sweep would have written it to.
  *
@@ -115,6 +123,8 @@ export class DrawCommand extends CommandRunner {
     private readonly drawPermutationsService: DrawPermutationsService,
     @Inject(DrawRenderingService)
     private readonly drawRenderingService: DrawRenderingService,
+    @Inject(HardcodedMeandersService)
+    private readonly hardcodedMeandersService: HardcodedMeandersService,
   ) {
     super();
     this.logger.setContext(DrawCommand.name);
@@ -224,12 +234,17 @@ export class DrawCommand extends CommandRunner {
       );
     }
 
+    const hardcodedMeanders = await this.hardcodedMeandersService.ingest(
+      HARDCODED_MEANDERS_BY_FAMILY,
+    );
+
     const indexPath = path.join(outputDirectory, INDEX_FILE_NAME);
 
     await writeFile(indexPath, this.drawIndexService.render(documents));
 
     this.logger.log("✨ Generated every meander", undefined, {
       count: documents.length,
+      hardcodedCount: hardcodedMeanders.length,
       indexPath,
       outputDirectory,
       permutations: documents.length - combinations.length,
