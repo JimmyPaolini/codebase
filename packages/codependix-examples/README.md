@@ -325,19 +325,19 @@ _This project defines no NestJS modules to graph._
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-4135-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-204.89_kB-6b7280?style=flat-square)
-![Folders](https://img.shields.io/badge/Folders-59-4a4a4a?style=flat-square)
-![Source Files](https://img.shields.io/badge/Source_Files-80-3178c6?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-4218-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-208.88_kB-6b7280?style=flat-square)
+![Folders](https://img.shields.io/badge/Folders-63-4a4a4a?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-82-3178c6?style=flat-square)
 
 ### TypeScript
 
-![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-65-3178c6?style=flat-square)
+![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-67-3178c6?style=flat-square)
 ![Interfaces](https://img.shields.io/badge/Interfaces-13-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-0-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
 ![Decorators](https://img.shields.io/badge/Decorators-27-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-220-6366f1?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-224-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-1-166534?style=flat-square)
 
 ### JavaScript
@@ -346,15 +346,15 @@ _This project defines no NestJS modules to graph._
 ![Test Files](https://img.shields.io/badge/Test_Files-2-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-17-8b5cf6?style=flat-square)
 ![Classes](https://img.shields.io/badge/Classes-25-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-224-16a34a?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-225-16a34a?style=flat-square)
 ![Methods](https://img.shields.io/badge/Methods-3-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-180-4ade80?style=flat-square)
-![Async Functions](https://img.shields.io/badge/Async_Functions-47-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-177-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-160-0284c7?style=flat-square)
-![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-137-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-296-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-504-475569?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-179-4ade80?style=flat-square)
+![Async Functions](https://img.shields.io/badge/Async_Functions-49-059669?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-182-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-161-0284c7?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-138-ea580c?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-300-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-511-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python
@@ -374,17 +374,17 @@ _This project defines no NestJS modules to graph._
 
 ### JSON
 
-![JSON Files](https://img.shields.io/badge/JSON_Files-15-a16207?style=flat-square)
-![JSON Lines](https://img.shields.io/badge/JSON_Lines-267-ca8a04?style=flat-square)
-![JSON Objects](https://img.shields.io/badge/JSON_Objects-57-7c3aed?style=flat-square)
+![JSON Files](https://img.shields.io/badge/JSON_Files-16-a16207?style=flat-square)
+![JSON Lines](https://img.shields.io/badge/JSON_Lines-272-ca8a04?style=flat-square)
+![JSON Objects](https://img.shields.io/badge/JSON_Objects-58-7c3aed?style=flat-square)
 ![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-30-8b5cf6?style=flat-square)
-![JSON Properties](https://img.shields.io/badge/JSON_Properties-154-0284c7?style=flat-square)
-![JSON Strings](https://img.shields.io/badge/JSON_Strings-117-16a34a?style=flat-square)
+![JSON Properties](https://img.shields.io/badge/JSON_Properties-157-0284c7?style=flat-square)
+![JSON Strings](https://img.shields.io/badge/JSON_Strings-119-16a34a?style=flat-square)
 ![JSON Numbers](https://img.shields.io/badge/JSON_Numbers-1-059669?style=flat-square)
-![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-18-0ea5e9?style=flat-square)
+![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-19-0ea5e9?style=flat-square)
 ![JSON Nulls](https://img.shields.io/badge/JSON_Nulls-0-64748b?style=flat-square)
 ![JSON Items](https://img.shields.io/badge/JSON_Items-54-475569?style=flat-square)
-![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-223-dc2626?style=flat-square)
+![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-227-dc2626?style=flat-square)
 ![JSON Max Depth](https://img.shields.io/badge/JSON_Max_Depth-6-ea580c?style=flat-square)
 
 ### YAML
@@ -510,14 +510,14 @@ _This project defines no NestJS modules to graph._
 ### Markdown
 
 ![Markdown Files](https://img.shields.io/badge/Markdown_Files-17-083fa1?style=flat-square)
-![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-1382-1f6feb?style=flat-square)
+![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-1392-1f6feb?style=flat-square)
 ![H1](https://img.shields.io/badge/H1-17-7c3aed?style=flat-square)
 ![H2](https://img.shields.io/badge/H2-116-8b5cf6?style=flat-square)
 ![H3](https://img.shields.io/badge/H3-0-a78bfa?style=flat-square)
 ![H4](https://img.shields.io/badge/H4-0-c4b5fd?style=flat-square)
 ![H5](https://img.shields.io/badge/H5-0-ddd6fe?style=flat-square)
 ![H6](https://img.shields.io/badge/H6-0-ede9fe?style=flat-square)
-![Paragraphs](https://img.shields.io/badge/Paragraphs-161-64748b?style=flat-square)
+![Paragraphs](https://img.shields.io/badge/Paragraphs-160-64748b?style=flat-square)
 ![Lists](https://img.shields.io/badge/Lists-4-16a34a?style=flat-square)
 ![List Items](https://img.shields.io/badge/List_Items-16-22c55e?style=flat-square)
 ![Task List Items](https://img.shields.io/badge/Task_List_Items-0-4ade80?style=flat-square)
@@ -525,8 +525,8 @@ _This project defines no NestJS modules to graph._
 ![Table Rows](https://img.shields.io/badge/Table_Rows-54-0ea5e9?style=flat-square)
 ![Links](https://img.shields.io/badge/Links-56-059669?style=flat-square)
 ![Images](https://img.shields.io/badge/Images-0-10b981?style=flat-square)
-![Code Blocks](https://img.shields.io/badge/Code_Blocks-81-dc2626?style=flat-square)
-![Inline Code](https://img.shields.io/badge/Inline_Code-386-ef4444?style=flat-square)
+![Code Blocks](https://img.shields.io/badge/Code_Blocks-82-dc2626?style=flat-square)
+![Inline Code](https://img.shields.io/badge/Inline_Code-391-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-0-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-0-a16207?style=flat-square)
 <!-- CODE_STATISTICS_END -->

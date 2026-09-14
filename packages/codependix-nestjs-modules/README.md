@@ -94,9 +94,9 @@ Call stacks traced through `packages/codependix-nestjs-modules`, deepest first. 
 
 | Measure | Value |
 | --- | --- |
-| Callables | 31 |
-| Files | 14 |
-| Calls traced | 27 |
+| Callables | 47 |
+| Files | 18 |
+| Calls traced | 44 |
 | Call stacks | 0 |
 | Deepest stack | 0 |
 | Stacks through recursion | 0 |
@@ -120,14 +120,16 @@ None.
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
 | `ModuleGraphService.buildGraph` | 5 | `ModuleGraphService.findAmbientModuleNames`, `ModuleGraphService.collectEdges`, `ModuleGraphService.sortNames`, `ModuleGraphService.toSorted(…)`, `ModuleGraphService.filter(…)` | `packages/codependix-nestjs-modules/src/modules/module-graph/module-graph.service.ts:136` |
+| `NestjsModulesWorkspaceGraphService.buildWorkspaceGraph` | 4 | `NestjsModulesWorkspaceGraphService.sortNames`, `NestjsModulesWorkspaceGraphService.flatMap(…)`, `NestjsModulesWorkspaceGraphService.toSorted(…)`, `NestjsModulesWorkspaceGraphService.flatMap(…)` | `packages/codependix-nestjs-modules/src/modules/nestjs-modules-workspace-graph/nestjs-modules-workspace-graph.service.ts:80` |
 | `NestjsProjectService.buildSyntheticRootModule` | 3 | `NestjsProjectService.findModuleFiles`, `NestjsProjectService.map(…)`, `SyntheticRootModule.forModules` | `packages/codependix-nestjs-modules/src/modules/nestjs-project/nestjs-project.service.ts:54` |
-| `ModuleGraphService.renderMermaid` | 2 | `ModuleGraphService.map(…)`, `ModuleGraphService.map(…)` | `packages/codependix-nestjs-modules/src/modules/module-graph/module-graph.service.ts:158` |
 
 <details>
-<summary>12 more callables</summary>
+<summary>23 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
+| `ModuleGraphService.renderMermaid` | 2 | `ModuleGraphService.map(…)`, `ModuleGraphService.map(…)` | `packages/codependix-nestjs-modules/src/modules/module-graph/module-graph.service.ts:158` |
+| `NestjsModulesWorkspaceGraphService.renderMermaid` | 2 | `NestjsModulesWorkspaceGraphService.map(…)`, `NestjsModulesWorkspaceGraphService.map(…)` | `packages/codependix-nestjs-modules/src/modules/nestjs-modules-workspace-graph/nestjs-modules-workspace-graph.service.ts:103` |
 | `NestjsProjectService.loadModuleClasses` | 2 | `NestjsProjectService.map(…)`, `NestjsProjectService.filter(…)` | `packages/codependix-nestjs-modules/src/modules/nestjs-project/nestjs-project.service.ts:87` |
 | `NestjsProjectService.discoverProjects` | 2 | `NestjsProjectService.map(…)`, `NestjsProjectService.filter(…)` | `packages/codependix-nestjs-modules/src/modules/nestjs-project/nestjs-project.service.ts:142` |
 | `NestjsProjectService.exploreProject` | 2 | `NestjsProjectService.buildSyntheticRootModule`, `NestjsProjectService.loadRootModule` | `packages/codependix-nestjs-modules/src/modules/nestjs-project/nestjs-project.service.ts:153` |
@@ -136,6 +138,15 @@ None.
 | `ModuleGraphService.sortNames` | 1 | `ModuleGraphService.toSorted(…)` | `packages/codependix-nestjs-modules/src/modules/module-graph/module-graph.service.ts:129` |
 | `ModuleGraphService.toSorted(…)` | 1 | `ModuleGraphService.compareEdges` | `packages/codependix-nestjs-modules/src/modules/module-graph/module-graph.service.ts:146` |
 | `ModuleGraphService.map(…)` | 1 | `ModuleGraphService.renderNode` | `packages/codependix-nestjs-modules/src/modules/module-graph/module-graph.service.ts:167` |
+| `NestjsModulesWorkspaceGraphService.renderNode` | 1 | `NestjsModulesWorkspaceGraphService.toNodeIdentifier` | `packages/codependix-nestjs-modules/src/modules/nestjs-modules-workspace-graph/nestjs-modules-workspace-graph.service.ts:60` |
+| `NestjsModulesWorkspaceGraphService.sortNames` | 1 | `NestjsModulesWorkspaceGraphService.toSorted(…)` | `packages/codependix-nestjs-modules/src/modules/nestjs-modules-workspace-graph/nestjs-modules-workspace-graph.service.ts:65` |
+| `NestjsModulesWorkspaceGraphService.flatMap(…)` | 1 | `NestjsModulesWorkspaceGraphService.map(…)` | `packages/codependix-nestjs-modules/src/modules/nestjs-modules-workspace-graph/nestjs-modules-workspace-graph.service.ts:84` |
+| `NestjsModulesWorkspaceGraphService.map(…)` | 1 | `NestjsModulesWorkspaceGraphService.qualifyModuleName` | `packages/codependix-nestjs-modules/src/modules/nestjs-modules-workspace-graph/nestjs-modules-workspace-graph.service.ts:85` |
+| `NestjsModulesWorkspaceGraphService.flatMap(…)` | 1 | `NestjsModulesWorkspaceGraphService.map(…)` | `packages/codependix-nestjs-modules/src/modules/nestjs-modules-workspace-graph/nestjs-modules-workspace-graph.service.ts:91` |
+| `NestjsModulesWorkspaceGraphService.map(…)` | 1 | `NestjsModulesWorkspaceGraphService.qualifyModuleName` | `packages/codependix-nestjs-modules/src/modules/nestjs-modules-workspace-graph/nestjs-modules-workspace-graph.service.ts:92` |
+| `NestjsModulesWorkspaceGraphService.toSorted(…)` | 1 | `NestjsModulesWorkspaceGraphService.compareEdges` | `packages/codependix-nestjs-modules/src/modules/nestjs-modules-workspace-graph/nestjs-modules-workspace-graph.service.ts:97` |
+| `NestjsModulesWorkspaceGraphService.map(…)` | 1 | `NestjsModulesWorkspaceGraphService.renderNode` | `packages/codependix-nestjs-modules/src/modules/nestjs-modules-workspace-graph/nestjs-modules-workspace-graph.service.ts:111` |
+| `NestjsModulesWorkspaceGraphService.map(…)` | 1 | `NestjsModulesWorkspaceGraphService.toNodeIdentifier` | `packages/codependix-nestjs-modules/src/modules/nestjs-modules-workspace-graph/nestjs-modules-workspace-graph.service.ts:115` |
 | `NestjsProjectService.map(…)` | 1 | `NestjsProjectService.loadModuleClasses` | `packages/codependix-nestjs-modules/src/modules/nestjs-project/nestjs-project.service.ts:61` |
 | `NestjsProjectService.findModuleFiles` | 1 | `NestjsProjectService.toSorted(…)` | `packages/codependix-nestjs-modules/src/modules/nestjs-project/nestjs-project.service.ts:68` |
 | `NestjsProjectService.filter(…)` | 1 | `NestjsProjectService.isNestjsProject` | `packages/codependix-nestjs-modules/src/modules/nestjs-project/nestjs-project.service.ts:146` |
@@ -150,40 +161,40 @@ None.
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-1386-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-55.16_kB-6b7280?style=flat-square)
-![Folders](https://img.shields.io/badge/Folders-5-4a4a4a?style=flat-square)
-![Source Files](https://img.shields.io/badge/Source_Files-22-3178c6?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-1746-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-67.90_kB-6b7280?style=flat-square)
+![Folders](https://img.shields.io/badge/Folders-6-4a4a4a?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-28-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-6.87_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-9.17_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
-![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-22-3178c6?style=flat-square)
-![Interfaces](https://img.shields.io/badge/Interfaces-3-0ea5e9?style=flat-square)
+![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-28-3178c6?style=flat-square)
+![Interfaces](https://img.shields.io/badge/Interfaces-5-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-0-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
-![Decorators](https://img.shields.io/badge/Decorators-6-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-49-6366f1?style=flat-square)
+![Decorators](https://img.shields.io/badge/Decorators-8-db2777?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-60-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-1-166534?style=flat-square)
 
 ### JavaScript
 
 ![JavaScript Files](https://img.shields.io/badge/JavaScript_Files-0-f7df1e?style=flat-square)
-![Test Files](https://img.shields.io/badge/Test_Files-5-10b981?style=flat-square)
+![Test Files](https://img.shields.io/badge/Test_Files-7-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-12-8b5cf6?style=flat-square)
-![Classes](https://img.shields.io/badge/Classes-6-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-73-16a34a?style=flat-square)
-![Methods](https://img.shields.io/badge/Methods-29-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-83-4ade80?style=flat-square)
-![Async Functions](https://img.shields.io/badge/Async_Functions-19-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-64-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-60-0284c7?style=flat-square)
-![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-21-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-73-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-180-475569?style=flat-square)
+![Classes](https://img.shields.io/badge/Classes-8-7c3aed?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-86-16a34a?style=flat-square)
+![Methods](https://img.shields.io/badge/Methods-44-15803d?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-110-4ade80?style=flat-square)
+![Async Functions](https://img.shields.io/badge/Async_Functions-20-059669?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-85-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-74-0284c7?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-28-ea580c?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-90-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-221-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python
@@ -294,14 +305,14 @@ None.
 
 ### Conventions
 
-![Module Files](https://img.shields.io/badge/Module_Files-4-7c3aed?style=flat-square)
-![Service Files](https://img.shields.io/badge/Service_Files-2-0284c7?style=flat-square)
+![Module Files](https://img.shields.io/badge/Module_Files-5-7c3aed?style=flat-square)
+![Service Files](https://img.shields.io/badge/Service_Files-3-0284c7?style=flat-square)
 ![Command Files](https://img.shields.io/badge/Command_Files-0-16a34a?style=flat-square)
-![Constants Files](https://img.shields.io/badge/Constants_Files-2-ea580c?style=flat-square)
-![Types Files](https://img.shields.io/badge/Types_Files-2-db2777?style=flat-square)
+![Constants Files](https://img.shields.io/badge/Constants_Files-3-ea580c?style=flat-square)
+![Types Files](https://img.shields.io/badge/Types_Files-3-db2777?style=flat-square)
 ![Utilities Files](https://img.shields.io/badge/Utilities_Files-0-0ea5e9?style=flat-square)
 ![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-0-059669?style=flat-square)
-![Unit Tests](https://img.shields.io/badge/Unit_Tests-5-ca8a04?style=flat-square)
+![Unit Tests](https://img.shields.io/badge/Unit_Tests-7-ca8a04?style=flat-square)
 ![Integration Tests](https://img.shields.io/badge/Integration_Tests-0-7c3aed?style=flat-square)
 ![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-0-0284c7?style=flat-square)
 ![CSS Comment Budget](https://img.shields.io/badge/CSS_Comment_Budget-0-16a34a?style=flat-square)

@@ -88,9 +88,9 @@ Call stacks traced through `packages/codependix-configuration`, deepest first. E
 
 | Measure | Value |
 | --- | --- |
-| Callables | 40 |
-| Files | 13 |
-| Calls traced | 38 |
+| Callables | 51 |
+| Files | 21 |
+| Calls traced | 48 |
 | Call stacks | 1 |
 | Deepest stack | 2 |
 | Stacks through recursion | 0 |
@@ -110,40 +110,46 @@ What this project is judged against, as declared in its own `callidescope.config
 **1. `refine(…)`** — depth 2 · orphan-root
 
 ```text
-🚀 refine(…)(…): boolean [packages/codependix-configuration/src/modules/configuration/configuration.constants.ts:104]
-  └─> some(…)(value: string[] | undefined): value is string[] [packages/codependix-configuration/src/modules/configuration/configuration.constants.ts:104]
+🚀 refine(…)(…): boolean [packages/codependix-configuration/src/modules/configuration/configuration.constants.ts:103]
+  └─> some(…)(value: string[] | undefined): value is string[] [packages/codependix-configuration/src/modules/configuration/configuration.constants.ts:103]
 ```
 
 ### Breadth
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `ConfigurationService.loadConfiguration` | 5 | `ConfigurationService.findConfigurationFile`, `ConfigurationService.resolveConfigurationPath`, `ConfigurationService.resolveConfiguration`, `UnknownConfigurationFileTypeError.constructor`, `ConfigurationService.loadConfigurationModule` | `packages/codependix-configuration/src/modules/configuration/configuration.service.ts:325` |
-| `InputService.promptForSelect` | 4 | `InputService.assertCanPrompt`, `InputService.map(…)`, `promptCancelledError`, `InputService.find(…)` | `packages/codependix-configuration/src/modules/input/input.service.ts:75` |
-| `ConfigurationService.isProjectNamedOnCommandLine` | 2 | `ConfigurationService.matchesAnyName`, `ConfigurationService.some(…)` | `packages/codependix-configuration/src/modules/configuration/configuration.service.ts:119` |
+| `InputService.promptForSelect` | 4 | `InputService.assertCanPrompt`, `InputService.map(…)`, `promptCancelledError`, `InputService.find(…)` | `packages/codependix-configuration/src/modules/input/input.service.ts:92` |
+| `ConfigurationLoaderService.readAuthoredConfiguration` | 3 | `ConfigurationLoaderService.findConfigurationFile`, `ConfigurationLoaderService.resolveConfigurationPath`, `ConfigurationLoaderService.parseConfigurationFile` | `packages/codependix-configuration/src/modules/configuration-loader/configuration-loader.service.ts:169` |
+| `ConfigurationService.loadConfiguration` | 3 | `ConfigurationLoaderService.readAuthoredConfiguration`, `OverrideResolutionService.applyOverrides`, `ConfigurationService.resolveConfiguration` | `packages/codependix-configuration/src/modules/configuration/configuration.service.ts:214` |
 
 <details>
-<summary>17 more callables</summary>
+<summary>23 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `ConfigurationService.resolveConfigurationPath` | 2 | `ConfigurationService.findWorkspaceRoot`, `ConfigurationFileNotFoundError.constructor` | `packages/codependix-configuration/src/modules/configuration/configuration.service.ts:202` |
-| `ConfigurationService.splitSelectionArgument` | 2 | `ConfigurationService.filter(…)`, `ConfigurationService.map(…)` | `packages/codependix-configuration/src/modules/configuration/configuration.service.ts:260` |
-| `ConfigurationService.isProjectIncluded` | 2 | `ConfigurationService.matchesAnyName`, `ConfigurationService.isProjectNamedOnCommandLine` | `packages/codependix-configuration/src/modules/configuration/configuration.service.ts:282` |
-| `ConfigurationService.resolveConfiguration` | 2 | `ConfigurationService.resolveBoundaries`, `ConfigurationService.resolveSelection` | `packages/codependix-configuration/src/modules/configuration/configuration.service.ts:362` |
-| `ConfigurationService.resolveForProject` | 2 | `ConfigurationService.isProjectIncluded`, `ConfigurationService.resolveGraphOutput` | `packages/codependix-configuration/src/modules/configuration/configuration.service.ts:390` |
-| `refine(…)` | 1 | `some(…)` | `packages/codependix-configuration/src/modules/configuration/configuration.constants.ts:104` |
-| `ConfigurationService.findWorkspaceRoot` | 1 | `ConfigurationService.some(…)` | `packages/codependix-configuration/src/modules/configuration/configuration.service.ts:95` |
-| `ConfigurationService.loadConfigurationModule` | 1 | `ConfigurationService.readDefaultExport` | `packages/codependix-configuration/src/modules/configuration/configuration.service.ts:134` |
-| `ConfigurationService.matchesAnyGlob` | 1 | `ConfigurationService.some(…)` | `packages/codependix-configuration/src/modules/configuration/configuration.service.ts:150` |
-| `ConfigurationService.matchesAnyName` | 1 | `ConfigurationService.matchesAnyGlob` | `packages/codependix-configuration/src/modules/configuration/configuration.service.ts:155` |
-| `ConfigurationService.resolveSelection` | 1 | `ConfigurationService.splitSelectionArgument` | `packages/codependix-configuration/src/modules/configuration/configuration.service.ts:250` |
-| `ConfigurationService.isProjectSelected` | 1 | `ConfigurationService.isProjectNamedOnCommandLine` | `packages/codependix-configuration/src/modules/configuration/configuration.service.ts:307` |
-| `ConfigurationService.resolveForWorkspace` | 1 | `ConfigurationService.resolveGraphOutput` | `packages/codependix-configuration/src/modules/configuration/configuration.service.ts:424` |
+| `ConfigurationService.loadProjectConfiguration` | 3 | `ConfigurationLoaderService.findProjectConfigurationFile`, `UnknownConfigurationFileTypeError.constructor`, `ConfigurationLoaderService.loadConfigurationModule` | `packages/codependix-configuration/src/modules/configuration/configuration.service.ts:238` |
+| `ConfigurationLoaderService.parseConfigurationFile` | 2 | `UnknownConfigurationFileTypeError.constructor`, `ConfigurationLoaderService.loadConfigurationModule` | `packages/codependix-configuration/src/modules/configuration-loader/configuration-loader.service.ts:151` |
+| `ConfigurationLoaderService.resolveConfigurationPath` | 2 | `ConfigurationLoaderService.findWorkspaceRoot`, `ConfigurationFileNotFoundError.constructor` | `packages/codependix-configuration/src/modules/configuration-loader/configuration-loader.service.ts:187` |
+| `OverrideResolutionService.resolveOverride` | 2 | `InputError.constructor`, `buildUndeclaredOverrideMessage` | `packages/codependix-configuration/src/modules/override-resolution/override-resolution.service.ts:48` |
+| `ConfigurationService.isProjectNamedOnCommandLine` | 2 | `ConfigurationService.matchesAnyName`, `ConfigurationService.some(…)` | `packages/codependix-configuration/src/modules/configuration/configuration.service.ts:61` |
+| `ConfigurationService.splitSelectionArgument` | 2 | `ConfigurationService.filter(…)`, `ConfigurationService.map(…)` | `packages/codependix-configuration/src/modules/configuration/configuration.service.ts:151` |
+| `ConfigurationService.isProjectIncluded` | 2 | `ConfigurationService.matchesAnyName`, `ConfigurationService.isProjectNamedOnCommandLine` | `packages/codependix-configuration/src/modules/configuration/configuration.service.ts:171` |
+| `ConfigurationService.resolveConfiguration` | 2 | `ConfigurationService.resolveBoundaries`, `ConfigurationService.resolveSelection` | `packages/codependix-configuration/src/modules/configuration/configuration.service.ts:271` |
+| `ConfigurationService.resolveForProject` | 2 | `ConfigurationService.isProjectIncluded`, `ConfigurationService.resolveGraphOutput` | `packages/codependix-configuration/src/modules/configuration/configuration.service.ts:299` |
+| `refine(…)` | 1 | `some(…)` | `packages/codependix-configuration/src/modules/configuration/configuration.constants.ts:103` |
+| `ConfigurationLoaderService.findWorkspaceRoot` | 1 | `ConfigurationLoaderService.some(…)` | `packages/codependix-configuration/src/modules/configuration-loader/configuration-loader.service.ts:111` |
+| `ConfigurationLoaderService.loadConfigurationModule` | 1 | `ConfigurationLoaderService.readDefaultExport` | `packages/codependix-configuration/src/modules/configuration-loader/configuration-loader.service.ts:135` |
 | `missingInputError` | 1 | `InputError.constructor` | `packages/codependix-configuration/src/modules/input/input.constants.ts:29` |
 | `promptCancelledError` | 1 | `InputError.constructor` | `packages/codependix-configuration/src/modules/input/input.constants.ts:41` |
+| `OverrideResolutionService.applyOverrides` | 1 | `OverrideResolutionService.resolveOverride` | `packages/codependix-configuration/src/modules/override-resolution/override-resolution.service.ts:74` |
+| `ConfigurationService.matchesAnyGlob` | 1 | `ConfigurationService.some(…)` | `packages/codependix-configuration/src/modules/configuration/configuration.service.ts:76` |
+| `ConfigurationService.matchesAnyName` | 1 | `ConfigurationService.matchesAnyGlob` | `packages/codependix-configuration/src/modules/configuration/configuration.service.ts:81` |
+| `ConfigurationService.resolveSelection` | 1 | `ConfigurationService.splitSelectionArgument` | `packages/codependix-configuration/src/modules/configuration/configuration.service.ts:141` |
+| `ConfigurationService.isProjectSelected` | 1 | `ConfigurationService.isProjectNamedOnCommandLine` | `packages/codependix-configuration/src/modules/configuration/configuration.service.ts:196` |
+| `ConfigurationService.resolveForWorkspace` | 1 | `ConfigurationService.resolveGraphOutput` | `packages/codependix-configuration/src/modules/configuration/configuration.service.ts:341` |
 | `InputService.assertCanPrompt` | 1 | `missingInputError` | `packages/codependix-configuration/src/modules/input/input.service.ts:38` |
-| `InputService.parsePathOption` | 1 | `InputService.parseOptionalOption` | `packages/codependix-configuration/src/modules/input/input.service.ts:70` |
+| `InputService.parseCommaDelimitedOption` | 1 | `InputService.map(…)` | `packages/codependix-configuration/src/modules/input/input.service.ts:54` |
+| `InputService.parsePathOption` | 1 | `InputService.parseOptionalOption` | `packages/codependix-configuration/src/modules/input/input.service.ts:87` |
 
 </details>
 <!-- CALL_STACKS_END -->
@@ -154,40 +160,40 @@ What this project is judged against, as declared in its own `callidescope.config
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-2354-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-87.92_kB-6b7280?style=flat-square)
-![Folders](https://img.shields.io/badge/Folders-5-4a4a4a?style=flat-square)
-![Source Files](https://img.shields.io/badge/Source_Files-20-3178c6?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-3384-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-122.50_kB-6b7280?style=flat-square)
+![Folders](https://img.shields.io/badge/Folders-7-4a4a4a?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-30-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-9.65_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-14.20_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
-![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-20-3178c6?style=flat-square)
-![Interfaces](https://img.shields.io/badge/Interfaces-20-0ea5e9?style=flat-square)
+![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-30-3178c6?style=flat-square)
+![Interfaces](https://img.shields.io/badge/Interfaces-25-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-0-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
-![Decorators](https://img.shields.io/badge/Decorators-4-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-89-6366f1?style=flat-square)
+![Decorators](https://img.shields.io/badge/Decorators-8-db2777?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-113-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-0-166534?style=flat-square)
 
 ### JavaScript
 
 ![JavaScript Files](https://img.shields.io/badge/JavaScript_Files-0-f7df1e?style=flat-square)
-![Test Files](https://img.shields.io/badge/Test_Files-5-10b981?style=flat-square)
+![Test Files](https://img.shields.io/badge/Test_Files-7-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-11-8b5cf6?style=flat-square)
-![Classes](https://img.shields.io/badge/Classes-7-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-99-16a34a?style=flat-square)
-![Methods](https://img.shields.io/badge/Methods-30-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-101-4ade80?style=flat-square)
-![Async Functions](https://img.shields.io/badge/Async_Functions-28-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-122-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-52-0284c7?style=flat-square)
-![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-46-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-125-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-433-475569?style=flat-square)
+![Classes](https://img.shields.io/badge/Classes-11-7c3aed?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-156-16a34a?style=flat-square)
+![Methods](https://img.shields.io/badge/Methods-38-15803d?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-141-4ade80?style=flat-square)
+![Async Functions](https://img.shields.io/badge/Async_Functions-53-059669?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-186-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-82-0284c7?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-57-ea580c?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-167-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-561-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python
@@ -298,14 +304,14 @@ What this project is judged against, as declared in its own `callidescope.config
 
 ### Conventions
 
-![Module Files](https://img.shields.io/badge/Module_Files-2-7c3aed?style=flat-square)
-![Service Files](https://img.shields.io/badge/Service_Files-2-0284c7?style=flat-square)
+![Module Files](https://img.shields.io/badge/Module_Files-4-7c3aed?style=flat-square)
+![Service Files](https://img.shields.io/badge/Service_Files-4-0284c7?style=flat-square)
 ![Command Files](https://img.shields.io/badge/Command_Files-0-16a34a?style=flat-square)
-![Constants Files](https://img.shields.io/badge/Constants_Files-2-ea580c?style=flat-square)
-![Types Files](https://img.shields.io/badge/Types_Files-2-db2777?style=flat-square)
+![Constants Files](https://img.shields.io/badge/Constants_Files-4-ea580c?style=flat-square)
+![Types Files](https://img.shields.io/badge/Types_Files-4-db2777?style=flat-square)
 ![Utilities Files](https://img.shields.io/badge/Utilities_Files-0-0ea5e9?style=flat-square)
 ![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-0-059669?style=flat-square)
-![Unit Tests](https://img.shields.io/badge/Unit_Tests-5-ca8a04?style=flat-square)
+![Unit Tests](https://img.shields.io/badge/Unit_Tests-7-ca8a04?style=flat-square)
 ![Integration Tests](https://img.shields.io/badge/Integration_Tests-0-7c3aed?style=flat-square)
 ![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-0-0284c7?style=flat-square)
 ![CSS Comment Budget](https://img.shields.io/badge/CSS_Comment_Budget-0-16a34a?style=flat-square)

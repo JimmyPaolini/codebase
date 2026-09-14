@@ -137,9 +137,9 @@ Call stacks traced through `packages/codependix-file-imports`, deepest first. Ea
 
 | Measure | Value |
 | --- | --- |
-| Callables | 84 |
-| Files | 20 |
-| Calls traced | 83 |
+| Callables | 100 |
+| Files | 24 |
+| Calls traced | 100 |
 | Call stacks | 0 |
 | Deepest stack | 0 |
 | Stacks through recursion | 0 |
@@ -164,17 +164,19 @@ None.
 | --- | --- | --- | --- |
 | `TypescriptImportGraphService.buildGraph` | 8 | `TypescriptImportGraphService.resolveOwnedFileNames`, `TypescriptImportGraphService.listOwnedSourceFileNames`, `TypescriptImportGraphService.dedupeEdges`, `TypescriptImportGraphService.flatMap(…)`, `TypescriptImportGraphService.flatMap(…)`, `TypescriptImportGraphService.toSorted(…)`, `TypescriptImportGraphService.map(…)`, `TypescriptImportGraphService.filter(…)` | `packages/codependix-file-imports/src/modules/typescript/typescript-import-graph.service.ts:185` |
 | `PythonImportGraphService.buildGraph` | 7 | `PythonProjectService.listSourceFileNames`, `PythonImportGraphService.dedupeEdges`, `PythonImportGraphService.flatMap(…)`, `PythonImportGraphService.flatMap(…)`, `PythonImportGraphService.toSorted(…)`, `PythonImportGraphService.map(…)`, `PythonImportGraphService.filter(…)` | `packages/codependix-file-imports/src/modules/python/python-import-graph.service.ts:180` |
-| `PythonImportParserService.parseImportStatement` | 3 | `PythonImportParserService.map(…)`, `PythonImportParserService.filter(…)`, `PythonImportParserService.map(…)` | `packages/codependix-file-imports/src/modules/python/python-import-parser.service.ts:105` |
+| `FileImportsWorkspaceGraphService.buildWorkspaceGraph` | 4 | `FileImportsWorkspaceGraphService.sortNames`, `FileImportsWorkspaceGraphService.flatMap(…)`, `FileImportsWorkspaceGraphService.toSorted(…)`, `FileImportsWorkspaceGraphService.flatMap(…)` | `packages/codependix-file-imports/src/modules/file-imports-workspace-graph/file-imports-workspace-graph.service.ts:84` |
 
 <details>
-<summary>42 more callables</summary>
+<summary>53 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
+| `PythonImportParserService.parseImportStatement` | 3 | `PythonImportParserService.map(…)`, `PythonImportParserService.filter(…)`, `PythonImportParserService.map(…)` | `packages/codependix-file-imports/src/modules/python/python-import-parser.service.ts:105` |
 | `PythonImportParserService.parseImportSpecifiers` | 3 | `PythonImportParserService.isTopLevelImportStart`, `PythonImportParserService.collectStatement`, `PythonImportParserService.parseStatement` | `packages/codependix-file-imports/src/modules/python/python-import-parser.service.ts:158` |
 | `PythonImportGraphService.collectEdgesForFile` | 3 | `PythonImportParserService.parseImportSpecifiers`, `PythonImportGraphService.resolveSpecifierPath`, `PythonImportGraphService.toRelativePath` | `packages/codependix-file-imports/src/modules/python/python-import-graph.service.ts:64` |
 | `TypescriptProjectService.parseConfiguration` | 3 | `TypescriptProjectService.readJsonConfigFile(…)`, `TypescriptProjectConfigurationError.constructor`, `TypescriptProjectService.map(…)` | `packages/codependix-file-imports/src/modules/typescript/typescript-project.service.ts:51` |
 | `TypescriptImportGraphService.listOwnedSourceFileNames` | 3 | `TypescriptImportGraphService.toSorted(…)`, `TypescriptImportGraphService.filter(…)`, `TypescriptImportGraphService.resolveOwnedFileNames` | `packages/codependix-file-imports/src/modules/typescript/typescript-import-graph.service.ts:122` |
+| `FileImportsWorkspaceGraphService.renderMermaid` | 2 | `FileImportsWorkspaceGraphService.map(…)`, `FileImportsWorkspaceGraphService.map(…)` | `packages/codependix-file-imports/src/modules/file-imports-workspace-graph/file-imports-workspace-graph.service.ts:109` |
 | `PythonImportParserService.collectStatement` | 2 | `PythonImportParserService.stripComment`, `PythonImportParserService.countCharacter` | `packages/codependix-file-imports/src/modules/python/python-import-parser.service.ts:42` |
 | `PythonImportParserService.isTopLevelImportStart` | 2 | `PythonImportParserService.measureIndent`, `PythonImportParserService.stripComment` | `packages/codependix-file-imports/src/modules/python/python-import-parser.service.ts:79` |
 | `PythonImportParserService.parseStatement` | 2 | `PythonImportParserService.parseFromStatement`, `PythonImportParserService.parseImportStatement` | `packages/codependix-file-imports/src/modules/python/python-import-parser.service.ts:126` |
@@ -184,6 +186,15 @@ None.
 | `TypescriptProjectService.discoverProjects` | 2 | `TypescriptProjectService.map(…)`, `TypescriptProjectService.filter(…)` | `packages/codependix-file-imports/src/modules/typescript/typescript-project.service.ts:107` |
 | `TypescriptImportGraphService.collectEdgesForFile` | 2 | `TypescriptImportGraphService.resolveImportTarget`, `TypescriptImportGraphService.toRelativePath` | `packages/codependix-file-imports/src/modules/typescript/typescript-import-graph.service.ts:49` |
 | `TypescriptImportGraphService.renderMermaid` | 2 | `TypescriptImportGraphService.map(…)`, `TypescriptImportGraphService.map(…)` | `packages/codependix-file-imports/src/modules/typescript/typescript-import-graph.service.ts:215` |
+| `FileImportsWorkspaceGraphService.renderNode` | 1 | `FileImportsWorkspaceGraphService.toNodeIdentifier` | `packages/codependix-file-imports/src/modules/file-imports-workspace-graph/file-imports-workspace-graph.service.ts:64` |
+| `FileImportsWorkspaceGraphService.sortNames` | 1 | `FileImportsWorkspaceGraphService.toSorted(…)` | `packages/codependix-file-imports/src/modules/file-imports-workspace-graph/file-imports-workspace-graph.service.ts:69` |
+| `FileImportsWorkspaceGraphService.flatMap(…)` | 1 | `FileImportsWorkspaceGraphService.map(…)` | `packages/codependix-file-imports/src/modules/file-imports-workspace-graph/file-imports-workspace-graph.service.ts:90` |
+| `FileImportsWorkspaceGraphService.map(…)` | 1 | `FileImportsWorkspaceGraphService.qualifyFileName` | `packages/codependix-file-imports/src/modules/file-imports-workspace-graph/file-imports-workspace-graph.service.ts:91` |
+| `FileImportsWorkspaceGraphService.flatMap(…)` | 1 | `FileImportsWorkspaceGraphService.map(…)` | `packages/codependix-file-imports/src/modules/file-imports-workspace-graph/file-imports-workspace-graph.service.ts:97` |
+| `FileImportsWorkspaceGraphService.map(…)` | 1 | `FileImportsWorkspaceGraphService.qualifyFileName` | `packages/codependix-file-imports/src/modules/file-imports-workspace-graph/file-imports-workspace-graph.service.ts:98` |
+| `FileImportsWorkspaceGraphService.toSorted(…)` | 1 | `FileImportsWorkspaceGraphService.compareEdges` | `packages/codependix-file-imports/src/modules/file-imports-workspace-graph/file-imports-workspace-graph.service.ts:103` |
+| `FileImportsWorkspaceGraphService.map(…)` | 1 | `FileImportsWorkspaceGraphService.renderNode` | `packages/codependix-file-imports/src/modules/file-imports-workspace-graph/file-imports-workspace-graph.service.ts:117` |
+| `FileImportsWorkspaceGraphService.map(…)` | 1 | `FileImportsWorkspaceGraphService.toNodeIdentifier` | `packages/codependix-file-imports/src/modules/file-imports-workspace-graph/file-imports-workspace-graph.service.ts:119` |
 | `PythonProjectService.filter(…)` | 1 | `PythonProjectService.isPythonProject` | `packages/codependix-file-imports/src/modules/python/python-project.service.ts:73` |
 | `PythonProjectService.map(…)` | 1 | `PythonProjectService.describeProject` | `packages/codependix-file-imports/src/modules/python/python-project.service.ts:74` |
 | `PythonImportGraphService.dedupeEdges` | 1 | `PythonImportGraphService.toSorted(…)` | `packages/codependix-file-imports/src/modules/python/python-import-graph.service.ts:107` |
@@ -223,40 +234,40 @@ None.
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-2534-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-92.56_kB-6b7280?style=flat-square)
-![Folders](https://img.shields.io/badge/Folders-5-4a4a4a?style=flat-square)
-![Source Files](https://img.shields.io/badge/Source_Files-32-3178c6?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-2906-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-105.73_kB-6b7280?style=flat-square)
+![Folders](https://img.shields.io/badge/Folders-6-4a4a4a?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-38-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-14.49_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-16.93_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
-![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-32-3178c6?style=flat-square)
-![Interfaces](https://img.shields.io/badge/Interfaces-8-0ea5e9?style=flat-square)
+![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-38-3178c6?style=flat-square)
+![Interfaces](https://img.shields.io/badge/Interfaces-10-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-0-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
-![Decorators](https://img.shields.io/badge/Decorators-9-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-90-6366f1?style=flat-square)
+![Decorators](https://img.shields.io/badge/Decorators-11-db2777?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-101-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-0-166534?style=flat-square)
 
 ### JavaScript
 
 ![JavaScript Files](https://img.shields.io/badge/JavaScript_Files-0-f7df1e?style=flat-square)
-![Test Files](https://img.shields.io/badge/Test_Files-9-10b981?style=flat-square)
+![Test Files](https://img.shields.io/badge/Test_Files-11-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-9-8b5cf6?style=flat-square)
-![Classes](https://img.shields.io/badge/Classes-10-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-121-16a34a?style=flat-square)
-![Methods](https://img.shields.io/badge/Methods-76-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-170-4ade80?style=flat-square)
-![Async Functions](https://img.shields.io/badge/Async_Functions-27-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-155-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-113-0284c7?style=flat-square)
-![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-37-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-157-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-343-475569?style=flat-square)
+![Classes](https://img.shields.io/badge/Classes-12-7c3aed?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-134-16a34a?style=flat-square)
+![Methods](https://img.shields.io/badge/Methods-91-15803d?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-197-4ade80?style=flat-square)
+![Async Functions](https://img.shields.io/badge/Async_Functions-28-059669?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-177-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-129-0284c7?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-44-ea580c?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-174-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-386-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python
@@ -367,14 +378,14 @@ None.
 
 ### Conventions
 
-![Module Files](https://img.shields.io/badge/Module_Files-2-7c3aed?style=flat-square)
-![Service Files](https://img.shields.io/badge/Service_Files-7-0284c7?style=flat-square)
+![Module Files](https://img.shields.io/badge/Module_Files-3-7c3aed?style=flat-square)
+![Service Files](https://img.shields.io/badge/Service_Files-8-0284c7?style=flat-square)
 ![Command Files](https://img.shields.io/badge/Command_Files-0-16a34a?style=flat-square)
-![Constants Files](https://img.shields.io/badge/Constants_Files-3-ea580c?style=flat-square)
-![Types Files](https://img.shields.io/badge/Types_Files-3-db2777?style=flat-square)
+![Constants Files](https://img.shields.io/badge/Constants_Files-4-ea580c?style=flat-square)
+![Types Files](https://img.shields.io/badge/Types_Files-4-db2777?style=flat-square)
 ![Utilities Files](https://img.shields.io/badge/Utilities_Files-0-0ea5e9?style=flat-square)
 ![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-0-059669?style=flat-square)
-![Unit Tests](https://img.shields.io/badge/Unit_Tests-9-ca8a04?style=flat-square)
+![Unit Tests](https://img.shields.io/badge/Unit_Tests-11-ca8a04?style=flat-square)
 ![Integration Tests](https://img.shields.io/badge/Integration_Tests-0-7c3aed?style=flat-square)
 ![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-0-0284c7?style=flat-square)
 ![CSS Comment Budget](https://img.shields.io/badge/CSS_Comment_Budget-0-16a34a?style=flat-square)
