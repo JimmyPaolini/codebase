@@ -53,6 +53,7 @@ function buildConfiguration(
   outputs: ResolvedCodometerConfiguration["outputs"] = [],
 ): ResolvedCodometerConfiguration {
   return {
+    custom: [],
     defaultInput: undefined,
     exclude: ["**/node_modules/**"],
     excludeFrom: [],

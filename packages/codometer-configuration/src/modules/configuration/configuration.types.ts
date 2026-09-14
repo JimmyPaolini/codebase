@@ -100,6 +100,16 @@ export type CodometerCompression = "brotli" | "gzip" | "none";
  */
 export interface CodometerConfiguration {
   /**
+   * Every counter this configuration measures, regardless of where — or
+   * whether — any of them is rendered.
+   *
+   * Declaring a counter here is what measures it; an `outputs[].custom` entry
+   * then only *selects* which of these labels that destination renders. A
+   * label an output selects that is not declared here is refused: selection
+   * cannot conjure a counter that was never measured.
+   */
+  custom?: CodometerCustomStatistic[] | undefined;
+  /**
    * Input an unqualified limit's metric path belongs to.
    *
    * A limit addresses its metric by input name followed by metric path.
@@ -239,11 +249,12 @@ export interface CodometerInput {
 /**
  * Where and how the JSON statistics report is written.
  *
- * `custom` names the counters rendered into this destination, independently
- * of any other output's own set.
+ * `custom` selects, by label, which of the top-level `custom` counters this
+ * destination renders — independently of any other output's own selection.
+ * Selecting a label the top level never declared is refused.
  */
 export interface CodometerJsonOutput {
-  custom?: CodometerCustomStatistic[] | undefined;
+  custom?: string[] | undefined;
   indentation?: number | undefined;
   path: string;
   type: "json";
@@ -299,11 +310,12 @@ export interface CodometerLimit {
  *
  * `path` is optional because a `write` function may choose the file itself —
  * but one of the two must be present, or there is no markdown output at all.
- * `custom` names the counters rendered into this destination, independently
- * of any other output's own set.
+ * `custom` selects, by label, which of the top-level `custom` counters this
+ * destination renders — independently of any other output's own selection.
+ * Selecting a label the top level never declared is refused.
  */
 export interface CodometerMarkdownOutput {
-  custom?: CodometerCustomStatistic[] | undefined;
+  custom?: string[] | undefined;
   description?: string | undefined;
   endMarker?: string | undefined;
   path?: string | undefined;

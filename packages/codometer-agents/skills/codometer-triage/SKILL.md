@@ -90,13 +90,14 @@ into `failures` in the report rather than folded into any metric.
   ran — check the build step before touching the configuration. An input
   nobody limited that matches nothing is unremarkable and reports no failure.
 - **The configuration itself was rejected before anything measured.** A
-  missing `format`, two `outputs` entries of the same type, or a custom
-  statistic naming none of `patterns`/`symbols`/`comment` each fail the run at
-  load time with the reason named. A configuration exporting a function
-  instead of a plain object is a quieter version of the same problem: there is
-  no config-as-function escape hatch any more, so it is not recognized and
-  falls back to an empty configuration — which then fails on the missing
-  `format` rather than on anything naming the real cause. Fix the
+  missing `format`, two `outputs` entries of the same type, a custom statistic
+  naming none of `patterns`/`symbols`/`comment`, or an `outputs` entry
+  selecting a `custom` label the top-level `custom` array never declared each
+  fail the run at load time with the reason named. A configuration exporting a
+  function instead of a plain object is a quieter version of the same problem:
+  there is no config-as-function escape hatch any more, so it is not
+  recognized and falls back to an empty configuration — which then fails on
+  the missing `format` rather than on anything naming the real cause. Fix the
   configuration rather than the command line.
 
 Every failure in one run is collected and reported together, so treat a report
