@@ -2,7 +2,7 @@ import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { getRepositoryToken, TypeOrmModule } from "@nestjs/typeorm";
 import { DataSource, type Repository } from "typeorm";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { LoggerService } from "@codebase/logger";
 
@@ -19,17 +19,28 @@ import { MeanderRenderingModule } from "../meander-rendering/meander-rendering.m
 
 import { DrawCodeService } from "./draw-code.service";
 import { DrawEnumerationService } from "./draw-enumeration.service";
+import { DrawIndexService } from "./draw-index.service";
 import { DrawRecordService } from "./draw-record.service";
 import { DrawCommand } from "./draw.command";
+import { DEFAULT_INDEX_PATH } from "./draw.constants";
+
+const { writeFileMock } = vi.hoisted(() => ({
+  writeFileMock: vi.fn<(path: string, data: string) => Promise<void>>(),
+}));
+
+vi.mock("node:fs/promises", () => ({
+  writeFile: writeFileMock,
+}));
 
 /**
- * Drives the whole of `DrawCommand`'s sweep — the generalized enumeration
- * and the historical corpus's hardcoded ingestion together — against a real
- * TypeORM connection to an in-memory `better-sqlite3` database, and asserts
- * on the rows it persists. It is spec #813's highest seam for this command,
- * and the direct successor to the file-tree assertions
- * `draw.command.unit.test.ts` made by mocking `node:fs/promises` while the
- * per-family procedural pipeline still wrote one.
+ * Drives the whole of `DrawCommand`'s sweep — the generalized enumeration,
+ * the historical corpus's hardcoded ingestion, and the index page rebuilt
+ * from both — against a real TypeORM connection to an in-memory
+ * `better-sqlite3` database, and asserts on the rows it persists. It is spec
+ * #813's highest seam for this command, and the direct successor to the
+ * file-tree assertions `draw.command.unit.test.ts` made by mocking
+ * `node:fs/promises` while the per-family procedural pipeline still wrote
+ * one.
  *
  * **This is what proves the two provenances do not collide.** Both halves
  * write through the same unique index over a meander's lattice address, and
@@ -42,8 +53,11 @@ import { DrawCommand } from "./draw.command";
  * fixture — `DrawCommand.run` reads it directly rather than through an
  * overridable dependency — and the enumeration is the real budgeted walk, so
  * this drives tens of thousands of rows through the decoder, renderer, and
- * Characteristic computation. That is real work rather than a hang, and the
- * timeout is declared rather than left to the default five seconds.
+ * Characteristic computation, then through `DrawIndexService` itself. That
+ * is real work rather than a hang, and the timeout is declared rather than
+ * left to the default five seconds. `node:fs/promises` stays mocked even
+ * here: this suite's own in-memory database is disposable, but the
+ * committed `output/index.html` a real write would land on is not.
  */
 describe("drawCommand sweep mode", () => {
   const SWEEP_TIMEOUT_MILLISECONDS = 300_000;
@@ -54,6 +68,8 @@ describe("drawCommand sweep mode", () => {
   let repository: Repository<Meander>;
 
   beforeEach(async () => {
+    writeFileMock.mockClear();
+
     const module = await Test.createTestingModule({
       imports: [
         TypeOrmModule.forRoot({
@@ -73,6 +89,7 @@ describe("drawCommand sweep mode", () => {
       providers: [
         DrawCommand,
         DrawEnumerationService,
+        DrawIndexService,
         DrawRecordService,
         HardcodedMeandersService,
         MeanderDatabaseService,
@@ -118,6 +135,30 @@ describe("drawCommand sweep mode", () => {
       await expect(
         repository.countBy({ provenance: "hardcoded" }),
       ).resolves.toBe(expectedHardcoded);
+    },
+    SWEEP_TIMEOUT_MILLISECONDS,
+  );
+
+  it(
+    "rebuilds output/index.html from the sweep's own rows once both halves have committed",
+    async () => {
+      await command.run([], {});
+
+      const total = await repository.count();
+
+      expect(writeFileMock).toHaveBeenCalledTimes(1);
+
+      const call = writeFileMock.mock.calls[0];
+
+      if (call === undefined) {
+        throw new Error("expected the index page to have been written");
+      }
+
+      const [indexPath, page] = call;
+
+      expect(indexPath).toBe(DEFAULT_INDEX_PATH);
+      expect(page).toContain(`${total} meanders across`);
+      expect(page).toContain("<svg");
     },
     SWEEP_TIMEOUT_MILLISECONDS,
   );

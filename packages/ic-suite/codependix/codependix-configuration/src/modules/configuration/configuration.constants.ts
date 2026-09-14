@@ -194,8 +194,15 @@ const graphOutputSchema = z
     }
   });
 
-/** Validates a project's export configuration, keyed by graph type. */
-const projectConfigurationSchema = z.object({
+/**
+ * Validates a project's own `codependix.config.ts`, keyed by graph type.
+ *
+ * The same shape a project's own file spreads `projectDefaults` into, and the
+ * same shape the root configuration's schema no longer carries — a project's
+ * export configuration is validated from its own file rather than from a root
+ * `projects` dict.
+ */
+export const codependixProjectConfigurationSchema = z.object({
   fileImports: graphOutputSchema.optional(),
   nestjsModules: graphOutputSchema.optional(),
   nxProjects: graphOutputSchema.optional(),
@@ -221,11 +228,9 @@ const workspaceConfigurationSchema = z.object({
  */
 export const codependixConfigurationSchema = z.object({
   boundaries: boundariesConfigurationSchema.optional(),
-  defaults: projectConfigurationSchema.optional(),
   exclude: z.array(z.string()).optional(),
   include: z.array(z.string()).optional(),
   projectGraph: z.string().optional(),
-  projects: z.record(z.string(), projectConfigurationSchema).optional(),
   workspace: workspaceConfigurationSchema.optional(),
 });
 

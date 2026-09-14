@@ -154,6 +154,7 @@ export class MapService {
     return this.configurationService.resolveForProject({
       configuration: context.configuration,
       graphType,
+      projectConfiguration: context.projectConfigurations.get(project.name),
       projectName: project.name,
       projectRoot: path.relative(
         context.workingDirectory,

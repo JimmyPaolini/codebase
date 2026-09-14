@@ -13,16 +13,34 @@ graph builders, so a claim that stops being true fails a check rather than
 misleading anybody. The command above fails if what is committed here has
 drifted; `:write` regenerates it.
 
-## `defaults`, a per-project override, and the two glob lists
+## A project's own file, an included project with no file, and the two glob lists
 
-`atlas-core` names an `nxProjects` override, and it **replaces** the default outright rather than merging into it — its `markdown` destination is gone, not inherited. `atlas-application` matches `exclude`, so it resolves to `none` no matter what either configuration would otherwise say. `unrelated` matches no `include` glob at all.
+`atlas-core` carries its own `codependix.config.ts` — see the next section for how it spreads `projectDefaults` — and is read exactly as loaded, with no further merge. `atlas-service` names no file of its own, and resolves to `"none"` even though `include` matches it: a project matched by `include` with no file of its own produces no per-project output. `atlas-application` matches `exclude`, so it resolves to `"none"` no matter what its own file would otherwise say. `unrelated` matches no `include` glob at all.
 
-| Project | Root | Resolved target | Destination |
-| ------- | ---- | --------------- | ----------- |
-| `atlas-service` | `packages/atlas-service` | `markdown` | markdown `README.md` anchor `example-nx` |
-| `atlas-core` | `packages/atlas-core` | `json` | json `graph.json` |
-| `atlas-application` | `applications/atlas-application` | `none` | _none_ |
-| `unrelated` | `tools/unrelated` | `none` | _none_ |
+| Project | Own file? | Resolved target | Destination |
+| ------- | --------- | --------------- | ----------- |
+| `atlas-core` | yes | `json` | json `codependix-nx-graph.json` |
+| `atlas-service` | no | `none` | _none_ |
+| `atlas-application` | no | `none` | _none_ |
+| `unrelated` | no | `none` | _none_ |
+
+## `projectDefaults`, spread and then overridden
+
+`examples/configuration-resolution/per-project-files/codependix.config.ts` exports `projectDefaults`. Its `packages/atlas-core/codependix.config.ts` spreads it and overrides `nxProjects` outright — the spread's `markdown` destination is gone, not merged with the `json` one that replaced it. `packages/atlas-service/` carries no `codependix.config.ts` at all, so `loadProjectConfiguration` resolves it to `undefined` rather than falling back to `projectDefaults` on its own — a project opts in by writing the file.
+
+```json
+{
+  "atlasCore": {
+    "nxProjects": {
+      "json": {
+        "path": "codependix-nx-graph.json"
+      },
+      "target": "json"
+    }
+  },
+  "atlasService": null
+}
+```
 
 ## `include` and `exclude` match a name or a root
 
@@ -50,12 +68,6 @@ It is exported once for the repository rather than once per project, so it carri
 }
 ```
 
-## Why the field is `defaults` and not `default`
-
-The one naming decision in the whole configuration surface that looks arbitrary and is not.
-
-`ConfigurationService.readDefaultExport` unwraps a configuration module's default export **by name**. A configuration field also called `default` would collide with that unwrapping, which is why the field is `defaults`.
-
 ## A workspace carrying two configuration files
 
 `examples/configuration/precedence/` holds both a `codependix.config.ts` and a `codependix.config.json`. `CONFIGURATION_FILE_NAMES` is searched in order, so the TypeScript one wins — the anchor here is the one it declares.
@@ -73,17 +85,15 @@ The one naming decision in the whole configuration surface that looks arbitrary 
 
 ## The upward search reaches past a nested `package.json`
 
-The search started inside `packages/atlas-service/`, which carries its own `package.json`, and still found the configuration at the workspace root — the root every path in that configuration was written relative to.
+The search started inside `packages/atlas-service/`, which carries its own `package.json`, and still found the configuration at the workspace root — the root every path in that configuration was written relative to. A project's own `codependix.config.ts` is searched for differently — see the next section — and never walks upward this way.
 
 ```json
 {
-  "atlas-service": {
-    "nxProjects": {
-      "json": {
-        "path": "codependix-nx-graph.json"
-      },
-      "target": "json"
-    }
+  "nxProjects": {
+    "markdown": {
+      "anchor": "example-nx"
+    },
+    "target": "markdown"
   }
 }
 ```

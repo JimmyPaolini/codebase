@@ -1,3 +1,5 @@
+import { writeFile } from "node:fs/promises";
+
 import { Inject, Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
 
@@ -8,7 +10,11 @@ import { HardcodedMeandersService } from "../hardcoded-meanders/hardcoded-meande
 
 import { DrawCodeService } from "./draw-code.service";
 import { DrawEnumerationService } from "./draw-enumeration.service";
-import { IncompleteCodeDrawingError } from "./draw.constants";
+import { DrawIndexService } from "./draw-index.service";
+import {
+  DEFAULT_INDEX_PATH,
+  IncompleteCodeDrawingError,
+} from "./draw.constants";
 
 import type { DrawCommandOptions } from "./draw.types";
 
@@ -32,12 +38,14 @@ import type { DrawCommandOptions } from "./draw.types";
  *   persists that one meander, through the same generic pipeline both halves
  *   of the sweep use.
  *
- * **Nothing here writes a file any more.** The nine per-family procedural
- * motif services, the `output/<family>/*.svg` tree they wrote, and the
- * `--type`/`--modifier` flags that named one are all retired: a meander is a
- * database row, and a row has no path-length limit for a Code to outgrow.
- * `output/index.html` is rebuilt from the database rather than from a tree
- * of files, which is issue #821's work.
+ * **The per-family SVG tree is gone for good.** The nine per-family
+ * procedural motif services, the `output/<family>/*.svg` tree they wrote,
+ * and the `--type`/`--modifier` flags that named one are all retired: a
+ * meander is a database row, and a row has no path-length limit for a Code
+ * to outgrow. One file write survives the retirement rather than zero:
+ * `output/index.html`, rebuilt at the end of every sweep from the
+ * database's own rows rather than from a tree of files — see
+ * {@link DrawIndexService}.
  *
  * The enumerated half runs first, so a sweep that cannot decode or render
  * something it found fails before the corpus is ingested behind it — and so
@@ -60,6 +68,8 @@ export class DrawCommand extends CommandRunner {
     private readonly drawCodeService: DrawCodeService,
     @Inject(DrawEnumerationService)
     private readonly drawEnumerationService: DrawEnumerationService,
+    @Inject(DrawIndexService)
+    private readonly drawIndexService: DrawIndexService,
     @Inject(HardcodedMeandersService)
     private readonly hardcodedMeandersService: HardcodedMeandersService,
   ) {
@@ -101,7 +111,7 @@ export class DrawCommand extends CommandRunner {
 
   /**
    * Draws every meander the application can draw, as rows in the committed
-   * database.
+   * database, then rebuilds `output/index.html` from those same rows.
    *
    * Two provenances, one corpus and one unique index over a meander's
    * lattice address. The enumerated half is written first and the hardcoded
@@ -109,6 +119,10 @@ export class DrawCommand extends CommandRunner {
    * claimed an address the enumeration already holds is refused by the index
    * rather than overwriting it, which is spec #813's thirty-second story
    * enforced by the schema rather than by a convention nobody checks.
+   *
+   * The index page is built and written last, once both halves have
+   * committed — a page built from a partial sweep would tell a reader the
+   * corpus stopped short of where it actually did.
    */
   private async sweep(): Promise<void> {
     const enumerated = await this.drawEnumerationService.sweep();
@@ -125,6 +139,14 @@ export class DrawCommand extends CommandRunner {
       enumerated,
       hardcoded: hardcoded.length,
       total: enumerated + hardcoded.length,
+    });
+
+    const page = await this.drawIndexService.build();
+
+    await writeFile(DEFAULT_INDEX_PATH, page);
+
+    this.logger.log("✨ Rebuilt the index page", undefined, {
+      indexPath: DEFAULT_INDEX_PATH,
     });
   }
 

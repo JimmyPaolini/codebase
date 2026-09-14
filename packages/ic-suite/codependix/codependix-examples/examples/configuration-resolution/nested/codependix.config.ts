@@ -3,15 +3,8 @@
  * nested project's own `package.json`.
  */
 export default {
-  defaults: {
+  include: ["packages/*"],
+  workspace: {
     nxProjects: { markdown: { anchor: "example-nx" }, target: "markdown" },
-  },
-  projects: {
-    "atlas-service": {
-      nxProjects: {
-        json: { path: "codependix-nx-graph.json" },
-        target: "json",
-      },
-    },
   },
 };

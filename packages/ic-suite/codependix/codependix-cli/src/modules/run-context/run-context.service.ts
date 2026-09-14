@@ -6,7 +6,10 @@ import { Injectable } from "@nestjs/common";
 
 import type { CodependixRunMode } from "../delivery/delivery.types";
 import type { GraphRunContext, MapCommandOptions } from "../map/map.types";
-import type { ResolvedCodependixConfiguration } from "@codependix/configuration";
+import type {
+  CodependixProjectConfiguration,
+  ResolvedCodependixConfiguration,
+} from "@codependix/configuration";
 import type { NxProject } from "@codependix/nx-projects";
 
 /**
@@ -32,6 +35,32 @@ export class RunContextService {
   // 🔑 Public Fields
 
   // 🔏 Private Methods
+
+  /**
+   * Loads every project's own `codependix.config.ts`, keyed by project name.
+   *
+   * Loaded once per run, up front, rather than once per graph-type pass: a
+   * project with no file of its own is a normal, expected outcome rather than
+   * a failure, so every project is attempted and the map simply holds
+   * `undefined` for the ones naming none.
+   */
+  private async loadProjectConfigurations(
+    projects: NxProject[],
+  ): Promise<Map<string, CodependixProjectConfiguration | undefined>> {
+    const entries = await Promise.all(
+      projects.map(
+        async (project) =>
+          [
+            project.name,
+            await this.configurationService.loadProjectConfiguration({
+              projectRoot: project.absoluteRoot,
+            }),
+          ] as const,
+      ),
+    );
+
+    return new Map(entries);
+  }
 
   /**
    * Resolves a supplied project graph's path against the workspace root.
@@ -104,11 +133,14 @@ export class RunContextService {
       graph,
       workingDirectory,
     );
+    const projectConfigurations =
+      await this.loadProjectConfigurations(projects);
 
     return {
       configuration,
       graph,
       mode,
+      projectConfigurations,
       projects,
       selectedProjects: this.selectProjects({
         configuration,
