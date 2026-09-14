@@ -14,6 +14,7 @@ import { LoggerService } from "@codebase/logger";
 
 import { HardcodedMeandersService } from "../hardcoded-meanders/hardcoded-meanders.service";
 
+import { DrawCheckService } from "./draw-check.service";
 import { DrawCodeService } from "./draw-code.service";
 import { DrawEnumerationService } from "./draw-enumeration.service";
 import { DrawIndexService } from "./draw-index.service";
@@ -21,6 +22,7 @@ import { DrawCommand } from "./draw.command";
 import { DEFAULT_INDEX_PATH } from "./draw.constants";
 
 import type { Meander } from "../meander-database/entities/Meander.entity";
+import type { MeanderDriftReport } from "./draw-check.types";
 
 const { writeFileMock } = vi.hoisted(() => ({
   writeFileMock: vi.fn<() => Promise<void>>(),
@@ -47,6 +49,7 @@ vi.mock("node:fs/promises", () => ({
  */
 describe(DrawCommand, () => {
   let build: Mock<() => Promise<string>>;
+  let check: Mock<() => Promise<MeanderDriftReport>>;
   let command: DrawCommand;
   let draw: Mock<() => Promise<Meander>>;
   let ingest: Mock<() => Promise<Meander[]>>;
@@ -54,6 +57,11 @@ describe(DrawCommand, () => {
 
   beforeAll(async () => {
     build = vi.fn<() => Promise<string>>().mockResolvedValue("<!doctype html>");
+    check = vi
+      .fn<() => Promise<MeanderDriftReport>>()
+      .mockResolvedValue(
+        createMock<MeanderDriftReport>({ changed: [], missing: [], new: [] }),
+      );
     draw = vi
       .fn<() => Promise<Meander>>()
       .mockResolvedValue(createMock<Meander>({ id: 1 }));
@@ -63,6 +71,10 @@ describe(DrawCommand, () => {
     const module = await Test.createTestingModule({
       providers: [
         DrawCommand,
+        {
+          provide: DrawCheckService,
+          useValue: createMock<DrawCheckService>({ check }),
+        },
         {
           provide: DrawCodeService,
           useValue: createMock<DrawCodeService>({ draw }),
@@ -91,6 +103,7 @@ describe(DrawCommand, () => {
 
   beforeEach(() => {
     build.mockClear();
+    check.mockClear();
     draw.mockClear();
     ingest.mockClear();
     sweep.mockClear();
@@ -105,6 +118,10 @@ describe(DrawCommand, () => {
     const module = await Test.createTestingModule({
       providers: [
         DrawCommand,
+        {
+          provide: DrawCheckService,
+          useValue: createMock<DrawCheckService>(),
+        },
         {
           provide: DrawCodeService,
           useValue: createMock<DrawCodeService>(),
@@ -186,9 +203,28 @@ describe(DrawCommand, () => {
     expect(draw).not.toHaveBeenCalled();
   });
 
+  it("checks for drift instead of sweeping or drawing when --check is given", async () => {
+    await command.run([], { check: true });
+
+    expect(check).toHaveBeenCalledTimes(1);
+    expect(sweep).not.toHaveBeenCalled();
+    expect(ingest).not.toHaveBeenCalled();
+    expect(draw).not.toHaveBeenCalled();
+  });
+
+  it("propagates drift detected by --check rather than swallowing it", async () => {
+    check.mockRejectedValueOnce(new Error("meander drift detected"));
+
+    await expect(command.run([], { check: true })).rejects.toThrow(
+      /meander drift detected/,
+    );
+  });
+
   it("parses each option the command still takes", () => {
     expect(command.parseCode("3c9a")).toBe("3c9a");
     expect(command.parseColumns("2")).toBe(2);
     expect(command.parseRows("3")).toBe(3);
+    expect(command.parseCheck(undefined)).toBe(true);
+    expect(command.parseCheck("false")).toBe(false);
   });
 });
