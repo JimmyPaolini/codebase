@@ -178,7 +178,7 @@ jobs:
       # writing — dependabot/dependabot-core#13905), so a dependabot pull
       # request can never carry the four required headings. Everything else
       # in this job still runs against it.
-      #
+
       # Keyed off `pull_request.user.login` rather than `github.actor`:
       # a dependabot pull request needs a maintainer to approve running
       # workflows on it, and that approval makes `github.actor` the
