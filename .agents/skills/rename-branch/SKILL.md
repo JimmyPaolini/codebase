@@ -58,7 +58,6 @@ Using the repository's naming convention (`<type>/<scope>-<description>`):
 | `configuration` | Workspace root config files (tsconfig, eslint, vitest, nx.json, etc.) |
 | `conformetry` | Code generator templates and validation tests for generated instances |
 | `dependencies` | Dependency version changes (upgrades, additions, removals via pnpm) |
-| `deps` | Dependency version changes (upgrades, additions, removals via pnpm) |
 | `deployments` | GitHub Actions workflows and CI/CD pipeline configuration |
 | `documentation` | Markdown docs, skills, planning files, and AGENTS.md files |
 | `infrastructure` | Helm charts, Terraform configs, and Kubernetes resources |

@@ -12,17 +12,23 @@
 # request means a breaking major fails that pull request's own checks,
 # visibly, instead of taking every other update down with it.
 
-# Both PR-metadata gates already carve dependabot out: validate-conventions.yml
-# skips `github.actor == 'dependabot[bot]'`, and so does audit-issues.yml. So
-# a dependabot pull request needs none of the type:/scope:/source: labels or
-# the four-heading body validate-conventions enforces elsewhere in this
-# repository — only lint-codebase, test-coverage, make-projects, and
-# scan-security still run against it. The `commit-message.prefix` on every
-# entry below is cosmetic, not a compliance requirement: it makes the
-# generated commit and pull request title read like this repository's own
-# `<type>(<scope>): <gitmoji> <subject>` convention, but the generated
-# subject itself ("Bump x from y to z") keeps Dependabot's own wording and
-# capitalization — there is no field that reshapes that part.
+# validate-conventions.yml no longer exempts dependabot from title, label, or
+# release-significance checks — only its pull request body check still does,
+# since there is no dependabot.yml field for body content. Every entry below
+# therefore carries the `type:`, `scope:`, and `source:agent` labels its
+# commit-message prefix implies, statically, since nothing derives them for
+# a pull request Dependabot itself opens. `type:chore` matches this
+# repository's own existing `chore(dependencies): ⬆️ Upgrade` convention for
+# routine version bumps: `release.config.cjs` maps `chore` to no release
+# significance, so these pull requests don't trigger a version bump on
+# their own.
+
+# The `commit-message.prefix` on every entry makes the generated commit and
+# pull request title read like this repository's own `<type>(<scope>):
+# <gitmoji> <subject>` convention — confirmed against commitlint directly,
+# it passes. The generated subject itself ("Bump x from y to z") keeps
+# Dependabot's own wording and capitalization; there is no field that
+# reshapes that part, but commitlint's `subject-case` rule accepts it as is.
 version: 2
 updates:
   - package-ecosystem: npm
@@ -32,10 +38,13 @@ updates:
       day: friday
     open-pull-requests-limit: 10
     commit-message:
-      prefix: "chore(deps): 🔧 "
+      prefix: "chore(dependencies): 🔧 "
     labels:
       - dependencies
       - automated
+      - type:chore
+      - scope:dependencies
+      - source:agent
     assignees:
       - JimmyPaolini
     groups:
@@ -82,10 +91,13 @@ updates:
       day: friday
     open-pull-requests-limit: 10
     commit-message:
-      prefix: "chore(deps): 🔧 "
+      prefix: "chore(dependencies): 🔧 "
     labels:
       - dependencies
       - automated
+      - type:chore
+      - scope:dependencies
+      - source:agent
     assignees:
       - JimmyPaolini
     groups:
@@ -113,7 +125,9 @@ updates:
     labels:
       - dependencies
       - automated
-      - ci
+      - type:chore
+      - scope:deployments
+      - source:agent
     assignees:
       - JimmyPaolini
     groups:
@@ -134,6 +148,9 @@ updates:
     labels:
       - dependencies
       - automated
+      - type:chore
+      - scope:infrastructure
+      - source:agent
     assignees:
       - JimmyPaolini
 
@@ -151,6 +168,9 @@ updates:
     labels:
       - dependencies
       - automated
+      - type:chore
+      - scope:configuration
+      - source:agent
     assignees:
       - JimmyPaolini
 
@@ -170,5 +190,8 @@ updates:
     labels:
       - dependencies
       - automated
+      - type:chore
+      - scope:configuration
+      - source:agent
     assignees:
       - JimmyPaolini
