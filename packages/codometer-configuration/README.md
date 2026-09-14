@@ -242,34 +242,49 @@ input nobody limited simply measured zero, which is unremarkable.
 ## Custom Statistics
 
 A repository that names files by convention has a vocabulary no language
-analyzer knows about. Each output destination carries its own `custom` list to
-count them — there is no longer one shared `statistics` array, so a JSON report
-and a markdown report may count entirely different things:
+analyzer knows about. The top-level `custom` array is what **measures** these
+counters, regardless of whether — or where — any output renders them:
 
 ```ts
-outputs: [
-  {
-    custom: [
-      { label: "Service Files", patterns: ["**/*.service.ts"] },
-      { label: "Unit Tests", patterns: ["**/*.unit.test.ts"] },
-      { color: "16a34a", label: "Migrations", patterns: ["**/migrations/*.sql"] },
-    ],
-    path: "codometer-report.json",
-    type: "json",
-  },
+custom: [
+  { label: "Service Files", patterns: ["**/*.service.ts"] },
+  { label: "Unit Tests", patterns: ["**/*.unit.test.ts"] },
+  { color: "16a34a", label: "Migrations", patterns: ["**/migrations/*.sql"] },
 ],
 ```
 
-Each entry becomes one badge, in the order it was configured. Globs are matched
-against repository-relative paths with `path.matchesGlob` over the same
-discovered files everything else measures, so exclusions apply. A file matching
-several of one entry's globs counts once. `color` is a shields.io hexadecimal
-triplet; entries that omit it take the next color from a built-in palette,
-cycling so a counter's color stays the same between runs.
+Each entry becomes one badge, in the order it was configured, everywhere it is
+selected. Globs are matched against repository-relative paths with
+`path.matchesGlob` over the same discovered files everything else measures, so
+exclusions apply. A file matching several of one entry's globs counts once.
+`color` is a shields.io hexadecimal triplet; entries that omit it take the next
+color from a built-in palette, cycling so a counter's color stays the same
+between runs.
 
 A counter selects what it counts with one of three fields — `patterns`,
 `symbols`, or `comment` — and needs at least one of them, or it is rejected as
 counting nothing.
+
+An output's own `custom` array is a separate, later concern: it **selects**,
+by label, which of the top-level counters that destination renders — it never
+declares a counter of its own. A JSON report and a markdown report may still
+select entirely different labels:
+
+```ts
+custom: [
+  { label: "Service Files", patterns: ["**/*.service.ts"] },
+  { label: "Unit Tests", patterns: ["**/*.unit.test.ts"] },
+],
+outputs: [
+  { custom: ["Service Files"], path: "codometer-report.json", type: "json" },
+  { custom: ["Unit Tests"], path: "README.md", type: "markdown" },
+],
+```
+
+A label an output selects that the top-level `custom` never declared is
+refused when the configuration loads — selection cannot conjure a counter that
+was never measured. A counter the top level declares but no output selects is
+still measured and still gates a limit; it simply renders nowhere.
 
 ### Counting Declarations
 
@@ -344,9 +359,11 @@ group may be named instead: `css`, `hcl`, `json`, `jupyter`, `markdown`,
 `python`, `repository`, `shell`, `sql`, `toml`, `typescript`, or `yaml`. A name
 outside that set fails the configuration rather than rendering nowhere.
 
-The default palette runs per group and per output destination, so adding a
-counter to one group — or to one output's `custom` list — never recolors the
-badges of another.
+The default palette runs per group over the top-level `custom` array, so
+adding a counter to one group never recolors the badges of another. A
+counter's color is settled once there — an output selecting it back out by
+label renders whichever color that resolution gave it, rather than cycling
+its own palette.
 
 ## Outputs
 
@@ -638,14 +655,14 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-4059-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-140.70_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-4156-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-145.26_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-5-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-26-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-16.16_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-16.86_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
@@ -654,7 +671,7 @@ graph LR
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-1-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
 ![Decorators](https://img.shields.io/badge/Decorators-5-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-128-6366f1?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-131-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-0-166534?style=flat-square)
 
 ### JavaScript
@@ -663,15 +680,15 @@ graph LR
 ![Test Files](https://img.shields.io/badge/Test_Files-5-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-11-8b5cf6?style=flat-square)
 ![Classes](https://img.shields.io/badge/Classes-9-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-138-16a34a?style=flat-square)
-![Methods](https://img.shields.io/badge/Methods-32-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-97-4ade80?style=flat-square)
-![Async Functions](https://img.shields.io/badge/Async_Functions-73-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-214-dc2626?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-147-16a34a?style=flat-square)
+![Methods](https://img.shields.io/badge/Methods-35-15803d?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-106-4ade80?style=flat-square)
+![Async Functions](https://img.shields.io/badge/Async_Functions-76-059669?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-222-dc2626?style=flat-square)
 ![Imports](https://img.shields.io/badge/Imports-70-0284c7?style=flat-square)
 ![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-90-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-258-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-730-475569?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-265-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-757-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python

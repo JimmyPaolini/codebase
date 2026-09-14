@@ -312,23 +312,31 @@ exit would claim otherwise.
 ## Custom statistics
 
 A repository that names files by convention has a vocabulary no analyzer knows
-about. Each output destination carries its own `custom` list to count them —
-there is no longer one shared `statistics` array, so a JSON report and a
-markdown report may count entirely different things:
+about. The top-level `custom` array is what measures these counters,
+regardless of whether — or where — any output renders them:
+
+```ts
+custom: [
+  { label: "Service Files", patterns: ["**/*.service.ts"] },
+  { label: "Unit Tests", patterns: ["**/*.unit.test.ts"] },
+  { color: "16a34a", label: "Migrations", patterns: ["**/migrations/*.sql"] },
+],
+```
+
+An output's own `custom` array is a separate, later concern: it selects, by
+label, which of these counters that destination renders — a JSON report and a
+markdown report may still select entirely different labels:
 
 ```ts
 outputs: [
-  {
-    custom: [
-      { label: "Service Files", patterns: ["**/*.service.ts"] },
-      { label: "Unit Tests", patterns: ["**/*.unit.test.ts"] },
-      { color: "16a34a", label: "Migrations", patterns: ["**/migrations/*.sql"] },
-    ],
-    path: "codometer-report.json",
-    type: "json",
-  },
+  { custom: ["Service Files"], path: "codometer-report.json", type: "json" },
+  { custom: ["Unit Tests"], path: "README.md", type: "markdown" },
 ],
 ```
+
+A label an output selects that `custom` never declared is refused when the
+configuration loads. A counter `custom` declares but no output selects is
+still measured and still gates a limit — it simply renders nowhere.
 
 Counters can also match _declarations_ rather than files, by shape:
 
@@ -1197,14 +1205,14 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-8879-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-288.46_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-8988-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-292.78_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-10-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-62-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-37.70_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-37.86_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
@@ -1213,7 +1221,7 @@ graph LR
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-0-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
 ![Decorators](https://img.shields.io/badge/Decorators-37-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-251-6366f1?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-253-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-0-166534?style=flat-square)
 
 ### JavaScript
@@ -1222,15 +1230,15 @@ graph LR
 ![Test Files](https://img.shields.io/badge/Test_Files-16-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-21-8b5cf6?style=flat-square)
 ![Classes](https://img.shields.io/badge/Classes-21-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-340-16a34a?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-346-16a34a?style=flat-square)
 ![Methods](https://img.shields.io/badge/Methods-123-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-383-4ade80?style=flat-square)
-![Async Functions](https://img.shields.io/badge/Async_Functions-80-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-313-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-306-0284c7?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-388-4ade80?style=flat-square)
+![Async Functions](https://img.shields.io/badge/Async_Functions-81-059669?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-317-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-305-0284c7?style=flat-square)
 ![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-101-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-496-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-1147-475569?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-511-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-1166-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python

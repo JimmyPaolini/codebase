@@ -22,9 +22,7 @@ import type {
 import type {
   CodeStatisticsResult,
   CodometerAnalysis,
-  ResolvedCodometerCustomStatistic,
   ResolvedCodometerInput,
-  ResolvedCodometerOutput,
 } from "@codometer/configuration";
 import type {
   CommentMeasurement,
@@ -175,29 +173,6 @@ export class MeasureService {
     };
   }
 
-  /**
-   * Every custom statistic declared across every configured output, deduped
-   * by label.
-   *
-   * Measured once per input rather than once per output: an output's own
-   * `custom` array says which counters it renders, not which counters exist,
-   * so the union is what the measurement pipeline needs and each output's own
-   * renderer picks its own subset back out by label.
-   */
-  private collectStatistics(
-    outputs: readonly ResolvedCodometerOutput[],
-  ): ResolvedCodometerCustomStatistic[] {
-    const byLabel = new Map<string, ResolvedCodometerCustomStatistic>();
-
-    for (const output of outputs) {
-      for (const statistic of output.custom) {
-        byLabel.set(statistic.label, statistic);
-      }
-    }
-
-    return [...byLabel.values()];
-  }
-
   /** Reads whatever an input's measurement threw as a printable sentence. */
   private describeFailure(error: unknown): string {
     return error instanceof Error ? error.message : String(error);
@@ -336,7 +311,10 @@ export class MeasureService {
    * unreadable file never takes the whole run with it.
    */
   measure(args: MeasureArguments): MeasurementResult {
-    const statistics = this.collectStatistics(args.configuration.outputs);
+    // Every custom statistic the configuration declares, regardless of which
+    // output — if any — selects it back out by label: a counter is measured
+    // once it is declared, not once it belongs to some output's selection.
+    const statistics = args.configuration.custom;
     const commentCounters =
       this.customizationService.buildCommentCounters(statistics);
     const symbolCounters =

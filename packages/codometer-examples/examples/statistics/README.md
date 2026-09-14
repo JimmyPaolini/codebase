@@ -16,13 +16,13 @@ codometer --config ../statistics/codometer.config.ts
 
 ```text
 statistics/
-└── codometer.config.ts    seven counters, declared under one output's `custom` array
+└── codometer.config.ts    seven counters, declared in the top-level `custom` array
 ```
 
-A counter is measured once it belongs to some configured output's `custom`
-list — there is no longer a top-level `statistics` array independent of where
-a report lands. This file declares one `json` output purely so every counter
-below is computed; a bare run writes nothing to it.
+A counter is measured once it is declared in the top-level `custom` array,
+regardless of whether any output selects it back out by label. This file
+declares no `outputs` entry at all; every counter below is still computed and
+printed to the console.
 
 | Counter | Declared as | Result |
 | ------- | ----------- | ------ |
