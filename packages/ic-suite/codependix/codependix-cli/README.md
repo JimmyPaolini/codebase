@@ -403,9 +403,9 @@ What this project is judged against, as declared in its own `callidescope.config
      ↳ Runs the passes a resolved mode selected, and reports what they found.
     └─> MapCommand.runExports(context: GraphRunContext): Promise<GraphRunOutcome> [packages/ic-suite/codependix/codependix-cli/src/modules/map/map.command.ts:177]
        ↳ Runs the export pass, warning first when it can select nothing.
-      └─> MapService.run(context: GraphRunContext): Promise<GraphRunOutcome> [packages/ic-suite/codependix/codependix-cli/src/modules/map/map.service.ts:328]
+      └─> MapService.run(context: GraphRunContext): Promise<GraphRunOutcome> [packages/ic-suite/codependix/codependix-cli/src/modules/map/map.service.ts:338]
          ↳ Runs every configured graph export against an already-resolved context.
-        └─> MapService.runPythonImportGraphs(context: GraphRunContext): GraphRunOutcome [packages/ic-suite/codependix/codependix-cli/src/modules/map/map.service.ts:482]
+        └─> MapService.runPythonImportGraphs(context: GraphRunContext): GraphRunOutcome [packages/ic-suite/codependix/codependix-cli/src/modules/map/map.service.ts:492]
            ↳ Builds and delivers every configured Python file-level import graph export.
           └─> PythonImportsService.runGraphs(context: GraphRunContext): GraphRunOutcome [packages/ic-suite/codependix/codependix-cli/src/modules/python-imports/python-imports.service.ts:136]
              ↳ Builds and delivers every configured Python file-level import graph export.
@@ -485,37 +485,37 @@ What this project is judged against, as declared in its own `callidescope.config
 | --- | --- | --- | --- |
 | `MapCommand.runMode` | 7 | `RunContextService.build`, `RunPlanService.touchesFiles`, `MapCommand.runExports`, `BoundaryCheckService.run`, `MapCommand.reportOutcome`, `MapCommand.reportBoundaries`, `MapCommand.reportSuccess` | `packages/ic-suite/codependix/codependix-cli/src/modules/map/map.command.ts:189` |
 | `AnchorsService.replaceAnchorContent` | 6 | `AnchorsService.hasAnchor`, `AnchorNotFoundError.constructor`, `buildStartMarker`, `buildEndMarker`, `AnchorsService.replace(…)`, `AnchorsService.buildAnchorPattern` | `packages/ic-suite/codependix/codependix-cli/src/modules/anchors/anchors.service.ts:178` |
-| `MapService.runImportProject` | 6 | `TypescriptService.buildProgram`, `TypescriptService.buildGraph`, `DeliveryService.deliverGraphOutput`, `DeliveryService.renderJson`, `TypescriptService.renderMermaid`, `MapService.buildMarkdownSection` | `packages/ic-suite/codependix/codependix-cli/src/modules/map/map.service.ts:159` |
+| `MapService.runImportProject` | 6 | `TypescriptService.buildProgram`, `TypescriptService.buildGraph`, `DeliveryService.deliverGraphOutput`, `DeliveryService.renderJson`, `TypescriptService.renderMermaid`, `MapService.buildMarkdownSection` | `packages/ic-suite/codependix/codependix-cli/src/modules/map/map.service.ts:169` |
 
 <details>
 <summary>42 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `MapService.runNestjsProject` | 6 | `NestjsProjectService.exploreProject`, `ModuleGraphService.buildGraph`, `DeliveryService.deliverGraphOutput`, `DeliveryService.renderJson`, `ModuleGraphService.renderMermaid`, `MapService.buildMarkdownSection` | `packages/ic-suite/codependix/codependix-cli/src/modules/map/map.service.ts:186` |
-| `MapService.runWorkspaceGraph` | 6 | `ConfigurationService.resolveForWorkspace`, `WorkspaceGraphService.buildWorkspaceGraph`, `DeliveryService.deliverGraphOutput`, `DeliveryService.renderJson`, `WorkspaceGraphService.renderMermaid`, `MapService.buildMarkdownSection` | `packages/ic-suite/codependix/codependix-cli/src/modules/map/map.service.ts:281` |
+| `MapService.runNestjsProject` | 6 | `NestjsProjectService.exploreProject`, `ModuleGraphService.buildGraph`, `DeliveryService.deliverGraphOutput`, `DeliveryService.renderJson`, `ModuleGraphService.renderMermaid`, `MapService.buildMarkdownSection` | `packages/ic-suite/codependix/codependix-cli/src/modules/map/map.service.ts:196` |
+| `MapService.runWorkspaceGraph` | 6 | `ConfigurationService.resolveForWorkspace`, `WorkspaceGraphService.buildWorkspaceGraph`, `DeliveryService.deliverGraphOutput`, `DeliveryService.renderJson`, `WorkspaceGraphService.renderMermaid`, `MapService.buildMarkdownSection` | `packages/ic-suite/codependix/codependix-cli/src/modules/map/map.service.ts:291` |
 | `DeliveryService.deliverAnchoredMarkdown` | 5 | `AnchorNotFoundError.constructor`, `AnchorsService.hasAnchor`, `AnchorsService.checkAnchor`, `DeliveryService.writeAutoCreatedAnchorSection`, `AnchorsService.replaceAnchorContent` | `packages/ic-suite/codependix/codependix-cli/src/modules/delivery/delivery.service.ts:52` |
 | `PythonImportsService.runProject` | 5 | `PythonService.buildGraph`, `DeliveryService.deliverGraphOutput`, `DeliveryService.renderJson`, `PythonService.renderMermaid`, `PythonImportsService.buildMarkdownSection` | `packages/ic-suite/codependix/codependix-cli/src/modules/python-imports/python-imports.service.ts:100` |
 | `RunContextService.build` | 5 | `ConfigurationService.loadConfiguration`, `NeighborhoodService.readProjectGraph`, `RunContextService.resolveProjectGraphPath`, `NeighborhoodService.readProjects`, `RunContextService.selectProjects` | `packages/ic-suite/codependix/codependix-cli/src/modules/run-context/run-context.service.ts:86` |
-| `MapService.runNxProject` | 5 | `DeliveryService.deliverGraphOutput`, `DeliveryService.renderJson`, `MapService.buildNeighborhoodJsonExport`, `NeighborhoodService.renderMermaid`, `MapService.buildMarkdownSection` | `packages/ic-suite/codependix/codependix-cli/src/modules/map/map.service.ts:213` |
+| `MapService.runNxProject` | 5 | `DeliveryService.deliverGraphOutput`, `DeliveryService.renderJson`, `MapService.buildNeighborhoodJsonExport`, `NeighborhoodService.renderMermaid`, `MapService.buildMarkdownSection` | `packages/ic-suite/codependix/codependix-cli/src/modules/map/map.service.ts:223` |
 | `AnchorsService.insertAnchorSection` | 4 | `AnchorsService.wrapInAnchors`, `AnchorsService.escapeForPattern`, `AnchorsService.appendCodependixSection`, `AnchorsService.insertIntoCodependixSection` | `packages/ic-suite/codependix/codependix-cli/src/modules/anchors/anchors.service.ts:144` |
 | `DeliveryService.deliverGraphOutput` | 4 | `DeliveryService.resolveJsonDelivery`, `DeliveryService.resolveMarkdownDelivery`, `DeliveryService.deliverJson`, `DeliveryService.deliverMarkdown` | `packages/ic-suite/codependix/codependix-cli/src/modules/delivery/delivery.service.ts:271` |
 | `PythonImportsService.runGraphs` | 4 | `PythonService.discoverProjects`, `PythonImportsService.resolveProjectOutput`, `PythonImportsService.runProject`, `PythonImportsService.collectProjectFailure` | `packages/ic-suite/codependix/codependix-cli/src/modules/python-imports/python-imports.service.ts:136` |
 | `RunPlanService.readCheckNames` | 4 | `RunPlanService.filter(…)`, `RunPlanService.map(…)`, `RunPlanService.describeAcceptedCheckNames`, `RunPlanService.validateCheckNames` | `packages/ic-suite/codependix/codependix-cli/src/modules/run-plan/run-plan.service.ts:82` |
-| `MapService.run` | 4 | `MapService.runNxGraphs`, `MapService.runNestjsGraphs`, `MapService.runImportGraphs`, `MapService.runPythonImportGraphs` | `packages/ic-suite/codependix/codependix-cli/src/modules/map/map.service.ts:328` |
-| `MapService.runImportGraphs` | 4 | `TypescriptService.discoverProjects`, `MapService.resolveProjectOutput`, `MapService.runImportProject`, `MapService.collectProjectFailure` | `packages/ic-suite/codependix/codependix-cli/src/modules/map/map.service.ts:360` |
-| `MapService.runNestjsGraphs` | 4 | `NestjsProjectService.discoverProjects`, `MapService.resolveProjectOutput`, `MapService.runNestjsProject`, `MapService.collectProjectFailure` | `packages/ic-suite/codependix/codependix-cli/src/modules/map/map.service.ts:402` |
-| `MapService.runNxGraphs` | 4 | `NeighborhoodService.buildNeighborhoods`, `MapService.runNxProjects`, `MapService.runWorkspaceGraph`, `MapService.collectProjectFailure` | `packages/ic-suite/codependix/codependix-cli/src/modules/map/map.service.ts:449` |
+| `MapService.run` | 4 | `MapService.runNxGraphs`, `MapService.runNestjsGraphs`, `MapService.runImportGraphs`, `MapService.runPythonImportGraphs` | `packages/ic-suite/codependix/codependix-cli/src/modules/map/map.service.ts:338` |
+| `MapService.runImportGraphs` | 4 | `TypescriptService.discoverProjects`, `MapService.resolveProjectOutput`, `MapService.runImportProject`, `MapService.collectProjectFailure` | `packages/ic-suite/codependix/codependix-cli/src/modules/map/map.service.ts:370` |
+| `MapService.runNestjsGraphs` | 4 | `NestjsProjectService.discoverProjects`, `MapService.resolveProjectOutput`, `MapService.runNestjsProject`, `MapService.collectProjectFailure` | `packages/ic-suite/codependix/codependix-cli/src/modules/map/map.service.ts:412` |
+| `MapService.runNxGraphs` | 4 | `NeighborhoodService.buildNeighborhoods`, `MapService.runNxProjects`, `MapService.runWorkspaceGraph`, `MapService.collectProjectFailure` | `packages/ic-suite/codependix/codependix-cli/src/modules/map/map.service.ts:459` |
 | `AnchorsService.buildAnchorPattern` | 3 | `AnchorsService.escapeForPattern`, `buildStartMarker`, `buildEndMarker` | `packages/ic-suite/codependix/codependix-cli/src/modules/anchors/anchors.service.ts:59` |
 | `RunPlanService.selectMode` | 3 | `RunPlanService.readCheckNames`, `RunPlanService.emptyMode`, `RunPlanService.promptForMode` | `packages/ic-suite/codependix/codependix-cli/src/modules/run-plan/run-plan.service.ts:137` |
-| `MapService.runNxProjects` | 3 | `MapService.resolveProjectOutput`, `MapService.runNxProject`, `MapService.collectProjectFailure` | `packages/ic-suite/codependix/codependix-cli/src/modules/map/map.service.ts:243` |
+| `MapService.runNxProjects` | 3 | `MapService.resolveProjectOutput`, `MapService.runNxProject`, `MapService.collectProjectFailure` | `packages/ic-suite/codependix/codependix-cli/src/modules/map/map.service.ts:253` |
 | `MapCommand.run` | 3 | `RunPlanService.selectMode`, `MapCommand.runMode`, `MapCommand.reportFailure` | `packages/ic-suite/codependix/codependix-cli/src/modules/map/map.command.ts:305` |
 | `AnchorsService.checkAnchor` | 2 | `AnchorsService.extractAnchorContent`, `AnchorNotFoundError.constructor` | `packages/ic-suite/codependix/codependix-cli/src/modules/anchors/anchors.service.ts:103` |
 | `AnchorsService.wrapInAnchors` | 2 | `buildStartMarker`, `buildEndMarker` | `packages/ic-suite/codependix/codependix-cli/src/modules/anchors/anchors.service.ts:196` |
 | `DeliveryService.deliverMarkdown` | 2 | `DeliveryService.deliverFile`, `DeliveryService.deliverAnchoredMarkdown` | `packages/ic-suite/codependix/codependix-cli/src/modules/delivery/delivery.service.ts:143` |
 | `DeliveryService.writeAutoCreatedAnchorSection` | 2 | `AnchorNotFoundError.constructor`, `AnchorsService.insertAnchorSection` | `packages/ic-suite/codependix/codependix-cli/src/modules/delivery/delivery.service.ts:238` |
 | `PythonImportsService.resolveProjectOutput` | 2 | `ConfigurationService.resolveForProject`, `PythonImportsService.find(…)` | `packages/ic-suite/codependix/codependix-cli/src/modules/python-imports/python-imports.service.ts:79` |
-| `MapService.resolveProjectOutput` | 2 | `ConfigurationService.resolveForProject`, `MapService.find(…)` | `packages/ic-suite/codependix/codependix-cli/src/modules/map/map.service.ts:137` |
+| `MapService.resolveProjectOutput` | 2 | `ConfigurationService.resolveForProject`, `MapService.find(…)` | `packages/ic-suite/codependix/codependix-cli/src/modules/map/map.service.ts:147` |
 | `MapCommand.reportBoundaries` | 2 | `BoundaryReportService.renderSummary`, `BoundaryReportService.renderViolations` | `packages/ic-suite/codependix/codependix-cli/src/modules/map/map.command.ts:76` |
 | `MapCommand.reportOutcome` | 2 | `MapCommand.filter(…)`, `MapCommand.map(…)` | `packages/ic-suite/codependix/codependix-cli/src/modules/map/map.command.ts:140` |
 | `MapCommand.runExports` | 2 | `MapCommand.reportEmptySelection`, `MapService.run` | `packages/ic-suite/codependix/codependix-cli/src/modules/map/map.command.ts:177` |
@@ -528,7 +528,7 @@ What this project is judged against, as declared in its own `callidescope.config
 | `RunPlanService.describeAcceptedCheckNames` | 1 | `RunPlanService.map(…)` | `packages/ic-suite/codependix/codependix-cli/src/modules/run-plan/run-plan.service.ts:39` |
 | `RunPlanService.promptForMode` | 1 | `InputService.promptForSelect` | `packages/ic-suite/codependix/codependix-cli/src/modules/run-plan/run-plan.service.ts:55` |
 | `RunPlanService.validateCheckNames` | 1 | `RunPlanService.describeAcceptedCheckNames` | `packages/ic-suite/codependix/codependix-cli/src/modules/run-plan/run-plan.service.ts:107` |
-| `MapService.runPythonImportGraphs` | 1 | `PythonImportsService.runGraphs` | `packages/ic-suite/codependix/codependix-cli/src/modules/map/map.service.ts:482` |
+| `MapService.runPythonImportGraphs` | 1 | `PythonImportsService.runGraphs` | `packages/ic-suite/codependix/codependix-cli/src/modules/map/map.service.ts:492` |
 | `MapCommand.parseConfig` | 1 | `InputService.parseOptionalOption` | `packages/ic-suite/codependix/codependix-cli/src/modules/map/map.command.ts:237` |
 | `MapCommand.parseDirectory` | 1 | `InputService.parsePathOption` | `packages/ic-suite/codependix/codependix-cli/src/modules/map/map.command.ts:246` |
 | `MapCommand.parseProjects` | 1 | `InputService.parseOptionalOption` | `packages/ic-suite/codependix/codependix-cli/src/modules/map/map.command.ts:264` |

@@ -2063,13 +2063,13 @@ Call stacks traced through `applications/meanderaw`, deepest first. Each frame s
 
 | Measure | Value |
 | --- | --- |
-| Callables | 514 |
-| Files | 105 |
-| Calls traced | 701 |
-| Call stacks | 49 |
+| Callables | 600 |
+| Files | 134 |
+| Calls traced | 802 |
+| Call stacks | 59 |
 | Deepest stack | 16 |
 | Stacks through recursion | 0 |
-| Unfollowable calls | 48 |
+| Unfollowable calls | 52 |
 
 ### Limits
 
@@ -2085,34 +2085,35 @@ What this project is judged against, as declared in its own `callidescope.config
 **1. `DrawCommand.run`** — depth ≥ 16 · decorated-method
 
 ```text
-🚀 DrawCommand.run(_passedParameters: string[], options: DrawCommandOptions): Promise<void> [applications/meanderaw/src/modules/draw/draw.command.ts:320]
-   ↳ Sweeps every meander, or draws the one `--type` and `--rows` name.
-  └─> DrawCommand.sweep(outputDirectory: string): Promise<void> [applications/meanderaw/src/modules/draw/draw.command.ts:141]
+🚀 DrawCommand.run(_passedParameters: string[], options: DrawCommandOptions): Promise<void> [applications/meanderaw/src/modules/draw/draw.command.ts:414]
+   ↳ Sweeps every meander, draws the one `--code` names, or draws the one `--type` and `--rows` name. `--code` is checked…
+  └─> DrawCommand.sweep(outputDirectory: string): Promise<void> [applications/meanderaw/src/modules/draw/draw.command.ts:196]
      ↳ Draws every meander the application can draw, and indexes them all in one page.
-    └─> DrawCommand.renderCombinations(): RenderedDocument[] [applications/meanderaw/src/modules/draw/draw.command.ts:134]
-       ↳ Renders the named-family half of the sweep.
-      └─> DrawCommand.map(…)(parameters: GenerationParameters): RenderedDocument [applications/meanderaw/src/modules/draw/draw.command.ts:137]
-        └─> DrawRenderingService.render(parameters: GenerationParameters): RenderedDocument [applications/meanderaw/src/modules/draw/draw-rendering.service.ts:164]
-           ↳ Renders one set of generation parameters, beside the path those parameters name.
-          └─> MeanderGenerationService.generate(parameters: GenerationParameters): string [applications/meanderaw/src/modules/meander-generation/meander-generation.service.ts:365]
-             ↳ Validates the parameters, then renders the finished SVG document.
-            └─> MeanderGenerationService.generateSubFamily(parameters: GenerationParameters, subFamily: MosaicBuildableSubFamily): string [applications/meanderaw/src/modules/meander-generation/meander-generation.service.ts:122]
-               ↳ Renders the tile a sub-family names, rather than a motif service's own repeat unit.
-              └─> MosaicTileGenerationService.generate(tile: MosaicTile, repeatCount: number): string [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile-generation.service.ts:59]
-                 ↳ Validates the tile's row count and the repeat count, then renders the finished SVG document.
-                └─> MosaicTileGenerationService.from(…)(_value: unknown, unitIndex: number): string [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile-generation.service.ts:85]
-                  └─> MosaicTileMotifService.path(geometry: GridGeometry, tile: MosaicTile, unit: MosaicTileUnit): string [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile-motif.service.ts:140]
-                     ↳ Draws one repeat unit's ink and its two cap ticks, as an SVG path attribute value.
-                    └─> MosaicTileMotifService.unitSegments(geometry: GridGeometry, tile: MosaicTile, tileStartColumn: number): string [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile-motif.service.ts:74]
-                       ↳ The path data every point of one repeat unit draws, in reading order.
-                      └─> MosaicTileMotifService.flatMap(…)(this: undefined, row: readonly MosaicDirections[], level: number): string[] [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile-motif.service.ts:80]
-                        └─> MosaicTileMotifService.map(…)(directions: MosaicDirections, column: number): string [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile-motif.service.ts:81]
-                          └─> MosaicTileMotifService.pointSegments(…): string [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile-motif.service.ts:51]
-                             ↳ The path data one point draws: the edges it owns, or a dot where it owns none and is reached by none.
-                            └─> MosaicTileMotifService.format(value: number): string [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile-motif.service.ts:46]
-                               ↳ Rounds and trims one pixel coordinate for interpolation into path data.
-                              └─> GridGeometryService.formatCoordinate(value: number): string [applications/meanderaw/src/modules/grid-geometry/grid-geometry.service.ts:63]
-                                 ↳ Rounds a coordinate to five decimal places and trims any trailing zeros.
+    └─> DrawEnumerationService.sweep(): Promise<number> [applications/meanderaw/src/modules/draw/draw-enumeration.service.ts:81]
+       ↳ Every shape the budget admits, swept and written — which is what `draw` with no drawing named now does.
+      └─> DrawEnumerationService.persist(shapes: readonly MeanderShape[]): Promise<number> [applications/meanderaw/src/modules/draw/draw-enumeration.service.ts:61]
+         ↳ Enumerates the shapes named and writes every meander they hold, one shape's rows at a time, answering with how many…
+        └─> DrawEnumerationService.records(shape: MeanderShape): MeanderRecord[] [applications/meanderaw/src/modules/draw/draw-enumeration.service.ts:72]
+           ↳ Every meander of one shape, as the rows the database holds for them.
+          └─> MeanderEnumerationService.enumerate(shape: MeanderShape): EnumeratedMeander[] [applications/meanderaw/src/modules/meander-enumeration/meander-enumeration.service.ts:77]
+             ↳ Every structurally distinct meander of one shape, one per symmetry class, each spelled by the Code of the class's own…
+            └─> MosaicTilesService.enumerate(rows: number, columns: number): MosaicTile[] [applications/meanderaw/src/modules/mosaic-tile/mosaic-tiles.service.ts:185]
+               ↳ Every distinct tile of the given size, one per symmetry class, ordered by canonical edge key so the sweep is stable…
+              └─> MosaicTilesService.assign(ordinal: number, enumeration: MosaicEnumeration): void [applications/meanderaw/src/modules/mosaic-tile/mosaic-tiles.service.ts:106]
+                 ↳ Decides the `ordinal`-th edge both ways, recording a tile once every edge is decided.
+                └─> MosaicTilesService.record(enumeration: MosaicEnumeration): void [applications/meanderaw/src/modules/mosaic-tile/mosaic-tiles.service.ts:145]
+                   ↳ Keeps the tile the current assignment describes, unless a tile already found draws the same pattern.
+                  └─> MosaicSymmetryService.canonicalTile(tile: MosaicTile): MosaicTile [applications/meanderaw/src/modules/mosaic-tile/mosaic-symmetry.service.ts:185]
+                     ↳ The one tile of a symmetry class the corpus draws.
+                    └─> MosaicSymmetryService.orbit(tile: MosaicTile): MosaicTile[] [applications/meanderaw/src/modules/mosaic-tile/mosaic-symmetry.service.ts:69]
+                       ↳ Every tile the symmetry group maps `tile` to, itself included, with duplicates left in.
+                      └─> MosaicSymmetryService.transform(tile: MosaicTile, options: MosaicTransformChoice): MosaicTile [applications/meanderaw/src/modules/mosaic-tile/mosaic-symmetry.service.ts:150]
+                         ↳ The tile one group element maps `tile` to.
+                        └─> MosaicTileService.blankEdges(shape: MosaicTileShape): MosaicEdgesDraft [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:151]
+                           ↳ A tile's worth of unset edges, ready to be marked one at a time and handed to {@link build}.
+                          └─> MosaicTileService.grid(levels: number): boolean[][] [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:153]
+                            └─> MosaicTileService.from(…)(): boolean[] [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:154]
+                              └─> MosaicTileService.from(…)(): boolean [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:155]
 ```
 
 **2. `SnakeMotifService.path`** — depth ≥ 9 · orphan-root
@@ -2160,7 +2161,7 @@ What this project is judged against, as declared in its own `callidescope.config
 ```
 
 <details>
-<summary>46 more call stacks</summary>
+<summary>56 more call stacks</summary>
 
 **4. `NegativeMotifService.path`** — depth ≥ 8 · orphan-root
 
@@ -2495,7 +2496,7 @@ What this project is judged against, as declared in its own `callidescope.config
 **27. `DrawCommand.parseDirection`** — depth ≥ 3 · decorated-method
 
 ```text
-🚀 DrawCommand.parseDirection(value: string): RungDirection [applications/meanderaw/src/modules/draw/draw.command.ts:225]
+🚀 DrawCommand.parseDirection(value: string): RungDirection [applications/meanderaw/src/modules/draw/draw.command.ts:311]
    ↳ Parses `--direction`, rejecting any value outside the supported set.
   └─> DrawParametersService.rungDirection(value: string): RungDirection [applications/meanderaw/src/modules/draw/draw-parameters.service.ts:224]
      ↳ Narrows `--direction`, rejecting any value outside the supported set. Used only with `--modifier rung`.
@@ -2506,7 +2507,7 @@ What this project is judged against, as declared in its own `callidescope.config
 **28. `DrawCommand.parseFlip`** — depth ≥ 3 · decorated-method
 
 ```text
-🚀 DrawCommand.parseFlip(value: string): SerpentineFlip [applications/meanderaw/src/modules/draw/draw.command.ts:234]
+🚀 DrawCommand.parseFlip(value: string): SerpentineFlip [applications/meanderaw/src/modules/draw/draw.command.ts:320]
    ↳ Parses `--flip`, rejecting any value outside the supported set. Used only with `--modifier serpentine`.
   └─> DrawParametersService.serpentineFlip(value: string): SerpentineFlip [applications/meanderaw/src/modules/draw/draw-parameters.service.ts:237]
      ↳ Narrows `--flip`, rejecting any value outside the supported set. Used only with `--modifier serpentine`.
@@ -2517,7 +2518,7 @@ What this project is judged against, as declared in its own `callidescope.config
 **29. `DrawCommand.parseModifier`** — depth ≥ 3 · decorated-method
 
 ```text
-🚀 DrawCommand.parseModifier(value: string): Modifier["name"] [applications/meanderaw/src/modules/draw/draw.command.ts:243]
+🚀 DrawCommand.parseModifier(value: string): Modifier["name"] [applications/meanderaw/src/modules/draw/draw.command.ts:329]
    ↳ Parses `--modifier`, rejecting any name outside the supported set. Omitted entirely when no modifier is requested.
   └─> DrawParametersService.modifierName(value: string): Modifier["name"] [applications/meanderaw/src/modules/draw/draw-parameters.service.ts:211]
      ↳ Narrows `--modifier` to a supported {@link Modifier} name, rejecting anything outside the supported set.
@@ -2528,7 +2529,7 @@ What this project is judged against, as declared in its own `callidescope.config
 **30. `DrawCommand.parseSubFamily`** — depth ≥ 3 · decorated-method
 
 ```text
-🚀 DrawCommand.parseSubFamily(value: string): MosaicSubFamily [applications/meanderaw/src/modules/draw/draw.command.ts:302]
+🚀 DrawCommand.parseSubFamily(value: string): MosaicSubFamily [applications/meanderaw/src/modules/draw/draw.command.ts:388]
    ↳ Parses `--sub-family`, rejecting any name outside the set of recognized sub-families.
   └─> DrawParametersService.subFamily(value: string): MosaicBuildableSubFamily [applications/meanderaw/src/modules/draw/draw-parameters.service.ts:281]
      ↳ Narrows `--sub-family` to a {@link MosaicBuildableSubFamily}, which for `mosaic` is the only way to name a drawing: the…
@@ -2539,7 +2540,7 @@ What this project is judged against, as declared in its own `callidescope.config
 **31. `DrawCommand.parseType`** — depth ≥ 3 · decorated-method
 
 ```text
-🚀 DrawCommand.parseType(value: string): MeanderType [applications/meanderaw/src/modules/draw/draw.command.ts:311]
+🚀 DrawCommand.parseType(value: string): MeanderType [applications/meanderaw/src/modules/draw/draw.command.ts:397]
    ↳ Parses `--type`, rejecting any value outside the supported set. Optional, since a sweep names no family.
   └─> DrawParametersService.type(value: string): MeanderType [applications/meanderaw/src/modules/draw/draw-parameters.service.ts:294]
      ↳ Narrows `--type` to a supported {@link MeanderType}, rejecting anything outside the supported set.
@@ -2577,7 +2578,67 @@ What this project is judged against, as declared in its own `callidescope.config
        ↳ How many of a point's four direction bits are set — the point's degree as the drawing shows it.
 ```
 
-**35. `BoxesMotifService.anonymous`** — depth 3 · orphan-root
+**35. `MeanderClassificationService.matches`** — depth 3 · orphan-root
+
+```text
+🚀 MeanderClassificationService.matches(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:243]
+  └─> MeanderClassificationService.isClosedLoop(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:137]
+     ↳ Whether a repeat's ink is one closed loop through every point, which is what `snake` draws and `chain` is the same…
+    └─> MeanderClassificationService.isJunctionFree(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:149]
+       ↳ Whether a repeat's ink neither forks nor crosses — charter invariants 3 and 4, read off one tile.
+```
+
+**36. `MeanderClassificationService.matches`** — depth 3 · orphan-root
+
+```text
+🚀 MeanderClassificationService.matches(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:250]
+  └─> MeanderClassificationService.isArc(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:100]
+     ↳ Whether a repeat's ink is one open arc with two ends and nothing else — the shape four families share and their pitch…
+    └─> MeanderClassificationService.isJunctionFree(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:149]
+       ↳ Whether a repeat's ink neither forks nor crosses — charter invariants 3 and 4, read off one tile.
+```
+
+**37. `MeanderClassificationService.matches`** — depth 3 · orphan-root
+
+```text
+🚀 MeanderClassificationService.matches(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:257]
+  └─> MeanderClassificationService.isArc(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:100]
+     ↳ Whether a repeat's ink is one open arc with two ends and nothing else — the shape four families share and their pitch…
+    └─> MeanderClassificationService.isJunctionFree(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:149]
+       ↳ Whether a repeat's ink neither forks nor crosses — charter invariants 3 and 4, read off one tile.
+```
+
+**38. `MeanderClassificationService.matches`** — depth 3 · orphan-root
+
+```text
+🚀 MeanderClassificationService.matches(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:264]
+  └─> MeanderClassificationService.isArc(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:100]
+     ↳ Whether a repeat's ink is one open arc with two ends and nothing else — the shape four families share and their pitch…
+    └─> MeanderClassificationService.isJunctionFree(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:149]
+       ↳ Whether a repeat's ink neither forks nor crosses — charter invariants 3 and 4, read off one tile.
+```
+
+**39. `MeanderClassificationService.matches`** — depth 3 · orphan-root
+
+```text
+🚀 MeanderClassificationService.matches(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:271]
+  └─> MeanderClassificationService.isArc(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:100]
+     ↳ Whether a repeat's ink is one open arc with two ends and nothing else — the shape four families share and their pitch…
+    └─> MeanderClassificationService.isJunctionFree(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:149]
+       ↳ Whether a repeat's ink neither forks nor crosses — charter invariants 3 and 4, read off one tile.
+```
+
+**40. `MeanderClassificationService.matches`** — depth 3 · orphan-root
+
+```text
+🚀 MeanderClassificationService.matches(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:278]
+  └─> MeanderClassificationService.isBundle(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:123]
+     ↳ Whether a repeat's ink is a bundle of nested brackets: `columns / 2` strands, since a `parallel` strand takes two…
+    └─> MeanderClassificationService.isJunctionFree(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:149]
+       ↳ Whether a repeat's ink neither forks nor crosses — charter invariants 3 and 4, read off one tile.
+```
+
+**41. `BoxesMotifService.anonymous`** — depth 3 · orphan-root
 
 ```text
 🚀 BoxesMotifService.anonymous(): MotifLevelPoint[] [applications/meanderaw/src/modules/boxes-motif/boxes-motif.service.ts:155]
@@ -2586,7 +2647,7 @@ What this project is judged against, as declared in its own `callidescope.config
     └─> MotifTransformsService.map(…)([x, y]: MotifLevelPoint): MotifLevelPoint [applications/meanderaw/src/modules/motif-transforms/motif-transforms.service.ts:73]
 ```
 
-**36. `SwirlMotifService.rightEdge`** — depth 3 · orphan-root
+**42. `SwirlMotifService.rightEdge`** — depth 3 · orphan-root
 
 ```text
 🚀 SwirlMotifService.rightEdge(geometry: GridGeometry, pattern: RepeatPatternOptions): number [applications/meanderaw/src/modules/swirl-motif/swirl-motif.service.ts:190]
@@ -2597,7 +2658,7 @@ What this project is judged against, as declared in its own `callidescope.config
        ↳ How many grid levels the motif's own two-armed spiral spans before the `flip` modifier's mirrored twin is fused on.
 ```
 
-**37. `WhirlMotifService.rightEdge`** — depth 3 · orphan-root
+**43. `WhirlMotifService.rightEdge`** — depth 3 · orphan-root
 
 ```text
 🚀 WhirlMotifService.rightEdge(geometry: GridGeometry, pattern: RepeatPatternOptions): number [applications/meanderaw/src/modules/whirl-motif/whirl-motif.service.ts:188]
@@ -2608,7 +2669,7 @@ What this project is judged against, as declared in its own `callidescope.config
        ↳ How many grid levels the motif's own single-arm spiral spans before the `flip` modifier's mirrored twin is fused on.
 ```
 
-**38. `MeanderTopologyService.key`** — depth 2 · orphan-root
+**44. `MeanderTopologyService.key`** — depth 2 · orphan-root
 
 ```text
 🚀 MeanderTopologyService.key({ column, row }: LatticePoint): string [applications/meanderaw/src/modules/meander-topology/meander-topology.service.ts:81]
@@ -2616,7 +2677,39 @@ What this project is judged against, as declared in its own `callidescope.config
      ↳ The `"column,row"` key {@link MeanderLatticeService} records lattice points and one-pitch steps under.
 ```
 
-**39. `BoxesMotifService.toXCoordinate`** — depth 2 · orphan-root
+**45. `MeanderClassificationService.matches`** — depth 2 · orphan-root
+
+```text
+🚀 MeanderClassificationService.matches(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:221]
+  └─> MeanderClassificationService.reachesMinimumRows(structure: MeanderStructure, family: MeanderType): boolean [applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:156]
+     ↳ Whether a repeat is deep enough for `family` to draw a non-degenerate motif in, read off the same record the command…
+```
+
+**46. `MeanderClassificationService.matches`** — depth 2 · orphan-root
+
+```text
+🚀 MeanderClassificationService.matches(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:228]
+  └─> MeanderClassificationService.reachesMinimumRows(structure: MeanderStructure, family: MeanderType): boolean [applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:156]
+     ↳ Whether a repeat is deep enough for `family` to draw a non-degenerate motif in, read off the same record the command…
+```
+
+**47. `MeanderClassificationService.matches`** — depth 2 · orphan-root
+
+```text
+🚀 MeanderClassificationService.matches(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:235]
+  └─> MeanderClassificationService.reachesMinimumRows(structure: MeanderStructure, family: MeanderType): boolean [applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:156]
+     ↳ Whether a repeat is deep enough for `family` to draw a non-degenerate motif in, read off the same record the command…
+```
+
+**48. `MeanderClassificationService.matches`** — depth 2 · orphan-root
+
+```text
+🚀 MeanderClassificationService.matches(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:282]
+  └─> MeanderClassificationService.reachesMinimumRows(structure: MeanderStructure, family: MeanderType): boolean [applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:156]
+     ↳ Whether a repeat is deep enough for `family` to draw a non-degenerate motif in, read off the same record the command…
+```
+
+**49. `BoxesMotifService.toXCoordinate`** — depth 2 · orphan-root
 
 ```text
 🚀 BoxesMotifService.toXCoordinate(level: number): string [applications/meanderaw/src/modules/boxes-motif/boxes-motif.service.ts:177]
@@ -2624,7 +2717,7 @@ What this project is judged against, as declared in its own `callidescope.config
      ↳ Rounds a coordinate to five decimal places and trims any trailing zeros.
 ```
 
-**40. `BoxesMotifService.toYCoordinate`** — depth 2 · orphan-root
+**50. `BoxesMotifService.toYCoordinate`** — depth 2 · orphan-root
 
 ```text
 🚀 BoxesMotifService.toYCoordinate(level: number): string [applications/meanderaw/src/modules/boxes-motif/boxes-motif.service.ts:181]
@@ -2632,7 +2725,7 @@ What this project is judged against, as declared in its own `callidescope.config
      ↳ Rounds a coordinate to five decimal places and trims any trailing zeros.
 ```
 
-**41. `SnakeMotifService.toXCoordinate`** — depth 2 · orphan-root
+**51. `SnakeMotifService.toXCoordinate`** — depth 2 · orphan-root
 
 ```text
 🚀 SnakeMotifService.toXCoordinate(level: number): string [applications/meanderaw/src/modules/snake-motif/snake-motif.service.ts:87]
@@ -2640,7 +2733,7 @@ What this project is judged against, as declared in its own `callidescope.config
      ↳ Rounds a coordinate to five decimal places and trims any trailing zeros.
 ```
 
-**42. `SnakeMotifService.toYCoordinate`** — depth 2 · orphan-root
+**52. `SnakeMotifService.toYCoordinate`** — depth 2 · orphan-root
 
 ```text
 🚀 SnakeMotifService.toYCoordinate(level: number): string [applications/meanderaw/src/modules/snake-motif/snake-motif.service.ts:91]
@@ -2648,7 +2741,7 @@ What this project is judged against, as declared in its own `callidescope.config
      ↳ Rounds a coordinate to five decimal places and trims any trailing zeros.
 ```
 
-**43. `ChainMotifService.toXCoordinate`** — depth 2 · orphan-root
+**53. `ChainMotifService.toXCoordinate`** — depth 2 · orphan-root
 
 ```text
 🚀 ChainMotifService.toXCoordinate(level: number): string [applications/meanderaw/src/modules/chain-motif/chain-motif.service.ts:104]
@@ -2656,7 +2749,7 @@ What this project is judged against, as declared in its own `callidescope.config
      ↳ Rounds a coordinate to five decimal places and trims any trailing zeros.
 ```
 
-**44. `ChainMotifService.toYCoordinate`** — depth 2 · orphan-root
+**54. `ChainMotifService.toYCoordinate`** — depth 2 · orphan-root
 
 ```text
 🚀 ChainMotifService.toYCoordinate(level: number): string [applications/meanderaw/src/modules/chain-motif/chain-motif.service.ts:108]
@@ -2664,7 +2757,7 @@ What this project is judged against, as declared in its own `callidescope.config
      ↳ Rounds a coordinate to five decimal places and trims any trailing zeros.
 ```
 
-**45. `CrossMotifService.rightEdge`** — depth 2 · orphan-root
+**55. `CrossMotifService.rightEdge`** — depth 2 · orphan-root
 
 ```text
 🚀 CrossMotifService.rightEdge(geometry: GridGeometry, pattern: RepeatPatternOptions): number [applications/meanderaw/src/modules/cross-motif/cross-motif.service.ts:222]
@@ -2673,7 +2766,7 @@ What this project is judged against, as declared in its own `callidescope.config
      ↳ How many grid levels the whole pattern spans: two per repeat unit, plus one.
 ```
 
-**46. `SwirlMotifService.toXCoordinate`** — depth 2 · orphan-root
+**56. `SwirlMotifService.toXCoordinate`** — depth 2 · orphan-root
 
 ```text
 🚀 SwirlMotifService.toXCoordinate(level: number): string [applications/meanderaw/src/modules/swirl-motif/swirl-motif.service.ts:160]
@@ -2681,7 +2774,7 @@ What this project is judged against, as declared in its own `callidescope.config
      ↳ Rounds a coordinate to five decimal places and trims any trailing zeros.
 ```
 
-**47. `SwirlMotifService.toYCoordinate`** — depth 2 · orphan-root
+**57. `SwirlMotifService.toYCoordinate`** — depth 2 · orphan-root
 
 ```text
 🚀 SwirlMotifService.toYCoordinate(level: number): string [applications/meanderaw/src/modules/swirl-motif/swirl-motif.service.ts:164]
@@ -2689,7 +2782,7 @@ What this project is judged against, as declared in its own `callidescope.config
      ↳ Rounds a coordinate to five decimal places and trims any trailing zeros.
 ```
 
-**48. `WhirlMotifService.toXCoordinate`** — depth 2 · orphan-root
+**58. `WhirlMotifService.toXCoordinate`** — depth 2 · orphan-root
 
 ```text
 🚀 WhirlMotifService.toXCoordinate(level: number): string [applications/meanderaw/src/modules/whirl-motif/whirl-motif.service.ts:151]
@@ -2697,7 +2790,7 @@ What this project is judged against, as declared in its own `callidescope.config
      ↳ Rounds a coordinate to five decimal places and trims any trailing zeros.
 ```
 
-**49. `WhirlMotifService.toYCoordinate`** — depth 2 · orphan-root
+**59. `WhirlMotifService.toYCoordinate`** — depth 2 · orphan-root
 
 ```text
 🚀 WhirlMotifService.toYCoordinate(level: number): string [applications/meanderaw/src/modules/whirl-motif/whirl-motif.service.ts:155]
@@ -2712,11 +2805,11 @@ What this project is judged against, as declared in its own `callidescope.config
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
 | `MeanderGenerationService.generate` | 14 | `MeanderGenerationService.generateSubFamily`, `MeanderGenerationService.validateRows`, `MeanderGenerationService.validateRepeatCount`, `MeanderGenerationService.validateModifier`, `MeanderGenerationService.validateModifierCycle`, `MeanderGenerationService.validateStaggerBranches`, `MeanderGenerationService.validateStrands`, `MeanderGenerationService.validateOffset`, `MotifRegistryService.resolve`, `MeanderGenerationService.motifDrawnType`, `GridGeometryService.compute`, `MeanderGenerationService.buildPaths`, `SvgRenderingService.render`, `MeanderGenerationService.format` | `applications/meanderaw/src/modules/meander-generation/meander-generation.service.ts:365` |
+| `DrawCommand.sweep` | 9 | `DrawEnumerationService.sweep`, `DrawCommand.renderCombinations`, `DrawCommand.assertNoPathCollisions`, `DrawCommand.writeDocuments`, `DrawPermutationsService.rowsSweep`, `DrawPermutationsService.render`, `DrawNegativePermutationsService.rowsSweep`, `DrawNegativePermutationsService.render`, `DrawIndexService.render` | `applications/meanderaw/src/modules/draw/draw.command.ts:196` |
 | `MosaicTileGenerationService.generate` | 8 | `InvalidRowsError.constructor`, `InvalidRepeatCountError.constructor`, `GridGeometryService.compute`, `MosaicTileGenerationService.from(…)`, `MosaicTileMotifService.leadingOverhang`, `MosaicTileMotifService.rightEdge`, `SvgRenderingService.render`, `MosaicTileGenerationService.format` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-tile-generation.service.ts:59` |
-| `DrawCommand.sweep` | 8 | `DrawCommand.renderCombinations`, `DrawCommand.assertNoPathCollisions`, `DrawCommand.writeDocuments`, `DrawPermutationsService.rowsSweep`, `DrawPermutationsService.render`, `DrawNegativePermutationsService.rowsSweep`, `DrawNegativePermutationsService.render`, `DrawIndexService.render` | `applications/meanderaw/src/modules/draw/draw.command.ts:141` |
 
 <details>
-<summary>313 more callables</summary>
+<summary>365 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
@@ -2734,11 +2827,14 @@ What this project is judged against, as declared in its own `callidescope.config
 | `NegativeMotifService.tilePath` | 5 | `NegativeMotifService.reach`, `NegativeMotifService.from(…)`, `NegativeMotifService.from(…)`, `NegativeMotifService.map(…)`, `NegativeMotifService.map(…)` | `applications/meanderaw/src/modules/negative-motif/negative-motif.service.ts:304` |
 | `MeanderGenerationService.buildPaths` | 5 | `MeanderGenerationService.from(…)`, `BoxesMotifService.border`, `BranchMotifService.border`, `CrossMotifService.border`, `ParallelMotifService.border` | `applications/meanderaw/src/modules/meander-generation/meander-generation.service.ts:78` |
 | `MeanderGenerationService.generateSubFamily` | 5 | `InvalidSubFamilyError.constructor`, `ConflictingSubFamilyError.constructor`, `MosaicSubFamilyService.tile`, `UnavailableSubFamilyError.constructor`, `MosaicTileGenerationService.generate` | `applications/meanderaw/src/modules/meander-generation/meander-generation.service.ts:122` |
+| `MeanderRenderingService.render` | 5 | `GridGeometryService.compute`, `MeanderRenderingService.gridSegments`, `GridGeometryService.borderPath`, `SvgRenderingService.render`, `MeanderRenderingService.format` | `applications/meanderaw/src/modules/meander-rendering/meander-rendering.service.ts:107` |
 | `DrawRenderingService.addressFor` | 5 | `isMotifDrawnType`, `MotifPitchService.columnPitch`, `MotifPitchService.columnSpan`, `DrawRenderingService.assertAddressableWidth`, `LatticeIdentificationService.identifyDocument` | `applications/meanderaw/src/modules/draw/draw-rendering.service.ts:79` |
 | `MeanderTopologyService.connectivity` | 4 | `MeanderLatticeService.build`, `MeanderTopologyService.components`, `MeanderTopologyService.adjacency`, `MeanderTopologyService.freeEnds` | `applications/meanderaw/src/modules/meander-topology/meander-topology.service.ts:284` |
 | `MosaicConnectivityService.connectivity` | 4 | `MosaicConnectivityService.adjacency`, `MeanderTopologyService.components`, `MosaicConnectivityService.edgeCount`, `MosaicConnectivityService.freeEnds` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-connectivity.service.ts:177` |
 | `MosaicSymmetryService.transform` | 4 | `MosaicTileService.edges`, `MosaicTileService.blankEdges`, `MosaicSymmetryService.place`, `MosaicTileService.build` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-symmetry.service.ts:150` |
 | `MosaicTilesService.assign` | 4 | `MosaicTilesService.edges`, `MosaicTilesService.record`, `MosaicTilesService.set`, `MosaicTilesService.clear` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-tiles.service.ts:106` |
+| `MeanderConnectivityService.connectivity` | 4 | `MeanderConnectivityService.edges`, `MeanderConnectivityService.adjacency`, `MeanderTopologyService.components`, `MeanderConnectivityService.freeEnds` | `applications/meanderaw/src/modules/meander-characteristics/meander-connectivity.service.ts:180` |
+| `MeanderCharacteristicsService.negativeDegree` | 4 | `MeanderCharacteristicsService.hasEastCorridor`, `MeanderCharacteristicsService.hasNorthCorridor`, `MeanderCharacteristicsService.hasSouthCorridor`, `MeanderCharacteristicsService.hasWestCorridor` | `applications/meanderaw/src/modules/meander-characteristics/meander-characteristics.service.ts:129` |
 | `SnakeSequenceService.unitPoints` | 4 | `SnakeSequenceService.fusedFlipPoints`, `SnakeSequenceService.points`, `MotifTransformsService.closeEdge`, `MotifTransformsService.mirror` | `applications/meanderaw/src/modules/snake-motif/snake-sequence.service.ts:192` |
 | `SnakeMotifService.path` | 4 | `SnakeSequenceService.unitPoints`, `SnakeMotifService.unitWidth`, `MotifTransformsService.pointsToPathData`, `SnakeMotifService.borderSegment` | `applications/meanderaw/src/modules/snake-motif/snake-motif.service.ts:79` |
 | `NegativeSourceService.tile` | 4 | `NegativeSourceService.isColumnSource`, `MosaicTileService.build`, `NegativeSourceService.columnEdges`, `NegativeSourceService.tileSource` | `applications/meanderaw/src/modules/negative-motif/negative-source.service.ts:232` |
@@ -2747,9 +2843,10 @@ What this project is judged against, as declared in its own `callidescope.config
 | `SwirlMotifService.path` | 4 | `SwirlMotifService.unitWidth`, `SwirlMotifService.map(…)`, `SwirlMotifService.subpaths`, `SwirlMotifService.borderSegment` | `applications/meanderaw/src/modules/swirl-motif/swirl-motif.service.ts:157` |
 | `WhirlMotifService.borderSegment` | 4 | `MotifTransformsService.rightmostLevel`, `WhirlMotifService.subpaths`, `WhirlMotifService.unitWidth`, `GridGeometryService.formatCoordinate` | `applications/meanderaw/src/modules/whirl-motif/whirl-motif.service.ts:126` |
 | `WhirlMotifService.path` | 4 | `WhirlMotifService.unitWidth`, `WhirlMotifService.map(…)`, `WhirlMotifService.subpaths`, `WhirlMotifService.borderSegment` | `applications/meanderaw/src/modules/whirl-motif/whirl-motif.service.ts:148` |
+| `DrawRecordService.record` | 4 | `MeanderDecodingService.decode`, `MeanderCharacteristicsService.compute`, `MeanderClassificationService.classify`, `MeanderRenderingService.render` | `applications/meanderaw/src/modules/draw/draw-record.service.ts:56` |
 | `DrawNegativePermutationsService.render` | 4 | `OutputPathService.familyDirectory`, `DrawNegativePermutationsService.map(…)`, `DrawNegativePermutationsService.filter(…)`, `MosaicTilesService.enumerate` | `applications/meanderaw/src/modules/draw/draw-negative-permutations.service.ts:141` |
 | `DrawParametersService.modifier` | 4 | `DrawParametersService.isPlyModifierName`, `DrawParametersService.plyModifier`, `DrawParametersService.rungModifier`, `DrawParametersService.staggerModifier` | `applications/meanderaw/src/modules/draw/draw-parameters.service.ts:188` |
-| `DrawCommand.writeDocuments` | 4 | `DrawCommand.map(…)`, `DrawCommand.map(…)`, `DrawCommand.map(…)`, `DrawCommand.map(…)` | `applications/meanderaw/src/modules/draw/draw.command.ts:179` |
+| `DrawCommand.writeDocuments` | 4 | `DrawCommand.map(…)`, `DrawCommand.map(…)`, `DrawCommand.map(…)`, `DrawCommand.map(…)` | `applications/meanderaw/src/modules/draw/draw.command.ts:240` |
 | `MeanderLatticeService.trace` | 3 | `MeanderLatticeService.snap`, `MeanderLatticeService.addHorizontal`, `MeanderLatticeService.addVertical` | `applications/meanderaw/src/modules/meander-lattice/meander-lattice.service.ts:204` |
 | `MeanderTopologyService.neighbors` | 3 | `MeanderTopologyService.key`, `MeanderTopologyService.map(…)`, `MeanderTopologyService.filter(…)` | `applications/meanderaw/src/modules/meander-topology/meander-topology.service.ts:165` |
 | `OutputPathService.build` | 3 | `OutputPathService.familyDirectory`, `OutputPathService.fileName`, `OutputPathService.addressSuffix` | `applications/meanderaw/src/modules/svg-rendering/output-path.service.ts:161` |
@@ -2758,6 +2855,10 @@ What this project is judged against, as declared in its own `callidescope.config
 | `MosaicTilesService.record` | 3 | `MosaicTileService.build`, `MosaicSymmetryService.canonicalTile`, `MosaicSymmetryService.edgeKey` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-tiles.service.ts:145` |
 | `MosaicNamingService.matching` | 3 | `MosaicNamingService.map(…)`, `MosaicNamingService.filter(…)`, `MosaicNamingService.rules` | `applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:168` |
 | `LatticeIdentificationService.readTile` | 3 | `MosaicTileService.blankEdges`, `MosaicTileService.mark`, `MosaicTileService.build` | `applications/meanderaw/src/modules/lattice-identification/lattice-identification.service.ts:237` |
+| `MeanderConnectivityService.edges` | 3 | `MeanderConnectivityService.key`, `MeanderConnectivityService.joinsEast`, `MeanderConnectivityService.joinsSouth` | `applications/meanderaw/src/modules/meander-characteristics/meander-connectivity.service.ts:96` |
+| `MeanderCharacteristicsService.compute` | 3 | `MeanderCharacteristicsService.tallyInk`, `MeanderCharacteristicsService.tallyNegative`, `MeanderConnectivityService.connectivity` | `applications/meanderaw/src/modules/meander-characteristics/meander-characteristics.service.ts:196` |
+| `MeanderClassificationService.matching` | 3 | `MeanderClassificationService.map(…)`, `MeanderClassificationService.filter(…)`, `MeanderClassificationService.rules` | `applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:200` |
+| `MeanderDecodingService.decode` | 3 | `InvalidCodeLengthError.constructor`, `MeanderDecodingService.from(…)`, `MeanderDecodingService.from(…)` | `applications/meanderaw/src/modules/meander-decoding/meander-decoding.service.ts:65` |
 | `BoxesMotifService.unitPoints` | 3 | `BoxesMotifService.spiralPoints`, `BoxesMotifService.centerPoint`, `MotifTransformsService.rotate` | `applications/meanderaw/src/modules/boxes-motif/boxes-motif.service.ts:129` |
 | `BoxesMotifService.path` | 3 | `BoxesMotifService.unitPoints`, `BoxesMotifService.unitWidth`, `BoxesMotifService.pointsToPathData` | `applications/meanderaw/src/modules/boxes-motif/boxes-motif.service.ts:173` |
 | `BranchMotifService.path` | 3 | `BranchMotifService.unitColumns`, `BranchMotifService.rungUnit`, `BranchMotifService.spineUnit` | `applications/meanderaw/src/modules/branch-motif/branch-motif.service.ts:484` |
@@ -2780,6 +2881,7 @@ What this project is judged against, as declared in its own `callidescope.config
 | `DrawNegativePermutationsService.map(…)` | 3 | `LatticeIdentificationService.canonicalIdentifier`, `DrawNegativePermutationsService.classify`, `NegativeTileGenerationService.generate` | `applications/meanderaw/src/modules/draw/draw-negative-permutations.service.ts:155` |
 | `DrawRenderingService.assertAddressableWidth` | 3 | `MotifPitchService.columnCount`, `NarrowRepeatCountError.constructor`, `DrawRenderingService.cycledRepeatCount` | `applications/meanderaw/src/modules/draw/draw-rendering.service.ts:122` |
 | `DrawRenderingService.render` | 3 | `MeanderGenerationService.generate`, `DrawRenderingService.addressFor`, `OutputPathService.build` | `applications/meanderaw/src/modules/draw/draw-rendering.service.ts:164` |
+| `DrawCommand.run` | 3 | `DrawCommand.runCodeDrawing`, `DrawCommand.sweep`, `DrawCommand.render` | `applications/meanderaw/src/modules/draw/draw.command.ts:414` |
 | `MeanderLatticeService.commands` | 2 | `MeanderLatticeService.map(…)`, `MeanderLatticeService.groups` | `applications/meanderaw/src/modules/meander-lattice/meander-lattice.service.ts:120` |
 | `MeanderLatticeService.groups` | 2 | `UnsupportedPathCommandError.constructor`, `UnmeasurableDocumentError.constructor` | `applications/meanderaw/src/modules/meander-lattice/meander-lattice.service.ts:138` |
 | `MeanderLatticeService.strokeWidth` | 2 | `MeanderLatticeService.map(…)`, `UnmeasurableDocumentError.constructor` | `applications/meanderaw/src/modules/meander-lattice/meander-lattice.service.ts:186` |
@@ -2811,6 +2913,18 @@ What this project is judged against, as declared in its own `callidescope.config
 | `MosaicNamingService.matches` | 2 | `MosaicNamingService.corner`, `MosaicNamingService.cornerLanes` | `applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:253` |
 | `MosaicNamingService.matches` | 2 | `MosaicNamingService.corner`, `MosaicNamingService.cornerLanes` | `applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:257` |
 | `LatticeIdentificationService.canonicalIdentifier` | 2 | `LatticeIdentificationService.identify`, `MosaicSymmetryService.canonicalTile` | `applications/meanderaw/src/modules/lattice-identification/lattice-identification.service.ts:131` |
+| `MeanderConnectivityService.freeEnds` | 2 | `MeanderConnectivityService.bump`, `MeanderConnectivityService.filter(…)` | `applications/meanderaw/src/modules/meander-characteristics/meander-connectivity.service.ts:118` |
+| `MeanderCharacteristicsService.tallyInk` | 2 | `MeanderCharacteristicsService.tally`, `MeanderCharacteristicsService.inkDegree` | `applications/meanderaw/src/modules/meander-characteristics/meander-characteristics.service.ts:163` |
+| `MeanderCharacteristicsService.tallyNegative` | 2 | `MeanderCharacteristicsService.tally`, `MeanderCharacteristicsService.negativeDegree` | `applications/meanderaw/src/modules/meander-characteristics/meander-characteristics.service.ts:176` |
+| `MeanderClassificationService.isBundle` | 2 | `MeanderClassificationService.isJunctionFree`, `MeanderClassificationService.reachesMinimumRows` | `applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:123` |
+| `MeanderClassificationService.classify` | 2 | `MeanderClassificationService.subFamily`, `MeanderClassificationService.matching` | `applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:176` |
+| `MeanderClassificationService.matches` | 2 | `MeanderClassificationService.isClosedLoop`, `MeanderClassificationService.reachesMinimumRows` | `applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:243` |
+| `MeanderClassificationService.matches` | 2 | `MeanderClassificationService.isArc`, `MeanderClassificationService.reachesMinimumRows` | `applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:250` |
+| `MeanderClassificationService.matches` | 2 | `MeanderClassificationService.isArc`, `MeanderClassificationService.reachesMinimumRows` | `applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:257` |
+| `MeanderClassificationService.matches` | 2 | `MeanderClassificationService.isArc`, `MeanderClassificationService.reachesMinimumRows` | `applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:264` |
+| `MeanderClassificationService.matches` | 2 | `MeanderClassificationService.isArc`, `MeanderClassificationService.reachesMinimumRows` | `applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:271` |
+| `MeanderEnumerationService.enumerate` | 2 | `MeanderEnumerationService.map(…)`, `MosaicTilesService.enumerate` | `applications/meanderaw/src/modules/meander-enumeration/meander-enumeration.service.ts:77` |
+| `MeanderEnumerationService.shapes` | 2 | `MeanderEnumerationService.isAdmitted`, `MosaicTilesService.maximumColumns` | `applications/meanderaw/src/modules/meander-enumeration/meander-enumeration.service.ts:105` |
 | `BoxesMotifService.border` | 2 | `GridGeometryService.borderPath`, `BoxesMotifService.rightEdge` | `applications/meanderaw/src/modules/boxes-motif/boxes-motif.service.ts:165` |
 | `BranchMotifService.rungRail` | 2 | `BranchMotifService.stileColumn`, `BranchMotifService.orientation` | `applications/meanderaw/src/modules/branch-motif/branch-motif.service.ts:195` |
 | `BranchMotifService.spineRow` | 2 | `BranchMotifService.figureRows`, `BranchMotifService.mode` | `applications/meanderaw/src/modules/branch-motif/branch-motif.service.ts:303` |
@@ -2835,11 +2949,16 @@ What this project is judged against, as declared in its own `callidescope.config
 | `WhirlMotifService.subpaths` | 2 | `WhirlMotifService.basePoints`, `WhirlMotifService.flippedPoints` | `applications/meanderaw/src/modules/whirl-motif/whirl-motif.service.ts:96` |
 | `MeanderGenerationService.motifDrawnType` | 2 | `MeanderGenerationService.isTileDrawnType`, `MissingSubFamilyError.constructor` | `applications/meanderaw/src/modules/meander-generation/meander-generation.service.ts:176` |
 | `MotifPitchService.columnCount` | 2 | `GridGeometryService.compute`, `MotifRegistryService.resolve` | `applications/meanderaw/src/modules/meander-generation/motif-pitch.service.ts:67` |
+| `MeanderRenderingService.pointSegments` | 2 | `MeanderRenderingService.format`, `MeanderRenderingService.isBare` | `applications/meanderaw/src/modules/meander-rendering/meander-rendering.service.ts:77` |
+| `DrawCodeService.draw` | 2 | `MeanderDatabaseService.save`, `DrawRecordService.record` | `applications/meanderaw/src/modules/draw/draw-code.service.ts:43` |
 | `DrawCombinationsService.combinationsForType` | 2 | `DrawCombinationsService.flatMap(…)`, `DrawCombinationsService.rowsSweep` | `applications/meanderaw/src/modules/draw/draw-combinations.service.ts:79` |
 | `DrawCombinationsService.flatMap(…)` | 2 | `DrawCombinationsService.map(…)`, `DrawCombinationsService.modifiersForType` | `applications/meanderaw/src/modules/draw/draw-combinations.service.ts:80` |
 | `DrawCombinationsService.flatMap(…)` | 2 | `DrawCombinationsService.map(…)`, `ParallelSerpentineService.variants` | `applications/meanderaw/src/modules/draw/draw-combinations.service.ts:105` |
 | `DrawCombinationsService.modifiersForType` | 2 | `DrawCombinationsService.filter(…)`, `DrawCombinationsService.flatMap(…)` | `applications/meanderaw/src/modules/draw/draw-combinations.service.ts:152` |
 | `DrawCombinationsService.enumerate` | 2 | `DrawCombinationsService.filter(…)`, `DrawCombinationsService.flatMap(…)` | `applications/meanderaw/src/modules/draw/draw-combinations.service.ts:252` |
+| `DrawEnumerationService.persist` | 2 | `MeanderDatabaseService.saveAll`, `DrawEnumerationService.records` | `applications/meanderaw/src/modules/draw/draw-enumeration.service.ts:61` |
+| `DrawEnumerationService.records` | 2 | `DrawEnumerationService.map(…)`, `MeanderEnumerationService.enumerate` | `applications/meanderaw/src/modules/draw/draw-enumeration.service.ts:72` |
+| `DrawEnumerationService.sweep` | 2 | `DrawEnumerationService.persist`, `MeanderEnumerationService.shapes` | `applications/meanderaw/src/modules/draw/draw-enumeration.service.ts:81` |
 | `DrawIndexService.groupByDirectory` | 2 | `DrawIndexService.toSorted(…)`, `DrawIndexService.map(…)` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:74` |
 | `DrawIndexService.map(…)` | 2 | `DrawIndexService.escape`, `DrawIndexService.slug` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:102` |
 | `DrawNegativePermutationsService.classify` | 2 | `LatticeIdentificationService.canonicalIdentifier`, `DrawNegativePermutationsService.find(…)` | `applications/meanderaw/src/modules/draw/draw-negative-permutations.service.ts:112` |
@@ -2851,10 +2970,10 @@ What this project is judged against, as declared in its own `callidescope.config
 | `DrawParametersService.single` | 2 | `IncompleteDrawingError.constructor`, `DrawParametersService.modifier` | `applications/meanderaw/src/modules/draw/draw-parameters.service.ts:257` |
 | `DrawParametersService.subFamily` | 2 | `DrawParametersService.isSubFamily`, `UnsupportedOptionError.constructor` | `applications/meanderaw/src/modules/draw/draw-parameters.service.ts:281` |
 | `DrawParametersService.type` | 2 | `DrawParametersService.isMeanderType`, `UnsupportedOptionError.constructor` | `applications/meanderaw/src/modules/draw/draw-parameters.service.ts:294` |
-| `DrawCommand.assertNoPathCollisions` | 2 | `DrawCommand.map(…)`, `CollidingPathsError.constructor` | `applications/meanderaw/src/modules/draw/draw.command.ts:116` |
-| `DrawCommand.render` | 2 | `DrawRenderingService.render`, `DrawParametersService.single` | `applications/meanderaw/src/modules/draw/draw.command.ts:127` |
-| `DrawCommand.renderCombinations` | 2 | `DrawCommand.map(…)`, `DrawCombinationsService.enumerate` | `applications/meanderaw/src/modules/draw/draw.command.ts:134` |
-| `DrawCommand.run` | 2 | `DrawCommand.sweep`, `DrawCommand.render` | `applications/meanderaw/src/modules/draw/draw.command.ts:320` |
+| `DrawCommand.assertNoPathCollisions` | 2 | `DrawCommand.map(…)`, `CollidingPathsError.constructor` | `applications/meanderaw/src/modules/draw/draw.command.ts:130` |
+| `DrawCommand.render` | 2 | `DrawRenderingService.render`, `DrawParametersService.single` | `applications/meanderaw/src/modules/draw/draw.command.ts:141` |
+| `DrawCommand.renderCombinations` | 2 | `DrawCommand.map(…)`, `DrawCombinationsService.enumerate` | `applications/meanderaw/src/modules/draw/draw.command.ts:148` |
+| `DrawCommand.runCodeDrawing` | 2 | `IncompleteCodeDrawingError.constructor`, `DrawCodeService.draw` | `applications/meanderaw/src/modules/draw/draw.command.ts:164` |
 | `MeanderLatticeService.addHorizontal` | 1 | `MeanderLatticeService.key` | `applications/meanderaw/src/modules/meander-lattice/meander-lattice.service.ts:55` |
 | `MeanderLatticeService.addVertical` | 1 | `MeanderLatticeService.key` | `applications/meanderaw/src/modules/meander-lattice/meander-lattice.service.ts:73` |
 | `MeanderLatticeService.command` | 1 | `UnmeasurableDocumentError.constructor` | `applications/meanderaw/src/modules/meander-lattice/meander-lattice.service.ts:91` |
@@ -2929,6 +3048,27 @@ What this project is judged against, as declared in its own `callidescope.config
 | `LatticeIdentificationService.assertAddressable` | 1 | `InvalidSpanError.constructor` | `applications/meanderaw/src/modules/lattice-identification/lattice-identification.service.ts:84` |
 | `LatticeIdentificationService.identify` | 1 | `LatticeIdentificationService.flatMap(…)` | `applications/meanderaw/src/modules/lattice-identification/lattice-identification.service.ts:159` |
 | `LatticeIdentificationService.flatMap(…)` | 1 | `LatticeIdentificationService.map(…)` | `applications/meanderaw/src/modules/lattice-identification/lattice-identification.service.ts:161` |
+| `MeanderConnectivityService.adjacency` | 1 | `MeanderConnectivityService.nodes` | `applications/meanderaw/src/modules/meander-characteristics/meander-connectivity.service.ts:71` |
+| `MeanderConnectivityService.nodes` | 1 | `MeanderConnectivityService.flatMap(…)` | `applications/meanderaw/src/modules/meander-characteristics/meander-connectivity.service.ts:163` |
+| `MeanderConnectivityService.flatMap(…)` | 1 | `MeanderConnectivityService.map(…)` | `applications/meanderaw/src/modules/meander-characteristics/meander-connectivity.service.ts:164` |
+| `MeanderConnectivityService.map(…)` | 1 | `MeanderConnectivityService.key` | `applications/meanderaw/src/modules/meander-characteristics/meander-connectivity.service.ts:165` |
+| `MeanderCharacteristicsService.hasEastCorridor` | 1 | `MeanderCharacteristicsService.pointAt` | `applications/meanderaw/src/modules/meander-characteristics/meander-characteristics.service.ts:74` |
+| `MeanderCharacteristicsService.hasNorthCorridor` | 1 | `MeanderCharacteristicsService.pointAt` | `applications/meanderaw/src/modules/meander-characteristics/meander-characteristics.service.ts:87` |
+| `MeanderCharacteristicsService.hasSouthCorridor` | 1 | `MeanderCharacteristicsService.pointAt` | `applications/meanderaw/src/modules/meander-characteristics/meander-characteristics.service.ts:96` |
+| `MeanderCharacteristicsService.hasWestCorridor` | 1 | `MeanderCharacteristicsService.pointAt` | `applications/meanderaw/src/modules/meander-characteristics/meander-characteristics.service.ts:107` |
+| `MeanderClassificationService.isArc` | 1 | `MeanderClassificationService.isJunctionFree` | `applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:100` |
+| `MeanderClassificationService.isClosedLoop` | 1 | `MeanderClassificationService.isJunctionFree` | `applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:137` |
+| `MeanderClassificationService.matches` | 1 | `MeanderClassificationService.reachesMinimumRows` | `applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:221` |
+| `MeanderClassificationService.matches` | 1 | `MeanderClassificationService.reachesMinimumRows` | `applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:228` |
+| `MeanderClassificationService.matches` | 1 | `MeanderClassificationService.reachesMinimumRows` | `applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:235` |
+| `MeanderClassificationService.matches` | 1 | `MeanderClassificationService.isBundle` | `applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:278` |
+| `MeanderClassificationService.matches` | 1 | `MeanderClassificationService.reachesMinimumRows` | `applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:282` |
+| `MeanderClassificationService.subFamily` | 1 | `MosaicNamingService.name` | `applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:291` |
+| `MeanderDatabaseService.saveAll` | 1 | `MeanderDatabaseService.transaction(…)` | `applications/meanderaw/src/modules/meander-database/meander-database.service.ts:75` |
+| `MeanderDecodingService.point` | 1 | `InvalidCodeCharacterError.constructor` | `applications/meanderaw/src/modules/meander-decoding/meander-decoding.service.ts:43` |
+| `MeanderDecodingService.from(…)` | 1 | `MeanderDecodingService.point` | `applications/meanderaw/src/modules/meander-decoding/meander-decoding.service.ts:72` |
+| `MeanderEnumerationService.map(…)` | 1 | `LatticeIdentificationService.identify` | `applications/meanderaw/src/modules/meander-enumeration/meander-enumeration.service.ts:80` |
+| `MeanderEnumerationService.isAdmitted` | 1 | `MosaicTilesService.isAdmitted` | `applications/meanderaw/src/modules/meander-enumeration/meander-enumeration.service.ts:88` |
 | `MotifTransformsService.mirror` | 1 | `MotifTransformsService.map(…)` | `applications/meanderaw/src/modules/motif-transforms/motif-transforms.service.ts:66` |
 | `MotifTransformsService.pointsToPathData` | 1 | `MotifTransformsService.reduce(…)` | `applications/meanderaw/src/modules/motif-transforms/motif-transforms.service.ts:87` |
 | `MotifTransformsService.rightmostLevel` | 1 | `MotifTransformsService.flatMap(…)` | `applications/meanderaw/src/modules/motif-transforms/motif-transforms.service.ts:132` |
@@ -3011,6 +3151,10 @@ What this project is judged against, as declared in its own `callidescope.config
 | `MeanderGenerationService.validateStrands` | 1 | `InvalidStrandCountError.constructor` | `applications/meanderaw/src/modules/meander-generation/meander-generation.service.ts:336` |
 | `MeanderGenerationService.format` | 1 | `GridGeometryService.formatCoordinate` | `applications/meanderaw/src/modules/meander-generation/meander-generation.service.ts:390` |
 | `MotifPitchService.columnSpan` | 1 | `MotifPitchService.columnPitch` | `applications/meanderaw/src/modules/meander-generation/motif-pitch.service.ts:126` |
+| `MeanderRenderingService.format` | 1 | `GridGeometryService.formatCoordinate` | `applications/meanderaw/src/modules/meander-rendering/meander-rendering.service.ts:53` |
+| `MeanderRenderingService.gridSegments` | 1 | `MeanderRenderingService.flatMap(…)` | `applications/meanderaw/src/modules/meander-rendering/meander-rendering.service.ts:58` |
+| `MeanderRenderingService.flatMap(…)` | 1 | `MeanderRenderingService.map(…)` | `applications/meanderaw/src/modules/meander-rendering/meander-rendering.service.ts:60` |
+| `MeanderRenderingService.map(…)` | 1 | `MeanderRenderingService.pointSegments` | `applications/meanderaw/src/modules/meander-rendering/meander-rendering.service.ts:61` |
 | `DrawCombinationsService.map(…)` | 1 | `DrawCombinationsService.repeatCountFor` | `applications/meanderaw/src/modules/draw/draw-combinations.service.ts:81` |
 | `DrawCombinationsService.filter(…)` | 1 | `DrawCombinationsService.isModifierName` | `applications/meanderaw/src/modules/draw/draw-combinations.service.ts:157` |
 | `DrawCombinationsService.flatMap(…)` | 1 | `DrawCombinationsService.expandModifierName` | `applications/meanderaw/src/modules/draw/draw-combinations.service.ts:160` |
@@ -3018,6 +3162,7 @@ What this project is judged against, as declared in its own `callidescope.config
 | `DrawCombinationsService.strandCounts` | 1 | `DrawCombinationsService.from(…)` | `applications/meanderaw/src/modules/draw/draw-combinations.service.ts:219` |
 | `DrawCombinationsService.filter(…)` | 1 | `DrawCombinationsService.isMeanderType` | `applications/meanderaw/src/modules/draw/draw-combinations.service.ts:254` |
 | `DrawCombinationsService.flatMap(…)` | 1 | `DrawCombinationsService.combinationsForType` | `applications/meanderaw/src/modules/draw/draw-combinations.service.ts:258` |
+| `DrawEnumerationService.map(…)` | 1 | `DrawRecordService.record` | `applications/meanderaw/src/modules/draw/draw-enumeration.service.ts:75` |
 | `DrawIndexService.map(…)` | 1 | `DrawIndexService.toSorted(…)` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:87` |
 | `DrawIndexService.toSorted(…)` | 1 | `DrawIndexService.familyRank` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:92` |
 | `DrawIndexService.renderContents` | 1 | `DrawIndexService.map(…)` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:99` |
@@ -3027,12 +3172,12 @@ What this project is judged against, as declared in its own `callidescope.config
 | `DrawNegativePermutationsService.rowsSweep` | 1 | `DrawNegativePermutationsService.from(…)` | `applications/meanderaw/src/modules/draw/draw-negative-permutations.service.ts:172` |
 | `DrawParametersService.staggerModifier` | 1 | `MissingModifierParameterError.constructor` | `applications/meanderaw/src/modules/draw/draw-parameters.service.ts:169` |
 | `DrawPermutationsService.rowsSweep` | 1 | `DrawPermutationsService.from(…)` | `applications/meanderaw/src/modules/draw/draw-permutations.service.ts:113` |
-| `DrawCommand.map(…)` | 1 | `DrawRenderingService.render` | `applications/meanderaw/src/modules/draw/draw.command.ts:137` |
-| `DrawCommand.parseDirection` | 1 | `DrawParametersService.rungDirection` | `applications/meanderaw/src/modules/draw/draw.command.ts:225` |
-| `DrawCommand.parseFlip` | 1 | `DrawParametersService.serpentineFlip` | `applications/meanderaw/src/modules/draw/draw.command.ts:234` |
-| `DrawCommand.parseModifier` | 1 | `DrawParametersService.modifierName` | `applications/meanderaw/src/modules/draw/draw.command.ts:243` |
-| `DrawCommand.parseSubFamily` | 1 | `DrawParametersService.subFamily` | `applications/meanderaw/src/modules/draw/draw.command.ts:302` |
-| `DrawCommand.parseType` | 1 | `DrawParametersService.type` | `applications/meanderaw/src/modules/draw/draw.command.ts:311` |
+| `DrawCommand.map(…)` | 1 | `DrawRenderingService.render` | `applications/meanderaw/src/modules/draw/draw.command.ts:151` |
+| `DrawCommand.parseDirection` | 1 | `DrawParametersService.rungDirection` | `applications/meanderaw/src/modules/draw/draw.command.ts:311` |
+| `DrawCommand.parseFlip` | 1 | `DrawParametersService.serpentineFlip` | `applications/meanderaw/src/modules/draw/draw.command.ts:320` |
+| `DrawCommand.parseModifier` | 1 | `DrawParametersService.modifierName` | `applications/meanderaw/src/modules/draw/draw.command.ts:329` |
+| `DrawCommand.parseSubFamily` | 1 | `DrawParametersService.subFamily` | `applications/meanderaw/src/modules/draw/draw.command.ts:388` |
+| `DrawCommand.parseType` | 1 | `DrawParametersService.type` | `applications/meanderaw/src/modules/draw/draw.command.ts:397` |
 
 </details>
 <!-- CALL_STACKS_END -->
