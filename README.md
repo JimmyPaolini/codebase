@@ -50,7 +50,7 @@ A modern TypeScript codebase with Nx, featuring automated releases, comprehensiv
 
 ## 💽 Projects
 
-- **🤲 [affirmations](applications/affirmations)** - Python LangChain + Ollama affirmation generator (LangGraph ReAct agent, SearxNG)
+- **🔮 [affirmations](applications/affirmations)** - Python LangChain + Ollama affirmation generator (LangGraph ReAct agent, SearxNG)
 - **🛰️ [caelundas](applications/caelundas)** - Swiss Ephemeris calendar generator that turns astronomical events into an `.ics` file
 - <details>
   <summary>**🔭 callidescope** - Call stack tracing toolchain that follows control flow through injected dependencies and reports where a stack got too deep</summary>
@@ -119,7 +119,7 @@ A modern TypeScript codebase with Nx, featuring automated releases, comprehensiv
 
   </details>
 - **🪵 [logger](packages/logger)** - Shared pino-backed NestJS `LoggerService` and `LoggerModule`
-- **🌀 [meanderaw](applications/meanderaw)** - CLI that generates Greek meander (key/fret) SVG patterns programmatically from a type, row count, and repeat count
+- **🏺 [meanderaw](applications/meanderaw)** - CLI that generates Greek meander (key/fret) SVG patterns programmatically from a type, row count, and repeat count
 - **↔️ [synchronization](tools/synchronization)** - NestJS CLI that regenerates the workspace's derived configuration and documentation, and fails CI when they drift
 - **🧑‍⚖️ [validation](tools/validation)** - NestJS CLI for the repository's one-sided checks, the ones with a check and no write, such as the pull request metadata gate
 
