@@ -37,6 +37,11 @@ import type { CodometerConfiguration } from "@codometer/configuration";
  * A limit's value is a **count** of the blocks that broke a selector's own
  * maximum, so every limit below reads `value: 0`: no block may breach.
  *
+ * Every counter is declared in the top-level `custom` array, which is what
+ * measures it. This file declares no `outputs` entry at all — a gate does
+ * not need a destination, since selecting a counter for some output and
+ * measuring it are two separate questions now.
+ *
  * ```bash
  * cd packages/ic-suite/codometer/codometer-examples/examples/corpus
  * codometer --config ../documentation/comments.config.ts --check limits
@@ -44,6 +49,44 @@ import type { CodometerConfiguration } from "@codometer/configuration";
  * ```
  */
 const codometerConfiguration: CodometerConfiguration = {
+  custom: [
+    {
+      comment: { language: "css", maximumWords: 3 },
+      label: "CSS Comment Budget",
+    },
+    {
+      comment: { language: "hcl", maximumWords: 3 },
+      label: "HCL Comment Budget",
+    },
+    {
+      comment: { language: "python", maximumWords: 3 },
+      label: "Python Comment Budget",
+    },
+    // Loosened to eight words rather than held to the three every other
+    // counter names. There is no shared budget to override any more, so
+    // "every language at three except shell at eight" is eight independent
+    // counters, and this is the one that reads differently.
+    {
+      comment: { language: "shell", maximumWords: 8 },
+      label: "Shell Comment Budget",
+    },
+    {
+      comment: { language: "sql", maximumWords: 3 },
+      label: "SQL Comment Budget",
+    },
+    {
+      comment: { language: "toml", maximumWords: 3 },
+      label: "TOML Comment Budget",
+    },
+    {
+      comment: { language: "typescript", maximumWords: 3 },
+      label: "TypeScript Comment Budget",
+    },
+    {
+      comment: { language: "yaml", maximumWords: 3 },
+      label: "YAML Comment Budget",
+    },
+  ],
   defaultInput: "codebase",
   format: "markdown",
   limits: [
@@ -55,50 +98,6 @@ const codometerConfiguration: CodometerConfiguration = {
     { metric: "custom.TOML Comment Budget", value: 0 },
     { metric: "custom.TypeScript Comment Budget", value: 0 },
     { metric: "custom.YAML Comment Budget", value: 0 },
-  ],
-  outputs: [
-    {
-      custom: [
-        {
-          comment: { language: "css", maximumWords: 3 },
-          label: "CSS Comment Budget",
-        },
-        {
-          comment: { language: "hcl", maximumWords: 3 },
-          label: "HCL Comment Budget",
-        },
-        {
-          comment: { language: "python", maximumWords: 3 },
-          label: "Python Comment Budget",
-        },
-        // Loosened to eight words rather than held to the three every other
-        // counter names. There is no shared budget to override any more, so
-        // "every language at three except shell at eight" is eight independent
-        // counters, and this is the one that reads differently.
-        {
-          comment: { language: "shell", maximumWords: 8 },
-          label: "Shell Comment Budget",
-        },
-        {
-          comment: { language: "sql", maximumWords: 3 },
-          label: "SQL Comment Budget",
-        },
-        {
-          comment: { language: "toml", maximumWords: 3 },
-          label: "TOML Comment Budget",
-        },
-        {
-          comment: { language: "typescript", maximumWords: 3 },
-          label: "TypeScript Comment Budget",
-        },
-        {
-          comment: { language: "yaml", maximumWords: 3 },
-          label: "YAML Comment Budget",
-        },
-      ],
-      path: "codometer-report.json",
-      type: "json",
-    },
   ],
   python: { command: "uv run python" },
 };

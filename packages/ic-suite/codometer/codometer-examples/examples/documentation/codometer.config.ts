@@ -30,6 +30,9 @@ import type { CodometerConfiguration } from "@codometer/configuration";
  * measured — so `priceLine` and `DEFAULT_CURRENCY` breach nothing whatever
  * comments they carry.
  *
+ * Every counter is declared in the top-level `custom` array, which is what
+ * measures it; no `outputs` entry is needed just to gate a limit.
+ *
  * ```bash
  * cd packages/ic-suite/codometer/codometer-examples/examples/corpus
  * codometer --config ../documentation/codometer.config.ts --check limits
@@ -37,6 +40,24 @@ import type { CodometerConfiguration } from "@codometer/configuration";
  * ```
  */
 const codometerConfiguration: CodometerConfiguration = {
+  custom: [
+    {
+      comment: { kind: "class", maximumLines: 4 },
+      label: "Class Comment Budget",
+    },
+    {
+      comment: { kind: "interface", maximumLines: 3 },
+      label: "Interface Comment Budget",
+    },
+    {
+      comment: { kind: "method", maximumLines: 2 },
+      label: "Method Comment Budget",
+    },
+    {
+      comment: { kind: "property", maximumLines: 2 },
+      label: "Property Comment Budget",
+    },
+  ],
   defaultInput: "codebase",
   format: "markdown",
   limits: [
@@ -44,30 +65,6 @@ const codometerConfiguration: CodometerConfiguration = {
     { metric: "custom.Interface Comment Budget", value: 0 },
     { metric: "custom.Method Comment Budget", value: 0 },
     { metric: "custom.Property Comment Budget", value: 0 },
-  ],
-  outputs: [
-    {
-      custom: [
-        {
-          comment: { kind: "class", maximumLines: 4 },
-          label: "Class Comment Budget",
-        },
-        {
-          comment: { kind: "interface", maximumLines: 3 },
-          label: "Interface Comment Budget",
-        },
-        {
-          comment: { kind: "method", maximumLines: 2 },
-          label: "Method Comment Budget",
-        },
-        {
-          comment: { kind: "property", maximumLines: 2 },
-          label: "Property Comment Budget",
-        },
-      ],
-      path: "codometer-report.json",
-      type: "json",
-    },
   ],
   python: { command: "uv run python" },
 };

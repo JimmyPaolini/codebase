@@ -322,6 +322,8 @@ overrides:
 words:
   # The rc-style conformetry config filenames the Nx plugin looks for.
   - conformetryrc
+  # Dependabot's dependabot.yml field name for delaying a version update.
+  - cooldown
   # Nx's project-discovery ignore file, read when listing a workspace's projects.
   - nxignore
   - openwiki

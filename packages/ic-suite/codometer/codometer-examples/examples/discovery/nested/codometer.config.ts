@@ -34,20 +34,14 @@ import type { CodometerConfiguration } from "@codometer/configuration";
  * it.
  */
 const codometerConfiguration: CodometerConfiguration = {
-  format: "markdown",
-  outputs: [
+  custom: [
     {
-      custom: [
-        {
-          color: "9333ea",
-          label: "Configurations",
-          patterns: ["**/*.config.ts"],
-        },
-      ],
-      path: "codometer-report.json",
-      type: "json",
+      color: "9333ea",
+      label: "Configurations",
+      patterns: ["**/*.config.ts"],
     },
   ],
+  format: "markdown",
 };
 
 export default codometerConfiguration;

@@ -37,21 +37,15 @@ import type { CodometerConfiguration } from "@codometer/configuration";
  * ```
  */
 const codometerConfiguration: CodometerConfiguration = {
+  custom: [
+    {
+      comment: { language: "yaml", maximumLines: 1, maximumWords: 5 },
+      label: "YAML Comment Budget",
+    },
+  ],
   defaultInput: "codebase",
   format: "markdown",
   limits: [{ metric: "custom.YAML Comment Budget", value: 0 }],
-  outputs: [
-    {
-      custom: [
-        {
-          comment: { language: "yaml", maximumLines: 1, maximumWords: 5 },
-          label: "YAML Comment Budget",
-        },
-      ],
-      path: "codometer-report.json",
-      type: "json",
-    },
-  ],
   python: { command: "uv run python" },
 };
 

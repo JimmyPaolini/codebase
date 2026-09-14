@@ -68,6 +68,18 @@ describe("measure command over a fixture directory", () => {
     writeFileSync(
       path.join(workingDirectory, "codometer.config.json"),
       JSON.stringify({
+        custom: [
+          {
+            color: "dc2626",
+            comment: {
+              language: "yaml",
+              maximumWords: 10,
+              severity: "fail",
+            },
+            group: "conventions",
+            label: "Overlong YAML Comments",
+          },
+        ],
         excludeFrom: [".codometerignore"],
         format: "json",
         limits: [
@@ -75,18 +87,7 @@ describe("measure command over a fixture directory", () => {
         ],
         outputs: [
           {
-            custom: [
-              {
-                color: "dc2626",
-                comment: {
-                  language: "yaml",
-                  maximumWords: 10,
-                  severity: "fail",
-                },
-                group: "conventions",
-                label: "Overlong YAML Comments",
-              },
-            ],
+            custom: ["Overlong YAML Comments"],
             path: REPORT_FILE_NAME,
             type: "json",
           },
