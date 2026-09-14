@@ -2,8 +2,10 @@ import { Module } from "@nestjs/common";
 
 import { LatticeIdentificationModule } from "../lattice-identification/lattice-identification.module";
 import { MeanderCharacteristicsModule } from "../meander-characteristics/meander-characteristics.module";
+import { MeanderClassificationModule } from "../meander-classification/meander-classification.module";
 import { MeanderDatabaseModule } from "../meander-database/meander-database.module";
 import { MeanderDecodingModule } from "../meander-decoding/meander-decoding.module";
+import { MeanderEnumerationModule } from "../meander-enumeration/meander-enumeration.module";
 import { MeanderGenerationModule } from "../meander-generation/meander-generation.module";
 import { MeanderRenderingModule } from "../meander-rendering/meander-rendering.module";
 import { MosaicNamingModule } from "../mosaic-naming/mosaic-naming.module";
@@ -11,10 +13,12 @@ import { ParallelMotifModule } from "../parallel-motif/parallel-motif.module";
 
 import { DrawCodeService } from "./draw-code.service";
 import { DrawCombinationsService } from "./draw-combinations.service";
+import { DrawEnumerationService } from "./draw-enumeration.service";
 import { DrawIndexService } from "./draw-index.service";
 import { DrawNegativePermutationsService } from "./draw-negative-permutations.service";
 import { DrawParametersService } from "./draw-parameters.service";
 import { DrawPermutationsService } from "./draw-permutations.service";
+import { DrawRecordService } from "./draw-record.service";
 import { DrawRenderingService } from "./draw-rendering.service";
 import { DrawCommand } from "./draw.command";
 
@@ -44,15 +48,18 @@ import { DrawCommand } from "./draw.command";
  * the sweep. Asking `ParallelSerpentineService` is what keeps the corpus
  * from carrying the same drawing under several filenames.
  *
- * It also imports `MeanderCharacteristicsModule`, `MeanderDatabaseModule`,
- * `MeanderDecodingModule`, and `MeanderRenderingModule` for `DrawCodeService`'s
- * `--code` drawing mode: the generic decoder and renderer every family's Code
- * is now drawn through, the Characteristic computation that measures the same
- * decoded grid, and the committed sqlite database that mode persists a row
- * to, in place of the file `--type`/`--rows` still writes. `MeanderDatabaseModule`
- * always opens the one committed database file — a test exercising
- * `DrawCodeService` builds its own `TestingModule` against a temporary or
- * in-memory connection instead of importing this module.
+ * It also imports `MeanderCharacteristicsModule`, `MeanderClassificationModule`,
+ * `MeanderDatabaseModule`, `MeanderDecodingModule`, `MeanderEnumerationModule`,
+ * and `MeanderRenderingModule` for the two lattice-first paths `DrawRecordService`
+ * builds a row for: the generic decoder and renderer every family's Code is
+ * now drawn through, the Characteristic computation that measures the same
+ * decoded grid, the family classifier that reads a family off those
+ * Characteristics, the enumeration of the whole unit space the sweep now
+ * walks, and the committed sqlite database both paths persist to, in place of
+ * the file `--type`/`--rows` still writes. `MeanderDatabaseModule` always
+ * opens the one committed database file — a test exercising `DrawCodeService`
+ * or `DrawEnumerationService` builds its own `TestingModule` against a
+ * temporary or in-memory connection instead of importing this module.
  */
 @Module({
   controllers: [],
@@ -60,8 +67,10 @@ import { DrawCommand } from "./draw.command";
   imports: [
     LatticeIdentificationModule,
     MeanderCharacteristicsModule,
+    MeanderClassificationModule,
     MeanderDatabaseModule,
     MeanderDecodingModule,
+    MeanderEnumerationModule,
     MeanderGenerationModule,
     MeanderRenderingModule,
     MosaicNamingModule,
@@ -71,10 +80,12 @@ import { DrawCommand } from "./draw.command";
     DrawCodeService,
     DrawCombinationsService,
     DrawCommand,
+    DrawEnumerationService,
     DrawIndexService,
     DrawNegativePermutationsService,
     DrawParametersService,
     DrawPermutationsService,
+    DrawRecordService,
     DrawRenderingService,
   ],
 })

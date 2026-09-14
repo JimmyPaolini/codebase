@@ -1,7 +1,11 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
+import { MeanderLatticeService } from "../meander-lattice/meander-lattice.service";
+import { MeanderTopologyService } from "../meander-topology/meander-topology.service";
+
 import { MeanderCharacteristicsService } from "./meander-characteristics.service";
+import { MeanderConnectivityService } from "./meander-connectivity.service";
 
 import type { MeanderPointDirections } from "../meander-decoding/meander-decoding.types";
 import type { MeanderCharacteristics } from "./meander-characteristics.types";
@@ -19,6 +23,9 @@ const bare: MeanderPointDirections = {
 const characteristics = (
   options: Partial<MeanderCharacteristics>,
 ): MeanderCharacteristics => ({
+  components: options.components ?? 0,
+  cycles: options.cycles ?? 0,
+  freeEnds: options.freeEnds ?? 0,
   hasBranching: options.hasBranching ?? false,
   hasCrossing: options.hasCrossing ?? false,
   inkTJunctions: options.inkTJunctions ?? 0,
@@ -57,7 +64,12 @@ describe(MeanderCharacteristicsService, () => {
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [MeanderCharacteristicsService],
+      providers: [
+        MeanderCharacteristicsService,
+        MeanderConnectivityService,
+        MeanderLatticeService,
+        MeanderTopologyService,
+      ],
     }).compile();
 
     service = await module.resolve(MeanderCharacteristicsService);
@@ -72,8 +84,10 @@ describe(MeanderCharacteristicsService, () => {
       expect(service.compute([])).toStrictEqual(characteristics({}));
     });
 
-    it("reports no branching or crossing for a single bare point", () => {
-      expect(service.compute([[bare]])).toStrictEqual(characteristics({}));
+    it("reports no branching or crossing for a single bare point, which is one component of its own", () => {
+      expect(service.compute([[bare]])).toStrictEqual(
+        characteristics({ components: 1 }),
+      );
     });
 
     it("reports no branching or crossing for a chain-like code with no junction", () => {
@@ -84,14 +98,21 @@ describe(MeanderCharacteristicsService, () => {
         ],
       ];
 
-      expect(service.compute(grid)).toStrictEqual(characteristics({}));
+      expect(service.compute(grid)).toStrictEqual(
+        characteristics({ components: 1, freeEnds: 2 }),
+      );
     });
 
     it("counts a three-armed ink junction as a T-junction and reports hasBranching", () => {
       const grid = [[{ east: true, north: false, south: true, west: true }]];
 
       expect(service.compute(grid)).toStrictEqual(
-        characteristics({ hasBranching: true, inkTJunctions: 1 }),
+        characteristics({
+          components: 1,
+          cycles: 1,
+          hasBranching: true,
+          inkTJunctions: 1,
+        }),
       );
     });
 
@@ -99,13 +120,19 @@ describe(MeanderCharacteristicsService, () => {
       const grid = [[{ east: true, north: true, south: true, west: true }]];
 
       expect(service.compute(grid)).toStrictEqual(
-        characteristics({ hasCrossing: true, inkXJunctions: 1 }),
+        characteristics({
+          components: 1,
+          cycles: 1,
+          hasCrossing: true,
+          inkXJunctions: 1,
+        }),
       );
     });
 
     it("counts a corner cell's two corridors, an edge cell's three, and the center cell's four, over a fully bare grid", () => {
       expect(service.compute(squareGrid())).toStrictEqual(
         characteristics({
+          components: 16,
           hasBranching: true,
           hasCrossing: true,
           negativeTJunctions: 4,
@@ -118,7 +145,12 @@ describe(MeanderCharacteristicsService, () => {
       const grid = squareGrid({ closeCenterEastCorridor: true });
 
       expect(service.compute(grid)).toStrictEqual(
-        characteristics({ hasBranching: true, negativeTJunctions: 4 }),
+        characteristics({
+          components: 15,
+          freeEnds: 2,
+          hasBranching: true,
+          negativeTJunctions: 4,
+        }),
       );
     });
   });

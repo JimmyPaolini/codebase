@@ -58,6 +58,10 @@ describe(MeanderDatabaseService, () => {
     overrides: Partial<MeanderRecord> & Pick<MeanderRecord, "code">,
   ): MeanderRecord => ({
     columns: 1,
+    components: 1,
+    cycles: 0,
+    family: null,
+    freeEnds: 0,
     hasBranching: false,
     hasCrossing: false,
     inkTJunctions: 0,
@@ -67,6 +71,7 @@ describe(MeanderDatabaseService, () => {
     pitch: 1,
     provenance: "hardcoded",
     rows: 2,
+    subFamily: null,
     svg: "<svg>fixture</svg>\n",
     ...overrides,
   });
@@ -76,6 +81,10 @@ describe(MeanderDatabaseService, () => {
       const saved = await service.save({
         code: "3c9a",
         columns: 2,
+        components: 1,
+        cycles: 0,
+        family: "snake",
+        freeEnds: 0,
         hasBranching: true,
         hasCrossing: false,
         inkTJunctions: 1,
@@ -85,6 +94,7 @@ describe(MeanderDatabaseService, () => {
         pitch: 2,
         provenance: "hardcoded",
         rows: 3,
+        subFamily: "zigzag",
         svg: "<svg>fixture</svg>\n",
       });
 
@@ -93,6 +103,10 @@ describe(MeanderDatabaseService, () => {
       expect(row).toMatchObject({
         code: "3c9a",
         columns: 2,
+        components: 1,
+        cycles: 0,
+        family: "snake",
+        freeEnds: 0,
         hasBranching: true,
         hasCrossing: false,
         inkTJunctions: 1,
@@ -102,6 +116,7 @@ describe(MeanderDatabaseService, () => {
         pitch: 2,
         provenance: "hardcoded",
         rows: 3,
+        subFamily: "zigzag",
         svg: "<svg>fixture</svg>\n",
       });
     });

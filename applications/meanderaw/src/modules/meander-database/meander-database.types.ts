@@ -1,5 +1,7 @@
 // 🏷️ Types
 
+import type { MeanderType } from "../meander-generation/meander-generation.types";
+import type { MosaicSubFamily } from "../mosaic-tile/mosaic-tile.types";
 import type { MEANDER_PROVENANCES } from "./meander-database.constants";
 
 /** Which of the two ways a meander row came to exist: see {@link MEANDER_PROVENANCES}. */
@@ -12,6 +14,10 @@ export type MeanderProvenance = (typeof MEANDER_PROVENANCES)[number];
 export interface MeanderRecord {
   readonly code: string;
   readonly columns: number;
+  readonly components: number;
+  readonly cycles: number;
+  readonly family: MeanderType | null;
+  readonly freeEnds: number;
   readonly hasBranching: boolean;
   readonly hasCrossing: boolean;
   readonly inkTJunctions: number;
@@ -21,5 +27,6 @@ export interface MeanderRecord {
   readonly pitch: number;
   readonly provenance: MeanderProvenance;
   readonly rows: number;
+  readonly subFamily: MosaicSubFamily | null;
   readonly svg: string;
 }

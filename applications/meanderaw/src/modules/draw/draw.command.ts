@@ -18,6 +18,7 @@ import { SUPPORTED_SERPENTINE_FLIPS } from "../parallel-motif/parallel-motif.con
 
 import { DrawCodeService } from "./draw-code.service";
 import { DrawCombinationsService } from "./draw-combinations.service";
+import { DrawEnumerationService } from "./draw-enumeration.service";
 import { DrawIndexService } from "./draw-index.service";
 import { DrawNegativePermutationsService } from "./draw-negative-permutations.service";
 import { DrawParametersService } from "./draw-parameters.service";
@@ -48,7 +49,11 @@ import type {
  *
  * What it draws is decided by whether a drawing was named:
  *
- * - **`draw`** sweeps everything. A bounded, representative sample of the
+ * - **`draw`** sweeps everything. The whole lattice's unit space,
+ *   enumerated by {@link DrawEnumerationService} and written to the
+ *   database — every family's space rather than only `mosaic`'s, with each
+ *   meander's family read off its own structure — beside a bounded,
+ *   representative sample of the
  *   named families' parameter space, enumerated by
  *   {@link DrawCombinationsService} — which the meander charter's property
  *   test also sweeps, so the corpus this writes and the corpus that is gated
@@ -84,7 +89,7 @@ import type {
  */
 @Command({
   description:
-    "Draw meanders: with no drawing named, sweep every one the application can draw (each named family from its own structural minimum through its own maximum rows, with every compatible modifier, plus exhaustive enumerations of the mosaic family's tiles and the negative family's one-column sources) beneath an index page listing them all; with --type and --rows, draw that one",
+    "Draw meanders: with no drawing named, sweep every one the application can draw (the whole lattice's unit space enumerated into the database, classified into a family by each meander's own structure; plus each named family from its own structural minimum through its own maximum rows, with every compatible modifier, and exhaustive enumerations of the mosaic family's tiles and the negative family's one-column sources, beneath an index page listing them all); with --type and --rows, draw that one",
   name: "draw",
   options: { isDefault: true },
 })
@@ -98,6 +103,8 @@ export class DrawCommand extends CommandRunner {
     private readonly drawCodeService: DrawCodeService,
     @Inject(DrawCombinationsService)
     private readonly drawCombinationsService: DrawCombinationsService,
+    @Inject(DrawEnumerationService)
+    private readonly drawEnumerationService: DrawEnumerationService,
     @Inject(DrawIndexService)
     private readonly drawIndexService: DrawIndexService,
     @Inject(DrawParametersService)
@@ -170,8 +177,29 @@ export class DrawCommand extends CommandRunner {
     });
   }
 
-  /** Draws every meander the application can draw, and indexes them all in one page. */
+  /**
+   * Draws every meander the application can draw, and indexes them all in
+   * one page.
+   *
+   * Two corpora, side by side. The lattice-first half enumerates the whole
+   * unit space and writes a database row per meander found — every family's
+   * space now, not only `mosaic`'s, with family membership decided from each
+   * meander's own structure rather than from whichever generator drew it.
+   * The file-writing halves below it are unchanged, and stay that way until
+   * the hardcoded corpus is ingested and issue #819 retires them; the index
+   * page still lists only what they wrote, since nothing yet reads the
+   * database back.
+   *
+   * The enumerated half runs first, so a sweep that cannot decode or render
+   * something it found fails before thousands of files are written.
+   */
   private async sweep(outputDirectory: string): Promise<void> {
+    const enumerated = await this.drawEnumerationService.sweep();
+
+    this.logger.log("✨ Enumerated every family's unit space", undefined, {
+      enumerated,
+    });
+
     const combinations = this.renderCombinations();
 
     this.assertNoPathCollisions(combinations);

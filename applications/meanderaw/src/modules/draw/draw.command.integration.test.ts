@@ -8,18 +8,26 @@ import { LoggerService } from "@codebase/logger";
 
 import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
 import { MeanderCharacteristicsService } from "../meander-characteristics/meander-characteristics.service";
+import { MeanderConnectivityService } from "../meander-characteristics/meander-connectivity.service";
+import { MeanderClassificationService } from "../meander-classification/meander-classification.service";
 import { Meander } from "../meander-database/entities/Meander.entity";
 import { MeanderDatabaseService } from "../meander-database/meander-database.service";
 import { MeanderDecodingModule } from "../meander-decoding/meander-decoding.module";
+import { MeanderLatticeService } from "../meander-lattice/meander-lattice.service";
 import { MeanderRenderingModule } from "../meander-rendering/meander-rendering.module";
+import { MeanderTopologyService } from "../meander-topology/meander-topology.service";
+import { MosaicNamingService } from "../mosaic-naming/mosaic-naming.service";
+import { MosaicTileService } from "../mosaic-tile/mosaic-tile.service";
 import { SvgRenderingService } from "../svg-rendering/svg-rendering.service";
 
 import { DrawCodeService } from "./draw-code.service";
 import { DrawCombinationsService } from "./draw-combinations.service";
+import { DrawEnumerationService } from "./draw-enumeration.service";
 import { DrawIndexService } from "./draw-index.service";
 import { DrawNegativePermutationsService } from "./draw-negative-permutations.service";
 import { DrawParametersService } from "./draw-parameters.service";
 import { DrawPermutationsService } from "./draw-permutations.service";
+import { DrawRecordService } from "./draw-record.service";
 import { DrawRenderingService } from "./draw-rendering.service";
 import { DrawCommand } from "./draw.command";
 
@@ -56,10 +64,21 @@ describe("drawCommand --code mode", () => {
       providers: [
         DrawCommand,
         DrawCodeService,
+        DrawRecordService,
         GridGeometryService,
         MeanderCharacteristicsService,
+        MeanderClassificationService,
+        MeanderConnectivityService,
         MeanderDatabaseService,
+        MeanderLatticeService,
+        MeanderTopologyService,
+        MosaicNamingService,
+        MosaicTileService,
         SvgRenderingService,
+        {
+          provide: DrawEnumerationService,
+          useValue: createMock<DrawEnumerationService>(),
+        },
         {
           provide: LoggerService,
           useValue: createMock<LoggerService>(),
