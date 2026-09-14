@@ -8,7 +8,7 @@ import type { ExampleDocument } from "./types";
 import type {
   TypescriptImportGraph,
   TypescriptProject,
-} from "@codependix/imports";
+} from "@codependix/file-imports";
 
 // 🏷️ Types
 

@@ -1,13 +1,13 @@
 import path from "node:path";
 
 import { ConfigurationService } from "@codependix/configuration";
-import { NeighborhoodService } from "@codependix/nx";
+import { NeighborhoodService } from "@codependix/nx-projects";
 import { Injectable } from "@nestjs/common";
 
 import type { CodependixRunMode } from "../delivery/delivery.types";
 import type { GraphRunContext, MapCommandOptions } from "../map/map.types";
 import type { ResolvedCodependixConfiguration } from "@codependix/configuration";
-import type { NxProject } from "@codependix/nx";
+import type { NxProject } from "@codependix/nx-projects";
 
 /**
  * Resolves everything one run reads, once, before any pass runs.

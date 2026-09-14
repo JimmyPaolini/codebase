@@ -1,12 +1,12 @@
 import { ConfigurationService } from "@codependix/configuration";
-import { NeighborhoodService } from "@codependix/nx";
+import { NeighborhoodService } from "@codependix/nx-projects";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { RunContextService } from "./run-context.service";
 
-import type { NxProject } from "@codependix/nx";
+import type { NxProject } from "@codependix/nx-projects";
 
 /** The projects the mocked workspace reports, tagged for selection. */
 const PROJECTS: NxProject[] = [

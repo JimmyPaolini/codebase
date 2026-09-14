@@ -1,5 +1,5 @@
 import { ConfigurationModule } from "@codependix/configuration";
-import { PythonModule } from "@codependix/imports";
+import { PythonModule } from "@codependix/file-imports";
 import { Module } from "@nestjs/common";
 
 import { DeliveryModule } from "../delivery/delivery.module";

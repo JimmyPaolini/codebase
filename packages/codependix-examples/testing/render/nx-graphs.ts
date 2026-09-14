@@ -7,7 +7,7 @@ import type {
   NxProject,
   NxProjectGraph,
   WorkspaceGraph,
-} from "@codependix/nx";
+} from "@codependix/nx-projects";
 
 // 🏷️ Types
 
