@@ -207,4 +207,51 @@ describe(RenderConfigurationService, () => {
       rootError: null,
     });
   });
+
+  // A configuration that declares none of these still renders a row apiece,
+  // so a reader can tell "declared nothing" from "this listing left it out".
+  it("renders an em dash for every list a configuration left empty", () => {
+    const document = service.render({
+      described: [
+        {
+          configuration: {
+            custom: [],
+            defaultInput: undefined,
+            exclude: [],
+            excludeFrom: [],
+            format: "markdown",
+            inputs: [],
+            limits: [],
+            outputs: [],
+            python: { command: "python3" },
+          } satisfies ResolvedCodometerConfiguration,
+          directory: "packages/bare",
+          error: undefined,
+          path: "packages/bare/codometer.config.ts",
+        },
+      ],
+      format: "markdown",
+      limitRows: [],
+      limitsOnly: false,
+      rootError: undefined,
+    });
+
+    expect(document).toContain("- Inputs: —");
+    expect(document).toContain("- Custom statistics: —");
+    expect(document).toContain("- Exclude files: —");
+  });
+
+  // Every failure this listing carries is a string today, but the field is
+  // optional on the entry, and a reader must never be shown a bare "undefined".
+  it("names an unreadable configuration whose failure went unrecorded", () => {
+    const document = service.render({
+      described: [{ ...UNREADABLE, error: undefined }],
+      format: "markdown",
+      limitRows: [],
+      limitsOnly: false,
+      rootError: undefined,
+    });
+
+    expect(document).toContain("Could not be read: unknown error");
+  });
 });

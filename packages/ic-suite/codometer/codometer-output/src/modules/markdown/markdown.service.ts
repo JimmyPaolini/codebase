@@ -39,10 +39,10 @@ import type {
   WrapInAnchorsArguments,
 } from "./markdown.types";
 import type {
-  CodeStatisticsResult,
   MarkdownAnchorHelpers,
   ResolvedCodometerMarkdownOutput,
 } from "@codometer/configuration";
+import type { CodeStatisticsResult } from "@codometer/core";
 
 /**
  * Writes generated code statistics badges into a markdown file.

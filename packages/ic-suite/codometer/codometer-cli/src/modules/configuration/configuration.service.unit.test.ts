@@ -2,7 +2,7 @@ import {
   ConfigurationService as CodometerConfigurationService,
   DEFAULT_EXCLUDE_GLOBS,
 } from "@codometer/configuration";
-import { DiscoveryService } from "@codometer/discovery";
+import { DiscoveryService } from "@codometer/measurement";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
@@ -13,7 +13,7 @@ import type {
   LoadedConfiguration,
   ResolvedCodometerConfiguration,
 } from "@codometer/configuration";
-import type { DiscoveryResult } from "@codometer/discovery";
+import type { DiscoveryResult } from "@codometer/measurement";
 
 /** A resolved configuration with only the fields these tests read filled in. */
 function buildConfiguration(
@@ -228,6 +228,43 @@ describe(ConfigurationService, () => {
           path: "packages/broken/codometer.config.ts",
         },
       ]);
+    });
+
+    // A loader reached through `jiti` can reject with whatever the
+    // configuration file itself threw, which need not be an `Error` at all.
+    it("reads a thrown value that is not an Error as its own text", async () => {
+      vi.mocked(discoveryService.discoverFiles).mockReturnValue(
+        buildDiscovery(["packages/broken/codometer.config.ts"]),
+      );
+      vi.mocked(codometerConfigurationService.loadConfigurationFile)
+        .mockResolvedValueOnce({
+          configuration: buildConfiguration(),
+          path: undefined,
+        } satisfies LoadedConfiguration)
+        .mockRejectedValueOnce("exploded");
+
+      const { described } = await service.describeConfigurations({
+        configurationPath: undefined,
+        workingDirectory: "/repository",
+      });
+
+      expect(described.map((entry) => entry.error)).toStrictEqual(["exploded"]);
+    });
+
+    it("reads a non-Error thrown for the walk root as its own text", async () => {
+      vi.mocked(discoveryService.discoverFiles).mockReturnValue(
+        buildDiscovery([]),
+      );
+      vi.mocked(
+        codometerConfigurationService.loadConfigurationFile,
+      ).mockRejectedValueOnce("exploded");
+
+      const { rootError } = await service.describeConfigurations({
+        configurationPath: undefined,
+        workingDirectory: "/repository",
+      });
+
+      expect(rootError).toBe("exploded");
     });
   });
 

@@ -9,7 +9,7 @@ import type {
   CodometerReport,
   ReportMetric,
   ReportTarget,
-} from "@codometer/cli";
+} from "@codometer/core";
 
 /**
  * Drives the real codometer command line over the sample corpus.
@@ -106,11 +106,11 @@ const typescriptConfigurationPath = path.resolve(
 /**
  * The report shape, re-exported from the tool that produces it.
  *
- * Tests read it from here rather than from `@codometer/cli` directly, so the
+ * Tests read it from here rather than from `@codometer/core` directly, so the
  * harness stays the one seam this package tests through — and so the day the
  * tool's report type changes, it changes here.
  */
-export type { CodometerReport } from "@codometer/cli";
+export type { CodometerReport } from "@codometer/core";
 
 /** What one run of the command line left behind. */
 export interface CodometerRun {
@@ -123,7 +123,7 @@ export interface CodometerRun {
  * One breaching instance a `comment` selector's counter found.
  *
  * Derived from the report rather than imported on its own, because the report
- * type is what `@codometer/cli` exports and this is the shape a comment-budget
+ * type is what `@codometer/core` exports and this is the shape a comment-budget
  * counter's `instances` holds — a metric that only counts leaves this `null`,
  * so a comment-budget metric is the only one where indexing into it is safe.
  */

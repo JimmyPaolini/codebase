@@ -1,5 +1,33 @@
 // 📤 Exports
 
+export {
+  codometerReportSchema,
+  REPORT_GLOBS,
+} from "./modules/changes/changes.constants";
+export { ChangesModule } from "./modules/changes/changes.module";
+export { ChangesService } from "./modules/changes/changes.service";
+export type {
+  CollectProjectRowsArguments,
+  CollectRowsArguments,
+  MetricCollection,
+  MetricRow,
+  MetricSeverity,
+  ProjectFailure,
+  ProjectReport,
+} from "./modules/changes/changes.types";
+export { DeliveryModule } from "./modules/delivery/delivery.module";
+export { DeliveryService } from "./modules/delivery/delivery.service";
+export type { DeliverArguments } from "./modules/delivery/delivery.types";
+export { DestinationsModule } from "./modules/destinations/destinations.module";
+export { DestinationsService } from "./modules/destinations/destinations.service";
+export type {
+  ListOutputPathsArguments,
+  ResolveDestinationsArguments,
+  ResolveDestinationsResult,
+  ResolvedJsonDestination,
+  ResolvedMarkdownDestination,
+  RunDestinations,
+} from "./modules/destinations/destinations.types";
 export { DocumentsModule } from "./modules/documents/documents.module";
 export { DocumentsService } from "./modules/documents/documents.service";
 export type {
@@ -35,3 +63,5 @@ export {
   formatValue,
   hasChanged,
 } from "./modules/render/render.utilities";
+export { ReportModule } from "./modules/report/report.module";
+export { ReportService } from "./modules/report/report.service";

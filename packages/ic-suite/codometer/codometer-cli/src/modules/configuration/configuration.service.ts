@@ -5,7 +5,7 @@ import {
   CONFIGURATION_FILE_NAMES,
   DEFAULT_EXCLUDE_GLOBS,
 } from "@codometer/configuration";
-import { DiscoveryService } from "@codometer/discovery";
+import { DiscoveryService } from "@codometer/measurement";
 import { formatBytes, formatCount } from "@codometer/output";
 import { Injectable } from "@nestjs/common";
 

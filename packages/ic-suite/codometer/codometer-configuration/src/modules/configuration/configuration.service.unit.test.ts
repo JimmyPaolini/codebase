@@ -2,12 +2,18 @@ import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
+import {
+  ConfigurationFileNotFoundError,
+  InvalidConfigurationError,
+  InvalidLimitValueError,
+  UnknownConfigurationFileTypeError,
+} from "@codometer/core";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
+import { ConfigurationFlagsService } from "./configuration-flags.service";
 import { ConfigurationLoaderService } from "./configuration-loader.service";
 import {
-  ConfigurationFileNotFoundError,
   DEFAULT_CUSTOM_STATISTIC_COLORS,
   DEFAULT_INPUT_COMPRESSION,
   DEFAULT_INPUT_DIRECTORY,
@@ -17,9 +23,6 @@ import {
   DEFAULT_MARKDOWN_END_MARKER,
   DEFAULT_MARKDOWN_START_MARKER,
   DEFAULT_PYTHON_COMMAND,
-  InvalidConfigurationError,
-  InvalidLimitValueError,
-  UnknownConfigurationFileTypeError,
 } from "./configuration.constants";
 import { ConfigurationService } from "./configuration.service";
 
@@ -77,7 +80,11 @@ describe(ConfigurationService, () => {
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [ConfigurationLoaderService, ConfigurationService],
+      providers: [
+        ConfigurationFlagsService,
+        ConfigurationLoaderService,
+        ConfigurationService,
+      ],
     }).compile();
 
     service = await module.resolve(ConfigurationService);
@@ -1356,5 +1363,43 @@ describe(ConfigurationService, () => {
     expect(configuration.exclude).toContain("folder/**");
     expect(configuration.exclude).not.toContain("ancestor/**");
     expect(configuration.python.command).toBe(DEFAULT_PYTHON_COMMAND);
+  });
+  // 🚩 The command line, read through the layer's one public service
+
+  // A consumer injects this service and nothing else from the package, so
+  // every flag the run is configured by is answered here. What each one means
+  // is asserted against `ConfigurationFlagsService` itself.
+  describe("the command line it reads beside the file", () => {
+    it("reads a written option as itself", () => {
+      expect(service.parseOptionalOption("reports")).toBe("reports");
+      expect(service.parseDefaultedOption(undefined, "markdown")).toBe(
+        "markdown",
+      );
+      expect(service.parseDirectoryOption("packages/logger")).toBe(
+        "packages/logger",
+      );
+    });
+
+    it("reads --format, falling back to the configured one", () => {
+      const errors: string[] = [];
+
+      expect(service.resolveFormat("json", "markdown", errors)).toBe("json");
+      expect(service.resolveFormat(undefined, "markdown", errors)).toBe(
+        "markdown",
+      );
+      expect(errors).toStrictEqual([]);
+    });
+
+    it("reads what the run writes and what it fails on", () => {
+      expect(service.selectMode({ check: "limits" })).toStrictEqual({
+        errors: [],
+        mode: {
+          checksLimits: true,
+          checksReports: false,
+          writesJson: false,
+          writesMarkdown: false,
+        },
+      });
+    });
   });
 });

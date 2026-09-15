@@ -341,65 +341,63 @@ const codependixConfiguration: CodependixConfiguration = {
       },
       // ⏲️ Codometer
       {
-        from: { tags: ["name:codometer-configuration"] },
+        from: { tags: ["name:codometer-core"] },
         kind: "forbid",
         message:
-          "The codometer chain points one way: configuration and the measurement packages are leaves, the output renderer joins a change collection to a report, and the command-line host composes all of them.",
-        name: "codometer-configuration-is-a-leaf",
+          "The codometer chain is the ic-suite five-layer spine: `core <- configuration <- measurement <- output <- cli`. Core is the contracts leaf, configuration resolves the config file and the command line, measurement counts, output owns every render target including report diffing, and the command-line host composes all of them.",
+        name: "codometer-core-is-a-leaf",
         to: { id: ["*"] },
       },
       {
-        from: { tags: ["name:codometer-changes"] },
+        from: { tags: ["name:codometer-configuration"] },
         kind: "allow",
         message:
-          "The codometer chain points one way: configuration and the measurement packages are leaves, the output renderer joins a change collection to a report, and the command-line host composes all of them.",
-        name: "codometer-changes-layer",
-        to: { tags: ["name:logger"] },
-      },
-      {
-        from: { tags: ["name:codometer-discovery"] },
-        kind: "allow",
-        message:
-          "The codometer chain points one way: configuration and the measurement packages are leaves, the output renderer joins a change collection to a report, and the command-line host composes all of them.",
-        name: "codometer-discovery-layer",
-        to: { tags: ["name:codometer-configuration", "name:logger"] },
+          "The codometer chain is the ic-suite five-layer spine: `core <- configuration <- measurement <- output <- cli`. Core is the contracts leaf, configuration resolves the config file and the command line, measurement counts, output owns every render target including report diffing, and the command-line host composes all of them.",
+        name: "codometer-configuration-layer",
+        to: {
+          tags: ["name:codometer-core"],
+        },
       },
       {
         from: { tags: ["name:codometer-languages"] },
         kind: "allow",
         message:
-          "The codometer chain points one way: configuration and the measurement packages are leaves, the output renderer joins a change collection to a report, and the command-line host composes all of them.",
+          "The codometer chain is the ic-suite five-layer spine: `core <- configuration <- measurement <- output <- cli`. Core is the contracts leaf, configuration resolves the config file and the command line, measurement counts, output owns every render target including report diffing, and the command-line host composes all of them.",
         name: "codometer-languages-layer",
-        to: { tags: ["name:codometer-configuration", "name:logger"] },
-      },
-      {
-        from: { tags: ["name:codometer-customization"] },
-        kind: "allow",
-        message:
-          "The codometer chain points one way: configuration and the measurement packages are leaves, the output renderer joins a change collection to a report, and the command-line host composes all of them.",
-        name: "codometer-customization-layer",
         to: {
-          tags: ["name:codometer-configuration", "name:codometer-languages"],
+          tags: [
+            "name:codometer-configuration",
+            "name:codometer-core",
+            "name:logger",
+          ],
         },
       },
       {
-        from: { tags: ["name:codometer-size"] },
+        from: { tags: ["name:codometer-measurement"] },
         kind: "allow",
         message:
-          "The codometer chain points one way: configuration and the measurement packages are leaves, the output renderer joins a change collection to a report, and the command-line host composes all of them.",
-        name: "codometer-size-layer",
-        to: { tags: ["name:codometer-configuration", "name:logger"] },
+          "The codometer chain is the ic-suite five-layer spine: `core <- configuration <- measurement <- output <- cli`. Core is the contracts leaf, configuration resolves the config file and the command line, measurement counts, output owns every render target including report diffing, and the command-line host composes all of them.",
+        name: "codometer-measurement-layer",
+        to: {
+          tags: [
+            "name:codometer-configuration",
+            "name:codometer-core",
+            "name:codometer-languages",
+            "name:logger",
+          ],
+        },
       },
       {
         from: { tags: ["name:codometer-output"] },
         kind: "allow",
         message:
-          "The codometer chain points one way: configuration and the measurement packages are leaves, the output renderer joins a change collection to a report, and the command-line host composes all of them.",
+          "The codometer chain is the ic-suite five-layer spine: `core <- configuration <- measurement <- output <- cli`. Core is the contracts leaf, configuration resolves the config file and the command line, measurement counts, output owns every render target including report diffing, and the command-line host composes all of them.",
         name: "codometer-output-layer",
         to: {
           tags: [
-            "name:codometer-changes",
             "name:codometer-configuration",
+            "name:codometer-core",
+            "name:codometer-measurement",
             "name:logger",
           ],
         },
@@ -408,17 +406,14 @@ const codependixConfiguration: CodependixConfiguration = {
         from: { tags: ["name:codometer-cli"] },
         kind: "allow",
         message:
-          "The codometer chain points one way: configuration and the measurement packages are leaves, the output renderer joins a change collection to a report, and the command-line host composes all of them.",
+          "The codometer chain is the ic-suite five-layer spine: `core <- configuration <- measurement <- output <- cli`. Core is the contracts leaf, configuration resolves the config file and the command line, measurement counts, output owns every render target including report diffing, and the command-line host composes all of them.",
         name: "codometer-cli-layer",
         to: {
           tags: [
-            "name:codometer-changes",
             "name:codometer-configuration",
-            "name:codometer-customization",
-            "name:codometer-discovery",
-            "name:codometer-languages",
+            "name:codometer-core",
+            "name:codometer-measurement",
             "name:codometer-output",
-            "name:codometer-size",
             "name:logger",
           ],
         },

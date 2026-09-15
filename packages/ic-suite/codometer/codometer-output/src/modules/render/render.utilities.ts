@@ -1,4 +1,5 @@
-import type { MetricRow, MetricUnit } from "@codometer/changes";
+import type { MetricRow } from "../changes/changes.types";
+import type { MetricUnit } from "@codometer/core";
 
 /**
  * Formats a byte count, switching to megabytes once kilobytes get unwieldy.

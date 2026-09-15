@@ -469,32 +469,26 @@ export default [
               ],
               sourceTag: "name:callidescope-nx",
             },
-            // Codometer package graph. The configuration reader, the change
-            // diffing package, the language analyzers, and the measurement
-            // support packages (discovery, size, customization) are leaves;
-            // the output renderer joins a change collection to a rendered
-            // report, so it depends on the diffing and configuration
-            // packages; the CLI measures whatever the configuration
-            // describes and reports on all of them, so the dependency only
-            // ever points that way.
+            // Codometer package graph, on the ic-suite five-layer spine:
+            // `core <- configuration <- measurement <- output <- cli`. The
+            // contracts leaf holds the measured vocabulary and depends on
+            // nothing; configuration resolves the config file and the command
+            // line over it; the language analyzers and the measurement
+            // package do the measuring; output owns every render target,
+            // report diffing included; and the command-line host wires
+            // commands over all of them.
             {
               onlyDependOnLibsWithTags: [],
+              sourceTag: "name:codometer-core",
+            },
+            {
+              onlyDependOnLibsWithTags: ["name:codometer-core"],
               sourceTag: "name:codometer-configuration",
             },
             {
-              onlyDependOnLibsWithTags: ["name:logger"],
-              sourceTag: "name:codometer-changes",
-            },
-            {
               onlyDependOnLibsWithTags: [
                 "name:codometer-configuration",
-                "name:logger",
-              ],
-              sourceTag: "name:codometer-discovery",
-            },
-            {
-              onlyDependOnLibsWithTags: [
-                "name:codometer-configuration",
+                "name:codometer-core",
                 "name:logger",
               ],
               sourceTag: "name:codometer-languages",
@@ -502,34 +496,27 @@ export default [
             {
               onlyDependOnLibsWithTags: [
                 "name:codometer-configuration",
+                "name:codometer-core",
                 "name:codometer-languages",
-              ],
-              sourceTag: "name:codometer-customization",
-            },
-            {
-              onlyDependOnLibsWithTags: [
-                "name:codometer-configuration",
                 "name:logger",
               ],
-              sourceTag: "name:codometer-size",
+              sourceTag: "name:codometer-measurement",
             },
             {
               onlyDependOnLibsWithTags: [
-                "name:codometer-changes",
                 "name:codometer-configuration",
+                "name:codometer-core",
+                "name:codometer-measurement",
                 "name:logger",
               ],
               sourceTag: "name:codometer-output",
             },
             {
               onlyDependOnLibsWithTags: [
-                "name:codometer-changes",
                 "name:codometer-configuration",
-                "name:codometer-customization",
-                "name:codometer-discovery",
-                "name:codometer-languages",
+                "name:codometer-core",
+                "name:codometer-measurement",
                 "name:codometer-output",
-                "name:codometer-size",
                 "name:logger",
               ],
               sourceTag: "name:codometer-cli",

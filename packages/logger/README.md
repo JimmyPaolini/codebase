@@ -144,12 +144,10 @@ graph LR
   codependix_examples["codependix-examples"]
   codependix_nestjs_modules["codependix-nestjs-modules"]
   codependix_output["codependix-output"]
-  codometer_changes["codometer-changes"]
   codometer_cli["codometer-cli"]
-  codometer_discovery["codometer-discovery"]
   codometer_languages["codometer-languages"]
+  codometer_measurement["codometer-measurement"]
   codometer_output["codometer-output"]
-  codometer_size["codometer-size"]
   conformetry_cli["conformetry-cli"]
   conformetry_nx["conformetry-nx"]
   lexico_ingestion["lexico-ingestion"]
@@ -166,12 +164,10 @@ graph LR
   codependix_examples --> logger
   codependix_nestjs_modules --> logger
   codependix_output --> logger
-  codometer_changes --> logger
   codometer_cli --> logger
-  codometer_discovery --> logger
   codometer_languages --> logger
+  codometer_measurement --> logger
   codometer_output --> logger
-  codometer_size --> logger
   conformetry_cli --> logger
   conformetry_nx --> logger
   lexico_ingestion --> logger

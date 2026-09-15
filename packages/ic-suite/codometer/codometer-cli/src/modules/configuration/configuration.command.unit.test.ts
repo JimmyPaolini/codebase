@@ -1,4 +1,4 @@
-import { InputService } from "@codometer/configuration";
+import { ConfigurationModule as CodometerConfigurationModule } from "@codometer/configuration";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import {
@@ -26,9 +26,9 @@ describe(ConfigurationCommand, () => {
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
+      imports: [CodometerConfigurationModule],
       providers: [
         ConfigurationCommand,
-        InputService,
         {
           provide: ConfigurationService,
           useValue: createMock<ConfigurationService>(),
@@ -66,9 +66,9 @@ describe(ConfigurationCommand, () => {
 
   it("sets logger context", async () => {
     const module = await Test.createTestingModule({
+      imports: [CodometerConfigurationModule],
       providers: [
         ConfigurationCommand,
-        InputService,
         {
           provide: ConfigurationService,
           useValue: createMock<ConfigurationService>(),
