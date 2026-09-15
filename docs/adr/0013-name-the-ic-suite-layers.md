@@ -93,6 +93,10 @@ independently usable analyzer, named for what it analyzes.**
   this ADR's analysis-layer rule exists to prevent. The rule that replaces
   convergence — one package per independently usable analyzer, named for what
   it analyzes — is recorded above.
+- **The five-layer spine above, with `core` as pure contracts and the
+  analysis layer named per suite rather than converged.** Chosen. It is what
+  the layer table, the core-versus-configuration test, and the per-toolchain
+  package plan in this ADR all describe.
 
 ## The no-shared-package constraint
 
