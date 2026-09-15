@@ -173,6 +173,7 @@ const codependixConfiguration: CodependixConfiguration = {
         name: "applications-depend-only-on-packages",
         to: { tags: ["type:package"] },
       },
+      // 🔭 Callidescope
       {
         from: { tags: ["name:callidescope-configuration"] },
         kind: "forbid",
@@ -234,6 +235,31 @@ const codependixConfiguration: CodependixConfiguration = {
           ],
         },
       },
+      // 🕸️ Codependix
+      {
+        from: {
+          id: [
+            "codependix-configuration",
+            "codependix-file-imports",
+            "codependix-nestjs-modules",
+            "codependix-nx-projects",
+          ],
+        },
+        kind: "forbid",
+        message:
+          "The four graph builders and the configuration package are leaves: none of them may depend on another codependix package. Only codependix-cli composes them, which is what lets a host take one graph builder without dragging the others behind it.",
+        name: "codependix-graph-builders-are-leaves",
+        to: { id: ["codependix-*"] },
+      },
+      {
+        from: { id: ["codependix-boundaries"] },
+        kind: "forbid",
+        message:
+          "codependix-boundaries builds each level's graph and judges it, and is called by a host rather than calling one. Depending back on codependix-cli would close a cycle between the host and the logic it hosts, which is the one direction this package may never point.",
+        name: "codependix-boundaries-does-not-reach-the-host",
+        to: { id: ["codependix-cli"] },
+      },
+      // ⏲️ Codometer
       {
         from: { tags: ["name:codometer-configuration"] },
         kind: "forbid",
@@ -317,6 +343,7 @@ const codependixConfiguration: CodependixConfiguration = {
           ],
         },
       },
+      // 👔 Conformetry
       {
         from: { tags: ["name:conformetry-core"] },
         kind: "forbid",
@@ -460,29 +487,6 @@ const codependixConfiguration: CodependixConfiguration = {
         message:
           "Two projects that depend on each other cannot be built, released, or reasoned about apart. Stated here rather than left to Nx because an implicit edge closes a cycle just as a real import does, and `@nx/enforce-module-boundaries` has no import statement to flag for one.",
         name: "no-project-cycles",
-      },
-      {
-        from: {
-          id: [
-            "codependix-configuration",
-            "codependix-file-imports",
-            "codependix-nestjs-modules",
-            "codependix-nx-projects",
-          ],
-        },
-        kind: "forbid",
-        message:
-          "The four graph builders and the configuration package are leaves: none of them may depend on another codependix package. Only codependix-cli composes them, which is what lets a host take one graph builder without dragging the others behind it.",
-        name: "codependix-graph-builders-are-leaves",
-        to: { id: ["codependix-*"] },
-      },
-      {
-        from: { id: ["codependix-boundaries"] },
-        kind: "forbid",
-        message:
-          "codependix-boundaries builds each level's graph and judges it, and is called by a host rather than calling one. Depending back on codependix-cli would close a cycle between the host and the logic it hosts, which is the one direction this package may never point.",
-        name: "codependix-boundaries-does-not-reach-the-host",
-        to: { id: ["codependix-cli"] },
       },
     ],
   },
