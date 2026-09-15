@@ -1,27 +1,3 @@
-export type {
-  CallableBreadthReport,
-  CallableDocumentation,
-  CallableId,
-  CallableKind,
-  CallableNode,
-  CallableParameter,
-  CallableSignature,
-  CallEdge,
-  CallGraphResult,
-  CallGraphSummary,
-  CallStack,
-  DeepStackFinding,
-  EdgeResolution,
-  EntryPoint,
-  EntryPointKind,
-  ProjectReport,
-  SourceLocation,
-  StackFrame,
-  UnresolvedCall,
-  UnresolvedReason,
-  WideCallableCallee,
-  WideCallableFinding,
-} from "./modules/configuration/call-graph.types";
 // 📤 Exports
 export {
   CALLIDESCOPE_OUTPUT_FORMATS,
@@ -82,10 +58,7 @@ export type {
   WriteMarkdownArguments,
   WriteMarkdownOutput,
 } from "./modules/configuration/configuration.types";
-export { ProjectConfigurationService } from "./modules/configuration/project-configuration.service";
 export { flagResolutionError } from "./modules/flag-resolution/flag-resolution.constants";
-export { FlagResolutionModule } from "./modules/flag-resolution/flag-resolution.module";
-export { FlagResolutionService } from "./modules/flag-resolution/flag-resolution.service";
 export type {
   CallidescopeRunFlags,
   ResolvedRunFlags,
@@ -95,6 +68,20 @@ export {
   missingInputError,
   promptCancelledError,
 } from "./modules/input/input.constants";
-export { InputModule } from "./modules/input/input.module";
-export { InputService } from "./modules/input/input.service";
 export type { CallidescopeFormatOptions } from "./modules/input/input.types";
+export {
+  CHECK_BREADTH,
+  CHECK_DEPTH,
+  CHECK_NAMES,
+  CHECK_REPORTS,
+  CHECK_SEPARATOR,
+  DESTINATION_FLAG_NAMES,
+} from "./modules/run-plan/run-plan.constants";
+export type {
+  AddressCommandOptions,
+  CallidescopeCommandOptions,
+  PreparedLookup,
+  PreparedRun,
+  RunMode,
+  RunPreparation,
+} from "./modules/run-plan/run-plan.types";

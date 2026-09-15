@@ -175,30 +175,45 @@ const codependixConfiguration: CodependixConfiguration = {
       },
       // 🔭 Callidescope
       {
-        from: { tags: ["name:callidescope-configuration"] },
+        from: { tags: ["name:callidescope-core"] },
         kind: "forbid",
         message:
-          "The callidescope chain points one way: configuration is the leaf, the graph builder reads it, the output renderer reads both, the command-line host composes all three, and the Nx plugin sits on top so `@nx/devkit` never reaches a package that traces.",
-        name: "callidescope-configuration-is-a-leaf",
+          "The callidescope spine points one way: core is the contracts leaf, configuration resolves the file and the flags over it, the graph builder analyzes, the output renderer reads both, the command-line host composes them, and the Nx plugin sits on top so `@nx/devkit` never reaches a package that traces.",
+        name: "callidescope-core-is-a-leaf",
         to: { id: ["*"] },
+      },
+      {
+        from: { tags: ["name:callidescope-configuration"] },
+        kind: "allow",
+        message:
+          "The callidescope spine points one way: core is the contracts leaf, configuration resolves the file and the flags over it, the graph builder analyzes, the output renderer reads both, the command-line host composes them, and the Nx plugin sits on top so `@nx/devkit` never reaches a package that traces.",
+        name: "callidescope-configuration-layer",
+        to: { tags: ["name:callidescope-core", "name:logger"] },
       },
       {
         from: { tags: ["name:callidescope-graph"] },
         kind: "allow",
         message:
-          "The callidescope chain points one way: configuration is the leaf, the graph builder reads it, the output renderer reads both, the command-line host composes all three, and the Nx plugin sits on top so `@nx/devkit` never reaches a package that traces.",
+          "The callidescope spine points one way: core is the contracts leaf, configuration resolves the file and the flags over it, the graph builder analyzes, the output renderer reads both, the command-line host composes them, and the Nx plugin sits on top so `@nx/devkit` never reaches a package that traces.",
         name: "callidescope-graph-layer",
-        to: { tags: ["name:callidescope-configuration", "name:logger"] },
+        to: {
+          tags: [
+            "name:callidescope-configuration",
+            "name:callidescope-core",
+            "name:logger",
+          ],
+        },
       },
       {
         from: { tags: ["name:callidescope-output"] },
         kind: "allow",
         message:
-          "The callidescope chain points one way: configuration is the leaf, the graph builder reads it, the output renderer reads both, the command-line host composes all three, and the Nx plugin sits on top so `@nx/devkit` never reaches a package that traces.",
+          "The callidescope spine points one way: core is the contracts leaf, configuration resolves the file and the flags over it, the graph builder analyzes, the output renderer reads both, the command-line host composes them, and the Nx plugin sits on top so `@nx/devkit` never reaches a package that traces.",
         name: "callidescope-output-layer",
         to: {
           tags: [
             "name:callidescope-configuration",
+            "name:callidescope-core",
             "name:callidescope-graph",
             "name:logger",
           ],
@@ -208,11 +223,12 @@ const codependixConfiguration: CodependixConfiguration = {
         from: { tags: ["name:callidescope-cli"] },
         kind: "allow",
         message:
-          "The callidescope chain points one way: configuration is the leaf, the graph builder reads it, the output renderer reads both, the command-line host composes all three, and the Nx plugin sits on top so `@nx/devkit` never reaches a package that traces.",
+          "The callidescope spine points one way: core is the contracts leaf, configuration resolves the file and the flags over it, the graph builder analyzes, the output renderer reads both, the command-line host composes them, and the Nx plugin sits on top so `@nx/devkit` never reaches a package that traces.",
         name: "callidescope-cli-layer",
         to: {
           tags: [
             "name:callidescope-configuration",
+            "name:callidescope-core",
             "name:callidescope-graph",
             "name:callidescope-output",
             "name:logger",
@@ -223,12 +239,13 @@ const codependixConfiguration: CodependixConfiguration = {
         from: { tags: ["name:callidescope-nx"] },
         kind: "allow",
         message:
-          "The callidescope chain points one way: configuration is the leaf, the graph builder reads it, the output renderer reads both, the command-line host composes all three, and the Nx plugin sits on top so `@nx/devkit` never reaches a package that traces.",
+          "The callidescope spine points one way: core is the contracts leaf, configuration resolves the file and the flags over it, the graph builder analyzes, the output renderer reads both, the command-line host composes them, and the Nx plugin sits on top so `@nx/devkit` never reaches a package that traces.",
         name: "callidescope-nx-layer",
         to: {
           tags: [
             "name:callidescope-cli",
             "name:callidescope-configuration",
+            "name:callidescope-core",
             "name:callidescope-graph",
             "name:callidescope-output",
             "name:logger",

@@ -24,7 +24,7 @@ import type {
   CallEdge,
   SourceLocation,
   UnresolvedCall,
-} from "@callidescope/configuration";
+} from "@callidescope/core";
 
 /**
  * Turns every callable's body into edges in the call graph.

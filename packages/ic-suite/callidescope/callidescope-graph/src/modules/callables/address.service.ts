@@ -14,7 +14,7 @@ import type {
   ResolveAddressArguments,
 } from "./address.types";
 import type { DiscoveredCallable } from "./callables.types";
-import type { CallableNode } from "@callidescope/configuration";
+import type { CallableNode } from "@callidescope/core";
 
 /**
  * Resolves a human-typed callable address to the callable it names.

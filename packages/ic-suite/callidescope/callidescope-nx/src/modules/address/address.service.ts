@@ -1,11 +1,13 @@
-import { AddressLookupService, AddressReportService } from "@callidescope/cli";
+import { AddressLookupService } from "@callidescope/cli";
 import { DEFAULT_OUTPUT_FORMAT } from "@callidescope/configuration";
 import { AddressDepthService, BreadthService } from "@callidescope/graph";
+import { AddressReportService } from "@callidescope/output";
 import { Injectable } from "@nestjs/common";
 
 import type { LookupArguments, LookupResult } from "./address.types";
-import type { BreadthReport, LocatedWorkspace } from "@callidescope/cli";
-import type { CallableId } from "@callidescope/configuration";
+import type { LocatedWorkspace } from "@callidescope/cli";
+import type { CallableId } from "@callidescope/core";
+import type { BreadthReport } from "@callidescope/output";
 
 /**
  * Answers `depth` and `breadth` about the callables it is named, inside a

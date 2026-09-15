@@ -1,8 +1,8 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
+import { ConfigurationFileService } from "../configuration/configuration-file.service";
 import { DEFAULT_EXCLUDE_GLOBS } from "../configuration/configuration.constants";
-import { ConfigurationService } from "../configuration/configuration.service";
 
 import { FlagResolutionService } from "./flag-resolution.service";
 
@@ -17,15 +17,15 @@ import type {
 // cspell:ignore markdwon
 
 describe(FlagResolutionService, () => {
-  let configurationService: ConfigurationService;
+  let configurationService: ConfigurationFileService;
   let service: FlagResolutionService;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [ConfigurationService, FlagResolutionService],
+      providers: [ConfigurationFileService, FlagResolutionService],
     }).compile();
 
-    configurationService = await module.resolve(ConfigurationService);
+    configurationService = await module.resolve(ConfigurationFileService);
     service = await module.resolve(FlagResolutionService);
   });
 

@@ -6,7 +6,7 @@ import { ConfigurationService } from "./configuration.service";
 import { ProjectConfigurationService } from "./project-configuration.service";
 
 describe(ConfigurationModule, () => {
-  it("exports and provides both configuration services", () => {
+  it("exports the facade alone, and provides what it is built from", () => {
     const exportsMetadata = Reflect.getMetadata(
       MODULE_METADATA.EXPORTS,
       ConfigurationModule,
@@ -16,8 +16,7 @@ describe(ConfigurationModule, () => {
       ConfigurationModule,
     ) as undefined | unknown[];
 
-    expect(exportsMetadata).toContain(ConfigurationService);
-    expect(exportsMetadata).toContain(ProjectConfigurationService);
+    expect(exportsMetadata).toStrictEqual([ConfigurationService]);
     expect(providersMetadata).toContain(ConfigurationService);
     expect(providersMetadata).toContain(ProjectConfigurationService);
   });

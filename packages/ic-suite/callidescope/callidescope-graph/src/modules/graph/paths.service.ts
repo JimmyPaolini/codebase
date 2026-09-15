@@ -5,7 +5,7 @@ import { SignaturesService } from "../signatures/signatures.service";
 
 import type { DiscoveredCallable } from "../callables/callables.types";
 import type { CondensedGraph, DepthMeasurement } from "./graph.types";
-import type { CallableId, StackFrame } from "@callidescope/configuration";
+import type { CallableId, StackFrame } from "@callidescope/core";
 
 /**
  * Rebuilds the single deepest call stack below an entry point.

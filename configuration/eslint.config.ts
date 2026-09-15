@@ -410,18 +410,27 @@ export default [
               onlyDependOnLibsWithTags: ["type:package"],
               sourceTag: "type:application",
             },
-            // Callidescope package graph. The configuration reader is the
-            // leaf; the graph builder depends only on it; the output renderer
-            // depends on both the configuration and the graph it renders; the
-            // CLI orchestrates all three, so the dependency only ever points
-            // that way.
+            // Callidescope package graph. Core, holding the domain vocabulary
+            // and nothing executable, is the leaf; the configuration package
+            // resolves the file and the flags over it; the graph builder
+            // analyzes; the output renderer depends on the configuration and
+            // the graph it renders; the CLI composes them, so the dependency
+            // only ever points that way.
             {
               onlyDependOnLibsWithTags: [],
+              sourceTag: "name:callidescope-core",
+            },
+            {
+              onlyDependOnLibsWithTags: [
+                "name:callidescope-core",
+                "name:logger",
+              ],
               sourceTag: "name:callidescope-configuration",
             },
             {
               onlyDependOnLibsWithTags: [
                 "name:callidescope-configuration",
+                "name:callidescope-core",
                 "name:logger",
               ],
               sourceTag: "name:callidescope-graph",
@@ -429,6 +438,7 @@ export default [
             {
               onlyDependOnLibsWithTags: [
                 "name:callidescope-configuration",
+                "name:callidescope-core",
                 "name:callidescope-graph",
                 "name:logger",
               ],
@@ -437,6 +447,7 @@ export default [
             {
               onlyDependOnLibsWithTags: [
                 "name:callidescope-configuration",
+                "name:callidescope-core",
                 "name:callidescope-graph",
                 "name:callidescope-output",
                 "name:logger",
@@ -451,6 +462,7 @@ export default [
               onlyDependOnLibsWithTags: [
                 "name:callidescope-cli",
                 "name:callidescope-configuration",
+                "name:callidescope-core",
                 "name:callidescope-graph",
                 "name:callidescope-output",
                 "name:logger",

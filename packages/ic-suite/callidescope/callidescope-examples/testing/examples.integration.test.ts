@@ -17,7 +17,7 @@ import type {
   CallGraphResult,
   DeepStackFinding,
   ProjectReport,
-} from "@callidescope/configuration";
+} from "@callidescope/core";
 
 // 🔭 Fixture expectations
 
@@ -618,10 +618,15 @@ describe("callidescope examples (integration)", () => {
       // repository configures. The other refusal — the workspace root — is
       // only reachable through that one here, so this list stands for the
       // first rule rather than for both.
+      //
+      // `callidescope-core` is reached because the result vocabulary moved
+      // down into it, out of `callidescope-configuration`: one project became
+      // two, and neither refusal above is weakened by the addition.
       expect(
         result.projects.map((project) => project.projectName),
       ).toStrictEqual([
         "packages/ic-suite/callidescope/callidescope-configuration",
+        "packages/ic-suite/callidescope/callidescope-core",
         EXAMPLES_DIRECTORY,
         GATED_LEAF_DIRECTORY,
         "packages/ic-suite/codependix/codependix-configuration",
@@ -712,8 +717,16 @@ describe("callidescope examples (integration)", () => {
           displayName: "ConfigurationService.resolveConfiguration",
           project: "packages/ic-suite/callidescope/callidescope-configuration",
         },
+        // Two frames inside the dependency rather than one: that package
+        // publishes a single facade, and the facade forwards to the loader
+        // behind it. Which is the point of the fixture — the trace follows
+        // the call as far as the closure allows, however many hops that is.
         {
-          displayName: "ConfigurationService.resolveEntryPoints",
+          displayName: "ConfigurationFileService.resolveConfiguration",
+          project: "packages/ic-suite/callidescope/callidescope-configuration",
+        },
+        {
+          displayName: "ConfigurationFileService.resolveEntryPoints",
           project: "packages/ic-suite/callidescope/callidescope-configuration",
         },
       ]);

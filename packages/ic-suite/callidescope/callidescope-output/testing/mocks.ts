@@ -2,13 +2,15 @@ import { createMock } from "@golevelup/ts-vitest";
 import { afterEach, beforeEach, vi } from "vitest";
 
 import type {
-  CallableNode,
-  CallGraphResult,
   ProjectLimits,
   ProjectLimitsLookup,
+} from "@callidescope/configuration";
+import type {
+  CallableNode,
+  CallGraphResult,
   SourceLocation,
   StackFrame,
-} from "@callidescope/configuration";
+} from "@callidescope/core";
 import type { DiscoveredCallable } from "@callidescope/graph";
 
 /**
@@ -42,12 +44,35 @@ export function buildCallableNode(
 }
 
 /**
- * Builds an empty result, for tests that only pass one through.
+ * Builds a discovered callable for tests that only read its described node.
+ *
+ * The declaration and program come from `createMock` rather than a cast: the
+ * graph services never touch either, but a bare `{}` would have to be lied
+ * about to the type system to say so.
+ */
+export function buildDiscoveredCallable(
+  overrides: Partial<CallableNode> = {},
+): DiscoveredCallable {
+  return {
+    declaration: createMock<DiscoveredCallable["declaration"]>(),
+    node: buildCallableNode(overrides),
+    projectProgram: createMock<DiscoveredCallable["projectProgram"]>(),
+  };
+}
+
+/**
+ * Builds a result whose every collection and count is empty.
  *
  * Every collection the pipeline produces is present, so a test asserting on the
  * whole result keeps working when a new finding kind is added.
+ *
+ * Named for the emptiness rather than for the type, because the emptiness is
+ * not neutral: an all-zero summary is itself a finding to anything that judges
+ * a run, so a test about what a run reports wants
+ * {@link buildTracedCallGraphResult} instead. This one is for the renderers,
+ * which only pass a result through.
  */
-export function buildCallGraphResult(
+export function buildEmptyCallGraphResult(
   overrides: Partial<CallGraphResult> = {},
 ): CallGraphResult {
   return {
@@ -65,23 +90,6 @@ export function buildCallGraphResult(
     },
     wideCallables: [],
     ...overrides,
-  };
-}
-
-/**
- * Builds a discovered callable for tests that only read its described node.
- *
- * The declaration and program come from `createMock` rather than a cast: the
- * graph services never touch either, but a bare `{}` would have to be lied
- * about to the type system to say so.
- */
-export function buildDiscoveredCallable(
-  overrides: Partial<CallableNode> = {},
-): DiscoveredCallable {
-  return {
-    declaration: createMock<DiscoveredCallable["declaration"]>(),
-    node: buildCallableNode(overrides),
-    projectProgram: createMock<DiscoveredCallable["projectProgram"]>(),
   };
 }
 
@@ -156,6 +164,33 @@ export function buildStackFrame(
     signature: undefined,
     ...overrides,
   };
+}
+
+/**
+ * Builds a result whose summary says a run really traced something.
+ *
+ * A result with nothing in it is not the neutral value it looks like: a run
+ * that traced nothing is itself a finding, so an all-zero summary would make
+ * every test that only passes a result through assert the wrong exit code for
+ * the wrong reason. One callable in one file in one project is the smallest
+ * summary that says the trace happened.
+ */
+export function buildTracedCallGraphResult(
+  overrides: Partial<CallGraphResult> = {},
+): CallGraphResult {
+  return buildEmptyCallGraphResult({
+    summary: {
+      callableCount: 1,
+      cyclicComponentCount: 0,
+      edgeCount: 0,
+      entryPointCount: 0,
+      fileCount: 1,
+      maximumDepth: 0,
+      projectCount: 1,
+      unresolvedCallCount: 0,
+    },
+    ...overrides,
+  });
 }
 
 /**

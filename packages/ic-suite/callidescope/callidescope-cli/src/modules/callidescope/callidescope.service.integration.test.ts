@@ -16,10 +16,8 @@ import { ANALYSIS_MODULES } from "../../../testing/modules";
 
 import { CallidescopeService } from "./callidescope.service";
 
-import type {
-  CallGraphResult,
-  ResolvedCallidescopeConfiguration,
-} from "@callidescope/configuration";
+import type { ResolvedCallidescopeConfiguration } from "@callidescope/configuration";
+import type { CallGraphResult } from "@callidescope/core";
 
 /**
  * The depth `ApplicationCommand` measures once the closure resolves its call

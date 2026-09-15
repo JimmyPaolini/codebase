@@ -6,7 +6,7 @@ import type {
   CallEdge,
   UnresolvedCall,
   UnresolvedReason,
-} from "@callidescope/configuration";
+} from "@callidescope/core";
 import type ts from "typescript";
 
 /** Arguments for turning every callable's body into edges. */

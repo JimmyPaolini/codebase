@@ -7,7 +7,7 @@ import { ComponentsService } from "./components.service";
 import { GraphService } from "./graph.service";
 
 import type { CondensedGraph } from "./graph.types";
-import type { CallEdge } from "@callidescope/configuration";
+import type { CallEdge } from "@callidescope/core";
 
 /** Condenses a graph described as `from -> to` pairs. */
 function condense(args: {

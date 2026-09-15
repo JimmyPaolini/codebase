@@ -1,12 +1,12 @@
 // 🏷️ Types
 
+import type { ProjectLimitsLookup } from "@callidescope/configuration";
 import type {
   CallableId,
   DeepStackFinding,
-  ProjectLimitsLookup,
   ProjectReport,
   WideCallableFinding,
-} from "@callidescope/configuration";
+} from "@callidescope/core";
 import type {
   BreadthMeasurement,
   CallGraph,

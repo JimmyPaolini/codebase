@@ -5,7 +5,7 @@ import type {
   CallEdge,
   SourceLocation,
   UnresolvedCall,
-} from "@callidescope/configuration";
+} from "@callidescope/core";
 
 /** Breadth for every callable measured. */
 export interface BreadthMeasurement {

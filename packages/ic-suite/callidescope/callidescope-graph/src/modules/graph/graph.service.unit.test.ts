@@ -5,7 +5,7 @@ import { ANALYSIS_MODULES } from "../../../testing/modules";
 
 import { GraphService } from "./graph.service";
 
-import type { CallEdge } from "@callidescope/configuration";
+import type { CallEdge } from "@callidescope/core";
 
 /** Builds an edge between two identifiers. */
 function edge(from: string, to: string): CallEdge {
