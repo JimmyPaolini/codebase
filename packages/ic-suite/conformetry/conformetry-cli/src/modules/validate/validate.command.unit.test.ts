@@ -5,7 +5,7 @@ import {
   InstanceDiscoveryService,
   TemplateDiscoveryService,
 } from "@conformetry/configuration";
-import { ReportingService } from "@conformetry/core";
+import { ReportingService } from "@conformetry/output";
 import { ValidationService } from "@conformetry/validation";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";

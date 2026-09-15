@@ -1,6 +1,6 @@
 import path from "node:path";
 
-import { ScoringService } from "@conformetry/core";
+import { ScoringService } from "@conformetry/languages";
 import { Injectable } from "@nestjs/common";
 
 import { DEFAULT_THRESHOLD, SCORE_KEY_SEPARATOR } from "./validation.constants";

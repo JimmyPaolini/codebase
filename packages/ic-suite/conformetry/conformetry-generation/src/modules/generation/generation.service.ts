@@ -1,11 +1,9 @@
 import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
+import { RenderingService } from "@conformetry/configuration";
 import { Injectable } from "@nestjs/common";
 
-import { RenderingService } from "../rendering/rendering.service";
-
-import type { Substitutions } from "../rendering/rendering.types";
 import type {
   DirectoryEntry,
   FileSystemAdapter,
@@ -14,6 +12,7 @@ import type {
   RunGeneratorArguments,
   RunGeneratorResult,
 } from "./generation.types";
+import type { Substitutions } from "@conformetry/configuration";
 
 /* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**

@@ -2,10 +2,9 @@ import { mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
+import { RenderingService } from "@conformetry/configuration";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it, vi } from "vitest";
-
-import { RenderingService } from "../rendering/rendering.service";
 
 import { GenerationService } from "./generation.service";
 

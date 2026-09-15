@@ -100,13 +100,13 @@ A modern TypeScript codebase with Nx, featuring automated releases, comprehensiv
 
 &nbsp;&nbsp;&nbsp;&nbsp;**[conformetry-agents](packages/ic-suite/conformetry/conformetry-agents)** - Agent skills for the conformetry toolchain, published and installed back from the lockfile like any other vendored skill\
 &nbsp;&nbsp;&nbsp;&nbsp;**[conformetry-cli](packages/ic-suite/conformetry/conformetry-cli)** - Command-line host that expands globs, prompts for inputs, and runs generation and validation\
-&nbsp;&nbsp;&nbsp;&nbsp;**[conformetry-configuration](packages/ic-suite/conformetry/conformetry-configuration)** - Configuration loading, template discovery, and generator input resolution\
-&nbsp;&nbsp;&nbsp;&nbsp;**[conformetry-core](packages/ic-suite/conformetry/conformetry-core)** - Shared error types, language validator contracts, and finding reporting\
+&nbsp;&nbsp;&nbsp;&nbsp;**[conformetry-configuration](packages/ic-suite/conformetry/conformetry-configuration)** - Configuration loading, template and instance discovery, generator input resolution, and the placeholder rendering every template path needs\
+&nbsp;&nbsp;&nbsp;&nbsp;**[conformetry-core](packages/ic-suite/conformetry/conformetry-core)** - Contracts leaf: difference, score, inventory, and language validator types, and nothing executable\
 &nbsp;&nbsp;&nbsp;&nbsp;**[conformetry-examples](packages/ic-suite/conformetry/conformetry-examples)** - Eleven runnable examples of the toolchain, each with its own configuration, template, instances, and guide, executed by CI so the guides cannot rot\
-&nbsp;&nbsp;&nbsp;&nbsp;**[conformetry-files](packages/ic-suite/conformetry/conformetry-files)** - Checks that every file a template declares exists, whatever its extension\
-&nbsp;&nbsp;&nbsp;&nbsp;**[conformetry-generation](packages/ic-suite/conformetry/conformetry-generation)** - Mustache template rendering and scaffold file generation\
-&nbsp;&nbsp;&nbsp;&nbsp;**[conformetry-languages](packages/ic-suite/conformetry/conformetry-languages)** - Every language conformetry compares files with, as modules of one package, plus the resolution that picks them and the text fallback\
+&nbsp;&nbsp;&nbsp;&nbsp;**[conformetry-generation](packages/ic-suite/conformetry/conformetry-generation)** - Scaffold file generation, rendering each template through the configuration layer\
+&nbsp;&nbsp;&nbsp;&nbsp;**[conformetry-languages](packages/ic-suite/conformetry/conformetry-languages)** - Every language conformetry compares files with, as modules of one package, plus the resolution that picks them, the text fallback, the extension-agnostic existence pass, and the difference and scoring primitives they share\
 &nbsp;&nbsp;&nbsp;&nbsp;**[conformetry-nx](packages/ic-suite/conformetry/conformetry-nx)** - Nx plugin host with generators, executors, and the emitted-plugin bootstrap\
+&nbsp;&nbsp;&nbsp;&nbsp;**[conformetry-output](packages/ic-suite/conformetry/conformetry-output)** - Every render target: the validation report and the template and instance inventory\
 &nbsp;&nbsp;&nbsp;&nbsp;**[conformetry-validation](packages/ic-suite/conformetry/conformetry-validation)** - Validation orchestration, language routing, and finding deduplication
 
 </details>
@@ -217,10 +217,10 @@ graph LR
   conformetry_configuration["conformetry-configuration"]
   conformetry_core["conformetry-core"]
   conformetry_examples["conformetry-examples"]
-  conformetry_files["conformetry-files"]
   conformetry_generation["conformetry-generation"]
   conformetry_languages["conformetry-languages"]
   conformetry_nx["conformetry-nx"]
+  conformetry_output["conformetry-output"]
   conformetry_validation["conformetry-validation"]
   lexico["lexico"]
   lexico_components["lexico-components"]
@@ -288,29 +288,29 @@ graph LR
   codometer_size --> codometer_configuration
   codometer_size --> logger
   conformetry_cli --> conformetry_configuration
-  conformetry_cli --> conformetry_core
   conformetry_cli --> conformetry_generation
+  conformetry_cli --> conformetry_output
   conformetry_cli --> conformetry_validation
   conformetry_cli --> logger
   conformetry_configuration --> conformetry_core
-  conformetry_configuration --> conformetry_generation
   conformetry_examples -.-> conformetry_cli
   conformetry_examples --> conformetry_configuration
-  conformetry_examples --> conformetry_core
   conformetry_examples --> conformetry_generation
   conformetry_examples --> conformetry_nx
+  conformetry_examples --> conformetry_output
   conformetry_examples --> conformetry_validation
-  conformetry_files --> conformetry_configuration
-  conformetry_files --> conformetry_core
+  conformetry_generation --> conformetry_configuration
+  conformetry_languages --> conformetry_configuration
   conformetry_languages --> conformetry_core
   conformetry_nx --> conformetry_configuration
-  conformetry_nx --> conformetry_core
   conformetry_nx --> conformetry_generation
+  conformetry_nx --> conformetry_output
   conformetry_nx --> conformetry_validation
   conformetry_nx --> logger
+  conformetry_output --> conformetry_core
+  conformetry_output --> conformetry_languages
   conformetry_validation --> conformetry_configuration
   conformetry_validation --> conformetry_core
-  conformetry_validation --> conformetry_files
   conformetry_validation --> conformetry_languages
   lexico --> lexico_components
   lexico_ingestion --> lexico_entities
@@ -547,7 +547,7 @@ The workspace's call graph, traced by [callidescope](packages/ic-suite/callidesc
 | Measure | Value |
 | --- | --- |
 | Callables | 4957 |
-| Files | 1385 |
+| Files | 1389 |
 | Calls traced | 5564 |
 | Call stacks | 1298 |
 | Deepest stack | 17 |
@@ -558,7 +558,6 @@ The workspace's call graph, traced by [callidescope](packages/ic-suite/callidesc
 
 | Project | Deepest | Limit | Headroom | Widest |
 | --- | --- | --- | --- | --- |
-| `packages/ic-suite/conformetry/conformetry-languages` | 13 | 4 | -9 | 11 |
 | `applications/caelundas` | 16 | 16 | 0 | 12 |
 | `applications/lexico` | 9 | 9 | 0 | 9 |
 | `applications/lexico-ingestion` | 17 | 17 | 0 | 8 |
@@ -568,6 +567,7 @@ The workspace's call graph, traced by [callidescope](packages/ic-suite/callidesc
 | `packages/ic-suite/codependix/codependix-boundaries` | 12 | 12 | 0 | 5 |
 | `packages/ic-suite/codependix/codependix-cli` | 15 | 15 | 0 | 7 |
 | `packages/ic-suite/conformetry/conformetry-cli` | 14 | 14 | 0 | 9 |
+| `packages/ic-suite/conformetry/conformetry-languages` | 13 | 13 | 0 | 11 |
 | `packages/ic-suite/conformetry/conformetry-nx` | 14 | 14 | 0 | 9 |
 | `packages/lexico-components` | 3 | 3 | 0 | 7 |
 | `packages/lexico-entities` | 3 | 3 | 0 | 3 |
@@ -576,6 +576,7 @@ The workspace's call graph, traced by [callidescope](packages/ic-suite/callidesc
 | `tools/validation` | 8 | 8 | 0 | 9 |
 | `packages/ic-suite/callidescope/callidescope-configuration` | 5 | 6 | 1 | 7 |
 | `packages/ic-suite/codometer/codometer-cli` | 15 | 16 | 1 | 9 |
+| `packages/ic-suite/conformetry/conformetry-core` | 0 | 1 | 1 | 0 |
 | `packages/ic-suite/codometer/codometer-size` | 0 | 3 | 3 | 2 |
 | `packages/ic-suite/conformetry/conformetry-configuration` | 10 | 13 | 3 | 5 |
 | `packages/ic-suite/codependix/codependix-configuration` | 2 | 6 | 4 | 4 |
@@ -587,11 +588,10 @@ The workspace's call graph, traced by [callidescope](packages/ic-suite/callidesc
 | `packages/ic-suite/callidescope/callidescope-graph` | 5 | 11 | 6 | 8 |
 | `packages/ic-suite/callidescope/callidescope-output` | 4 | 10 | 6 | 7 |
 | `packages/ic-suite/codometer/codometer-languages` | 5 | 11 | 6 | 12 |
-| `packages/ic-suite/conformetry/conformetry-core` | 0 | 6 | 6 | 4 |
+| `packages/ic-suite/conformetry/conformetry-output` | 0 | 6 | 6 | 4 |
 | `packages/ic-suite/codometer/codometer-discovery` | 0 | 7 | 7 | 7 |
 | `packages/ic-suite/codometer/codometer-output` | 4 | 11 | 7 | 16 |
 | `packages/ic-suite/codependix/codependix-file-imports` | 0 | 8 | 8 | 8 |
-| `packages/ic-suite/conformetry/conformetry-files` | 0 | 9 | 9 | 3 |
 | `packages/ic-suite/codometer/codometer-changes` | 0 | 10 | 10 | 7 |
 | `packages/ic-suite/conformetry/conformetry-validation` | 0 | 12 | 12 | 10 |
 | `configuration` | 3 | 17 | 14 | 2 |
@@ -600,112 +600,16 @@ The workspace's call graph, traced by [callidescope](packages/ic-suite/callidesc
 
 | Headroom | Projects |
 | --- | --- |
-| over limit | 1 |
-| 0 — at limit | 15 |
+| over limit | 0 |
+| 0 — at limit | 16 |
 | 1 | 2 |
 | 2–3 | 1 |
 | 4+ | 8 |
 | no stacks | 10 |
 
-### Call stacks over the depth limit (4)
+### Call stacks over the depth limit (0)
 
-**1. `JupyterService.validateDocument`** — depth 13 · orphan-root
-
-```text
-🚀 JupyterService.validateDocument(document: PreparedValidationDocument): DocumentValidationResult [packages/ic-suite/conformetry/conformetry-languages/src/modules/jupyter/jupyter.service.ts:153]
-   ↳ Reports every notebook difference: envelope, missing cells, cell contents.
-  └─> JupyterService.map(…)(…): { error: { differenceType: "code"; expected: string; fix: string; language: "python"; message: string; weight: number; }; weight: number; } [packages/ic-suite/conformetry/conformetry-languages/src/modules/jupyter/jupyter.service.ts:173]
-    └─> JupyterService.weighMissingCell(args: { cell: PairedCells; document: PreparedValidationDocument; }): number [packages/ic-suite/conformetry/conformetry-languages/src/modules/jupyter/jupyter.service.ts:140]
-       ↳ Weighs a cell the notebook does not have.
-      └─> JupyterService.validateCell(…): DocumentValidationResult [packages/ic-suite/conformetry/conformetry-languages/src/modules/jupyter/jupyter.service.ts:90]
-         ↳ Validates one paired cell with the validator matching its kind.
-        └─> MarkdownService.validateDocument(document: PreparedValidationDocument): DocumentValidationResult [packages/ic-suite/conformetry/conformetry-languages/src/modules/markdown/markdown.service.ts:48]
-           ↳ Reports every markdown structure the template requires and the file lacks.
-          └─> MarkdownTreeService.compareContainer(args: CompareNodeArguments): CompareNodeResult (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/markdown/markdown-tree.service.ts:64]
-             ↳ Matches a container node, then descends into it.
-            └─> MarkdownTreeService.map(…)(…): { differences: MarkdownComparisonError[]; lastMatchedNode: MarkdownNode; totalWeight: number; } (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/markdown/markdown-tree.service.ts:90]
-              └─> MarkdownTreeService.compareChildren(args: CompareChildrenArguments): CompareChildrenResult (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/markdown/markdown-tree.service.ts:146]
-                 ↳ Compares one level of two trees, descending into containers.
-                └─> MarkdownTreeService.compareLeaf(args: CompareNodeArguments): CompareNodeResult [packages/ic-suite/conformetry/conformetry-languages/src/modules/markdown/markdown-tree.service.ts:114]
-                   ↳ Matches a leaf node on its own identity, without descending.
-                  └─> MarkdownTreeService.findCandidates(args: CompareNodeArguments): MarkdownNode[] [packages/ic-suite/conformetry/conformetry-languages/src/modules/markdown/markdown-tree.service.ts:134]
-                     ↳ Finds every instance sibling satisfying the template node.
-                    └─> MarkdownTreeService.filter(…)(instanceNode: MarkdownNode): boolean [packages/ic-suite/conformetry/conformetry-languages/src/modules/markdown/markdown-tree.service.ts:135]
-                      └─> MarkdownNodesService.matches(args: { instanceNode: MarkdownNode; templateNode: MarkdownNode; }): boolean [packages/ic-suite/conformetry/conformetry-languages/src/modules/markdown/markdown-nodes.service.ts:140]
-                         ↳ Returns whether an instance node satisfies a template node.
-                        └─> MarkdownNodesService.readText(node: MarkdownNode): string [packages/ic-suite/conformetry/conformetry-languages/src/modules/markdown/markdown-nodes.service.ts:163]
-                           ↳ Reads a node's rendered plain text.
-```
-
-**2. `JsonService.validateDocument`** — depth 12 · orphan-root
-
-```text
-🚀 JsonService.validateDocument(document: PreparedValidationDocument): DocumentValidationResult [packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json.service.ts:39]
-   ↳ Reports every key or value the template requires and the instance lacks.
-  └─> JsonComparisonService.compareArrayItem(…): JsonComparison (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:79]
-     ↳ Matches one required array entry against the instance array.
-    └─> JsonComparisonService.map(…)(instanceItem: JsonValue, index: number): JsonComparison (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:122]
-      └─> JsonComparisonService.compare(args: CompareJsonArguments): JsonComparison (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:268]
-         ↳ Compares a template value against an instance value, returning every way the instance fails to contain what the…
-        └─> JsonComparisonService.compareArrays(…): JsonComparison (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:141]
-           ↳ Compares two arrays.
-          └─> JsonComparisonService.map(…)(templateItem: JsonValue): JsonComparison (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:148]
-            └─> JsonComparisonService.compareObjects(…): JsonComparison (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:155]
-               ↳ Compares two objects, requiring every template key to be present.
-              └─> JsonComparisonService.map(…)([key, templateValue]: [string, JsonValue]): JsonComparison (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:164]
-                └─> JsonComparisonService.countNodes(value: JsonValue): number (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:207]
-                   ↳ Counts a JSON value and every value nested inside it.
-                  └─> JsonComparisonService.reduce(…)(total: number, item: JsonValue): number (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:209]
-                    └─> JsonComparisonService.reduce(…)(total: number, nested: JsonValue): number (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:215]
-                      └─> JsonComparisonService.isJsonObject(value: JsonValue): value is Record<string, JsonValue> [packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:235]
-                         ↳ Returns whether a value is a plain JSON object.
-```
-
-**3. `TypescriptService.validateDocument`** — depth 12 · orphan-root
-
-```text
-🚀 TypescriptService.validateDocument(document: PreparedValidationDocument): DocumentValidationResult [packages/ic-suite/conformetry/conformetry-languages/src/modules/typescript/typescript.service.ts:164]
-   ↳ Reports every declaration and comment the template requires.
-  └─> TypescriptService.validateStructure(…): DocumentValidationResult [packages/ic-suite/conformetry/conformetry-languages/src/modules/typescript/typescript.service.ts:107]
-     ↳ Compares the syntax trees and describes each missing declaration.
-    └─> TypescriptTreeService.compareBestCandidate(args: { candidates: Node[]; templateChild: Node; }): TreeComparison (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/typescript/typescript-tree.service.ts:67]
-       ↳ Descends into whichever candidate explains the template best.
-      └─> TypescriptTreeService.map(…)(candidate: Node): TreeComparison (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/typescript/typescript-tree.service.ts:72]
-        └─> TypescriptTreeService.compareTree(args: CompareTreeArguments): TreeComparison (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/typescript/typescript-tree.service.ts:126]
-           ↳ Compares one level of two trees, descending into every match.
-          └─> TypescriptTreeService.map(…)(templateChild: Node): TreeComparison (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/typescript/typescript-tree.service.ts:133]
-            └─> TypescriptTreeService.compareChild(…): TreeComparison (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/typescript/typescript-tree.service.ts:87]
-               ↳ Matches one template child against the instance's children.
-              └─> TypescriptTreeService.buildError(…): TypescriptComparisonError [packages/ic-suite/conformetry/conformetry-languages/src/modules/typescript/typescript-tree.service.ts:42]
-                 ↳ Describes a template node with no instance counterpart.
-                └─> TypescriptNodesService.countSubtree(node: Node): number (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/typescript/typescript-nodes.service.ts:176]
-                   ↳ Counts a node and everything beneath it.
-                  └─> TypescriptNodesService.reduce(…)(total: number, child: Node): number (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/typescript/typescript-nodes.service.ts:177]
-                    └─> TypescriptNodesService.readChildren(node: Node): Node[] [packages/ic-suite/conformetry/conformetry-languages/src/modules/typescript/typescript-nodes.service.ts:183]
-                       ↳ Reads a node's direct children, skipping the end-of-file token.
-                      └─> TypescriptNodesService.forEachChild(…)(childNode: Node): undefined [packages/ic-suite/conformetry/conformetry-languages/src/modules/typescript/typescript-nodes.service.ts:186]
-```
-
-<details>
-<summary>1 more call stacks</summary>
-
-**4. `PythonService.validateDocument`** — depth 6 · orphan-root
-
-```text
-🚀 PythonService.validateDocument(document: PreparedValidationDocument): DocumentValidationResult [packages/ic-suite/conformetry/conformetry-languages/src/modules/python/python.service.ts:38]
-   ↳ Reports every declaration and comment the template requires.
-  └─> PythonBridgeService.validatePythonSource(args: RunPythonBridgeArguments): DocumentValidationResult [packages/ic-suite/conformetry/conformetry-languages/src/modules/python/python-bridge.service.ts:160]
-     ↳ Compares one Python source against its rendered template.
-    └─> PythonBridgeService.map(…)(error: Readonly<Record<string, unknown>>): ConformetryDifference [packages/ic-suite/conformetry/conformetry-languages/src/modules/python/python-bridge.service.ts:185]
-      └─> PythonBridgeService.toConformetryDifference(error: PythonBridgeError): ConformetryDifference [packages/ic-suite/conformetry/conformetry-languages/src/modules/python/python-bridge.service.ts:132]
-         ↳ Maps one snake_case bridge error onto the shared error shape.
-        └─> PythonBridgeService.readValues(error: PythonBridgeError): Partial<ConformetryDifference> [packages/ic-suite/conformetry/conformetry-languages/src/modules/python/python-bridge.service.ts:121]
-           ↳ Reads the optional expected and actual values.
-          └─> PythonBridgeService.readString(error: PythonBridgeError, key: string): string | undefined [packages/ic-suite/conformetry/conformetry-languages/src/modules/python/python-bridge.service.ts:111]
-             ↳ Narrows an untrusted string field from the bridge payload.
-```
-
-</details>
+None.
 
 ### Callables over the breadth limit (0)
 
