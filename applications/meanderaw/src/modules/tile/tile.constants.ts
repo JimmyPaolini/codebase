@@ -26,8 +26,7 @@ export const TILE_MINIMUM_ROWS = 3;
  *
  * Refusing these is what makes the bits a bijection with the drawing. A
  * disagreeing pair would have to render as a half-unit stub ending between
- * lattice lines, which `LatticeService` refuses to read back, and
- * which no charter invariant admits.
+ * lattice lines, which nothing on the lattice admits.
  */
 export class MalformedTileError extends Error {
   constructor(reason: string) {

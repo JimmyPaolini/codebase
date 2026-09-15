@@ -11,31 +11,27 @@ import type { Characteristics, JunctionCounts } from "./characteristics.types";
 /**
  * Computes the raw junction counts and boolean Characteristics spec #813
  * asks every meander row to record, directly from a Code,
- * point by point — generalizing `MeasurementService`'s
- * approach (which reads the same two kinds of junction off a *rendered* SVG
- * document, by rebuilding a lattice from its path data) to the Code
- * `CodeService.parse` already reads, with no SVG and no
- * rendering step anywhere in between.
+ * point by point — over the Code `CodeService.parse` already reads, with
+ * no SVG and no rendering step anywhere in between. A retired reader did
+ * the same two counts off a *rendered* SVG document, by rebuilding a
+ * lattice from its path data; nothing reads a drawing now.
  *
- * **Ink junctions** need no adjacency lookup the way
- * `MeasurementService.inkDegree` does: a Code spells all four direction
+ * **Ink junctions** need no adjacency lookup: a Code spells all four direction
  * bits out at every point rather than leaving north and west to be derived
  * from a neighbor (see `CodeService`'s own doc comment), so a
  * point's ink degree is simply how many of its own four bits are set.
  *
  * **Negative (white-space) junctions** are still counted over the dual grid
- * of cells, the same shape `MeasurementService.negativeDegree` counts —
- * a cell bounded by four lattice points has a corridor to a neighboring cell
+ * of cells — a cell bounded by four lattice points has a corridor to a neighboring cell
  * wherever the ink edge between them is absent — but bounded by the Code's
  * own extent rather than a rendered canvas's: a cell on the Code's
- * own edge has fewer than four possible corridors, the same edge-cropping
- * `negativeDegree` applies, just relative to where the Code itself stops
- * rather than to a border rule a renderer draws beyond it.
+ * own edge has fewer than four possible corridors, cropped relative to
+ * where the Code itself stops rather than to a border rule a renderer draws
+ * beyond it.
  *
  * **`hasBranching` and `hasCrossing`** read *both* counts rather than the
  * ink count alone. Ink-only would read `false` across the whole historical
- * corpus: `MeasurementService`'s own doc comment records that a
- * finished drawing never actually violates the charter's no-branching and
+ * corpus, because a finished drawing never actually violates the charter's no-branching and
  * no-crossing invariants in its ink — two sub-families of `mosaic` "cross"
  * only in the negative space, and nowhere else — so a Characteristic meant
  * to flag that structure has to look at both.
@@ -130,8 +126,8 @@ export class CharacteristicsService {
    * open, where the cell bounded by grid points `(level, column)`,
    * `(level, column + 1)`, `(level + 1, column)`, and
    * `(level + 1, column + 1)` is bounded rather than crossing off the
-   * Code's own extent — the equivalent of
-   * `MeasurementService.negativeDegree`'s own canvas-edge cropping.
+   * Code's own extent, which is where a rendered canvas's edge used to be
+   * read off instead.
    */
   private negativeDegree(
     code: ParsedCode,
