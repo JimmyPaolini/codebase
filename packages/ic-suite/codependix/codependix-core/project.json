@@ -1,0 +1,46 @@
+{
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "name": "codependix-core",
+  "projectType": "library",
+  "sourceRoot": "packages/ic-suite/codependix/codependix-core",
+  "tags": [
+    "generator:nestjs-service-project",
+    "language:typescript",
+    "layer:core",
+    "name:codependix-core",
+    "type:package"
+  ],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "options": {
+        "assets": [
+          {
+            "glob": "README.md",
+            "input": "packages/ic-suite/codependix/codependix-core",
+            "output": "."
+          }
+        ],
+        "generatePackageJson": false,
+        "main": "packages/ic-suite/codependix/codependix-core/src/index.ts",
+        "outputPath": "packages/ic-suite/codependix/codependix-core/dist",
+        "tsConfig": "packages/ic-suite/codependix/codependix-core/tsconfig.build.json"
+      },
+      "outputs": ["{options.outputPath}"]
+    },
+    "codometer": {},
+    "dependency-cruiser": {},
+    "knip": {},
+    "lint-codebase": {},
+    "make-projects": {},
+    "markdown-lint": {},
+    "oxfmt": {},
+    "oxlint": {},
+    "prettier": {},
+    "spell-check": {},
+    "test-coverage": {},
+    "type-coverage": {},
+    "typecheck": {},
+    "yaml-lint": {}
+  }
+}

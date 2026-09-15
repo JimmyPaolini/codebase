@@ -1,7 +1,7 @@
 import { rmSync } from "node:fs";
 import path from "node:path";
 
-import { MARKDOWN_SECTION_INTRO_LINE } from "@codependix/cli";
+import { MARKDOWN_SECTION_INTRO_LINE } from "@codependix/output";
 
 import { anchorsService } from "./builders";
 import { fence } from "./document";

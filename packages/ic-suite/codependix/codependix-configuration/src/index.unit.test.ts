@@ -10,8 +10,6 @@ import {
   DEFAULT_EXPORT_TARGET,
   DEFAULT_MARKDOWN_PATH,
   InputError,
-  InputModule,
-  InputService,
   missingInputError,
   promptCancelledError,
   UnknownConfigurationFileTypeError,
@@ -28,8 +26,6 @@ describe("codependix-configuration index", () => {
     expect(CODEPENDIX_EXPORT_TARGETS).toBeDefined();
     expect(DEFAULT_EXPORT_TARGET).toBeDefined();
     expect(DEFAULT_MARKDOWN_PATH).toBeDefined();
-    expect(InputModule).toBeDefined();
-    expect(InputService).toBeDefined();
     expect(InputError).toBeDefined();
     expect(promptCancelledError).toBeDefined();
     expect(missingInputError).toBeDefined();

@@ -11,9 +11,12 @@ import { projectDefaults } from "../../../../configuration/callidescope.config.j
  * limit passes, so this gate is green the day it arrives and each number is a
  * starting point to ratchet down from rather than a target to grow into.
  *
- * Five direct callees at the widest — ordinary fan-out rather than a closed
- * enumeration, so the next helper anybody extracts here is what moves the
- * number.
+ * Seven direct callees at the widest, in `RunContextService.build` — the
+ * run-context resolution this package absorbed from the command-line host,
+ * which measured exactly seven there too. The number moved because the
+ * callable did, not because anything inside it grew: ordinary fan-out rather
+ * than a closed enumeration, so the next helper anybody extracts here is what
+ * moves it again.
  *
  * @see configuration/callidescope.config.ts — `projectDefaults`, spread below
  * for everything this file does not override
@@ -21,7 +24,7 @@ import { projectDefaults } from "../../../../configuration/callidescope.config.j
 export default {
   ...projectDefaults,
   limits: {
-    maximumBreadth: 5,
+    maximumBreadth: 7,
     maximumDepth: 12,
   },
 };

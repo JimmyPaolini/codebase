@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@codependix/core": "workspace:*",
     "@nestjs/common": "catalog:",
     "jiti": "catalog:",
     "prompts": "catalog:",

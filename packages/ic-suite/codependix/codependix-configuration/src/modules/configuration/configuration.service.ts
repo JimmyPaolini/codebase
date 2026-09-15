@@ -2,9 +2,10 @@ import path from "node:path";
 
 import { Injectable } from "@nestjs/common";
 
-import { ConfigurationLoaderService } from "../configuration-loader/configuration-loader.service";
+import { InputService } from "../input/input.service";
 import { OverrideResolutionService } from "../override-resolution/override-resolution.service";
 
+import { ConfigurationLoaderService } from "./configuration-loader.service";
 import {
   codependixProjectConfigurationSchema,
   DEFAULT_EXPORT_TARGET,
@@ -14,6 +15,7 @@ import {
   SUPPORTED_CONFIGURATION_EXTENSIONS,
   UnknownConfigurationFileTypeError,
 } from "./configuration.constants";
+import { FlagResolutionService } from "./flag-resolution.service";
 
 import type {
   CodependixBoundariesConfiguration,
@@ -24,6 +26,7 @@ import type {
   CodependixSelectionArguments,
   LoadConfigurationArguments,
   LoadProjectConfigurationArguments,
+  MapCommandOptions,
   ProjectSelectionArguments,
   ResolvedCodependixBoundariesConfiguration,
   ResolvedCodependixConfiguration,
@@ -31,6 +34,7 @@ import type {
   ResolvedCodependixSelection,
   ResolveForProjectArguments,
 } from "./configuration.types";
+import type { RunMode, RunModeSelection } from "@codependix/core";
 
 /**
  * Loads, validates, and resolves codependix configuration files.
@@ -48,6 +52,8 @@ export class ConfigurationService {
 
   constructor(
     private readonly configurationLoaderService: ConfigurationLoaderService,
+    private readonly flagResolutionService: FlagResolutionService,
+    private readonly inputService: InputService,
     private readonly overrideResolutionService: OverrideResolutionService,
   ) {}
 
@@ -262,6 +268,34 @@ export class ConfigurationService {
   }
 
   /**
+   * Parses a comma-separated list option, dropping blank entries.
+   *
+   * One of the six command-line methods this service forwards to the
+   * `input` and flag-resolution providers it owns. They are stated here
+   * rather than exported alongside it because this package makes exactly one
+   * service public: a host asking what a run is configured to do — from its
+   * configuration file or from its flags — asks `ConfigurationService`.
+   */
+  public parseCommaDelimitedOption(value: string | undefined): string[] {
+    return this.inputService.parseCommaDelimitedOption(value);
+  }
+
+  /** Parses a valueless boolean flag, which is present or it is not. */
+  public parseFlagOption(value: boolean | undefined): boolean {
+    return this.inputService.parseFlagOption(value);
+  }
+
+  /** Trims an optional string option, treating blank as absent. */
+  public parseOptionalOption(value: string | undefined): string | undefined {
+    return this.inputService.parseOptionalOption(value);
+  }
+
+  /** Parses a path option that falls back to the working directory. */
+  public parsePathOption(value: string | undefined): string {
+    return this.inputService.parsePathOption(value);
+  }
+
+  /**
    * Fills in every field a configuration file may leave out.
    *
    * Exposed so a host embedding codependix can hand over a configuration
@@ -343,5 +377,22 @@ export class ConfigurationService {
     graphType: CodependixGraphType,
   ): ResolvedCodependixGraphOutput {
     return this.resolveGraphOutput(configuration.workspace[graphType]);
+  }
+
+  /**
+   * Reads the flags into what the run writes and what it fails on.
+   *
+   * See `FlagResolutionService.selectMode` for which combinations are
+   * refused and why.
+   */
+  public async selectMode(
+    options: MapCommandOptions,
+  ): Promise<RunModeSelection> {
+    return this.flagResolutionService.selectMode(options);
+  }
+
+  /** Whether a run reads or rewrites the files its exports live in. */
+  public touchesFiles(mode: RunMode): boolean {
+    return this.flagResolutionService.touchesFiles(mode);
   }
 }
