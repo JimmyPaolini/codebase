@@ -16,7 +16,7 @@
  * cost of allocating one object per lattice point of every one of the 31,244
  * meanders the sweep draws. What survives of it is the four-direction
  * reading a caller gets back for one point, which is where the bit meanings
- * are written down — see `MosaicDirections`.
+ * are written down — see `Directions`.
  *
  * {@link levels} is `rows - 1` and is carried rather than recomputed because
  * it is the bound every walk over a Code runs to: the band's two border

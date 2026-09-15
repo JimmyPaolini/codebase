@@ -1,7 +1,7 @@
 // 🏷️ Types
 
-import type { MeanderType } from "../meander-classification/meander-classification.types";
-import type { Meander } from "../meander-database/entities/Meander.entity";
+import type { MeanderType } from "../classification/classification.types";
+import type { Meander } from "../database/entities/Meander.entity";
 
 /**
  * One section of the index page: every row that earned `family`, in the

@@ -1,13 +1,13 @@
 import { Module } from "@nestjs/common";
 
+import { CharacteristicsModule } from "../characteristics/characteristics.module";
+import { ClassificationModule } from "../classification/classification.module";
 import { CodeModule } from "../code/code.module";
-import { GridGeometryModule } from "../grid-geometry/grid-geometry.module";
-import { HardcodedMeandersModule } from "../hardcoded-meanders/hardcoded-meanders.module";
-import { MeanderCharacteristicsModule } from "../meander-characteristics/meander-characteristics.module";
-import { MeanderClassificationModule } from "../meander-classification/meander-classification.module";
-import { MeanderDatabaseModule } from "../meander-database/meander-database.module";
-import { MeanderEnumerationModule } from "../meander-enumeration/meander-enumeration.module";
-import { MeanderRenderingModule } from "../meander-rendering/meander-rendering.module";
+import { CorpusModule } from "../corpus/corpus.module";
+import { DatabaseModule } from "../database/database.module";
+import { DrawingModule } from "../drawing/drawing.module";
+import { EnumerationModule } from "../enumeration/enumeration.module";
+import { GeometryModule } from "../geometry/geometry.module";
 
 import { DrawCheckService } from "./draw-check.service";
 import { DrawCodeService } from "./draw-code.service";
@@ -24,28 +24,28 @@ import { DrawCommand } from "./draw.command";
  * any of them builds a database row.
  *
  * Every import here serves the one lattice-first pipeline both paths share:
- * `CodeModule` and `MeanderRenderingModule` are the generic
+ * `CodeModule` and `DrawingModule` are the generic
  * decoder and renderer every family's Code is drawn through,
- * `MeanderCharacteristicsModule` measures that same decoded grid,
- * `MeanderClassificationModule` reads a family off those Characteristics,
- * `MeanderEnumerationModule` walks the space the sweep covers, and
- * `MeanderDatabaseModule` is the committed sqlite database all of it
- * persists to and `DrawIndexService` reads back from, and `GridGeometryModule`
+ * `CharacteristicsModule` measures that same decoded grid,
+ * `ClassificationModule` reads a family off those Characteristics,
+ * `EnumerationModule` walks the space the sweep covers, and
+ * `DatabaseModule` is the committed sqlite database all of it
+ * persists to and `DrawIndexService` reads back from, and `GeometryModule`
  * is the same scaling rule the renderer drew against, which the index page
- * reads back to step each repeat of a tile one pitch along its band. `HardcodedMeandersModule`
+ * reads back to step each repeat of a tile one pitch along its band. `CorpusModule`
  * wraps the same decoder, renderer, and Characteristic computation beneath
  * one service `DrawCommand` calls once per sweep with the historical corpus,
  * trusting its family/subFamily rather than classifying them.
  *
- * `MeanderDatabaseModule` always opens the one committed database file — a
+ * `DatabaseModule` always opens the one committed database file — a
  * test exercising `DrawCommand`, `DrawCodeService`, `DrawEnumerationService`,
- * `DrawIndexService`, or `HardcodedMeandersService` builds its own
+ * `DrawIndexService`, or `CorpusService` builds its own
  * `TestingModule` against a temporary or in-memory connection instead of
  * importing this module.
  *
  * `DrawCheckService` reads the committed connection through
- * `MeanderDatabaseModule`'s own exported `TypeOrmModule`, exactly as
- * `MeanderDatabaseService` does — no wiring of its own is needed for that
+ * `DatabaseModule`'s own exported `TypeOrmModule`, exactly as
+ * `DatabaseService` does — no wiring of its own is needed for that
  * half. Its other half, regenerating a throwaway sweep, needs none of this
  * module's imports at all: `--check` mode's whole point is regenerating into
  * a connection this module never opens, so it boots its own throwaway
@@ -55,14 +55,14 @@ import { DrawCommand } from "./draw.command";
   controllers: [],
   exports: [DrawCommand],
   imports: [
-    GridGeometryModule,
-    HardcodedMeandersModule,
-    MeanderCharacteristicsModule,
-    MeanderClassificationModule,
-    MeanderDatabaseModule,
+    GeometryModule,
+    CorpusModule,
+    CharacteristicsModule,
+    ClassificationModule,
+    DatabaseModule,
     CodeModule,
-    MeanderEnumerationModule,
-    MeanderRenderingModule,
+    EnumerationModule,
+    DrawingModule,
   ],
   providers: [
     DrawCheckService,

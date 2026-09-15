@@ -3,13 +3,13 @@ import { getRepositoryToken, TypeOrmModule } from "@nestjs/typeorm";
 import { DataSource, type Repository } from "typeorm";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
-import { Meander } from "../meander-database/entities/Meander.entity";
-import { MeanderDatabaseService } from "../meander-database/meander-database.service";
+import { DatabaseService } from "../database/database.service";
+import { Meander } from "../database/entities/Meander.entity";
+import { GeometryService } from "../geometry/geometry.service";
 
 import { DrawIndexService } from "./draw-index.service";
 
-import type { MeanderRecord } from "../meander-database/meander-database.types";
+import type { MeanderRecord } from "../database/database.types";
 
 /**
  * Drives `DrawIndexService.build` against a real TypeORM connection to an
@@ -17,7 +17,7 @@ import type { MeanderRecord } from "../meander-database/meander-database.types";
  * constructed set of rows, per spec #813's Testing Decisions for this seam.
  *
  * The connection is assembled inline rather than through
- * `MeanderDatabaseModule`, which always opens the one committed database
+ * `DatabaseModule`, which always opens the one committed database
  * file — this suite needs a fresh, isolated connection instead, the same way
  * `meander-database.service.integration.test.ts` does.
  */
@@ -38,11 +38,7 @@ describe(DrawIndexService, () => {
         }),
         TypeOrmModule.forFeature([Meander]),
       ],
-      providers: [
-        DrawIndexService,
-        GridGeometryService,
-        MeanderDatabaseService,
-      ],
+      providers: [DrawIndexService, GeometryService, DatabaseService],
     }).compile();
 
     service = await module.resolve(DrawIndexService);
@@ -85,7 +81,7 @@ describe(DrawIndexService, () => {
     await repository.save(record({ code: "snake-row", family: "snake" }));
     await repository.save(
       record({
-        code: "mosaic-row",
+        code: "sample-row",
         family: "mosaic",
         subFamily: "dots",
       }),

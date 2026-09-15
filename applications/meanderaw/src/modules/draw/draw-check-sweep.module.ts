@@ -1,14 +1,14 @@
 import { Module } from "@nestjs/common";
 import { getRepositoryToken, TypeOrmModule } from "@nestjs/typeorm";
 
+import { CharacteristicsModule } from "../characteristics/characteristics.module";
+import { ClassificationModule } from "../classification/classification.module";
 import { CodeModule } from "../code/code.module";
-import { HardcodedMeandersService } from "../hardcoded-meanders/hardcoded-meanders.service";
-import { MeanderCharacteristicsModule } from "../meander-characteristics/meander-characteristics.module";
-import { MeanderClassificationModule } from "../meander-classification/meander-classification.module";
-import { Meander } from "../meander-database/entities/Meander.entity";
-import { MeanderDatabaseService } from "../meander-database/meander-database.service";
-import { MeanderEnumerationModule } from "../meander-enumeration/meander-enumeration.module";
-import { MeanderRenderingModule } from "../meander-rendering/meander-rendering.module";
+import { CorpusService } from "../corpus/corpus.service";
+import { DatabaseService } from "../database/database.service";
+import { Meander } from "../database/entities/Meander.entity";
+import { DrawingModule } from "../drawing/drawing.module";
+import { EnumerationModule } from "../enumeration/enumeration.module";
 
 import { DRAW_CHECK_SWEEP_CONNECTION_NAME } from "./draw-check.constants";
 import { DrawEnumerationService } from "./draw-enumeration.service";
@@ -21,20 +21,20 @@ import { DrawRecordService } from "./draw-record.service";
  * runs against the committed database, run here against a connection nothing
  * else ever reads.
  *
- * It does **not** import `HardcodedMeandersModule` or `MeanderDatabaseModule`
- * — both pull in `MeanderDatabaseModule`'s `TypeOrmModule.forRoot()`, which
+ * It does **not** import `CorpusModule` or `DatabaseModule`
+ * — both pull in `DatabaseModule`'s `TypeOrmModule.forRoot()`, which
  * always opens the one committed `output/meanders.sqlite` file under
  * TypeORM's default connection name. This module registers its own
  * `TypeOrmModule.forRoot()` under `DRAW_CHECK_SWEEP_CONNECTION_NAME` instead
  * of that default name, so the two root connections this application keeps
  * alive at once — the committed one and this throwaway one — never collide,
  * the same reason `draw-sweep.command.integration.test.ts` lists
- * `HardcodedMeandersService` and `MeanderDatabaseService` directly as
+ * `CorpusService` and `DatabaseService` directly as
  * providers rather than importing the modules that wrap them for the
  * committed connection. This module mirrors that test's own provider
  * composition, adapted from test code to real runtime use.
  *
- * `MeanderDatabaseService` itself still injects its repository unnamed
+ * `DatabaseService` itself still injects its repository unnamed
  * (`@InjectRepository(Meander)`, the same as it does against the real
  * committed connection elsewhere), so this module also aliases the
  * default-named repository token to the one `forFeature` above actually
@@ -45,11 +45,11 @@ import { DrawRecordService } from "./draw-record.service";
 @Module({
   controllers: [],
   imports: [
-    MeanderCharacteristicsModule,
-    MeanderClassificationModule,
+    CharacteristicsModule,
+    ClassificationModule,
     CodeModule,
-    MeanderEnumerationModule,
-    MeanderRenderingModule,
+    EnumerationModule,
+    DrawingModule,
     TypeOrmModule.forRoot({
       database: ":memory:",
       entities: [Meander],
@@ -63,8 +63,8 @@ import { DrawRecordService } from "./draw-record.service";
   providers: [
     DrawEnumerationService,
     DrawRecordService,
-    HardcodedMeandersService,
-    MeanderDatabaseService,
+    CorpusService,
+    DatabaseService,
     {
       provide: getRepositoryToken(Meander),
       useExisting: getRepositoryToken(

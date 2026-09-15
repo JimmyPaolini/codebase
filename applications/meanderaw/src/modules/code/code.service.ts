@@ -1,6 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
 
-import { MosaicSymmetryService } from "../mosaic-tile/mosaic-symmetry.service";
+import { SymmetryService } from "../symmetry/symmetry.service";
 
 import {
   HEXADECIMAL_DIGIT_PATTERN,
@@ -8,10 +8,7 @@ import {
   InvalidCodeLengthError,
 } from "./code.constants";
 
-import type {
-  MosaicDirections,
-  MosaicTile,
-} from "../mosaic-tile/mosaic-tile.types";
+import type { Directions, Tile } from "../tile/tile.types";
 import type { ParsedCode } from "./code.types";
 
 /**
@@ -40,7 +37,7 @@ import type { ParsedCode } from "./code.types";
  * `4 * columns * (rows - 1)` bits where a tile has only
  * `columns * (2 * rows - 3)` degrees of freedom, because every edge is
  * written twice, once at each end. That is the same redundancy
- * `MosaicTileService.assertWellFormed` checks, and paying it buys a Code
+ * `TileService.assertWellFormed` checks, and paying it buys a Code
  * whose characters are the meander's own points: `0` is a dot, `3` a
  * horizontal straight, `c` a vertical straight, `5`/`6`/`9`/`a` the corners,
  * `7`/`b`/`d`/`e` the T-junctions, `f` a crossing. A reader decodes a Code
@@ -52,8 +49,8 @@ export class CodeService {
   // 🏗 Dependency Injection
 
   constructor(
-    @Inject(MosaicSymmetryService)
-    private readonly mosaicSymmetryService: MosaicSymmetryService,
+    @Inject(SymmetryService)
+    private readonly symmetryService: SymmetryService,
   ) {}
 
   // 🔐 Private Fields
@@ -63,7 +60,7 @@ export class CodeService {
   // 🔏 Private Methods
 
   /** One digit's four direction bits, worth `8` north, `4` south, `2` east, `1` west. */
-  private decode(value: number): MosaicDirections {
+  private decode(value: number): Directions {
     return {
       east: (value & 0b0010) !== 0,
       north: (value & 0b1000) !== 0,
@@ -84,11 +81,7 @@ export class CodeService {
    * ticks rather than points of the repeat, so there is nothing there for a
    * bit to be set on.
    */
-  directionsAt(
-    code: ParsedCode,
-    level: number,
-    column: number,
-  ): MosaicDirections {
+  directionsAt(code: ParsedCode, level: number, column: number): Directions {
     const { columns, digits, levels } = code;
 
     if (level < 0 || level >= levels || column < 0 || column >= columns) {
@@ -161,7 +154,7 @@ export class CodeService {
    * a Code carries no row count and no column span of its own, which is why
    * both travel beside it everywhere one is stored or read.
    */
-  spell(tile: MosaicTile): string {
+  spell(tile: Tile): string {
     return tile.points
       .flatMap((row) =>
         row.map((point) =>
@@ -178,17 +171,17 @@ export class CodeService {
 
   /**
    * The Code every tile in a symmetry class shares: {@link spell} of the one
-   * member `MosaicSymmetryService.canonicalTile` picks. Two tiles draw the
+   * member `SymmetryService.canonicalTile` picks. Two tiles draw the
    * same pattern exactly when their canonical Codes match.
    *
    * It is not the deduplication key the enumeration folds on. That key has
-   * to be readable by `MosaicTilesService`, which sits upstream of this
-   * service, and `MosaicSymmetryService.edgeKey` separates two classes of
+   * to be readable by `TileEnumerationService`, which sits upstream of this
+   * service, and `SymmetryService.edgeKey` separates two classes of
    * one shape exactly as this does — so how a Code is spelled stays a
    * question this module answers alone.
    */
-  spellCanonical(tile: MosaicTile): string {
-    return this.spell(this.mosaicSymmetryService.canonicalTile(tile));
+  spellCanonical(tile: Tile): string {
+    return this.spell(this.symmetryService.canonicalTile(tile));
   }
 
   /**
@@ -202,7 +195,7 @@ export class CodeService {
    * caller asking a question the tile vocabulary already answers reaches for
    * this.
    */
-  tile(code: ParsedCode): MosaicTile {
+  tile(code: ParsedCode): Tile {
     const { columns, levels, rows } = code;
 
     return {

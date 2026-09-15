@@ -1,9 +1,9 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { mosaicTile } from "../../../testing/mosaic-tiles";
-import { MosaicSymmetryService } from "../mosaic-tile/mosaic-symmetry.service";
-import { MosaicTileService } from "../mosaic-tile/mosaic-tile.service";
+import { buildTile } from "../../../testing/tiles";
+import { SymmetryService } from "../symmetry/symmetry.service";
+import { TileService } from "../tile/tile.service";
 
 import {
   InvalidCodeCharacterError,
@@ -20,20 +20,20 @@ const BARE = { east: false, north: false, south: false, west: false };
 
 describe(CodeService, () => {
   let service: CodeService;
-  let mosaicSymmetryService: MosaicSymmetryService;
+  let symmetryService: SymmetryService;
 
   // Six rows, one column: five interior levels whose top point sends a
   // southward edge, then a bare point, then the wrapped east-west rule,
   // then another bare point.
-  const singleColumn = mosaicTile(["s", ".", ".", "e", "."]);
+  const singleColumn = buildTile(["s", ".", ".", "e", "."]);
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [CodeService, MosaicSymmetryService, MosaicTileService],
+      providers: [CodeService, SymmetryService, TileService],
     }).compile();
 
     service = await module.resolve(CodeService);
-    mosaicSymmetryService = await module.resolve(MosaicSymmetryService);
+    symmetryService = await module.resolve(SymmetryService);
   });
 
   it("is defined", () => {
@@ -112,21 +112,21 @@ describe(CodeService, () => {
     });
 
     it("reads row-major, so a two-column tile interleaves its columns", () => {
-      expect(service.spell(mosaicTile(["e.", ".."]))).toBe("2100");
-      expect(service.spell(mosaicTile([".e", ".."]))).toBe("1200");
+      expect(service.spell(buildTile(["e.", ".."]))).toBe("2100");
+      expect(service.spell(buildTile([".e", ".."]))).toBe("1200");
     });
 
     it("writes a single column's wrapped edge as both east and west, which is what its ink does", () => {
-      expect(service.spell(mosaicTile(["e"]))).toBe("3");
-      expect(service.spell(mosaicTile(["e."]))).toBe("21");
+      expect(service.spell(buildTile(["e"]))).toBe("3");
+      expect(service.spell(buildTile(["e."]))).toBe("21");
     });
 
     it("writes a point owning both its edges as one character, which a per-mark letter had none for", () => {
-      expect(service.spell(mosaicTile(["b.", "..", ".."]))).toBe("618000");
+      expect(service.spell(buildTile(["b.", "..", ".."]))).toBe("618000");
     });
 
     it("round-trips a tile through a Code and back to the same tile, which is what makes the two directions one conversion", () => {
-      const tile = mosaicTile(["bs", "e."]);
+      const tile = buildTile(["bs", "e."]);
 
       expect(
         service.tile(service.parse(service.spell(tile), 3, 2)),
@@ -134,15 +134,15 @@ describe(CodeService, () => {
     });
 
     it("names a tile completely, so two tiles of one shape share it only when they are the same tile", () => {
-      expect(service.spell(mosaicTile(["e.", "e.", ".."]))).not.toBe(
-        service.spell(mosaicTile(["e.", ".e", ".."])),
+      expect(service.spell(buildTile(["e.", "e.", ".."]))).not.toBe(
+        service.spell(buildTile(["e.", ".e", ".."])),
       );
     });
   });
 
   describe("spellCanonical", () => {
     it("gives a tile and its own top-to-bottom mirror the same name", () => {
-      const flipped = mosaicTile([".", "e", ".", "s", "."]);
+      const flipped = buildTile([".", "e", ".", "s", "."]);
 
       expect(service.spellCanonical(flipped)).toBe(
         service.spellCanonical(singleColumn),
@@ -150,21 +150,21 @@ describe(CodeService, () => {
     });
 
     it("gives a tile and its own column shift the same name, since shifting only re-phases the pattern", () => {
-      expect(service.spellCanonical(mosaicTile([".e", ".."]))).toBe(
-        service.spellCanonical(mosaicTile(["e.", ".."])),
+      expect(service.spellCanonical(buildTile([".e", ".."]))).toBe(
+        service.spellCanonical(buildTile(["e.", ".."])),
       );
     });
 
     it("is the representative's own bit string, so a Code describes the tile that spelled it", () => {
       expect(service.spellCanonical(singleColumn)).toBe(
-        service.spell(mosaicSymmetryService.canonicalTile(singleColumn)),
+        service.spell(symmetryService.canonicalTile(singleColumn)),
       );
       expect(service.spellCanonical(singleColumn)).toBe("03048");
     });
 
     it("keeps two genuinely different tiles apart", () => {
-      expect(service.spellCanonical(mosaicTile(["e.", "e.", ".."]))).not.toBe(
-        service.spellCanonical(mosaicTile(["e.", ".e", ".."])),
+      expect(service.spellCanonical(buildTile(["e.", "e.", ".."]))).not.toBe(
+        service.spellCanonical(buildTile(["e.", ".e", ".."])),
       );
     });
   });

@@ -5,8 +5,8 @@ import { Command, CommandRunner, Option } from "nest-commander";
 
 import { LoggerService } from "@codebase/logger";
 
-import { HARDCODED_MEANDERS_BY_FAMILY } from "../hardcoded-meanders/hardcoded-meanders.constants";
-import { HardcodedMeandersService } from "../hardcoded-meanders/hardcoded-meanders.service";
+import { CORPUS_BY_FAMILY } from "../corpus/corpus.constants";
+import { CorpusService } from "../corpus/corpus.service";
 
 import { DrawCheckService } from "./draw-check.service";
 import { DrawCodeService } from "./draw-code.service";
@@ -31,7 +31,7 @@ import type { DrawCommandOptions } from "./draw.types";
  *   space — every shape the edge budget admits, every structurally distinct
  *   repeat within each — and writes a row per meander found, its family read
  *   off its own structure rather than off whichever generator drew it. Then
- *   {@link HardcodedMeandersService} ingests the historical corpus's
+ *   {@link CorpusService} ingests the historical corpus's
  *   hardcoded Code constants, which are exactly the meanders that lie
  *   *beyond* that budget — see `hardcoded-meanders.constants.ts` for how that
  *   boundary is drawn and why it has to be.
@@ -79,8 +79,8 @@ export class DrawCommand extends CommandRunner {
     private readonly drawEnumerationService: DrawEnumerationService,
     @Inject(DrawIndexService)
     private readonly drawIndexService: DrawIndexService,
-    @Inject(HardcodedMeandersService)
-    private readonly hardcodedMeandersService: HardcodedMeandersService,
+    @Inject(CorpusService)
+    private readonly corpusService: CorpusService,
   ) {
     super();
     this.logger.setContext(DrawCommand.name);
@@ -140,9 +140,7 @@ export class DrawCommand extends CommandRunner {
       enumerated,
     });
 
-    const hardcoded = await this.hardcodedMeandersService.ingest(
-      HARDCODED_MEANDERS_BY_FAMILY,
-    );
+    const hardcoded = await this.corpusService.ingest(CORPUS_BY_FAMILY);
 
     this.logger.log("✨ Generated every meander", undefined, {
       enumerated,

@@ -1,15 +1,15 @@
 import { Inject, Injectable } from "@nestjs/common";
 
+import { CharacteristicsService } from "../characteristics/characteristics.service";
+import { ClassificationService } from "../classification/classification.service";
 import { CodeService } from "../code/code.service";
-import { MeanderCharacteristicsService } from "../meander-characteristics/meander-characteristics.service";
-import { MeanderClassificationService } from "../meander-classification/meander-classification.service";
-import { MeanderRenderingService } from "../meander-rendering/meander-rendering.service";
+import { DrawingService } from "../drawing/drawing.service";
 
-import type { MeanderShape } from "../meander-classification/meander-classification.types";
+import type { MeanderShape } from "../classification/classification.types";
 import type {
   MeanderProvenance,
   MeanderRecord,
-} from "../meander-database/meander-database.types";
+} from "../database/database.types";
 
 /**
  * Turns one Code into the row the database holds for it: read once, then
@@ -34,14 +34,14 @@ export class DrawRecordService {
   // 🏗 Dependency Injection
 
   constructor(
-    @Inject(MeanderCharacteristicsService)
-    private readonly meanderCharacteristicsService: MeanderCharacteristicsService,
-    @Inject(MeanderClassificationService)
-    private readonly meanderClassificationService: MeanderClassificationService,
+    @Inject(CharacteristicsService)
+    private readonly characteristicsService: CharacteristicsService,
+    @Inject(ClassificationService)
+    private readonly classificationService: ClassificationService,
     @Inject(CodeService)
     private readonly codeService: CodeService,
-    @Inject(MeanderRenderingService)
-    private readonly meanderRenderingService: MeanderRenderingService,
+    @Inject(DrawingService)
+    private readonly drawingService: DrawingService,
   ) {}
 
   // 🔐 Private Fields
@@ -60,8 +60,8 @@ export class DrawRecordService {
   ): MeanderRecord {
     const { columns, rows } = shape;
     const parsed = this.codeService.parse(code, rows, columns);
-    const characteristics = this.meanderCharacteristicsService.compute(parsed);
-    const classification = this.meanderClassificationService.classify(
+    const characteristics = this.characteristicsService.compute(parsed);
+    const classification = this.classificationService.classify(
       parsed,
       characteristics,
       shape,
@@ -76,7 +76,7 @@ export class DrawRecordService {
       provenance,
       rows,
       subFamily: classification.subFamily ?? null,
-      svg: this.meanderRenderingService.render(parsed),
+      svg: this.drawingService.render(parsed),
     };
   }
 }

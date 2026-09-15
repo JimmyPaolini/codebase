@@ -2,13 +2,13 @@ import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
-import { MeanderDatabaseService } from "../meander-database/meander-database.service";
+import { DatabaseService } from "../database/database.service";
 
 import { DrawCodeService } from "./draw-code.service";
 import { DrawRecordService } from "./draw-record.service";
 
-import type { Meander } from "../meander-database/entities/Meander.entity";
-import type { MeanderRecord } from "../meander-database/meander-database.types";
+import type { MeanderRecord } from "../database/database.types";
+import type { Meander } from "../database/entities/Meander.entity";
 
 // 🧪 Tests
 
@@ -22,7 +22,7 @@ import type { MeanderRecord } from "../meander-database/meander-database.types";
  */
 describe(DrawCodeService, () => {
   let drawRecordService: DrawRecordService;
-  let meanderDatabaseService: MeanderDatabaseService;
+  let databaseService: DatabaseService;
   let service: DrawCodeService;
 
   const record = createMock<MeanderRecord>({ code: "2" });
@@ -37,18 +37,18 @@ describe(DrawCodeService, () => {
           useValue: createMock<DrawRecordService>(),
         },
         {
-          provide: MeanderDatabaseService,
-          useValue: createMock<MeanderDatabaseService>(),
+          provide: DatabaseService,
+          useValue: createMock<DatabaseService>(),
         },
       ],
     }).compile();
 
     service = await module.resolve(DrawCodeService);
     drawRecordService = await module.resolve(DrawRecordService);
-    meanderDatabaseService = await module.resolve(MeanderDatabaseService);
+    databaseService = await module.resolve(DatabaseService);
 
     vi.mocked(drawRecordService.record).mockReturnValue(record);
-    vi.mocked(meanderDatabaseService.save).mockResolvedValue(savedMeander);
+    vi.mocked(databaseService.save).mockResolvedValue(savedMeander);
   });
 
   it("is defined", () => {
@@ -69,7 +69,7 @@ describe(DrawCodeService, () => {
     it("persists exactly the row the builder produced", async () => {
       await service.draw({ code: "2", columns: 1, rows: 2 });
 
-      expect(meanderDatabaseService.save).toHaveBeenCalledWith(record);
+      expect(databaseService.save).toHaveBeenCalledWith(record);
     });
 
     it("resolves with the saved meander row", async () => {
