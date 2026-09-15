@@ -283,6 +283,35 @@ describe(LoggerService, () => {
         service.log("CommanderError: (outputHelp)", "CommandFactory");
       }).not.toThrow();
     });
+
+    it("exempts @nestjs/typeorm's connection-retry warning", () => {
+      // `TypeOrmModule`'s own connection-retry logic logs through this
+      // instance when it is registered as Nest's global logger. A first
+      // connection attempt failing is routine, not a reason to crash.
+      expect(() => {
+        service.error(
+          "Unable to connect to the database. Retrying (1)...",
+          "error stack",
+          "TypeOrmModule",
+        );
+      }).not.toThrow();
+    });
+
+    it("exempts @nestjs/core's uncaught bootstrap exception handler", () => {
+      // `ExceptionHandler` is @nestjs/core's catch-all for any unhandled
+      // exception during dependency initialization — a native module ABI
+      // mismatch, a database driver failing to load, anything. It logs the
+      // raw exception with no message convention of its own, and Nest's
+      // default `abortOnError` turns a throw here into a fatal
+      // `process.abort()`, so this path must never throw either.
+      expect(() => {
+        service.error(
+          new Error("The module was compiled against a different version"),
+          undefined,
+          "ExceptionHandler",
+        );
+      }).not.toThrow();
+    });
   });
 
   describe("structured data", () => {
