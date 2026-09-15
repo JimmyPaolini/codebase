@@ -1,74 +1,6 @@
 // ♟️ Constants
 
-import type {
-  MosaicBuildableSubFamily,
-  MosaicSubFamilyShape,
-} from "./mosaic-tile.types";
-
-/**
- * The tile each sub-family is named for, as the rules that build it. A
- * region holds every tile its predicate accepts, so this is the region's
- * aligned representative rather than its only member.
- *
- * Read down the two rule columns and the family's pairings are one number
- * apart. `bars` and `diamond` are the same southward rule at two level
- * steps, which is the whole difference between an unbroken vertical bar and
- * a dashed one; `lines` and `dashes` are the same eastward rule at two
- * column steps. `dots` has no rule at all and `mesh` has both at every step
- * of one, which is why those two are the ends of the space rather than a
- * pair.
- *
- * `zigzag` is the only entry needing both a rule and a phase, and it is the
- * only one whose two rules disagree: `diamond`'s southward period in every
- * column rather than the first, under an eastward rule whose column offset
- * moves along by one at every level. That phase is what turns the ink at
- * every point instead of closing it into a box, and `MosaicEdgeRule` is
- * where it is explained.
- *
- * `MosaicSubFamilyService`'s round-trip test is what keeps a shape and the
- * predicate that recognizes it agreeing.
- */
-export const MOSAIC_SUB_FAMILY_SHAPES: Record<
-  MosaicBuildableSubFamily,
-  MosaicSubFamilyShape
-> = {
-  bars: {
-    columns: 1,
-    horizontal: undefined,
-    vertical: { columnStep: 1, levelStep: 1, phased: false },
-  },
-  dashes: {
-    columns: 2,
-    horizontal: { columnStep: 2, levelStep: 1, phased: false },
-    vertical: undefined,
-  },
-  diamond: {
-    columns: 1,
-    horizontal: undefined,
-    vertical: { columnStep: 1, levelStep: 2, phased: false },
-  },
-  dots: { columns: 1, horizontal: undefined, vertical: undefined },
-  lines: {
-    columns: 1,
-    horizontal: { columnStep: 1, levelStep: 1, phased: false },
-    vertical: undefined,
-  },
-  mesh: {
-    columns: 1,
-    horizontal: { columnStep: 1, levelStep: 1, phased: false },
-    vertical: { columnStep: 1, levelStep: 1, phased: false },
-  },
-  square: {
-    columns: 2,
-    horizontal: { columnStep: 2, levelStep: 1, phased: false },
-    vertical: { columnStep: 1, levelStep: 2, phased: false },
-  },
-  zigzag: {
-    columns: 2,
-    horizontal: { columnStep: 2, levelStep: 1, phased: true },
-    vertical: { columnStep: 1, levelStep: 2, phased: false },
-  },
-};
+import type { MosaicSubFamily } from "./mosaic-tile.types";
 
 /**
  * How many edges one `mosaic` tile may hold, which is the one knob the size
@@ -96,52 +28,6 @@ export const MOSAIC_SUB_FAMILY_SHAPES: Record<
 export const MOSAIC_TILE_EDGE_BUDGET = 16;
 
 /**
- * The deepest band the `mosaic` family is drawn in, and so the highest
- * `rows` value a tile is enumerated at.
- *
- * Six, where every other family runs to the shared `MAXIMUM_VALUE` of 12.
- * {@link MOSAIC_TILE_EDGE_BUDGET} would admit a little past it on its own —
- * a one-column tile stays inside the budget out to 9 rows — but a family
- * that ran deeper at one column than at any other would be describing its
- * own ceiling with two numbers that disagree, and the sweep would file a
- * `9-rows` directory holding a single column and nothing beside it.
- *
- * It is a budget rather than a structural claim: nothing about the geometry
- * fails at 7 rows, which is why this is not the opposite number of
- * `STRUCTURAL_MINIMUM_ROWS`. It is enforced at the generation seam through
- * `FAMILY_MAXIMUM_ROWS` all the same, so a `mosaic` at 7 rows is refused
- * rather than drawn outside the corpus the charter gates — the property
- * issue #507 lived in the absence of.
- *
- * **The `negative` permutation half stops here too**, which is why this
- * constant is read outside the `mosaic` modules. That half used to stop one
- * row lower, so every drawing in it inverted a tile the `mosaic` half had
- * already committed; it now runs to the same 6, so its deepest row count
- * inverts a seven-row source that is enumerable but not committed and the
- * corridor-identity gate covers rows 3 through 5 of it rather than all of
- * it. `NegativeSourceService` builds source tiles from a rule rather than
- * from the enumeration, which is the same reason the named `negative`
- * family already draws out to 12 rows with no committed source at all.
- */
-export const MOSAIC_TILE_MAXIMUM_ROWS = 6;
-
-/**
- * The highest `rows` or `repeatCount` value {@link MosaicTileGenerationService}
- * draws a whole tiled document at.
- *
- * Twelve, and it moved here from the retired `meander-generation` module,
- * where it was the shared ceiling every family's command-line `--rows` and
- * `--repeat-count` were validated against. That command line is gone with
- * the per-family procedural pipeline, and this is the one bound left reading
- * it — so it lives beside the service that reads it rather than in a module
- * kept alive to hold it.
- */
-export const MOSAIC_TILE_MAXIMUM_VALUE = 12;
-
-/** The lowest `repeatCount` {@link MosaicTileGenerationService} draws a document at: at least one unit must be drawn. */
-export const MOSAIC_TILE_MINIMUM_REPEAT_COUNT = 1;
-
-/**
  * The smallest `rows` value a `mosaic` tile is worth enumerating at.
  *
  * Three, where a tile's interior is two grid levels — enough for a southward
@@ -158,39 +44,30 @@ export const MOSAIC_TILE_MINIMUM_REPEAT_COUNT = 1;
 export const MOSAIC_TILE_MINIMUM_ROWS = 3;
 
 /**
- * Every named sub-family, as `readonly string[]` — mirroring
- * `SUPPORTED_TYPES`'s widened declaration for the same reason: it keeps
- * `Array.prototype.includes` usable with a plain `string` at the command
- * line boundary, where a raw flag value has to be narrowed before it can be
- * trusted.
+ * Every named sub-family, as `readonly string[]` — widened rather than a
+ * literal tuple so `Array.prototype.includes` stays usable with a plain
+ * `string` where one arrives untyped, and so the entity's `simple-enum`
+ * column can take it directly.
  *
- * Read off {@link MOSAIC_SUB_FAMILY_SHAPES} rather than written out again,
- * so the names a caller may ask for are exactly the ones a tile can be
- * built for.
+ * It was read off a table of constructors — the rules that built each
+ * sub-family's aligned tile — until that table and the service that read it
+ * went, having had no production caller since the per-family procedural
+ * pipeline retired. The names are written out here instead, in the same
+ * order, and the `satisfies` check is what keeps them the names
+ * {@link MosaicSubFamily} spells.
  */
-export const SUPPORTED_SUB_FAMILIES: readonly string[] = Object.keys(
-  MOSAIC_SUB_FAMILY_SHAPES,
-);
+export const SUPPORTED_SUB_FAMILIES: readonly string[] = [
+  "bars",
+  "dashes",
+  "diamond",
+  "dots",
+  "lines",
+  "mesh",
+  "square",
+  "zigzag",
+] as const satisfies readonly MosaicSubFamily[];
 
 // 🚨 Errors
-
-/** Thrown when `repeatCount` falls outside {@link MOSAIC_TILE_MINIMUM_REPEAT_COUNT} and {@link MOSAIC_TILE_MAXIMUM_VALUE}. */
-export class InvalidMosaicRepeatCountError extends Error {
-  constructor(repeatCount: number, minimum: number, maximum: number) {
-    super(
-      `repeatCount must be between ${minimum} and ${maximum}, received ${repeatCount}`,
-    );
-    this.name = "InvalidMosaicRepeatCountError";
-  }
-}
-
-/** Thrown when `rows` falls outside the `mosaic` family's own structural minimum or {@link MOSAIC_TILE_MAXIMUM_VALUE}. */
-export class InvalidMosaicRowsError extends Error {
-  constructor(rows: number, minimum: number, maximum: number) {
-    super(`rows must be between ${minimum} and ${maximum}, received ${rows}`);
-    this.name = "InvalidMosaicRowsError";
-  }
-}
 
 /**
  * Thrown when a grid of direction bits is not a tile: two adjoining points

@@ -12,8 +12,8 @@ import type { MeanderCanvasPoint } from "./meander-rendering.types";
 
 /**
  * Draws a decoded Code's point grid to SVG: the family-agnostic mechanical
- * rule generalized from `MosaicTileMotifService.path`, so it applies to
- * every family's Code rather than only `mosaic`'s tiles.
+ * rule generalized from the retired per-tile motif, so it applies to every
+ * family's Code rather than only one family's tiles.
  *
  * Each point owns two of its four direction bits — an `east` bit draws one
  * unit right, a `south` bit one unit down — and a point owning neither is an
@@ -23,8 +23,8 @@ import type { MeanderCanvasPoint } from "./meander-rendering.types";
  * point is bare; they draw nothing of their own, since the neighbor that
  * owns the matching `south`/`east` bit already draws that segment.
  *
- * Unlike `MosaicTileMotifService`, this renderer draws no repeat unit, no
- * leading overhang, and no per-unit cap-tick clipping. A Code named by
+ * Unlike that motif, this renderer draws no repeat unit, no leading
+ * overhang, and no per-unit cap-tick clipping. A Code named by
  * `--rows`/`--columns`/`--code` is one whole meander already, not one tile
  * meant to be tiled several times, so there is no second repeat for an
  * overhang to reach into or a cap tick to stay flush with — the top and

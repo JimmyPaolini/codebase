@@ -360,8 +360,8 @@ change and is not worth making for a vocabulary correction.
 The charter reports a **rendered document**'s ink as a graph — nodes, edges, components,
 free ends — and two predicates follow from those counts by arithmetic and nothing else: a
 **forest** is exactly `edges = nodes − components`, and a **tree** is exactly
-`components = 1 && edges = nodes − 1`. `MosaicConnectivityService` asks the same two
-questions of a **tile**, and answers them without drawing it.
+`components = 1 && edges = nodes − 1`. The same two questions were asked of a **tile**,
+and answered without drawing it — the counts below are what that reading found.
 
 | Question | Over the 8,551 tiles |
 | --- | --- |
@@ -573,8 +573,7 @@ rows is asked of the rows instead, and it is exact.
 ### Every name is a constructor as well as a predicate
 
 A name is a rule, so recognizing a region costs nothing; building its aligned
-representative is the separate job `MosaicSubFamilyService` does, and for a while only
-five of the names had one. `mesh` and `zigzag` did not, because the shape table
+representative was a separate job, and for a while only five of the names had one. `mesh` and `zigzag` did not, because the shape table
 could say one thing — one direction's edges, anchored in the first column, every
 `levelStep` levels — and neither of those two is that. `mesh` uses both directions at
 once. `zigzag` needs its eastward edges to start a column further along at every level,
@@ -1249,9 +1248,8 @@ mortar that branches and one that crosses.
 `brick-upright` is the one source that cannot always be a sub-family's tile. `diamond`'s
 vertical dashes cover the interior in pairs, so it names no tile over an odd number of
 levels; this family closes the stack with a one-level dot there instead, exactly as the
-stair caps its own. Where `diamond` exists the two tiles are identical, which
-`negative-source.service.unit.test.ts` asserts against `MosaicSubFamilyService.tile`
-rather than against an identifier.
+stair caps its own. Where `diamond` exists the two tiles are identical, which was
+asserted against the sub-family's own constructor rather than against an identifier.
 
 A `negative` of `rows` rows inverts a source of `rows + 1`, and that offset is arithmetic
 rather than taste: a source of `n` rows has `n` rows of cells, the negative puts a lattice

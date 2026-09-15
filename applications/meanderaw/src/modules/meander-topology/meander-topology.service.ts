@@ -241,14 +241,14 @@ export class MeanderTopologyService {
    * quantity {@link InkConnectivity}'s two predicates cannot be computed
    * without and the one that costs a walk.
    *
-   * It takes an {@link InkAdjacency} rather than a document because the
-   * `mosaic` family asks this of a *tile* — a repeat unit whose ink wraps
-   * east into its own first column — and a tile is not a document and never
-   * becomes one. Rendering a tile in order to measure it would answer a
-   * different question: a rendering of `N` repeats shows `N` copies of
-   * whatever one repeat contains, so its component count says how many
-   * repeats were drawn as much as it says anything about the tile. See
-   * `MosaicConnectivityService`.
+   * It takes an {@link InkAdjacency} rather than a document because this is
+   * also asked of a *repeat unit* whose ink wraps east into its own first
+   * column, and a repeat unit is not a document and never becomes one.
+   * Rendering one in order to measure it would answer a different question:
+   * a rendering of `N` repeats shows `N` copies of whatever one repeat
+   * contains, so its component count says how many repeats were drawn as
+   * much as it says anything about the unit. See
+   * `MeanderConnectivityService`.
    */
   components<Node>(adjacency: InkAdjacency<Node>): number {
     const visited = new Set<string>();
@@ -290,28 +290,6 @@ export class MeanderTopologyService {
       freeEnds: this.freeEnds(graph),
       nodes: graph.nodes.size,
     };
-  }
-
-  /**
-   * Whether an ink graph carries no loop anywhere — a forest.
-   *
-   * The whole of it is `edges === nodes - components`, which is stated and
-   * argued in {@link InkConnectivity} rather than here. It lives on this
-   * service because the arithmetic belongs to the counts rather than to
-   * whatever was counted: a tile and a document both reach it through the
-   * same three numbers, and neither should restate the identity.
-   */
-  isAcyclic(connectivity: InkConnectivity): boolean {
-    return connectivity.edges === connectivity.nodes - connectivity.components;
-  }
-
-  /**
-   * Whether an ink graph is a single connected figure. Together with
-   * {@link isAcyclic} this is a tree, which is what
-   * {@link InkConnectivity} spells `components === 1 && edges === nodes - 1`.
-   */
-  isOneComponent(connectivity: InkConnectivity): boolean {
-    return connectivity.components === 1;
   }
 
   /** Measures one rendered meander's channel widths and its ink and negative junction counts. */

@@ -18,19 +18,17 @@ import type {
  * loops it closes, and how many of its points terminate.
  *
  * They are the same three `MeanderTopologyService.connectivity` reports for
- * a *rendered document*, and the same three `MosaicConnectivityService`
- * reports for a `mosaic` *tile* — read here off the decoded grid directly,
+ * a *rendered document* — read here off the decoded grid directly,
  * for the same reason `MeanderCharacteristicsService` reads the junction
  * counts off it: a Code is what a meander now is, and measuring it should
  * not require rendering it first.
  *
  * **A grid is read as one repeat of a band, not as a finished drawing.** A
  * step east off the last column arrives at the first column of the same
- * grid, exactly as `MosaicConnectivityService` reads a tile, because that
- * wrap is what makes a repeat unit join up with its own next repeat. North
- * and south do not wrap: the grid's first and last levels sit against the
- * band's two border rules, which are cap ticks rather than points of the
- * repeat. The consequence is the one that service's own doc comment states:
+ * grid, because that wrap is what makes a repeat unit join up with its own
+ * next repeat. North and south do not wrap: the grid's first and last levels
+ * sit against the band's two border rules, which are cap ticks rather than
+ * points of the repeat. The consequence is worth stating:
  * a run that closes only by wrapping — every level leaving its own point
  * east and arriving back at it from the west — is a loop here and a straight
  * rule in the drawing.
@@ -173,8 +171,8 @@ export class MeanderConnectivityService {
    * it closes, and how many of its points terminate.
    *
    * `cycles` is `edges - nodes + components`, the first Betti number — the
-   * same arithmetic `MeanderTopologyService.isAcyclic` states as an
-   * equality, reported as a count here because a family is told from another
+   * same arithmetic `InkConnectivity` states as the equality a forest
+   * satisfies, reported as a count here because a family is told from another
    * by how many loops it closes rather than only by whether it closes one.
    */
   connectivity(grid: MeanderPointGrid): MeanderConnectivity {

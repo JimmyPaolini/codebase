@@ -23,9 +23,9 @@ export interface MeanderCharacteristics extends MeanderConnectivity {
  * into, how many independent loops it closes, and how many of its points
  * carry exactly one arm.
  *
- * The same three numbers `InkConnectivity` reports for a rendered document
- * and `MosaicConnectivityService` reports for a `mosaic` tile, stated over a
- * decoded Code's grid instead — see `MeanderConnectivityService` for how the
+ * The same three numbers `InkConnectivity` reports for a rendered document,
+ * stated over a decoded Code's grid instead — see
+ * `MeanderConnectivityService` for how the
  * grid is read as a repeating band and why an edge is claimed by either of
  * its ends.
  *

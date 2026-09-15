@@ -2,10 +2,6 @@ import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import { mosaicTile } from "../../../testing/mosaic-tiles";
-import { MeanderLatticeService } from "../meander-lattice/meander-lattice.service";
-import { MeanderTopologyService } from "../meander-topology/meander-topology.service";
-import { MosaicConnectivityService } from "../mosaic-tile/mosaic-connectivity.service";
-import { MosaicSubFamilyService } from "../mosaic-tile/mosaic-sub-family.service";
 import { MosaicSymmetryService } from "../mosaic-tile/mosaic-symmetry.service";
 import { MosaicTileService } from "../mosaic-tile/mosaic-tile.service";
 import { MosaicTilesService } from "../mosaic-tile/mosaic-tiles.service";
@@ -13,7 +9,6 @@ import { MosaicTilesService } from "../mosaic-tile/mosaic-tiles.service";
 import { MosaicNamingService } from "./mosaic-naming.service";
 
 import type {
-  MosaicBuildableSubFamily,
   MosaicSubFamily,
   MosaicTile,
   MosaicTileShape,
@@ -56,18 +51,6 @@ const NAMES: readonly MosaicSubFamily[] = [
   "zigzag",
 ];
 
-/** The names that also have a builder, which is what the round trip below can go through — every one of them now. */
-const BUILDABLE_NAMES: readonly MosaicBuildableSubFamily[] = [
-  "bars",
-  "dashes",
-  "diamond",
-  "dots",
-  "lines",
-  "mesh",
-  "square",
-  "zigzag",
-];
-
 /** One canonical tile per name, written out by hand so a rule is checked against a shape rather than against its own builder. */
 const CANONICAL_TILES: readonly (readonly [MosaicSubFamily, MosaicTile])[] = [
   ["bars", mosaicTile(["s", "s", "."])],
@@ -84,18 +67,12 @@ const CANONICAL_TILES: readonly (readonly [MosaicSubFamily, MosaicTile])[] = [
 
 describe(MosaicNamingService, () => {
   let service: MosaicNamingService;
-  let mosaicConnectivityService: MosaicConnectivityService;
-  let mosaicSubFamilyService: MosaicSubFamilyService;
   let mosaicTilesService: MosaicTilesService;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
       providers: [
-        MeanderLatticeService,
-        MeanderTopologyService,
-        MosaicConnectivityService,
         MosaicNamingService,
-        MosaicSubFamilyService,
         MosaicSymmetryService,
         MosaicTileService,
         MosaicTilesService,
@@ -103,8 +80,6 @@ describe(MosaicNamingService, () => {
     }).compile();
 
     service = await module.resolve(MosaicNamingService);
-    mosaicConnectivityService = await module.resolve(MosaicConnectivityService);
-    mosaicSubFamilyService = await module.resolve(MosaicSubFamilyService);
     mosaicTilesService = await module.resolve(MosaicTilesService);
   });
 
@@ -149,18 +124,6 @@ describe(MosaicNamingService, () => {
       ).toBeUndefined();
     });
 
-    it("splits the pair on its lanes rather than on its component count, which at two columns reads the same for both", () => {
-      const stepped = mosaicTile(["sb", "e."]);
-      const closed = mosaicTile(["bs", "e."]);
-
-      expect(mosaicConnectivityService.connectivity(stepped).components).toBe(
-        1,
-      );
-      expect(mosaicConnectivityService.connectivity(closed).components).toBe(1);
-      expect(service.name(stepped)).toBe("zigzag");
-      expect(service.name(closed)).toBe("square");
-    });
-
     it("names the two ends of the space, the tile with no edge and the tile with every edge", () => {
       expect(service.name(mosaicTile([".", "."]))).toBe("dots");
       expect(service.name(mosaicTile(["bb", "ee"]))).toBe("mesh");
@@ -181,20 +144,6 @@ describe(MosaicNamingService, () => {
           .toSorted(),
       ).toStrictEqual([...NAMES].toSorted());
     });
-
-    it.each(BUILDABLE_NAMES)(
-      "names back every %s tile the sub-family builder constructs, at every row count it exists at",
-      (earned) => {
-        const built = [4, 5, 6, 7, 8, 9, 10, 11, 12]
-          .map((rows) => mosaicSubFamilyService.tile(earned, rows))
-          .filter((tile) => tile !== undefined);
-
-        expect(built.length).toBeGreaterThan(0);
-        expect(built.map((tile) => service.name(tile))).toStrictEqual(
-          built.map(() => earned),
-        );
-      },
-    );
   });
 
   describe("over the enumerated unit space", () => {

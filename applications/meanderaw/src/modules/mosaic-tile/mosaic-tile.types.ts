@@ -1,35 +1,6 @@
 // 🏷️ Types
 
 /**
- * The sub-families `MosaicSubFamilyService` can build the aligned tile for,
- * and so the ones `--sub-family` offers.
- *
- * Every {@link MosaicSubFamily} name, which it was not always: `mesh` and
- * `zigzag` were predicates without constructors while the shape table could
- * only say "one direction's edges, anchored in the first column". Neither is
- * that. `mesh` uses both directions at once and `zigzag` needs its
- * horizontal edges to move a column along at every level, so the two arrived
- * together with the {@link MosaicEdgeRule} pair that can state them —
- * see {@link MosaicSubFamilyShape}.
- *
- * `square` arrived for free once `zigzag` had a phase: it is the identical
- * pair of rules with {@link MosaicEdgeRule.phased} off, which is the whole of
- * the difference between a staircase and a stack of closed squares. That
- * the two names are one boolean apart is the strongest evidence the split
- * between them is real rather than a distinction drawn over a region nobody
- * could tell apart.
- */
-export type MosaicBuildableSubFamily =
-  | "bars"
-  | "dashes"
-  | "diamond"
-  | "dots"
-  | "lines"
-  | "mesh"
-  | "square"
-  | "zigzag";
-
-/**
  * The four bits one point of a {@link MosaicTile} carries: whether ink
  * leaves it north, south, east, or west. `0000` is a dot, `1100` a corner,
  * `1110` a T-junction, `1111` a crossing.
@@ -56,36 +27,6 @@ export interface MosaicEdgeAddress {
   readonly column: number;
   readonly grid: readonly boolean[][];
   readonly level: number;
-}
-
-/**
- * How one of a tile's two edge grids is filled in, as the periodicity of the
- * edges in it: an edge every `levelStep` levels, and within a marked level
- * every `columnStep` columns, with `phased` advancing that column offset by
- * one per level.
- *
- * Two of these describe every buildable sub-family's aligned tile between
- * them, and the pairs the family is named in fall out of one number each.
- * `bars` and `diamond` are the same grid at `levelStep` 1 and 2 — an
- * unbroken bar and a dashed one. `lines` and `dashes` are the same grid at
- * `columnStep` 1 and 2 — a continuous rule and a broken one. `mesh` is both
- * grids at every step of one, which is every edge there is.
- *
- * `phased` is the one field that is a whole sub-family by itself. `zigzag`
- * and `square` are the same two rules and differ in nothing else: both close
- * every point into a corner, and a fixed column offset lets the ink turn back
- * on itself and close into a square inside the repeat, while advancing
- * that offset by one column per level makes each level's horizontal run start
- * where the one above it ended, so the ink turns the opposite way at every
- * level and walks sideways through the repeats. `zigzag` is the one with the
- * phase on and `square` the one with it off, which is why the field is a
- * boolean on the rule rather than a special case in whatever built the
- * staircase.
- */
-export interface MosaicEdgeRule {
-  readonly columnStep: number;
-  readonly levelStep: number;
-  readonly phased: boolean;
 }
 
 /**
@@ -123,12 +64,6 @@ export interface MosaicEnumeration {
   readonly edges: MosaicEdgesDraft;
   readonly shape: MosaicTileShape;
   readonly tilesByKey: Map<string, MosaicTile>;
-}
-
-/** One lattice point's position on the canvas, in pixels, as `MosaicTileMotifService` draws from it. */
-export interface MosaicLatticePoint {
-  readonly x: number;
-  readonly y: number;
 }
 
 /**
@@ -175,8 +110,8 @@ export type MosaicPointRank = 0 | 1 | 2 | 3;
  * another. That is neither name rather than the nearer one, which is the same
  * stance a tile mixing horizontal and vertical ink already got.
  *
- * Every one has a constructor as well as a predicate — see
- * {@link MosaicBuildableSubFamily}. `diamond` names the same shape the
+ * Every one had a constructor as well as a predicate until the constructors
+ * retired with the procedural pipeline. `diamond` names the same shape the
  * `split` **modifier** constructs, and both names survive because they play
  * different roles: `split` is a constructor into the unit space, `diamond` a
  * predicate over it. Nothing about the `split` modifier or its reference
@@ -191,42 +126,6 @@ export type MosaicSubFamily =
   | "mesh"
   | "square"
   | "zigzag";
-
-/**
- * How to build the tile a {@link MosaicSubFamily} is named for: the column
- * span its edges need to state themselves in, and one
- * {@link MosaicEdgeRule} per edge grid — `undefined` where the sub-family
- * uses no edge of that direction at all, which is both of them for `dots`.
- *
- * It is a rule per grid rather than one direction and one level step
- * because a sub-family may use both directions at once. `mesh` uses every
- * edge of both, and `zigzag` and `square` each need a southward rule and an
- * eastward rule that disagree about their periods — pairs of levels down,
- * alternate columns across — which a single direction cannot say.
- *
- * A `levelStep` above one is what makes a sub-family unavailable at some row
- * counts, since a rule has to close on the interior it fills rather than run
- * off the end of it. `diamond`'s southward edges span levels in pairs, so an
- * interior with an odd number of levels has no `diamond` tile at all, and
- * `zigzag` and `square` inherit exactly that constraint from the southward
- * rule all three share: every point turning a corner forces the southward
- * edges to alternate level by level, which only lands on the last level when
- * the number of them is even.
- *
- * `columns` is a consequence of the rules rather than an independent knob: a
- * `columnStep` of two needs two columns to be two columns wide. `dashes`
- * spans two for that reason — an eastward edge reaches the point to its
- * right, so at a single column it wraps onto its own point and draws the
- * continuous rule `lines` is named for instead — and `zigzag` and `square`
- * span two for the same reason read the other way, since their horizontal
- * bits have to alternate around the repeat and an odd number of columns
- * cannot alternate and still join up with itself.
- */
-export interface MosaicSubFamilyShape {
-  readonly columns: number;
-  readonly horizontal: MosaicEdgeRule | undefined;
-  readonly vertical: MosaicEdgeRule | undefined;
-}
 
 /**
  * One repeat tile of the `mosaic` family: a `columns` by `rows - 1` grid of
@@ -259,17 +158,6 @@ export interface MosaicTilePoint {
 export interface MosaicTileShape {
   readonly columns: number;
   readonly rows: number;
-}
-
-/**
- * Which repeat unit of a {@link MosaicTile} `MosaicTileMotifService.path`
- * draws. Grouped into one object rather than passed alongside the tile so
- * the method stays inside the workspace's parameter limit, and so
- * `isLastUnit` reads the same here as it does in `MotifUnit`.
- */
-export interface MosaicTileUnit {
-  readonly isLastUnit: boolean;
-  readonly unitIndex: number;
 }
 
 /** One group element, plus the shape it is acting on and which of a tile's two edge directions is being moved. */
