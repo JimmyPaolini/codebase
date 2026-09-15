@@ -1,4 +1,4 @@
-import { RenderingModule } from "@conformetry/configuration";
+import { ConfigurationModule } from "@conformetry/configuration";
 import { Module } from "@nestjs/common";
 
 import { GenerationService } from "./generation.service";
@@ -9,7 +9,7 @@ import { GenerationService } from "./generation.service";
 @Module({
   controllers: [],
   exports: [GenerationService],
-  imports: [RenderingModule],
+  imports: [ConfigurationModule],
   providers: [GenerationService],
 })
 export class GenerationModule {}

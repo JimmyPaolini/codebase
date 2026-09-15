@@ -1,8 +1,4 @@
-import {
-  ConfigurationModule,
-  InstanceDiscoveryModule,
-  TemplateDiscoveryModule,
-} from "@conformetry/configuration";
+import { ConfigurationModule } from "@conformetry/configuration";
 import { GenerationModule } from "@conformetry/generation";
 import { ReportingModule } from "@conformetry/output";
 import { ValidationModule } from "@conformetry/validation";
@@ -34,8 +30,6 @@ import { PluginService } from "./plugin.service";
     InstancesModule,
     ConfigurationModule,
     GeneratorModule,
-    InstanceDiscoveryModule,
-    TemplateDiscoveryModule,
     GenerationModule,
     LoggerModule,
     OptionsModule,
@@ -51,8 +45,6 @@ import { PluginService } from "./plugin.service";
     InstancesModule,
     ConfigurationModule,
     GeneratorModule,
-    InstanceDiscoveryModule,
-    TemplateDiscoveryModule,
     GenerationModule,
     LoggerModule,
     OptionsModule,

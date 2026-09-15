@@ -1,10 +1,6 @@
 import path from "node:path";
 
-import {
-  ConfigurationService,
-  InputService,
-  InstanceDiscoveryService,
-} from "@conformetry/configuration";
+import { ConfigurationService } from "@conformetry/configuration";
 import { InventoryService } from "@conformetry/output";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
@@ -79,7 +75,7 @@ const written = (): string => output.join("\n");
  */
 describe(TemplatesCommand, () => {
   let command: TemplatesCommand;
-  let instanceDiscoveryService: DeepMocked<InstanceDiscoveryService>;
+  let configurationService: DeepMocked<ConfigurationService>;
   let commandLogger: DeepMocked<LoggerService>;
 
   beforeAll(async () => {
@@ -91,17 +87,12 @@ describe(TemplatesCommand, () => {
           provide: ConfigurationService,
           useValue: createMock<ConfigurationService>(),
         },
-        { provide: InputService, useValue: createMock<InputService>() },
-        {
-          provide: InstanceDiscoveryService,
-          useValue: createMock<InstanceDiscoveryService>(),
-        },
         { provide: LoggerService, useValue: createMock<LoggerService>() },
       ],
     }).compile();
 
     command = await module.resolve(TemplatesCommand);
-    instanceDiscoveryService = await module.resolve(InstanceDiscoveryService);
+    configurationService = await module.resolve(ConfigurationService);
     commandLogger = await module.resolve(LoggerService);
   });
 
@@ -113,7 +104,7 @@ describe(TemplatesCommand, () => {
     vi.spyOn(console, "info").mockImplementation((...data: unknown[]) => {
       output.push(data.map(String).join(" "));
     });
-    instanceDiscoveryService.resolveInventoriedTemplates.mockReturnValue([
+    configurationService.resolveInventoriedTemplates.mockReturnValue([
       COMMAND_MODULE,
       SERVICE_MODULE,
     ]);
@@ -133,11 +124,6 @@ describe(TemplatesCommand, () => {
         {
           provide: ConfigurationService,
           useValue: createMock<ConfigurationService>(),
-        },
-        { provide: InputService, useValue: createMock<InputService>() },
-        {
-          provide: InstanceDiscoveryService,
-          useValue: createMock<InstanceDiscoveryService>(),
         },
         { provide: LoggerService, useValue: createMock<LoggerService>() },
       ],
@@ -202,7 +188,7 @@ describe(TemplatesCommand, () => {
       await command.run([], { instances: ["packages/*", "tools/*"] });
 
       expect(
-        instanceDiscoveryService.resolveInventoriedTemplates,
+        configurationService.resolveInventoriedTemplates,
       ).toHaveBeenCalledWith(
         expect.objectContaining({
           instancePatterns: ["packages/*", "tools/*"],
@@ -211,16 +197,14 @@ describe(TemplatesCommand, () => {
     });
 
     it("reads the configuration path the caller named", async () => {
-      const configurationService = createMock<ConfigurationService>();
+      const scopedConfigurationService = createMock<ConfigurationService>();
       const module = await Test.createTestingModule({
         providers: [
           TemplatesCommand,
           InventoryService,
-          { provide: ConfigurationService, useValue: configurationService },
-          { provide: InputService, useValue: createMock<InputService>() },
           {
-            provide: InstanceDiscoveryService,
-            useValue: createMock<InstanceDiscoveryService>(),
+            provide: ConfigurationService,
+            useValue: scopedConfigurationService,
           },
           { provide: LoggerService, useValue: createMock<LoggerService>() },
         ],
@@ -230,12 +214,12 @@ describe(TemplatesCommand, () => {
       await scoped.run([], { config: "custom/conformetry.config.ts" });
 
       expect(
-        configurationService.loadConformetryConfiguration,
+        scopedConfigurationService.loadConformetryConfiguration,
       ).toHaveBeenCalledWith("custom/conformetry.config.ts");
     });
 
     it("says so when the configuration declares no templates", async () => {
-      instanceDiscoveryService.resolveInventoriedTemplates.mockReturnValue([]);
+      configurationService.resolveInventoriedTemplates.mockReturnValue([]);
 
       await command.run([], {});
 
@@ -243,7 +227,7 @@ describe(TemplatesCommand, () => {
     });
 
     it("distinguishes an unexplained path from an empty configuration", async () => {
-      instanceDiscoveryService.resolveInventoriedTemplates.mockReturnValue([]);
+      configurationService.resolveInventoriedTemplates.mockReturnValue([]);
 
       await command.run([], { instances: ["packages/widgets/nowhere"] });
 
@@ -289,7 +273,7 @@ describe(TemplatesCommand, () => {
     });
 
     it("writes an empty collection when nothing is declared", async () => {
-      instanceDiscoveryService.resolveInventoriedTemplates.mockReturnValue([]);
+      configurationService.resolveInventoriedTemplates.mockReturnValue([]);
 
       await command.run([], { json: true });
 

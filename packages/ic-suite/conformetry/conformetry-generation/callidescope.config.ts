@@ -3,7 +3,13 @@ import { projectDefaults } from "../../../../configuration/callidescope.config.j
 /**
  * What conformetry-generation is held to, measured rather than assumed.
  *
- * Seven frames to render a template into an instance.
+ * Eight frames to render a template into an instance.
+ *
+ * Seven of those eight are the same render as before. The eighth is
+ * `ConfigurationService`: `@conformetry/configuration` now publishes one
+ * facade, so generation injects it rather than `RenderingService` and every
+ * stack through it gains exactly one delegating frame. The measured depth
+ * moved 7 → 8 and nothing got deeper.
  *
  * Measured by a run scoped to this project and its dependency closure, and set
  * **at** what it measured rather than above it: a stack or a callable at either
@@ -21,6 +27,6 @@ export default {
   ...projectDefaults,
   limits: {
     maximumBreadth: 4,
-    maximumDepth: 7,
+    maximumDepth: 8,
   },
 };

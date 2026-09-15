@@ -2,8 +2,16 @@ import { mkdtemp, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
+import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
+
+import { InputPromptingService } from "../input/input-prompting.service";
+import { InputService } from "../input/input.service";
+import { InstanceDiscoveryService } from "../instance-discovery/instance-discovery.service";
+import { InstanceGroupService } from "../instance-group/instance-group.service";
+import { RenderingService } from "../rendering/rendering.service";
+import { TemplateDiscoveryService } from "../template-discovery/template-discovery.service";
 
 import { UnknownConfigurationFileTypeError } from "./configuration.constants";
 import { ConfigurationService } from "./configuration.service";
@@ -36,7 +44,27 @@ describe(ConfigurationService, () => {
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [ConfigurationService],
+      providers: [
+        ConfigurationService,
+        {
+          provide: InputPromptingService,
+          useValue: createMock<InputPromptingService>(),
+        },
+        { provide: InputService, useValue: createMock<InputService>() },
+        {
+          provide: InstanceDiscoveryService,
+          useValue: createMock<InstanceDiscoveryService>(),
+        },
+        {
+          provide: InstanceGroupService,
+          useValue: createMock<InstanceGroupService>(),
+        },
+        { provide: RenderingService, useValue: createMock<RenderingService>() },
+        {
+          provide: TemplateDiscoveryService,
+          useValue: createMock<TemplateDiscoveryService>(),
+        },
+      ],
     }).compile();
 
     service = await module.resolve(ConfigurationService);

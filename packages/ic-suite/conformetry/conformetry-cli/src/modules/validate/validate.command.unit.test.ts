@@ -1,10 +1,4 @@
-import {
-  ConfigurationService,
-  InputPromptingService,
-  InputService,
-  InstanceDiscoveryService,
-  TemplateDiscoveryService,
-} from "@conformetry/configuration";
+import { ConfigurationService } from "@conformetry/configuration";
 import { ReportingService } from "@conformetry/output";
 import { ValidationService } from "@conformetry/validation";
 import { createMock } from "@golevelup/ts-vitest";
@@ -70,9 +64,6 @@ const TWO_TEMPLATES: ConformetryConfiguration = [
 describe(ValidateCommand, () => {
   let command: ValidateCommand;
   let configurationService: ConfigurationService;
-  let instanceDiscoveryService: InstanceDiscoveryService;
-  let templateDiscoveryService: TemplateDiscoveryService;
-  let inputPromptingService: InputPromptingService;
   let commandLogger: LoggerService;
   let reportingService: ReportingService;
   let validationService: ValidationService;
@@ -85,19 +76,6 @@ describe(ValidateCommand, () => {
           provide: ConfigurationService,
           useValue: createMock<ConfigurationService>(),
         },
-        {
-          provide: InstanceDiscoveryService,
-          useValue: createMock<InstanceDiscoveryService>(),
-        },
-        {
-          provide: TemplateDiscoveryService,
-          useValue: createMock<TemplateDiscoveryService>(),
-        },
-        {
-          provide: InputPromptingService,
-          useValue: createMock<InputPromptingService>(),
-        },
-        { provide: InputService, useValue: createMock<InputService>() },
         { provide: LoggerService, useValue: createMock<LoggerService>() },
         { provide: ReportingService, useValue: createMock<ReportingService>() },
         {
@@ -109,9 +87,6 @@ describe(ValidateCommand, () => {
 
     command = await module.resolve(ValidateCommand);
     configurationService = await module.resolve(ConfigurationService);
-    instanceDiscoveryService = await module.resolve(InstanceDiscoveryService);
-    templateDiscoveryService = await module.resolve(TemplateDiscoveryService);
-    inputPromptingService = await module.resolve(InputPromptingService);
     commandLogger = await module.resolve(LoggerService);
     reportingService = await module.resolve(ReportingService);
     validationService = await module.resolve(ValidationService);
@@ -124,10 +99,8 @@ describe(ValidateCommand, () => {
     vi.mocked(
       configurationService.loadConformetryConfiguration,
     ).mockResolvedValue(CONFIGURATION);
-    vi.mocked(instanceDiscoveryService.findInstances).mockReturnValue([
-      INSTANCE,
-    ]);
-    vi.mocked(templateDiscoveryService.collectTemplates).mockReturnValue([
+    vi.mocked(configurationService.findInstances).mockReturnValue([INSTANCE]);
+    vi.mocked(configurationService.collectTemplates).mockReturnValue([
       TEMPLATE,
     ]);
     vi.mocked(validationService.validate).mockReturnValue({
@@ -137,12 +110,12 @@ describe(ValidateCommand, () => {
       scores: [],
       unmatched: [],
     });
-    vi.mocked(inputPromptingService.isAtTerminal).mockReturnValue(false);
+    vi.mocked(configurationService.isAtTerminal).mockReturnValue(false);
     // Which groups this host can locate is the discovery service's rule, and
     // is tested there. Here every group is locatable unless a test says
     // otherwise, so these cases exercise the command's reaction rather than
     // restating the rule.
-    vi.mocked(instanceDiscoveryService.readWorkspaceGroups).mockImplementation(
+    vi.mocked(configurationService.readWorkspaceGroups).mockImplementation(
       (groups) => [...groups],
     );
   });
@@ -161,19 +134,6 @@ describe(ValidateCommand, () => {
           provide: ConfigurationService,
           useValue: createMock<ConfigurationService>(),
         },
-        {
-          provide: InstanceDiscoveryService,
-          useValue: createMock<InstanceDiscoveryService>(),
-        },
-        {
-          provide: TemplateDiscoveryService,
-          useValue: createMock<TemplateDiscoveryService>(),
-        },
-        {
-          provide: InputPromptingService,
-          useValue: createMock<InputPromptingService>(),
-        },
-        { provide: InputService, useValue: createMock<InputService>() },
         { provide: LoggerService, useValue: createMock<LoggerService>() },
         { provide: ReportingService, useValue: createMock<ReportingService>() },
         {
@@ -191,7 +151,7 @@ describe(ValidateCommand, () => {
     it("validates the configured instances and reports the outcome", async () => {
       await command.run([], {});
 
-      expect(instanceDiscoveryService.findInstances).toHaveBeenCalledWith(
+      expect(configurationService.findInstances).toHaveBeenCalledWith(
         expect.objectContaining({ patterns: ["packages/*/src/modules/*"] }),
       );
       expect(validationService.validate).toHaveBeenCalledWith(
@@ -241,7 +201,7 @@ describe(ValidateCommand, () => {
     it("lets an explicit glob override the configured instances", async () => {
       await command.run([], { instances: ["tools/*"] });
 
-      expect(instanceDiscoveryService.findInstances).toHaveBeenCalledWith(
+      expect(configurationService.findInstances).toHaveBeenCalledWith(
         expect.objectContaining({ patterns: ["tools/*"] }),
       );
     });
@@ -265,7 +225,7 @@ describe(ValidateCommand, () => {
 
       await command.run([], {});
 
-      expect(instanceDiscoveryService.findInstances).toHaveBeenCalledWith(
+      expect(configurationService.findInstances).toHaveBeenCalledWith(
         expect.objectContaining({ substitutions: { type: "packages" } }),
       );
     });
@@ -284,7 +244,7 @@ describe(ValidateCommand, () => {
 
       await command.run([], {});
 
-      expect(instanceDiscoveryService.findInstances).toHaveBeenCalledWith(
+      expect(configurationService.findInstances).toHaveBeenCalledWith(
         expect.objectContaining({ patterns: [] }),
       );
     });
@@ -311,7 +271,7 @@ describe(ValidateCommand, () => {
 
       await command.run([], {});
 
-      expect(instanceDiscoveryService.findInstances).toHaveBeenCalledWith(
+      expect(configurationService.findInstances).toHaveBeenCalledWith(
         expect.objectContaining({ threshold: 0.75 }),
       );
     });
@@ -399,7 +359,7 @@ describe(ValidateCommand, () => {
   describe("template narrowing", () => {
     /** Answers each glob with the instance that configuration locates. */
     function locateInstancesByPattern(): void {
-      vi.mocked(instanceDiscoveryService.findInstances).mockImplementation(
+      vi.mocked(configurationService.findInstances).mockImplementation(
         (args) => {
           if (args.patterns.includes("packages/*/src/modules/*")) {
             return [INSTANCE];
@@ -423,7 +383,7 @@ describe(ValidateCommand, () => {
     // narrowing that matches nothing produces no findings, and an empty
     // findings list is what a clean report looks like.
     it("says nothing matched rather than reporting a vacuous pass", async () => {
-      vi.mocked(instanceDiscoveryService.findInstances).mockReturnValue([]);
+      vi.mocked(configurationService.findInstances).mockReturnValue([]);
 
       const write = vi.spyOn(process.stdout, "write").mockReturnValue(true);
 
@@ -453,9 +413,7 @@ describe(ValidateCommand, () => {
         },
       ]);
 
-      vi.mocked(instanceDiscoveryService.readWorkspaceGroups).mockReturnValue(
-        [],
-      );
+      vi.mocked(configurationService.readWorkspaceGroups).mockReturnValue([]);
 
       const write = vi.spyOn(process.stdout, "write").mockReturnValue(true);
 
@@ -483,13 +441,11 @@ describe(ValidateCommand, () => {
         },
       ]);
 
-      vi.mocked(instanceDiscoveryService.readWorkspaceGroups).mockReturnValue(
-        [],
-      );
+      vi.mocked(configurationService.readWorkspaceGroups).mockReturnValue([]);
 
       await command.run([], { templates: ["widget"] });
 
-      expect(instanceDiscoveryService.findInstances).not.toHaveBeenCalledWith(
+      expect(configurationService.findInstances).not.toHaveBeenCalledWith(
         expect.objectContaining({ patterns: ["src/modules/*"] }),
       );
     });
@@ -505,7 +461,7 @@ describe(ValidateCommand, () => {
     it("measures against only the selected templates", async () => {
       await command.run([], { templates: ["gadget"] });
 
-      expect(templateDiscoveryService.collectTemplates).toHaveBeenCalledWith(
+      expect(configurationService.collectTemplates).toHaveBeenCalledWith(
         expect.objectContaining({
           configuration: [TWO_TEMPLATES[1]],
         }),
@@ -525,7 +481,7 @@ describe(ValidateCommand, () => {
     // Neither flag overrides the other: each removes candidates from one side
     // before the pairing, so the run is their intersection.
     it("intersects an instance glob with the selected templates", async () => {
-      vi.mocked(instanceDiscoveryService.findInstances).mockImplementation(
+      vi.mocked(configurationService.findInstances).mockImplementation(
         (args) => {
           if (args.patterns.includes("tools/*")) {
             return [INSTANCE, GADGET_INSTANCE];
@@ -570,11 +526,11 @@ describe(ValidateCommand, () => {
     });
 
     it("covers every template when told all, without asking", async () => {
-      vi.mocked(inputPromptingService.isAtTerminal).mockReturnValue(true);
+      vi.mocked(configurationService.isAtTerminal).mockReturnValue(true);
 
       await command.run([], { templates: ["all"] });
 
-      expect(inputPromptingService.promptForTemplates).not.toHaveBeenCalled();
+      expect(configurationService.promptForTemplates).not.toHaveBeenCalled();
       expect(validationService.validate).toHaveBeenCalledWith(
         expect.objectContaining({ instances: [INSTANCE, GADGET_INSTANCE] }),
       );
@@ -585,15 +541,15 @@ describe(ValidateCommand, () => {
     it("covers every template when nobody can be asked", async () => {
       await command.run([], {});
 
-      expect(inputPromptingService.promptForTemplates).not.toHaveBeenCalled();
+      expect(configurationService.promptForTemplates).not.toHaveBeenCalled();
       expect(validationService.validate).toHaveBeenCalledWith(
         expect.objectContaining({ instances: [INSTANCE, GADGET_INSTANCE] }),
       );
     });
 
     it("offers the configured templates when none was named", async () => {
-      vi.mocked(inputPromptingService.isAtTerminal).mockReturnValue(true);
-      vi.mocked(inputPromptingService.promptForTemplates).mockResolvedValue([
+      vi.mocked(configurationService.isAtTerminal).mockReturnValue(true);
+      vi.mocked(configurationService.promptForTemplates).mockResolvedValue([
         "gadget",
       ]);
 
@@ -601,7 +557,7 @@ describe(ValidateCommand, () => {
 
       // The loaded configuration itself, not a mapping of it: the picker can
       // then never disagree with what this command would actually run.
-      expect(inputPromptingService.promptForTemplates).toHaveBeenCalledWith(
+      expect(configurationService.promptForTemplates).toHaveBeenCalledWith(
         TWO_TEMPLATES,
       );
       expect(validationService.validate).toHaveBeenCalledWith(
@@ -610,8 +566,8 @@ describe(ValidateCommand, () => {
     });
 
     it("covers every template when the picker is cancelled", async () => {
-      vi.mocked(inputPromptingService.isAtTerminal).mockReturnValue(true);
-      vi.mocked(inputPromptingService.promptForTemplates).mockResolvedValue(
+      vi.mocked(configurationService.isAtTerminal).mockReturnValue(true);
+      vi.mocked(configurationService.promptForTemplates).mockResolvedValue(
         undefined,
       );
 
@@ -623,8 +579,8 @@ describe(ValidateCommand, () => {
     });
 
     it("covers every template when all is picked alongside a name", async () => {
-      vi.mocked(inputPromptingService.isAtTerminal).mockReturnValue(true);
-      vi.mocked(inputPromptingService.promptForTemplates).mockResolvedValue([
+      vi.mocked(configurationService.isAtTerminal).mockReturnValue(true);
+      vi.mocked(configurationService.promptForTemplates).mockResolvedValue([
         "all",
         "gadget",
       ]);
@@ -639,16 +595,14 @@ describe(ValidateCommand, () => {
     // Today's `--instances` behavior, which existing scripts rely on: the
     // globbed paths are measured against every template, not narrowed.
     it("leaves an instance glob alone when no template is named", async () => {
-      vi.mocked(instanceDiscoveryService.findInstances).mockReturnValue([
-        INSTANCE,
-      ]);
+      vi.mocked(configurationService.findInstances).mockReturnValue([INSTANCE]);
 
       await command.run([], { instances: ["tools/*"] });
 
-      expect(instanceDiscoveryService.findInstances).toHaveBeenCalledWith(
+      expect(configurationService.findInstances).toHaveBeenCalledWith(
         expect.objectContaining({ patterns: ["tools/*"] }),
       );
-      expect(templateDiscoveryService.collectTemplates).toHaveBeenCalledWith(
+      expect(configurationService.collectTemplates).toHaveBeenCalledWith(
         expect.objectContaining({ configuration: TWO_TEMPLATES }),
       );
     });
