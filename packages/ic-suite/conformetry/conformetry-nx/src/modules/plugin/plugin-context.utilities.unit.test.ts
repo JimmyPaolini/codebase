@@ -14,7 +14,7 @@ import {
 import { PLUGIN_CONTEXT_GLOBAL_KEY } from "./plugin.constants";
 import { PluginService } from "./plugin.service";
 
-import type nestCore from "@nestjs/core";
+import type * as nestCore from "@nestjs/core";
 
 // Compiling the real graph is the integration test's job; what these
 // functions own is bootstrapping once and handing back the right service.
