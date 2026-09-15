@@ -10,24 +10,24 @@ import type { Characteristics, JunctionCounts } from "./characteristics.types";
 
 /**
  * Computes the raw junction counts and boolean Characteristics spec #813
- * asks every meander row to record, directly from a decoded Code's
- * per-point direction-bit grid — generalizing `MeasurementService`'s
+ * asks every meander row to record, directly from a Code,
+ * point by point — generalizing `MeasurementService`'s
  * approach (which reads the same two kinds of junction off a *rendered* SVG
- * document, by rebuilding a lattice from its path data) to the grid
- * `MeanderDecodingService.decode` already produces, with no SVG and no
+ * document, by rebuilding a lattice from its path data) to the Code
+ * `CodeService.parse` already reads, with no SVG and no
  * rendering step anywhere in between.
  *
  * **Ink junctions** need no adjacency lookup the way
  * `MeasurementService.inkDegree` does: a Code spells all four direction
  * bits out at every point rather than leaving north and west to be derived
- * from a neighbor (see `MeanderDecodingService`'s own doc comment), so a
+ * from a neighbor (see `CodeService`'s own doc comment), so a
  * point's ink degree is simply how many of its own four bits are set.
  *
  * **Negative (white-space) junctions** are still counted over the dual grid
  * of cells, the same shape `MeasurementService.negativeDegree` counts —
  * a cell bounded by four lattice points has a corridor to a neighboring cell
- * wherever the ink edge between them is absent — but bounded by the decoded
- * grid's own extent rather than a rendered canvas's: a cell on the grid's
+ * wherever the ink edge between them is absent — but bounded by the Code's
+ * own extent rather than a rendered canvas's: a cell on the Code's
  * own edge has fewer than four possible corridors, the same edge-cropping
  * `negativeDegree` applies, just relative to where the Code itself stops
  * rather than to a border rule a renderer draws beyond it.
@@ -41,7 +41,7 @@ import type { Characteristics, JunctionCounts } from "./characteristics.types";
  * to flag that structure has to look at both.
  *
  * **Components, cycles, and free ends** are delegated whole to
- * `ConnectivityService`, which reads the same grid as a graph rather
+ * `ConnectivityService`, which reads the same Code as a graph rather
  * than point by point. They are Characteristics for the same reason the
  * junction counts are: no charter invariant fixes them, and they are what
  * tells one family's structure from another's where the junction counts
@@ -130,7 +130,7 @@ export class CharacteristicsService {
    * open, where the cell bounded by grid points `(level, column)`,
    * `(level, column + 1)`, `(level + 1, column)`, and
    * `(level + 1, column + 1)` is bounded rather than crossing off the
-   * decoded grid's own extent — the equivalent of
+   * Code's own extent — the equivalent of
    * `MeasurementService.negativeDegree`'s own canvas-edge cropping.
    */
   private negativeDegree(

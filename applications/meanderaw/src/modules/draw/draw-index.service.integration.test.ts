@@ -19,7 +19,7 @@ import type { MeanderRecord } from "../database/database.types";
  * The connection is assembled inline rather than through
  * `DatabaseModule`, which always opens the one committed database
  * file — this suite needs a fresh, isolated connection instead, the same way
- * `meander-database.service.integration.test.ts` does.
+ * `database.service.integration.test.ts` does.
  */
 describe(DrawIndexService, () => {
   let dataSource: DataSource;

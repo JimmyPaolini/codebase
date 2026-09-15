@@ -2,7 +2,7 @@
 
 /**
  * Every fact `CharacteristicsService.compute` derives directly from a
- * decoded Code's grid: the four raw junction counts spec #813 asks every
+ * Code: the four raw junction counts spec #813 asks every
  * meander row to record, the two boolean Characteristics built from them,
  * and the three {@link Connectivity} counts that say what shape the
  * ink is as a graph. See `CharacteristicsService`'s own doc comment
@@ -18,7 +18,7 @@ export interface Characteristics extends Connectivity {
   readonly negativeXJunctions: number;
 }
 
-/** One edge of a decoded grid, named by the two points it joins — `from` and `to` are the same point for a single-column grid's wrapped eastward edge. */
+/** One edge a Code holds, named by the two points it joins — `from` and `to` are the same point for a single-column Code's wrapped eastward edge. */
 export interface CodeEdge {
   readonly from: string;
   readonly to: string;
@@ -30,7 +30,7 @@ export interface CodeEdge {
  * carry exactly one arm.
  *
  * The same three numbers `InkConnectivity` reports for a rendered document,
- * stated over a decoded Code's grid instead — see
+ * stated over a Code instead — see
  * `ConnectivityService` for how the
  * grid is read as a repeating band and why an edge is claimed by either of
  * its ends.
@@ -50,7 +50,7 @@ export interface Connectivity {
 /**
  * A running count of three-armed and four-armed junctions — the same shape
  * `MeasurementService`'s own `JunctionCounts` takes for a rendered
- * document, read here directly off a decoded Code's grid instead. A fresh
+ * document, read here directly off a Code instead. A fresh
  * type rather than a reuse: this service depends on nothing from
  * `meander-topology`, and importing across for one shared shape would cost
  * more coupling than the duplication it would save.

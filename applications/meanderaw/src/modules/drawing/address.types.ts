@@ -39,8 +39,8 @@ export interface LatticeAddress {
  * units sit.
  *
  * Both come from the family that drew the document rather than from the
- * document — `MotifPitchService` answers each — which is why they arrive as
- * parameters instead of being recovered here. Recovering the span by
+ * document, which is why they arrive as parameters instead of being
+ * recovered here. Recovering the span by
  * searching for the narrowest window that happens to repeat would agree with
  * every drawing by construction and so would report a drawing whose repeat
  * had grown as correct.

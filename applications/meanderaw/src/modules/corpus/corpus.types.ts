@@ -21,7 +21,7 @@ export interface CorpusEntry {
  * drawn from an enumerated unit space and so is reproduced by
  * `EnumerationService` rather than preserved as constants. See
  * `CORPUS_BY_FAMILY`'s own doc comment, in
- * `hardcoded-meanders.constants.ts`, for where the boundary between the
+ * `corpus.constants.ts`, for where the boundary between the
  * enumerated and hardcoded halves is drawn.
  */
 export type CorpusFamily =

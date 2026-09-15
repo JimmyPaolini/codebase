@@ -79,7 +79,7 @@ import type { MeanderProvenance } from "../database.types";
  * `inkTJunctions`, `inkXJunctions`, `negativeTJunctions`, and
  * `negativeXJunctions` are the raw junction counts
  * `CharacteristicsService.compute` derives directly from the row's
- * decoded grid, and `hasBranching`/`hasCrossing` are the first two of a
+ * Code, and `hasBranching`/`hasCrossing` are the first two of a
  * growing set of boolean Characteristic columns built from them — see that
  * service's own doc comment for what each one means.
  */

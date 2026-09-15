@@ -49,22 +49,6 @@ export const SWEEP_MINIMUM_ROWS = 3;
 export const EDGE_BUDGET = 16;
 
 /**
- * The smallest `rows` value a `mosaic` tile is worth enumerating at.
- *
- * Three, where a tile's interior is two grid levels — enough for a southward
- * edge to join them, which is the shallowest tile that can hold one. Below
- * it the interior is a single level with nothing under it, so the only
- * tiles are a bare point and the wrapped rule and there is nothing to
- * permute.
- *
- * It was 4 while the space at three rows held four tiles. The budget is
- * what makes three worth sweeping: it admits five column spans there,
- * against one at six rows, so the shallowest band is where the family is
- * widest.
- */
-export const TILE_MINIMUM_ROWS = 3;
-
-/**
  * Thrown when a tile shape holds more edges than
  * {@link EDGE_BUDGET} admits.
  *

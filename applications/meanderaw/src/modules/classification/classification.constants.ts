@@ -1,6 +1,6 @@
 // ♟️ Constants
 
-import { TILE_MINIMUM_ROWS } from "../enumeration/enumeration.constants";
+import { TILE_MINIMUM_ROWS } from "../tile/tile.constants";
 
 import type { MeanderType } from "./classification.types";
 

@@ -141,7 +141,7 @@ closed and what it cost.
 the whole of it. Its unit space is every assignment of direction bits over a lattice, and
 most of that space branches and crosses; the four named modes it once had, `plain`,
 `split`, `alternated`, and `dot`, did neither, and they are gone. This is still recorded in
-`measurement.service.integration.test.ts` with a `permutations` flag, measured from
+a charter integration suite since retired, with a `permutations` flag, measured from
 committed output rather than from a generated drawing.
 
 | # | Invariant | Status |
@@ -440,10 +440,10 @@ repeat the ink really does close on itself, and the distinction it draws — ink
 terminates inside the repeat against ink that runs on through the repeats forever — is one
 the drawing cannot state.
 
-Both halves are asserted rather than argued.
-`mosaic-connectivity.service.integration.test.ts` renders every tile of three shapes at two
-repeat counts, measures each document the way any committed document is measured, and
-checks that the implication has no exception and that the set of tiles the two readings
+Both halves were asserted rather than argued, by a suite that rendered every tile of
+three shapes at two
+repeat counts, measured each document the way any committed document is measured, and
+checked that the implication had no exception and that the set of tiles the two readings
 disagree about is the same set once enough repeats are drawn for a wrapping run to show
 itself rather than close by coincidence within a narrow drawing — 1,631 tiles disagree at
 one repeat and 1,039 at two, against 1,033 from three repeats on, which is where the set
@@ -726,9 +726,8 @@ A tile is classified from its own `negativeTJunctions`/`negativeXJunctions`:
 - **Branches only**: `negativeTJunctions > 0` and `negativeXJunctions === 0`.
 - **Neither**: both zero.
 
-This measurement adds no committed source: it ran as a temporary test beside
-`measurement.service.integration.test.ts`, deleted before this section was
-committed. It is nothing but a loop calling `measure` on each file and tallying the
+This measurement adds no committed source: it ran as a temporary test beside the
+charter integration suite, and both are gone. It is nothing but a loop calling `measure` on each file and tallying the
 result against the two thresholds above — reproducible in a few lines against the
 already-committed service.
 
@@ -1213,10 +1212,10 @@ invariants 3 and 4 constrain ink, and no family is failed for what its white spa
 | 5 Band, not field | Applies | Applies |
 | 6 Flat path model | Applies | Applies |
 
-That declaration lives in `RELAXED_INVARIANTS` in
-[the charter property test](src/modules/drawing/measurement.service.integration.test.ts),
-which asserts a declared relaxation is _present_ as well as an undeclared one absent — so
-neither mode can quietly stop doing what this table says it does.
+That declaration lived in `RELAXED_INVARIANTS` in the charter property test, which
+asserted a declared relaxation was _present_ as well as an undeclared one absent. Both
+are retired: asserting that a declared relaxation is present means nothing once nothing
+is declared, and the charter is prose now rather than a gate.
 
 ### Provenance: derived, not attested
 
@@ -1425,7 +1424,7 @@ else in the corpus.
 
 Thirty of those two hundred numbers have a committed source: the ones at 3 through 5 rows,
 whose `mosaic` sources are among the committed permutation tiles. Each of the thirty is
-asserted, in `measurement.service.integration.test.ts`, to equal the negative T- and
+asserted, by the retired charter integration suite, to equal the negative T- and
 X-junction counts of the committed `output/mosaic/<rows>-rows/<columns>-columns/` document it
 inverts — read off disk, from a file that existed before this family did. That assertion is
 what makes "the candidates come from the mosaic space" a fact rather than a claim: if a
@@ -1482,8 +1481,8 @@ apart. The corpus that resulted has no tree in it at all — `parallel`'s one-st
 and its names were then dropped as duplicates for a separate reason. What is left is the
 two-way split the tree was the exception to: 5,817 of the 9,877 committed documents are
 forests of many components — `branch`'s 80 among them — and 4,060 carry a loop.
-`measurement.service.integration.test.ts` reads every committed document off disk and
-asserts that.
+The retired charter integration suite read every committed document off disk and
+asserted that.
 
 ### What it draws
 
@@ -1650,7 +1649,7 @@ pieces with no cycle in any of them. The ten `negative` drawings that carry no c
 `ruled-closed`'s, whose ink is the band's own rules and nothing joining them: a forest of
 one component per lattice row, which is the corner of that family shaped the way this one
 now is throughout. Both ends of `negative`'s range are asserted in
-`measurement.service.integration.test.ts` rather than merely published here.
+the retired charter integration suite rather than merely published here.
 
 The survey anticipated the loop-free figure — its "A note for the branching family" found that
 every one of the 104 _branches only_ tiles has at least one cycle at the rendered scale,
@@ -2067,11 +2066,11 @@ What this project is judged against, as declared in its own `callidescope.config
            ↳ Every meander of one shape, as the rows the database holds for them.
           └─> EnumerationService.enumerate(shape: MeanderShape): EnumeratedMeander[] [applications/meanderaw/src/modules/enumeration/enumeration.service.ts:77]
              ↳ Every structurally distinct meander of one shape, one per symmetry class, each spelled by the Code of the class's own…
-            └─> TileEnumerationService.enumerate(rows: number, columns: number): Tile[] [applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:170]
+            └─> TileEnumerationService.enumerate(rows: number, columns: number): Tile[] [applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:166]
                ↳ Every distinct tile of the given size, one per symmetry class, ordered by canonical edge key so the sweep is stable…
-              └─> TileEnumerationService.assign(ordinal: number, enumeration: TileEnumerationState): void [applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:99]
+              └─> TileEnumerationService.assign(ordinal: number, enumeration: TileEnumerationState): void [applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:95]
                  ↳ Decides the `ordinal`-th edge both ways, recording a tile once every edge is decided.
-                └─> TileEnumerationService.record(enumeration: TileEnumerationState): void [applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:134]
+                └─> TileEnumerationService.record(enumeration: TileEnumerationState): void [applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:130]
                    ↳ Keeps the tile the current assignment describes, unless a tile already found draws the same pattern.
                   └─> SymmetryService.canonicalTile(tile: Tile): Tile [applications/meanderaw/src/modules/symmetry/symmetry.service.ts:174]
                      ↳ The one tile of a symmetry class the corpus draws.
@@ -2162,7 +2161,7 @@ What this project is judged against, as declared in its own `callidescope.config
   └─> SubFamilyService.bare(tile: Tile): boolean [applications/meanderaw/src/modules/classification/sub-family.service.ts:214]
     └─> SubFamilyService.everyPoint(…)(point: Directions): boolean [applications/meanderaw/src/modules/classification/sub-family.service.ts:215]
       └─> TileService.isBare(directions: Directions): boolean [applications/meanderaw/src/modules/tile/tile.service.ts:231]
-         ↳ Every point of a tile that carries no ink at all, and so draws a dot.
+         ↳ Whether a point carries no ink at all, and so draws a dot.
         └─> TileService.degree(directions: Directions): number [applications/meanderaw/src/modules/tile/tile.service.ts:188]
            ↳ How many of a point's four direction bits are set — the point's degree as the drawing shows it.
 ```
@@ -2256,7 +2255,7 @@ What this project is judged against, as declared in its own `callidescope.config
      ↳ Refuses one point whose bits disagree with its neighbors'.
     └─> TileService.assertPointJoinsBelow(point: Directions, below: Directions | undefined, at: TilePoint): void [applications/meanderaw/src/modules/tile/tile.service.ts:72]
        ↳ Refuses one point whose southward bit the point below does not answer, or whose north is claimed where the cap tick…
-      └─> MalformedTileError.constructor(reason: string): MalformedTileError [applications/meanderaw/src/modules/tile/tile.constants.ts:17]
+      └─> MalformedTileError.constructor(reason: string): MalformedTileError [applications/meanderaw/src/modules/tile/tile.constants.ts:33]
 ```
 
 **15. `ClassificationService.matches`** — depth 3 · orphan-root
@@ -2332,7 +2331,7 @@ What this project is judged against, as declared in its own `callidescope.config
 **22. `TileEnumerationService.isMatching`** — depth 3 · orphan-root
 
 ```text
-🚀 TileEnumerationService.isMatching(tile: Tile): boolean [applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:221]
+🚀 TileEnumerationService.isMatching(tile: Tile): boolean [applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:217]
    ↳ Whether every point of a tile is touched by at most one edge — the family's original exact-cover rule, restated over…
   └─> TileService.incidentEdges(tile: Tile, level: number, column: number): number [applications/meanderaw/src/modules/tile/tile.service.ts:218]
      ↳ How many distinct edges touch a point, which differs from {@link degree} at one column and nowhere else: there a set…
@@ -2394,7 +2393,7 @@ What this project is judged against, as declared in its own `callidescope.config
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `TileEnumerationService.enumerate` | 7 | `TileEnumerationService.isAdmitted`, `OversizedTileError.constructor`, `TileEnumerationService.edges`, `TileService.blankEdges`, `TileEnumerationService.assign`, `TileEnumerationService.map(…)`, `TileEnumerationService.toSorted(…)` | `applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:170` |
+| `TileEnumerationService.enumerate` | 7 | `TileEnumerationService.isAdmitted`, `OversizedTileError.constructor`, `TileEnumerationService.edges`, `TileService.blankEdges`, `TileEnumerationService.assign`, `TileEnumerationService.map(…)`, `TileEnumerationService.toSorted(…)` | `applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:166` |
 | `LatticeService.build` | 6 | `LatticeService.strokeWidth`, `LatticeService.pathData`, `LatticeService.trace`, `LatticeService.commands`, `LatticeService.snap`, `LatticeService.dimension` | `applications/meanderaw/src/modules/drawing/lattice.service.ts:233` |
 | `AddressService.identifyDocument` | 6 | `LatticeService.build`, `AddressService.assertAddressable`, `AddressService.readTile`, `CodeService.spell`, `SubFamilyService.name`, `CodeService.spellCanonical` | `applications/meanderaw/src/modules/drawing/address.service.ts:134` |
 
@@ -2411,7 +2410,7 @@ What this project is judged against, as declared in its own `callidescope.config
 | `ConnectivityService.connectivity` | 4 | `ConnectivityService.edges`, `ConnectivityService.adjacency`, `GraphService.components`, `ConnectivityService.freeEnds` | `applications/meanderaw/src/modules/characteristics/connectivity.service.ts:176` |
 | `CharacteristicsService.negativeDegree` | 4 | `CharacteristicsService.hasEastCorridor`, `CharacteristicsService.hasNorthCorridor`, `CharacteristicsService.hasSouthCorridor`, `CharacteristicsService.hasWestCorridor` | `applications/meanderaw/src/modules/characteristics/characteristics.service.ts:136` |
 | `MeasurementService.connectivity` | 4 | `LatticeService.build`, `GraphService.components`, `MeasurementService.adjacency`, `MeasurementService.freeEnds` | `applications/meanderaw/src/modules/drawing/measurement.service.ts:229` |
-| `TileEnumerationService.assign` | 4 | `TileEnumerationService.edges`, `TileEnumerationService.record`, `TileEnumerationService.set`, `TileEnumerationService.clear` | `applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:99` |
+| `TileEnumerationService.assign` | 4 | `TileEnumerationService.edges`, `TileEnumerationService.record`, `TileEnumerationService.set`, `TileEnumerationService.clear` | `applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:95` |
 | `DrawRecordService.record` | 4 | `CodeService.parse`, `CharacteristicsService.compute`, `ClassificationService.classify`, `DrawingService.render` | `applications/meanderaw/src/modules/draw/draw-record.service.ts:56` |
 | `ConnectivityService.edges` | 3 | `ConnectivityService.key`, `ConnectivityService.joinsEast`, `ConnectivityService.joinsSouth` | `applications/meanderaw/src/modules/characteristics/connectivity.service.ts:91` |
 | `CharacteristicsService.tallyInk` | 3 | `CharacteristicsService.tally`, `CharacteristicsService.inkDegree`, `CodeService.directionsAt` | `applications/meanderaw/src/modules/characteristics/characteristics.service.ts:161` |
@@ -2421,7 +2420,7 @@ What this project is judged against, as declared in its own `callidescope.config
 | `LatticeService.trace` | 3 | `LatticeService.snap`, `LatticeService.addHorizontal`, `LatticeService.addVertical` | `applications/meanderaw/src/modules/drawing/lattice.service.ts:204` |
 | `AddressService.readTile` | 3 | `TileService.blankEdges`, `TileService.mark`, `TileService.build` | `applications/meanderaw/src/modules/drawing/address.service.ts:174` |
 | `MeasurementService.neighbors` | 3 | `MeasurementService.key`, `MeasurementService.map(…)`, `MeasurementService.filter(…)` | `applications/meanderaw/src/modules/drawing/measurement.service.ts:166` |
-| `TileEnumerationService.record` | 3 | `TileService.build`, `SymmetryService.canonicalTile`, `SymmetryService.edgeKey` | `applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:134` |
+| `TileEnumerationService.record` | 3 | `TileService.build`, `SymmetryService.canonicalTile`, `SymmetryService.edgeKey` | `applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:130` |
 | `MeanderDriftDetectedError.describe` | 3 | `MeanderDriftDetectedError.map(…)`, `MeanderDriftDetectedError.map(…)`, `MeanderDriftDetectedError.map(…)` | `applications/meanderaw/src/modules/draw/draw-check.constants.ts:76` |
 | `DrawCheckService.diff` | 3 | `DrawCheckService.index`, `DrawCheckService.findNewAndChanged`, `DrawCheckService.findMissing` | `applications/meanderaw/src/modules/draw/draw-check.service.ts:196` |
 | `DrawIndexService.renderBand` | 3 | `GeometryService.compute`, `DrawIndexService.format`, `DrawIndexService.renderRepeats` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:161` |
@@ -2468,7 +2467,7 @@ What this project is judged against, as declared in its own `callidescope.config
 | `LatticeService.strokeWidth` | 2 | `LatticeService.map(…)`, `UnmeasurableDocumentError.constructor` | `applications/meanderaw/src/modules/drawing/lattice.service.ts:186` |
 | `DrawingService.codeSegments` | 2 | `DrawingService.pointSegments`, `CodeService.directionsAt` | `applications/meanderaw/src/modules/drawing/drawing.service.ts:54` |
 | `DrawingService.pointSegments` | 2 | `DrawingService.format`, `DrawingService.isBare` | `applications/meanderaw/src/modules/drawing/drawing.service.ts:86` |
-| `TileEnumerationService.set` | 2 | `TileEnumerationService.address`, `TileService.mark` | `applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:146` |
+| `TileEnumerationService.set` | 2 | `TileEnumerationService.address`, `TileService.mark` | `applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:142` |
 | `EnumerationService.enumerate` | 2 | `EnumerationService.map(…)`, `TileEnumerationService.enumerate` | `applications/meanderaw/src/modules/enumeration/enumeration.service.ts:77` |
 | `EnumerationService.shapes` | 2 | `EnumerationService.isAdmitted`, `TileEnumerationService.maximumColumns` | `applications/meanderaw/src/modules/enumeration/enumeration.service.ts:105` |
 | `DrawEnumerationService.persist` | 2 | `DatabaseService.saveAll`, `DrawEnumerationService.records` | `applications/meanderaw/src/modules/draw/draw-enumeration.service.ts:61` |
@@ -2551,9 +2550,9 @@ What this project is judged against, as declared in its own `callidescope.config
 | `MeasurementService.isChannelWidthCompliant` | 1 | `MeasurementService.key` | `applications/meanderaw/src/modules/drawing/measurement.service.ts:123` |
 | `MeasurementService.negativeDegree` | 1 | `MeasurementService.key` | `applications/meanderaw/src/modules/drawing/measurement.service.ts:148` |
 | `CorpusService.ingest` | 1 | `CorpusService.ingestOne` | `applications/meanderaw/src/modules/corpus/corpus.service.ts:105` |
-| `TileEnumerationService.clear` | 1 | `TileEnumerationService.address` | `applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:115` |
-| `TileEnumerationService.isAdmitted` | 1 | `TileEnumerationService.edges` | `applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:201` |
-| `TileEnumerationService.isMatching` | 1 | `TileService.incidentEdges` | `applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:221` |
+| `TileEnumerationService.clear` | 1 | `TileEnumerationService.address` | `applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:111` |
+| `TileEnumerationService.isAdmitted` | 1 | `TileEnumerationService.edges` | `applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:197` |
+| `TileEnumerationService.isMatching` | 1 | `TileService.incidentEdges` | `applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:217` |
 | `EnumerationService.map(…)` | 1 | `CodeService.spell` | `applications/meanderaw/src/modules/enumeration/enumeration.service.ts:80` |
 | `EnumerationService.isAdmitted` | 1 | `TileEnumerationService.isAdmitted` | `applications/meanderaw/src/modules/enumeration/enumeration.service.ts:88` |
 | `MeanderDriftDetectedError.constructor` | 1 | `MeanderDriftDetectedError.describe` | `applications/meanderaw/src/modules/draw/draw-check.constants.ts:70` |
@@ -2833,7 +2832,7 @@ graph LR
   file_src_modules_characteristics_connectivity_service_unit_test_ts --> file_src_modules_symmetry_symmetry_service_ts
   file_src_modules_characteristics_connectivity_service_unit_test_ts --> file_src_modules_tile_tile_service_ts
   file_src_modules_classification_classification_constants_ts --> file_src_modules_classification_classification_types_ts
-  file_src_modules_classification_classification_constants_ts --> file_src_modules_enumeration_enumeration_constants_ts
+  file_src_modules_classification_classification_constants_ts --> file_src_modules_tile_tile_constants_ts
   file_src_modules_classification_classification_module_ts --> file_src_modules_classification_classification_service_ts
   file_src_modules_classification_classification_module_ts --> file_src_modules_classification_sub_family_service_ts
   file_src_modules_classification_classification_module_ts --> file_src_modules_code_code_module_ts

@@ -116,10 +116,10 @@ export class AddressService {
    *
    * The {@link LatticeUnit} is a parameter rather than something recovered
    * here. How wide one repeat unit is, and how many of them a true repeat
-   * takes, are facts about the family that drew the document —
-   * `MotifPitchService` derives both — while what the ink *does* over that
-   * span is a fact about the document, and only the last of those can be
-   * read off the drawing.
+   * takes, are facts about the family that drew the document — the retired
+   * per-family pipeline derived both, and a caller now supplies them —
+   * while what the ink *does* over that span is a fact about the document,
+   * and only the last of those can be read off the drawing.
    *
    * The addressed window opens one pitch in and closes one pitch short of
    * the end, so a family whose span runs to several pitches is still

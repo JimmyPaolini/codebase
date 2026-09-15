@@ -33,7 +33,7 @@ import type { DrawCommandOptions } from "./draw.types";
  *   off its own structure rather than off whichever generator drew it. Then
  *   {@link CorpusService} ingests the historical corpus's
  *   hardcoded Code constants, which are exactly the meanders that lie
- *   *beyond* that budget — see `hardcoded-meanders.constants.ts` for how that
+ *   *beyond* that budget — see `corpus.constants.ts` for how that
  *   boundary is drawn and why it has to be.
  * - **`draw --rows <n> --columns <n> --code <code>`** decodes, renders, and
  *   persists that one meander, through the same generic pipeline both halves
@@ -176,8 +176,8 @@ export class DrawCommand extends CommandRunner {
 
   /**
    * Parses `--code`, passed through unchanged: the hexadecimal digits a
-   * decoded grid's own points are read from, one character per interior
-   * lattice point. `MeanderDecodingService.decode` is what refuses a
+   * a meander's own points are read from, one character per interior
+   * lattice point. `CodeService.parse` is what refuses a
    * non-hexadecimal character or a length `--rows`/`--columns` disagree
    * with, so nothing is validated here.
    */

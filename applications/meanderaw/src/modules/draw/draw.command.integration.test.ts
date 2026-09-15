@@ -132,7 +132,7 @@ describe("drawCommand --code mode", () => {
     expect(rows[0]?.svg).toContain("<svg");
   });
 
-  it("populates a row's Characteristics from its decoded grid, for a code with a three-armed ink junction", async () => {
+  it("populates a row's Characteristics from its Code, for a code with a three-armed ink junction", async () => {
     await command.run([], {
       code: "e",
       columns: 1,

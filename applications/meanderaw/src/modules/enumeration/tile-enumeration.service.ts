@@ -19,19 +19,15 @@ import type { EdgeAddress, TileEnumerationState } from "./enumeration.types";
  * arrangement, which is what makes the walk indifferent to what the tiles
  * mean.
  *
- * Two numbers bound it, and they bound different things.
- * {@link MOSAIC_TILE_MAXIMUM_DEGREE} is a ceiling on one *point* — how many
- * direction bits it may carry, which is what says whether the family can
- * turn a corner. {@link EDGE_BUDGET} is a ceiling on the whole
+ * One number bounds it. {@link EDGE_BUDGET} is a ceiling on the whole
  * *tile* — how many edges it may hold, which is what keeps the space small
- * enough to look through, since the count is `2 ** edges` before folding. Raising the
- * first without the second is what makes a lattice family explode.
+ * enough to look through, since the count is `2 ** edges` before folding.
+ * There was once a second, a ceiling on how many direction bits one *point*
+ * could carry, and it is gone: a point may carry any of the sixteen
+ * patterns, junctions and crossings included, so the budget is the only
+ * thing bounding the space and it has to be.
  *
- * The point ceiling prunes as the walk goes rather than being checked at
- * the end, which is the whole of the old backtracking search's cleverness
- * restated as one comparison.
- *
- * Whatever the ceiling, the result is folded by symmetry class — a tile
+ * The result is folded by symmetry class — a tile
  * repeats forever, so a shift or a mirror of one tile is not another — and
  * `SymmetryService.canonicalTile` picks which member of a class the
  * corpus draws. Which member the walk happens to reach first therefore does

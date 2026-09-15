@@ -26,7 +26,7 @@ import { DrawCommand } from "./draw.command";
  * Every import here serves the one lattice-first pipeline both paths share:
  * `CodeModule` and `DrawingModule` are the generic
  * decoder and renderer every family's Code is drawn through,
- * `CharacteristicsModule` measures that same decoded grid,
+ * `CharacteristicsModule` measures that same Code,
  * `ClassificationModule` reads a family off those Characteristics,
  * `EnumerationModule` walks the space the sweep covers, and
  * `DatabaseModule` is the committed sqlite database all of it

@@ -227,7 +227,7 @@ export class TileService {
     return this.degree(directions) - (loops ? 1 : 0);
   }
 
-  /** Every point of a tile that carries no ink at all, and so draws a dot. */
+  /** Whether a point carries no ink at all, and so draws a dot. */
   isBare(directions: Directions): boolean {
     return this.degree(directions) === 0;
   }
