@@ -15,6 +15,24 @@ export type {
   ProjectFailure,
   ProjectReport,
 } from "./modules/changes/changes.types";
+export {
+  ABSENT_LABEL,
+  CONFIGURATION_HEADING,
+  LIMIT_TABLE_COLUMNS,
+  SIZE_METRIC_SUFFIX,
+} from "./modules/configuration/configuration.constants";
+export { ConfigurationModule as ConfigurationListingModule } from "./modules/configuration/configuration.module";
+export { ConfigurationService as ConfigurationListingService } from "./modules/configuration/configuration.service";
+export type {
+  ConfiguredDirectory,
+  ConfiguredLimitRow,
+  ConfiguredTree,
+  DescribeConfigurationsArguments,
+  DiscoveredConfigurationFiles,
+  RenderConfigurationArguments,
+  WalkExclusions,
+} from "./modules/configuration/configuration.types";
+export { RenderConfigurationService } from "./modules/configuration/render-configuration.service";
 export { DeliveryModule } from "./modules/delivery/delivery.module";
 export { DeliveryService } from "./modules/delivery/delivery.service";
 export type { DeliverArguments } from "./modules/delivery/delivery.types";

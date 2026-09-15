@@ -2,7 +2,7 @@ import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
-import { ConfigurationService } from "@codometer/configuration";
+import { ConfigurationModule as CodometerConfigurationModule } from "@codometer/configuration";
 import {
   ChangesService,
   DocumentsService,
@@ -58,17 +58,9 @@ describe(ChangesCommand, () => {
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
+      imports: [CodometerConfigurationModule],
       providers: [
         ChangesCommand,
-        {
-          provide: ConfigurationService,
-          useValue: createMock<ConfigurationService>({
-            parseDirectoryOption: (value: unknown) =>
-              typeof value === "string" && value !== "" ? value : process.cwd(),
-            parseOptionalOption: (value: unknown) =>
-              typeof value === "string" && value !== "" ? value : undefined,
-          }),
-        },
         DocumentsService,
         RenderService,
         { provide: ChangesService, useValue: { collect } },
@@ -96,17 +88,9 @@ describe(ChangesCommand, () => {
 
   it("sets logger context", async () => {
     const module = await Test.createTestingModule({
+      imports: [CodometerConfigurationModule],
       providers: [
         ChangesCommand,
-        {
-          provide: ConfigurationService,
-          useValue: createMock<ConfigurationService>({
-            parseDirectoryOption: (value: unknown) =>
-              typeof value === "string" && value !== "" ? value : process.cwd(),
-            parseOptionalOption: (value: unknown) =>
-              typeof value === "string" && value !== "" ? value : undefined,
-          }),
-        },
         DocumentsService,
         RenderService,
         { provide: ChangesService, useValue: { collect } },

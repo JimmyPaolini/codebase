@@ -228,12 +228,6 @@ export const CODOMETER_FORMATS = [
   "markdown",
 ] as const satisfies readonly CodometerFormat[];
 
-/** Severities a limit may declare for the breach it would report. */
-export const CODOMETER_SEVERITIES = [
-  "fail",
-  "warn",
-] as const satisfies readonly CodometerSeverity[];
-
 /** Units a documentation limit may measure a comment's length in. */
 export const CODOMETER_DOCUMENTATION_UNITS = [
   "characters",

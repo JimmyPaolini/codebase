@@ -13,6 +13,7 @@ import { beforeAll, describe, expect, it, vi } from "vitest";
 
 import { ConfigurationFlagsService } from "./configuration-flags.service";
 import { ConfigurationLoaderService } from "./configuration-loader.service";
+import { ConfigurationResolverService } from "./configuration-resolver.service";
 import {
   DEFAULT_CUSTOM_STATISTIC_COLORS,
   DEFAULT_INPUT_COMPRESSION,
@@ -83,6 +84,7 @@ describe(ConfigurationService, () => {
       providers: [
         ConfigurationFlagsService,
         ConfigurationLoaderService,
+        ConfigurationResolverService,
         ConfigurationService,
       ],
     }).compile();

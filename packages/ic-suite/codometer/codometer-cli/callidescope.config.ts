@@ -3,9 +3,12 @@ import { projectDefaults } from "../../../../configuration/callidescope.config.j
 /**
  * What codometer-cli is held to, measured rather than assumed.
  *
- * Sixteen is one under the workspace's seventeen, and the deepest of any
- * package here bar `callidescope-nx`, whose two executors are what pin that
- * seventeen. Eleven is `MeasureCommand.run`, which is the command itself.
+ * Ratcheted down from sixteen and eleven, which is what the host measured
+ * while it still held the measurement, limits, delivery and report modules.
+ * Those left for `@codometer/measurement` and `@codometer/output`, and the
+ * host kept only the command that composes them — so fifteen and nine are what
+ * a scoped run now reports, and leaving the old numbers would have gated
+ * nothing.
  *
  * Measured by a run scoped to this project and its dependency closure, and set
  * **at** what it measured rather than above it: a stack at the limit passes, so
@@ -18,7 +21,7 @@ import { projectDefaults } from "../../../../configuration/callidescope.config.j
 export default {
   ...projectDefaults,
   limits: {
-    maximumBreadth: 11,
-    maximumDepth: 16,
+    maximumBreadth: 9,
+    maximumDepth: 15,
   },
 };

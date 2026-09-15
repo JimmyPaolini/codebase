@@ -18,29 +18,17 @@ import type {
 } from "./configuration.types";
 
 /**
- * Reads the command line `ConfigurationService` resolves a run from.
+ * Reads the command line `ConfigurationService` answers a run from.
  *
- * Not exported from this package. The configuration layer has exactly one
- * public entry point, and this is the half of it that reads flags rather than
- * files — held apart from `ConfigurationService` because that class is already
- * near the size limit, not because a caller is ever meant to reach it.
+ * Not exported. The configuration layer has one public entry point, and this
+ * is the half of it that reads flags rather than files.
  *
- * Shared by `codometer`, `changes`, and `configuration` so the rules for the
- * flags they hold in common — a directory that falls back to the working
- * directory, and a path that may be written blank — are stated once rather
- * than restated per command. It also reads the flags that decide what a
- * measurement run does with what it measures, which is the other half of the
- * question this layer answers: the configuration file says what to measure,
- * and the command line says what to do about it. They are subtle enough to be worth stating
+ * `codometer`, `changes` and `configuration` share the rules for the flags
+ * they hold in common, and those rules are subtle enough to be worth stating
  * once: commander hands a valueless flag through as `true` without ever
  * calling its parser, so a command that narrows text and one that does not
- * disagree about what `--flag "$UNSET"` meant. Only the rules more than one
- * command shares live here; a flag whose parser is its own business keeps it.
- *
- * Nothing here prompts. Every codometer flag is either optional or defaulted,
- * and no command takes a positional argument, so a run never reaches a value
- * it could only get by asking — unlike `callidescope`'s `depth` and `breadth`,
- * which prompt for the `<address>` they cannot proceed without.
+ * disagree about what `--flag "$UNSET"` meant. A flag only one command takes
+ * keeps its own parser.
  */
 @Injectable()
 export class ConfigurationFlagsService {

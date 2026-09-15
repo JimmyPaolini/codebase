@@ -35,6 +35,7 @@ export type {
   YamlStatistics,
 } from "./lib/statistics.types";
 export {
+  CODOMETER_SEVERITIES,
   CODOMETER_STATISTIC_GROUPS,
   CODOMETER_SYMBOL_KINDS,
   CODOMETER_SYMBOL_MODIFIERS,

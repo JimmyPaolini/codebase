@@ -6,8 +6,9 @@ import {
   DEFAULT_EXCLUDE_GLOBS,
 } from "@codometer/configuration";
 import { DiscoveryService } from "@codometer/measurement";
-import { formatBytes, formatCount } from "@codometer/output";
 import { Injectable } from "@nestjs/common";
+
+import { formatBytes, formatCount } from "../render/render.utilities";
 
 import { ABSENT_LABEL, SIZE_METRIC_SUFFIX } from "./configuration.constants";
 

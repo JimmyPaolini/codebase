@@ -1,6 +1,10 @@
 import path from "node:path";
 
 import { ConfigurationService as CodometerConfigurationService } from "@codometer/configuration";
+import {
+  ConfigurationListingService,
+  RenderConfigurationService,
+} from "@codometer/output";
 import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
 
@@ -10,8 +14,6 @@ import {
   CONFIGURATION_FORMATS,
   DEFAULT_CONFIGURATION_FORMAT,
 } from "./configuration.constants";
-import { ConfigurationService } from "./configuration.service";
-import { RenderConfigurationService } from "./render-configuration.service";
 
 import type { ConfigurationCommandOptions } from "./configuration.types";
 
@@ -34,7 +36,7 @@ export class ConfigurationCommand extends CommandRunner {
 
   constructor(
     private readonly codometerConfigurationService: CodometerConfigurationService,
-    private readonly configurationService: ConfigurationService,
+    private readonly configurationService: ConfigurationListingService,
     private readonly renderConfigurationService: RenderConfigurationService,
     private readonly logger: LoggerService,
   ) {
