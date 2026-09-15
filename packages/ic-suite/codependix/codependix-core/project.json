@@ -4,6 +4,7 @@
   "projectType": "library",
   "sourceRoot": "packages/ic-suite/codependix/codependix-core",
   "tags": [
+    "framework:nestjs",
     "generator:nestjs-service-project",
     "language:typescript",
     "layer:core",
