@@ -2,7 +2,7 @@
 
 import type { ProjectProgram } from "../program/program.types";
 import type { FileFilter } from "../workspace/workspace.types";
-import type { CallableId, CallableNode } from "@callidescope/configuration";
+import type { CallableId, CallableNode } from "@callidescope/core";
 import type ts from "typescript";
 
 /** Everything the walk over owned files produced. */

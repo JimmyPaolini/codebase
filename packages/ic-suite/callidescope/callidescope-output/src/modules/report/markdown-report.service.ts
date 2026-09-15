@@ -22,13 +22,13 @@ import type {
   RenderStacksArguments,
   StackRendering,
 } from "./report.types";
+import type { ProjectLimits } from "@callidescope/configuration";
 import type {
   CallableBreadthReport,
   CallGraphSummary,
   CallStack,
-  ProjectLimits,
   WideCallableFinding,
-} from "@callidescope/configuration";
+} from "@callidescope/core";
 
 /**
  * Renders a run, or one project's slice of it, as markdown.

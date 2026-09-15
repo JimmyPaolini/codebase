@@ -9,7 +9,7 @@ import type {
   CallGraph,
   MeasureBreadthArguments,
 } from "./graph.types";
-import type { CallableId } from "@callidescope/configuration";
+import type { CallableId } from "@callidescope/core";
 
 /**
  * Measures how many distinct callables each callable calls directly.

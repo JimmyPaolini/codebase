@@ -19,12 +19,14 @@ import {
 } from "./report.constants";
 
 import type {
-  CallableBreadthReport,
-  CallStack,
   ProjectLimits,
   ProjectLimitsLookup,
-  ProjectReport,
 } from "@callidescope/configuration";
+import type {
+  CallableBreadthReport,
+  CallStack,
+  ProjectReport,
+} from "@callidescope/core";
 
 /** A callable with the given breadth and no callees, named uniquely. */
 function callableBreadth(args: {

@@ -14,7 +14,7 @@ import type {
   AddressCommandOptions,
   LocatedWorkspace,
 } from "../address-lookup/address-lookup.types";
-import type { CallableId } from "@callidescope/configuration";
+import type { CallableId } from "@callidescope/core";
 import type { LogData } from "@codebase/logger";
 
 /**

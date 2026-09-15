@@ -10,7 +10,7 @@ import type {
   RenderDepthArguments,
   RenderDepthReportsArguments,
 } from "./address-report.types";
-import type { StackFrame } from "@callidescope/configuration";
+import type { StackFrame } from "@callidescope/core";
 import type { CallableReference, CallAddressStack } from "@callidescope/graph";
 import type { FramedStack } from "@callidescope/output";
 

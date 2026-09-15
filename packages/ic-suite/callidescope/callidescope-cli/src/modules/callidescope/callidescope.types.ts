@@ -1,8 +1,6 @@
 // 🏷️ Types
 
 import type {
-  CallableId,
-  CallGraphResult,
   CallidescopeLimitOverrides,
   CallidescopeLimits,
   ProjectLimitsLookup,
@@ -10,6 +8,7 @@ import type {
   ResolvedCallidescopeEntryPoints,
   ResolvedCallidescopeWriteConfiguration,
 } from "@callidescope/configuration";
+import type { CallableId, CallGraphResult } from "@callidescope/core";
 import type {
   CallableCollection,
   CallGraph,

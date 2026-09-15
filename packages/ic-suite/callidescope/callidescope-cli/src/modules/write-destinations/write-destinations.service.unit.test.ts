@@ -20,11 +20,11 @@ import type { SyncDestinationsArguments } from "./write-destinations.types";
 import type {
   ProjectLimits,
   ProjectLimitsLookup,
-  ProjectReport,
   ResolvedCallidescopeConfiguration,
   ResolvedCallidescopeMarkdownOutputConfiguration,
   ResolvedCallidescopeWriteConfiguration,
 } from "@callidescope/configuration";
+import type { ProjectReport } from "@callidescope/core";
 
 /** Builds a resolved configuration with no destinations configured. */
 function buildConfiguration(

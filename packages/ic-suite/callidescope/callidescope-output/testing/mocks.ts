@@ -2,13 +2,15 @@ import { createMock } from "@golevelup/ts-vitest";
 import { afterEach, beforeEach, vi } from "vitest";
 
 import type {
-  CallableNode,
-  CallGraphResult,
   ProjectLimits,
   ProjectLimitsLookup,
+} from "@callidescope/configuration";
+import type {
+  CallableNode,
+  CallGraphResult,
   SourceLocation,
   StackFrame,
-} from "@callidescope/configuration";
+} from "@callidescope/core";
 import type { DiscoveredCallable } from "@callidescope/graph";
 
 /**

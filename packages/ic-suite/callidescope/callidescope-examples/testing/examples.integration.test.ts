@@ -17,7 +17,7 @@ import type {
   CallGraphResult,
   DeepStackFinding,
   ProjectReport,
-} from "@callidescope/configuration";
+} from "@callidescope/core";
 
 // 🔭 Fixture expectations
 
@@ -622,6 +622,7 @@ describe("callidescope examples (integration)", () => {
         result.projects.map((project) => project.projectName),
       ).toStrictEqual([
         "packages/ic-suite/callidescope/callidescope-configuration",
+        "packages/ic-suite/callidescope/callidescope-core",
         EXAMPLES_DIRECTORY,
         GATED_LEAF_DIRECTORY,
         "packages/ic-suite/codependix/codependix-configuration",

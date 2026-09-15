@@ -1,5 +1,4 @@
 import {
-  type CallGraphResult,
   type CallidescopeLimits,
   type ConfigurationService,
   type LoadedProjectConfiguration,
@@ -37,6 +36,7 @@ import {
 import { CallidescopeService } from "./callidescope.service";
 
 import type { FixtureServices } from "../../../testing/programs";
+import type { CallGraphResult } from "@callidescope/core";
 import type { DeepMocked } from "@golevelup/ts-vitest";
 
 /** Analyzes in-memory files end to end, short of reading the disk. */

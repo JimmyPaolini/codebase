@@ -1,27 +1,3 @@
-export type {
-  CallableBreadthReport,
-  CallableDocumentation,
-  CallableId,
-  CallableKind,
-  CallableNode,
-  CallableParameter,
-  CallableSignature,
-  CallEdge,
-  CallGraphResult,
-  CallGraphSummary,
-  CallStack,
-  DeepStackFinding,
-  EdgeResolution,
-  EntryPoint,
-  EntryPointKind,
-  ProjectReport,
-  SourceLocation,
-  StackFrame,
-  UnresolvedCall,
-  UnresolvedReason,
-  WideCallableCallee,
-  WideCallableFinding,
-} from "./modules/configuration/call-graph.types";
 // 📤 Exports
 export {
   CALLIDESCOPE_OUTPUT_FORMATS,

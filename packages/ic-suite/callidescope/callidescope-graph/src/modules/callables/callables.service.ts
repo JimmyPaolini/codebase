@@ -14,7 +14,7 @@ import type {
   DescribeCallableArguments,
   DiscoveredCallable,
 } from "./callables.types";
-import type { CallableId } from "@callidescope/configuration";
+import type { CallableId } from "@callidescope/core";
 
 /**
  * Walks every owned file and collects the callables a call stack can hold.

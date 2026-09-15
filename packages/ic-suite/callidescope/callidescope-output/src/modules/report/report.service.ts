@@ -12,7 +12,7 @@ import {
   TRUNCATION_SUFFIX,
 } from "./report.constants";
 
-import type { StackFrame } from "@callidescope/configuration";
+import type { StackFrame } from "@callidescope/core";
 
 /**
  * Renders one call stack as an indented tree.

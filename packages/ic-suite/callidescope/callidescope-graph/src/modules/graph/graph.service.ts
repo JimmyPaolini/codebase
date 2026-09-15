@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 
 import type { EdgeCollection } from "../edges/edges.types";
 import type { CallGraph } from "./graph.types";
-import type { CallableId } from "@callidescope/configuration";
+import type { CallableId } from "@callidescope/core";
 
 /**
  * Assembles the resolved edges into a graph indexed in both directions.

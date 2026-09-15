@@ -41,14 +41,13 @@ import { buildUnknownCommandMessage } from "./callidescope.constants";
 import { CallidescopeService } from "./callidescope.service";
 
 import type {
-  CallGraphResult,
   ProjectLimits,
   ProjectLimitsLookup,
-  ProjectReport,
   ResolvedCallidescopeConfiguration,
   ResolvedCallidescopeMarkdownOutputConfiguration,
   ResolvedCallidescopeWriteConfiguration,
 } from "@callidescope/configuration";
+import type { CallGraphResult, ProjectReport } from "@callidescope/core";
 import type { UnresolvedEntryPointAddress } from "@callidescope/graph";
 
 /** Builds a resolved configuration with no destinations configured. */

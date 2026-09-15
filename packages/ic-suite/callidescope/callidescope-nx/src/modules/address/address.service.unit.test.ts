@@ -7,7 +7,7 @@ import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { AddressService } from "./address.service";
 
 import type { LocatedWorkspace } from "@callidescope/cli";
-import type { CallableId } from "@callidescope/configuration";
+import type { CallableId } from "@callidescope/core";
 import type { DiscoveredCallable } from "@callidescope/graph";
 
 /** The address every test looks up. */

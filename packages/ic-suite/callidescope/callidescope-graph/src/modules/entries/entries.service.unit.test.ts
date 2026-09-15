@@ -21,10 +21,8 @@ import { EntriesService } from "./entries.service";
 import type { DiscoveredCallable } from "../callables/callables.types";
 import type { CallGraph } from "../graph/graph.types";
 import type { EntryPointCollection } from "./entries.types";
-import type {
-  EntryPointKind,
-  ResolvedCallidescopeEntryPoints,
-} from "@callidescope/configuration";
+import type { ResolvedCallidescopeEntryPoints } from "@callidescope/configuration";
+import type { EntryPointKind } from "@callidescope/core";
 import type { LoggerService } from "@codebase/logger";
 import type { DeepMocked } from "@golevelup/ts-vitest";
 

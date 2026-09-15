@@ -27,11 +27,11 @@ import { CallidescopeService } from "./callidescope.service";
 
 import type { CallidescopeCommandOptions } from "./callidescope.types";
 import type {
-  CallGraphResult,
   CallidescopeOutputFormat,
   ProjectLimitsLookup,
   ResolvedCallidescopeConfiguration,
 } from "@callidescope/configuration";
+import type { CallGraphResult } from "@callidescope/core";
 import type { UnresolvedEntryPointAddress } from "@callidescope/graph";
 import type { LogData } from "@codebase/logger";
 

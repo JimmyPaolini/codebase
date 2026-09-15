@@ -5,7 +5,7 @@ import type {
   DepthMeasurement,
   MeasureDepthArguments,
 } from "./graph.types";
-import type { CallableId } from "@callidescope/configuration";
+import type { CallableId } from "@callidescope/core";
 
 /**
  * Measures the longest call stack below every component.

@@ -22,12 +22,12 @@ import type {
   ResolveEntriesArguments,
   UnresolvedEntryPointAddress,
 } from "./entries.types";
+import type { ResolvedCallidescopeEntryPoints } from "@callidescope/configuration";
 import type {
   CallableId,
   EntryPoint,
   EntryPointKind,
-  ResolvedCallidescopeEntryPoints,
-} from "@callidescope/configuration";
+} from "@callidescope/core";
 
 /**
  * Decides which callables are the roots of a call stack.

@@ -20,8 +20,8 @@ import type {
 import type {
   ProjectLimits,
   ProjectLimitsLookup,
-  ProjectReport,
 } from "@callidescope/configuration";
+import type { ProjectReport } from "@callidescope/core";
 
 /**
  * Renders what a whole run says about the projects in it, rather than about

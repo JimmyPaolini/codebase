@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "@callidescope/configuration": "workspace:*",
+    "@callidescope/core": "workspace:*",
     "@nestjs/common": "catalog:",
     "reflect-metadata": "catalog:",
     "tslib": "catalog:"

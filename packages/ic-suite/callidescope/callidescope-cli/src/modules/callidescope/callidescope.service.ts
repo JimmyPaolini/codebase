@@ -25,14 +25,13 @@ import type {
   TraceOutcome,
 } from "./callidescope.types";
 import type {
-  CallableId,
-  CallGraphSummary,
   CallidescopeLimitOverrides,
   CallidescopeLimits,
   ProjectLimitsLookup,
   ResolvedCallidescopeConfiguration,
   ResolvedCallidescopeEntryPoints,
 } from "@callidescope/configuration";
+import type { CallableId, CallGraphSummary } from "@callidescope/core";
 import type {
   DepthMeasurement,
   DiscoveredCallable,

@@ -819,6 +819,8 @@ importers:
         specifier: 'catalog:'
         version: 4.4.3
 
+  applications/JimmyPaolini: {}
+
   applications/affirmations: {}
 
   applications/caelundas:
@@ -1178,6 +1180,9 @@ importers:
       '@callidescope/configuration':
         specifier: workspace:*
         version: link:../callidescope-configuration
+      '@callidescope/core':
+        specifier: workspace:*
+        version: link:../callidescope-core
       '@callidescope/graph':
         specifier: workspace:*
         version: link:../callidescope-graph
@@ -1242,6 +1247,9 @@ importers:
 
   packages/ic-suite/callidescope/callidescope-configuration:
     dependencies:
+      '@callidescope/core':
+        specifier: workspace:*
+        version: link:../callidescope-core
       '@nestjs/common':
         specifier: 'catalog:'
         version: 12.0.1(reflect-metadata@0.2.2)(rxjs@7.8.2)
@@ -1292,11 +1300,36 @@ importers:
         specifier: 'catalog:'
         version: 5.0.0(@types/node@26.5.1)(@vitest/coverage-v8@5.0.0)(@vitest/ui@5.0.0)(jsdom@30.0.1)(vite@8.1.5(@types/node@26.5.1)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.49.0)(tsx@4.23.1)(yaml@2.9.0))
 
+  packages/ic-suite/callidescope/callidescope-core:
+    dependencies:
+      tslib:
+        specifier: 'catalog:'
+        version: 2.8.1
+    devDependencies:
+      '@nx/eslint-plugin':
+        specifier: 'catalog:'
+        version: 23.1.0(@babel/traverse@7.29.7)(@swc-node/register@1.12.1(@swc/core@1.16.2(@swc/helpers@0.5.23))(@swc/types@0.1.28)(typescript@6.0.3))(@swc/core@1.16.2(@swc/helpers@0.5.23))(@typescript-eslint/parser@8.65.0(eslint@10.10.0(jiti@2.7.0))(typescript@6.0.3))(eslint-config-prettier@10.1.8(eslint@10.10.0(jiti@2.7.0)))(eslint@10.10.0(jiti@2.7.0))(nx@23.2.1(@swc-node/register@1.12.1(@swc/core@1.16.2(@swc/helpers@0.5.23))(@swc/types@0.1.28)(typescript@6.0.3))(@swc/core@1.16.2(@swc/helpers@0.5.23)))(typescript@6.0.3)
+      '@swc/helpers':
+        specifier: 'catalog:'
+        version: 0.5.23
+      '@types/node':
+        specifier: 'catalog:'
+        version: 26.5.1
+      '@vitest/coverage-v8':
+        specifier: 'catalog:'
+        version: 5.0.0(vitest@5.0.0)
+      vitest:
+        specifier: 'catalog:'
+        version: 5.0.0(@types/node@26.5.1)(@vitest/coverage-v8@5.0.0)(@vitest/ui@5.0.0)(jsdom@30.0.1)(vite@8.1.5(@types/node@26.5.1)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.49.0)(tsx@4.23.1)(yaml@2.9.0))
+
   packages/ic-suite/callidescope/callidescope-examples:
     dependencies:
       '@callidescope/configuration':
         specifier: workspace:*
         version: link:../callidescope-configuration
+      '@callidescope/core':
+        specifier: workspace:*
+        version: link:../callidescope-core
       '@nestjs/common':
         specifier: 'catalog:'
         version: 12.0.1(reflect-metadata@0.2.2)(rxjs@7.8.2)
@@ -1331,6 +1364,9 @@ importers:
       '@callidescope/configuration':
         specifier: workspace:*
         version: link:../callidescope-configuration
+      '@callidescope/core':
+        specifier: workspace:*
+        version: link:../callidescope-core
       '@codebase/logger':
         specifier: workspace:*
         version: link:../../../logger
@@ -1377,6 +1413,9 @@ importers:
       '@callidescope/configuration':
         specifier: workspace:*
         version: link:../callidescope-configuration
+      '@callidescope/core':
+        specifier: workspace:*
+        version: link:../callidescope-core
       '@callidescope/graph':
         specifier: workspace:*
         version: link:../callidescope-graph
@@ -1438,6 +1477,9 @@ importers:
       '@callidescope/configuration':
         specifier: workspace:*
         version: link:../callidescope-configuration
+      '@callidescope/core':
+        specifier: workspace:*
+        version: link:../callidescope-core
       '@callidescope/graph':
         specifier: workspace:*
         version: link:../callidescope-graph

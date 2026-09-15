@@ -7,7 +7,7 @@ import { ANALYSIS_MODULES } from "../../../testing/modules";
 import { MermaidReportService } from "./mermaid-report.service";
 import { MAXIMUM_DIAGRAM_NODES } from "./report.constants";
 
-import type { CallStack, StackFrame } from "@callidescope/configuration";
+import type { CallStack, StackFrame } from "@callidescope/core";
 
 /** A frame whose identity is its name, so stacks can share callables. */
 function frame(name: string, overrides: Partial<StackFrame> = {}): StackFrame {

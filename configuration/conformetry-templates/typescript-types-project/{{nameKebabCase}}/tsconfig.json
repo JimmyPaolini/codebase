@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "lib": ["ES2023"],
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "noEmit": true,
+    "paths": {
+      "codebase/configuration/*": ["{{workspaceRelativePrefix}}configuration/*"],
+      "eslint-plugin-better-max-params": [
+        "{{workspaceRelativePrefix}}configuration/types/eslint-plugin-better-max-params/index.d.ts"
+      ]
+    },
+    "target": "esnext",
+    "types": ["node", "vitest/globals"]
+  },
+  "exclude": ["dist", "node_modules", "output"],
+  "extends": "{{workspaceRelativePrefix}}configuration/tsconfig.json",
+  "include": ["codometer.config.ts", "eslint.config.ts", "scripts/**/*.ts", "src/**/*.ts", "testing/**/*.ts", "vitest.config.ts"]
+}

@@ -5,7 +5,7 @@ import { Injectable } from "@nestjs/common";
 
 import type { LookupArguments, LookupResult } from "./address.types";
 import type { BreadthReport, LocatedWorkspace } from "@callidescope/cli";
-import type { CallableId } from "@callidescope/configuration";
+import type { CallableId } from "@callidescope/core";
 
 /**
  * Answers `depth` and `breadth` about the callables it is named, inside a

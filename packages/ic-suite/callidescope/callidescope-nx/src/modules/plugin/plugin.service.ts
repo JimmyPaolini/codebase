@@ -42,10 +42,8 @@ import type {
   RunTraceResult,
   RunVerdict,
 } from "./plugin.types";
-import type {
-  CallGraphResult,
-  ProjectLimitsLookup,
-} from "@callidescope/configuration";
+import type { ProjectLimitsLookup } from "@callidescope/configuration";
+import type { CallGraphResult } from "@callidescope/core";
 import type { FileFilter } from "@callidescope/graph";
 
 /**

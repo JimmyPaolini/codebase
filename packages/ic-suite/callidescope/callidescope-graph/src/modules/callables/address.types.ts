@@ -1,7 +1,7 @@
 // 🏷️ Types
 
 import type { DiscoveredCallable } from "./callables.types";
-import type { CallableId, SourceLocation } from "@callidescope/configuration";
+import type { CallableId, SourceLocation } from "@callidescope/core";
 
 /** One declaration an ambiguous address could have meant. */
 export interface CallableAddressCandidate {
