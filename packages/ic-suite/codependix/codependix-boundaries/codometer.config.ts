@@ -21,5 +21,5 @@ export default {
       include: ["dist/**/*.js"],
     },
   ],
-  limits: [{ metric: "Compiled JavaScript.size", value: "18 KB" }],
+  limits: [{ metric: "Compiled JavaScript.size", value: "16 KB" }],
 };

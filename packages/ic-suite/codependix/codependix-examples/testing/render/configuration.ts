@@ -3,7 +3,7 @@ import path from "node:path";
 import { codependixConfigurationSchema } from "@codependix/configuration";
 import { z } from "zod";
 
-import { configurationService } from "./builders";
+import { getConfigurationService } from "./builders";
 import { fence, fenceJson, table } from "./document";
 import { resolveExample } from "./paths";
 
@@ -11,6 +11,7 @@ import type { ExampleDocument, ExampleSection } from "./types";
 import type {
   CodependixGraphType,
   CodependixProjectConfiguration,
+  ConfigurationService,
   ResolvedCodependixConfiguration,
 } from "@codependix/configuration";
 
@@ -160,6 +161,8 @@ export function describeIssues(error: unknown): string {
 export async function describeLoadRefusal(
   relativePath: string,
 ): Promise<string> {
+  const configurationService = await getConfigurationService();
+
   try {
     await configurationService.loadConfiguration({
       configurationPath: resolveExample(REFUSALS_SEGMENT, relativePath),
@@ -190,6 +193,8 @@ export function describeParseRefusal(configuration: unknown): string {
 export async function loadConfiguration(
   name: string,
 ): Promise<ResolvedCodependixConfiguration> {
+  const configurationService = await getConfigurationService();
+
   return configurationService.loadConfiguration({
     searchDirectory: resolveExample(CONFIGURATION_SEGMENT, name),
   });
@@ -210,6 +215,7 @@ export function redactPath(message: string): string {
 
 /** Builds the sections covering how a configuration file is found and read. */
 async function buildDiscoverySections(): Promise<ExampleSection[]> {
+  const configurationService = await getConfigurationService();
   const precedence = await loadConfiguration(PRECEDENCE);
   const nested = await configurationService.loadConfiguration({
     searchDirectory: resolveExample(
@@ -277,7 +283,8 @@ async function buildPathRefusalSections(): Promise<ExampleSection[]> {
  * two glob lists.
  */
 async function buildResolutionSections(): Promise<ExampleSection[]> {
-  const configuration = buildSampleConfiguration();
+  const configurationService = await getConfigurationService();
+  const configuration = buildSampleConfiguration(configurationService);
   const atlasCoreProjectConfiguration =
     await loadExampleProjectConfiguration("atlas-core");
   const atlasServiceProjectConfiguration =
@@ -290,24 +297,28 @@ async function buildResolutionSections(): Promise<ExampleSection[]> {
         [
           resolveRow({
             configuration,
+            configurationService,
             projectConfiguration: atlasCoreProjectConfiguration,
             projectName: "atlas-core",
             projectRoot: "packages/atlas-core",
           }),
           resolveRow({
             configuration,
+            configurationService,
             projectConfiguration: atlasServiceProjectConfiguration,
             projectName: "atlas-service",
             projectRoot: "packages/atlas-service",
           }),
           resolveRow({
             configuration,
+            configurationService,
             projectConfiguration: undefined,
             projectName: "atlas-application",
             projectRoot: "applications/atlas-application",
           }),
           resolveRow({
             configuration,
+            configurationService,
             projectConfiguration: undefined,
             projectName: "unrelated",
             projectRoot: "tools/unrelated",
@@ -329,7 +340,7 @@ async function buildResolutionSections(): Promise<ExampleSection[]> {
       note: "`examples/configuration-resolution/per-project-files/codependix.config.ts` exports `projectDefaults`. Its `packages/atlas-core/codependix.config.ts` spreads it and overrides `nxProjects` outright — the spread's `markdown` destination is gone, not merged with the `json` one that replaced it. `packages/atlas-service/` carries no `codependix.config.ts` at all, so `loadProjectConfiguration` resolves it to `undefined` rather than falling back to `projectDefaults` on its own — a project opts in by writing the file.",
     },
     {
-      body: renderInclusion(configuration),
+      body: renderInclusion(configurationService, configuration),
       heading: "`include` and `exclude` match a name or a root",
       note: "Both lists are matched against a project's name **and** its workspace-relative root. `atlas-service` matches no glob by name and matches `packages/*` by root, so a caller that knows the root gets a different answer from one that does not — which is why `projectRoot` is optional rather than absent.",
     },
@@ -344,7 +355,9 @@ async function buildResolutionSections(): Promise<ExampleSection[]> {
 }
 
 /** The configuration every resolution row is resolved against. */
-function buildSampleConfiguration(): ResolvedCodependixConfiguration {
+function buildSampleConfiguration(
+  configurationService: ConfigurationService,
+): ResolvedCodependixConfiguration {
   return configurationService.resolveConfiguration({
     exclude: ["applications/*"],
     include: ["packages/*", "codependix-*"],
@@ -361,6 +374,8 @@ function buildSampleConfiguration(): ResolvedCodependixConfiguration {
 async function loadExampleProjectConfiguration(
   projectName: string,
 ): Promise<CodependixProjectConfiguration | undefined> {
+  const configurationService = await getConfigurationService();
+
   return configurationService.loadProjectConfiguration({
     projectRoot: resolveExample(
       CONFIGURATION_SEGMENT,
@@ -373,6 +388,7 @@ async function loadExampleProjectConfiguration(
 
 /** Renders what `isProjectIncluded` answers, with and without a root. */
 function renderInclusion(
+  configurationService: ConfigurationService,
   configuration: ResolvedCodependixConfiguration,
 ): string {
   const answer = (projectName: string, projectRoot?: string): string =>
@@ -398,12 +414,18 @@ function renderInclusion(
 /** Resolves one project's `nxProjects` output and describes it as a table row. */
 function resolveRow(args: {
   configuration: ResolvedCodependixConfiguration;
+  configurationService: ConfigurationService;
   projectConfiguration: CodependixProjectConfiguration | undefined;
   projectName: string;
   projectRoot: string;
 }): string[] {
-  const { configuration, projectConfiguration, projectName, projectRoot } =
-    args;
+  const {
+    configuration,
+    configurationService,
+    projectConfiguration,
+    projectName,
+    projectRoot,
+  } = args;
   const graphType: CodependixGraphType = "nxProjects";
   const resolved = configurationService.resolveForProject({
     configuration,

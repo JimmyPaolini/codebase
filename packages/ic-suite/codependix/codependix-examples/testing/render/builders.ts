@@ -30,14 +30,18 @@ import { NestFactory } from "@nestjs/core";
 
 import { LoggerService } from "@codebase/logger";
 
+import type { INestApplicationContext } from "@nestjs/common";
+
 // ♟️ Constants
 
 /**
  * The codependix builders every example renders through.
  *
  * These are the same classes `@codependix/cli` wires into its own container.
- * This package runs a script rather than an application, so there is no
- * container here to resolve them from — and nothing else for one to hold.
+ * This package runs a script rather than an application, so all but one are
+ * constructed by hand rather than resolved from a container. The exception is
+ * `ConfigurationService` — see `getConfigurationService`, which boots the one
+ * module it is exported from.
  */
 const logger = new LoggerService();
 
@@ -77,22 +81,44 @@ export const pythonService = new PythonService(
 );
 
 /**
+ * The booted `ConfigurationModule`, or `undefined` until something asks for
+ * it. Held so repeated calls share one container rather than booting a fresh
+ * one per example.
+ */
+let configurationContext: INestApplicationContext | undefined;
+
+/**
+ * Closes the container `getConfigurationService` booted, if it booted one.
+ *
+ * Called once the render run is over — a context left open holds the process
+ * open with it, which a script that is expected to exit cannot afford.
+ */
+export async function closeConfigurationService(): Promise<void> {
+  await configurationContext?.close();
+  configurationContext = undefined;
+}
+
+/**
  * Resolves what a configuration file says about where an export goes, and
  * what the command line says over it.
  *
  * Resolved from `ConfigurationModule` rather than constructed by hand, unlike
- * every builder above: `@codependix/configuration` makes exactly one service
- * public, so its loader, override resolver, option parser, and flag resolver
- * are providers nothing outside the package can name. Booting the module here
- * is also the only builder in this file that proves its own wiring.
+ * every builder in this file: `@codependix/configuration` makes exactly one
+ * service public, so its loader, override resolver, option parser, and flag
+ * resolver are providers nothing outside the package can name.
+ *
+ * A function rather than a top-level `await`, which would make this shared
+ * module async for the sake of one of its sixteen builders and boot a
+ * container for callers that never touch configuration at all.
  */
-const configurationContext = await NestFactory.createApplicationContext(
-  ConfigurationModule,
-  { logger: false },
-);
+export async function getConfigurationService(): Promise<ConfigurationService> {
+  configurationContext ??= await NestFactory.createApplicationContext(
+    ConfigurationModule,
+    { logger: false },
+  );
 
-export const configurationService =
-  configurationContext.get(ConfigurationService);
+  return configurationContext.get(ConfigurationService);
+}
 
 /** Reads and rewrites codependix's own named anchor blocks. */
 export const anchorsService = new AnchorsService();

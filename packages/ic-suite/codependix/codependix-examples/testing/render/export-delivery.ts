@@ -7,8 +7,8 @@ import { MARKDOWN_SECTION_INTRO_LINE } from "@codependix/output";
 
 import {
   anchorsService,
-  configurationService,
   deliveryService,
+  getConfigurationService,
 } from "./builders";
 import { fence, fenceJson, table } from "./document";
 import { buildJsonExports } from "./graph-levels";
@@ -341,6 +341,7 @@ function listChangedPaths(
 
 /** Runs the real run plan and renders whatever it refused the command line with. */
 async function refuse(options: MapCommandOptions): Promise<string> {
+  const configurationService = await getConfigurationService();
   const { errors } = await configurationService.selectMode(options);
 
   return fence(errors.join("\n"));

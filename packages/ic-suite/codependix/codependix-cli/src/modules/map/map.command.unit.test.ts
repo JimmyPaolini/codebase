@@ -125,7 +125,7 @@ describe(MapCommand, () => {
     };
   }
 
-  /** Hands the command a mode, as the run plan would have resolved one. */
+  /** Hands the command a mode, as the configuration service would resolve one. */
   function selectMode(overrides: Partial<RunMode> = {}): RunMode {
     const mode = buildMode(overrides);
 
@@ -569,13 +569,13 @@ describe(MapCommand, () => {
   // Sentinels rather than realistic answers, so a parser reintroduced inline
   // here fails rather than coincidentally agreeing with the stub.
 
-  it("hands --check through unparsed, for the run plan to read", () => {
+  it("hands --check through unparsed, for the configuration service to read", () => {
     expect(buildCommand().parseCheck("boundaries,reports")).toBe(
       "boundaries,reports",
     );
   });
 
-  it("delegates --write to the shared input service", () => {
+  it("delegates --write to the configuration service", () => {
     vi.mocked(configurationService.parseFlagOption).mockReturnValue(false);
 
     expect(buildCommand().parseWrite(undefined)).toBe(false);
@@ -584,7 +584,7 @@ describe(MapCommand, () => {
     );
   });
 
-  it("delegates --config to the shared input service", () => {
+  it("delegates --config to the configuration service", () => {
     vi.mocked(configurationService.parseOptionalOption).mockReturnValue(
       "parsed",
     );
@@ -597,7 +597,7 @@ describe(MapCommand, () => {
     );
   });
 
-  it("delegates --projects to the shared input service", () => {
+  it("delegates --projects to the configuration service", () => {
     vi.mocked(configurationService.parseOptionalOption).mockReturnValue(
       "parsed",
     );
@@ -608,7 +608,7 @@ describe(MapCommand, () => {
     );
   });
 
-  it("delegates --tags to the shared input service", () => {
+  it("delegates --tags to the configuration service", () => {
     vi.mocked(configurationService.parseOptionalOption).mockReturnValue(
       "parsed",
     );
@@ -619,7 +619,7 @@ describe(MapCommand, () => {
     );
   });
 
-  it("delegates --directory to the shared input service", () => {
+  it("delegates --directory to the configuration service", () => {
     vi.mocked(configurationService.parsePathOption).mockReturnValue("parsed");
 
     expect(buildCommand().parseDirectory(undefined)).toBe("parsed");
@@ -628,7 +628,7 @@ describe(MapCommand, () => {
     );
   });
 
-  it("delegates mode resolution to the run plan", async () => {
+  it("delegates mode resolution to the configuration service", async () => {
     await run({ directory: "packages/logger" });
 
     expect(configurationService.selectMode).toHaveBeenCalledWith({
@@ -726,7 +726,7 @@ describe(MapCommand, () => {
 
   // 🧾 Combined output and format flags
 
-  it("delegates --json-output to the shared input service", () => {
+  it("delegates --json-output to the configuration service", () => {
     vi.mocked(configurationService.parseOptionalOption).mockReturnValue(
       "out.json",
     );
@@ -737,7 +737,7 @@ describe(MapCommand, () => {
     );
   });
 
-  it("delegates --markdown-output to the shared input service", () => {
+  it("delegates --markdown-output to the configuration service", () => {
     vi.mocked(configurationService.parseOptionalOption).mockReturnValue(
       "out.md",
     );
@@ -748,7 +748,7 @@ describe(MapCommand, () => {
     );
   });
 
-  it("delegates --format to the shared input service", () => {
+  it("delegates --format to the configuration service", () => {
     vi.mocked(configurationService.parseOptionalOption).mockReturnValue("json");
 
     expect(buildCommand().parseFormat("json")).toBe("json");
