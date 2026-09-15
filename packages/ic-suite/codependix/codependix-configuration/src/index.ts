@@ -1,7 +1,9 @@
-export { ConfigurationLoaderModule } from "./modules/configuration-loader/configuration-loader.module";
-export { ConfigurationLoaderService } from "./modules/configuration-loader/configuration-loader.service";
 // 📤 Exports
 export {
+  CHECK_BOUNDARIES,
+  CHECK_NAMES,
+  CHECK_REPORTS,
+  CHECK_SEPARATOR,
   CODEPENDIX_EXPORT_TARGETS,
   CODEPENDIX_GRAPH_TYPES,
   codependixConfigurationSchema,
@@ -12,6 +14,8 @@ export {
   DEFAULT_INCLUDE_GLOBS,
   DEFAULT_MARKDOWN_PATH,
   REPOSITORY_ROOT_MARKERS,
+  RUN_MODE_CHOICES,
+  RUN_MODE_SUBJECT,
   UnknownConfigurationFileTypeError,
 } from "./modules/configuration/configuration.constants";
 export { ConfigurationModule } from "./modules/configuration/configuration.module";
@@ -36,6 +40,7 @@ export type {
   CodependixWorkspaceConfiguration,
   LoadConfigurationArguments,
   LoadProjectConfigurationArguments,
+  MapCommandOptions,
   ProjectSelectionArguments,
   ResolvedCodependixBoundariesConfiguration,
   ResolvedCodependixConfiguration,
@@ -51,8 +56,4 @@ export {
   missingInputError,
   promptCancelledError,
 } from "./modules/input/input.constants";
-export { InputModule } from "./modules/input/input.module";
-export { InputService } from "./modules/input/input.service";
-export { OverrideResolutionModule } from "./modules/override-resolution/override-resolution.module";
-export { OverrideResolutionService } from "./modules/override-resolution/override-resolution.service";
 export type { ApplyOverridesArguments } from "./modules/override-resolution/override-resolution.types";

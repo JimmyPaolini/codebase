@@ -8,6 +8,7 @@
     "framework:nestjs",
     "generator:nestjs-command-project",
     "language:typescript",
+    "layer:cli",
     "name:codependix-cli",
     "type:package"
   ],

@@ -25,7 +25,7 @@ import { MainModule } from "../../main.module";
 
 import { MapCommand } from "./map.command";
 
-import type { MapCommandOptions } from "./map.types";
+import type { MapCommandOptions } from "@codependix/configuration";
 import type { MockInstance } from "vitest";
 
 /**

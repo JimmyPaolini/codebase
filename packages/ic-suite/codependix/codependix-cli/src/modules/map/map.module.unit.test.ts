@@ -3,10 +3,9 @@ import { describe, expect, it } from "vitest";
 
 import { MapCommand } from "./map.command";
 import { MapModule } from "./map.module";
-import { MapService } from "./map.service";
 
 describe(MapModule, () => {
-  it("exports MapService and provides both the command and the service", () => {
+  it("exports and provides the command", () => {
     const exportsMetadata = Reflect.getMetadata(
       MODULE_METADATA.EXPORTS,
       MapModule,
@@ -16,8 +15,7 @@ describe(MapModule, () => {
       MapModule,
     ) as undefined | unknown[];
 
-    expect(exportsMetadata).toContain(MapService);
-    expect(providersMetadata).toContain(MapService);
+    expect(exportsMetadata).toContain(MapCommand);
     expect(providersMetadata).toContain(MapCommand);
   });
 });
