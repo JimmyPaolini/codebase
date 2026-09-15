@@ -77,45 +77,49 @@ toward this repository's language bar, and `.codometerignore`, `.prettierignore`
 
 ## 🏛️ Meander Charter
 
-Ten families of meander are implemented, and they share a set of properties that are
-load-bearing to how a meander looks. The invariants were extracted from the six families
-that predate them, by measuring every committed SVG rather than by reading the code, and
-each is marked fixed or negotiable. A new family that breaks a fixed invariant is not a
-new family — it is a different kind of drawing. All four of the families that came after
-break a negotiable one: `cross` crosses, and `negative`, `branch`, and `parallel` all
-branch — in different shapes, which "The Branching Family" and "The Parallel Family" below
-are about. `negative` breaks the other one too, in three of its ten modes, and that is not
-a second family creeping in: the survey below found that 3,070 of the 3,179 `mosaic` tiles
-it measured have a crossing negative, so a `negative` family that crossed nowhere was
-drawing the 3.3% minority of its own source space.
+Ten families of meander are implemented, and they share a set of properties that describe
+how a meander looks. Three of them — orthogonality, space-filling channels, and the band
+model — are **guaranteed by construction**: no assignment of direction bits to a lattice
+can violate them, so no family gates them and none ever could. The other two — branching
+and crossing — are **demoted to measured characteristics**, `hasTJunctions` and
+`hasXJunctions`, rather than kept as invariants with declared exceptions: whether a
+family's ink branches or crosses is measured, never gated, and a family is free to do
+either as much as its own structure earns.
 
-`parallel` was the exception until this corpus was drawn, and its row of
-`RELAXED_INVARIANTS` was empty on purpose. **That is reversed.** Ruling both borders of
-its band — the same closing `branch` takes, though there the rules stand a lattice row
-clear of the ink — meets each strand's
-rising end with west, east, and south ink at one lattice point, so 642 of its 786 drawings
-fork. The row is not blanket: the other 144 are the `serpentine` drawings whose first and
-last strips are each one lattice row deep, where the flat ribbon on such a strip _is_ the
-rule and nothing rises to meet it. So the relaxation carries a **structural condition**
-rather than a list of modifier names, which is the only such row in the declaration. See
+The counts below were extracted from the ten families as they stand, by measuring every
+committed SVG rather than by reading the code — the method a declared-invariant framework
+once formalized and that this section keeps as the record of why each family's ink looks
+the way it does. `cross` crosses, and `negative`, `branch`, and `parallel` all branch — in
+different shapes, which "The Branching Family" and "The Parallel Family" below are about.
+`negative` crosses too, in three of its ten modes, and that is not a second family creeping
+in: the survey below found that 3,070 of the 3,179 `mosaic` tiles it measured have a
+crossing negative, so a `negative` family that crossed nowhere was drawing the 3.3%
+minority of its own source space.
+
+`parallel` was the exception until this corpus was drawn: it branched nowhere. **That
+changed.** Ruling both borders of its band — the same closing `branch` takes, though there
+the rules stand a lattice row clear of the ink — meets each strand's rising end with west,
+east, and south ink at one lattice point, so 642 of its 786 drawings fork. Not every
+drawing forks: the other 144 are the `serpentine` drawings whose first and last strips are
+each one lattice row deep, where the flat ribbon on such a strip _is_ the rule and nothing
+rises to meet it — a **structural condition** rather than a blanket count. See
 `docs/adr/0006-close-both-band-borders-in-branch-and-parallel.md` for why both borders were
 closed and what it cost.
 
-`mosaic` breaks both, and it is the only family that breaks them in its **enumerated half
-alone** — which is now the whole of it. Its unit space is every assignment of direction
-bits over a lattice, and most of that space branches and crosses; the four named modes it
-once had, `plain`, `split`, `alternated`, and `dot`, did neither, and they are gone. The
-declaration in `meander-topology.service.integration.test.ts` says so
-with a `permutations` flag, and the assertion that a declared relaxation is really
-_present_ is taken from committed output rather than from a generated drawing.
+`mosaic` branches and crosses too, and only in its **enumerated half alone** — which is now
+the whole of it. Its unit space is every assignment of direction bits over a lattice, and
+most of that space branches and crosses; the four named modes it once had, `plain`,
+`split`, `alternated`, and `dot`, did neither, and they are gone. This is still recorded in
+`meander-topology.service.integration.test.ts` with a `permutations` flag, measured from
+committed output rather than from a generated drawing.
 
 | # | Invariant | Status |
 | --- | --- | --- |
-| 1 | **Orthogonal only** — horizontal and vertical movement, no diagonals | Fixed |
-| 2 | **Space-filling** — every interior white channel is exactly one stroke width | Fixed |
-| 3 | **No branching** — ink contains no T-junctions | Relaxed by `branch` in every mode, by `negative` in every mode but `ruled-closed`, by `parallel` wherever a border strip has depth, by `mosaic` across its enumerated half, and by `chain` and `snake` under `edge` and `edge-flip` |
-| 4 | **No crossing** — ink contains no X-junctions | Relaxed by `cross` except under `interrupted`, by `mosaic` across its enumerated half, and by `negative` under `brick-straight`, `brick-upright`, and `grid` |
-| 5 | **Band, not field** — fixed canvas height, `rows` is density, tiling is horizontal | Fixed |
+| 1 | **Orthogonal only** — horizontal and vertical movement, no diagonals | Guaranteed by construction |
+| 2 | **Space-filling** — every interior white channel is exactly one stroke width | Guaranteed by construction |
+| 3 | **No branching** — ink contains no T-junctions | Demoted to characteristic `hasTJunctions` — present in `branch` in every mode, in `negative` in every mode but `ruled-closed`, in `parallel` wherever a border strip has depth, in `mosaic` across its enumerated half, and in `chain` and `snake` under `edge` and `edge-flip` |
+| 4 | **No crossing** — ink contains no X-junctions | Demoted to characteristic `hasXJunctions` — present in `cross` except under `interrupted`, in `mosaic` across its enumerated half, and in `negative` under `brick-straight`, `brick-upright`, and `grid` |
+| 5 | **Band, not field** — fixed canvas height, `rows` is density, tiling is horizontal | Guaranteed by construction |
 | 6 | **Flat path model** — unordered paths, no z-order, one stroke width per document | May be relaxed by ADR only |
 | 7 | Invariants hold within a band, not at its termination | See [#338](https://github.com/JimmyPaolini/codebase/issues/338) |
 
