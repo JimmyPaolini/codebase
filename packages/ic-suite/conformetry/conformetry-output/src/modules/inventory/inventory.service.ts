@@ -16,7 +16,7 @@ import type {
   InventoriedInstance,
   InventoriedPairing,
   InventoriedTemplate,
-} from "./inventory.types";
+} from "@conformetry/core";
 
 /**
  * Renders the template and instance inventory as readable lines.

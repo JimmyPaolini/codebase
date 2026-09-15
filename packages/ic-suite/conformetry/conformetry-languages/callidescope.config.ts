@@ -21,6 +21,13 @@ import { projectDefaults } from "../../../../configuration/callidescope.config.j
  * measurement stopped being able to hide it, which is the better of the two
  * states to gate from.
  *
+ * The same commit turns four workspace-level over-limit findings green, and
+ * that is this one number read from the other end rather than four separate
+ * wins. The root `README.md` used to list these walks as breaches belonging to
+ * no project's own limit, because no project's own limit reached them.
+ * Declaring thirteen here is what claims them, so the whole-workspace report
+ * now has nothing left to say about this package.
+ *
  * Eleven direct callees at the widest, among the comparison walks — fan-out
  * shaped by the syntax tree they descend rather than a budget anybody chose.
  * The next node kind a Language learns to compare is what moves this number

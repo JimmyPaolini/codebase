@@ -102,9 +102,10 @@ Types only: `ConformetryDifference`, `ConformetryDifferenceLanguage`,
 nx run conformetry-core:vitest
 ```
 
-There is nothing to run. Every file here declares types, so the suite is empty
-by nature rather than by omission — and the day a service appears here, it is
-the layering that is wrong, not the coverage.
+One test, and it asserts the property that makes this package a leaf: the
+module contributes nothing at runtime, so importing a result type from here
+cannot drag a service or a NestJS module behind it. Exporting one value fails
+it.
 
 ## License
 
@@ -136,8 +137,8 @@ What this project is judged against, as declared in its own `callidescope.config
 
 | Limit | Value |
 | --- | --- |
-| `maximumDepth` | 6 |
-| `maximumBreadth` | 4 |
+| `maximumDepth` | 1 |
+| `maximumBreadth` | 1 |
 
 ### Call stacks (depth)
 
@@ -157,11 +158,13 @@ Dependency graphs exported by [codependix](https://github.com/JimmyPaolini/codeb
 <!-- codependix:start name="codependix-nx-projects" -->
 ```mermaid
 graph LR
+  conformetry_cli["conformetry-cli"]
   conformetry_configuration["conformetry-configuration"]
   conformetry_core["conformetry-core"]
   conformetry_languages["conformetry-languages"]
   conformetry_output["conformetry-output"]
   conformetry_validation["conformetry-validation"]
+  conformetry_cli --> conformetry_core
   conformetry_configuration --> conformetry_core
   conformetry_languages --> conformetry_core
   conformetry_output --> conformetry_core
@@ -195,6 +198,7 @@ graph LR
   file_codometer_config_ts["codometer.config.ts"]
   file_eslint_config_ts["eslint.config.ts"]
   file_src_index_ts["src/index.ts"]
+  file_src_index_unit_test_ts["src/index.unit.test.ts"]
   file_src_lib_differences_types_ts["src/lib/differences.types.ts"]
   file_src_lib_inventory_types_ts["src/lib/inventory.types.ts"]
   file_src_lib_runner_types_ts["src/lib/runner.types.ts"]
@@ -202,6 +206,7 @@ graph LR
   file_testing_mocks_ts["testing/mocks.ts"]
   file_testing_setup_ts["testing/setup.ts"]
   file_vitest_config_ts["vitest.config.ts"]
+  file_src_index_unit_test_ts --> file_src_index_ts
   file_src_lib_runner_types_ts --> file_src_lib_differences_types_ts
 ```
 <!-- codependix:end name="codependix-file-imports" -->

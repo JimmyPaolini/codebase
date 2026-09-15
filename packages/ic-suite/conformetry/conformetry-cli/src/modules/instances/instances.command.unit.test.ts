@@ -14,7 +14,7 @@ import { LoggerService } from "@codebase/logger";
 
 import { InstancesCommand } from "./instances.command";
 
-import type { InventoriedInstance } from "@conformetry/output";
+import type { InventoriedInstance } from "@conformetry/core";
 import type { DeepMocked } from "@golevelup/ts-vitest";
 
 const GEARS: InventoriedInstance = {
