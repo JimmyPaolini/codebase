@@ -3,8 +3,15 @@ import { projectDefaults } from "../../../../configuration/callidescope.config.j
 /**
  * What conformetry-configuration is held to, measured rather than assumed.
  *
- * Thirteen frames, which is more than any other configuration reader here: this
+ * Fourteen frames, which is more than any other configuration reader here: this
  * one resolves templates, instances, and the tags that select them.
+ *
+ * Thirteen of those fourteen are the same walk as before. The fourteenth is
+ * `ConfigurationService` itself: this package now publishes one facade rather
+ * than fourteen services, so every stack through it gains exactly one
+ * delegating frame between the caller and the collaborator that does the work.
+ * The measured depth moved 13 → 14 and nothing got deeper — a frame was added
+ * in front of the same descent.
  *
  * Measured by a run scoped to this project and its dependency closure, and set
  * **at** what it measured rather than above it: a stack or a callable at either
@@ -22,6 +29,6 @@ export default {
   ...projectDefaults,
   limits: {
     maximumBreadth: 5,
-    maximumDepth: 13,
+    maximumDepth: 14,
   },
 };

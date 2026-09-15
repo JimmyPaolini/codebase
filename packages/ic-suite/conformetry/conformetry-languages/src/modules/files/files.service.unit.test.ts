@@ -3,9 +3,8 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 
 import {
-  InstanceDiscoveryModule,
-  InstanceDiscoveryService,
-  TemplateDiscoveryService,
+  ConfigurationModule,
+  ConfigurationService,
 } from "@conformetry/configuration";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
@@ -60,14 +59,13 @@ async function createTemplatePath(): Promise<string> {
 }
 
 describe(FilesService, () => {
-  let instanceDiscoveryService: InstanceDiscoveryService;
-  let templateDiscoveryService: TemplateDiscoveryService;
+  let configurationService: ConfigurationService;
   let service: FilesService;
   let template: TemplateDefinition;
 
   /** Matches an instance path against the single `widget` template. */
   function matchInstance(instancePath: string): MatchedInstance[] {
-    const { matched } = instanceDiscoveryService.matchInstances({
+    const { matched } = configurationService.matchInstances({
       instances: [{ nameStem: "my-widget", path: instancePath }],
       templates: [template],
     });
@@ -77,14 +75,13 @@ describe(FilesService, () => {
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      imports: [InstanceDiscoveryModule, DifferencesModule],
+      imports: [ConfigurationModule, DifferencesModule],
       providers: [FilesService],
     }).compile();
 
     service = await module.resolve(FilesService);
-    instanceDiscoveryService = await module.resolve(InstanceDiscoveryService);
-    templateDiscoveryService = await module.resolve(TemplateDiscoveryService);
-    template = templateDiscoveryService.collectTemplate({
+    configurationService = await module.resolve(ConfigurationService);
+    template = configurationService.collectTemplate({
       name: "widget",
       templatePath: await createTemplatePath(),
     });
@@ -124,7 +121,7 @@ describe(FilesService, () => {
   });
 
   it("reports nothing when the matched template declares no files", async () => {
-    const emptyTemplate = templateDiscoveryService.collectTemplate({
+    const emptyTemplate = configurationService.collectTemplate({
       name: "empty",
       templatePath: await mkdtemp(
         path.join(tmpdir(), "conformetry-files-empty-template-"),
@@ -174,7 +171,7 @@ describe(FilesService, () => {
   });
 
   it("reports a missing directory once however many files it holds", async () => {
-    const nestedTemplate = templateDiscoveryService.collectTemplate({
+    const nestedTemplate = configurationService.collectTemplate({
       name: "widget",
       templatePath: await createNestedTemplatePath(),
     });
@@ -189,7 +186,7 @@ describe(FilesService, () => {
       "utf8",
     );
 
-    const { matched } = instanceDiscoveryService.matchInstances({
+    const { matched } = configurationService.matchInstances({
       instances: [{ nameStem: "my-widget", path: instancePath }],
       templates: [nestedTemplate],
     });

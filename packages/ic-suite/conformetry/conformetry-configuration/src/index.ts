@@ -6,29 +6,17 @@ export type {
   ConformetryConfiguration,
   ConformetryGeneratorDefinition,
   ConformetryGeneratorInputDefinition,
-  ConformetryInstanceGroup,
   JsonSchemaDefinition,
 } from "./modules/configuration/configuration.types";
-export { InstanceGroupService } from "./modules/configuration/instance-group.service";
-export { InputOptionsService } from "./modules/input/input-options.service";
-export { InputPromptingService } from "./modules/input/input-prompting.service";
-export { InputSchemaService } from "./modules/input/input-schema.service";
 export {
   ALL_TEMPLATES_SELECTION,
   InputError,
   missingInputError,
 } from "./modules/input/input.constants";
-export { InputModule } from "./modules/input/input.module";
-export { InputService } from "./modules/input/input.service";
 export type {
   ResolveGeneratorInputsArguments,
-  ResolveInputsFromValuesArguments,
   TemplateChoice,
 } from "./modules/input/input.types";
-export { InstanceDiscoveryLocatingService } from "./modules/instance-discovery/instance-discovery-locating.service";
-export { InstanceDiscoveryMatchingService } from "./modules/instance-discovery/instance-discovery-matching.service";
-export { InstanceDiscoveryModule } from "./modules/instance-discovery/instance-discovery.module";
-export { InstanceDiscoveryService } from "./modules/instance-discovery/instance-discovery.service";
 export type {
   FindInstancesArguments,
   Instance,
@@ -42,10 +30,7 @@ export type {
   UnmatchedInstance,
   UnmatchedReason,
 } from "./modules/instance-discovery/instance-discovery.types";
+export type { ConformetryInstanceGroup } from "./modules/instance-group/instance-group.types";
 export { MissingSubstitutionError } from "./modules/rendering/rendering.constants";
-export { RenderingModule } from "./modules/rendering/rendering.module";
-export { RenderingService } from "./modules/rendering/rendering.service";
 export type { Substitutions } from "./modules/rendering/rendering.types";
-export { TemplateDiscoveryModule } from "./modules/template-discovery/template-discovery.module";
-export { TemplateDiscoveryService } from "./modules/template-discovery/template-discovery.service";
 export type { TemplateDefinition } from "./modules/template-discovery/template-discovery.types";

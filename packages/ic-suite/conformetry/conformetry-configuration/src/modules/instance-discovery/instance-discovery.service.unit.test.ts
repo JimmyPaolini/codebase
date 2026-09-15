@@ -5,7 +5,7 @@ import path from "node:path";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { InstanceGroupService } from "../configuration/instance-group.service";
+import { InstanceGroupService } from "../instance-group/instance-group.service";
 
 import { InstanceDiscoveryModule } from "./instance-discovery.module";
 import { InstanceDiscoveryService } from "./instance-discovery.service";
