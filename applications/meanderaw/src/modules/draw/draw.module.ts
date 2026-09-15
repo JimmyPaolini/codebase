@@ -1,5 +1,6 @@
 import { Module } from "@nestjs/common";
 
+import { GridGeometryModule } from "../grid-geometry/grid-geometry.module";
 import { HardcodedMeandersModule } from "../hardcoded-meanders/hardcoded-meanders.module";
 import { MeanderCharacteristicsModule } from "../meander-characteristics/meander-characteristics.module";
 import { MeanderClassificationModule } from "../meander-classification/meander-classification.module";
@@ -29,7 +30,9 @@ import { DrawCommand } from "./draw.command";
  * `MeanderClassificationModule` reads a family off those Characteristics,
  * `MeanderEnumerationModule` walks the space the sweep covers, and
  * `MeanderDatabaseModule` is the committed sqlite database all of it
- * persists to and `DrawIndexService` reads back from. `HardcodedMeandersModule`
+ * persists to and `DrawIndexService` reads back from, and `GridGeometryModule`
+ * is the same scaling rule the renderer drew against, which the index page
+ * reads back to step each repeat of a tile one pitch along its band. `HardcodedMeandersModule`
  * wraps the same decoder, renderer, and Characteristic computation beneath
  * one service `DrawCommand` calls once per sweep with the historical corpus,
  * trusting its family/subFamily rather than classifying them.
@@ -52,6 +55,7 @@ import { DrawCommand } from "./draw.command";
   controllers: [],
   exports: [DrawCommand],
   imports: [
+    GridGeometryModule,
     HardcodedMeandersModule,
     MeanderCharacteristicsModule,
     MeanderClassificationModule,

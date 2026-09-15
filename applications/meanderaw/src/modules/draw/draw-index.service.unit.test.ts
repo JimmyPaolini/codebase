@@ -2,6 +2,7 @@ import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
+import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
 import { MeanderDatabaseService } from "../meander-database/meander-database.service";
 
 import { DrawIndexService } from "./draw-index.service";
@@ -44,6 +45,7 @@ describe(DrawIndexService, () => {
     const module = await Test.createTestingModule({
       providers: [
         DrawIndexService,
+        GridGeometryService,
         {
           provide: MeanderDatabaseService,
           useValue: createMock<MeanderDatabaseService>(),
@@ -158,6 +160,44 @@ describe(DrawIndexService, () => {
 
       expect(page).toContain("&lt;script&gt;&amp;&quot;");
       expect(page).not.toContain("<script>");
+    });
+
+    it("defines each meander's own tile once and places it six times along a band", () => {
+      const page = service.render([
+        meander({
+          code: "a",
+          columns: 3,
+          id: 7,
+          pitch: 3,
+          rows: 4,
+          svg: '<svg width="52.5" height="67.5"><path d="M1 1"/></svg>',
+        }),
+      ]);
+
+      expect(page.split('<path d="M1 1"/>')).toHaveLength(2);
+      expect(page).toContain('<defs><g id="meander-7">');
+      expect(page.split('<use href="#meander-7"')).toHaveLength(7);
+    });
+
+    it("steps each repeat one pitch further along the band, so the tiles meet rather than overlap or gap", () => {
+      const page = service.render([
+        meander({ code: "a", columns: 3, id: 1, pitch: 3, rows: 4 }),
+      ]);
+
+      expect(page).toContain('<use href="#meander-1" x="0"/>');
+      expect(page).toContain('<use href="#meander-1" x="45"/>');
+      expect(page).toContain('<use href="#meander-1" x="225"/>');
+      expect(page).not.toContain('<use href="#meander-1" x="270"/>');
+    });
+
+    it("sizes the band to hold every repeat at the tile's own height", () => {
+      const page = service.render([
+        meander({ code: "a", columns: 3, id: 1, pitch: 3, rows: 4 }),
+      ]);
+
+      expect(page).toContain(
+        '<svg width="277.5" height="67.5" viewBox="0 0 277.5 67.5" fill="none"',
+      );
     });
 
     it("refuses a row whose svg field is not a well-formed inline SVG document, rather than emitting broken markup", () => {

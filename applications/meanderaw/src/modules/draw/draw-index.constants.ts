@@ -5,6 +5,29 @@
 // ♟️ Constants
 
 /**
+ * How many times each row's tile is laid out along its band on the page.
+ *
+ * A stored `svg` is one repeat, and one repeat read alone shows the shape of
+ * a tile rather than the shape of the meander it tiles into — which of two
+ * adjacent tiles a stroke belongs to only becomes readable once the repeat
+ * has happened a few times. Six is wide enough for the eye to pick the
+ * period out and short enough that a whole family's grid of them still fits
+ * a column.
+ */
+export const BAND_REPEAT_COUNT = 6;
+
+/**
+ * Prefixed onto a row's own primary key to name the `<defs>` entry its band
+ * references once per repeat.
+ *
+ * Every band on the page shares one document, so the identifier has to be
+ * unique across the whole corpus rather than within one figure — a row's
+ * primary key already is, and the prefix keeps it from colliding with any
+ * other kind of identifier the page might grow.
+ */
+export const TILE_ID_PREFIX = "meander-";
+
+/**
  * The label a null-`family` row's section is headed and jump-linked with.
  *
  * Roughly a ninth of the enumerated corpus matches no family's defining
@@ -23,6 +46,11 @@ export const UNCLASSIFIED_FAMILY_LABEL = "unclassified";
  * restyled for an inlined `<svg>` in place of the `<img>` it used to frame:
  * there is no `loading="lazy"` left to give an inline element, since that
  * attribute only ever deferred a linked file's own network request.
+ *
+ * `.art > svg` is the band, and only the band — the child combinator matters,
+ * because the repeats nested inside it are `<svg>` elements too and must keep
+ * the size the band placed them at. The band alone scales down to its column,
+ * so six repeats of a wide tile shrink to fit rather than scrolling.
  */
 export const PAGE_STYLES = `
 :root { color-scheme: light dark; }
@@ -34,10 +62,10 @@ nav ul { columns: 4 280px; list-style: none; margin: 0 0 32px; padding: 0; }
 nav li { break-inside: avoid; font-family: ui-monospace, monospace; }
 nav span { color: color-mix(in srgb, currentColor 55%, transparent); }
 section { margin: 0 0 40px; }
-.grid { display: grid; gap: 20px 16px; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+.grid { display: grid; gap: 20px 16px; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); }
 figure { margin: 0; }
-.art { background: #fff; border: 1px solid color-mix(in srgb, currentColor 20%, transparent); display: block; overflow-x: auto; padding: 8px; }
-.art svg { display: block; }
+.art { background: #fff; border: 1px solid color-mix(in srgb, currentColor 20%, transparent); display: block; overflow: hidden; padding: 8px; }
+.art > svg { display: block; height: auto; max-width: 100%; }
 figcaption { font-family: ui-monospace, monospace; font-size: 11px; margin-top: 6px; word-break: break-all; }
 `;
 
