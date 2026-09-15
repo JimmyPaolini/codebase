@@ -85,54 +85,46 @@ _Avoid_: Drift, out of date, dirty
 ## Meanders
 
 **Meander**:
-A single generated Greek key/fret ornament: one family, one tile or modifier, a row
-count, and a repeat count, rendered as one SVG document.
+A single generated Greek key/fret ornament — a band of ink drawn from a Code,
+rendered as one SVG document.
 _Avoid_: Pattern, motif, key pattern
 
-**Family**:
-The top-level generative model a meander is drawn from — `boxes`, `branch`, `chain`,
-`cross`, `mosaic`, `negative`, `parallel`, `snake`, `swirl`, or `whirl`. Each family
-generates its own repeat units and accepts its own modifiers. The primary term; `type` survives only as the
-name of the command-line flag.
-_Avoid_: Style, kind, category
+**Code**:
+The direction bits that are a meander: one hexadecimal digit per interior lattice
+point of one true repeat, read row-major and worth `8` north, `4` south, `2` east
+and `1` west. A meander is its Code — nothing else identifies it, and nothing about
+how it is drawn, measured, or named is stored separately from it.
+_Avoid_: Lattice address, hash, fingerprint
 
-**Unit space**:
-The set of repeat units a family can generate. Materialized and enumerable for `mosaic`,
-latent for every other family.
-_Avoid_: Tile set, permutations, search space
+**Phase**:
+Which cyclic rotation of a Code's columns is the one stored and drawn. The same
+band cut at a different column is the same meander in a different phase, so a
+meander has exactly one canonical phase rather than one Code.
+_Avoid_: Rotation, offset, cut
+
+**Seam**:
+The join where a tile's last column meets its first when a Code is read as a
+repeating band rather than as a finite drawing. What crosses a seam — a stranded
+end, a junction, a closed loop — is measured rather than assumed, and the
+measurement is what a canonical phase is chosen to minimize.
+_Avoid_: Wrap, edge, border
+
+**Characteristic**:
+A measured structural property of a meander, read as a pattern over the Code's
+digits where one exists and by walking the tile where none does. Characteristics
+are an open, growing set — adding one changes no other module.
+_Avoid_: Property, metric, trait
+
+**Family**:
+A combination of characteristics a meander's structure satisfies, possibly
+several at once, possibly none. Earned by what a meander measures as, never
+assigned by its proportions or carried over as metadata.
+_Avoid_: Style, kind, category, generative model
 
 **Tile**:
-One repeat unit's worth of the lattice a band is drawn on, named by a canonical
-identifier. The lattice is the substrate of every family, so a drawing from any of them
-reduces to a tile; `mosaic` is only the family whose own unit space is enumerated as
-tiles.
+One repeat unit's worth of the lattice a meander is drawn on — the grid of points
+and edges a Code is spelled into.
 _Avoid_: Cell, unit, permutation
-
-**Lattice address**:
-What a rendered meander is called on the lattice — `<rows>r<columns>c-<hexadecimal>`,
-one hexadecimal character per interior lattice point, worth `8` north, `4` south, `2`
-east and `1` west, spanning one true repeat. It is literal rather than folded: the
-canonical symmetry class is reported beside it, and that class is what states that two
-drawings are one pattern.
-_Avoid_: Hash, fingerprint, canonical class, tile name
-
-**Sub-family**:
-A named, recognizable class of meanders within one family — `dots`, `lines`, `dashes`,
-`diamond`. A sub-family is recognized as a structural property of a tile, so a drawing
-from any family can earn one; it may also be constructible by a modifier, though for
-`mosaic` none is, since every member of its space is already enumerated.
-_Avoid_: Variant, subtype, group
-
-**Modifier**:
-A named transform applied to a family's units — rotation (`spin`), mirroring (`flip`),
-border-closing (`edge`), the `cross`-specific `interrupted`, the `negative`-specific
-`brick` and `ruled`, the `branch`-specific `rung` and `stagger`, or the
-`parallel`-specific `plied`.
-One route by which a sub-family may come about, not a separate level of the model. Only
-certain modifiers are compatible with each family, and `mosaic` accepts none: a modifier
-constructs a member of a unit space, and every member of that family's space is already
-enumerated.
-_Avoid_: Variant, option, flag
 
 **Rows**:
 The parameter that sets a meander's grid density. It does not change the
@@ -140,10 +132,6 @@ canvas height, which stays fixed; instead it divides that fixed height into
 finer subdivisions, shrinking the grid unit and stroke width as rows
 increases.
 _Avoid_: Row count, height, N
-
-**Repeat count**:
-How many times a family's unit is tiled horizontally across a meander.
-_Avoid_: Width, unit count, columns
 
 **Grid unit**:
 The base spacing a meander's coordinates are built from, derived from canvas
@@ -287,6 +275,36 @@ reports` means the same thing in callidescope, codometer, and codependix: a
 configured destination no longer holds what a fresh run would write. Each
 tool's other `--check` name is its own gating word — `depth`, `limits`,
 `boundaries` — because those are the magnitudes only it measures.
+
+## IC-Suite Layers
+
+The four ic-suite toolchains — conformetry, codometer, callidescope, and
+codependix — will share one five-layer spine, each layer depending only
+downward, plus an optional `nx` plugin layer above `cli` where one exists
+(callidescope and conformetry only). This pull request lands the vocabulary
+first, by design: the `layer:*` tags below arrive with each toolchain's own
+pull request, not with this one, so no package carries one yet. See
+[ADR 0013](docs/adr/0013-name-the-ic-suite-layers.md) for the sharp test that
+decides layer membership, the rejected alternative, and the no-shared-package
+constraint.
+
+| Layer | Tag | Holds | Never holds |
+| --- | --- | --- | --- |
+| **core** | `layer:core` | Domain vocabulary only: result and finding types, error classes, shared enums and unions, analyzer and validator contracts | Services, modules, anything executable |
+| **configuration** | `layer:configuration` | The config file's schema, loading, defaults, and override resolution, **plus CLI flag resolution**, producing one resolved configuration object | Domain result types |
+| **analysis** | `layer:analysis` | What the tool actually does. Per-suite names and per-suite shape | Rendering, command wiring |
+| **output** | `layer:output` | Every render target: JSON, markdown, mermaid, anchor blocks, destination routing, delivery | Analysis |
+| **cli** | `layer:cli` | `*.command.ts` modules and nothing else | Any logic |
+
+**Core-versus-configuration test**:
+Whether a type belongs in `core` or `configuration`: if it describes what the
+tool produced, it is `core`; if it describes what the user wrote in
+`<tool>.config.ts`, it is `configuration`.
+
+The analysis layer is the one layer that deliberately does not converge on a
+shared name — it is governed by a rule instead: one package per independently
+usable analyzer, named for what it analyzes. `agents` and `examples` carry no
+layer tag; neither is in the runtime chain.
 
 ## Publishing
 
