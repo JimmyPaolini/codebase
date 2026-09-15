@@ -5,6 +5,8 @@ import path from "node:path";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
+import { WorkspaceFixtureError } from "../../../testing/workspace-fixture-guard";
+
 import { ConfigurationLoaderService } from "./configuration-loader.service";
 import {
   ConfigurationFileNotFoundError,
@@ -178,6 +180,34 @@ describe(ConfigurationLoaderService, () => {
     const loaded = await service.load({ configurationPath });
 
     expect(loaded?.configuration).toStrictEqual({});
+  });
+
+  it("refuses to evaluate a configuration file inside this workspace", async () => {
+    // The fixture that cost #749 a hundred tool calls: a real, in-workspace
+    // TypeScript configuration, which `jiti` evaluates in a second module
+    // registry and whose import of a sibling package silently doubles that
+    // package's v8 coverage entries. The guard turns that into a failure the
+    // test run names, rather than a coverage number that drifts.
+    await expect(
+      service.load({ configurationPath: "configuration/codometer.config.ts" }),
+    ).rejects.toBeInstanceOf(WorkspaceFixtureError);
+  });
+
+  it("refuses a fixture that imports a workspace package from outside the workspace", async () => {
+    // The same defect reached the other way round: the fixture itself sits in
+    // a temporary directory, but importing a workspace package re-evaluates
+    // that package's source graph in jiti's registry just the same. The entry
+    // path is innocent; the import graph is what corrupts the coverage.
+    const configurationPath = await writeConfigurationFile(
+      "codometer.config.ts",
+      `import { DEFAULT_INPUT_NAME } from "@codometer/configuration";
+
+export default { defaultInput: DEFAULT_INPUT_NAME };`,
+    );
+
+    await expect(service.load({ configurationPath })).rejects.toBeInstanceOf(
+      WorkspaceFixtureError,
+    );
   });
 
   it("finds a configuration file by walking up from a nested directory", async () => {
