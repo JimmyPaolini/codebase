@@ -48,12 +48,12 @@ export class TileEnumerationService {
   // 🏗 Dependency Injection
 
   constructor(
-    @Inject(ConfigService)
-    configService: ConfigService<Environment>,
     @Inject(SymmetryService)
     private readonly symmetryService: SymmetryService,
     @Inject(TileService)
     private readonly tileService: TileService,
+    @Inject(ConfigService)
+    configService: ConfigService<Environment>,
   ) {
     this.edgeBudget =
       configService.get<number>("SWEEP_EDGE_BUDGET") ?? EDGE_BUDGET;

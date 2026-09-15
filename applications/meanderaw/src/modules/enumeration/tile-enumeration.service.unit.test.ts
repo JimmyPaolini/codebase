@@ -164,6 +164,10 @@ describe(TileEnumerationService, () => {
       );
     });
 
+    // 🎯 The schema always supplies a default, so `ConfigService.get` never
+    // actually returns `undefined` for this key in a running application —
+    // this exercises the `??` fallback in isolation, as defensive coding
+    // against `ConfigService`'s own loosely-typed `get` signature.
     it("falls back to today's default when the environment leaves the budget unset", async () => {
       const module = await Test.createTestingModule({
         providers: [

@@ -55,6 +55,7 @@ import { DrawRecordService } from "./draw-record.service";
   controllers: [],
   imports: [
     ConfigModule.forRoot({
+      envFilePath: ".env",
       isGlobal: true,
       validate: (config: Record<string, unknown>) =>
         environmentSchema.parse(config),

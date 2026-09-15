@@ -149,6 +149,10 @@ describe(EnumerationService, () => {
       expect(unconfigured.shapes()).toStrictEqual(service.shapes());
     });
 
+    // 🎯 The schema always supplies a default, so `ConfigService.get` never
+    // actually returns `undefined` for these keys in a running application —
+    // this exercises the `??` fallback in isolation, as defensive coding
+    // against `ConfigService`'s own loosely-typed `get` signature.
     it("falls back to unbounded rows and columns when the environment leaves them unset", async () => {
       const module = await Test.createTestingModule({
         providers: [
