@@ -1,6 +1,6 @@
 import path from "node:path";
 
-import { InputService } from "@codometer/configuration";
+import { ConfigurationService as CodometerConfigurationService } from "@codometer/configuration";
 import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
 
@@ -33,9 +33,9 @@ export class ConfigurationCommand extends CommandRunner {
   // 🏗 Dependency Injection
 
   constructor(
+    private readonly codometerConfigurationService: CodometerConfigurationService,
     private readonly configurationService: ConfigurationService,
     private readonly renderConfigurationService: RenderConfigurationService,
-    private readonly inputService: InputService,
     private readonly logger: LoggerService,
   ) {
     super();
@@ -74,7 +74,7 @@ export class ConfigurationCommand extends CommandRunner {
     flags: "-d, --directory [directory]",
   })
   public parseDirectory(value: unknown): string {
-    return this.inputService.parseDirectoryOption(value);
+    return this.codometerConfigurationService.parseDirectoryOption(value);
   }
 
   /** Parse the output format the listing is rendered in. */
@@ -83,7 +83,7 @@ export class ConfigurationCommand extends CommandRunner {
     flags: "-f, --format [format]",
   })
   public parseFormat(value: unknown): string {
-    return this.inputService.parseDefaultedOption(
+    return this.codometerConfigurationService.parseDefaultedOption(
       value,
       DEFAULT_CONFIGURATION_FORMAT,
     );

@@ -25,7 +25,7 @@ import type {
   TypescriptSymbolCounter,
   TypescriptWalkContext,
 } from "./typescript.types";
-import type { CodometerSymbolModifier } from "@codometer/configuration";
+import type { CodometerSymbolModifier } from "@codometer/core";
 
 /** Walks TypeScript and JavaScript ASTs to collect code metrics. */
 @Injectable()

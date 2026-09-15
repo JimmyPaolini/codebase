@@ -1,5 +1,14 @@
-export { codometerConfigurationSchema } from "./modules/configuration/configuration-schema.constants";
+export {
+  CHECK_LIMITS,
+  CHECK_NAMES,
+  CHECK_REPORTS,
+  CHECK_SEPARATOR,
+  FORMAT_JSON,
+  FORMAT_MARKDOWN,
+  FORMAT_NAMES,
+} from "./modules/configuration/configuration-flags.constants";
 // 📤 Exports
+export { codometerConfigurationSchema } from "./modules/configuration/configuration-schema.constants";
 export {
   CODOMETER_ANALYSES,
   CODOMETER_COMMENT_LANGUAGES,
@@ -7,11 +16,7 @@ export {
   CODOMETER_DOCUMENTATION_UNITS,
   CODOMETER_FORMATS,
   CODOMETER_SEVERITIES,
-  CODOMETER_STATISTIC_GROUPS,
-  CODOMETER_SYMBOL_KINDS,
-  CODOMETER_SYMBOL_MODIFIERS,
   CONFIGURATION_FILE_NAMES,
-  ConfigurationFileNotFoundError,
   DEFAULT_CODEBASE_INPUT,
   DEFAULT_CUSTOM_STATISTIC_COLORS,
   DEFAULT_CUSTOM_STATISTIC_GROUP,
@@ -24,11 +29,8 @@ export {
   DEFAULT_MARKDOWN_END_MARKER,
   DEFAULT_MARKDOWN_START_MARKER,
   DEFAULT_PYTHON_COMMAND,
-  InvalidConfigurationError,
-  InvalidLimitValueError,
   MISSING_FORMAT_MESSAGE,
   REPOSITORY_ROOT_MARKERS,
-  UnknownConfigurationFileTypeError,
 } from "./modules/configuration/configuration.constants";
 export { ConfigurationModule } from "./modules/configuration/configuration.module";
 export { ConfigurationService } from "./modules/configuration/configuration.service";
@@ -48,18 +50,18 @@ export type {
   CodometerMarkdownOutput,
   CodometerOutput,
   CodometerPythonConfiguration,
-  CodometerSeverity,
-  CodometerSymbolKind,
   CodometerSymbolMatcher,
-  CodometerSymbolModifier,
   LoadConfigurationArguments,
+  MeasureCommandOptions,
+  MeasureFormat,
+  ModeSelection,
+  RunMode,
 } from "./modules/configuration/configuration.types";
 export type {
   MarkdownAnchorHelpers,
   WriteMarkdownOutput,
   WriteMarkdownOutputArguments,
 } from "./modules/configuration/output.types";
-
 export type {
   LoadedConfiguration,
   ResolvedCodometerCommentSelector,
@@ -72,23 +74,3 @@ export type {
   ResolvedCodometerOutput,
   ResolvedCodometerPythonConfiguration,
 } from "./modules/configuration/resolved.types";
-export type {
-  CodeStatisticsResult,
-  CodometerStatisticGroup,
-  CssStatistics,
-  CustomStatisticResult,
-  CustomStatisticResultInstance,
-  HclStatistics,
-  JavascriptStatistics,
-  JsonStatistics,
-  JupyterStatistics,
-  MarkdownStatistics,
-  PythonStatistics,
-  ShellStatistics,
-  SqlStatistics,
-  TomlStatistics,
-  TypescriptStatistics,
-  YamlStatistics,
-} from "./modules/configuration/statistics.types";
-export { InputModule } from "./modules/input/input.module";
-export { InputService } from "./modules/input/input.service";

@@ -1,6 +1,11 @@
+import {
+  InvalidConfigurationError,
+  InvalidLimitValueError,
+} from "@codometer/core";
 import { Injectable } from "@nestjs/common";
 import { z } from "zod";
 
+import { ConfigurationFlagsService } from "./configuration-flags.service";
 import { ConfigurationLoaderService } from "./configuration-loader.service";
 import { codometerConfigurationSchema } from "./configuration-schema.constants";
 import {
@@ -16,8 +21,6 @@ import {
   DEFAULT_MARKDOWN_END_MARKER,
   DEFAULT_MARKDOWN_START_MARKER,
   DEFAULT_PYTHON_COMMAND,
-  InvalidConfigurationError,
-  InvalidLimitValueError,
   LIMIT_UNIT_MULTIPLIERS,
   LIMIT_VALUE_PATTERN,
   NEGATION_PREFIX,
@@ -26,12 +29,16 @@ import {
 import type {
   CodometerConfiguration,
   CodometerCustomStatistic,
+  CodometerFormat,
   CodometerInput,
   CodometerJsonOutput,
   CodometerLimit,
   CodometerMarkdownOutput,
   CodometerOutput,
   LoadConfigurationArguments,
+  MeasureCommandOptions,
+  MeasureFormat,
+  ModeSelection,
 } from "./configuration.types";
 import type {
   LoadedConfiguration,
@@ -43,15 +50,20 @@ import type {
   ResolvedCodometerMarkdownOutput,
   ResolvedCodometerOutput,
 } from "./resolved.types";
-import type { CodometerStatisticGroup } from "./statistics.types";
+import type { CodometerStatisticGroup } from "@codometer/core";
 
 /**
  * Loads, validates, and normalizes codometer configuration files.
  *
- * This service owns loading only. What the configuration means — which files
- * an exclusion glob removes, where a badge block is spliced in — belongs to
- * the analyzers that read it, so that reading a configuration file stays free
- * of any knowledge of the repository being measured.
+ * The configuration layer's one public entry point, and the only place that
+ * answers what a run is actually configured to do: the file says what to
+ * measure, and the flags beside it say what to do about what was measured.
+ * Both are read here, so a command injects this and nothing else.
+ *
+ * It owns resolution only. What the configuration means — which files an
+ * exclusion glob removes, where a badge block is spliced in — belongs to the
+ * analyzers that read it, so that reading a configuration stays free of any
+ * knowledge of the repository being measured.
  */
 @Injectable()
 export class ConfigurationService {
@@ -59,6 +71,7 @@ export class ConfigurationService {
 
   constructor(
     private readonly configurationLoaderService: ConfigurationLoaderService,
+    private readonly configurationFlagsService: ConfigurationFlagsService,
   ) {}
 
   // 🔐 Private Fields
@@ -377,6 +390,29 @@ export class ConfigurationService {
   }
 
   /**
+   * Reads an option that carries a default when it was left off.
+   *
+   * The fallback belongs to the command rather than here: two commands that
+   * share the parsing rule for `--format` need not share what they render
+   * when nobody said.
+   */
+  public parseDefaultedOption(value: unknown, fallback: string): string {
+    return this.configurationFlagsService.parseDefaultedOption(value, fallback);
+  }
+
+  // 🚩 Command line
+
+  /** Reads a directory option, falling back to the working directory. */
+  public parseDirectoryOption(value: unknown): string {
+    return this.configurationFlagsService.parseDirectoryOption(value);
+  }
+
+  /** Reads an option that carries text, or nothing at all. */
+  public parseOptionalOption(value: unknown): string | undefined {
+    return this.configurationFlagsService.parseOptionalOption(value);
+  }
+
+  /**
    * Fills in every field a configuration file may leave out.
    *
    * Exposed so a host embedding codometer can hand over a configuration object
@@ -408,5 +444,26 @@ export class ConfigurationService {
         command: configuration.python?.command ?? DEFAULT_PYTHON_COMMAND,
       },
     };
+  }
+
+  /**
+   * Reads `--format` into what the run prints, falling back to the resolved
+   * configuration's own `format` when the flag was left off.
+   */
+  public resolveFormat(
+    value: string | undefined,
+    configuredFormat: CodometerFormat,
+    errors: string[],
+  ): MeasureFormat | undefined {
+    return this.configurationFlagsService.resolveFormat(
+      value,
+      configuredFormat,
+      errors,
+    );
+  }
+
+  /** Reads the flags into what the run writes and what it fails on. */
+  public selectMode(options: MeasureCommandOptions): ModeSelection {
+    return this.configurationFlagsService.selectMode(options);
   }
 }

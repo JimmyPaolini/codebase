@@ -1,11 +1,13 @@
 {
   "dependencies": {
     "@codebase/logger": "workspace:*",
-    "@codometer/changes": "workspace:*",
     "@codometer/configuration": "workspace:*",
+    "@codometer/core": "workspace:*",
+    "@codometer/measurement": "workspace:*",
     "@nestjs/common": "catalog:",
     "reflect-metadata": "catalog:",
-    "tslib": "catalog:"
+    "tslib": "catalog:",
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@golevelup/ts-vitest": "catalog:",

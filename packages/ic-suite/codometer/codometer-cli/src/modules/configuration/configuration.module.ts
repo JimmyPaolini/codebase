@@ -1,8 +1,5 @@
-import {
-  ConfigurationModule as CodometerConfigurationModule,
-  InputModule,
-} from "@codometer/configuration";
-import { DiscoveryModule } from "@codometer/discovery";
+import { ConfigurationModule as CodometerConfigurationModule } from "@codometer/configuration";
+import { DiscoveryModule } from "@codometer/measurement";
 import { Module } from "@nestjs/common";
 
 import { ConfigurationCommand } from "./configuration.command";
@@ -20,7 +17,7 @@ import { RenderConfigurationService } from "./render-configuration.service";
 @Module({
   controllers: [],
   exports: [ConfigurationCommand, ConfigurationService],
-  imports: [CodometerConfigurationModule, DiscoveryModule, InputModule],
+  imports: [CodometerConfigurationModule, DiscoveryModule],
   providers: [
     ConfigurationCommand,
     ConfigurationService,

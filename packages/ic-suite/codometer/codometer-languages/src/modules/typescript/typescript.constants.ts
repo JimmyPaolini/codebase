@@ -6,7 +6,7 @@ import type { TypescriptResult } from "./typescript.types";
 import type {
   CodometerSymbolKind,
   CodometerSymbolModifier,
-} from "@codometer/configuration";
+} from "@codometer/core";
 
 /**
  * The declaration kind each syntax kind is counted as.

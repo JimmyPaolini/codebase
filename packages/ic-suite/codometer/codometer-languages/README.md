@@ -355,15 +355,15 @@ Dependency graphs exported by [codependix](https://github.com/JimmyPaolini/codeb
 <!-- codependix:start name="codependix-nx-projects" -->
 ```mermaid
 graph LR
-  codometer_cli["codometer-cli"]
   codometer_configuration["codometer-configuration"]
-  codometer_customization["codometer-customization"]
+  codometer_core["codometer-core"]
   codometer_languages["codometer-languages"]
+  codometer_measurement["codometer-measurement"]
   logger["logger"]
-  codometer_cli --> codometer_languages
-  codometer_customization --> codometer_languages
   codometer_languages --> codometer_configuration
+  codometer_languages --> codometer_core
   codometer_languages --> logger
+  codometer_measurement --> codometer_languages
   classDef subject fill:#7c3aed,color:#fff,stroke:#4c1d95,stroke-width:2px
   class codometer_languages subject
 ```

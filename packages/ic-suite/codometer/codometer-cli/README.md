@@ -620,13 +620,13 @@ Call stacks traced through `packages/ic-suite/codometer/codometer-cli`, deepest 
 
 | Measure | Value |
 | --- | --- |
-| Callables | 139 |
-| Files | 43 |
-| Calls traced | 166 |
+| Callables | 63 |
+| Files | 25 |
+| Calls traced | 74 |
 | Call stacks | 11 |
 | Deepest stack | 15 |
 | Stacks through recursion | 0 |
-| Unfollowable calls | 5 |
+| Unfollowable calls | 3 |
 
 ### Limits
 
@@ -642,13 +642,13 @@ What this project is judged against, as declared in its own `callidescope.config
 **1. `MeasureCommand.run`** — depth ≥ 15 · decorated-method
 
 ```text
-🚀 MeasureCommand.run(_passedParameters: string[], options: MeasureCommandOptions): Promise<void> [packages/ic-suite/codometer/codometer-cli/src/modules/measure/measure.command.ts:399]
+🚀 MeasureCommand.run(_passedParameters: string[], options: MeasureCommandOptions): Promise<void> [packages/ic-suite/codometer/codometer-cli/src/modules/measure/measure.command.ts:400]
    ↳ Measure the repository and produce every resolved output.
-  └─> MeasureService.measure(args: MeasureArguments): MeasurementResult [packages/ic-suite/codometer/codometer-cli/src/modules/measure/measure.service.ts:313]
+  └─> MeasureService.measure(args: MeasureArguments): MeasurementResult [packages/ic-suite/codometer/codometer-measurement/src/modules/measure/measure.service.ts:312]
      ↳ Measure every input the configuration declares.
-    └─> MeasureService.measureInput(args: MeasureInputArguments): InputMeasurement [packages/ic-suite/codometer/codometer-cli/src/modules/measure/measure.service.ts:254]
+    └─> MeasureService.measureInput(args: MeasureInputArguments): InputMeasurement [packages/ic-suite/codometer/codometer-measurement/src/modules/measure/measure.service.ts:253]
        ↳ Measure one declared input with whichever analyses it asked for.
-      └─> MeasureService.analyzeFiles(args: AnalyzeFilesArguments): CodeStatisticsResult [packages/ic-suite/codometer/codometer-cli/src/modules/measure/measure.service.ts:76]
+      └─> MeasureService.analyzeFiles(args: AnalyzeFilesArguments): CodeStatisticsResult [packages/ic-suite/codometer/codometer-measurement/src/modules/measure/measure.service.ts:75]
          ↳ Run every analyzer over one set of files and shape the result.
         └─> LanguagesService.analyze(args: AnalyzeLanguagesArguments): LanguageResults [packages/ic-suite/codometer/codometer-languages/src/modules/languages/languages.service.ts:56]
            ↳ Analyze every language present in the discovered files.
@@ -676,22 +676,22 @@ What this project is judged against, as declared in its own `callidescope.config
 ```text
 🚀 ChangesCommand.run(_passedParameters: string[], options: ChangesCommandOptions): Promise<void> [packages/ic-suite/codometer/codometer-cli/src/modules/changes/changes.command.ts:97]
    ↳ Diffs every project's report against the baseline, and emits the result.
-  └─> ChangesService.collect(args: CollectRowsArguments): MetricCollection [packages/ic-suite/codometer/codometer-changes/src/modules/changes/changes.service.ts:289]
+  └─> ChangesService.collect(args: CollectRowsArguments): MetricCollection [packages/ic-suite/codometer/codometer-output/src/modules/changes/changes.service.ts:289]
      ↳ Joins every current report to the baseline snapshot.
-    └─> ChangesService.map(…)(reportPath: string): MetricCollection [packages/ic-suite/codometer/codometer-changes/src/modules/changes/changes.service.ts:290]
-      └─> ChangesService.collectProjectRows(args: CollectProjectRowsArguments): MetricCollection [packages/ic-suite/codometer/codometer-changes/src/modules/changes/changes.service.ts:110]
+    └─> ChangesService.map(…)(reportPath: string): MetricCollection [packages/ic-suite/codometer/codometer-output/src/modules/changes/changes.service.ts:290]
+      └─> ChangesService.collectProjectRows(args: CollectProjectRowsArguments): MetricCollection [packages/ic-suite/codometer/codometer-output/src/modules/changes/changes.service.ts:110]
          ↳ Joins one project's current report to its baseline.
-        └─> ChangesService.readBaseline(args: CollectProjectRowsArguments): Map<string, ReportMetric> [packages/ic-suite/codometer/codometer-changes/src/modules/changes/changes.service.ts:154]
+        └─> ChangesService.readBaseline(args: CollectProjectRowsArguments): Map<string, ReportMetric> [packages/ic-suite/codometer/codometer-output/src/modules/changes/changes.service.ts:154]
            ↳ Reads a baseline report into a name-to-metric lookup.
-          └─> ChangesService.readReport(workingDirectory: string, reportPath: string): ProjectReport [packages/ic-suite/codometer/codometer-changes/src/modules/changes/changes.service.ts:240]
+          └─> ChangesService.readReport(workingDirectory: string, reportPath: string): ProjectReport [packages/ic-suite/codometer/codometer-output/src/modules/changes/changes.service.ts:240]
              ↳ Parses a codometer report, tolerating an absent or malformed file.
-            └─> ChangesService.flatMap(…)(…): ReportMetric[] [packages/ic-suite/codometer/codometer-changes/src/modules/changes/changes.service.ts:256]
-              └─> ChangesService.readMetrics(target: ReportTarget): ReportMetric[] [packages/ic-suite/codometer/codometer-changes/src/modules/changes/changes.service.ts:222]
+            └─> ChangesService.flatMap(…)(…): ReportMetric[] [packages/ic-suite/codometer/codometer-output/src/modules/changes/changes.service.ts:256]
+              └─> ChangesService.readMetrics(target: ReportTarget): ReportMetric[] [packages/ic-suite/codometer/codometer-output/src/modules/changes/changes.service.ts:222]
                  ↳ Pulls every metric a target produced out of the report.
-                └─> ChangesService.map(…)(…): { breach: MetricSeverity | undefined; empty: boolean; label: string; limit: number | undefined; name: string; unit: "bytes" | null; value: number; } [packages/ic-suite/codometer/codometer-changes/src/modules/changes/changes.service.ts:223]
-                  └─> ChangesService.readBreach(limits: readonly ReportLimit[]): MetricSeverity | undefined [packages/ic-suite/codometer/codometer-changes/src/modules/changes/changes.service.ts:175]
+                └─> ChangesService.map(…)(…): { breach: MetricSeverity | undefined; empty: boolean; label: string; limit: number | undefined; name: string; unit: "bytes" | null; value: number; } [packages/ic-suite/codometer/codometer-output/src/modules/changes/changes.service.ts:223]
+                  └─> ChangesService.readBreach(limits: readonly ReportLimit[]): MetricSeverity | undefined [packages/ic-suite/codometer/codometer-output/src/modules/changes/changes.service.ts:175]
                      ↳ The severity of the worst limit a metric breached, if it breached one.
-                    └─> ChangesService.filter(…)(…): boolean [packages/ic-suite/codometer/codometer-changes/src/modules/changes/changes.service.ts:178]
+                    └─> ChangesService.filter(…)(…): boolean [packages/ic-suite/codometer/codometer-output/src/modules/changes/changes.service.ts:178]
 ```
 
 **3. `ConfigurationCommand.run`** — depth ≥ 11 · decorated-method
@@ -705,94 +705,108 @@ What this project is judged against, as declared in its own `callidescope.config
        ↳ Finds every configuration file beneath a directory.
       └─> ConfigurationService.resolveWalkExclusions(args: DescribeConfigurationsArguments): Promise<WalkExclusions> [packages/ic-suite/codometer/codometer-cli/src/modules/configuration/configuration.service.ts:116]
          ↳ Resolves the exclusions the walk uses, reporting rather than throwing.
-        └─> ConfigurationService.loadConfigurationFile(args?: LoadConfigurationArguments): Promise<LoadedConfiguration> [packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration.service.ts:355]
+        └─> ConfigurationService.loadConfigurationFile(args?: LoadConfigurationArguments): Promise<LoadedConfiguration> [packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration.service.ts:368]
            ↳ Loads a configuration and says which file answered.
-          └─> ConfigurationService.resolveConfiguration(configuration: CodometerConfiguration): ResolvedCodometerConfiguration [packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration.service.ts:385]
+          └─> ConfigurationService.resolveConfiguration(configuration: CodometerConfiguration): ResolvedCodometerConfiguration [packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration.service.ts:398]
              ↳ Fills in every field a configuration file may leave out.
-            └─> ConfigurationService.resolveLimits(limits: CodometerLimit[] | undefined): ResolvedCodometerLimit[] [packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration.service.ts:258]
+            └─> ConfigurationService.resolveLimits(limits: CodometerLimit[] | undefined): ResolvedCodometerLimit[] [packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration.service.ts:271]
                ↳ Gives every limit its severity and a value read as a number.
-              └─> ConfigurationService.map(…)(…): { label: string | undefined; metric: string; severity: CodometerSeverity; value: number; } [packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration.service.ts:261]
-                └─> ConfigurationService.parseLimitValue(limit: CodometerLimit): number [packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration.service.ts:94]
+              └─> ConfigurationService.map(…)(…): { label: string | undefined; metric: string; severity: CodometerSeverity; value: number; } [packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration.service.ts:274]
+                └─> ConfigurationService.parseLimitValue(limit: CodometerLimit): number [packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration.service.ts:107]
                    ↳ Reads a limit's value, in decimal units when it was written as a string.
-                  └─> ConfigurationService.parseLimitValueText(metric: string, text: string): number [packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration.service.ts:114]
+                  └─> ConfigurationService.parseLimitValueText(metric: string, text: string): number [packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration.service.ts:127]
                      ↳ Reads a limit written as a string, unit and all.
-                    └─> InvalidLimitValueError.constructor(metric: string, value: string): InvalidLimitValueError [packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration.constants.ts:334]
+                    └─> InvalidLimitValueError.constructor(metric: string, value: string): InvalidLimitValueError [packages/ic-suite/codometer/codometer-core/src/lib/errors.constants.ts:35]
 ```
 
 <details>
 <summary>8 more call stacks</summary>
 
-**4. `ChangesCommand.parseDirectory`** — depth 4 · decorated-method
+**4. `ChangesCommand.parseDirectory`** — depth 5 · decorated-method
 
 ```text
 🚀 ChangesCommand.parseDirectory(value: unknown): string [packages/ic-suite/codometer/codometer-cli/src/modules/changes/changes.command.ts:70]
    ↳ Parse the directory to look for codometer reports in.
-  └─> InputService.parseDirectoryOption(value: unknown): string [packages/ic-suite/codometer/codometer-configuration/src/modules/input/input.service.ts:52]
+  └─> ConfigurationService.parseDirectoryOption(value: unknown): string [packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration.service.ts:440]
      ↳ Reads a directory option, falling back to the working directory.
-    └─> InputService.parseDefaultedOption(value: unknown, fallback: string): string [packages/ic-suite/codometer/codometer-configuration/src/modules/input/input.service.ts:41]
-       ↳ Reads an option that carries a default when it was left off.
-      └─> InputService.parseOptionalOption(value: unknown): string | undefined [packages/ic-suite/codometer/codometer-configuration/src/modules/input/input.service.ts:68]
-         ↳ Reads an option that carries text, or nothing at all.
+    └─> ConfigurationFlagsService.parseDirectoryOption(value: unknown): string [packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration-flags.service.ts:138]
+       ↳ Reads a directory option, falling back to the working directory.
+      └─> ConfigurationFlagsService.parseDefaultedOption(value: unknown, fallback: string): string [packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration-flags.service.ts:127]
+         ↳ Reads an option that carries a default when it was left off.
+        └─> ConfigurationFlagsService.parseOptionalOption(value: unknown): string | undefined [packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration-flags.service.ts:154]
+           ↳ Reads an option that carries text, or nothing at all.
 ```
 
-**5. `ConfigurationCommand.parseDirectory`** — depth 4 · decorated-method
+**5. `ConfigurationCommand.parseDirectory`** — depth 5 · decorated-method
 
 ```text
 🚀 ConfigurationCommand.parseDirectory(value: unknown): string [packages/ic-suite/codometer/codometer-cli/src/modules/configuration/configuration.command.ts:72]
    ↳ Parse the directory to look for configuration files beneath.
-  └─> InputService.parseDirectoryOption(value: unknown): string [packages/ic-suite/codometer/codometer-configuration/src/modules/input/input.service.ts:52]
+  └─> ConfigurationService.parseDirectoryOption(value: unknown): string [packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration.service.ts:440]
      ↳ Reads a directory option, falling back to the working directory.
-    └─> InputService.parseDefaultedOption(value: unknown, fallback: string): string [packages/ic-suite/codometer/codometer-configuration/src/modules/input/input.service.ts:41]
-       ↳ Reads an option that carries a default when it was left off.
-      └─> InputService.parseOptionalOption(value: unknown): string | undefined [packages/ic-suite/codometer/codometer-configuration/src/modules/input/input.service.ts:68]
-         ↳ Reads an option that carries text, or nothing at all.
+    └─> ConfigurationFlagsService.parseDirectoryOption(value: unknown): string [packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration-flags.service.ts:138]
+       ↳ Reads a directory option, falling back to the working directory.
+      └─> ConfigurationFlagsService.parseDefaultedOption(value: unknown, fallback: string): string [packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration-flags.service.ts:127]
+         ↳ Reads an option that carries a default when it was left off.
+        └─> ConfigurationFlagsService.parseOptionalOption(value: unknown): string | undefined [packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration-flags.service.ts:154]
+           ↳ Reads an option that carries text, or nothing at all.
 ```
 
-**6. `ConfigurationCommand.parseFormat`** — depth 3 · decorated-method
+**6. `ConfigurationCommand.parseFormat`** — depth 4 · decorated-method
 
 ```text
 🚀 ConfigurationCommand.parseFormat(value: unknown): string [packages/ic-suite/codometer/codometer-cli/src/modules/configuration/configuration.command.ts:81]
    ↳ Parse the output format the listing is rendered in.
-  └─> InputService.parseDefaultedOption(value: unknown, fallback: string): string [packages/ic-suite/codometer/codometer-configuration/src/modules/input/input.service.ts:41]
+  └─> ConfigurationService.parseDefaultedOption(value: unknown, fallback: string): string [packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration.service.ts:435]
      ↳ Reads an option that carries a default when it was left off.
-    └─> InputService.parseOptionalOption(value: unknown): string | undefined [packages/ic-suite/codometer/codometer-configuration/src/modules/input/input.service.ts:68]
-       ↳ Reads an option that carries text, or nothing at all.
+    └─> ConfigurationFlagsService.parseDefaultedOption(value: unknown, fallback: string): string [packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration-flags.service.ts:127]
+       ↳ Reads an option that carries a default when it was left off.
+      └─> ConfigurationFlagsService.parseOptionalOption(value: unknown): string | undefined [packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration-flags.service.ts:154]
+         ↳ Reads an option that carries text, or nothing at all.
 ```
 
-**7. `ChangesCommand.parseBaseline`** — depth 2 · decorated-method
+**7. `ChangesCommand.parseBaseline`** — depth 3 · decorated-method
 
 ```text
 🚀 ChangesCommand.parseBaseline(value: unknown): string | undefined [packages/ic-suite/codometer/codometer-cli/src/modules/changes/changes.command.ts:52]
    ↳ Parse the baseline directory holding a snapshot of the reports.
-  └─> InputService.parseOptionalOption(value: unknown): string | undefined [packages/ic-suite/codometer/codometer-configuration/src/modules/input/input.service.ts:68]
+  └─> ConfigurationService.parseOptionalOption(value: unknown): string | undefined [packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration.service.ts:445]
      ↳ Reads an option that carries text, or nothing at all.
+    └─> ConfigurationFlagsService.parseOptionalOption(value: unknown): string | undefined [packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration-flags.service.ts:154]
+       ↳ Reads an option that carries text, or nothing at all.
 ```
 
-**8. `ChangesCommand.parseBaselineUrl`** — depth 2 · decorated-method
+**8. `ChangesCommand.parseBaselineUrl`** — depth 3 · decorated-method
 
 ```text
 🚀 ChangesCommand.parseBaselineUrl(value: unknown): string | undefined [packages/ic-suite/codometer/codometer-cli/src/modules/changes/changes.command.ts:61]
    ↳ Parse the run URL the baseline came from, linked from the summary.
-  └─> InputService.parseOptionalOption(value: unknown): string | undefined [packages/ic-suite/codometer/codometer-configuration/src/modules/input/input.service.ts:68]
+  └─> ConfigurationService.parseOptionalOption(value: unknown): string | undefined [packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration.service.ts:445]
      ↳ Reads an option that carries text, or nothing at all.
+    └─> ConfigurationFlagsService.parseOptionalOption(value: unknown): string | undefined [packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration-flags.service.ts:154]
+       ↳ Reads an option that carries text, or nothing at all.
 ```
 
-**9. `ChangesCommand.parseMarkdown`** — depth 2 · decorated-method
+**9. `ChangesCommand.parseMarkdown`** — depth 3 · decorated-method
 
 ```text
 🚀 ChangesCommand.parseMarkdown(value: unknown): string | undefined [packages/ic-suite/codometer/codometer-cli/src/modules/changes/changes.command.ts:79]
    ↳ Parse the markdown document the report is spliced into.
-  └─> InputService.parseOptionalOption(value: unknown): string | undefined [packages/ic-suite/codometer/codometer-configuration/src/modules/input/input.service.ts:68]
+  └─> ConfigurationService.parseOptionalOption(value: unknown): string | undefined [packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration.service.ts:445]
      ↳ Reads an option that carries text, or nothing at all.
+    └─> ConfigurationFlagsService.parseOptionalOption(value: unknown): string | undefined [packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration-flags.service.ts:154]
+       ↳ Reads an option that carries text, or nothing at all.
 ```
 
-**10. `ChangesCommand.parseOutput`** — depth 2 · decorated-method
+**10. `ChangesCommand.parseOutput`** — depth 3 · decorated-method
 
 ```text
 🚀 ChangesCommand.parseOutput(value: unknown): string | undefined [packages/ic-suite/codometer/codometer-cli/src/modules/changes/changes.command.ts:88]
    ↳ Parse the file the report is written to on its own.
-  └─> InputService.parseOptionalOption(value: unknown): string | undefined [packages/ic-suite/codometer/codometer-configuration/src/modules/input/input.service.ts:68]
+  └─> ConfigurationService.parseOptionalOption(value: unknown): string | undefined [packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration.service.ts:445]
      ↳ Reads an option that carries text, or nothing at all.
+    └─> ConfigurationFlagsService.parseOptionalOption(value: unknown): string | undefined [packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration-flags.service.ts:154]
+       ↳ Reads an option that carries text, or nothing at all.
 ```
 
 **11. `main`** — depth 2 · module-bootstrap
@@ -810,52 +824,29 @@ What this project is judged against, as declared in its own `callidescope.config
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `MeasureService.measure` | 9 | `CustomizationService.buildCommentCounters`, `CustomizationService.buildSymbolCounters`, `MeasureService.measureInput`, `MeasureService.describeFailure`, `MetricIndexService.index`, `LimitsService.evaluate`, `MeasureService.find(…)`, `MeasureService.map(…)`, `MeasureService.readLimitFailures` | `packages/ic-suite/codometer/codometer-cli/src/modules/measure/measure.service.ts:313` |
-| `MeasureCommand.run` | 9 | `MeasureCommand.resolveWorkingDirectory`, `MeasureCommand.resolveRunPlan`, `RunPlanService.listOutputPaths`, `MeasureCommand.announceOutputPaths`, `MeasureService.measure`, `ReportService.build`, `DeliveryService.deliver`, `RunPlanService.selectScope`, `MeasureCommand.reportFindings` | `packages/ic-suite/codometer/codometer-cli/src/modules/measure/measure.command.ts:399` |
-| `MeasureCommand.resolveRunPlan` | 7 | `RunPlanService.selectMode`, `MeasureCommand.rejectCommandLine`, `MeasureCommand.readConfiguration`, `MeasureCommand.applyInputsOverride`, `RunPlanService.resolveFormat`, `RunPlanService.resolveDestinations`, `RunPlanService.resolveConsoleMarkdown` | `packages/ic-suite/codometer/codometer-cli/src/modules/measure/measure.command.ts:227` |
+| `MeasureCommand.run` | 9 | `MeasureCommand.resolveWorkingDirectory`, `MeasureCommand.resolveRunPlan`, `DestinationsService.listOutputPaths`, `MeasureCommand.announceOutputPaths`, `MeasureService.measure`, `ReportService.build`, `DeliveryService.deliver`, `DestinationsService.selectScope`, `MeasureCommand.reportFindings` | `packages/ic-suite/codometer/codometer-cli/src/modules/measure/measure.command.ts:400` |
+| `MeasureCommand.resolveRunPlan` | 7 | `ConfigurationService.selectMode`, `MeasureCommand.rejectCommandLine`, `MeasureCommand.readConfiguration`, `MeasureCommand.applyInputsOverride`, `ConfigurationService.resolveFormat`, `DestinationsService.resolveDestinations`, `DestinationsService.resolveConsoleMarkdown` | `packages/ic-suite/codometer/codometer-cli/src/modules/measure/measure.command.ts:229` |
+| `ChangesCommand.run` | 5 | `ConfigurationService.parseOptionalOption`, `ConfigurationService.parseDirectoryOption`, `ChangesService.collect`, `RenderService.renderSection`, `DocumentsService.emit` | `packages/ic-suite/codometer/codometer-cli/src/modules/changes/changes.command.ts:97` |
 
 <details>
-<summary>63 more callables</summary>
+<summary>25 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `MeasureService.analyzeFiles` | 6 | `LanguagesService.analyze`, `SizeService.analyze`, `CustomizationService.analyze`, `MeasureService.getFolderCount`, `MeasureService.buildJavascriptStatistics`, `MeasureService.buildTypescriptStatistics` | `packages/ic-suite/codometer/codometer-cli/src/modules/measure/measure.service.ts:76` |
-| `ChangesCommand.run` | 5 | `InputService.parseOptionalOption`, `InputService.parseDirectoryOption`, `ChangesService.collect`, `RenderService.renderSection`, `DocumentsService.emit` | `packages/ic-suite/codometer/codometer-cli/src/modules/changes/changes.command.ts:97` |
-| `LimitsService.resolve` | 5 | `LimitsService.findCandidates`, `UnboundMetricError.constructor`, `LimitsService.describeTargets`, `LimitsService.map(…)`, `EmptyTargetError.constructor` | `packages/ic-suite/codometer/codometer-cli/src/modules/limits/limits.service.ts:156` |
-| `MeasureService.measureInput` | 5 | `MeasureService.discoverInputFiles`, `MeasureService.runsAnalysis`, `MeasureService.analyzeFiles`, `DiscoveryService.categorize`, `SizeService.analyze` | `packages/ic-suite/codometer/codometer-cli/src/modules/measure/measure.service.ts:254` |
 | `ConfigurationService.findConfigurationFiles` | 4 | `ConfigurationService.resolveWalkExclusions`, `DiscoveryService.discoverFiles`, `ConfigurationService.toSorted(…)`, `ConfigurationService.filter(…)` | `packages/ic-suite/codometer/codometer-cli/src/modules/configuration/configuration.service.ts:184` |
 | `ConfigurationCommand.run` | 4 | `ConfigurationService.describeConfigurations`, `ConfigurationCommand.filter(…)`, `RenderConfigurationService.render`, `ConfigurationService.toLimitRows` | `packages/ic-suite/codometer/codometer-cli/src/modules/configuration/configuration.command.ts:108` |
-| `RunPlanService.readCheckNames` | 4 | `RunPlanService.describeAcceptedCheckNames`, `RunPlanService.filter(…)`, `RunPlanService.map(…)`, `RunPlanService.validateCheckNames` | `packages/ic-suite/codometer/codometer-cli/src/modules/run-plan/run-plan.service.ts:82` |
-| `MeasureCommand.reportFindings` | 4 | `MeasureCommand.reportFailures`, `MeasureCommand.reportStaleness`, `MeasureCommand.reportBreaches`, `MeasureCommand.filter(…)` | `packages/ic-suite/codometer/codometer-cli/src/modules/measure/measure.command.ts:190` |
+| `MeasureCommand.reportFindings` | 4 | `MeasureCommand.reportFailures`, `MeasureCommand.reportStaleness`, `MeasureCommand.reportBreaches`, `MeasureCommand.filter(…)` | `packages/ic-suite/codometer/codometer-cli/src/modules/measure/measure.command.ts:192` |
 | `RenderConfigurationService.renderDirectory` | 3 | `RenderConfigurationService.renderNames`, `RenderConfigurationService.map(…)`, `RenderConfigurationService.map(…)` | `packages/ic-suite/codometer/codometer-cli/src/modules/configuration/render-configuration.service.ts:36` |
 | `RenderConfigurationService.renderLimitsTable` | 3 | `RenderConfigurationService.renderRow`, `RenderConfigurationService.map(…)`, `RenderConfigurationService.map(…)` | `packages/ic-suite/codometer/codometer-cli/src/modules/configuration/render-configuration.service.ts:64` |
 | `RenderConfigurationService.render` | 3 | `RenderConfigurationService.renderRootError`, `RenderConfigurationService.renderLimitsTable`, `RenderConfigurationService.map(…)` | `packages/ic-suite/codometer/codometer-cli/src/modules/configuration/render-configuration.service.ts:117` |
-| `DeliveryService.deliverConsole` | 3 | `JsonService.render`, `MarkdownService.renderBlock`, `DeliveryService.readTargetSizes` | `packages/ic-suite/codometer/codometer-cli/src/modules/delivery/delivery.service.ts:46` |
-| `DeliveryService.deliverMarkdown` | 3 | `DeliveryService.touchesFiles`, `MarkdownService.sync`, `DeliveryService.readTargetSizes` | `packages/ic-suite/codometer/codometer-cli/src/modules/delivery/delivery.service.ts:102` |
-| `DeliveryService.deliver` | 3 | `DeliveryService.deliverConsole`, `DeliveryService.deliverJson`, `DeliveryService.deliverMarkdown` | `packages/ic-suite/codometer/codometer-cli/src/modules/delivery/delivery.service.ts:164` |
-| `LimitsService.findDefaultCandidate` | 3 | `UnboundMetricError.constructor`, `LimitsService.describeTargets`, `LimitsService.bind` | `packages/ic-suite/codometer/codometer-cli/src/modules/limits/limits.service.ts:124` |
-| `ReportService.buildMetrics` | 3 | `ReportService.buildMetricName`, `ReportService.map(…)`, `ReportService.readUnit` | `packages/ic-suite/codometer/codometer-cli/src/modules/report/report.service.ts:52` |
-| `MeasureService.discoverInputFiles` | 3 | `DiscoveryService.discoverFiles`, `InputsService.matchFiles`, `MeasureService.excludeOutputPaths` | `packages/ic-suite/codometer/codometer-cli/src/modules/measure/measure.service.ts:190` |
-| `MeasureCommand.reportBreaches` | 3 | `MeasureCommand.filter(…)`, `MeasureCommand.filter(…)`, `MeasureCommand.filter(…)` | `packages/ic-suite/codometer/codometer-cli/src/modules/measure/measure.command.ts:143` |
+| `MeasureCommand.reportBreaches` | 3 | `MeasureCommand.filter(…)`, `MeasureCommand.filter(…)`, `MeasureCommand.filter(…)` | `packages/ic-suite/codometer/codometer-cli/src/modules/measure/measure.command.ts:145` |
 | `ConfigurationService.formatLimitValue` | 2 | `formatBytes`, `formatCount` | `packages/ic-suite/codometer/codometer-cli/src/modules/configuration/configuration.service.ts:97` |
 | `ConfigurationService.describeConfigurations` | 2 | `ConfigurationService.findConfigurationFiles`, `ConfigurationService.describeConfiguration` | `packages/ic-suite/codometer/codometer-cli/src/modules/configuration/configuration.service.ts:151` |
-| `DeliveryService.deliverJson` | 2 | `DeliveryService.touchesFiles`, `JsonService.sync` | `packages/ic-suite/codometer/codometer-cli/src/modules/delivery/delivery.service.ts:73` |
-| `LimitsService.findCandidates` | 2 | `LimitsService.bind`, `LimitsService.findDefaultCandidate` | `packages/ic-suite/codometer/codometer-cli/src/modules/limits/limits.service.ts:86` |
-| `LimitsService.evaluate` | 2 | `LimitsService.resolve`, `LimitsService.describeFailure` | `packages/ic-suite/codometer/codometer-cli/src/modules/limits/limits.service.ts:200` |
-| `MetricIndexService.buildTargetIndex` | 2 | `MetricIndexService.addMetric`, `MetricIndexService.indexLanguage` | `packages/ic-suite/codometer/codometer-cli/src/modules/limits/metric-index.service.ts:67` |
-| `MetricIndexService.indexCounters` | 2 | `MetricIndexService.addMetric`, `MetricIndexService.isCounterGroup` | `packages/ic-suite/codometer/codometer-cli/src/modules/limits/metric-index.service.ts:111` |
-| `MetricIndexService.indexLanguage` | 2 | `MetricIndexService.indexCounters`, `MetricIndexService.addMetric` | `packages/ic-suite/codometer/codometer-cli/src/modules/limits/metric-index.service.ts:135` |
-| `MetricIndexService.index` | 2 | `MetricIndexService.describeDuplicate`, `MetricIndexService.buildTargetIndex` | `packages/ic-suite/codometer/codometer-cli/src/modules/limits/metric-index.service.ts:168` |
-| `ReportService.build` | 2 | `ReportService.indexLimits`, `ReportService.buildMetrics` | `packages/ic-suite/codometer/codometer-cli/src/modules/report/report.service.ts:121` |
-| `RunPlanService.resolveMarkdown` | 2 | `RunPlanService.findConfiguredOutput`, `RunPlanService.resolvePath` | `packages/ic-suite/codometer/codometer-cli/src/modules/run-plan/run-plan.service.ts:172` |
-| `RunPlanService.listOutputPaths` | 2 | `RunPlanService.map(…)`, `RunPlanService.filter(…)` | `packages/ic-suite/codometer/codometer-cli/src/modules/run-plan/run-plan.service.ts:262` |
-| `RunPlanService.resolveDestinations` | 2 | `RunPlanService.resolveJson`, `RunPlanService.resolveMarkdown` | `packages/ic-suite/codometer/codometer-cli/src/modules/run-plan/run-plan.service.ts:305` |
-| `RunPlanService.resolveFormat` | 2 | `RunPlanService.find(…)`, `RunPlanService.map(…)` | `packages/ic-suite/codometer/codometer-cli/src/modules/run-plan/run-plan.service.ts:328` |
-| `ChangesCommand.parseBaseline` | 1 | `InputService.parseOptionalOption` | `packages/ic-suite/codometer/codometer-cli/src/modules/changes/changes.command.ts:52` |
-| `ChangesCommand.parseBaselineUrl` | 1 | `InputService.parseOptionalOption` | `packages/ic-suite/codometer/codometer-cli/src/modules/changes/changes.command.ts:61` |
-| `ChangesCommand.parseDirectory` | 1 | `InputService.parseDirectoryOption` | `packages/ic-suite/codometer/codometer-cli/src/modules/changes/changes.command.ts:70` |
-| `ChangesCommand.parseMarkdown` | 1 | `InputService.parseOptionalOption` | `packages/ic-suite/codometer/codometer-cli/src/modules/changes/changes.command.ts:79` |
-| `ChangesCommand.parseOutput` | 1 | `InputService.parseOptionalOption` | `packages/ic-suite/codometer/codometer-cli/src/modules/changes/changes.command.ts:88` |
+| `ChangesCommand.parseBaseline` | 1 | `ConfigurationService.parseOptionalOption` | `packages/ic-suite/codometer/codometer-cli/src/modules/changes/changes.command.ts:52` |
+| `ChangesCommand.parseBaselineUrl` | 1 | `ConfigurationService.parseOptionalOption` | `packages/ic-suite/codometer/codometer-cli/src/modules/changes/changes.command.ts:61` |
+| `ChangesCommand.parseDirectory` | 1 | `ConfigurationService.parseDirectoryOption` | `packages/ic-suite/codometer/codometer-cli/src/modules/changes/changes.command.ts:70` |
+| `ChangesCommand.parseMarkdown` | 1 | `ConfigurationService.parseOptionalOption` | `packages/ic-suite/codometer/codometer-cli/src/modules/changes/changes.command.ts:79` |
+| `ChangesCommand.parseOutput` | 1 | `ConfigurationService.parseOptionalOption` | `packages/ic-suite/codometer/codometer-cli/src/modules/changes/changes.command.ts:88` |
 | `ConfigurationService.describeConfiguration` | 1 | `ConfigurationService.loadConfigurationFile` | `packages/ic-suite/codometer/codometer-cli/src/modules/configuration/configuration.service.ts:62` |
 | `ConfigurationService.resolveWalkExclusions` | 1 | `ConfigurationService.loadConfigurationFile` | `packages/ic-suite/codometer/codometer-cli/src/modules/configuration/configuration.service.ts:116` |
 | `ConfigurationService.toLimitRows` | 1 | `ConfigurationService.flatMap(…)` | `packages/ic-suite/codometer/codometer-cli/src/modules/configuration/configuration.service.ts:203` |
@@ -863,24 +854,9 @@ What this project is judged against, as declared in its own `callidescope.config
 | `ConfigurationService.map(…)` | 1 | `ConfigurationService.formatLimitValue` | `packages/ic-suite/codometer/codometer-cli/src/modules/configuration/configuration.service.ts:207` |
 | `RenderConfigurationService.map(…)` | 1 | `RenderConfigurationService.renderRow` | `packages/ic-suite/codometer/codometer-cli/src/modules/configuration/render-configuration.service.ts:72` |
 | `RenderConfigurationService.map(…)` | 1 | `RenderConfigurationService.renderDirectory` | `packages/ic-suite/codometer/codometer-cli/src/modules/configuration/render-configuration.service.ts:144` |
-| `ConfigurationCommand.parseDirectory` | 1 | `InputService.parseDirectoryOption` | `packages/ic-suite/codometer/codometer-cli/src/modules/configuration/configuration.command.ts:72` |
-| `ConfigurationCommand.parseFormat` | 1 | `InputService.parseDefaultedOption` | `packages/ic-suite/codometer/codometer-cli/src/modules/configuration/configuration.command.ts:81` |
-| `DeliveryService.readTargetSizes` | 1 | `DeliveryService.flatMap(…)` | `packages/ic-suite/codometer/codometer-cli/src/modules/delivery/delivery.service.ts:137` |
-| `LimitsService.bind` | 1 | `UnboundMetricError.constructor` | `packages/ic-suite/codometer/codometer-cli/src/modules/limits/limits.service.ts:41` |
-| `LimitsService.describeTargets` | 1 | `LimitsService.map(…)` | `packages/ic-suite/codometer/codometer-cli/src/modules/limits/limits.service.ts:72` |
-| `LimitsService.map(…)` | 1 | `LimitsService.describeBinding` | `packages/ic-suite/codometer/codometer-cli/src/modules/limits/limits.service.ts:169` |
-| `ReportService.map(…)` | 1 | `ReportService.buildLimit` | `packages/ic-suite/codometer/codometer-cli/src/modules/report/report.service.ts:64` |
-| `ReportService.indexLimits` | 1 | `ReportService.buildMetricName` | `packages/ic-suite/codometer/codometer-cli/src/modules/report/report.service.ts:88` |
-| `RunPlanService.describeAcceptedCheckNames` | 1 | `RunPlanService.map(…)` | `packages/ic-suite/codometer/codometer-cli/src/modules/run-plan/run-plan.service.ts:60` |
-| `RunPlanService.findConfiguredOutput` | 1 | `RunPlanService.find(…)` | `packages/ic-suite/codometer/codometer-cli/src/modules/run-plan/run-plan.service.ts:65` |
-| `RunPlanService.resolveJson` | 1 | `RunPlanService.findConfiguredOutput` | `packages/ic-suite/codometer/codometer-cli/src/modules/run-plan/run-plan.service.ts:114` |
-| `RunPlanService.validateCheckNames` | 1 | `RunPlanService.describeAcceptedCheckNames` | `packages/ic-suite/codometer/codometer-cli/src/modules/run-plan/run-plan.service.ts:237` |
-| `RunPlanService.resolveConsoleMarkdown` | 1 | `RunPlanService.resolveMarkdown` | `packages/ic-suite/codometer/codometer-cli/src/modules/run-plan/run-plan.service.ts:290` |
-| `RunPlanService.selectMode` | 1 | `RunPlanService.readCheckNames` | `packages/ic-suite/codometer/codometer-cli/src/modules/run-plan/run-plan.service.ts:358` |
-| `RunPlanService.selectScope` | 1 | `RunPlanService.some(…)` | `packages/ic-suite/codometer/codometer-cli/src/modules/run-plan/run-plan.service.ts:386` |
-| `MeasureService.excludeOutputPaths` | 1 | `MeasureService.filter(…)` | `packages/ic-suite/codometer/codometer-cli/src/modules/measure/measure.service.ts:217` |
-| `MeasureService.readLimitFailures` | 1 | `MeasureService.map(…)` | `packages/ic-suite/codometer/codometer-cli/src/modules/measure/measure.service.ts:283` |
-| `MeasureCommand.readConfiguration` | 1 | `ConfigurationService.loadConfiguration` | `packages/ic-suite/codometer/codometer-cli/src/modules/measure/measure.command.ts:112` |
+| `ConfigurationCommand.parseDirectory` | 1 | `ConfigurationService.parseDirectoryOption` | `packages/ic-suite/codometer/codometer-cli/src/modules/configuration/configuration.command.ts:72` |
+| `ConfigurationCommand.parseFormat` | 1 | `ConfigurationService.parseDefaultedOption` | `packages/ic-suite/codometer/codometer-cli/src/modules/configuration/configuration.command.ts:81` |
+| `MeasureCommand.readConfiguration` | 1 | `ConfigurationService.loadConfiguration` | `packages/ic-suite/codometer/codometer-cli/src/modules/measure/measure.command.ts:114` |
 | `main` | 1 | `withDefaultCommand` | `packages/ic-suite/codometer/codometer-cli/src/main.ts:26` |
 
 </details>
@@ -895,28 +871,24 @@ Dependency graphs exported by [codependix](https://github.com/JimmyPaolini/codeb
 <!-- codependix:start name="codependix-nx-projects" -->
 ```mermaid
 graph LR
-  codometer_changes["codometer-changes"]
   codometer_cli["codometer-cli"]
   codometer_configuration["codometer-configuration"]
-  codometer_customization["codometer-customization"]
-  codometer_discovery["codometer-discovery"]
+  codometer_core["codometer-core"]
   codometer_examples["codometer-examples"]
-  codometer_languages["codometer-languages"]
+  codometer_measurement["codometer-measurement"]
   codometer_output["codometer-output"]
-  codometer_size["codometer-size"]
   logger["logger"]
-  codometer_cli --> codometer_changes
   codometer_cli --> codometer_configuration
-  codometer_cli --> codometer_customization
-  codometer_cli --> codometer_discovery
-  codometer_cli --> codometer_languages
+  codometer_cli --> codometer_core
+  codometer_cli --> codometer_measurement
   codometer_cli --> codometer_output
-  codometer_cli --> codometer_size
   codometer_cli --> logger
-  codometer_examples --> codometer_cli
+  codometer_examples -.-> codometer_cli
   classDef subject fill:#7c3aed,color:#fff,stroke:#4c1d95,stroke-width:2px
   class codometer_cli subject
 ```
+
+_Dashed edges are dependencies Nx inferred from configuration rather than from code._
 <!-- codependix:end name="codependix-nx-projects" -->
 
 ### NestJS Module Graph
@@ -931,6 +903,7 @@ flowchart LR
   CssModule
   CustomizationModule
   DeliveryModule
+  DestinationsModule
   DiscoveryModule
   DocumentsModule
   HclModule
@@ -947,7 +920,6 @@ flowchart LR
   PythonModule
   RenderModule
   ReportModule
-  RunPlanModule
   ShellModule
   SizeModule
   SqlModule
@@ -981,23 +953,24 @@ flowchart LR
   MainModule --> ChangesModule
   MainModule --> ConfigurationModule
   MainModule --> ConfigurationModule
-  MainModule --> CustomizationModule
   MainModule --> DiscoveryModule
   MainModule --> DiscoveryModule
   MainModule --> InputModule
   MainModule --> JsonModule
-  MainModule --> LanguagesModule
   MainModule --> MarkdownModule
   MainModule --> MeasureModule
   MeasureModule --> ConfigurationModule
+  MeasureModule --> ConfigurationModule
   MeasureModule --> CustomizationModule
   MeasureModule --> DeliveryModule
+  MeasureModule --> DestinationsModule
   MeasureModule --> DiscoveryModule
+  MeasureModule --> InputModule
   MeasureModule --> InputsModule
   MeasureModule --> LanguagesModule
   MeasureModule --> LimitsModule
+  MeasureModule --> MeasureModule
   MeasureModule --> ReportModule
-  MeasureModule --> RunPlanModule
   MeasureModule --> SizeModule
   TypescriptModule --> CommentsModule
 ```
@@ -1035,37 +1008,11 @@ graph LR
   file_src_modules_configuration_configuration_types_ts["src/modules/configuration/configuration.types.ts"]
   file_src_modules_configuration_render_configuration_service_ts["src/modules/configuration/render-configuration.service.ts"]
   file_src_modules_configuration_render_configuration_service_unit_test_ts["src/modules/configuration/render-configuration.service.unit.test.ts"]
-  file_src_modules_delivery_delivery_constants_ts["src/modules/delivery/delivery.constants.ts"]
-  file_src_modules_delivery_delivery_module_ts["src/modules/delivery/delivery.module.ts"]
-  file_src_modules_delivery_delivery_service_ts["src/modules/delivery/delivery.service.ts"]
-  file_src_modules_delivery_delivery_service_unit_test_ts["src/modules/delivery/delivery.service.unit.test.ts"]
-  file_src_modules_delivery_delivery_types_ts["src/modules/delivery/delivery.types.ts"]
-  file_src_modules_limits_limits_constants_ts["src/modules/limits/limits.constants.ts"]
-  file_src_modules_limits_limits_module_ts["src/modules/limits/limits.module.ts"]
-  file_src_modules_limits_limits_service_integration_test_ts["src/modules/limits/limits.service.integration.test.ts"]
-  file_src_modules_limits_limits_service_ts["src/modules/limits/limits.service.ts"]
-  file_src_modules_limits_limits_service_unit_test_ts["src/modules/limits/limits.service.unit.test.ts"]
-  file_src_modules_limits_limits_types_ts["src/modules/limits/limits.types.ts"]
-  file_src_modules_limits_metric_index_service_ts["src/modules/limits/metric-index.service.ts"]
-  file_src_modules_limits_metric_index_service_unit_test_ts["src/modules/limits/metric-index.service.unit.test.ts"]
   file_src_modules_measure_measure_command_integration_test_ts["src/modules/measure/measure.command.integration.test.ts"]
   file_src_modules_measure_measure_command_ts["src/modules/measure/measure.command.ts"]
   file_src_modules_measure_measure_command_unit_test_ts["src/modules/measure/measure.command.unit.test.ts"]
-  file_src_modules_measure_measure_constants_ts["src/modules/measure/measure.constants.ts"]
   file_src_modules_measure_measure_module_ts["src/modules/measure/measure.module.ts"]
-  file_src_modules_measure_measure_service_ts["src/modules/measure/measure.service.ts"]
-  file_src_modules_measure_measure_service_unit_test_ts["src/modules/measure/measure.service.unit.test.ts"]
   file_src_modules_measure_measure_types_ts["src/modules/measure/measure.types.ts"]
-  file_src_modules_report_report_constants_ts["src/modules/report/report.constants.ts"]
-  file_src_modules_report_report_module_ts["src/modules/report/report.module.ts"]
-  file_src_modules_report_report_service_ts["src/modules/report/report.service.ts"]
-  file_src_modules_report_report_service_unit_test_ts["src/modules/report/report.service.unit.test.ts"]
-  file_src_modules_report_report_types_ts["src/modules/report/report.types.ts"]
-  file_src_modules_run_plan_run_plan_constants_ts["src/modules/run-plan/run-plan.constants.ts"]
-  file_src_modules_run_plan_run_plan_module_ts["src/modules/run-plan/run-plan.module.ts"]
-  file_src_modules_run_plan_run_plan_service_ts["src/modules/run-plan/run-plan.service.ts"]
-  file_src_modules_run_plan_run_plan_service_unit_test_ts["src/modules/run-plan/run-plan.service.unit.test.ts"]
-  file_src_modules_run_plan_run_plan_types_ts["src/modules/run-plan/run-plan.types.ts"]
   file_src_repl_ts["src/repl.ts"]
   file_src_repl_unit_test_ts["src/repl.unit.test.ts"]
   file_testing_fixture_tree_ts["testing/fixture-tree.ts"]
@@ -1074,7 +1021,6 @@ graph LR
   file_testing_target_tree_ts["testing/target-tree.ts"]
   file_vitest_config_ts["vitest.config.ts"]
   file_src_main_end_to_end_test_ts --> file_src_constants_ts
-  file_src_main_end_to_end_test_ts --> file_src_modules_report_report_types_ts
   file_src_main_end_to_end_test_ts --> file_testing_fixture_tree_ts
   file_src_main_module_ts --> file_src_constants_ts
   file_src_main_module_ts --> file_src_modules_changes_changes_module_ts
@@ -1103,93 +1049,14 @@ graph LR
   file_src_modules_configuration_render_configuration_service_ts --> file_src_modules_configuration_configuration_types_ts
   file_src_modules_configuration_render_configuration_service_unit_test_ts --> file_src_modules_configuration_configuration_types_ts
   file_src_modules_configuration_render_configuration_service_unit_test_ts --> file_src_modules_configuration_render_configuration_service_ts
-  file_src_modules_delivery_delivery_constants_ts --> file_src_modules_run_plan_run_plan_types_ts
-  file_src_modules_delivery_delivery_module_ts --> file_src_modules_delivery_delivery_service_ts
-  file_src_modules_delivery_delivery_service_ts --> file_src_modules_delivery_delivery_constants_ts
-  file_src_modules_delivery_delivery_service_ts --> file_src_modules_delivery_delivery_types_ts
-  file_src_modules_delivery_delivery_service_ts --> file_src_modules_measure_measure_types_ts
-  file_src_modules_delivery_delivery_service_ts --> file_src_modules_run_plan_run_plan_types_ts
-  file_src_modules_delivery_delivery_service_unit_test_ts --> file_src_modules_delivery_delivery_service_ts
-  file_src_modules_delivery_delivery_service_unit_test_ts --> file_src_modules_measure_measure_types_ts
-  file_src_modules_delivery_delivery_service_unit_test_ts --> file_src_modules_run_plan_run_plan_types_ts
-  file_src_modules_delivery_delivery_service_unit_test_ts --> file_testing_mocks_ts
-  file_src_modules_delivery_delivery_types_ts --> file_src_modules_measure_measure_types_ts
-  file_src_modules_delivery_delivery_types_ts --> file_src_modules_report_report_types_ts
-  file_src_modules_delivery_delivery_types_ts --> file_src_modules_run_plan_run_plan_types_ts
-  file_src_modules_limits_limits_module_ts --> file_src_modules_limits_limits_service_ts
-  file_src_modules_limits_limits_module_ts --> file_src_modules_limits_metric_index_service_ts
-  file_src_modules_limits_limits_service_integration_test_ts --> file_src_modules_limits_limits_service_ts
-  file_src_modules_limits_limits_service_integration_test_ts --> file_src_modules_limits_limits_types_ts
-  file_src_modules_limits_limits_service_integration_test_ts --> file_src_modules_limits_metric_index_service_ts
-  file_src_modules_limits_limits_service_integration_test_ts --> file_testing_fixture_tree_ts
-  file_src_modules_limits_limits_service_integration_test_ts --> file_testing_mocks_ts
-  file_src_modules_limits_limits_service_ts --> file_src_modules_limits_limits_constants_ts
-  file_src_modules_limits_limits_service_ts --> file_src_modules_limits_limits_types_ts
-  file_src_modules_limits_limits_service_unit_test_ts --> file_src_modules_limits_limits_service_ts
-  file_src_modules_limits_limits_service_unit_test_ts --> file_src_modules_limits_limits_types_ts
-  file_src_modules_limits_limits_service_unit_test_ts --> file_src_modules_limits_metric_index_service_ts
-  file_src_modules_limits_limits_service_unit_test_ts --> file_testing_mocks_ts
-  file_src_modules_limits_metric_index_service_ts --> file_src_modules_limits_limits_constants_ts
-  file_src_modules_limits_metric_index_service_ts --> file_src_modules_limits_limits_types_ts
-  file_src_modules_limits_metric_index_service_unit_test_ts --> file_src_modules_limits_limits_types_ts
-  file_src_modules_limits_metric_index_service_unit_test_ts --> file_src_modules_limits_metric_index_service_ts
-  file_src_modules_limits_metric_index_service_unit_test_ts --> file_testing_mocks_ts
   file_src_modules_measure_measure_command_integration_test_ts --> file_src_main_module_ts
   file_src_modules_measure_measure_command_integration_test_ts --> file_src_modules_measure_measure_command_ts
-  file_src_modules_measure_measure_command_integration_test_ts --> file_src_modules_report_report_types_ts
   file_src_modules_measure_measure_command_integration_test_ts --> file_testing_fixture_tree_ts
-  file_src_modules_measure_measure_command_ts --> file_src_modules_delivery_delivery_service_ts
-  file_src_modules_measure_measure_command_ts --> file_src_modules_measure_measure_service_ts
   file_src_modules_measure_measure_command_ts --> file_src_modules_measure_measure_types_ts
-  file_src_modules_measure_measure_command_ts --> file_src_modules_report_report_service_ts
-  file_src_modules_measure_measure_command_ts --> file_src_modules_run_plan_run_plan_constants_ts
-  file_src_modules_measure_measure_command_ts --> file_src_modules_run_plan_run_plan_service_ts
-  file_src_modules_measure_measure_command_ts --> file_src_modules_run_plan_run_plan_types_ts
-  file_src_modules_measure_measure_command_unit_test_ts --> file_src_modules_delivery_delivery_service_ts
-  file_src_modules_measure_measure_command_unit_test_ts --> file_src_modules_limits_limits_types_ts
   file_src_modules_measure_measure_command_unit_test_ts --> file_src_modules_measure_measure_command_ts
-  file_src_modules_measure_measure_command_unit_test_ts --> file_src_modules_measure_measure_service_ts
-  file_src_modules_measure_measure_command_unit_test_ts --> file_src_modules_measure_measure_types_ts
-  file_src_modules_measure_measure_command_unit_test_ts --> file_src_modules_report_report_service_ts
-  file_src_modules_measure_measure_command_unit_test_ts --> file_src_modules_run_plan_run_plan_service_ts
-  file_src_modules_measure_measure_command_unit_test_ts --> file_src_modules_run_plan_run_plan_types_ts
   file_src_modules_measure_measure_command_unit_test_ts --> file_testing_mocks_ts
-  file_src_modules_measure_measure_module_ts --> file_src_modules_delivery_delivery_module_ts
-  file_src_modules_measure_measure_module_ts --> file_src_modules_limits_limits_module_ts
   file_src_modules_measure_measure_module_ts --> file_src_modules_measure_measure_command_ts
-  file_src_modules_measure_measure_module_ts --> file_src_modules_measure_measure_service_ts
-  file_src_modules_measure_measure_module_ts --> file_src_modules_report_report_module_ts
-  file_src_modules_measure_measure_module_ts --> file_src_modules_run_plan_run_plan_module_ts
-  file_src_modules_measure_measure_service_ts --> file_src_modules_limits_limits_service_ts
-  file_src_modules_measure_measure_service_ts --> file_src_modules_limits_limits_types_ts
-  file_src_modules_measure_measure_service_ts --> file_src_modules_limits_metric_index_service_ts
-  file_src_modules_measure_measure_service_ts --> file_src_modules_measure_measure_constants_ts
-  file_src_modules_measure_measure_service_ts --> file_src_modules_measure_measure_types_ts
-  file_src_modules_measure_measure_service_unit_test_ts --> file_src_modules_limits_limits_service_ts
-  file_src_modules_measure_measure_service_unit_test_ts --> file_src_modules_limits_metric_index_service_ts
-  file_src_modules_measure_measure_service_unit_test_ts --> file_src_modules_measure_measure_service_ts
-  file_src_modules_measure_measure_service_unit_test_ts --> file_testing_mocks_ts
-  file_src_modules_measure_measure_types_ts --> file_src_modules_limits_limits_types_ts
-  file_src_modules_report_report_module_ts --> file_src_modules_report_report_service_ts
-  file_src_modules_report_report_service_ts --> file_src_modules_limits_limits_types_ts
-  file_src_modules_report_report_service_ts --> file_src_modules_report_report_constants_ts
-  file_src_modules_report_report_service_ts --> file_src_modules_report_report_types_ts
-  file_src_modules_report_report_service_unit_test_ts --> file_src_modules_limits_limits_types_ts
-  file_src_modules_report_report_service_unit_test_ts --> file_src_modules_report_report_service_ts
-  file_src_modules_report_report_service_unit_test_ts --> file_src_modules_report_report_types_ts
-  file_src_modules_report_report_types_ts --> file_src_modules_limits_limits_types_ts
-  file_src_modules_report_report_types_ts --> file_src_modules_measure_measure_types_ts
-  file_src_modules_run_plan_run_plan_module_ts --> file_src_modules_run_plan_run_plan_service_ts
-  file_src_modules_run_plan_run_plan_service_ts --> file_src_modules_measure_measure_types_ts
-  file_src_modules_run_plan_run_plan_service_ts --> file_src_modules_run_plan_run_plan_constants_ts
-  file_src_modules_run_plan_run_plan_service_ts --> file_src_modules_run_plan_run_plan_types_ts
-  file_src_modules_run_plan_run_plan_service_unit_test_ts --> file_src_modules_measure_measure_types_ts
-  file_src_modules_run_plan_run_plan_service_unit_test_ts --> file_src_modules_run_plan_run_plan_service_ts
-  file_src_modules_run_plan_run_plan_service_unit_test_ts --> file_src_modules_run_plan_run_plan_types_ts
-  file_src_modules_run_plan_run_plan_types_ts --> file_src_modules_measure_measure_types_ts
-  file_src_modules_run_plan_run_plan_types_ts --> file_src_modules_run_plan_run_plan_constants_ts
   file_src_repl_ts --> file_src_main_module_ts
-  file_testing_mocks_ts --> file_src_modules_report_report_types_ts
 ```
 <!-- codependix:end name="codependix-file-imports" -->
 

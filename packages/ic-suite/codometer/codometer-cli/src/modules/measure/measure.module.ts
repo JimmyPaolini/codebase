@@ -1,39 +1,35 @@
 import { ConfigurationModule } from "@codometer/configuration";
-import { CustomizationModule } from "@codometer/customization";
-import { DiscoveryModule, InputsModule } from "@codometer/discovery";
-import { LanguagesModule } from "@codometer/languages";
-import { SizeModule } from "@codometer/size";
+import { MeasureModule as CodometerMeasureModule } from "@codometer/measurement";
+import {
+  DeliveryModule,
+  DestinationsModule,
+  ReportModule,
+} from "@codometer/output";
 import { Module } from "@nestjs/common";
 
 import { LoggerModule } from "@codebase/logger";
 
-import { DeliveryModule } from "../delivery/delivery.module";
-import { LimitsModule } from "../limits/limits.module";
-import { ReportModule } from "../report/report.module";
-import { RunPlanModule } from "../run-plan/run-plan.module";
-
 import { MeasureCommand } from "./measure.command";
-import { MeasureService } from "./measure.service";
 
 /**
- * NestJS module that wires the measure command and its measurement services.
+ * NestJS module that wires the measure command to the layers it composes.
+ *
+ * Nothing but wiring: the configuration layer reads the command line and the
+ * configuration file, the measurement layer counts, and the output layer
+ * resolves destinations, builds the report, and delivers it. The command
+ * calls them in order and sets an exit code.
  */
 @Module({
   controllers: [],
-  exports: [MeasureCommand, MeasureService],
+  exports: [MeasureCommand],
   imports: [
+    CodometerMeasureModule,
     ConfigurationModule,
-    CustomizationModule,
     DeliveryModule,
-    DiscoveryModule,
-    InputsModule,
-    LanguagesModule,
-    LimitsModule,
+    DestinationsModule,
     LoggerModule,
     ReportModule,
-    RunPlanModule,
-    SizeModule,
   ],
-  providers: [MeasureCommand, MeasureService],
+  providers: [MeasureCommand],
 })
 export class MeasureModule {}

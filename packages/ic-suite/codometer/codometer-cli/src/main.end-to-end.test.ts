@@ -15,7 +15,7 @@ import { createFixtureTree, removeFixtureTree } from "../testing/fixture-tree";
 
 import { environmentSchema } from "./constants";
 
-import type { CodometerReport } from "./modules/report/report.types";
+import type { CodometerReport } from "@codometer/core";
 
 const COMMAND_PATH = path.resolve(import.meta.dirname, "main.ts");
 
