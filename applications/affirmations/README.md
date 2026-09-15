@@ -183,7 +183,7 @@ _This project has no immediate Nx dependencies or dependents._
 
 ### Python File Imports
 
-<!-- codependix:start name="codependix-imports" -->
+<!-- codependix:start name="codependix-file-imports" -->
 ```mermaid
 graph LR
   file__vulture_whitelist_py[".vulture_whitelist.py"]
@@ -212,7 +212,7 @@ graph LR
   file_testing_test_prompts_py --> file_src_prompts_py
   file_testing_test_subjects_py --> file_src_subjects_py
 ```
-<!-- codependix:end name="codependix-imports" -->
+<!-- codependix:end name="codependix-file-imports" -->
 
 ## ⏲️ Codometer
 

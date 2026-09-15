@@ -10,7 +10,7 @@ Dependency graphs exported by [codependix](https://github.com/JimmyPaolini/codeb
 
 ### Nx Neighborhood
 
-<!-- codependix:start name="codependix-nx" -->
+<!-- codependix:start name="codependix-nx-projects" -->
 ```mermaid
 graph LR
   codependix_boundaries["codependix-boundaries"]
@@ -23,22 +23,22 @@ graph LR
   classDef subject fill:#7c3aed,color:#fff,stroke:#4c1d95,stroke-width:2px
   class codependix_nx_projects subject
 ```
-<!-- codependix:end name="codependix-nx" -->
+<!-- codependix:end name="codependix-nx-projects" -->
 
 ### NestJS Module Graph
 
-<!-- codependix:start name="codependix-nestjs" -->
+<!-- codependix:start name="codependix-nestjs-modules" -->
 ```mermaid
 flowchart LR
   NeighborhoodModule
   WorkspaceGraphModule
   WorkspaceGraphModule --> NeighborhoodModule
 ```
-<!-- codependix:end name="codependix-nestjs" -->
+<!-- codependix:end name="codependix-nestjs-modules" -->
 
 ### File Imports
 
-<!-- codependix:start name="codependix-imports" -->
+<!-- codependix:start name="codependix-file-imports" -->
 ```mermaid
 graph LR
   file_callidescope_config_ts["callidescope.config.ts"]
@@ -85,7 +85,7 @@ graph LR
   file_src_modules_workspace_graph_workspace_graph_service_unit_test_ts --> file_src_modules_workspace_graph_workspace_graph_service_ts
   file_src_modules_workspace_graph_workspace_graph_types_ts --> file_src_modules_neighborhood_neighborhood_types_ts
 ```
-<!-- codependix:end name="codependix-imports" -->
+<!-- codependix:end name="codependix-file-imports" -->
 
 <!-- CALL_STACKS_START -->
 

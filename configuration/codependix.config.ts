@@ -28,25 +28,36 @@ import {
  */
 export const projectDefaults = {
   /**
-   * Shared by both languages `codependix-file-imports` builds.
+   * Each anchor is named after the package that builds the graph it holds —
+   * `codependix-file-imports`, `codependix-nestjs-modules`,
+   * `codependix-nx-projects` — so a block in a README names the thing that
+   * wrote it rather than an abbreviation of it.
    *
-   * The anchor name is kept from before this graph type merged TypeScript
-   * and Python into one: a project is only ever one language, so the
-   * TypeScript and Python passes never both write to the same README, and
-   * renaming it here would orphan every already-spliced
-   * `codependix-imports` section across the workspace instead of updating
-   * it in place.
+   * **Renaming one of these is a two-place change, and doing half of it
+   * stops every release.** An anchor a README no longer carries is not an
+   * error: `--write` appends a fresh section below the orphaned block
+   * instead of replacing it, and the duplicate `###` headings then fail
+   * `markdown-lint` inside the pre-commit hook that `@semantic-release/git`
+   * fires for the version commit. That happens in `prepare`, before
+   * `publish`, so nothing reaches a registry — the release simply never
+   * happens, and the failure names a markdown rule rather than an anchor.
+   * #842 renamed these anchors in every README and not here, and no release
+   * was published between it and #857.
+   *
+   * So rename here and re-splice every README in the same commit, and let
+   * `codebase:codependix:check` prove it — bearing in mind that it runs on
+   * `main` and nowhere else, so a pull request cannot catch this.
    */
   fileImports: {
-    markdown: { anchor: "codependix-imports" },
+    markdown: { anchor: "codependix-file-imports" },
     target: "markdown",
   },
   nestjsModules: {
-    markdown: { anchor: "codependix-nestjs" },
+    markdown: { anchor: "codependix-nestjs-modules" },
     target: "markdown",
   },
   nxProjects: {
-    markdown: { anchor: "codependix-nx" },
+    markdown: { anchor: "codependix-nx-projects" },
     target: "markdown",
   },
 } satisfies CodependixProjectConfiguration;
@@ -491,22 +502,28 @@ const codependixConfiguration: CodependixConfiguration = {
   /**
    * All three graph types are exported once for the whole repository, each
    * spliced into its own anchor under the root README's `## 🕸️ Codependix`
-   * heading — `fileImports` and `nestjsModules` following the same
-   * `target: "markdown"` `nxProjects` has always used for
-   * `codependix-workspace`. Each anchor name is new for these two graph
-   * types; `codependix-workspace` itself is unchanged.
+   * heading.
+   *
+   * The anchor names are the same three `projectDefaults` uses, rather than
+   * a `codependix-workspace-*` set of their own. An anchor is resolved
+   * within one file, and these three are the only blocks the root
+   * `README.md` carries: the workspace export writes there, and a
+   * per-project export writes to its own project's README. Nothing collides
+   * until the root itself gets a `codependix.config.ts` — which would then
+   * be a fourth through sixth block in this same file, and would need its
+   * own `path` or its own anchors.
    */
   workspace: {
     fileImports: {
-      markdown: { anchor: "codependix-workspace-file-imports" },
+      markdown: { anchor: "codependix-file-imports" },
       target: "markdown",
     },
     nestjsModules: {
-      markdown: { anchor: "codependix-workspace-nestjs-modules" },
+      markdown: { anchor: "codependix-nestjs-modules" },
       target: "markdown",
     },
     nxProjects: {
-      markdown: { anchor: "codependix-workspace" },
+      markdown: { anchor: "codependix-nx-projects" },
       target: "markdown",
     },
   },
