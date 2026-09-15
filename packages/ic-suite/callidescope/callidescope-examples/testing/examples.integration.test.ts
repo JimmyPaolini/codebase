@@ -619,9 +619,9 @@ describe("callidescope examples (integration)", () => {
       // only reachable through that one here, so this list stands for the
       // first rule rather than for both.
       //
-      // `callidescope-core` is reached because the result vocabulary moved
-      // down into it, out of `callidescope-configuration`: one project became
-      // two, and neither refusal above is weakened by the addition.
+      // Every `*-core` here arrives behind the `configuration` package above
+      // it: each toolchain moved its result vocabulary down into a contracts
+      // leaf. Neither refusal above is weakened.
       expect(
         result.projects.map((project) => project.projectName),
       ).toStrictEqual([
@@ -630,6 +630,7 @@ describe("callidescope examples (integration)", () => {
         EXAMPLES_DIRECTORY,
         GATED_LEAF_DIRECTORY,
         "packages/ic-suite/codependix/codependix-configuration",
+        "packages/ic-suite/codependix/codependix-core",
         "packages/ic-suite/codometer/codometer-configuration",
         "packages/ic-suite/codometer/codometer-core",
         "packages/logger",
