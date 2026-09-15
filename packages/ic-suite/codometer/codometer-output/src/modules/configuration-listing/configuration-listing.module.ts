@@ -2,7 +2,7 @@ import { ConfigurationModule as CodometerConfigurationModule } from "@codometer/
 import { DiscoveryModule } from "@codometer/measurement";
 import { Module } from "@nestjs/common";
 
-import { ConfigurationService } from "./configuration.service";
+import { ConfigurationListingService } from "./configuration-listing.service";
 import { RenderConfigurationService } from "./render-configuration.service";
 
 /**
@@ -18,8 +18,8 @@ import { RenderConfigurationService } from "./render-configuration.service";
  */
 @Module({
   controllers: [],
-  exports: [ConfigurationService, RenderConfigurationService],
+  exports: [ConfigurationListingService, RenderConfigurationService],
   imports: [CodometerConfigurationModule, DiscoveryModule],
-  providers: [ConfigurationService, RenderConfigurationService],
+  providers: [ConfigurationListingService, RenderConfigurationService],
 })
-export class ConfigurationModule {}
+export class ConfigurationListingModule {}

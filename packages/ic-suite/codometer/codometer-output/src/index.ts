@@ -20,9 +20,9 @@ export {
   CONFIGURATION_HEADING,
   LIMIT_TABLE_COLUMNS,
   SIZE_METRIC_SUFFIX,
-} from "./modules/configuration/configuration.constants";
-export { ConfigurationModule as ConfigurationListingModule } from "./modules/configuration/configuration.module";
-export { ConfigurationService as ConfigurationListingService } from "./modules/configuration/configuration.service";
+} from "./modules/configuration-listing/configuration-listing.constants";
+export { ConfigurationListingModule } from "./modules/configuration-listing/configuration-listing.module";
+export { ConfigurationListingService } from "./modules/configuration-listing/configuration-listing.service";
 export type {
   ConfiguredDirectory,
   ConfiguredLimitRow,
@@ -31,8 +31,8 @@ export type {
   DiscoveredConfigurationFiles,
   RenderConfigurationArguments,
   WalkExclusions,
-} from "./modules/configuration/configuration.types";
-export { RenderConfigurationService } from "./modules/configuration/render-configuration.service";
+} from "./modules/configuration-listing/configuration-listing.types";
+export { RenderConfigurationService } from "./modules/configuration-listing/render-configuration.service";
 export { DeliveryModule } from "./modules/delivery/delivery.module";
 export { DeliveryService } from "./modules/delivery/delivery.service";
 export type { DeliverArguments } from "./modules/delivery/delivery.types";

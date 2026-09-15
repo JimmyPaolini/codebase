@@ -10,7 +10,10 @@ import { Injectable } from "@nestjs/common";
 
 import { formatBytes, formatCount } from "../render/render.utilities";
 
-import { ABSENT_LABEL, SIZE_METRIC_SUFFIX } from "./configuration.constants";
+import {
+  ABSENT_LABEL,
+  SIZE_METRIC_SUFFIX,
+} from "./configuration-listing.constants";
 
 import type {
   ConfiguredDirectory,
@@ -19,7 +22,7 @@ import type {
   DescribeConfigurationsArguments,
   DiscoveredConfigurationFiles,
   WalkExclusions,
-} from "./configuration.types";
+} from "./configuration-listing.types";
 
 /**
  * Finds every codometer configuration in a tree and says what each one holds.
@@ -31,7 +34,7 @@ import type {
  * every failure is carried back on the result rather than thrown.
  */
 @Injectable()
-export class ConfigurationService {
+export class ConfigurationListingService {
   // 🏗 Dependency Injection
 
   constructor(

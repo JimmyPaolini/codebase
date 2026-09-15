@@ -3,13 +3,13 @@ import { Injectable } from "@nestjs/common";
 import {
   CONFIGURATION_HEADING,
   LIMIT_TABLE_COLUMNS,
-} from "./configuration.constants";
+} from "./configuration-listing.constants";
 
 import type {
   ConfiguredDirectory,
   ConfiguredLimitRow,
   RenderConfigurationArguments,
-} from "./configuration.types";
+} from "./configuration-listing.types";
 
 /**
  * Turns a resolved configuration listing into the document a reader gets.

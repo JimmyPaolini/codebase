@@ -549,6 +549,7 @@ graph LR
   module_codometer_cli_ChangesModule["codometer-cli/ChangesModule"]
   module_codometer_cli_CommentsModule["codometer-cli/CommentsModule"]
   module_codometer_cli_ConfigModule["codometer-cli/ConfigModule"]
+  module_codometer_cli_ConfigurationListingModule["codometer-cli/ConfigurationListingModule"]
   module_codometer_cli_ConfigurationModule["codometer-cli/ConfigurationModule"]
   module_codometer_cli_CssModule["codometer-cli/CssModule"]
   module_codometer_cli_CustomizationModule["codometer-cli/CustomizationModule"]
@@ -612,6 +613,7 @@ graph LR
   module_codometer_measurement_TypescriptModule["codometer-measurement/TypescriptModule"]
   module_codometer_measurement_YamlModule["codometer-measurement/YamlModule"]
   module_codometer_output_ChangesModule["codometer-output/ChangesModule"]
+  module_codometer_output_ConfigurationListingModule["codometer-output/ConfigurationListingModule"]
   module_codometer_output_ConfigurationModule["codometer-output/ConfigurationModule"]
   module_codometer_output_DeliveryModule["codometer-output/DeliveryModule"]
   module_codometer_output_DestinationsModule["codometer-output/DestinationsModule"]
@@ -1116,10 +1118,10 @@ graph LR
   module_codometer_cli_ChangesModule --> module_codometer_cli_ConfigurationModule
   module_codometer_cli_ChangesModule --> module_codometer_cli_DocumentsModule
   module_codometer_cli_ChangesModule --> module_codometer_cli_RenderModule
+  module_codometer_cli_ConfigurationListingModule --> module_codometer_cli_ConfigurationModule
+  module_codometer_cli_ConfigurationListingModule --> module_codometer_cli_DiscoveryModule
+  module_codometer_cli_ConfigurationModule --> module_codometer_cli_ConfigurationListingModule
   module_codometer_cli_ConfigurationModule --> module_codometer_cli_ConfigurationModule
-  module_codometer_cli_ConfigurationModule --> module_codometer_cli_ConfigurationModule
-  module_codometer_cli_ConfigurationModule --> module_codometer_cli_ConfigurationModule
-  module_codometer_cli_ConfigurationModule --> module_codometer_cli_DiscoveryModule
   module_codometer_cli_DeliveryModule --> module_codometer_cli_JsonModule
   module_codometer_cli_DeliveryModule --> module_codometer_cli_MarkdownModule
   module_codometer_cli_JupyterModule --> module_codometer_cli_JsonModule
@@ -1197,8 +1199,8 @@ graph LR
   module_codometer_measurement_MeasureModule --> module_codometer_measurement_LimitsModule
   module_codometer_measurement_MeasureModule --> module_codometer_measurement_SizeModule
   module_codometer_measurement_TypescriptModule --> module_codometer_measurement_CommentsModule
-  module_codometer_output_ConfigurationModule --> module_codometer_output_ConfigurationModule
-  module_codometer_output_ConfigurationModule --> module_codometer_output_DiscoveryModule
+  module_codometer_output_ConfigurationListingModule --> module_codometer_output_ConfigurationModule
+  module_codometer_output_ConfigurationListingModule --> module_codometer_output_DiscoveryModule
   module_codometer_output_DeliveryModule --> module_codometer_output_JsonModule
   module_codometer_output_DeliveryModule --> module_codometer_output_MarkdownModule
   module_conformetry_cli_FilesModule --> module_conformetry_cli_DifferencesModule
@@ -1451,13 +1453,6399 @@ graph LR
 ```
 <!-- codependix:end name="codependix-nestjs-modules" -->
 
+### File Imports
+
+<!-- codependix:start name="codependix-file-imports" -->
+```mermaid
+graph LR
+  file_affirmations__vulture_whitelist_py["affirmations/.vulture_whitelist.py"]
+  file_affirmations_src___init___py["affirmations/src/__init__.py"]
+  file_affirmations_src_grammars_py["affirmations/src/grammars.py"]
+  file_affirmations_src_models_py["affirmations/src/models.py"]
+  file_affirmations_src_output_py["affirmations/src/output.py"]
+  file_affirmations_src_prompts_py["affirmations/src/prompts.py"]
+  file_affirmations_src_subjects_py["affirmations/src/subjects.py"]
+  file_affirmations_testing___init___py["affirmations/testing/__init__.py"]
+  file_affirmations_testing_test_grammars_py["affirmations/testing/test_grammars.py"]
+  file_affirmations_testing_test_models_py["affirmations/testing/test_models.py"]
+  file_affirmations_testing_test_output_py["affirmations/testing/test_output.py"]
+  file_affirmations_testing_test_prompts_py["affirmations/testing/test_prompts.py"]
+  file_affirmations_testing_test_subjects_py["affirmations/testing/test_subjects.py"]
+  file_caelundas_callidescope_config_ts["caelundas/callidescope.config.ts"]
+  file_caelundas_codependix_config_ts["caelundas/codependix.config.ts"]
+  file_caelundas_codometer_config_ts["caelundas/codometer.config.ts"]
+  file_caelundas_eslint_config_ts["caelundas/eslint.config.ts"]
+  file_caelundas_scripts_download_ephemeris_ts["caelundas/scripts/download-ephemeris.ts"]
+  file_caelundas_src_constants_ts["caelundas/src/constants.ts"]
+  file_caelundas_src_main_end_to_end_test_ts["caelundas/src/main.end-to-end.test.ts"]
+  file_caelundas_src_main_module_ts["caelundas/src/main.module.ts"]
+  file_caelundas_src_main_ts["caelundas/src/main.ts"]
+  file_caelundas_src_main_unit_test_ts["caelundas/src/main.unit.test.ts"]
+  file_caelundas_src_modules_annual_solar_cycle_annual_solar_cycle_events_service_ts["caelundas/src/modules/annual-solar-cycle/annual-solar-cycle-events.service.ts"]
+  file_caelundas_src_modules_annual_solar_cycle_annual_solar_cycle_events_service_unit_test_ts["caelundas/src/modules/annual-solar-cycle/annual-solar-cycle-events.service.unit.test.ts"]
+  file_caelundas_src_modules_annual_solar_cycle_annual_solar_cycle_constants_ts["caelundas/src/modules/annual-solar-cycle/annual-solar-cycle.constants.ts"]
+  file_caelundas_src_modules_annual_solar_cycle_annual_solar_cycle_module_ts["caelundas/src/modules/annual-solar-cycle/annual-solar-cycle.module.ts"]
+  file_caelundas_src_modules_annual_solar_cycle_annual_solar_cycle_service_ts["caelundas/src/modules/annual-solar-cycle/annual-solar-cycle.service.ts"]
+  file_caelundas_src_modules_annual_solar_cycle_annual_solar_cycle_service_unit_test_ts["caelundas/src/modules/annual-solar-cycle/annual-solar-cycle.service.unit.test.ts"]
+  file_caelundas_src_modules_annual_solar_cycle_annual_solar_cycle_types_ts["caelundas/src/modules/annual-solar-cycle/annual-solar-cycle.types.ts"]
+  file_caelundas_src_modules_aspects_aspect_calculation_support_service_ts["caelundas/src/modules/aspects/aspect-calculation-support.service.ts"]
+  file_caelundas_src_modules_aspects_aspect_calculation_support_service_unit_test_ts["caelundas/src/modules/aspects/aspect-calculation-support.service.unit.test.ts"]
+  file_caelundas_src_modules_aspects_aspect_ephemeris_service_ts["caelundas/src/modules/aspects/aspect-ephemeris.service.ts"]
+  file_caelundas_src_modules_aspects_aspect_ephemeris_service_unit_test_ts["caelundas/src/modules/aspects/aspect-ephemeris.service.unit.test.ts"]
+  file_caelundas_src_modules_aspects_aspect_event_formatting_service_ts["caelundas/src/modules/aspects/aspect-event-formatting.service.ts"]
+  file_caelundas_src_modules_aspects_aspect_event_formatting_service_unit_test_ts["caelundas/src/modules/aspects/aspect-event-formatting.service.unit.test.ts"]
+  file_caelundas_src_modules_aspects_aspect_graph_service_ts["caelundas/src/modules/aspects/aspect-graph.service.ts"]
+  file_caelundas_src_modules_aspects_aspect_graph_service_unit_test_ts["caelundas/src/modules/aspects/aspect-graph.service.unit.test.ts"]
+  file_caelundas_src_modules_aspects_aspect_phase_emoji_service_ts["caelundas/src/modules/aspects/aspect-phase-emoji.service.ts"]
+  file_caelundas_src_modules_aspects_aspect_phase_emoji_service_unit_test_ts["caelundas/src/modules/aspects/aspect-phase-emoji.service.unit.test.ts"]
+  file_caelundas_src_modules_aspects_aspects_utilities_module_ts["caelundas/src/modules/aspects/aspects-utilities.module.ts"]
+  file_caelundas_src_modules_aspects_aspects_utilities_service_ts["caelundas/src/modules/aspects/aspects-utilities.service.ts"]
+  file_caelundas_src_modules_aspects_aspects_utilities_service_unit_test_ts["caelundas/src/modules/aspects/aspects-utilities.service.unit.test.ts"]
+  file_caelundas_src_modules_aspects_aspects_constants_ts["caelundas/src/modules/aspects/aspects.constants.ts"]
+  file_caelundas_src_modules_aspects_aspects_module_ts["caelundas/src/modules/aspects/aspects.module.ts"]
+  file_caelundas_src_modules_aspects_aspects_service_ts["caelundas/src/modules/aspects/aspects.service.ts"]
+  file_caelundas_src_modules_aspects_aspects_service_unit_test_ts["caelundas/src/modules/aspects/aspects.service.unit.test.ts"]
+  file_caelundas_src_modules_aspects_aspects_types_ts["caelundas/src/modules/aspects/aspects.types.ts"]
+  file_caelundas_src_modules_aspects_compound_phase_service_ts["caelundas/src/modules/aspects/compound-phase.service.ts"]
+  file_caelundas_src_modules_aspects_compound_phase_service_unit_test_ts["caelundas/src/modules/aspects/compound-phase.service.unit.test.ts"]
+  file_caelundas_src_modules_aspects_progressive_compound_event_service_ts["caelundas/src/modules/aspects/progressive-compound-event.service.ts"]
+  file_caelundas_src_modules_aspects_progressive_compound_event_service_unit_test_ts["caelundas/src/modules/aspects/progressive-compound-event.service.unit.test.ts"]
+  file_caelundas_src_modules_caelundas_caelundas_command_ts["caelundas/src/modules/caelundas/caelundas.command.ts"]
+  file_caelundas_src_modules_caelundas_caelundas_command_unit_test_ts["caelundas/src/modules/caelundas/caelundas.command.unit.test.ts"]
+  file_caelundas_src_modules_caelundas_caelundas_constants_ts["caelundas/src/modules/caelundas/caelundas.constants.ts"]
+  file_caelundas_src_modules_caelundas_caelundas_module_ts["caelundas/src/modules/caelundas/caelundas.module.ts"]
+  file_caelundas_src_modules_caelundas_caelundas_module_unit_test_ts["caelundas/src/modules/caelundas/caelundas.module.unit.test.ts"]
+  file_caelundas_src_modules_caelundas_caelundas_types_ts["caelundas/src/modules/caelundas/caelundas.types.ts"]
+  file_caelundas_src_modules_caelundas_caelundas_types_unit_test_ts["caelundas/src/modules/caelundas/caelundas.types.unit.test.ts"]
+  file_caelundas_src_modules_caelundas_caelundas_utilities_ts["caelundas/src/modules/caelundas/caelundas.utilities.ts"]
+  file_caelundas_src_modules_caelundas_symbol_caelundas_constants_ts["caelundas/src/modules/caelundas/symbol-caelundas.constants.ts"]
+  file_caelundas_src_modules_calendar_calendar_constants_ts["caelundas/src/modules/calendar/calendar.constants.ts"]
+  file_caelundas_src_modules_calendar_calendar_module_ts["caelundas/src/modules/calendar/calendar.module.ts"]
+  file_caelundas_src_modules_calendar_calendar_service_ts["caelundas/src/modules/calendar/calendar.service.ts"]
+  file_caelundas_src_modules_calendar_calendar_service_unit_test_ts["caelundas/src/modules/calendar/calendar.service.unit.test.ts"]
+  file_caelundas_src_modules_calendar_calendar_types_ts["caelundas/src/modules/calendar/calendar.types.ts"]
+  file_caelundas_src_modules_daily_cycles_daily_cycles_builder_service_ts["caelundas/src/modules/daily-cycles/daily-cycles-builder.service.ts"]
+  file_caelundas_src_modules_daily_cycles_daily_cycles_builder_service_unit_test_ts["caelundas/src/modules/daily-cycles/daily-cycles-builder.service.unit.test.ts"]
+  file_caelundas_src_modules_daily_cycles_daily_cycles_constants_ts["caelundas/src/modules/daily-cycles/daily-cycles.constants.ts"]
+  file_caelundas_src_modules_daily_cycles_daily_cycles_module_ts["caelundas/src/modules/daily-cycles/daily-cycles.module.ts"]
+  file_caelundas_src_modules_daily_cycles_daily_cycles_service_ts["caelundas/src/modules/daily-cycles/daily-cycles.service.ts"]
+  file_caelundas_src_modules_daily_cycles_daily_cycles_service_unit_test_ts["caelundas/src/modules/daily-cycles/daily-cycles.service.unit.test.ts"]
+  file_caelundas_src_modules_daily_cycles_daily_cycles_types_ts["caelundas/src/modules/daily-cycles/daily-cycles.types.ts"]
+  file_caelundas_src_modules_datetime_datetime_constants_ts["caelundas/src/modules/datetime/datetime.constants.ts"]
+  file_caelundas_src_modules_datetime_datetime_module_ts["caelundas/src/modules/datetime/datetime.module.ts"]
+  file_caelundas_src_modules_datetime_datetime_service_ts["caelundas/src/modules/datetime/datetime.service.ts"]
+  file_caelundas_src_modules_datetime_datetime_service_unit_test_ts["caelundas/src/modules/datetime/datetime.service.unit.test.ts"]
+  file_caelundas_src_modules_datetime_datetime_types_ts["caelundas/src/modules/datetime/datetime.types.ts"]
+  file_caelundas_src_modules_eclipses_eclipse_calculation_service_ts["caelundas/src/modules/eclipses/eclipse-calculation.service.ts"]
+  file_caelundas_src_modules_eclipses_eclipse_calculation_service_unit_test_ts["caelundas/src/modules/eclipses/eclipse-calculation.service.unit.test.ts"]
+  file_caelundas_src_modules_eclipses_eclipse_event_service_ts["caelundas/src/modules/eclipses/eclipse-event.service.ts"]
+  file_caelundas_src_modules_eclipses_eclipse_event_service_unit_test_ts["caelundas/src/modules/eclipses/eclipse-event.service.unit.test.ts"]
+  file_caelundas_src_modules_eclipses_eclipse_geometry_service_ts["caelundas/src/modules/eclipses/eclipse-geometry.service.ts"]
+  file_caelundas_src_modules_eclipses_eclipse_geometry_service_unit_test_ts["caelundas/src/modules/eclipses/eclipse-geometry.service.unit.test.ts"]
+  file_caelundas_src_modules_eclipses_eclipse_topocentric_service_ts["caelundas/src/modules/eclipses/eclipse-topocentric.service.ts"]
+  file_caelundas_src_modules_eclipses_eclipse_topocentric_service_unit_test_ts["caelundas/src/modules/eclipses/eclipse-topocentric.service.unit.test.ts"]
+  file_caelundas_src_modules_eclipses_eclipses_constants_ts["caelundas/src/modules/eclipses/eclipses.constants.ts"]
+  file_caelundas_src_modules_eclipses_eclipses_module_ts["caelundas/src/modules/eclipses/eclipses.module.ts"]
+  file_caelundas_src_modules_eclipses_eclipses_service_ts["caelundas/src/modules/eclipses/eclipses.service.ts"]
+  file_caelundas_src_modules_eclipses_eclipses_service_unit_test_ts["caelundas/src/modules/eclipses/eclipses.service.unit.test.ts"]
+  file_caelundas_src_modules_eclipses_eclipses_types_ts["caelundas/src/modules/eclipses/eclipses.types.ts"]
+  file_caelundas_src_modules_ephemeris_ephemeris_aggregation_service_ts["caelundas/src/modules/ephemeris/ephemeris-aggregation.service.ts"]
+  file_caelundas_src_modules_ephemeris_ephemeris_aggregation_service_unit_test_ts["caelundas/src/modules/ephemeris/ephemeris-aggregation.service.unit.test.ts"]
+  file_caelundas_src_modules_ephemeris_ephemeris_constants_service_ts["caelundas/src/modules/ephemeris/ephemeris-constants.service.ts"]
+  file_caelundas_src_modules_ephemeris_ephemeris_constants_service_unit_test_ts["caelundas/src/modules/ephemeris/ephemeris-constants.service.unit.test.ts"]
+  file_caelundas_src_modules_ephemeris_ephemeris_coordinate_service_ts["caelundas/src/modules/ephemeris/ephemeris-coordinate.service.ts"]
+  file_caelundas_src_modules_ephemeris_ephemeris_coordinate_service_unit_test_ts["caelundas/src/modules/ephemeris/ephemeris-coordinate.service.unit.test.ts"]
+  file_caelundas_src_modules_ephemeris_ephemeris_horizon_service_ts["caelundas/src/modules/ephemeris/ephemeris-horizon.service.ts"]
+  file_caelundas_src_modules_ephemeris_ephemeris_horizon_service_unit_test_ts["caelundas/src/modules/ephemeris/ephemeris-horizon.service.unit.test.ts"]
+  file_caelundas_src_modules_ephemeris_ephemeris_phenomena_service_ts["caelundas/src/modules/ephemeris/ephemeris-phenomena.service.ts"]
+  file_caelundas_src_modules_ephemeris_ephemeris_phenomena_service_unit_test_ts["caelundas/src/modules/ephemeris/ephemeris-phenomena.service.unit.test.ts"]
+  file_caelundas_src_modules_ephemeris_ephemeris_time_service_ts["caelundas/src/modules/ephemeris/ephemeris-time.service.ts"]
+  file_caelundas_src_modules_ephemeris_ephemeris_time_service_unit_test_ts["caelundas/src/modules/ephemeris/ephemeris-time.service.unit.test.ts"]
+  file_caelundas_src_modules_ephemeris_ephemeris_constants_ts["caelundas/src/modules/ephemeris/ephemeris.constants.ts"]
+  file_caelundas_src_modules_ephemeris_ephemeris_constants_unit_test_ts["caelundas/src/modules/ephemeris/ephemeris.constants.unit.test.ts"]
+  file_caelundas_src_modules_ephemeris_ephemeris_module_ts["caelundas/src/modules/ephemeris/ephemeris.module.ts"]
+  file_caelundas_src_modules_ephemeris_ephemeris_service_ts["caelundas/src/modules/ephemeris/ephemeris.service.ts"]
+  file_caelundas_src_modules_ephemeris_ephemeris_service_unit_test_ts["caelundas/src/modules/ephemeris/ephemeris.service.unit.test.ts"]
+  file_caelundas_src_modules_ephemeris_ephemeris_types_ts["caelundas/src/modules/ephemeris/ephemeris.types.ts"]
+  file_caelundas_src_modules_ephemeris_ephemeris_types_unit_test_ts["caelundas/src/modules/ephemeris/ephemeris.types.unit.test.ts"]
+  file_caelundas_src_modules_ephemeris_internal_ephemeris_types_ts["caelundas/src/modules/ephemeris/internal-ephemeris.types.ts"]
+  file_caelundas_src_modules_ingresses_ingresses_composer_service_ts["caelundas/src/modules/ingresses/ingresses-composer.service.ts"]
+  file_caelundas_src_modules_ingresses_ingresses_composer_service_unit_test_ts["caelundas/src/modules/ingresses/ingresses-composer.service.unit.test.ts"]
+  file_caelundas_src_modules_ingresses_ingresses_constants_ts["caelundas/src/modules/ingresses/ingresses.constants.ts"]
+  file_caelundas_src_modules_ingresses_ingresses_module_ts["caelundas/src/modules/ingresses/ingresses.module.ts"]
+  file_caelundas_src_modules_ingresses_ingresses_service_integration_test_ts["caelundas/src/modules/ingresses/ingresses.service.integration.test.ts"]
+  file_caelundas_src_modules_ingresses_ingresses_service_ts["caelundas/src/modules/ingresses/ingresses.service.ts"]
+  file_caelundas_src_modules_ingresses_ingresses_service_unit_test_ts["caelundas/src/modules/ingresses/ingresses.service.unit.test.ts"]
+  file_caelundas_src_modules_ingresses_ingresses_types_ts["caelundas/src/modules/ingresses/ingresses.types.ts"]
+  file_caelundas_src_modules_input_input_constants_ts["caelundas/src/modules/input/input.constants.ts"]
+  file_caelundas_src_modules_input_input_module_ts["caelundas/src/modules/input/input.module.ts"]
+  file_caelundas_src_modules_input_input_service_ts["caelundas/src/modules/input/input.service.ts"]
+  file_caelundas_src_modules_input_input_service_unit_test_ts["caelundas/src/modules/input/input.service.unit.test.ts"]
+  file_caelundas_src_modules_input_input_types_ts["caelundas/src/modules/input/input.types.ts"]
+  file_caelundas_src_modules_major_aspects_major_aspect_event_service_ts["caelundas/src/modules/major-aspects/major-aspect-event.service.ts"]
+  file_caelundas_src_modules_major_aspects_major_aspect_event_service_unit_test_ts["caelundas/src/modules/major-aspects/major-aspect-event.service.unit.test.ts"]
+  file_caelundas_src_modules_major_aspects_major_aspect_progressive_service_ts["caelundas/src/modules/major-aspects/major-aspect-progressive.service.ts"]
+  file_caelundas_src_modules_major_aspects_major_aspect_progressive_service_unit_test_ts["caelundas/src/modules/major-aspects/major-aspect-progressive.service.unit.test.ts"]
+  file_caelundas_src_modules_major_aspects_major_aspects_constants_ts["caelundas/src/modules/major-aspects/major-aspects.constants.ts"]
+  file_caelundas_src_modules_major_aspects_major_aspects_module_ts["caelundas/src/modules/major-aspects/major-aspects.module.ts"]
+  file_caelundas_src_modules_major_aspects_major_aspects_service_integration_test_ts["caelundas/src/modules/major-aspects/major-aspects.service.integration.test.ts"]
+  file_caelundas_src_modules_major_aspects_major_aspects_service_ts["caelundas/src/modules/major-aspects/major-aspects.service.ts"]
+  file_caelundas_src_modules_major_aspects_major_aspects_service_unit_test_ts["caelundas/src/modules/major-aspects/major-aspects.service.unit.test.ts"]
+  file_caelundas_src_modules_major_aspects_major_aspects_types_ts["caelundas/src/modules/major-aspects/major-aspects.types.ts"]
+  file_caelundas_src_modules_math_math_constants_ts["caelundas/src/modules/math/math.constants.ts"]
+  file_caelundas_src_modules_math_math_module_ts["caelundas/src/modules/math/math.module.ts"]
+  file_caelundas_src_modules_math_math_service_ts["caelundas/src/modules/math/math.service.ts"]
+  file_caelundas_src_modules_math_math_service_unit_test_ts["caelundas/src/modules/math/math.service.unit.test.ts"]
+  file_caelundas_src_modules_math_math_types_ts["caelundas/src/modules/math/math.types.ts"]
+  file_caelundas_src_modules_minor_aspects_minor_aspects_composer_service_ts["caelundas/src/modules/minor-aspects/minor-aspects-composer.service.ts"]
+  file_caelundas_src_modules_minor_aspects_minor_aspects_composer_service_unit_test_ts["caelundas/src/modules/minor-aspects/minor-aspects-composer.service.unit.test.ts"]
+  file_caelundas_src_modules_minor_aspects_minor_aspects_event_service_ts["caelundas/src/modules/minor-aspects/minor-aspects-event.service.ts"]
+  file_caelundas_src_modules_minor_aspects_minor_aspects_event_service_unit_test_ts["caelundas/src/modules/minor-aspects/minor-aspects-event.service.unit.test.ts"]
+  file_caelundas_src_modules_minor_aspects_minor_aspects_progressive_service_ts["caelundas/src/modules/minor-aspects/minor-aspects-progressive.service.ts"]
+  file_caelundas_src_modules_minor_aspects_minor_aspects_progressive_service_unit_test_ts["caelundas/src/modules/minor-aspects/minor-aspects-progressive.service.unit.test.ts"]
+  file_caelundas_src_modules_minor_aspects_minor_aspects_constants_ts["caelundas/src/modules/minor-aspects/minor-aspects.constants.ts"]
+  file_caelundas_src_modules_minor_aspects_minor_aspects_module_ts["caelundas/src/modules/minor-aspects/minor-aspects.module.ts"]
+  file_caelundas_src_modules_minor_aspects_minor_aspects_service_integration_test_ts["caelundas/src/modules/minor-aspects/minor-aspects.service.integration.test.ts"]
+  file_caelundas_src_modules_minor_aspects_minor_aspects_service_ts["caelundas/src/modules/minor-aspects/minor-aspects.service.ts"]
+  file_caelundas_src_modules_minor_aspects_minor_aspects_service_unit_test_ts["caelundas/src/modules/minor-aspects/minor-aspects.service.unit.test.ts"]
+  file_caelundas_src_modules_minor_aspects_minor_aspects_types_ts["caelundas/src/modules/minor-aspects/minor-aspects.types.ts"]
+  file_caelundas_src_modules_monthly_lunar_cycle_monthly_lunar_cycle_constants_ts["caelundas/src/modules/monthly-lunar-cycle/monthly-lunar-cycle.constants.ts"]
+  file_caelundas_src_modules_monthly_lunar_cycle_monthly_lunar_cycle_module_ts["caelundas/src/modules/monthly-lunar-cycle/monthly-lunar-cycle.module.ts"]
+  file_caelundas_src_modules_monthly_lunar_cycle_monthly_lunar_cycle_service_integration_test_ts["caelundas/src/modules/monthly-lunar-cycle/monthly-lunar-cycle.service.integration.test.ts"]
+  file_caelundas_src_modules_monthly_lunar_cycle_monthly_lunar_cycle_service_ts["caelundas/src/modules/monthly-lunar-cycle/monthly-lunar-cycle.service.ts"]
+  file_caelundas_src_modules_monthly_lunar_cycle_monthly_lunar_cycle_service_unit_test_ts["caelundas/src/modules/monthly-lunar-cycle/monthly-lunar-cycle.service.unit.test.ts"]
+  file_caelundas_src_modules_monthly_lunar_cycle_monthly_lunar_cycle_types_ts["caelundas/src/modules/monthly-lunar-cycle/monthly-lunar-cycle.types.ts"]
+  file_caelundas_src_modules_perfective_perfective_constants_ts["caelundas/src/modules/perfective/perfective.constants.ts"]
+  file_caelundas_src_modules_perfective_perfective_module_ts["caelundas/src/modules/perfective/perfective.module.ts"]
+  file_caelundas_src_modules_perfective_perfective_service_ts["caelundas/src/modules/perfective/perfective.service.ts"]
+  file_caelundas_src_modules_perfective_perfective_service_unit_test_ts["caelundas/src/modules/perfective/perfective.service.unit.test.ts"]
+  file_caelundas_src_modules_perfective_perfective_types_ts["caelundas/src/modules/perfective/perfective.types.ts"]
+  file_caelundas_src_modules_phases_martian_phase_service_ts["caelundas/src/modules/phases/martian-phase.service.ts"]
+  file_caelundas_src_modules_phases_martian_phase_service_unit_test_ts["caelundas/src/modules/phases/martian-phase.service.unit.test.ts"]
+  file_caelundas_src_modules_phases_mercurian_phase_service_ts["caelundas/src/modules/phases/mercurian-phase.service.ts"]
+  file_caelundas_src_modules_phases_mercurian_phase_service_unit_test_ts["caelundas/src/modules/phases/mercurian-phase.service.unit.test.ts"]
+  file_caelundas_src_modules_phases_phase_calculation_service_ts["caelundas/src/modules/phases/phase-calculation.service.ts"]
+  file_caelundas_src_modules_phases_phase_calculation_service_unit_test_ts["caelundas/src/modules/phases/phase-calculation.service.unit.test.ts"]
+  file_caelundas_src_modules_phases_phases_constants_ts["caelundas/src/modules/phases/phases.constants.ts"]
+  file_caelundas_src_modules_phases_phases_module_ts["caelundas/src/modules/phases/phases.module.ts"]
+  file_caelundas_src_modules_phases_phases_service_integration_test_ts["caelundas/src/modules/phases/phases.service.integration.test.ts"]
+  file_caelundas_src_modules_phases_phases_service_ts["caelundas/src/modules/phases/phases.service.ts"]
+  file_caelundas_src_modules_phases_phases_service_unit_test_ts["caelundas/src/modules/phases/phases.service.unit.test.ts"]
+  file_caelundas_src_modules_phases_phases_types_ts["caelundas/src/modules/phases/phases.types.ts"]
+  file_caelundas_src_modules_phases_venusian_phase_service_ts["caelundas/src/modules/phases/venusian-phase.service.ts"]
+  file_caelundas_src_modules_phases_venusian_phase_service_unit_test_ts["caelundas/src/modules/phases/venusian-phase.service.unit.test.ts"]
+  file_caelundas_src_modules_progressive_progressive_aspect_service_ts["caelundas/src/modules/progressive/progressive-aspect.service.ts"]
+  file_caelundas_src_modules_progressive_progressive_aspect_service_unit_test_ts["caelundas/src/modules/progressive/progressive-aspect.service.unit.test.ts"]
+  file_caelundas_src_modules_progressive_progressive_utilities_module_ts["caelundas/src/modules/progressive/progressive-utilities.module.ts"]
+  file_caelundas_src_modules_progressive_progressive_utilities_service_ts["caelundas/src/modules/progressive/progressive-utilities.service.ts"]
+  file_caelundas_src_modules_progressive_progressive_utilities_service_unit_test_ts["caelundas/src/modules/progressive/progressive-utilities.service.unit.test.ts"]
+  file_caelundas_src_modules_progressive_progressive_constants_ts["caelundas/src/modules/progressive/progressive.constants.ts"]
+  file_caelundas_src_modules_progressive_progressive_module_ts["caelundas/src/modules/progressive/progressive.module.ts"]
+  file_caelundas_src_modules_progressive_progressive_service_ts["caelundas/src/modules/progressive/progressive.service.ts"]
+  file_caelundas_src_modules_progressive_progressive_service_unit_test_ts["caelundas/src/modules/progressive/progressive.service.unit.test.ts"]
+  file_caelundas_src_modules_progressive_progressive_types_ts["caelundas/src/modules/progressive/progressive.types.ts"]
+  file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_base_service_ts["caelundas/src/modules/quadruple-aspects/quadruple-aspects-base.service.ts"]
+  file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_base_service_unit_test_ts["caelundas/src/modules/quadruple-aspects/quadruple-aspects-base.service.unit.test.ts"]
+  file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_composer_service_ts["caelundas/src/modules/quadruple-aspects/quadruple-aspects-composer.service.ts"]
+  file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_composer_service_unit_test_ts["caelundas/src/modules/quadruple-aspects/quadruple-aspects-composer.service.unit.test.ts"]
+  file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_constants_ts["caelundas/src/modules/quadruple-aspects/quadruple-aspects.constants.ts"]
+  file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_module_ts["caelundas/src/modules/quadruple-aspects/quadruple-aspects.module.ts"]
+  file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_service_integration_test_ts["caelundas/src/modules/quadruple-aspects/quadruple-aspects.service.integration.test.ts"]
+  file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_service_ts["caelundas/src/modules/quadruple-aspects/quadruple-aspects.service.ts"]
+  file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_service_unit_test_ts["caelundas/src/modules/quadruple-aspects/quadruple-aspects.service.unit.test.ts"]
+  file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_types_ts["caelundas/src/modules/quadruple-aspects/quadruple-aspects.types.ts"]
+  file_caelundas_src_modules_quintuple_aspects_quintuple_aspects_composer_service_ts["caelundas/src/modules/quintuple-aspects/quintuple-aspects-composer.service.ts"]
+  file_caelundas_src_modules_quintuple_aspects_quintuple_aspects_composer_service_unit_test_ts["caelundas/src/modules/quintuple-aspects/quintuple-aspects-composer.service.unit.test.ts"]
+  file_caelundas_src_modules_quintuple_aspects_quintuple_aspects_constants_ts["caelundas/src/modules/quintuple-aspects/quintuple-aspects.constants.ts"]
+  file_caelundas_src_modules_quintuple_aspects_quintuple_aspects_module_ts["caelundas/src/modules/quintuple-aspects/quintuple-aspects.module.ts"]
+  file_caelundas_src_modules_quintuple_aspects_quintuple_aspects_service_integration_test_ts["caelundas/src/modules/quintuple-aspects/quintuple-aspects.service.integration.test.ts"]
+  file_caelundas_src_modules_quintuple_aspects_quintuple_aspects_service_ts["caelundas/src/modules/quintuple-aspects/quintuple-aspects.service.ts"]
+  file_caelundas_src_modules_quintuple_aspects_quintuple_aspects_service_unit_test_ts["caelundas/src/modules/quintuple-aspects/quintuple-aspects.service.unit.test.ts"]
+  file_caelundas_src_modules_quintuple_aspects_quintuple_aspects_types_ts["caelundas/src/modules/quintuple-aspects/quintuple-aspects.types.ts"]
+  file_caelundas_src_modules_retrogrades_retrogrades_constants_ts["caelundas/src/modules/retrogrades/retrogrades.constants.ts"]
+  file_caelundas_src_modules_retrogrades_retrogrades_module_ts["caelundas/src/modules/retrogrades/retrogrades.module.ts"]
+  file_caelundas_src_modules_retrogrades_retrogrades_service_integration_test_ts["caelundas/src/modules/retrogrades/retrogrades.service.integration.test.ts"]
+  file_caelundas_src_modules_retrogrades_retrogrades_service_ts["caelundas/src/modules/retrogrades/retrogrades.service.ts"]
+  file_caelundas_src_modules_retrogrades_retrogrades_service_unit_test_ts["caelundas/src/modules/retrogrades/retrogrades.service.unit.test.ts"]
+  file_caelundas_src_modules_retrogrades_retrogrades_types_ts["caelundas/src/modules/retrogrades/retrogrades.types.ts"]
+  file_caelundas_src_modules_sextuple_aspects_sextuple_aspects_composer_service_ts["caelundas/src/modules/sextuple-aspects/sextuple-aspects-composer.service.ts"]
+  file_caelundas_src_modules_sextuple_aspects_sextuple_aspects_composer_service_unit_test_ts["caelundas/src/modules/sextuple-aspects/sextuple-aspects-composer.service.unit.test.ts"]
+  file_caelundas_src_modules_sextuple_aspects_sextuple_aspects_constants_ts["caelundas/src/modules/sextuple-aspects/sextuple-aspects.constants.ts"]
+  file_caelundas_src_modules_sextuple_aspects_sextuple_aspects_module_ts["caelundas/src/modules/sextuple-aspects/sextuple-aspects.module.ts"]
+  file_caelundas_src_modules_sextuple_aspects_sextuple_aspects_service_integration_test_ts["caelundas/src/modules/sextuple-aspects/sextuple-aspects.service.integration.test.ts"]
+  file_caelundas_src_modules_sextuple_aspects_sextuple_aspects_service_ts["caelundas/src/modules/sextuple-aspects/sextuple-aspects.service.ts"]
+  file_caelundas_src_modules_sextuple_aspects_sextuple_aspects_service_unit_test_ts["caelundas/src/modules/sextuple-aspects/sextuple-aspects.service.unit.test.ts"]
+  file_caelundas_src_modules_sextuple_aspects_sextuple_aspects_types_ts["caelundas/src/modules/sextuple-aspects/sextuple-aspects.types.ts"]
+  file_caelundas_src_modules_specialty_aspects_specialty_aspects_composer_service_ts["caelundas/src/modules/specialty-aspects/specialty-aspects-composer.service.ts"]
+  file_caelundas_src_modules_specialty_aspects_specialty_aspects_composer_service_unit_test_ts["caelundas/src/modules/specialty-aspects/specialty-aspects-composer.service.unit.test.ts"]
+  file_caelundas_src_modules_specialty_aspects_specialty_aspects_event_service_ts["caelundas/src/modules/specialty-aspects/specialty-aspects-event.service.ts"]
+  file_caelundas_src_modules_specialty_aspects_specialty_aspects_event_service_unit_test_ts["caelundas/src/modules/specialty-aspects/specialty-aspects-event.service.unit.test.ts"]
+  file_caelundas_src_modules_specialty_aspects_specialty_aspects_progressive_service_ts["caelundas/src/modules/specialty-aspects/specialty-aspects-progressive.service.ts"]
+  file_caelundas_src_modules_specialty_aspects_specialty_aspects_progressive_service_unit_test_ts["caelundas/src/modules/specialty-aspects/specialty-aspects-progressive.service.unit.test.ts"]
+  file_caelundas_src_modules_specialty_aspects_specialty_aspects_constants_ts["caelundas/src/modules/specialty-aspects/specialty-aspects.constants.ts"]
+  file_caelundas_src_modules_specialty_aspects_specialty_aspects_module_ts["caelundas/src/modules/specialty-aspects/specialty-aspects.module.ts"]
+  file_caelundas_src_modules_specialty_aspects_specialty_aspects_service_ts["caelundas/src/modules/specialty-aspects/specialty-aspects.service.ts"]
+  file_caelundas_src_modules_specialty_aspects_specialty_aspects_service_unit_test_ts["caelundas/src/modules/specialty-aspects/specialty-aspects.service.unit.test.ts"]
+  file_caelundas_src_modules_specialty_aspects_specialty_aspects_types_ts["caelundas/src/modules/specialty-aspects/specialty-aspects.types.ts"]
+  file_caelundas_src_modules_stellium_stellium_constants_ts["caelundas/src/modules/stellium/stellium.constants.ts"]
+  file_caelundas_src_modules_stellium_stellium_module_ts["caelundas/src/modules/stellium/stellium.module.ts"]
+  file_caelundas_src_modules_stellium_stellium_service_ts["caelundas/src/modules/stellium/stellium.service.ts"]
+  file_caelundas_src_modules_stellium_stellium_service_unit_test_ts["caelundas/src/modules/stellium/stellium.service.unit.test.ts"]
+  file_caelundas_src_modules_stellium_stellium_types_ts["caelundas/src/modules/stellium/stellium.types.ts"]
+  file_caelundas_src_modules_triple_aspects_triple_aspects_composer_service_ts["caelundas/src/modules/triple-aspects/triple-aspects-composer.service.ts"]
+  file_caelundas_src_modules_triple_aspects_triple_aspects_composer_service_unit_test_ts["caelundas/src/modules/triple-aspects/triple-aspects-composer.service.unit.test.ts"]
+  file_caelundas_src_modules_triple_aspects_triple_aspects_detector_service_ts["caelundas/src/modules/triple-aspects/triple-aspects-detector.service.ts"]
+  file_caelundas_src_modules_triple_aspects_triple_aspects_detector_service_unit_test_ts["caelundas/src/modules/triple-aspects/triple-aspects-detector.service.unit.test.ts"]
+  file_caelundas_src_modules_triple_aspects_triple_aspects_constants_ts["caelundas/src/modules/triple-aspects/triple-aspects.constants.ts"]
+  file_caelundas_src_modules_triple_aspects_triple_aspects_module_ts["caelundas/src/modules/triple-aspects/triple-aspects.module.ts"]
+  file_caelundas_src_modules_triple_aspects_triple_aspects_service_integration_test_ts["caelundas/src/modules/triple-aspects/triple-aspects.service.integration.test.ts"]
+  file_caelundas_src_modules_triple_aspects_triple_aspects_service_ts["caelundas/src/modules/triple-aspects/triple-aspects.service.ts"]
+  file_caelundas_src_modules_triple_aspects_triple_aspects_service_unit_test_ts["caelundas/src/modules/triple-aspects/triple-aspects.service.unit.test.ts"]
+  file_caelundas_src_modules_triple_aspects_triple_aspects_types_ts["caelundas/src/modules/triple-aspects/triple-aspects.types.ts"]
+  file_caelundas_src_modules_twilights_twilights_builder_service_ts["caelundas/src/modules/twilights/twilights-builder.service.ts"]
+  file_caelundas_src_modules_twilights_twilights_builder_service_unit_test_ts["caelundas/src/modules/twilights/twilights-builder.service.unit.test.ts"]
+  file_caelundas_src_modules_twilights_twilights_composer_service_ts["caelundas/src/modules/twilights/twilights-composer.service.ts"]
+  file_caelundas_src_modules_twilights_twilights_composer_service_unit_test_ts["caelundas/src/modules/twilights/twilights-composer.service.unit.test.ts"]
+  file_caelundas_src_modules_twilights_twilights_detector_service_ts["caelundas/src/modules/twilights/twilights-detector.service.ts"]
+  file_caelundas_src_modules_twilights_twilights_detector_service_unit_test_ts["caelundas/src/modules/twilights/twilights-detector.service.unit.test.ts"]
+  file_caelundas_src_modules_twilights_twilights_constants_ts["caelundas/src/modules/twilights/twilights.constants.ts"]
+  file_caelundas_src_modules_twilights_twilights_module_ts["caelundas/src/modules/twilights/twilights.module.ts"]
+  file_caelundas_src_modules_twilights_twilights_service_ts["caelundas/src/modules/twilights/twilights.service.ts"]
+  file_caelundas_src_modules_twilights_twilights_service_unit_test_ts["caelundas/src/modules/twilights/twilights.service.unit.test.ts"]
+  file_caelundas_src_modules_twilights_twilights_types_ts["caelundas/src/modules/twilights/twilights.types.ts"]
+  file_caelundas_src_repl_ts["caelundas/src/repl.ts"]
+  file_caelundas_testing_aspect_test_utilities_ts["caelundas/testing/aspect-test.utilities.ts"]
+  file_caelundas_testing_mocks_ts["caelundas/testing/mocks.ts"]
+  file_caelundas_testing_setup_ts["caelundas/testing/setup.ts"]
+  file_caelundas_vitest_config_ts["caelundas/vitest.config.ts"]
+  file_callidescope_agents_codependix_config_ts["callidescope-agents/codependix.config.ts"]
+  file_callidescope_agents_codometer_config_ts["callidescope-agents/codometer.config.ts"]
+  file_callidescope_agents_eslint_config_ts["callidescope-agents/eslint.config.ts"]
+  file_callidescope_agents_testing_setup_ts["callidescope-agents/testing/setup.ts"]
+  file_callidescope_agents_testing_skills_unit_test_ts["callidescope-agents/testing/skills.unit.test.ts"]
+  file_callidescope_agents_vitest_config_ts["callidescope-agents/vitest.config.ts"]
+  file_callidescope_cli_callidescope_config_ts["callidescope-cli/callidescope.config.ts"]
+  file_callidescope_cli_codependix_config_ts["callidescope-cli/codependix.config.ts"]
+  file_callidescope_cli_codometer_config_ts["callidescope-cli/codometer.config.ts"]
+  file_callidescope_cli_eslint_config_ts["callidescope-cli/eslint.config.ts"]
+  file_callidescope_cli_src_constants_ts["callidescope-cli/src/constants.ts"]
+  file_callidescope_cli_src_index_ts["callidescope-cli/src/index.ts"]
+  file_callidescope_cli_src_main_end_to_end_test_ts["callidescope-cli/src/main.end-to-end.test.ts"]
+  file_callidescope_cli_src_main_module_ts["callidescope-cli/src/main.module.ts"]
+  file_callidescope_cli_src_main_ts["callidescope-cli/src/main.ts"]
+  file_callidescope_cli_src_modules_address_lookup_address_lookup_constants_ts["callidescope-cli/src/modules/address-lookup/address-lookup.constants.ts"]
+  file_callidescope_cli_src_modules_address_lookup_address_lookup_constants_unit_test_ts["callidescope-cli/src/modules/address-lookup/address-lookup.constants.unit.test.ts"]
+  file_callidescope_cli_src_modules_address_lookup_address_lookup_module_ts["callidescope-cli/src/modules/address-lookup/address-lookup.module.ts"]
+  file_callidescope_cli_src_modules_address_lookup_address_lookup_service_ts["callidescope-cli/src/modules/address-lookup/address-lookup.service.ts"]
+  file_callidescope_cli_src_modules_address_lookup_address_lookup_service_unit_test_ts["callidescope-cli/src/modules/address-lookup/address-lookup.service.unit.test.ts"]
+  file_callidescope_cli_src_modules_address_lookup_address_lookup_types_ts["callidescope-cli/src/modules/address-lookup/address-lookup.types.ts"]
+  file_callidescope_cli_src_modules_breadth_breadth_command_ts["callidescope-cli/src/modules/breadth/breadth.command.ts"]
+  file_callidescope_cli_src_modules_breadth_breadth_command_unit_test_ts["callidescope-cli/src/modules/breadth/breadth.command.unit.test.ts"]
+  file_callidescope_cli_src_modules_breadth_breadth_constants_ts["callidescope-cli/src/modules/breadth/breadth.constants.ts"]
+  file_callidescope_cli_src_modules_breadth_breadth_module_ts["callidescope-cli/src/modules/breadth/breadth.module.ts"]
+  file_callidescope_cli_src_modules_breadth_breadth_types_ts["callidescope-cli/src/modules/breadth/breadth.types.ts"]
+  file_callidescope_cli_src_modules_callidescope_callidescope_command_ts["callidescope-cli/src/modules/callidescope/callidescope.command.ts"]
+  file_callidescope_cli_src_modules_callidescope_callidescope_command_unit_test_ts["callidescope-cli/src/modules/callidescope/callidescope.command.unit.test.ts"]
+  file_callidescope_cli_src_modules_callidescope_callidescope_constants_ts["callidescope-cli/src/modules/callidescope/callidescope.constants.ts"]
+  file_callidescope_cli_src_modules_callidescope_callidescope_module_ts["callidescope-cli/src/modules/callidescope/callidescope.module.ts"]
+  file_callidescope_cli_src_modules_callidescope_callidescope_service_integration_test_ts["callidescope-cli/src/modules/callidescope/callidescope.service.integration.test.ts"]
+  file_callidescope_cli_src_modules_callidescope_callidescope_service_ts["callidescope-cli/src/modules/callidescope/callidescope.service.ts"]
+  file_callidescope_cli_src_modules_callidescope_callidescope_service_unit_test_ts["callidescope-cli/src/modules/callidescope/callidescope.service.unit.test.ts"]
+  file_callidescope_cli_src_modules_callidescope_callidescope_types_ts["callidescope-cli/src/modules/callidescope/callidescope.types.ts"]
+  file_callidescope_cli_src_modules_depth_depth_command_ts["callidescope-cli/src/modules/depth/depth.command.ts"]
+  file_callidescope_cli_src_modules_depth_depth_command_unit_test_ts["callidescope-cli/src/modules/depth/depth.command.unit.test.ts"]
+  file_callidescope_cli_src_modules_depth_depth_constants_ts["callidescope-cli/src/modules/depth/depth.constants.ts"]
+  file_callidescope_cli_src_modules_depth_depth_module_ts["callidescope-cli/src/modules/depth/depth.module.ts"]
+  file_callidescope_cli_src_modules_depth_depth_types_ts["callidescope-cli/src/modules/depth/depth.types.ts"]
+  file_callidescope_cli_src_modules_limits_limits_command_ts["callidescope-cli/src/modules/limits/limits.command.ts"]
+  file_callidescope_cli_src_modules_limits_limits_command_unit_test_ts["callidescope-cli/src/modules/limits/limits.command.unit.test.ts"]
+  file_callidescope_cli_src_modules_limits_limits_constants_ts["callidescope-cli/src/modules/limits/limits.constants.ts"]
+  file_callidescope_cli_src_modules_limits_limits_module_ts["callidescope-cli/src/modules/limits/limits.module.ts"]
+  file_callidescope_cli_src_modules_limits_limits_service_ts["callidescope-cli/src/modules/limits/limits.service.ts"]
+  file_callidescope_cli_src_modules_limits_limits_service_unit_test_ts["callidescope-cli/src/modules/limits/limits.service.unit.test.ts"]
+  file_callidescope_cli_src_modules_limits_limits_types_ts["callidescope-cli/src/modules/limits/limits.types.ts"]
+  file_callidescope_cli_src_modules_limits_render_limits_service_ts["callidescope-cli/src/modules/limits/render-limits.service.ts"]
+  file_callidescope_cli_src_modules_limits_render_limits_service_unit_test_ts["callidescope-cli/src/modules/limits/render-limits.service.unit.test.ts"]
+  file_callidescope_cli_src_repl_ts["callidescope-cli/src/repl.ts"]
+  file_callidescope_cli_src_repl_unit_test_ts["callidescope-cli/src/repl.unit.test.ts"]
+  file_callidescope_cli_testing_mocks_ts["callidescope-cli/testing/mocks.ts"]
+  file_callidescope_cli_testing_modules_ts["callidescope-cli/testing/modules.ts"]
+  file_callidescope_cli_testing_programs_ts["callidescope-cli/testing/programs.ts"]
+  file_callidescope_cli_testing_setup_ts["callidescope-cli/testing/setup.ts"]
+  file_callidescope_cli_vitest_config_ts["callidescope-cli/vitest.config.ts"]
+  file_callidescope_configuration_callidescope_config_ts["callidescope-configuration/callidescope.config.ts"]
+  file_callidescope_configuration_codependix_config_ts["callidescope-configuration/codependix.config.ts"]
+  file_callidescope_configuration_codometer_config_ts["callidescope-configuration/codometer.config.ts"]
+  file_callidescope_configuration_eslint_config_ts["callidescope-configuration/eslint.config.ts"]
+  file_callidescope_configuration_src_index_ts["callidescope-configuration/src/index.ts"]
+  file_callidescope_configuration_src_index_unit_test_ts["callidescope-configuration/src/index.unit.test.ts"]
+  file_callidescope_configuration_src_modules_configuration_configuration_file_module_ts["callidescope-configuration/src/modules/configuration/configuration-file.module.ts"]
+  file_callidescope_configuration_src_modules_configuration_configuration_file_service_ts["callidescope-configuration/src/modules/configuration/configuration-file.service.ts"]
+  file_callidescope_configuration_src_modules_configuration_configuration_file_service_unit_test_ts["callidescope-configuration/src/modules/configuration/configuration-file.service.unit.test.ts"]
+  file_callidescope_configuration_src_modules_configuration_configuration_file_types_ts["callidescope-configuration/src/modules/configuration/configuration-file.types.ts"]
+  file_callidescope_configuration_src_modules_configuration_configuration_constants_ts["callidescope-configuration/src/modules/configuration/configuration.constants.ts"]
+  file_callidescope_configuration_src_modules_configuration_configuration_module_ts["callidescope-configuration/src/modules/configuration/configuration.module.ts"]
+  file_callidescope_configuration_src_modules_configuration_configuration_module_unit_test_ts["callidescope-configuration/src/modules/configuration/configuration.module.unit.test.ts"]
+  file_callidescope_configuration_src_modules_configuration_configuration_service_ts["callidescope-configuration/src/modules/configuration/configuration.service.ts"]
+  file_callidescope_configuration_src_modules_configuration_configuration_service_unit_test_ts["callidescope-configuration/src/modules/configuration/configuration.service.unit.test.ts"]
+  file_callidescope_configuration_src_modules_configuration_configuration_types_ts["callidescope-configuration/src/modules/configuration/configuration.types.ts"]
+  file_callidescope_configuration_src_modules_configuration_project_configuration_service_ts["callidescope-configuration/src/modules/configuration/project-configuration.service.ts"]
+  file_callidescope_configuration_src_modules_configuration_project_configuration_service_unit_test_ts["callidescope-configuration/src/modules/configuration/project-configuration.service.unit.test.ts"]
+  file_callidescope_configuration_src_modules_flag_resolution_flag_resolution_constants_ts["callidescope-configuration/src/modules/flag-resolution/flag-resolution.constants.ts"]
+  file_callidescope_configuration_src_modules_flag_resolution_flag_resolution_module_ts["callidescope-configuration/src/modules/flag-resolution/flag-resolution.module.ts"]
+  file_callidescope_configuration_src_modules_flag_resolution_flag_resolution_service_ts["callidescope-configuration/src/modules/flag-resolution/flag-resolution.service.ts"]
+  file_callidescope_configuration_src_modules_flag_resolution_flag_resolution_service_unit_test_ts["callidescope-configuration/src/modules/flag-resolution/flag-resolution.service.unit.test.ts"]
+  file_callidescope_configuration_src_modules_flag_resolution_flag_resolution_types_ts["callidescope-configuration/src/modules/flag-resolution/flag-resolution.types.ts"]
+  file_callidescope_configuration_src_modules_input_input_constants_ts["callidescope-configuration/src/modules/input/input.constants.ts"]
+  file_callidescope_configuration_src_modules_input_input_module_ts["callidescope-configuration/src/modules/input/input.module.ts"]
+  file_callidescope_configuration_src_modules_input_input_service_ts["callidescope-configuration/src/modules/input/input.service.ts"]
+  file_callidescope_configuration_src_modules_input_input_service_unit_test_ts["callidescope-configuration/src/modules/input/input.service.unit.test.ts"]
+  file_callidescope_configuration_src_modules_input_input_types_ts["callidescope-configuration/src/modules/input/input.types.ts"]
+  file_callidescope_configuration_src_modules_run_plan_run_plan_constants_ts["callidescope-configuration/src/modules/run-plan/run-plan.constants.ts"]
+  file_callidescope_configuration_src_modules_run_plan_run_plan_module_ts["callidescope-configuration/src/modules/run-plan/run-plan.module.ts"]
+  file_callidescope_configuration_src_modules_run_plan_run_plan_service_ts["callidescope-configuration/src/modules/run-plan/run-plan.service.ts"]
+  file_callidescope_configuration_src_modules_run_plan_run_plan_service_unit_test_ts["callidescope-configuration/src/modules/run-plan/run-plan.service.unit.test.ts"]
+  file_callidescope_configuration_src_modules_run_plan_run_plan_types_ts["callidescope-configuration/src/modules/run-plan/run-plan.types.ts"]
+  file_callidescope_configuration_testing_mocks_ts["callidescope-configuration/testing/mocks.ts"]
+  file_callidescope_configuration_testing_setup_ts["callidescope-configuration/testing/setup.ts"]
+  file_callidescope_configuration_vitest_config_ts["callidescope-configuration/vitest.config.ts"]
+  file_callidescope_core_callidescope_config_ts["callidescope-core/callidescope.config.ts"]
+  file_callidescope_core_codependix_config_ts["callidescope-core/codependix.config.ts"]
+  file_callidescope_core_codometer_config_ts["callidescope-core/codometer.config.ts"]
+  file_callidescope_core_eslint_config_ts["callidescope-core/eslint.config.ts"]
+  file_callidescope_core_src_index_ts["callidescope-core/src/index.ts"]
+  file_callidescope_core_src_index_unit_test_ts["callidescope-core/src/index.unit.test.ts"]
+  file_callidescope_core_src_modules_call_graph_call_graph_types_ts["callidescope-core/src/modules/call-graph/call-graph.types.ts"]
+  file_callidescope_core_testing_setup_ts["callidescope-core/testing/setup.ts"]
+  file_callidescope_core_vitest_config_ts["callidescope-core/vitest.config.ts"]
+  file_callidescope_examples_callidescope_config_ts["callidescope-examples/callidescope.config.ts"]
+  file_callidescope_examples_callidescope_workspace_config_ts["callidescope-examples/callidescope.workspace.config.ts"]
+  file_callidescope_examples_codependix_config_ts["callidescope-examples/codependix.config.ts"]
+  file_callidescope_examples_codometer_config_ts["callidescope-examples/codometer.config.ts"]
+  file_callidescope_examples_eslint_config_ts["callidescope-examples/eslint.config.ts"]
+  file_callidescope_examples_examples_base_class_base_class_ts["callidescope-examples/examples/base-class/base-class.ts"]
+  file_callidescope_examples_examples_base_class_base_task_ts["callidescope-examples/examples/base-class/base-task.ts"]
+  file_callidescope_examples_examples_callback_argument_callback_argument_ts["callidescope-examples/examples/callback-argument/callback-argument.ts"]
+  file_callidescope_examples_examples_computed_member_computed_member_ts["callidescope-examples/examples/computed-member/computed-member.ts"]
+  file_callidescope_examples_examples_constructed_class_constructed_class_ts["callidescope-examples/examples/constructed-class/constructed-class.ts"]
+  file_callidescope_examples_examples_constructed_class_parser_ts["callidescope-examples/examples/constructed-class/parser.ts"]
+  file_callidescope_examples_examples_declared_entry_points_declared_entry_points_ts["callidescope-examples/examples/declared-entry-points/declared-entry-points.ts"]
+  file_callidescope_examples_examples_deep_stack_deep_stack_ts["callidescope-examples/examples/deep-stack/deep-stack.ts"]
+  file_callidescope_examples_examples_dependency_closure_dependency_closure_ts["callidescope-examples/examples/dependency-closure/dependency-closure.ts"]
+  file_callidescope_examples_examples_entry_points_entry_points_ts["callidescope-examples/examples/entry-points/entry-points.ts"]
+  file_callidescope_examples_examples_forwarding_stack_forwarding_stack_ts["callidescope-examples/examples/forwarding-stack/forwarding-stack.ts"]
+  file_callidescope_examples_examples_frame_annotations_frame_annotations_ts["callidescope-examples/examples/frame-annotations/frame-annotations.ts"]
+  file_callidescope_examples_examples_gated_leaf_callidescope_config_ts["callidescope-examples/examples/gated-leaf/callidescope.config.ts"]
+  file_callidescope_examples_examples_gated_leaf_gated_leaf_generated_ts["callidescope-examples/examples/gated-leaf/gated-leaf.generated.ts"]
+  file_callidescope_examples_examples_gated_leaf_gated_leaf_ts["callidescope-examples/examples/gated-leaf/gated-leaf.ts"]
+  file_callidescope_examples_examples_implementation_fan_out_api_sink_ts["callidescope-examples/examples/implementation-fan-out/api-sink.ts"]
+  file_callidescope_examples_examples_implementation_fan_out_console_sink_ts["callidescope-examples/examples/implementation-fan-out/console-sink.ts"]
+  file_callidescope_examples_examples_implementation_fan_out_database_sink_ts["callidescope-examples/examples/implementation-fan-out/database-sink.ts"]
+  file_callidescope_examples_examples_implementation_fan_out_file_sink_ts["callidescope-examples/examples/implementation-fan-out/file-sink.ts"]
+  file_callidescope_examples_examples_implementation_fan_out_line_sink_ts["callidescope-examples/examples/implementation-fan-out/line-sink.ts"]
+  file_callidescope_examples_examples_implementation_fan_out_memory_sink_ts["callidescope-examples/examples/implementation-fan-out/memory-sink.ts"]
+  file_callidescope_examples_examples_implementation_fan_out_network_sink_ts["callidescope-examples/examples/implementation-fan-out/network-sink.ts"]
+  file_callidescope_examples_examples_implementation_fan_out_queue_sink_ts["callidescope-examples/examples/implementation-fan-out/queue-sink.ts"]
+  file_callidescope_examples_examples_implementation_fan_out_stream_sink_ts["callidescope-examples/examples/implementation-fan-out/stream-sink.ts"]
+  file_callidescope_examples_examples_implementation_fan_out_telemetry_sink_ts["callidescope-examples/examples/implementation-fan-out/telemetry-sink.ts"]
+  file_callidescope_examples_examples_injected_dependency_injected_dependency_module_ts["callidescope-examples/examples/injected-dependency/injected-dependency.module.ts"]
+  file_callidescope_examples_examples_injected_dependency_inventory_ts["callidescope-examples/examples/injected-dependency/inventory.ts"]
+  file_callidescope_examples_examples_injected_dependency_orders_ts["callidescope-examples/examples/injected-dependency/orders.ts"]
+  file_callidescope_examples_examples_mutual_recursion_mutual_recursion_ts["callidescope-examples/examples/mutual-recursion/mutual-recursion.ts"]
+  file_callidescope_examples_examples_plain_call_normalize_label_ts["callidescope-examples/examples/plain-call/normalize-label.ts"]
+  file_callidescope_examples_examples_plain_call_plain_call_ts["callidescope-examples/examples/plain-call/plain-call.ts"]
+  file_callidescope_examples_examples_project_depth_limit_project_depth_limit_ts["callidescope-examples/examples/project-depth-limit/project-depth-limit.ts"]
+  file_callidescope_examples_examples_shared_tail_round_to_cents_ts["callidescope-examples/examples/shared-tail/round-to-cents.ts"]
+  file_callidescope_examples_examples_structural_interface_structural_interface_ts["callidescope-examples/examples/structural-interface/structural-interface.ts"]
+  file_callidescope_examples_examples_structural_interface_structural_provider_ts["callidescope-examples/examples/structural-interface/structural-provider.ts"]
+  file_callidescope_examples_src_index_ts["callidescope-examples/src/index.ts"]
+  file_callidescope_examples_src_main_ts["callidescope-examples/src/main.ts"]
+  file_callidescope_examples_testing_examples_integration_test_ts["callidescope-examples/testing/examples.integration.test.ts"]
+  file_callidescope_examples_testing_setup_ts["callidescope-examples/testing/setup.ts"]
+  file_callidescope_examples_vitest_config_ts["callidescope-examples/vitest.config.ts"]
+  file_callidescope_graph_callidescope_config_ts["callidescope-graph/callidescope.config.ts"]
+  file_callidescope_graph_codependix_config_ts["callidescope-graph/codependix.config.ts"]
+  file_callidescope_graph_codometer_config_ts["callidescope-graph/codometer.config.ts"]
+  file_callidescope_graph_eslint_config_ts["callidescope-graph/eslint.config.ts"]
+  file_callidescope_graph_src_index_ts["callidescope-graph/src/index.ts"]
+  file_callidescope_graph_src_modules_callables_address_constants_ts["callidescope-graph/src/modules/callables/address.constants.ts"]
+  file_callidescope_graph_src_modules_callables_address_service_ts["callidescope-graph/src/modules/callables/address.service.ts"]
+  file_callidescope_graph_src_modules_callables_address_service_unit_test_ts["callidescope-graph/src/modules/callables/address.service.unit.test.ts"]
+  file_callidescope_graph_src_modules_callables_address_types_ts["callidescope-graph/src/modules/callables/address.types.ts"]
+  file_callidescope_graph_src_modules_callables_callable_identity_service_ts["callidescope-graph/src/modules/callables/callable-identity.service.ts"]
+  file_callidescope_graph_src_modules_callables_callable_identity_service_unit_test_ts["callidescope-graph/src/modules/callables/callable-identity.service.unit.test.ts"]
+  file_callidescope_graph_src_modules_callables_callables_constants_ts["callidescope-graph/src/modules/callables/callables.constants.ts"]
+  file_callidescope_graph_src_modules_callables_callables_module_ts["callidescope-graph/src/modules/callables/callables.module.ts"]
+  file_callidescope_graph_src_modules_callables_callables_service_ts["callidescope-graph/src/modules/callables/callables.service.ts"]
+  file_callidescope_graph_src_modules_callables_callables_service_unit_test_ts["callidescope-graph/src/modules/callables/callables.service.unit.test.ts"]
+  file_callidescope_graph_src_modules_callables_callables_types_ts["callidescope-graph/src/modules/callables/callables.types.ts"]
+  file_callidescope_graph_src_modules_classes_classes_constants_ts["callidescope-graph/src/modules/classes/classes.constants.ts"]
+  file_callidescope_graph_src_modules_classes_classes_module_ts["callidescope-graph/src/modules/classes/classes.module.ts"]
+  file_callidescope_graph_src_modules_classes_classes_service_ts["callidescope-graph/src/modules/classes/classes.service.ts"]
+  file_callidescope_graph_src_modules_classes_classes_service_unit_test_ts["callidescope-graph/src/modules/classes/classes.service.unit.test.ts"]
+  file_callidescope_graph_src_modules_classes_classes_types_ts["callidescope-graph/src/modules/classes/classes.types.ts"]
+  file_callidescope_graph_src_modules_classes_external_service_ts["callidescope-graph/src/modules/classes/external.service.ts"]
+  file_callidescope_graph_src_modules_classes_external_service_unit_test_ts["callidescope-graph/src/modules/classes/external.service.unit.test.ts"]
+  file_callidescope_graph_src_modules_documentation_documentation_constants_ts["callidescope-graph/src/modules/documentation/documentation.constants.ts"]
+  file_callidescope_graph_src_modules_documentation_documentation_module_ts["callidescope-graph/src/modules/documentation/documentation.module.ts"]
+  file_callidescope_graph_src_modules_documentation_documentation_service_ts["callidescope-graph/src/modules/documentation/documentation.service.ts"]
+  file_callidescope_graph_src_modules_documentation_documentation_service_unit_test_ts["callidescope-graph/src/modules/documentation/documentation.service.unit.test.ts"]
+  file_callidescope_graph_src_modules_documentation_documentation_types_ts["callidescope-graph/src/modules/documentation/documentation.types.ts"]
+  file_callidescope_graph_src_modules_edges_call_sites_service_ts["callidescope-graph/src/modules/edges/call-sites.service.ts"]
+  file_callidescope_graph_src_modules_edges_call_sites_service_unit_test_ts["callidescope-graph/src/modules/edges/call-sites.service.unit.test.ts"]
+  file_callidescope_graph_src_modules_edges_edges_constants_ts["callidescope-graph/src/modules/edges/edges.constants.ts"]
+  file_callidescope_graph_src_modules_edges_edges_module_ts["callidescope-graph/src/modules/edges/edges.module.ts"]
+  file_callidescope_graph_src_modules_edges_edges_service_ts["callidescope-graph/src/modules/edges/edges.service.ts"]
+  file_callidescope_graph_src_modules_edges_edges_service_unit_test_ts["callidescope-graph/src/modules/edges/edges.service.unit.test.ts"]
+  file_callidescope_graph_src_modules_edges_edges_types_ts["callidescope-graph/src/modules/edges/edges.types.ts"]
+  file_callidescope_graph_src_modules_edges_symbol_resolution_service_ts["callidescope-graph/src/modules/edges/symbol-resolution.service.ts"]
+  file_callidescope_graph_src_modules_edges_symbol_resolution_service_unit_test_ts["callidescope-graph/src/modules/edges/symbol-resolution.service.unit.test.ts"]
+  file_callidescope_graph_src_modules_entries_entries_constants_ts["callidescope-graph/src/modules/entries/entries.constants.ts"]
+  file_callidescope_graph_src_modules_entries_entries_module_ts["callidescope-graph/src/modules/entries/entries.module.ts"]
+  file_callidescope_graph_src_modules_entries_entries_service_ts["callidescope-graph/src/modules/entries/entries.service.ts"]
+  file_callidescope_graph_src_modules_entries_entries_service_unit_test_ts["callidescope-graph/src/modules/entries/entries.service.unit.test.ts"]
+  file_callidescope_graph_src_modules_entries_entries_types_ts["callidescope-graph/src/modules/entries/entries.types.ts"]
+  file_callidescope_graph_src_modules_graph_address_depth_constants_ts["callidescope-graph/src/modules/graph/address-depth.constants.ts"]
+  file_callidescope_graph_src_modules_graph_address_depth_service_ts["callidescope-graph/src/modules/graph/address-depth.service.ts"]
+  file_callidescope_graph_src_modules_graph_address_depth_service_unit_test_ts["callidescope-graph/src/modules/graph/address-depth.service.unit.test.ts"]
+  file_callidescope_graph_src_modules_graph_address_depth_types_ts["callidescope-graph/src/modules/graph/address-depth.types.ts"]
+  file_callidescope_graph_src_modules_graph_breadth_service_ts["callidescope-graph/src/modules/graph/breadth.service.ts"]
+  file_callidescope_graph_src_modules_graph_breadth_service_unit_test_ts["callidescope-graph/src/modules/graph/breadth.service.unit.test.ts"]
+  file_callidescope_graph_src_modules_graph_components_constants_ts["callidescope-graph/src/modules/graph/components.constants.ts"]
+  file_callidescope_graph_src_modules_graph_components_service_ts["callidescope-graph/src/modules/graph/components.service.ts"]
+  file_callidescope_graph_src_modules_graph_components_service_unit_test_ts["callidescope-graph/src/modules/graph/components.service.unit.test.ts"]
+  file_callidescope_graph_src_modules_graph_components_types_ts["callidescope-graph/src/modules/graph/components.types.ts"]
+  file_callidescope_graph_src_modules_graph_graph_assembly_service_ts["callidescope-graph/src/modules/graph/graph-assembly.service.ts"]
+  file_callidescope_graph_src_modules_graph_graph_assembly_service_unit_test_ts["callidescope-graph/src/modules/graph/graph-assembly.service.unit.test.ts"]
+  file_callidescope_graph_src_modules_graph_graph_assembly_types_ts["callidescope-graph/src/modules/graph/graph-assembly.types.ts"]
+  file_callidescope_graph_src_modules_graph_graph_depth_service_ts["callidescope-graph/src/modules/graph/graph-depth.service.ts"]
+  file_callidescope_graph_src_modules_graph_graph_depth_service_unit_test_ts["callidescope-graph/src/modules/graph/graph-depth.service.unit.test.ts"]
+  file_callidescope_graph_src_modules_graph_graph_constants_ts["callidescope-graph/src/modules/graph/graph.constants.ts"]
+  file_callidescope_graph_src_modules_graph_graph_module_ts["callidescope-graph/src/modules/graph/graph.module.ts"]
+  file_callidescope_graph_src_modules_graph_graph_service_ts["callidescope-graph/src/modules/graph/graph.service.ts"]
+  file_callidescope_graph_src_modules_graph_graph_service_unit_test_ts["callidescope-graph/src/modules/graph/graph.service.unit.test.ts"]
+  file_callidescope_graph_src_modules_graph_graph_types_ts["callidescope-graph/src/modules/graph/graph.types.ts"]
+  file_callidescope_graph_src_modules_graph_paths_service_ts["callidescope-graph/src/modules/graph/paths.service.ts"]
+  file_callidescope_graph_src_modules_graph_paths_service_unit_test_ts["callidescope-graph/src/modules/graph/paths.service.unit.test.ts"]
+  file_callidescope_graph_src_modules_program_compiler_host_service_ts["callidescope-graph/src/modules/program/compiler-host.service.ts"]
+  file_callidescope_graph_src_modules_program_compiler_host_service_unit_test_ts["callidescope-graph/src/modules/program/compiler-host.service.unit.test.ts"]
+  file_callidescope_graph_src_modules_program_program_constants_ts["callidescope-graph/src/modules/program/program.constants.ts"]
+  file_callidescope_graph_src_modules_program_program_module_ts["callidescope-graph/src/modules/program/program.module.ts"]
+  file_callidescope_graph_src_modules_program_program_service_ts["callidescope-graph/src/modules/program/program.service.ts"]
+  file_callidescope_graph_src_modules_program_program_service_unit_test_ts["callidescope-graph/src/modules/program/program.service.unit.test.ts"]
+  file_callidescope_graph_src_modules_program_program_types_ts["callidescope-graph/src/modules/program/program.types.ts"]
+  file_callidescope_graph_src_modules_signatures_signatures_constants_ts["callidescope-graph/src/modules/signatures/signatures.constants.ts"]
+  file_callidescope_graph_src_modules_signatures_signatures_module_ts["callidescope-graph/src/modules/signatures/signatures.module.ts"]
+  file_callidescope_graph_src_modules_signatures_signatures_service_ts["callidescope-graph/src/modules/signatures/signatures.service.ts"]
+  file_callidescope_graph_src_modules_signatures_signatures_service_unit_test_ts["callidescope-graph/src/modules/signatures/signatures.service.unit.test.ts"]
+  file_callidescope_graph_src_modules_signatures_signatures_types_ts["callidescope-graph/src/modules/signatures/signatures.types.ts"]
+  file_callidescope_graph_src_modules_workspace_file_filter_service_ts["callidescope-graph/src/modules/workspace/file-filter.service.ts"]
+  file_callidescope_graph_src_modules_workspace_file_filter_service_unit_test_ts["callidescope-graph/src/modules/workspace/file-filter.service.unit.test.ts"]
+  file_callidescope_graph_src_modules_workspace_workspace_constants_ts["callidescope-graph/src/modules/workspace/workspace.constants.ts"]
+  file_callidescope_graph_src_modules_workspace_workspace_module_ts["callidescope-graph/src/modules/workspace/workspace.module.ts"]
+  file_callidescope_graph_src_modules_workspace_workspace_service_ts["callidescope-graph/src/modules/workspace/workspace.service.ts"]
+  file_callidescope_graph_src_modules_workspace_workspace_service_unit_test_ts["callidescope-graph/src/modules/workspace/workspace.service.unit.test.ts"]
+  file_callidescope_graph_src_modules_workspace_workspace_types_ts["callidescope-graph/src/modules/workspace/workspace.types.ts"]
+  file_callidescope_graph_testing_mocks_ts["callidescope-graph/testing/mocks.ts"]
+  file_callidescope_graph_testing_modules_ts["callidescope-graph/testing/modules.ts"]
+  file_callidescope_graph_testing_programs_ts["callidescope-graph/testing/programs.ts"]
+  file_callidescope_graph_testing_setup_ts["callidescope-graph/testing/setup.ts"]
+  file_callidescope_graph_vitest_config_ts["callidescope-graph/vitest.config.ts"]
+  file_callidescope_nx_callidescope_config_ts["callidescope-nx/callidescope.config.ts"]
+  file_callidescope_nx_codependix_config_ts["callidescope-nx/codependix.config.ts"]
+  file_callidescope_nx_codometer_config_ts["callidescope-nx/codometer.config.ts"]
+  file_callidescope_nx_eslint_config_ts["callidescope-nx/eslint.config.ts"]
+  file_callidescope_nx_src_executors_address_types_ts["callidescope-nx/src/executors/address.types.ts"]
+  file_callidescope_nx_src_executors_breadth_executor_ts["callidescope-nx/src/executors/breadth/executor.ts"]
+  file_callidescope_nx_src_executors_breadth_executor_unit_test_ts["callidescope-nx/src/executors/breadth/executor.unit.test.ts"]
+  file_callidescope_nx_src_executors_depth_executor_ts["callidescope-nx/src/executors/depth/executor.ts"]
+  file_callidescope_nx_src_executors_depth_executor_unit_test_ts["callidescope-nx/src/executors/depth/executor.unit.test.ts"]
+  file_callidescope_nx_src_executors_gate_executor_integration_test_ts["callidescope-nx/src/executors/gate/executor.integration.test.ts"]
+  file_callidescope_nx_src_executors_gate_executor_ts["callidescope-nx/src/executors/gate/executor.ts"]
+  file_callidescope_nx_src_executors_gate_executor_types_ts["callidescope-nx/src/executors/gate/executor.types.ts"]
+  file_callidescope_nx_src_executors_gate_executor_unit_test_ts["callidescope-nx/src/executors/gate/executor.unit.test.ts"]
+  file_callidescope_nx_src_executors_trace_executor_ts["callidescope-nx/src/executors/trace/executor.ts"]
+  file_callidescope_nx_src_executors_trace_executor_types_ts["callidescope-nx/src/executors/trace/executor.types.ts"]
+  file_callidescope_nx_src_executors_trace_executor_unit_test_ts["callidescope-nx/src/executors/trace/executor.unit.test.ts"]
+  file_callidescope_nx_src_index_ts["callidescope-nx/src/index.ts"]
+  file_callidescope_nx_src_index_unit_test_ts["callidescope-nx/src/index.unit.test.ts"]
+  file_callidescope_nx_src_main_module_ts["callidescope-nx/src/main.module.ts"]
+  file_callidescope_nx_src_modules_address_address_constants_ts["callidescope-nx/src/modules/address/address.constants.ts"]
+  file_callidescope_nx_src_modules_address_address_module_ts["callidescope-nx/src/modules/address/address.module.ts"]
+  file_callidescope_nx_src_modules_address_address_service_ts["callidescope-nx/src/modules/address/address.service.ts"]
+  file_callidescope_nx_src_modules_address_address_service_unit_test_ts["callidescope-nx/src/modules/address/address.service.unit.test.ts"]
+  file_callidescope_nx_src_modules_address_address_types_ts["callidescope-nx/src/modules/address/address.types.ts"]
+  file_callidescope_nx_src_modules_address_address_utilities_ts["callidescope-nx/src/modules/address/address.utilities.ts"]
+  file_callidescope_nx_src_modules_address_address_utilities_unit_test_ts["callidescope-nx/src/modules/address/address.utilities.unit.test.ts"]
+  file_callidescope_nx_src_modules_options_options_constants_ts["callidescope-nx/src/modules/options/options.constants.ts"]
+  file_callidescope_nx_src_modules_options_options_module_ts["callidescope-nx/src/modules/options/options.module.ts"]
+  file_callidescope_nx_src_modules_options_options_service_ts["callidescope-nx/src/modules/options/options.service.ts"]
+  file_callidescope_nx_src_modules_options_options_service_unit_test_ts["callidescope-nx/src/modules/options/options.service.unit.test.ts"]
+  file_callidescope_nx_src_modules_options_options_types_ts["callidescope-nx/src/modules/options/options.types.ts"]
+  file_callidescope_nx_src_modules_plugin_plugin_context_utilities_ts["callidescope-nx/src/modules/plugin/plugin-context.utilities.ts"]
+  file_callidescope_nx_src_modules_plugin_plugin_context_utilities_unit_test_ts["callidescope-nx/src/modules/plugin/plugin-context.utilities.unit.test.ts"]
+  file_callidescope_nx_src_modules_plugin_plugin_constants_ts["callidescope-nx/src/modules/plugin/plugin.constants.ts"]
+  file_callidescope_nx_src_modules_plugin_plugin_module_ts["callidescope-nx/src/modules/plugin/plugin.module.ts"]
+  file_callidescope_nx_src_modules_plugin_plugin_service_ts["callidescope-nx/src/modules/plugin/plugin.service.ts"]
+  file_callidescope_nx_src_modules_plugin_plugin_service_unit_test_ts["callidescope-nx/src/modules/plugin/plugin.service.unit.test.ts"]
+  file_callidescope_nx_src_modules_plugin_plugin_types_ts["callidescope-nx/src/modules/plugin/plugin.types.ts"]
+  file_callidescope_nx_src_modules_plugin_plugin_utilities_ts["callidescope-nx/src/modules/plugin/plugin.utilities.ts"]
+  file_callidescope_nx_src_modules_projects_projects_constants_ts["callidescope-nx/src/modules/projects/projects.constants.ts"]
+  file_callidescope_nx_src_modules_projects_projects_module_ts["callidescope-nx/src/modules/projects/projects.module.ts"]
+  file_callidescope_nx_src_modules_projects_projects_service_ts["callidescope-nx/src/modules/projects/projects.service.ts"]
+  file_callidescope_nx_src_modules_projects_projects_service_unit_test_ts["callidescope-nx/src/modules/projects/projects.service.unit.test.ts"]
+  file_callidescope_nx_src_modules_projects_projects_types_ts["callidescope-nx/src/modules/projects/projects.types.ts"]
+  file_callidescope_nx_src_modules_run_configuration_run_configuration_constants_ts["callidescope-nx/src/modules/run-configuration/run-configuration.constants.ts"]
+  file_callidescope_nx_src_modules_run_configuration_run_configuration_module_ts["callidescope-nx/src/modules/run-configuration/run-configuration.module.ts"]
+  file_callidescope_nx_src_modules_run_configuration_run_configuration_service_ts["callidescope-nx/src/modules/run-configuration/run-configuration.service.ts"]
+  file_callidescope_nx_src_modules_run_configuration_run_configuration_service_unit_test_ts["callidescope-nx/src/modules/run-configuration/run-configuration.service.unit.test.ts"]
+  file_callidescope_nx_src_modules_run_configuration_run_configuration_types_ts["callidescope-nx/src/modules/run-configuration/run-configuration.types.ts"]
+  file_callidescope_nx_testing_mocks_ts["callidescope-nx/testing/mocks.ts"]
+  file_callidescope_nx_testing_setup_ts["callidescope-nx/testing/setup.ts"]
+  file_callidescope_nx_vitest_config_ts["callidescope-nx/vitest.config.ts"]
+  file_callidescope_output_callidescope_config_ts["callidescope-output/callidescope.config.ts"]
+  file_callidescope_output_codependix_config_ts["callidescope-output/codependix.config.ts"]
+  file_callidescope_output_codometer_config_ts["callidescope-output/codometer.config.ts"]
+  file_callidescope_output_eslint_config_ts["callidescope-output/eslint.config.ts"]
+  file_callidescope_output_src_index_ts["callidescope-output/src/index.ts"]
+  file_callidescope_output_src_modules_address_report_address_report_constants_ts["callidescope-output/src/modules/address-report/address-report.constants.ts"]
+  file_callidescope_output_src_modules_address_report_address_report_module_ts["callidescope-output/src/modules/address-report/address-report.module.ts"]
+  file_callidescope_output_src_modules_address_report_address_report_service_ts["callidescope-output/src/modules/address-report/address-report.service.ts"]
+  file_callidescope_output_src_modules_address_report_address_report_service_unit_test_ts["callidescope-output/src/modules/address-report/address-report.service.unit.test.ts"]
+  file_callidescope_output_src_modules_address_report_address_report_types_ts["callidescope-output/src/modules/address-report/address-report.types.ts"]
+  file_callidescope_output_src_modules_output_json_output_json_constants_ts["callidescope-output/src/modules/output-json/output-json.constants.ts"]
+  file_callidescope_output_src_modules_output_json_output_json_module_ts["callidescope-output/src/modules/output-json/output-json.module.ts"]
+  file_callidescope_output_src_modules_output_json_output_json_service_ts["callidescope-output/src/modules/output-json/output-json.service.ts"]
+  file_callidescope_output_src_modules_output_json_output_json_service_unit_test_ts["callidescope-output/src/modules/output-json/output-json.service.unit.test.ts"]
+  file_callidescope_output_src_modules_output_json_output_json_types_ts["callidescope-output/src/modules/output-json/output-json.types.ts"]
+  file_callidescope_output_src_modules_output_markdown_output_markdown_constants_ts["callidescope-output/src/modules/output-markdown/output-markdown.constants.ts"]
+  file_callidescope_output_src_modules_output_markdown_output_markdown_module_ts["callidescope-output/src/modules/output-markdown/output-markdown.module.ts"]
+  file_callidescope_output_src_modules_output_markdown_output_markdown_service_ts["callidescope-output/src/modules/output-markdown/output-markdown.service.ts"]
+  file_callidescope_output_src_modules_output_markdown_output_markdown_service_unit_test_ts["callidescope-output/src/modules/output-markdown/output-markdown.service.unit.test.ts"]
+  file_callidescope_output_src_modules_output_markdown_output_markdown_types_ts["callidescope-output/src/modules/output-markdown/output-markdown.types.ts"]
+  file_callidescope_output_src_modules_project_reports_project_reports_constants_ts["callidescope-output/src/modules/project-reports/project-reports.constants.ts"]
+  file_callidescope_output_src_modules_project_reports_project_reports_module_ts["callidescope-output/src/modules/project-reports/project-reports.module.ts"]
+  file_callidescope_output_src_modules_project_reports_project_reports_service_ts["callidescope-output/src/modules/project-reports/project-reports.service.ts"]
+  file_callidescope_output_src_modules_project_reports_project_reports_service_unit_test_ts["callidescope-output/src/modules/project-reports/project-reports.service.unit.test.ts"]
+  file_callidescope_output_src_modules_project_reports_project_reports_types_ts["callidescope-output/src/modules/project-reports/project-reports.types.ts"]
+  file_callidescope_output_src_modules_report_findings_report_findings_constants_ts["callidescope-output/src/modules/report-findings/report-findings.constants.ts"]
+  file_callidescope_output_src_modules_report_findings_report_findings_module_ts["callidescope-output/src/modules/report-findings/report-findings.module.ts"]
+  file_callidescope_output_src_modules_report_findings_report_findings_service_ts["callidescope-output/src/modules/report-findings/report-findings.service.ts"]
+  file_callidescope_output_src_modules_report_findings_report_findings_service_unit_test_ts["callidescope-output/src/modules/report-findings/report-findings.service.unit.test.ts"]
+  file_callidescope_output_src_modules_report_findings_report_findings_types_ts["callidescope-output/src/modules/report-findings/report-findings.types.ts"]
+  file_callidescope_output_src_modules_report_markdown_report_service_ts["callidescope-output/src/modules/report/markdown-report.service.ts"]
+  file_callidescope_output_src_modules_report_markdown_report_service_unit_test_ts["callidescope-output/src/modules/report/markdown-report.service.unit.test.ts"]
+  file_callidescope_output_src_modules_report_mermaid_report_service_ts["callidescope-output/src/modules/report/mermaid-report.service.ts"]
+  file_callidescope_output_src_modules_report_mermaid_report_service_unit_test_ts["callidescope-output/src/modules/report/mermaid-report.service.unit.test.ts"]
+  file_callidescope_output_src_modules_report_report_constants_ts["callidescope-output/src/modules/report/report.constants.ts"]
+  file_callidescope_output_src_modules_report_report_module_ts["callidescope-output/src/modules/report/report.module.ts"]
+  file_callidescope_output_src_modules_report_report_service_ts["callidescope-output/src/modules/report/report.service.ts"]
+  file_callidescope_output_src_modules_report_report_service_unit_test_ts["callidescope-output/src/modules/report/report.service.unit.test.ts"]
+  file_callidescope_output_src_modules_report_report_types_ts["callidescope-output/src/modules/report/report.types.ts"]
+  file_callidescope_output_src_modules_report_workspace_report_service_ts["callidescope-output/src/modules/report/workspace-report.service.ts"]
+  file_callidescope_output_src_modules_report_workspace_report_service_unit_test_ts["callidescope-output/src/modules/report/workspace-report.service.unit.test.ts"]
+  file_callidescope_output_src_modules_write_destinations_write_destinations_constants_ts["callidescope-output/src/modules/write-destinations/write-destinations.constants.ts"]
+  file_callidescope_output_src_modules_write_destinations_write_destinations_module_ts["callidescope-output/src/modules/write-destinations/write-destinations.module.ts"]
+  file_callidescope_output_src_modules_write_destinations_write_destinations_service_ts["callidescope-output/src/modules/write-destinations/write-destinations.service.ts"]
+  file_callidescope_output_src_modules_write_destinations_write_destinations_service_unit_test_ts["callidescope-output/src/modules/write-destinations/write-destinations.service.unit.test.ts"]
+  file_callidescope_output_src_modules_write_destinations_write_destinations_types_ts["callidescope-output/src/modules/write-destinations/write-destinations.types.ts"]
+  file_callidescope_output_testing_mocks_ts["callidescope-output/testing/mocks.ts"]
+  file_callidescope_output_testing_modules_ts["callidescope-output/testing/modules.ts"]
+  file_callidescope_output_testing_setup_ts["callidescope-output/testing/setup.ts"]
+  file_callidescope_output_vitest_config_ts["callidescope-output/vitest.config.ts"]
+  file_codependix_agents_codependix_config_ts["codependix-agents/codependix.config.ts"]
+  file_codependix_agents_codometer_config_ts["codependix-agents/codometer.config.ts"]
+  file_codependix_agents_eslint_config_ts["codependix-agents/eslint.config.ts"]
+  file_codependix_agents_testing_setup_ts["codependix-agents/testing/setup.ts"]
+  file_codependix_agents_testing_skills_unit_test_ts["codependix-agents/testing/skills.unit.test.ts"]
+  file_codependix_agents_vitest_config_ts["codependix-agents/vitest.config.ts"]
+  file_codependix_boundaries_callidescope_config_ts["codependix-boundaries/callidescope.config.ts"]
+  file_codependix_boundaries_codependix_config_ts["codependix-boundaries/codependix.config.ts"]
+  file_codependix_boundaries_codometer_config_ts["codependix-boundaries/codometer.config.ts"]
+  file_codependix_boundaries_eslint_config_ts["codependix-boundaries/eslint.config.ts"]
+  file_codependix_boundaries_src_index_ts["codependix-boundaries/src/index.ts"]
+  file_codependix_boundaries_src_modules_boundaries_boundaries_constants_ts["codependix-boundaries/src/modules/boundaries/boundaries.constants.ts"]
+  file_codependix_boundaries_src_modules_boundaries_boundaries_module_ts["codependix-boundaries/src/modules/boundaries/boundaries.module.ts"]
+  file_codependix_boundaries_src_modules_boundaries_boundaries_module_unit_test_ts["codependix-boundaries/src/modules/boundaries/boundaries.module.unit.test.ts"]
+  file_codependix_boundaries_src_modules_boundaries_boundaries_service_ts["codependix-boundaries/src/modules/boundaries/boundaries.service.ts"]
+  file_codependix_boundaries_src_modules_boundaries_boundaries_service_unit_test_ts["codependix-boundaries/src/modules/boundaries/boundaries.service.unit.test.ts"]
+  file_codependix_boundaries_src_modules_boundaries_boundaries_types_ts["codependix-boundaries/src/modules/boundaries/boundaries.types.ts"]
+  file_codependix_boundaries_src_modules_boundaries_boundary_cycles_service_ts["codependix-boundaries/src/modules/boundaries/boundary-cycles.service.ts"]
+  file_codependix_boundaries_src_modules_boundaries_boundary_cycles_service_unit_test_ts["codependix-boundaries/src/modules/boundaries/boundary-cycles.service.unit.test.ts"]
+  file_codependix_boundaries_src_modules_boundaries_boundary_report_service_ts["codependix-boundaries/src/modules/boundaries/boundary-report.service.ts"]
+  file_codependix_boundaries_src_modules_boundaries_boundary_report_service_unit_test_ts["codependix-boundaries/src/modules/boundaries/boundary-report.service.unit.test.ts"]
+  file_codependix_boundaries_src_modules_boundaries_boundary_selector_service_ts["codependix-boundaries/src/modules/boundaries/boundary-selector.service.ts"]
+  file_codependix_boundaries_src_modules_boundaries_boundary_selector_service_unit_test_ts["codependix-boundaries/src/modules/boundaries/boundary-selector.service.unit.test.ts"]
+  file_codependix_boundaries_src_modules_boundary_check_boundary_check_constants_ts["codependix-boundaries/src/modules/boundary-check/boundary-check.constants.ts"]
+  file_codependix_boundaries_src_modules_boundary_check_boundary_check_module_ts["codependix-boundaries/src/modules/boundary-check/boundary-check.module.ts"]
+  file_codependix_boundaries_src_modules_boundary_check_boundary_check_module_unit_test_ts["codependix-boundaries/src/modules/boundary-check/boundary-check.module.unit.test.ts"]
+  file_codependix_boundaries_src_modules_boundary_check_boundary_check_service_ts["codependix-boundaries/src/modules/boundary-check/boundary-check.service.ts"]
+  file_codependix_boundaries_src_modules_boundary_check_boundary_check_service_unit_test_ts["codependix-boundaries/src/modules/boundary-check/boundary-check.service.unit.test.ts"]
+  file_codependix_boundaries_src_modules_boundary_check_boundary_check_types_ts["codependix-boundaries/src/modules/boundary-check/boundary-check.types.ts"]
+  file_codependix_boundaries_src_modules_boundary_check_boundary_graph_service_ts["codependix-boundaries/src/modules/boundary-check/boundary-graph.service.ts"]
+  file_codependix_boundaries_src_modules_boundary_check_boundary_graph_service_unit_test_ts["codependix-boundaries/src/modules/boundary-check/boundary-graph.service.unit.test.ts"]
+  file_codependix_boundaries_src_modules_run_context_run_context_constants_ts["codependix-boundaries/src/modules/run-context/run-context.constants.ts"]
+  file_codependix_boundaries_src_modules_run_context_run_context_module_ts["codependix-boundaries/src/modules/run-context/run-context.module.ts"]
+  file_codependix_boundaries_src_modules_run_context_run_context_module_unit_test_ts["codependix-boundaries/src/modules/run-context/run-context.module.unit.test.ts"]
+  file_codependix_boundaries_src_modules_run_context_run_context_service_ts["codependix-boundaries/src/modules/run-context/run-context.service.ts"]
+  file_codependix_boundaries_src_modules_run_context_run_context_service_unit_test_ts["codependix-boundaries/src/modules/run-context/run-context.service.unit.test.ts"]
+  file_codependix_boundaries_src_modules_run_context_run_context_types_ts["codependix-boundaries/src/modules/run-context/run-context.types.ts"]
+  file_codependix_boundaries_testing_mocks_ts["codependix-boundaries/testing/mocks.ts"]
+  file_codependix_boundaries_testing_setup_ts["codependix-boundaries/testing/setup.ts"]
+  file_codependix_boundaries_vitest_config_ts["codependix-boundaries/vitest.config.ts"]
+  file_codependix_cli_callidescope_config_ts["codependix-cli/callidescope.config.ts"]
+  file_codependix_cli_codependix_config_ts["codependix-cli/codependix.config.ts"]
+  file_codependix_cli_codometer_config_ts["codependix-cli/codometer.config.ts"]
+  file_codependix_cli_eslint_config_ts["codependix-cli/eslint.config.ts"]
+  file_codependix_cli_src_constants_ts["codependix-cli/src/constants.ts"]
+  file_codependix_cli_src_index_ts["codependix-cli/src/index.ts"]
+  file_codependix_cli_src_index_unit_test_ts["codependix-cli/src/index.unit.test.ts"]
+  file_codependix_cli_src_main_end_to_end_test_ts["codependix-cli/src/main.end-to-end.test.ts"]
+  file_codependix_cli_src_main_module_ts["codependix-cli/src/main.module.ts"]
+  file_codependix_cli_src_main_ts["codependix-cli/src/main.ts"]
+  file_codependix_cli_src_modules_map_map_command_integration_test_ts["codependix-cli/src/modules/map/map.command.integration.test.ts"]
+  file_codependix_cli_src_modules_map_map_command_ts["codependix-cli/src/modules/map/map.command.ts"]
+  file_codependix_cli_src_modules_map_map_command_unit_test_ts["codependix-cli/src/modules/map/map.command.unit.test.ts"]
+  file_codependix_cli_src_modules_map_map_constants_ts["codependix-cli/src/modules/map/map.constants.ts"]
+  file_codependix_cli_src_modules_map_map_module_ts["codependix-cli/src/modules/map/map.module.ts"]
+  file_codependix_cli_src_modules_map_map_module_unit_test_ts["codependix-cli/src/modules/map/map.module.unit.test.ts"]
+  file_codependix_cli_src_modules_map_map_types_ts["codependix-cli/src/modules/map/map.types.ts"]
+  file_codependix_cli_src_repl_ts["codependix-cli/src/repl.ts"]
+  file_codependix_cli_src_repl_unit_test_ts["codependix-cli/src/repl.unit.test.ts"]
+  file_codependix_cli_testing_mocks_ts["codependix-cli/testing/mocks.ts"]
+  file_codependix_cli_testing_setup_ts["codependix-cli/testing/setup.ts"]
+  file_codependix_cli_vitest_config_ts["codependix-cli/vitest.config.ts"]
+  file_codependix_configuration_callidescope_config_ts["codependix-configuration/callidescope.config.ts"]
+  file_codependix_configuration_codependix_config_ts["codependix-configuration/codependix.config.ts"]
+  file_codependix_configuration_codometer_config_ts["codependix-configuration/codometer.config.ts"]
+  file_codependix_configuration_eslint_config_ts["codependix-configuration/eslint.config.ts"]
+  file_codependix_configuration_src_index_ts["codependix-configuration/src/index.ts"]
+  file_codependix_configuration_src_index_unit_test_ts["codependix-configuration/src/index.unit.test.ts"]
+  file_codependix_configuration_src_modules_configuration_configuration_loader_service_ts["codependix-configuration/src/modules/configuration/configuration-loader.service.ts"]
+  file_codependix_configuration_src_modules_configuration_configuration_loader_service_unit_test_ts["codependix-configuration/src/modules/configuration/configuration-loader.service.unit.test.ts"]
+  file_codependix_configuration_src_modules_configuration_configuration_constants_ts["codependix-configuration/src/modules/configuration/configuration.constants.ts"]
+  file_codependix_configuration_src_modules_configuration_configuration_module_ts["codependix-configuration/src/modules/configuration/configuration.module.ts"]
+  file_codependix_configuration_src_modules_configuration_configuration_module_unit_test_ts["codependix-configuration/src/modules/configuration/configuration.module.unit.test.ts"]
+  file_codependix_configuration_src_modules_configuration_configuration_service_ts["codependix-configuration/src/modules/configuration/configuration.service.ts"]
+  file_codependix_configuration_src_modules_configuration_configuration_service_unit_test_ts["codependix-configuration/src/modules/configuration/configuration.service.unit.test.ts"]
+  file_codependix_configuration_src_modules_configuration_configuration_types_ts["codependix-configuration/src/modules/configuration/configuration.types.ts"]
+  file_codependix_configuration_src_modules_configuration_flag_resolution_service_ts["codependix-configuration/src/modules/configuration/flag-resolution.service.ts"]
+  file_codependix_configuration_src_modules_configuration_flag_resolution_service_unit_test_ts["codependix-configuration/src/modules/configuration/flag-resolution.service.unit.test.ts"]
+  file_codependix_configuration_src_modules_input_input_constants_ts["codependix-configuration/src/modules/input/input.constants.ts"]
+  file_codependix_configuration_src_modules_input_input_module_ts["codependix-configuration/src/modules/input/input.module.ts"]
+  file_codependix_configuration_src_modules_input_input_module_unit_test_ts["codependix-configuration/src/modules/input/input.module.unit.test.ts"]
+  file_codependix_configuration_src_modules_input_input_service_ts["codependix-configuration/src/modules/input/input.service.ts"]
+  file_codependix_configuration_src_modules_input_input_service_unit_test_ts["codependix-configuration/src/modules/input/input.service.unit.test.ts"]
+  file_codependix_configuration_src_modules_input_input_types_ts["codependix-configuration/src/modules/input/input.types.ts"]
+  file_codependix_configuration_src_modules_override_resolution_override_resolution_constants_ts["codependix-configuration/src/modules/override-resolution/override-resolution.constants.ts"]
+  file_codependix_configuration_src_modules_override_resolution_override_resolution_module_ts["codependix-configuration/src/modules/override-resolution/override-resolution.module.ts"]
+  file_codependix_configuration_src_modules_override_resolution_override_resolution_service_ts["codependix-configuration/src/modules/override-resolution/override-resolution.service.ts"]
+  file_codependix_configuration_src_modules_override_resolution_override_resolution_service_unit_test_ts["codependix-configuration/src/modules/override-resolution/override-resolution.service.unit.test.ts"]
+  file_codependix_configuration_src_modules_override_resolution_override_resolution_types_ts["codependix-configuration/src/modules/override-resolution/override-resolution.types.ts"]
+  file_codependix_configuration_testing_mocks_ts["codependix-configuration/testing/mocks.ts"]
+  file_codependix_configuration_testing_setup_ts["codependix-configuration/testing/setup.ts"]
+  file_codependix_configuration_vitest_config_ts["codependix-configuration/vitest.config.ts"]
+  file_codependix_core_callidescope_config_ts["codependix-core/callidescope.config.ts"]
+  file_codependix_core_codependix_config_ts["codependix-core/codependix.config.ts"]
+  file_codependix_core_codometer_config_ts["codependix-core/codometer.config.ts"]
+  file_codependix_core_eslint_config_ts["codependix-core/eslint.config.ts"]
+  file_codependix_core_src_index_ts["codependix-core/src/index.ts"]
+  file_codependix_core_src_index_unit_test_ts["codependix-core/src/index.unit.test.ts"]
+  file_codependix_core_src_modules_results_results_types_ts["codependix-core/src/modules/results/results.types.ts"]
+  file_codependix_core_src_modules_run_run_types_ts["codependix-core/src/modules/run/run.types.ts"]
+  file_codependix_core_testing_mocks_ts["codependix-core/testing/mocks.ts"]
+  file_codependix_core_testing_setup_ts["codependix-core/testing/setup.ts"]
+  file_codependix_core_vitest_config_ts["codependix-core/vitest.config.ts"]
+  file_codependix_examples_codependix_config_ts["codependix-examples/codependix.config.ts"]
+  file_codependix_examples_codometer_config_ts["codependix-examples/codometer.config.ts"]
+  file_codependix_examples_eslint_config_ts["codependix-examples/eslint.config.ts"]
+  file_codependix_examples_testing_examples_integration_test_ts["codependix-examples/testing/examples.integration.test.ts"]
+  file_codependix_examples_testing_graphs_integration_test_ts["codependix-examples/testing/graphs.integration.test.ts"]
+  file_codependix_examples_testing_render_examples_ts["codependix-examples/testing/render-examples.ts"]
+  file_codependix_examples_testing_render_anchor_placement_ts["codependix-examples/testing/render/anchor-placement.ts"]
+  file_codependix_examples_testing_render_boundary_rules_ts["codependix-examples/testing/render/boundary-rules.ts"]
+  file_codependix_examples_testing_render_builders_ts["codependix-examples/testing/render/builders.ts"]
+  file_codependix_examples_testing_render_catalog_ts["codependix-examples/testing/render/catalog.ts"]
+  file_codependix_examples_testing_render_configuration_ts["codependix-examples/testing/render/configuration.ts"]
+  file_codependix_examples_testing_render_document_ts["codependix-examples/testing/render/document.ts"]
+  file_codependix_examples_testing_render_export_delivery_ts["codependix-examples/testing/render/export-delivery.ts"]
+  file_codependix_examples_testing_render_graph_levels_ts["codependix-examples/testing/render/graph-levels.ts"]
+  file_codependix_examples_testing_render_nestjs_graphs_ts["codependix-examples/testing/render/nestjs-graphs.ts"]
+  file_codependix_examples_testing_render_nx_graphs_ts["codependix-examples/testing/render/nx-graphs.ts"]
+  file_codependix_examples_testing_render_paths_ts["codependix-examples/testing/render/paths.ts"]
+  file_codependix_examples_testing_render_python_imports_ts["codependix-examples/testing/render/python-imports.ts"]
+  file_codependix_examples_testing_render_reading_order_ts["codependix-examples/testing/render/reading-order.ts"]
+  file_codependix_examples_testing_render_run_ts["codependix-examples/testing/render/run.ts"]
+  file_codependix_examples_testing_render_types_ts["codependix-examples/testing/render/types.ts"]
+  file_codependix_examples_testing_render_typescript_imports_ts["codependix-examples/testing/render/typescript-imports.ts"]
+  file_codependix_examples_testing_setup_ts["codependix-examples/testing/setup.ts"]
+  file_codependix_examples_vitest_config_ts["codependix-examples/vitest.config.ts"]
+  file_codependix_file_imports_callidescope_config_ts["codependix-file-imports/callidescope.config.ts"]
+  file_codependix_file_imports_codependix_config_ts["codependix-file-imports/codependix.config.ts"]
+  file_codependix_file_imports_codometer_config_ts["codependix-file-imports/codometer.config.ts"]
+  file_codependix_file_imports_eslint_config_ts["codependix-file-imports/eslint.config.ts"]
+  file_codependix_file_imports_src_index_ts["codependix-file-imports/src/index.ts"]
+  file_codependix_file_imports_src_modules_file_imports_workspace_graph_file_imports_workspace_graph_constants_ts["codependix-file-imports/src/modules/file-imports-workspace-graph/file-imports-workspace-graph.constants.ts"]
+  file_codependix_file_imports_src_modules_file_imports_workspace_graph_file_imports_workspace_graph_module_ts["codependix-file-imports/src/modules/file-imports-workspace-graph/file-imports-workspace-graph.module.ts"]
+  file_codependix_file_imports_src_modules_file_imports_workspace_graph_file_imports_workspace_graph_module_unit_test_ts["codependix-file-imports/src/modules/file-imports-workspace-graph/file-imports-workspace-graph.module.unit.test.ts"]
+  file_codependix_file_imports_src_modules_file_imports_workspace_graph_file_imports_workspace_graph_service_ts["codependix-file-imports/src/modules/file-imports-workspace-graph/file-imports-workspace-graph.service.ts"]
+  file_codependix_file_imports_src_modules_file_imports_workspace_graph_file_imports_workspace_graph_service_unit_test_ts["codependix-file-imports/src/modules/file-imports-workspace-graph/file-imports-workspace-graph.service.unit.test.ts"]
+  file_codependix_file_imports_src_modules_file_imports_workspace_graph_file_imports_workspace_graph_types_ts["codependix-file-imports/src/modules/file-imports-workspace-graph/file-imports-workspace-graph.types.ts"]
+  file_codependix_file_imports_src_modules_python_python_import_graph_service_ts["codependix-file-imports/src/modules/python/python-import-graph.service.ts"]
+  file_codependix_file_imports_src_modules_python_python_import_graph_service_unit_test_ts["codependix-file-imports/src/modules/python/python-import-graph.service.unit.test.ts"]
+  file_codependix_file_imports_src_modules_python_python_import_parser_constants_ts["codependix-file-imports/src/modules/python/python-import-parser.constants.ts"]
+  file_codependix_file_imports_src_modules_python_python_import_parser_service_ts["codependix-file-imports/src/modules/python/python-import-parser.service.ts"]
+  file_codependix_file_imports_src_modules_python_python_import_parser_service_unit_test_ts["codependix-file-imports/src/modules/python/python-import-parser.service.unit.test.ts"]
+  file_codependix_file_imports_src_modules_python_python_import_parser_types_ts["codependix-file-imports/src/modules/python/python-import-parser.types.ts"]
+  file_codependix_file_imports_src_modules_python_python_project_service_ts["codependix-file-imports/src/modules/python/python-project.service.ts"]
+  file_codependix_file_imports_src_modules_python_python_project_service_unit_test_ts["codependix-file-imports/src/modules/python/python-project.service.unit.test.ts"]
+  file_codependix_file_imports_src_modules_python_python_constants_ts["codependix-file-imports/src/modules/python/python.constants.ts"]
+  file_codependix_file_imports_src_modules_python_python_module_ts["codependix-file-imports/src/modules/python/python.module.ts"]
+  file_codependix_file_imports_src_modules_python_python_module_unit_test_ts["codependix-file-imports/src/modules/python/python.module.unit.test.ts"]
+  file_codependix_file_imports_src_modules_python_python_service_ts["codependix-file-imports/src/modules/python/python.service.ts"]
+  file_codependix_file_imports_src_modules_python_python_service_unit_test_ts["codependix-file-imports/src/modules/python/python.service.unit.test.ts"]
+  file_codependix_file_imports_src_modules_python_python_types_ts["codependix-file-imports/src/modules/python/python.types.ts"]
+  file_codependix_file_imports_src_modules_typescript_typescript_import_graph_service_ts["codependix-file-imports/src/modules/typescript/typescript-import-graph.service.ts"]
+  file_codependix_file_imports_src_modules_typescript_typescript_import_graph_service_unit_test_ts["codependix-file-imports/src/modules/typescript/typescript-import-graph.service.unit.test.ts"]
+  file_codependix_file_imports_src_modules_typescript_typescript_project_service_ts["codependix-file-imports/src/modules/typescript/typescript-project.service.ts"]
+  file_codependix_file_imports_src_modules_typescript_typescript_project_service_unit_test_ts["codependix-file-imports/src/modules/typescript/typescript-project.service.unit.test.ts"]
+  file_codependix_file_imports_src_modules_typescript_typescript_constants_ts["codependix-file-imports/src/modules/typescript/typescript.constants.ts"]
+  file_codependix_file_imports_src_modules_typescript_typescript_module_ts["codependix-file-imports/src/modules/typescript/typescript.module.ts"]
+  file_codependix_file_imports_src_modules_typescript_typescript_module_unit_test_ts["codependix-file-imports/src/modules/typescript/typescript.module.unit.test.ts"]
+  file_codependix_file_imports_src_modules_typescript_typescript_service_ts["codependix-file-imports/src/modules/typescript/typescript.service.ts"]
+  file_codependix_file_imports_src_modules_typescript_typescript_service_unit_test_ts["codependix-file-imports/src/modules/typescript/typescript.service.unit.test.ts"]
+  file_codependix_file_imports_src_modules_typescript_typescript_types_ts["codependix-file-imports/src/modules/typescript/typescript.types.ts"]
+  file_codependix_file_imports_testing_mocks_ts["codependix-file-imports/testing/mocks.ts"]
+  file_codependix_file_imports_testing_programs_ts["codependix-file-imports/testing/programs.ts"]
+  file_codependix_file_imports_testing_setup_ts["codependix-file-imports/testing/setup.ts"]
+  file_codependix_file_imports_vitest_config_ts["codependix-file-imports/vitest.config.ts"]
+  file_codependix_nestjs_modules_callidescope_config_ts["codependix-nestjs-modules/callidescope.config.ts"]
+  file_codependix_nestjs_modules_codependix_config_ts["codependix-nestjs-modules/codependix.config.ts"]
+  file_codependix_nestjs_modules_codometer_config_ts["codependix-nestjs-modules/codometer.config.ts"]
+  file_codependix_nestjs_modules_eslint_config_ts["codependix-nestjs-modules/eslint.config.ts"]
+  file_codependix_nestjs_modules_src_index_ts["codependix-nestjs-modules/src/index.ts"]
+  file_codependix_nestjs_modules_src_index_unit_test_ts["codependix-nestjs-modules/src/index.unit.test.ts"]
+  file_codependix_nestjs_modules_src_modules_module_graph_module_graph_constants_ts["codependix-nestjs-modules/src/modules/module-graph/module-graph.constants.ts"]
+  file_codependix_nestjs_modules_src_modules_module_graph_module_graph_module_ts["codependix-nestjs-modules/src/modules/module-graph/module-graph.module.ts"]
+  file_codependix_nestjs_modules_src_modules_module_graph_module_graph_module_unit_test_ts["codependix-nestjs-modules/src/modules/module-graph/module-graph.module.unit.test.ts"]
+  file_codependix_nestjs_modules_src_modules_module_graph_module_graph_service_ts["codependix-nestjs-modules/src/modules/module-graph/module-graph.service.ts"]
+  file_codependix_nestjs_modules_src_modules_module_graph_module_graph_service_unit_test_ts["codependix-nestjs-modules/src/modules/module-graph/module-graph.service.unit.test.ts"]
+  file_codependix_nestjs_modules_src_modules_module_graph_module_graph_types_ts["codependix-nestjs-modules/src/modules/module-graph/module-graph.types.ts"]
+  file_codependix_nestjs_modules_src_modules_nestjs_modules_workspace_graph_nestjs_modules_workspace_graph_constants_ts["codependix-nestjs-modules/src/modules/nestjs-modules-workspace-graph/nestjs-modules-workspace-graph.constants.ts"]
+  file_codependix_nestjs_modules_src_modules_nestjs_modules_workspace_graph_nestjs_modules_workspace_graph_module_ts["codependix-nestjs-modules/src/modules/nestjs-modules-workspace-graph/nestjs-modules-workspace-graph.module.ts"]
+  file_codependix_nestjs_modules_src_modules_nestjs_modules_workspace_graph_nestjs_modules_workspace_graph_module_unit_test_ts["codependix-nestjs-modules/src/modules/nestjs-modules-workspace-graph/nestjs-modules-workspace-graph.module.unit.test.ts"]
+  file_codependix_nestjs_modules_src_modules_nestjs_modules_workspace_graph_nestjs_modules_workspace_graph_service_ts["codependix-nestjs-modules/src/modules/nestjs-modules-workspace-graph/nestjs-modules-workspace-graph.service.ts"]
+  file_codependix_nestjs_modules_src_modules_nestjs_modules_workspace_graph_nestjs_modules_workspace_graph_service_unit_test_ts["codependix-nestjs-modules/src/modules/nestjs-modules-workspace-graph/nestjs-modules-workspace-graph.service.unit.test.ts"]
+  file_codependix_nestjs_modules_src_modules_nestjs_modules_workspace_graph_nestjs_modules_workspace_graph_types_ts["codependix-nestjs-modules/src/modules/nestjs-modules-workspace-graph/nestjs-modules-workspace-graph.types.ts"]
+  file_codependix_nestjs_modules_src_modules_nestjs_project_nestjs_project_synthetic_module_ts["codependix-nestjs-modules/src/modules/nestjs-project/nestjs-project-synthetic.module.ts"]
+  file_codependix_nestjs_modules_src_modules_nestjs_project_nestjs_project_constants_ts["codependix-nestjs-modules/src/modules/nestjs-project/nestjs-project.constants.ts"]
+  file_codependix_nestjs_modules_src_modules_nestjs_project_nestjs_project_module_ts["codependix-nestjs-modules/src/modules/nestjs-project/nestjs-project.module.ts"]
+  file_codependix_nestjs_modules_src_modules_nestjs_project_nestjs_project_module_unit_test_ts["codependix-nestjs-modules/src/modules/nestjs-project/nestjs-project.module.unit.test.ts"]
+  file_codependix_nestjs_modules_src_modules_nestjs_project_nestjs_project_service_ts["codependix-nestjs-modules/src/modules/nestjs-project/nestjs-project.service.ts"]
+  file_codependix_nestjs_modules_src_modules_nestjs_project_nestjs_project_service_unit_test_ts["codependix-nestjs-modules/src/modules/nestjs-project/nestjs-project.service.unit.test.ts"]
+  file_codependix_nestjs_modules_src_modules_nestjs_project_nestjs_project_types_ts["codependix-nestjs-modules/src/modules/nestjs-project/nestjs-project.types.ts"]
+  file_codependix_nestjs_modules_testing_main_module_ts["codependix-nestjs-modules/testing/main.module.ts"]
+  file_codependix_nestjs_modules_testing_mocks_ts["codependix-nestjs-modules/testing/mocks.ts"]
+  file_codependix_nestjs_modules_testing_setup_ts["codependix-nestjs-modules/testing/setup.ts"]
+  file_codependix_nestjs_modules_vitest_config_ts["codependix-nestjs-modules/vitest.config.ts"]
+  file_codependix_nx_projects_callidescope_config_ts["codependix-nx-projects/callidescope.config.ts"]
+  file_codependix_nx_projects_codependix_config_ts["codependix-nx-projects/codependix.config.ts"]
+  file_codependix_nx_projects_codometer_config_ts["codependix-nx-projects/codometer.config.ts"]
+  file_codependix_nx_projects_eslint_config_ts["codependix-nx-projects/eslint.config.ts"]
+  file_codependix_nx_projects_src_index_ts["codependix-nx-projects/src/index.ts"]
+  file_codependix_nx_projects_src_index_unit_test_ts["codependix-nx-projects/src/index.unit.test.ts"]
+  file_codependix_nx_projects_src_modules_neighborhood_neighborhood_constants_ts["codependix-nx-projects/src/modules/neighborhood/neighborhood.constants.ts"]
+  file_codependix_nx_projects_src_modules_neighborhood_neighborhood_module_ts["codependix-nx-projects/src/modules/neighborhood/neighborhood.module.ts"]
+  file_codependix_nx_projects_src_modules_neighborhood_neighborhood_module_unit_test_ts["codependix-nx-projects/src/modules/neighborhood/neighborhood.module.unit.test.ts"]
+  file_codependix_nx_projects_src_modules_neighborhood_neighborhood_service_ts["codependix-nx-projects/src/modules/neighborhood/neighborhood.service.ts"]
+  file_codependix_nx_projects_src_modules_neighborhood_neighborhood_service_unit_test_ts["codependix-nx-projects/src/modules/neighborhood/neighborhood.service.unit.test.ts"]
+  file_codependix_nx_projects_src_modules_neighborhood_neighborhood_types_ts["codependix-nx-projects/src/modules/neighborhood/neighborhood.types.ts"]
+  file_codependix_nx_projects_src_modules_workspace_graph_workspace_graph_constants_ts["codependix-nx-projects/src/modules/workspace-graph/workspace-graph.constants.ts"]
+  file_codependix_nx_projects_src_modules_workspace_graph_workspace_graph_module_ts["codependix-nx-projects/src/modules/workspace-graph/workspace-graph.module.ts"]
+  file_codependix_nx_projects_src_modules_workspace_graph_workspace_graph_module_unit_test_ts["codependix-nx-projects/src/modules/workspace-graph/workspace-graph.module.unit.test.ts"]
+  file_codependix_nx_projects_src_modules_workspace_graph_workspace_graph_service_ts["codependix-nx-projects/src/modules/workspace-graph/workspace-graph.service.ts"]
+  file_codependix_nx_projects_src_modules_workspace_graph_workspace_graph_service_unit_test_ts["codependix-nx-projects/src/modules/workspace-graph/workspace-graph.service.unit.test.ts"]
+  file_codependix_nx_projects_src_modules_workspace_graph_workspace_graph_types_ts["codependix-nx-projects/src/modules/workspace-graph/workspace-graph.types.ts"]
+  file_codependix_nx_projects_testing_mocks_ts["codependix-nx-projects/testing/mocks.ts"]
+  file_codependix_nx_projects_testing_setup_ts["codependix-nx-projects/testing/setup.ts"]
+  file_codependix_nx_projects_vitest_config_ts["codependix-nx-projects/vitest.config.ts"]
+  file_codependix_output_callidescope_config_ts["codependix-output/callidescope.config.ts"]
+  file_codependix_output_codependix_config_ts["codependix-output/codependix.config.ts"]
+  file_codependix_output_codometer_config_ts["codependix-output/codometer.config.ts"]
+  file_codependix_output_eslint_config_ts["codependix-output/eslint.config.ts"]
+  file_codependix_output_src_index_ts["codependix-output/src/index.ts"]
+  file_codependix_output_src_modules_anchors_anchors_constants_ts["codependix-output/src/modules/anchors/anchors.constants.ts"]
+  file_codependix_output_src_modules_anchors_anchors_module_ts["codependix-output/src/modules/anchors/anchors.module.ts"]
+  file_codependix_output_src_modules_anchors_anchors_module_unit_test_ts["codependix-output/src/modules/anchors/anchors.module.unit.test.ts"]
+  file_codependix_output_src_modules_anchors_anchors_service_ts["codependix-output/src/modules/anchors/anchors.service.ts"]
+  file_codependix_output_src_modules_anchors_anchors_service_unit_test_ts["codependix-output/src/modules/anchors/anchors.service.unit.test.ts"]
+  file_codependix_output_src_modules_anchors_anchors_types_ts["codependix-output/src/modules/anchors/anchors.types.ts"]
+  file_codependix_output_src_modules_combined_output_combined_output_constants_ts["codependix-output/src/modules/combined-output/combined-output.constants.ts"]
+  file_codependix_output_src_modules_combined_output_combined_output_module_ts["codependix-output/src/modules/combined-output/combined-output.module.ts"]
+  file_codependix_output_src_modules_combined_output_combined_output_module_unit_test_ts["codependix-output/src/modules/combined-output/combined-output.module.unit.test.ts"]
+  file_codependix_output_src_modules_combined_output_combined_output_service_ts["codependix-output/src/modules/combined-output/combined-output.service.ts"]
+  file_codependix_output_src_modules_combined_output_combined_output_service_unit_test_ts["codependix-output/src/modules/combined-output/combined-output.service.unit.test.ts"]
+  file_codependix_output_src_modules_combined_output_combined_output_types_ts["codependix-output/src/modules/combined-output/combined-output.types.ts"]
+  file_codependix_output_src_modules_delivery_delivery_constants_ts["codependix-output/src/modules/delivery/delivery.constants.ts"]
+  file_codependix_output_src_modules_delivery_delivery_module_ts["codependix-output/src/modules/delivery/delivery.module.ts"]
+  file_codependix_output_src_modules_delivery_delivery_module_unit_test_ts["codependix-output/src/modules/delivery/delivery.module.unit.test.ts"]
+  file_codependix_output_src_modules_delivery_delivery_service_ts["codependix-output/src/modules/delivery/delivery.service.ts"]
+  file_codependix_output_src_modules_delivery_delivery_service_unit_test_ts["codependix-output/src/modules/delivery/delivery.service.unit.test.ts"]
+  file_codependix_output_src_modules_delivery_delivery_types_ts["codependix-output/src/modules/delivery/delivery.types.ts"]
+  file_codependix_output_src_modules_graph_run_graph_run_constants_ts["codependix-output/src/modules/graph-run/graph-run.constants.ts"]
+  file_codependix_output_src_modules_graph_run_graph_run_module_ts["codependix-output/src/modules/graph-run/graph-run.module.ts"]
+  file_codependix_output_src_modules_graph_run_graph_run_module_unit_test_ts["codependix-output/src/modules/graph-run/graph-run.module.unit.test.ts"]
+  file_codependix_output_src_modules_graph_run_graph_run_service_ts["codependix-output/src/modules/graph-run/graph-run.service.ts"]
+  file_codependix_output_src_modules_graph_run_graph_run_service_unit_test_ts["codependix-output/src/modules/graph-run/graph-run.service.unit.test.ts"]
+  file_codependix_output_src_modules_graph_run_graph_run_types_ts["codependix-output/src/modules/graph-run/graph-run.types.ts"]
+  file_codependix_output_src_modules_project_graphs_project_graphs_constants_ts["codependix-output/src/modules/project-graphs/project-graphs.constants.ts"]
+  file_codependix_output_src_modules_project_graphs_project_graphs_module_ts["codependix-output/src/modules/project-graphs/project-graphs.module.ts"]
+  file_codependix_output_src_modules_project_graphs_project_graphs_module_unit_test_ts["codependix-output/src/modules/project-graphs/project-graphs.module.unit.test.ts"]
+  file_codependix_output_src_modules_project_graphs_project_graphs_service_ts["codependix-output/src/modules/project-graphs/project-graphs.service.ts"]
+  file_codependix_output_src_modules_project_graphs_project_graphs_service_unit_test_ts["codependix-output/src/modules/project-graphs/project-graphs.service.unit.test.ts"]
+  file_codependix_output_src_modules_project_graphs_project_graphs_types_ts["codependix-output/src/modules/project-graphs/project-graphs.types.ts"]
+  file_codependix_output_src_modules_python_imports_python_imports_constants_ts["codependix-output/src/modules/python-imports/python-imports.constants.ts"]
+  file_codependix_output_src_modules_python_imports_python_imports_module_ts["codependix-output/src/modules/python-imports/python-imports.module.ts"]
+  file_codependix_output_src_modules_python_imports_python_imports_module_unit_test_ts["codependix-output/src/modules/python-imports/python-imports.module.unit.test.ts"]
+  file_codependix_output_src_modules_python_imports_python_imports_service_ts["codependix-output/src/modules/python-imports/python-imports.service.ts"]
+  file_codependix_output_src_modules_python_imports_python_imports_service_unit_test_ts["codependix-output/src/modules/python-imports/python-imports.service.unit.test.ts"]
+  file_codependix_output_src_modules_python_imports_python_imports_types_ts["codependix-output/src/modules/python-imports/python-imports.types.ts"]
+  file_codependix_output_src_modules_reporting_reporting_constants_ts["codependix-output/src/modules/reporting/reporting.constants.ts"]
+  file_codependix_output_src_modules_reporting_reporting_module_ts["codependix-output/src/modules/reporting/reporting.module.ts"]
+  file_codependix_output_src_modules_reporting_reporting_module_unit_test_ts["codependix-output/src/modules/reporting/reporting.module.unit.test.ts"]
+  file_codependix_output_src_modules_reporting_reporting_service_ts["codependix-output/src/modules/reporting/reporting.service.ts"]
+  file_codependix_output_src_modules_reporting_reporting_service_unit_test_ts["codependix-output/src/modules/reporting/reporting.service.unit.test.ts"]
+  file_codependix_output_src_modules_reporting_reporting_types_ts["codependix-output/src/modules/reporting/reporting.types.ts"]
+  file_codependix_output_src_modules_workspace_graphs_workspace_graphs_constants_ts["codependix-output/src/modules/workspace-graphs/workspace-graphs.constants.ts"]
+  file_codependix_output_src_modules_workspace_graphs_workspace_graphs_module_ts["codependix-output/src/modules/workspace-graphs/workspace-graphs.module.ts"]
+  file_codependix_output_src_modules_workspace_graphs_workspace_graphs_module_unit_test_ts["codependix-output/src/modules/workspace-graphs/workspace-graphs.module.unit.test.ts"]
+  file_codependix_output_src_modules_workspace_graphs_workspace_graphs_service_ts["codependix-output/src/modules/workspace-graphs/workspace-graphs.service.ts"]
+  file_codependix_output_src_modules_workspace_graphs_workspace_graphs_service_unit_test_ts["codependix-output/src/modules/workspace-graphs/workspace-graphs.service.unit.test.ts"]
+  file_codependix_output_src_modules_workspace_graphs_workspace_graphs_types_ts["codependix-output/src/modules/workspace-graphs/workspace-graphs.types.ts"]
+  file_codependix_output_testing_mocks_ts["codependix-output/testing/mocks.ts"]
+  file_codependix_output_testing_setup_ts["codependix-output/testing/setup.ts"]
+  file_codependix_output_vitest_config_ts["codependix-output/vitest.config.ts"]
+  file_codometer_agents_codependix_config_ts["codometer-agents/codependix.config.ts"]
+  file_codometer_agents_codometer_config_ts["codometer-agents/codometer.config.ts"]
+  file_codometer_agents_eslint_config_ts["codometer-agents/eslint.config.ts"]
+  file_codometer_agents_testing_setup_ts["codometer-agents/testing/setup.ts"]
+  file_codometer_agents_testing_skills_unit_test_ts["codometer-agents/testing/skills.unit.test.ts"]
+  file_codometer_agents_vitest_config_ts["codometer-agents/vitest.config.ts"]
+  file_codometer_cli_callidescope_config_ts["codometer-cli/callidescope.config.ts"]
+  file_codometer_cli_codependix_config_ts["codometer-cli/codependix.config.ts"]
+  file_codometer_cli_codometer_config_ts["codometer-cli/codometer.config.ts"]
+  file_codometer_cli_eslint_config_ts["codometer-cli/eslint.config.ts"]
+  file_codometer_cli_src_constants_ts["codometer-cli/src/constants.ts"]
+  file_codometer_cli_src_index_ts["codometer-cli/src/index.ts"]
+  file_codometer_cli_src_main_end_to_end_test_ts["codometer-cli/src/main.end-to-end.test.ts"]
+  file_codometer_cli_src_main_module_ts["codometer-cli/src/main.module.ts"]
+  file_codometer_cli_src_main_ts["codometer-cli/src/main.ts"]
+  file_codometer_cli_src_main_utilities_ts["codometer-cli/src/main.utilities.ts"]
+  file_codometer_cli_src_main_utilities_unit_test_ts["codometer-cli/src/main.utilities.unit.test.ts"]
+  file_codometer_cli_src_modules_changes_changes_command_ts["codometer-cli/src/modules/changes/changes.command.ts"]
+  file_codometer_cli_src_modules_changes_changes_command_unit_test_ts["codometer-cli/src/modules/changes/changes.command.unit.test.ts"]
+  file_codometer_cli_src_modules_changes_changes_constants_ts["codometer-cli/src/modules/changes/changes.constants.ts"]
+  file_codometer_cli_src_modules_changes_changes_module_ts["codometer-cli/src/modules/changes/changes.module.ts"]
+  file_codometer_cli_src_modules_changes_changes_types_ts["codometer-cli/src/modules/changes/changes.types.ts"]
+  file_codometer_cli_src_modules_configuration_configuration_command_ts["codometer-cli/src/modules/configuration/configuration.command.ts"]
+  file_codometer_cli_src_modules_configuration_configuration_command_unit_test_ts["codometer-cli/src/modules/configuration/configuration.command.unit.test.ts"]
+  file_codometer_cli_src_modules_configuration_configuration_constants_ts["codometer-cli/src/modules/configuration/configuration.constants.ts"]
+  file_codometer_cli_src_modules_configuration_configuration_module_ts["codometer-cli/src/modules/configuration/configuration.module.ts"]
+  file_codometer_cli_src_modules_configuration_configuration_types_ts["codometer-cli/src/modules/configuration/configuration.types.ts"]
+  file_codometer_cli_src_modules_measure_measure_command_integration_test_ts["codometer-cli/src/modules/measure/measure.command.integration.test.ts"]
+  file_codometer_cli_src_modules_measure_measure_command_ts["codometer-cli/src/modules/measure/measure.command.ts"]
+  file_codometer_cli_src_modules_measure_measure_command_unit_test_ts["codometer-cli/src/modules/measure/measure.command.unit.test.ts"]
+  file_codometer_cli_src_modules_measure_measure_constants_ts["codometer-cli/src/modules/measure/measure.constants.ts"]
+  file_codometer_cli_src_modules_measure_measure_module_ts["codometer-cli/src/modules/measure/measure.module.ts"]
+  file_codometer_cli_src_modules_measure_measure_types_ts["codometer-cli/src/modules/measure/measure.types.ts"]
+  file_codometer_cli_src_repl_ts["codometer-cli/src/repl.ts"]
+  file_codometer_cli_src_repl_unit_test_ts["codometer-cli/src/repl.unit.test.ts"]
+  file_codometer_cli_testing_fixture_tree_ts["codometer-cli/testing/fixture-tree.ts"]
+  file_codometer_cli_testing_mocks_ts["codometer-cli/testing/mocks.ts"]
+  file_codometer_cli_testing_setup_ts["codometer-cli/testing/setup.ts"]
+  file_codometer_cli_testing_target_tree_ts["codometer-cli/testing/target-tree.ts"]
+  file_codometer_cli_vitest_config_ts["codometer-cli/vitest.config.ts"]
+  file_codometer_configuration_callidescope_config_ts["codometer-configuration/callidescope.config.ts"]
+  file_codometer_configuration_codependix_config_ts["codometer-configuration/codependix.config.ts"]
+  file_codometer_configuration_codometer_config_ts["codometer-configuration/codometer.config.ts"]
+  file_codometer_configuration_eslint_config_ts["codometer-configuration/eslint.config.ts"]
+  file_codometer_configuration_src_index_ts["codometer-configuration/src/index.ts"]
+  file_codometer_configuration_src_index_unit_test_ts["codometer-configuration/src/index.unit.test.ts"]
+  file_codometer_configuration_src_modules_configuration_configuration_flags_constants_ts["codometer-configuration/src/modules/configuration/configuration-flags.constants.ts"]
+  file_codometer_configuration_src_modules_configuration_configuration_flags_service_ts["codometer-configuration/src/modules/configuration/configuration-flags.service.ts"]
+  file_codometer_configuration_src_modules_configuration_configuration_flags_service_unit_test_ts["codometer-configuration/src/modules/configuration/configuration-flags.service.unit.test.ts"]
+  file_codometer_configuration_src_modules_configuration_configuration_loader_service_ts["codometer-configuration/src/modules/configuration/configuration-loader.service.ts"]
+  file_codometer_configuration_src_modules_configuration_configuration_loader_service_unit_test_ts["codometer-configuration/src/modules/configuration/configuration-loader.service.unit.test.ts"]
+  file_codometer_configuration_src_modules_configuration_configuration_loader_types_ts["codometer-configuration/src/modules/configuration/configuration-loader.types.ts"]
+  file_codometer_configuration_src_modules_configuration_configuration_resolver_service_ts["codometer-configuration/src/modules/configuration/configuration-resolver.service.ts"]
+  file_codometer_configuration_src_modules_configuration_configuration_resolver_service_unit_test_ts["codometer-configuration/src/modules/configuration/configuration-resolver.service.unit.test.ts"]
+  file_codometer_configuration_src_modules_configuration_configuration_schema_constants_ts["codometer-configuration/src/modules/configuration/configuration-schema.constants.ts"]
+  file_codometer_configuration_src_modules_configuration_configuration_constants_ts["codometer-configuration/src/modules/configuration/configuration.constants.ts"]
+  file_codometer_configuration_src_modules_configuration_configuration_module_ts["codometer-configuration/src/modules/configuration/configuration.module.ts"]
+  file_codometer_configuration_src_modules_configuration_configuration_module_unit_test_ts["codometer-configuration/src/modules/configuration/configuration.module.unit.test.ts"]
+  file_codometer_configuration_src_modules_configuration_configuration_service_ts["codometer-configuration/src/modules/configuration/configuration.service.ts"]
+  file_codometer_configuration_src_modules_configuration_configuration_service_unit_test_ts["codometer-configuration/src/modules/configuration/configuration.service.unit.test.ts"]
+  file_codometer_configuration_src_modules_configuration_configuration_types_ts["codometer-configuration/src/modules/configuration/configuration.types.ts"]
+  file_codometer_configuration_src_modules_configuration_output_types_ts["codometer-configuration/src/modules/configuration/output.types.ts"]
+  file_codometer_configuration_src_modules_configuration_resolved_types_ts["codometer-configuration/src/modules/configuration/resolved.types.ts"]
+  file_codometer_configuration_testing_mocks_ts["codometer-configuration/testing/mocks.ts"]
+  file_codometer_configuration_testing_setup_ts["codometer-configuration/testing/setup.ts"]
+  file_codometer_configuration_vitest_config_ts["codometer-configuration/vitest.config.ts"]
+  file_codometer_core_callidescope_config_ts["codometer-core/callidescope.config.ts"]
+  file_codometer_core_codependix_config_ts["codometer-core/codependix.config.ts"]
+  file_codometer_core_codometer_config_ts["codometer-core/codometer.config.ts"]
+  file_codometer_core_eslint_config_ts["codometer-core/eslint.config.ts"]
+  file_codometer_core_src_index_ts["codometer-core/src/index.ts"]
+  file_codometer_core_src_index_unit_test_ts["codometer-core/src/index.unit.test.ts"]
+  file_codometer_core_src_lib_errors_constants_ts["codometer-core/src/lib/errors.constants.ts"]
+  file_codometer_core_src_lib_report_types_ts["codometer-core/src/lib/report.types.ts"]
+  file_codometer_core_src_lib_statistics_types_ts["codometer-core/src/lib/statistics.types.ts"]
+  file_codometer_core_src_lib_symbols_constants_ts["codometer-core/src/lib/symbols.constants.ts"]
+  file_codometer_core_src_lib_symbols_types_ts["codometer-core/src/lib/symbols.types.ts"]
+  file_codometer_core_testing_mocks_ts["codometer-core/testing/mocks.ts"]
+  file_codometer_core_testing_setup_ts["codometer-core/testing/setup.ts"]
+  file_codometer_core_vitest_config_ts["codometer-core/vitest.config.ts"]
+  file_codometer_examples_codependix_config_ts["codometer-examples/codependix.config.ts"]
+  file_codometer_examples_codometer_config_ts["codometer-examples/codometer.config.ts"]
+  file_codometer_examples_eslint_config_ts["codometer-examples/eslint.config.ts"]
+  file_codometer_examples_examples_compression_brotli_config_ts["codometer-examples/examples/compression/brotli.config.ts"]
+  file_codometer_examples_examples_compression_gzip_config_ts["codometer-examples/examples/compression/gzip.config.ts"]
+  file_codometer_examples_examples_compression_none_config_ts["codometer-examples/examples/compression/none.config.ts"]
+  file_codometer_examples_examples_discovery_nested_codometer_config_ts["codometer-examples/examples/discovery/nested/codometer.config.ts"]
+  file_codometer_examples_examples_documentation_codometer_config_ts["codometer-examples/examples/documentation/codometer.config.ts"]
+  file_codometer_examples_examples_documentation_comments_config_ts["codometer-examples/examples/documentation/comments.config.ts"]
+  file_codometer_examples_examples_documentation_yaml_comments_config_ts["codometer-examples/examples/documentation/yaml-comments.config.ts"]
+  file_codometer_examples_examples_limits_ambiguous_config_ts["codometer-examples/examples/limits/ambiguous.config.ts"]
+  file_codometer_examples_examples_limits_default_target_config_ts["codometer-examples/examples/limits/default-target.config.ts"]
+  file_codometer_examples_examples_limits_empty_target_limited_config_ts["codometer-examples/examples/limits/empty-target-limited.config.ts"]
+  file_codometer_examples_examples_limits_empty_target_unlimited_config_ts["codometer-examples/examples/limits/empty-target-unlimited.config.ts"]
+  file_codometer_examples_examples_limits_fail_config_ts["codometer-examples/examples/limits/fail.config.ts"]
+  file_codometer_examples_examples_limits_unbound_config_ts["codometer-examples/examples/limits/unbound.config.ts"]
+  file_codometer_examples_examples_limits_units_config_ts["codometer-examples/examples/limits/units.config.ts"]
+  file_codometer_examples_examples_limits_unprefixed_config_ts["codometer-examples/examples/limits/unprefixed.config.ts"]
+  file_codometer_examples_examples_limits_unreadable_unit_config_ts["codometer-examples/examples/limits/unreadable-unit.config.ts"]
+  file_codometer_examples_examples_limits_warn_config_ts["codometer-examples/examples/limits/warn.config.ts"]
+  file_codometer_examples_examples_output_codometer_config_ts["codometer-examples/examples/output/codometer.config.ts"]
+  file_codometer_examples_examples_output_custom_render_config_ts["codometer-examples/examples/output/custom-render.config.ts"]
+  file_codometer_examples_examples_output_custom_write_config_ts["codometer-examples/examples/output/custom-write.config.ts"]
+  file_codometer_examples_examples_output_renamed_markers_config_ts["codometer-examples/examples/output/renamed-markers.config.ts"]
+  file_codometer_examples_examples_output_self_excluded_config_ts["codometer-examples/examples/output/self-excluded.config.ts"]
+  file_codometer_examples_examples_python_default_interpreter_config_ts["codometer-examples/examples/python/default-interpreter.config.ts"]
+  file_codometer_examples_examples_python_unreachable_interpreter_config_ts["codometer-examples/examples/python/unreachable-interpreter.config.ts"]
+  file_codometer_examples_examples_python_uv_config_ts["codometer-examples/examples/python/uv.config.ts"]
+  file_codometer_examples_examples_staleness_codometer_config_ts["codometer-examples/examples/staleness/codometer.config.ts"]
+  file_codometer_examples_examples_statistics_codometer_config_ts["codometer-examples/examples/statistics/codometer.config.ts"]
+  file_codometer_examples_examples_targets_codometer_config_ts["codometer-examples/examples/targets/codometer.config.ts"]
+  file_codometer_examples_examples_targets_ignored_config_ts["codometer-examples/examples/targets/ignored.config.ts"]
+  file_codometer_examples_examples_targets_reordered_config_ts["codometer-examples/examples/targets/reordered.config.ts"]
+  file_codometer_examples_examples_write_check_codometer_config_ts["codometer-examples/examples/write-check/codometer.config.ts"]
+  file_codometer_examples_testing_codometer_ts["codometer-examples/testing/codometer.ts"]
+  file_codometer_examples_testing_corpus_integration_test_ts["codometer-examples/testing/corpus.integration.test.ts"]
+  file_codometer_examples_testing_examples_integration_test_ts["codometer-examples/testing/examples.integration.test.ts"]
+  file_codometer_examples_testing_run_examples_ts["codometer-examples/testing/run-examples.ts"]
+  file_codometer_examples_testing_setup_ts["codometer-examples/testing/setup.ts"]
+  file_codometer_examples_vitest_config_ts["codometer-examples/vitest.config.ts"]
+  file_codometer_languages_callidescope_config_ts["codometer-languages/callidescope.config.ts"]
+  file_codometer_languages_codependix_config_ts["codometer-languages/codependix.config.ts"]
+  file_codometer_languages_codometer_config_ts["codometer-languages/codometer.config.ts"]
+  file_codometer_languages_eslint_config_ts["codometer-languages/eslint.config.ts"]
+  file_codometer_languages_src_index_ts["codometer-languages/src/index.ts"]
+  file_codometer_languages_src_modules_comments_comments_constants_ts["codometer-languages/src/modules/comments/comments.constants.ts"]
+  file_codometer_languages_src_modules_comments_comments_module_ts["codometer-languages/src/modules/comments/comments.module.ts"]
+  file_codometer_languages_src_modules_comments_comments_module_unit_test_ts["codometer-languages/src/modules/comments/comments.module.unit.test.ts"]
+  file_codometer_languages_src_modules_comments_comments_service_ts["codometer-languages/src/modules/comments/comments.service.ts"]
+  file_codometer_languages_src_modules_comments_comments_service_unit_test_ts["codometer-languages/src/modules/comments/comments.service.unit.test.ts"]
+  file_codometer_languages_src_modules_comments_comments_types_ts["codometer-languages/src/modules/comments/comments.types.ts"]
+  file_codometer_languages_src_modules_comments_css_comments_service_ts["codometer-languages/src/modules/comments/css-comments.service.ts"]
+  file_codometer_languages_src_modules_comments_css_comments_service_unit_test_ts["codometer-languages/src/modules/comments/css-comments.service.unit.test.ts"]
+  file_codometer_languages_src_modules_comments_hash_comments_service_ts["codometer-languages/src/modules/comments/hash-comments.service.ts"]
+  file_codometer_languages_src_modules_comments_hash_comments_service_unit_test_ts["codometer-languages/src/modules/comments/hash-comments.service.unit.test.ts"]
+  file_codometer_languages_src_modules_comments_hcl_comments_service_ts["codometer-languages/src/modules/comments/hcl-comments.service.ts"]
+  file_codometer_languages_src_modules_comments_hcl_comments_service_unit_test_ts["codometer-languages/src/modules/comments/hcl-comments.service.unit.test.ts"]
+  file_codometer_languages_src_modules_comments_language_comments_service_ts["codometer-languages/src/modules/comments/language-comments.service.ts"]
+  file_codometer_languages_src_modules_comments_language_comments_service_unit_test_ts["codometer-languages/src/modules/comments/language-comments.service.unit.test.ts"]
+  file_codometer_languages_src_modules_comments_sql_comments_service_ts["codometer-languages/src/modules/comments/sql-comments.service.ts"]
+  file_codometer_languages_src_modules_comments_sql_comments_service_unit_test_ts["codometer-languages/src/modules/comments/sql-comments.service.unit.test.ts"]
+  file_codometer_languages_src_modules_comments_typescript_comments_constants_ts["codometer-languages/src/modules/comments/typescript-comments.constants.ts"]
+  file_codometer_languages_src_modules_comments_typescript_comments_service_ts["codometer-languages/src/modules/comments/typescript-comments.service.ts"]
+  file_codometer_languages_src_modules_comments_typescript_comments_service_unit_test_ts["codometer-languages/src/modules/comments/typescript-comments.service.unit.test.ts"]
+  file_codometer_languages_src_modules_comments_yaml_comments_service_ts["codometer-languages/src/modules/comments/yaml-comments.service.ts"]
+  file_codometer_languages_src_modules_comments_yaml_comments_service_unit_test_ts["codometer-languages/src/modules/comments/yaml-comments.service.unit.test.ts"]
+  file_codometer_languages_src_modules_css_css_constants_ts["codometer-languages/src/modules/css/css.constants.ts"]
+  file_codometer_languages_src_modules_css_css_module_ts["codometer-languages/src/modules/css/css.module.ts"]
+  file_codometer_languages_src_modules_css_css_module_unit_test_ts["codometer-languages/src/modules/css/css.module.unit.test.ts"]
+  file_codometer_languages_src_modules_css_css_service_ts["codometer-languages/src/modules/css/css.service.ts"]
+  file_codometer_languages_src_modules_css_css_service_unit_test_ts["codometer-languages/src/modules/css/css.service.unit.test.ts"]
+  file_codometer_languages_src_modules_css_css_types_ts["codometer-languages/src/modules/css/css.types.ts"]
+  file_codometer_languages_src_modules_hcl_hcl_constants_ts["codometer-languages/src/modules/hcl/hcl.constants.ts"]
+  file_codometer_languages_src_modules_hcl_hcl_module_ts["codometer-languages/src/modules/hcl/hcl.module.ts"]
+  file_codometer_languages_src_modules_hcl_hcl_module_unit_test_ts["codometer-languages/src/modules/hcl/hcl.module.unit.test.ts"]
+  file_codometer_languages_src_modules_hcl_hcl_service_ts["codometer-languages/src/modules/hcl/hcl.service.ts"]
+  file_codometer_languages_src_modules_hcl_hcl_service_unit_test_ts["codometer-languages/src/modules/hcl/hcl.service.unit.test.ts"]
+  file_codometer_languages_src_modules_hcl_hcl_types_ts["codometer-languages/src/modules/hcl/hcl.types.ts"]
+  file_codometer_languages_src_modules_json_json_constants_ts["codometer-languages/src/modules/json/json.constants.ts"]
+  file_codometer_languages_src_modules_json_json_module_ts["codometer-languages/src/modules/json/json.module.ts"]
+  file_codometer_languages_src_modules_json_json_module_unit_test_ts["codometer-languages/src/modules/json/json.module.unit.test.ts"]
+  file_codometer_languages_src_modules_json_json_service_ts["codometer-languages/src/modules/json/json.service.ts"]
+  file_codometer_languages_src_modules_json_json_service_unit_test_ts["codometer-languages/src/modules/json/json.service.unit.test.ts"]
+  file_codometer_languages_src_modules_json_json_types_ts["codometer-languages/src/modules/json/json.types.ts"]
+  file_codometer_languages_src_modules_jupyter_jupyter_constants_ts["codometer-languages/src/modules/jupyter/jupyter.constants.ts"]
+  file_codometer_languages_src_modules_jupyter_jupyter_module_ts["codometer-languages/src/modules/jupyter/jupyter.module.ts"]
+  file_codometer_languages_src_modules_jupyter_jupyter_module_unit_test_ts["codometer-languages/src/modules/jupyter/jupyter.module.unit.test.ts"]
+  file_codometer_languages_src_modules_jupyter_jupyter_service_ts["codometer-languages/src/modules/jupyter/jupyter.service.ts"]
+  file_codometer_languages_src_modules_jupyter_jupyter_service_unit_test_ts["codometer-languages/src/modules/jupyter/jupyter.service.unit.test.ts"]
+  file_codometer_languages_src_modules_jupyter_jupyter_types_ts["codometer-languages/src/modules/jupyter/jupyter.types.ts"]
+  file_codometer_languages_src_modules_languages_languages_constants_ts["codometer-languages/src/modules/languages/languages.constants.ts"]
+  file_codometer_languages_src_modules_languages_languages_module_ts["codometer-languages/src/modules/languages/languages.module.ts"]
+  file_codometer_languages_src_modules_languages_languages_module_unit_test_ts["codometer-languages/src/modules/languages/languages.module.unit.test.ts"]
+  file_codometer_languages_src_modules_languages_languages_service_ts["codometer-languages/src/modules/languages/languages.service.ts"]
+  file_codometer_languages_src_modules_languages_languages_service_unit_test_ts["codometer-languages/src/modules/languages/languages.service.unit.test.ts"]
+  file_codometer_languages_src_modules_languages_languages_types_ts["codometer-languages/src/modules/languages/languages.types.ts"]
+  file_codometer_languages_src_modules_markdown_markdown_constants_ts["codometer-languages/src/modules/markdown/markdown.constants.ts"]
+  file_codometer_languages_src_modules_markdown_markdown_module_ts["codometer-languages/src/modules/markdown/markdown.module.ts"]
+  file_codometer_languages_src_modules_markdown_markdown_module_unit_test_ts["codometer-languages/src/modules/markdown/markdown.module.unit.test.ts"]
+  file_codometer_languages_src_modules_markdown_markdown_service_ts["codometer-languages/src/modules/markdown/markdown.service.ts"]
+  file_codometer_languages_src_modules_markdown_markdown_service_unit_test_ts["codometer-languages/src/modules/markdown/markdown.service.unit.test.ts"]
+  file_codometer_languages_src_modules_markdown_markdown_types_ts["codometer-languages/src/modules/markdown/markdown.types.ts"]
+  file_codometer_languages_src_modules_python_python_constants_ts["codometer-languages/src/modules/python/python.constants.ts"]
+  file_codometer_languages_src_modules_python_python_module_ts["codometer-languages/src/modules/python/python.module.ts"]
+  file_codometer_languages_src_modules_python_python_module_unit_test_ts["codometer-languages/src/modules/python/python.module.unit.test.ts"]
+  file_codometer_languages_src_modules_python_python_service_ts["codometer-languages/src/modules/python/python.service.ts"]
+  file_codometer_languages_src_modules_python_python_service_unit_test_ts["codometer-languages/src/modules/python/python.service.unit.test.ts"]
+  file_codometer_languages_src_modules_python_python_types_ts["codometer-languages/src/modules/python/python.types.ts"]
+  file_codometer_languages_src_modules_shell_shell_constants_ts["codometer-languages/src/modules/shell/shell.constants.ts"]
+  file_codometer_languages_src_modules_shell_shell_module_ts["codometer-languages/src/modules/shell/shell.module.ts"]
+  file_codometer_languages_src_modules_shell_shell_module_unit_test_ts["codometer-languages/src/modules/shell/shell.module.unit.test.ts"]
+  file_codometer_languages_src_modules_shell_shell_service_ts["codometer-languages/src/modules/shell/shell.service.ts"]
+  file_codometer_languages_src_modules_shell_shell_service_unit_test_ts["codometer-languages/src/modules/shell/shell.service.unit.test.ts"]
+  file_codometer_languages_src_modules_shell_shell_types_ts["codometer-languages/src/modules/shell/shell.types.ts"]
+  file_codometer_languages_src_modules_sql_sql_constants_ts["codometer-languages/src/modules/sql/sql.constants.ts"]
+  file_codometer_languages_src_modules_sql_sql_module_ts["codometer-languages/src/modules/sql/sql.module.ts"]
+  file_codometer_languages_src_modules_sql_sql_module_unit_test_ts["codometer-languages/src/modules/sql/sql.module.unit.test.ts"]
+  file_codometer_languages_src_modules_sql_sql_service_ts["codometer-languages/src/modules/sql/sql.service.ts"]
+  file_codometer_languages_src_modules_sql_sql_service_unit_test_ts["codometer-languages/src/modules/sql/sql.service.unit.test.ts"]
+  file_codometer_languages_src_modules_sql_sql_types_ts["codometer-languages/src/modules/sql/sql.types.ts"]
+  file_codometer_languages_src_modules_toml_toml_constants_ts["codometer-languages/src/modules/toml/toml.constants.ts"]
+  file_codometer_languages_src_modules_toml_toml_module_ts["codometer-languages/src/modules/toml/toml.module.ts"]
+  file_codometer_languages_src_modules_toml_toml_module_unit_test_ts["codometer-languages/src/modules/toml/toml.module.unit.test.ts"]
+  file_codometer_languages_src_modules_toml_toml_service_ts["codometer-languages/src/modules/toml/toml.service.ts"]
+  file_codometer_languages_src_modules_toml_toml_service_unit_test_ts["codometer-languages/src/modules/toml/toml.service.unit.test.ts"]
+  file_codometer_languages_src_modules_toml_toml_types_ts["codometer-languages/src/modules/toml/toml.types.ts"]
+  file_codometer_languages_src_modules_typescript_declaration_comments_service_ts["codometer-languages/src/modules/typescript/declaration-comments.service.ts"]
+  file_codometer_languages_src_modules_typescript_declaration_comments_service_unit_test_ts["codometer-languages/src/modules/typescript/declaration-comments.service.unit.test.ts"]
+  file_codometer_languages_src_modules_typescript_typescript_constants_ts["codometer-languages/src/modules/typescript/typescript.constants.ts"]
+  file_codometer_languages_src_modules_typescript_typescript_module_ts["codometer-languages/src/modules/typescript/typescript.module.ts"]
+  file_codometer_languages_src_modules_typescript_typescript_module_unit_test_ts["codometer-languages/src/modules/typescript/typescript.module.unit.test.ts"]
+  file_codometer_languages_src_modules_typescript_typescript_service_ts["codometer-languages/src/modules/typescript/typescript.service.ts"]
+  file_codometer_languages_src_modules_typescript_typescript_service_unit_test_ts["codometer-languages/src/modules/typescript/typescript.service.unit.test.ts"]
+  file_codometer_languages_src_modules_typescript_typescript_types_ts["codometer-languages/src/modules/typescript/typescript.types.ts"]
+  file_codometer_languages_src_modules_yaml_yaml_constants_ts["codometer-languages/src/modules/yaml/yaml.constants.ts"]
+  file_codometer_languages_src_modules_yaml_yaml_module_ts["codometer-languages/src/modules/yaml/yaml.module.ts"]
+  file_codometer_languages_src_modules_yaml_yaml_module_unit_test_ts["codometer-languages/src/modules/yaml/yaml.module.unit.test.ts"]
+  file_codometer_languages_src_modules_yaml_yaml_service_ts["codometer-languages/src/modules/yaml/yaml.service.ts"]
+  file_codometer_languages_src_modules_yaml_yaml_service_unit_test_ts["codometer-languages/src/modules/yaml/yaml.service.unit.test.ts"]
+  file_codometer_languages_src_modules_yaml_yaml_types_ts["codometer-languages/src/modules/yaml/yaml.types.ts"]
+  file_codometer_languages_testing_mocks_ts["codometer-languages/testing/mocks.ts"]
+  file_codometer_languages_testing_setup_ts["codometer-languages/testing/setup.ts"]
+  file_codometer_languages_vitest_config_ts["codometer-languages/vitest.config.ts"]
+  file_codometer_measurement_callidescope_config_ts["codometer-measurement/callidescope.config.ts"]
+  file_codometer_measurement_codependix_config_ts["codometer-measurement/codependix.config.ts"]
+  file_codometer_measurement_codometer_config_ts["codometer-measurement/codometer.config.ts"]
+  file_codometer_measurement_eslint_config_ts["codometer-measurement/eslint.config.ts"]
+  file_codometer_measurement_src_index_ts["codometer-measurement/src/index.ts"]
+  file_codometer_measurement_src_modules_customization_customization_constants_ts["codometer-measurement/src/modules/customization/customization.constants.ts"]
+  file_codometer_measurement_src_modules_customization_customization_module_ts["codometer-measurement/src/modules/customization/customization.module.ts"]
+  file_codometer_measurement_src_modules_customization_customization_module_unit_test_ts["codometer-measurement/src/modules/customization/customization.module.unit.test.ts"]
+  file_codometer_measurement_src_modules_customization_customization_service_ts["codometer-measurement/src/modules/customization/customization.service.ts"]
+  file_codometer_measurement_src_modules_customization_customization_service_unit_test_ts["codometer-measurement/src/modules/customization/customization.service.unit.test.ts"]
+  file_codometer_measurement_src_modules_customization_customization_types_ts["codometer-measurement/src/modules/customization/customization.types.ts"]
+  file_codometer_measurement_src_modules_discovery_discovery_constants_ts["codometer-measurement/src/modules/discovery/discovery.constants.ts"]
+  file_codometer_measurement_src_modules_discovery_discovery_module_ts["codometer-measurement/src/modules/discovery/discovery.module.ts"]
+  file_codometer_measurement_src_modules_discovery_discovery_service_integration_test_ts["codometer-measurement/src/modules/discovery/discovery.service.integration.test.ts"]
+  file_codometer_measurement_src_modules_discovery_discovery_service_ts["codometer-measurement/src/modules/discovery/discovery.service.ts"]
+  file_codometer_measurement_src_modules_discovery_discovery_service_unit_test_ts["codometer-measurement/src/modules/discovery/discovery.service.unit.test.ts"]
+  file_codometer_measurement_src_modules_discovery_discovery_types_ts["codometer-measurement/src/modules/discovery/discovery.types.ts"]
+  file_codometer_measurement_src_modules_discovery_ignore_rules_service_ts["codometer-measurement/src/modules/discovery/ignore-rules.service.ts"]
+  file_codometer_measurement_src_modules_discovery_ignore_rules_service_unit_test_ts["codometer-measurement/src/modules/discovery/ignore-rules.service.unit.test.ts"]
+  file_codometer_measurement_src_modules_discovery_ignore_rules_types_ts["codometer-measurement/src/modules/discovery/ignore-rules.types.ts"]
+  file_codometer_measurement_src_modules_inputs_inputs_constants_ts["codometer-measurement/src/modules/inputs/inputs.constants.ts"]
+  file_codometer_measurement_src_modules_inputs_inputs_module_ts["codometer-measurement/src/modules/inputs/inputs.module.ts"]
+  file_codometer_measurement_src_modules_inputs_inputs_service_integration_test_ts["codometer-measurement/src/modules/inputs/inputs.service.integration.test.ts"]
+  file_codometer_measurement_src_modules_inputs_inputs_service_ts["codometer-measurement/src/modules/inputs/inputs.service.ts"]
+  file_codometer_measurement_src_modules_inputs_inputs_service_unit_test_ts["codometer-measurement/src/modules/inputs/inputs.service.unit.test.ts"]
+  file_codometer_measurement_src_modules_inputs_inputs_types_ts["codometer-measurement/src/modules/inputs/inputs.types.ts"]
+  file_codometer_measurement_src_modules_limits_limits_constants_ts["codometer-measurement/src/modules/limits/limits.constants.ts"]
+  file_codometer_measurement_src_modules_limits_limits_module_ts["codometer-measurement/src/modules/limits/limits.module.ts"]
+  file_codometer_measurement_src_modules_limits_limits_service_integration_test_ts["codometer-measurement/src/modules/limits/limits.service.integration.test.ts"]
+  file_codometer_measurement_src_modules_limits_limits_service_ts["codometer-measurement/src/modules/limits/limits.service.ts"]
+  file_codometer_measurement_src_modules_limits_limits_service_unit_test_ts["codometer-measurement/src/modules/limits/limits.service.unit.test.ts"]
+  file_codometer_measurement_src_modules_limits_limits_types_ts["codometer-measurement/src/modules/limits/limits.types.ts"]
+  file_codometer_measurement_src_modules_limits_metric_index_service_ts["codometer-measurement/src/modules/limits/metric-index.service.ts"]
+  file_codometer_measurement_src_modules_limits_metric_index_service_unit_test_ts["codometer-measurement/src/modules/limits/metric-index.service.unit.test.ts"]
+  file_codometer_measurement_src_modules_measure_measure_constants_ts["codometer-measurement/src/modules/measure/measure.constants.ts"]
+  file_codometer_measurement_src_modules_measure_measure_module_ts["codometer-measurement/src/modules/measure/measure.module.ts"]
+  file_codometer_measurement_src_modules_measure_measure_service_ts["codometer-measurement/src/modules/measure/measure.service.ts"]
+  file_codometer_measurement_src_modules_measure_measure_service_unit_test_ts["codometer-measurement/src/modules/measure/measure.service.unit.test.ts"]
+  file_codometer_measurement_src_modules_measure_measure_types_ts["codometer-measurement/src/modules/measure/measure.types.ts"]
+  file_codometer_measurement_src_modules_size_size_constants_ts["codometer-measurement/src/modules/size/size.constants.ts"]
+  file_codometer_measurement_src_modules_size_size_module_ts["codometer-measurement/src/modules/size/size.module.ts"]
+  file_codometer_measurement_src_modules_size_size_module_unit_test_ts["codometer-measurement/src/modules/size/size.module.unit.test.ts"]
+  file_codometer_measurement_src_modules_size_size_service_integration_test_ts["codometer-measurement/src/modules/size/size.service.integration.test.ts"]
+  file_codometer_measurement_src_modules_size_size_service_ts["codometer-measurement/src/modules/size/size.service.ts"]
+  file_codometer_measurement_src_modules_size_size_service_unit_test_ts["codometer-measurement/src/modules/size/size.service.unit.test.ts"]
+  file_codometer_measurement_src_modules_size_size_types_ts["codometer-measurement/src/modules/size/size.types.ts"]
+  file_codometer_measurement_testing_fixture_tree_ts["codometer-measurement/testing/fixture-tree.ts"]
+  file_codometer_measurement_testing_input_tree_ts["codometer-measurement/testing/input-tree.ts"]
+  file_codometer_measurement_testing_mocks_ts["codometer-measurement/testing/mocks.ts"]
+  file_codometer_measurement_testing_setup_ts["codometer-measurement/testing/setup.ts"]
+  file_codometer_measurement_testing_target_tree_ts["codometer-measurement/testing/target-tree.ts"]
+  file_codometer_measurement_vitest_config_ts["codometer-measurement/vitest.config.ts"]
+  file_codometer_output_callidescope_config_ts["codometer-output/callidescope.config.ts"]
+  file_codometer_output_codependix_config_ts["codometer-output/codependix.config.ts"]
+  file_codometer_output_codometer_config_ts["codometer-output/codometer.config.ts"]
+  file_codometer_output_eslint_config_ts["codometer-output/eslint.config.ts"]
+  file_codometer_output_src_index_ts["codometer-output/src/index.ts"]
+  file_codometer_output_src_modules_changes_changes_constants_ts["codometer-output/src/modules/changes/changes.constants.ts"]
+  file_codometer_output_src_modules_changes_changes_module_ts["codometer-output/src/modules/changes/changes.module.ts"]
+  file_codometer_output_src_modules_changes_changes_module_unit_test_ts["codometer-output/src/modules/changes/changes.module.unit.test.ts"]
+  file_codometer_output_src_modules_changes_changes_service_ts["codometer-output/src/modules/changes/changes.service.ts"]
+  file_codometer_output_src_modules_changes_changes_service_unit_test_ts["codometer-output/src/modules/changes/changes.service.unit.test.ts"]
+  file_codometer_output_src_modules_changes_changes_types_ts["codometer-output/src/modules/changes/changes.types.ts"]
+  file_codometer_output_src_modules_configuration_listing_configuration_listing_constants_ts["codometer-output/src/modules/configuration-listing/configuration-listing.constants.ts"]
+  file_codometer_output_src_modules_configuration_listing_configuration_listing_module_ts["codometer-output/src/modules/configuration-listing/configuration-listing.module.ts"]
+  file_codometer_output_src_modules_configuration_listing_configuration_listing_service_ts["codometer-output/src/modules/configuration-listing/configuration-listing.service.ts"]
+  file_codometer_output_src_modules_configuration_listing_configuration_listing_service_unit_test_ts["codometer-output/src/modules/configuration-listing/configuration-listing.service.unit.test.ts"]
+  file_codometer_output_src_modules_configuration_listing_configuration_listing_types_ts["codometer-output/src/modules/configuration-listing/configuration-listing.types.ts"]
+  file_codometer_output_src_modules_configuration_listing_render_configuration_service_ts["codometer-output/src/modules/configuration-listing/render-configuration.service.ts"]
+  file_codometer_output_src_modules_configuration_listing_render_configuration_service_unit_test_ts["codometer-output/src/modules/configuration-listing/render-configuration.service.unit.test.ts"]
+  file_codometer_output_src_modules_delivery_delivery_constants_ts["codometer-output/src/modules/delivery/delivery.constants.ts"]
+  file_codometer_output_src_modules_delivery_delivery_module_ts["codometer-output/src/modules/delivery/delivery.module.ts"]
+  file_codometer_output_src_modules_delivery_delivery_service_ts["codometer-output/src/modules/delivery/delivery.service.ts"]
+  file_codometer_output_src_modules_delivery_delivery_service_unit_test_ts["codometer-output/src/modules/delivery/delivery.service.unit.test.ts"]
+  file_codometer_output_src_modules_delivery_delivery_types_ts["codometer-output/src/modules/delivery/delivery.types.ts"]
+  file_codometer_output_src_modules_destinations_destinations_constants_ts["codometer-output/src/modules/destinations/destinations.constants.ts"]
+  file_codometer_output_src_modules_destinations_destinations_module_ts["codometer-output/src/modules/destinations/destinations.module.ts"]
+  file_codometer_output_src_modules_destinations_destinations_service_ts["codometer-output/src/modules/destinations/destinations.service.ts"]
+  file_codometer_output_src_modules_destinations_destinations_service_unit_test_ts["codometer-output/src/modules/destinations/destinations.service.unit.test.ts"]
+  file_codometer_output_src_modules_destinations_destinations_types_ts["codometer-output/src/modules/destinations/destinations.types.ts"]
+  file_codometer_output_src_modules_documents_documents_constants_ts["codometer-output/src/modules/documents/documents.constants.ts"]
+  file_codometer_output_src_modules_documents_documents_module_ts["codometer-output/src/modules/documents/documents.module.ts"]
+  file_codometer_output_src_modules_documents_documents_module_unit_test_ts["codometer-output/src/modules/documents/documents.module.unit.test.ts"]
+  file_codometer_output_src_modules_documents_documents_service_ts["codometer-output/src/modules/documents/documents.service.ts"]
+  file_codometer_output_src_modules_documents_documents_service_unit_test_ts["codometer-output/src/modules/documents/documents.service.unit.test.ts"]
+  file_codometer_output_src_modules_documents_documents_types_ts["codometer-output/src/modules/documents/documents.types.ts"]
+  file_codometer_output_src_modules_json_json_constants_ts["codometer-output/src/modules/json/json.constants.ts"]
+  file_codometer_output_src_modules_json_json_module_ts["codometer-output/src/modules/json/json.module.ts"]
+  file_codometer_output_src_modules_json_json_module_unit_test_ts["codometer-output/src/modules/json/json.module.unit.test.ts"]
+  file_codometer_output_src_modules_json_json_service_ts["codometer-output/src/modules/json/json.service.ts"]
+  file_codometer_output_src_modules_json_json_service_unit_test_ts["codometer-output/src/modules/json/json.service.unit.test.ts"]
+  file_codometer_output_src_modules_json_json_types_ts["codometer-output/src/modules/json/json.types.ts"]
+  file_codometer_output_src_modules_markdown_markdown_constants_ts["codometer-output/src/modules/markdown/markdown.constants.ts"]
+  file_codometer_output_src_modules_markdown_markdown_module_ts["codometer-output/src/modules/markdown/markdown.module.ts"]
+  file_codometer_output_src_modules_markdown_markdown_module_unit_test_ts["codometer-output/src/modules/markdown/markdown.module.unit.test.ts"]
+  file_codometer_output_src_modules_markdown_markdown_service_ts["codometer-output/src/modules/markdown/markdown.service.ts"]
+  file_codometer_output_src_modules_markdown_markdown_service_unit_test_ts["codometer-output/src/modules/markdown/markdown.service.unit.test.ts"]
+  file_codometer_output_src_modules_markdown_markdown_types_ts["codometer-output/src/modules/markdown/markdown.types.ts"]
+  file_codometer_output_src_modules_markdown_markdown_utilities_ts["codometer-output/src/modules/markdown/markdown.utilities.ts"]
+  file_codometer_output_src_modules_markdown_markdown_utilities_unit_test_ts["codometer-output/src/modules/markdown/markdown.utilities.unit.test.ts"]
+  file_codometer_output_src_modules_render_render_constants_ts["codometer-output/src/modules/render/render.constants.ts"]
+  file_codometer_output_src_modules_render_render_module_ts["codometer-output/src/modules/render/render.module.ts"]
+  file_codometer_output_src_modules_render_render_module_unit_test_ts["codometer-output/src/modules/render/render.module.unit.test.ts"]
+  file_codometer_output_src_modules_render_render_service_ts["codometer-output/src/modules/render/render.service.ts"]
+  file_codometer_output_src_modules_render_render_service_unit_test_ts["codometer-output/src/modules/render/render.service.unit.test.ts"]
+  file_codometer_output_src_modules_render_render_types_ts["codometer-output/src/modules/render/render.types.ts"]
+  file_codometer_output_src_modules_render_render_utilities_ts["codometer-output/src/modules/render/render.utilities.ts"]
+  file_codometer_output_src_modules_render_render_utilities_unit_test_ts["codometer-output/src/modules/render/render.utilities.unit.test.ts"]
+  file_codometer_output_src_modules_report_report_constants_ts["codometer-output/src/modules/report/report.constants.ts"]
+  file_codometer_output_src_modules_report_report_module_ts["codometer-output/src/modules/report/report.module.ts"]
+  file_codometer_output_src_modules_report_report_service_ts["codometer-output/src/modules/report/report.service.ts"]
+  file_codometer_output_src_modules_report_report_service_unit_test_ts["codometer-output/src/modules/report/report.service.unit.test.ts"]
+  file_codometer_output_src_modules_report_report_types_ts["codometer-output/src/modules/report/report.types.ts"]
+  file_codometer_output_testing_mocks_ts["codometer-output/testing/mocks.ts"]
+  file_codometer_output_testing_setup_ts["codometer-output/testing/setup.ts"]
+  file_codometer_output_vitest_config_ts["codometer-output/vitest.config.ts"]
+  file_conformetry_agents_codependix_config_ts["conformetry-agents/codependix.config.ts"]
+  file_conformetry_agents_codometer_config_ts["conformetry-agents/codometer.config.ts"]
+  file_conformetry_agents_eslint_config_ts["conformetry-agents/eslint.config.ts"]
+  file_conformetry_agents_testing_setup_ts["conformetry-agents/testing/setup.ts"]
+  file_conformetry_agents_testing_skills_unit_test_ts["conformetry-agents/testing/skills.unit.test.ts"]
+  file_conformetry_agents_vitest_config_ts["conformetry-agents/vitest.config.ts"]
+  file_conformetry_cli_callidescope_config_ts["conformetry-cli/callidescope.config.ts"]
+  file_conformetry_cli_codependix_config_ts["conformetry-cli/codependix.config.ts"]
+  file_conformetry_cli_codometer_config_ts["conformetry-cli/codometer.config.ts"]
+  file_conformetry_cli_eslint_config_ts["conformetry-cli/eslint.config.ts"]
+  file_conformetry_cli_src_constants_ts["conformetry-cli/src/constants.ts"]
+  file_conformetry_cli_src_index_ts["conformetry-cli/src/index.ts"]
+  file_conformetry_cli_src_main_end_to_end_test_ts["conformetry-cli/src/main.end-to-end.test.ts"]
+  file_conformetry_cli_src_main_integration_test_ts["conformetry-cli/src/main.integration.test.ts"]
+  file_conformetry_cli_src_main_module_ts["conformetry-cli/src/main.module.ts"]
+  file_conformetry_cli_src_main_ts["conformetry-cli/src/main.ts"]
+  file_conformetry_cli_src_main_unit_test_ts["conformetry-cli/src/main.unit.test.ts"]
+  file_conformetry_cli_src_modules_generate_generate_command_ts["conformetry-cli/src/modules/generate/generate.command.ts"]
+  file_conformetry_cli_src_modules_generate_generate_command_unit_test_ts["conformetry-cli/src/modules/generate/generate.command.unit.test.ts"]
+  file_conformetry_cli_src_modules_generate_generate_constants_ts["conformetry-cli/src/modules/generate/generate.constants.ts"]
+  file_conformetry_cli_src_modules_generate_generate_module_ts["conformetry-cli/src/modules/generate/generate.module.ts"]
+  file_conformetry_cli_src_modules_generate_generate_types_ts["conformetry-cli/src/modules/generate/generate.types.ts"]
+  file_conformetry_cli_src_modules_instances_instances_command_ts["conformetry-cli/src/modules/instances/instances.command.ts"]
+  file_conformetry_cli_src_modules_instances_instances_command_unit_test_ts["conformetry-cli/src/modules/instances/instances.command.unit.test.ts"]
+  file_conformetry_cli_src_modules_instances_instances_constants_ts["conformetry-cli/src/modules/instances/instances.constants.ts"]
+  file_conformetry_cli_src_modules_instances_instances_module_ts["conformetry-cli/src/modules/instances/instances.module.ts"]
+  file_conformetry_cli_src_modules_instances_instances_types_ts["conformetry-cli/src/modules/instances/instances.types.ts"]
+  file_conformetry_cli_src_modules_templates_templates_command_ts["conformetry-cli/src/modules/templates/templates.command.ts"]
+  file_conformetry_cli_src_modules_templates_templates_command_unit_test_ts["conformetry-cli/src/modules/templates/templates.command.unit.test.ts"]
+  file_conformetry_cli_src_modules_templates_templates_constants_ts["conformetry-cli/src/modules/templates/templates.constants.ts"]
+  file_conformetry_cli_src_modules_templates_templates_module_ts["conformetry-cli/src/modules/templates/templates.module.ts"]
+  file_conformetry_cli_src_modules_templates_templates_types_ts["conformetry-cli/src/modules/templates/templates.types.ts"]
+  file_conformetry_cli_src_modules_validate_validate_command_ts["conformetry-cli/src/modules/validate/validate.command.ts"]
+  file_conformetry_cli_src_modules_validate_validate_command_unit_test_ts["conformetry-cli/src/modules/validate/validate.command.unit.test.ts"]
+  file_conformetry_cli_src_modules_validate_validate_constants_ts["conformetry-cli/src/modules/validate/validate.constants.ts"]
+  file_conformetry_cli_src_modules_validate_validate_module_ts["conformetry-cli/src/modules/validate/validate.module.ts"]
+  file_conformetry_cli_src_modules_validate_validate_types_ts["conformetry-cli/src/modules/validate/validate.types.ts"]
+  file_conformetry_cli_src_repl_ts["conformetry-cli/src/repl.ts"]
+  file_conformetry_cli_src_repl_unit_test_ts["conformetry-cli/src/repl.unit.test.ts"]
+  file_conformetry_cli_testing_mocks_ts["conformetry-cli/testing/mocks.ts"]
+  file_conformetry_cli_testing_setup_ts["conformetry-cli/testing/setup.ts"]
+  file_conformetry_cli_vitest_config_ts["conformetry-cli/vitest.config.ts"]
+  file_conformetry_configuration_callidescope_config_ts["conformetry-configuration/callidescope.config.ts"]
+  file_conformetry_configuration_codependix_config_ts["conformetry-configuration/codependix.config.ts"]
+  file_conformetry_configuration_codometer_config_ts["conformetry-configuration/codometer.config.ts"]
+  file_conformetry_configuration_eslint_config_ts["conformetry-configuration/eslint.config.ts"]
+  file_conformetry_configuration_src_index_ts["conformetry-configuration/src/index.ts"]
+  file_conformetry_configuration_src_index_unit_test_ts["conformetry-configuration/src/index.unit.test.ts"]
+  file_conformetry_configuration_src_modules_configuration_configuration_constants_ts["conformetry-configuration/src/modules/configuration/configuration.constants.ts"]
+  file_conformetry_configuration_src_modules_configuration_configuration_module_ts["conformetry-configuration/src/modules/configuration/configuration.module.ts"]
+  file_conformetry_configuration_src_modules_configuration_configuration_module_unit_test_ts["conformetry-configuration/src/modules/configuration/configuration.module.unit.test.ts"]
+  file_conformetry_configuration_src_modules_configuration_configuration_service_ts["conformetry-configuration/src/modules/configuration/configuration.service.ts"]
+  file_conformetry_configuration_src_modules_configuration_configuration_service_unit_test_ts["conformetry-configuration/src/modules/configuration/configuration.service.unit.test.ts"]
+  file_conformetry_configuration_src_modules_configuration_configuration_types_ts["conformetry-configuration/src/modules/configuration/configuration.types.ts"]
+  file_conformetry_configuration_src_modules_configuration_configuration_utilities_ts["conformetry-configuration/src/modules/configuration/configuration.utilities.ts"]
+  file_conformetry_configuration_src_modules_configuration_instance_group_service_ts["conformetry-configuration/src/modules/configuration/instance-group.service.ts"]
+  file_conformetry_configuration_src_modules_configuration_instance_group_service_unit_test_ts["conformetry-configuration/src/modules/configuration/instance-group.service.unit.test.ts"]
+  file_conformetry_configuration_src_modules_input_input_options_service_ts["conformetry-configuration/src/modules/input/input-options.service.ts"]
+  file_conformetry_configuration_src_modules_input_input_options_service_unit_test_ts["conformetry-configuration/src/modules/input/input-options.service.unit.test.ts"]
+  file_conformetry_configuration_src_modules_input_input_prompting_service_ts["conformetry-configuration/src/modules/input/input-prompting.service.ts"]
+  file_conformetry_configuration_src_modules_input_input_prompting_service_unit_test_ts["conformetry-configuration/src/modules/input/input-prompting.service.unit.test.ts"]
+  file_conformetry_configuration_src_modules_input_input_schema_service_ts["conformetry-configuration/src/modules/input/input-schema.service.ts"]
+  file_conformetry_configuration_src_modules_input_input_schema_service_unit_test_ts["conformetry-configuration/src/modules/input/input-schema.service.unit.test.ts"]
+  file_conformetry_configuration_src_modules_input_input_constants_ts["conformetry-configuration/src/modules/input/input.constants.ts"]
+  file_conformetry_configuration_src_modules_input_input_module_ts["conformetry-configuration/src/modules/input/input.module.ts"]
+  file_conformetry_configuration_src_modules_input_input_service_ts["conformetry-configuration/src/modules/input/input.service.ts"]
+  file_conformetry_configuration_src_modules_input_input_service_unit_test_ts["conformetry-configuration/src/modules/input/input.service.unit.test.ts"]
+  file_conformetry_configuration_src_modules_input_input_types_ts["conformetry-configuration/src/modules/input/input.types.ts"]
+  file_conformetry_configuration_src_modules_instance_discovery_instance_discovery_locating_service_ts["conformetry-configuration/src/modules/instance-discovery/instance-discovery-locating.service.ts"]
+  file_conformetry_configuration_src_modules_instance_discovery_instance_discovery_locating_service_unit_test_ts["conformetry-configuration/src/modules/instance-discovery/instance-discovery-locating.service.unit.test.ts"]
+  file_conformetry_configuration_src_modules_instance_discovery_instance_discovery_matching_service_ts["conformetry-configuration/src/modules/instance-discovery/instance-discovery-matching.service.ts"]
+  file_conformetry_configuration_src_modules_instance_discovery_instance_discovery_matching_service_unit_test_ts["conformetry-configuration/src/modules/instance-discovery/instance-discovery-matching.service.unit.test.ts"]
+  file_conformetry_configuration_src_modules_instance_discovery_instance_discovery_constants_ts["conformetry-configuration/src/modules/instance-discovery/instance-discovery.constants.ts"]
+  file_conformetry_configuration_src_modules_instance_discovery_instance_discovery_module_ts["conformetry-configuration/src/modules/instance-discovery/instance-discovery.module.ts"]
+  file_conformetry_configuration_src_modules_instance_discovery_instance_discovery_service_ts["conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts"]
+  file_conformetry_configuration_src_modules_instance_discovery_instance_discovery_service_unit_test_ts["conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.unit.test.ts"]
+  file_conformetry_configuration_src_modules_instance_discovery_instance_discovery_types_ts["conformetry-configuration/src/modules/instance-discovery/instance-discovery.types.ts"]
+  file_conformetry_configuration_src_modules_rendering_rendering_constants_ts["conformetry-configuration/src/modules/rendering/rendering.constants.ts"]
+  file_conformetry_configuration_src_modules_rendering_rendering_module_ts["conformetry-configuration/src/modules/rendering/rendering.module.ts"]
+  file_conformetry_configuration_src_modules_rendering_rendering_service_ts["conformetry-configuration/src/modules/rendering/rendering.service.ts"]
+  file_conformetry_configuration_src_modules_rendering_rendering_service_unit_test_ts["conformetry-configuration/src/modules/rendering/rendering.service.unit.test.ts"]
+  file_conformetry_configuration_src_modules_rendering_rendering_types_ts["conformetry-configuration/src/modules/rendering/rendering.types.ts"]
+  file_conformetry_configuration_src_modules_template_discovery_template_discovery_constants_ts["conformetry-configuration/src/modules/template-discovery/template-discovery.constants.ts"]
+  file_conformetry_configuration_src_modules_template_discovery_template_discovery_module_ts["conformetry-configuration/src/modules/template-discovery/template-discovery.module.ts"]
+  file_conformetry_configuration_src_modules_template_discovery_template_discovery_service_ts["conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts"]
+  file_conformetry_configuration_src_modules_template_discovery_template_discovery_service_unit_test_ts["conformetry-configuration/src/modules/template-discovery/template-discovery.service.unit.test.ts"]
+  file_conformetry_configuration_src_modules_template_discovery_template_discovery_types_ts["conformetry-configuration/src/modules/template-discovery/template-discovery.types.ts"]
+  file_conformetry_configuration_testing_mocks_ts["conformetry-configuration/testing/mocks.ts"]
+  file_conformetry_configuration_testing_setup_ts["conformetry-configuration/testing/setup.ts"]
+  file_conformetry_configuration_vitest_config_ts["conformetry-configuration/vitest.config.ts"]
+  file_conformetry_core_callidescope_config_ts["conformetry-core/callidescope.config.ts"]
+  file_conformetry_core_codependix_config_ts["conformetry-core/codependix.config.ts"]
+  file_conformetry_core_codometer_config_ts["conformetry-core/codometer.config.ts"]
+  file_conformetry_core_eslint_config_ts["conformetry-core/eslint.config.ts"]
+  file_conformetry_core_src_index_ts["conformetry-core/src/index.ts"]
+  file_conformetry_core_src_index_unit_test_ts["conformetry-core/src/index.unit.test.ts"]
+  file_conformetry_core_src_lib_differences_types_ts["conformetry-core/src/lib/differences.types.ts"]
+  file_conformetry_core_src_lib_inventory_types_ts["conformetry-core/src/lib/inventory.types.ts"]
+  file_conformetry_core_src_lib_runner_types_ts["conformetry-core/src/lib/runner.types.ts"]
+  file_conformetry_core_src_lib_scoring_types_ts["conformetry-core/src/lib/scoring.types.ts"]
+  file_conformetry_core_testing_mocks_ts["conformetry-core/testing/mocks.ts"]
+  file_conformetry_core_testing_setup_ts["conformetry-core/testing/setup.ts"]
+  file_conformetry_core_vitest_config_ts["conformetry-core/vitest.config.ts"]
+  file_conformetry_examples_codependix_config_ts["conformetry-examples/codependix.config.ts"]
+  file_conformetry_examples_codometer_config_ts["conformetry-examples/codometer.config.ts"]
+  file_conformetry_examples_eslint_config_ts["conformetry-examples/eslint.config.ts"]
+  file_conformetry_examples_examples_ambiguous_attribution_conformetry_config_ts["conformetry-examples/examples/ambiguous-attribution/conformetry.config.ts"]
+  file_conformetry_examples_examples_case_variants_conformetry_config_ts["conformetry-examples/examples/case-variants/conformetry.config.ts"]
+  file_conformetry_examples_examples_drift_catalogue_conformetry_config_ts["conformetry-examples/examples/drift-catalogue/conformetry.config.ts"]
+  file_conformetry_examples_examples_embedding_conformetry_config_ts["conformetry-examples/examples/embedding/conformetry.config.ts"]
+  file_conformetry_examples_examples_embedding_embed_ts["conformetry-examples/examples/embedding/embed.ts"]
+  file_conformetry_examples_examples_failure_modes_conformetry_config_ts["conformetry-examples/examples/failure-modes/conformetry.config.ts"]
+  file_conformetry_examples_examples_hello_template_conformetry_config_ts["conformetry-examples/examples/hello-template/conformetry.config.ts"]
+  file_conformetry_examples_examples_language_validators_conformetry_config_ts["conformetry-examples/examples/language-validators/conformetry.config.ts"]
+  file_conformetry_examples_examples_nx_host_conformetry_config_ts["conformetry-examples/examples/nx-host/conformetry.config.ts"]
+  file_conformetry_examples_examples_scoring_thresholds_conformetry_config_ts["conformetry-examples/examples/scoring-thresholds/conformetry.config.ts"]
+  file_conformetry_examples_examples_structural_not_textual_conformetry_config_ts["conformetry-examples/examples/structural-not-textual/conformetry.config.ts"]
+  file_conformetry_examples_examples_two_directions_conformetry_config_ts["conformetry-examples/examples/two-directions/conformetry.config.ts"]
+  file_conformetry_examples_testing_examples_integration_test_ts["conformetry-examples/testing/examples.integration.test.ts"]
+  file_conformetry_examples_testing_setup_ts["conformetry-examples/testing/setup.ts"]
+  file_conformetry_examples_vitest_config_ts["conformetry-examples/vitest.config.ts"]
+  file_conformetry_generation_callidescope_config_ts["conformetry-generation/callidescope.config.ts"]
+  file_conformetry_generation_codependix_config_ts["conformetry-generation/codependix.config.ts"]
+  file_conformetry_generation_codometer_config_ts["conformetry-generation/codometer.config.ts"]
+  file_conformetry_generation_eslint_config_ts["conformetry-generation/eslint.config.ts"]
+  file_conformetry_generation_src_index_ts["conformetry-generation/src/index.ts"]
+  file_conformetry_generation_src_modules_generation_generation_constants_ts["conformetry-generation/src/modules/generation/generation.constants.ts"]
+  file_conformetry_generation_src_modules_generation_generation_module_ts["conformetry-generation/src/modules/generation/generation.module.ts"]
+  file_conformetry_generation_src_modules_generation_generation_module_unit_test_ts["conformetry-generation/src/modules/generation/generation.module.unit.test.ts"]
+  file_conformetry_generation_src_modules_generation_generation_service_ts["conformetry-generation/src/modules/generation/generation.service.ts"]
+  file_conformetry_generation_src_modules_generation_generation_service_unit_test_ts["conformetry-generation/src/modules/generation/generation.service.unit.test.ts"]
+  file_conformetry_generation_src_modules_generation_generation_types_ts["conformetry-generation/src/modules/generation/generation.types.ts"]
+  file_conformetry_generation_testing_mocks_ts["conformetry-generation/testing/mocks.ts"]
+  file_conformetry_generation_testing_setup_ts["conformetry-generation/testing/setup.ts"]
+  file_conformetry_generation_vitest_config_ts["conformetry-generation/vitest.config.ts"]
+  file_conformetry_languages_callidescope_config_ts["conformetry-languages/callidescope.config.ts"]
+  file_conformetry_languages_codependix_config_ts["conformetry-languages/codependix.config.ts"]
+  file_conformetry_languages_codometer_config_ts["conformetry-languages/codometer.config.ts"]
+  file_conformetry_languages_eslint_config_ts["conformetry-languages/eslint.config.ts"]
+  file_conformetry_languages_src_index_ts["conformetry-languages/src/index.ts"]
+  file_conformetry_languages_src_modules_differences_differences_constants_ts["conformetry-languages/src/modules/differences/differences.constants.ts"]
+  file_conformetry_languages_src_modules_differences_differences_module_ts["conformetry-languages/src/modules/differences/differences.module.ts"]
+  file_conformetry_languages_src_modules_differences_differences_module_unit_test_ts["conformetry-languages/src/modules/differences/differences.module.unit.test.ts"]
+  file_conformetry_languages_src_modules_differences_differences_service_ts["conformetry-languages/src/modules/differences/differences.service.ts"]
+  file_conformetry_languages_src_modules_differences_differences_service_unit_test_ts["conformetry-languages/src/modules/differences/differences.service.unit.test.ts"]
+  file_conformetry_languages_src_modules_differences_differences_types_ts["conformetry-languages/src/modules/differences/differences.types.ts"]
+  file_conformetry_languages_src_modules_files_files_constants_ts["conformetry-languages/src/modules/files/files.constants.ts"]
+  file_conformetry_languages_src_modules_files_files_module_ts["conformetry-languages/src/modules/files/files.module.ts"]
+  file_conformetry_languages_src_modules_files_files_module_unit_test_ts["conformetry-languages/src/modules/files/files.module.unit.test.ts"]
+  file_conformetry_languages_src_modules_files_files_service_ts["conformetry-languages/src/modules/files/files.service.ts"]
+  file_conformetry_languages_src_modules_files_files_service_unit_test_ts["conformetry-languages/src/modules/files/files.service.unit.test.ts"]
+  file_conformetry_languages_src_modules_files_files_types_ts["conformetry-languages/src/modules/files/files.types.ts"]
+  file_conformetry_languages_src_modules_json_json_comparison_service_ts["conformetry-languages/src/modules/json/json-comparison.service.ts"]
+  file_conformetry_languages_src_modules_json_json_comparison_service_unit_test_ts["conformetry-languages/src/modules/json/json-comparison.service.unit.test.ts"]
+  file_conformetry_languages_src_modules_json_json_constants_ts["conformetry-languages/src/modules/json/json.constants.ts"]
+  file_conformetry_languages_src_modules_json_json_module_ts["conformetry-languages/src/modules/json/json.module.ts"]
+  file_conformetry_languages_src_modules_json_json_module_unit_test_ts["conformetry-languages/src/modules/json/json.module.unit.test.ts"]
+  file_conformetry_languages_src_modules_json_json_service_ts["conformetry-languages/src/modules/json/json.service.ts"]
+  file_conformetry_languages_src_modules_json_json_service_unit_test_ts["conformetry-languages/src/modules/json/json.service.unit.test.ts"]
+  file_conformetry_languages_src_modules_json_json_types_ts["conformetry-languages/src/modules/json/json.types.ts"]
+  file_conformetry_languages_src_modules_jupyter_jupyter_notebook_service_ts["conformetry-languages/src/modules/jupyter/jupyter-notebook.service.ts"]
+  file_conformetry_languages_src_modules_jupyter_jupyter_notebook_service_unit_test_ts["conformetry-languages/src/modules/jupyter/jupyter-notebook.service.unit.test.ts"]
+  file_conformetry_languages_src_modules_jupyter_jupyter_constants_ts["conformetry-languages/src/modules/jupyter/jupyter.constants.ts"]
+  file_conformetry_languages_src_modules_jupyter_jupyter_module_ts["conformetry-languages/src/modules/jupyter/jupyter.module.ts"]
+  file_conformetry_languages_src_modules_jupyter_jupyter_module_unit_test_ts["conformetry-languages/src/modules/jupyter/jupyter.module.unit.test.ts"]
+  file_conformetry_languages_src_modules_jupyter_jupyter_service_ts["conformetry-languages/src/modules/jupyter/jupyter.service.ts"]
+  file_conformetry_languages_src_modules_jupyter_jupyter_service_unit_test_ts["conformetry-languages/src/modules/jupyter/jupyter.service.unit.test.ts"]
+  file_conformetry_languages_src_modules_jupyter_jupyter_types_ts["conformetry-languages/src/modules/jupyter/jupyter.types.ts"]
+  file_conformetry_languages_src_modules_languages_languages_constants_ts["conformetry-languages/src/modules/languages/languages.constants.ts"]
+  file_conformetry_languages_src_modules_languages_languages_module_ts["conformetry-languages/src/modules/languages/languages.module.ts"]
+  file_conformetry_languages_src_modules_languages_languages_module_unit_test_ts["conformetry-languages/src/modules/languages/languages.module.unit.test.ts"]
+  file_conformetry_languages_src_modules_languages_languages_service_ts["conformetry-languages/src/modules/languages/languages.service.ts"]
+  file_conformetry_languages_src_modules_languages_languages_service_unit_test_ts["conformetry-languages/src/modules/languages/languages.service.unit.test.ts"]
+  file_conformetry_languages_src_modules_languages_languages_types_ts["conformetry-languages/src/modules/languages/languages.types.ts"]
+  file_conformetry_languages_src_modules_markdown_markdown_nodes_service_ts["conformetry-languages/src/modules/markdown/markdown-nodes.service.ts"]
+  file_conformetry_languages_src_modules_markdown_markdown_nodes_service_unit_test_ts["conformetry-languages/src/modules/markdown/markdown-nodes.service.unit.test.ts"]
+  file_conformetry_languages_src_modules_markdown_markdown_tree_service_ts["conformetry-languages/src/modules/markdown/markdown-tree.service.ts"]
+  file_conformetry_languages_src_modules_markdown_markdown_tree_service_unit_test_ts["conformetry-languages/src/modules/markdown/markdown-tree.service.unit.test.ts"]
+  file_conformetry_languages_src_modules_markdown_markdown_constants_ts["conformetry-languages/src/modules/markdown/markdown.constants.ts"]
+  file_conformetry_languages_src_modules_markdown_markdown_module_ts["conformetry-languages/src/modules/markdown/markdown.module.ts"]
+  file_conformetry_languages_src_modules_markdown_markdown_module_unit_test_ts["conformetry-languages/src/modules/markdown/markdown.module.unit.test.ts"]
+  file_conformetry_languages_src_modules_markdown_markdown_service_ts["conformetry-languages/src/modules/markdown/markdown.service.ts"]
+  file_conformetry_languages_src_modules_markdown_markdown_service_unit_test_ts["conformetry-languages/src/modules/markdown/markdown.service.unit.test.ts"]
+  file_conformetry_languages_src_modules_markdown_markdown_types_ts["conformetry-languages/src/modules/markdown/markdown.types.ts"]
+  file_conformetry_languages_src_modules_python_python_bridge_service_ts["conformetry-languages/src/modules/python/python-bridge.service.ts"]
+  file_conformetry_languages_src_modules_python_python_bridge_service_unit_test_ts["conformetry-languages/src/modules/python/python-bridge.service.unit.test.ts"]
+  file_conformetry_languages_src_modules_python_python_constants_ts["conformetry-languages/src/modules/python/python.constants.ts"]
+  file_conformetry_languages_src_modules_python_python_module_ts["conformetry-languages/src/modules/python/python.module.ts"]
+  file_conformetry_languages_src_modules_python_python_module_unit_test_ts["conformetry-languages/src/modules/python/python.module.unit.test.ts"]
+  file_conformetry_languages_src_modules_python_python_service_ts["conformetry-languages/src/modules/python/python.service.ts"]
+  file_conformetry_languages_src_modules_python_python_service_unit_test_ts["conformetry-languages/src/modules/python/python.service.unit.test.ts"]
+  file_conformetry_languages_src_modules_python_python_types_ts["conformetry-languages/src/modules/python/python.types.ts"]
+  file_conformetry_languages_src_modules_scoring_scoring_constants_ts["conformetry-languages/src/modules/scoring/scoring.constants.ts"]
+  file_conformetry_languages_src_modules_scoring_scoring_module_ts["conformetry-languages/src/modules/scoring/scoring.module.ts"]
+  file_conformetry_languages_src_modules_scoring_scoring_module_unit_test_ts["conformetry-languages/src/modules/scoring/scoring.module.unit.test.ts"]
+  file_conformetry_languages_src_modules_scoring_scoring_service_ts["conformetry-languages/src/modules/scoring/scoring.service.ts"]
+  file_conformetry_languages_src_modules_scoring_scoring_service_unit_test_ts["conformetry-languages/src/modules/scoring/scoring.service.unit.test.ts"]
+  file_conformetry_languages_src_modules_scoring_scoring_types_ts["conformetry-languages/src/modules/scoring/scoring.types.ts"]
+  file_conformetry_languages_src_modules_text_text_constants_ts["conformetry-languages/src/modules/text/text.constants.ts"]
+  file_conformetry_languages_src_modules_text_text_module_ts["conformetry-languages/src/modules/text/text.module.ts"]
+  file_conformetry_languages_src_modules_text_text_module_unit_test_ts["conformetry-languages/src/modules/text/text.module.unit.test.ts"]
+  file_conformetry_languages_src_modules_text_text_service_ts["conformetry-languages/src/modules/text/text.service.ts"]
+  file_conformetry_languages_src_modules_text_text_service_unit_test_ts["conformetry-languages/src/modules/text/text.service.unit.test.ts"]
+  file_conformetry_languages_src_modules_text_text_types_ts["conformetry-languages/src/modules/text/text.types.ts"]
+  file_conformetry_languages_src_modules_typescript_typescript_comments_service_ts["conformetry-languages/src/modules/typescript/typescript-comments.service.ts"]
+  file_conformetry_languages_src_modules_typescript_typescript_comments_service_unit_test_ts["conformetry-languages/src/modules/typescript/typescript-comments.service.unit.test.ts"]
+  file_conformetry_languages_src_modules_typescript_typescript_nodes_service_ts["conformetry-languages/src/modules/typescript/typescript-nodes.service.ts"]
+  file_conformetry_languages_src_modules_typescript_typescript_nodes_service_unit_test_ts["conformetry-languages/src/modules/typescript/typescript-nodes.service.unit.test.ts"]
+  file_conformetry_languages_src_modules_typescript_typescript_tree_service_ts["conformetry-languages/src/modules/typescript/typescript-tree.service.ts"]
+  file_conformetry_languages_src_modules_typescript_typescript_tree_service_unit_test_ts["conformetry-languages/src/modules/typescript/typescript-tree.service.unit.test.ts"]
+  file_conformetry_languages_src_modules_typescript_typescript_constants_ts["conformetry-languages/src/modules/typescript/typescript.constants.ts"]
+  file_conformetry_languages_src_modules_typescript_typescript_module_ts["conformetry-languages/src/modules/typescript/typescript.module.ts"]
+  file_conformetry_languages_src_modules_typescript_typescript_module_unit_test_ts["conformetry-languages/src/modules/typescript/typescript.module.unit.test.ts"]
+  file_conformetry_languages_src_modules_typescript_typescript_service_ts["conformetry-languages/src/modules/typescript/typescript.service.ts"]
+  file_conformetry_languages_src_modules_typescript_typescript_service_unit_test_ts["conformetry-languages/src/modules/typescript/typescript.service.unit.test.ts"]
+  file_conformetry_languages_src_modules_typescript_typescript_types_ts["conformetry-languages/src/modules/typescript/typescript.types.ts"]
+  file_conformetry_languages_testing_mocks_ts["conformetry-languages/testing/mocks.ts"]
+  file_conformetry_languages_testing_setup_ts["conformetry-languages/testing/setup.ts"]
+  file_conformetry_languages_vitest_config_ts["conformetry-languages/vitest.config.ts"]
+  file_conformetry_nx_callidescope_config_ts["conformetry-nx/callidescope.config.ts"]
+  file_conformetry_nx_codependix_config_ts["conformetry-nx/codependix.config.ts"]
+  file_conformetry_nx_codometer_config_ts["conformetry-nx/codometer.config.ts"]
+  file_conformetry_nx_eslint_config_ts["conformetry-nx/eslint.config.ts"]
+  file_conformetry_nx_src_executors_validate_executor_ts["conformetry-nx/src/executors/validate/executor.ts"]
+  file_conformetry_nx_src_executors_validate_executor_types_ts["conformetry-nx/src/executors/validate/executor.types.ts"]
+  file_conformetry_nx_src_executors_validate_executor_unit_test_ts["conformetry-nx/src/executors/validate/executor.unit.test.ts"]
+  file_conformetry_nx_src_generators_sync_generator_ts["conformetry-nx/src/generators/sync/generator.ts"]
+  file_conformetry_nx_src_generators_sync_generator_types_ts["conformetry-nx/src/generators/sync/generator.types.ts"]
+  file_conformetry_nx_src_generators_sync_generator_unit_test_ts["conformetry-nx/src/generators/sync/generator.unit.test.ts"]
+  file_conformetry_nx_src_index_ts["conformetry-nx/src/index.ts"]
+  file_conformetry_nx_src_index_unit_test_ts["conformetry-nx/src/index.unit.test.ts"]
+  file_conformetry_nx_src_main_module_ts["conformetry-nx/src/main.module.ts"]
+  file_conformetry_nx_src_modules_adapter_adapter_constants_ts["conformetry-nx/src/modules/adapter/adapter.constants.ts"]
+  file_conformetry_nx_src_modules_adapter_adapter_module_ts["conformetry-nx/src/modules/adapter/adapter.module.ts"]
+  file_conformetry_nx_src_modules_adapter_adapter_service_ts["conformetry-nx/src/modules/adapter/adapter.service.ts"]
+  file_conformetry_nx_src_modules_adapter_adapter_service_unit_test_ts["conformetry-nx/src/modules/adapter/adapter.service.unit.test.ts"]
+  file_conformetry_nx_src_modules_adapter_adapter_types_ts["conformetry-nx/src/modules/adapter/adapter.types.ts"]
+  file_conformetry_nx_src_modules_generator_bootstrap_utilities_ts["conformetry-nx/src/modules/generator/bootstrap.utilities.ts"]
+  file_conformetry_nx_src_modules_generator_bootstrap_utilities_unit_test_ts["conformetry-nx/src/modules/generator/bootstrap.utilities.unit.test.ts"]
+  file_conformetry_nx_src_modules_generator_generator_constants_ts["conformetry-nx/src/modules/generator/generator.constants.ts"]
+  file_conformetry_nx_src_modules_generator_generator_module_ts["conformetry-nx/src/modules/generator/generator.module.ts"]
+  file_conformetry_nx_src_modules_generator_generator_service_ts["conformetry-nx/src/modules/generator/generator.service.ts"]
+  file_conformetry_nx_src_modules_generator_generator_service_unit_test_ts["conformetry-nx/src/modules/generator/generator.service.unit.test.ts"]
+  file_conformetry_nx_src_modules_generator_generator_types_ts["conformetry-nx/src/modules/generator/generator.types.ts"]
+  file_conformetry_nx_src_modules_instances_instances_constants_ts["conformetry-nx/src/modules/instances/instances.constants.ts"]
+  file_conformetry_nx_src_modules_instances_instances_module_ts["conformetry-nx/src/modules/instances/instances.module.ts"]
+  file_conformetry_nx_src_modules_instances_instances_service_ts["conformetry-nx/src/modules/instances/instances.service.ts"]
+  file_conformetry_nx_src_modules_instances_instances_service_unit_test_ts["conformetry-nx/src/modules/instances/instances.service.unit.test.ts"]
+  file_conformetry_nx_src_modules_instances_instances_types_ts["conformetry-nx/src/modules/instances/instances.types.ts"]
+  file_conformetry_nx_src_modules_options_options_constants_ts["conformetry-nx/src/modules/options/options.constants.ts"]
+  file_conformetry_nx_src_modules_options_options_module_ts["conformetry-nx/src/modules/options/options.module.ts"]
+  file_conformetry_nx_src_modules_options_options_service_ts["conformetry-nx/src/modules/options/options.service.ts"]
+  file_conformetry_nx_src_modules_options_options_service_unit_test_ts["conformetry-nx/src/modules/options/options.service.unit.test.ts"]
+  file_conformetry_nx_src_modules_options_options_types_ts["conformetry-nx/src/modules/options/options.types.ts"]
+  file_conformetry_nx_src_modules_paths_paths_constants_ts["conformetry-nx/src/modules/paths/paths.constants.ts"]
+  file_conformetry_nx_src_modules_paths_paths_module_ts["conformetry-nx/src/modules/paths/paths.module.ts"]
+  file_conformetry_nx_src_modules_paths_paths_service_ts["conformetry-nx/src/modules/paths/paths.service.ts"]
+  file_conformetry_nx_src_modules_paths_paths_service_unit_test_ts["conformetry-nx/src/modules/paths/paths.service.unit.test.ts"]
+  file_conformetry_nx_src_modules_paths_paths_types_ts["conformetry-nx/src/modules/paths/paths.types.ts"]
+  file_conformetry_nx_src_modules_plugin_plugin_context_utilities_ts["conformetry-nx/src/modules/plugin/plugin-context.utilities.ts"]
+  file_conformetry_nx_src_modules_plugin_plugin_context_utilities_unit_test_ts["conformetry-nx/src/modules/plugin/plugin-context.utilities.unit.test.ts"]
+  file_conformetry_nx_src_modules_plugin_plugin_constants_ts["conformetry-nx/src/modules/plugin/plugin.constants.ts"]
+  file_conformetry_nx_src_modules_plugin_plugin_module_ts["conformetry-nx/src/modules/plugin/plugin.module.ts"]
+  file_conformetry_nx_src_modules_plugin_plugin_service_ts["conformetry-nx/src/modules/plugin/plugin.service.ts"]
+  file_conformetry_nx_src_modules_plugin_plugin_service_unit_test_ts["conformetry-nx/src/modules/plugin/plugin.service.unit.test.ts"]
+  file_conformetry_nx_src_modules_plugin_plugin_types_ts["conformetry-nx/src/modules/plugin/plugin.types.ts"]
+  file_conformetry_nx_src_modules_projects_projects_constants_ts["conformetry-nx/src/modules/projects/projects.constants.ts"]
+  file_conformetry_nx_src_modules_projects_projects_module_ts["conformetry-nx/src/modules/projects/projects.module.ts"]
+  file_conformetry_nx_src_modules_projects_projects_service_ts["conformetry-nx/src/modules/projects/projects.service.ts"]
+  file_conformetry_nx_src_modules_projects_projects_service_unit_test_ts["conformetry-nx/src/modules/projects/projects.service.unit.test.ts"]
+  file_conformetry_nx_src_modules_projects_projects_types_ts["conformetry-nx/src/modules/projects/projects.types.ts"]
+  file_conformetry_nx_src_modules_scope_scope_constants_ts["conformetry-nx/src/modules/scope/scope.constants.ts"]
+  file_conformetry_nx_src_modules_scope_scope_module_ts["conformetry-nx/src/modules/scope/scope.module.ts"]
+  file_conformetry_nx_src_modules_scope_scope_service_ts["conformetry-nx/src/modules/scope/scope.service.ts"]
+  file_conformetry_nx_src_modules_scope_scope_service_unit_test_ts["conformetry-nx/src/modules/scope/scope.service.unit.test.ts"]
+  file_conformetry_nx_src_modules_scope_scope_types_ts["conformetry-nx/src/modules/scope/scope.types.ts"]
+  file_conformetry_nx_testing_mocks_ts["conformetry-nx/testing/mocks.ts"]
+  file_conformetry_nx_testing_setup_ts["conformetry-nx/testing/setup.ts"]
+  file_conformetry_nx_vitest_config_ts["conformetry-nx/vitest.config.ts"]
+  file_conformetry_output_callidescope_config_ts["conformetry-output/callidescope.config.ts"]
+  file_conformetry_output_codependix_config_ts["conformetry-output/codependix.config.ts"]
+  file_conformetry_output_codometer_config_ts["conformetry-output/codometer.config.ts"]
+  file_conformetry_output_eslint_config_ts["conformetry-output/eslint.config.ts"]
+  file_conformetry_output_src_index_ts["conformetry-output/src/index.ts"]
+  file_conformetry_output_src_modules_inventory_inventory_constants_ts["conformetry-output/src/modules/inventory/inventory.constants.ts"]
+  file_conformetry_output_src_modules_inventory_inventory_module_ts["conformetry-output/src/modules/inventory/inventory.module.ts"]
+  file_conformetry_output_src_modules_inventory_inventory_module_unit_test_ts["conformetry-output/src/modules/inventory/inventory.module.unit.test.ts"]
+  file_conformetry_output_src_modules_inventory_inventory_service_ts["conformetry-output/src/modules/inventory/inventory.service.ts"]
+  file_conformetry_output_src_modules_inventory_inventory_service_unit_test_ts["conformetry-output/src/modules/inventory/inventory.service.unit.test.ts"]
+  file_conformetry_output_src_modules_inventory_inventory_types_ts["conformetry-output/src/modules/inventory/inventory.types.ts"]
+  file_conformetry_output_src_modules_reporting_reporting_constants_ts["conformetry-output/src/modules/reporting/reporting.constants.ts"]
+  file_conformetry_output_src_modules_reporting_reporting_module_ts["conformetry-output/src/modules/reporting/reporting.module.ts"]
+  file_conformetry_output_src_modules_reporting_reporting_module_unit_test_ts["conformetry-output/src/modules/reporting/reporting.module.unit.test.ts"]
+  file_conformetry_output_src_modules_reporting_reporting_service_ts["conformetry-output/src/modules/reporting/reporting.service.ts"]
+  file_conformetry_output_src_modules_reporting_reporting_service_unit_test_ts["conformetry-output/src/modules/reporting/reporting.service.unit.test.ts"]
+  file_conformetry_output_src_modules_reporting_reporting_types_ts["conformetry-output/src/modules/reporting/reporting.types.ts"]
+  file_conformetry_output_testing_mocks_ts["conformetry-output/testing/mocks.ts"]
+  file_conformetry_output_testing_setup_ts["conformetry-output/testing/setup.ts"]
+  file_conformetry_output_vitest_config_ts["conformetry-output/vitest.config.ts"]
+  file_conformetry_validation_callidescope_config_ts["conformetry-validation/callidescope.config.ts"]
+  file_conformetry_validation_codependix_config_ts["conformetry-validation/codependix.config.ts"]
+  file_conformetry_validation_codometer_config_ts["conformetry-validation/codometer.config.ts"]
+  file_conformetry_validation_eslint_config_ts["conformetry-validation/eslint.config.ts"]
+  file_conformetry_validation_src_index_ts["conformetry-validation/src/index.ts"]
+  file_conformetry_validation_src_modules_runner_runner_constants_ts["conformetry-validation/src/modules/runner/runner.constants.ts"]
+  file_conformetry_validation_src_modules_runner_runner_module_ts["conformetry-validation/src/modules/runner/runner.module.ts"]
+  file_conformetry_validation_src_modules_runner_runner_module_unit_test_ts["conformetry-validation/src/modules/runner/runner.module.unit.test.ts"]
+  file_conformetry_validation_src_modules_runner_runner_service_ts["conformetry-validation/src/modules/runner/runner.service.ts"]
+  file_conformetry_validation_src_modules_runner_runner_service_unit_test_ts["conformetry-validation/src/modules/runner/runner.service.unit.test.ts"]
+  file_conformetry_validation_src_modules_runner_runner_types_ts["conformetry-validation/src/modules/runner/runner.types.ts"]
+  file_conformetry_validation_src_modules_validation_validation_deduplication_service_ts["conformetry-validation/src/modules/validation/validation-deduplication.service.ts"]
+  file_conformetry_validation_src_modules_validation_validation_deduplication_service_unit_test_ts["conformetry-validation/src/modules/validation/validation-deduplication.service.unit.test.ts"]
+  file_conformetry_validation_src_modules_validation_validation_findings_service_ts["conformetry-validation/src/modules/validation/validation-findings.service.ts"]
+  file_conformetry_validation_src_modules_validation_validation_findings_service_unit_test_ts["conformetry-validation/src/modules/validation/validation-findings.service.unit.test.ts"]
+  file_conformetry_validation_src_modules_validation_validation_scoring_service_ts["conformetry-validation/src/modules/validation/validation-scoring.service.ts"]
+  file_conformetry_validation_src_modules_validation_validation_scoring_service_unit_test_ts["conformetry-validation/src/modules/validation/validation-scoring.service.unit.test.ts"]
+  file_conformetry_validation_src_modules_validation_validation_constants_ts["conformetry-validation/src/modules/validation/validation.constants.ts"]
+  file_conformetry_validation_src_modules_validation_validation_module_ts["conformetry-validation/src/modules/validation/validation.module.ts"]
+  file_conformetry_validation_src_modules_validation_validation_service_ts["conformetry-validation/src/modules/validation/validation.service.ts"]
+  file_conformetry_validation_src_modules_validation_validation_service_unit_test_ts["conformetry-validation/src/modules/validation/validation.service.unit.test.ts"]
+  file_conformetry_validation_src_modules_validation_validation_types_ts["conformetry-validation/src/modules/validation/validation.types.ts"]
+  file_conformetry_validation_testing_mocks_ts["conformetry-validation/testing/mocks.ts"]
+  file_conformetry_validation_testing_setup_ts["conformetry-validation/testing/setup.ts"]
+  file_conformetry_validation_vitest_config_ts["conformetry-validation/vitest.config.ts"]
+  file_lexico_components_callidescope_config_ts["lexico-components/callidescope.config.ts"]
+  file_lexico_components_codependix_config_ts["lexico-components/codependix.config.ts"]
+  file_lexico_components_codometer_config_ts["lexico-components/codometer.config.ts"]
+  file_lexico_components_eslint_config_ts["lexico-components/eslint.config.ts"]
+  file_lexico_components_src_components_ui_accordion_tsx["lexico-components/src/components/ui/accordion.tsx"]
+  file_lexico_components_src_components_ui_alert_dialog_tsx["lexico-components/src/components/ui/alert-dialog.tsx"]
+  file_lexico_components_src_components_ui_alert_tsx["lexico-components/src/components/ui/alert.tsx"]
+  file_lexico_components_src_components_ui_aspect_ratio_tsx["lexico-components/src/components/ui/aspect-ratio.tsx"]
+  file_lexico_components_src_components_ui_avatar_tsx["lexico-components/src/components/ui/avatar.tsx"]
+  file_lexico_components_src_components_ui_badge_tsx["lexico-components/src/components/ui/badge.tsx"]
+  file_lexico_components_src_components_ui_breadcrumb_tsx["lexico-components/src/components/ui/breadcrumb.tsx"]
+  file_lexico_components_src_components_ui_button_group_tsx["lexico-components/src/components/ui/button-group.tsx"]
+  file_lexico_components_src_components_ui_button_tsx["lexico-components/src/components/ui/button.tsx"]
+  file_lexico_components_src_components_ui_calendar_tsx["lexico-components/src/components/ui/calendar.tsx"]
+  file_lexico_components_src_components_ui_card_tsx["lexico-components/src/components/ui/card.tsx"]
+  file_lexico_components_src_components_ui_carousel_tsx["lexico-components/src/components/ui/carousel.tsx"]
+  file_lexico_components_src_components_ui_chart_tsx["lexico-components/src/components/ui/chart.tsx"]
+  file_lexico_components_src_components_ui_checkbox_tsx["lexico-components/src/components/ui/checkbox.tsx"]
+  file_lexico_components_src_components_ui_collapsible_tsx["lexico-components/src/components/ui/collapsible.tsx"]
+  file_lexico_components_src_components_ui_command_tsx["lexico-components/src/components/ui/command.tsx"]
+  file_lexico_components_src_components_ui_context_menu_tsx["lexico-components/src/components/ui/context-menu.tsx"]
+  file_lexico_components_src_components_ui_dialog_tsx["lexico-components/src/components/ui/dialog.tsx"]
+  file_lexico_components_src_components_ui_drawer_tsx["lexico-components/src/components/ui/drawer.tsx"]
+  file_lexico_components_src_components_ui_dropdown_menu_tsx["lexico-components/src/components/ui/dropdown-menu.tsx"]
+  file_lexico_components_src_components_ui_empty_tsx["lexico-components/src/components/ui/empty.tsx"]
+  file_lexico_components_src_components_ui_field_tsx["lexico-components/src/components/ui/field.tsx"]
+  file_lexico_components_src_components_ui_form_tsx["lexico-components/src/components/ui/form.tsx"]
+  file_lexico_components_src_components_ui_hover_card_tsx["lexico-components/src/components/ui/hover-card.tsx"]
+  file_lexico_components_src_components_ui_input_group_tsx["lexico-components/src/components/ui/input-group.tsx"]
+  file_lexico_components_src_components_ui_input_otp_tsx["lexico-components/src/components/ui/input-otp.tsx"]
+  file_lexico_components_src_components_ui_input_tsx["lexico-components/src/components/ui/input.tsx"]
+  file_lexico_components_src_components_ui_item_tsx["lexico-components/src/components/ui/item.tsx"]
+  file_lexico_components_src_components_ui_kbd_tsx["lexico-components/src/components/ui/kbd.tsx"]
+  file_lexico_components_src_components_ui_label_tsx["lexico-components/src/components/ui/label.tsx"]
+  file_lexico_components_src_components_ui_menubar_tsx["lexico-components/src/components/ui/menubar.tsx"]
+  file_lexico_components_src_components_ui_navigation_menu_tsx["lexico-components/src/components/ui/navigation-menu.tsx"]
+  file_lexico_components_src_components_ui_pagination_tsx["lexico-components/src/components/ui/pagination.tsx"]
+  file_lexico_components_src_components_ui_popover_tsx["lexico-components/src/components/ui/popover.tsx"]
+  file_lexico_components_src_components_ui_progress_tsx["lexico-components/src/components/ui/progress.tsx"]
+  file_lexico_components_src_components_ui_radio_group_tsx["lexico-components/src/components/ui/radio-group.tsx"]
+  file_lexico_components_src_components_ui_resizable_tsx["lexico-components/src/components/ui/resizable.tsx"]
+  file_lexico_components_src_components_ui_scroll_area_tsx["lexico-components/src/components/ui/scroll-area.tsx"]
+  file_lexico_components_src_components_ui_select_tsx["lexico-components/src/components/ui/select.tsx"]
+  file_lexico_components_src_components_ui_separator_tsx["lexico-components/src/components/ui/separator.tsx"]
+  file_lexico_components_src_components_ui_sheet_tsx["lexico-components/src/components/ui/sheet.tsx"]
+  file_lexico_components_src_components_ui_sidebar_tsx["lexico-components/src/components/ui/sidebar.tsx"]
+  file_lexico_components_src_components_ui_skeleton_tsx["lexico-components/src/components/ui/skeleton.tsx"]
+  file_lexico_components_src_components_ui_slider_tsx["lexico-components/src/components/ui/slider.tsx"]
+  file_lexico_components_src_components_ui_sonner_tsx["lexico-components/src/components/ui/sonner.tsx"]
+  file_lexico_components_src_components_ui_spinner_tsx["lexico-components/src/components/ui/spinner.tsx"]
+  file_lexico_components_src_components_ui_switch_tsx["lexico-components/src/components/ui/switch.tsx"]
+  file_lexico_components_src_components_ui_table_tsx["lexico-components/src/components/ui/table.tsx"]
+  file_lexico_components_src_components_ui_tabs_tsx["lexico-components/src/components/ui/tabs.tsx"]
+  file_lexico_components_src_components_ui_textarea_tsx["lexico-components/src/components/ui/textarea.tsx"]
+  file_lexico_components_src_components_ui_toggle_group_tsx["lexico-components/src/components/ui/toggle-group.tsx"]
+  file_lexico_components_src_components_ui_toggle_tsx["lexico-components/src/components/ui/toggle.tsx"]
+  file_lexico_components_src_components_ui_tooltip_tsx["lexico-components/src/components/ui/tooltip.tsx"]
+  file_lexico_components_src_hooks_use_media_query_ts["lexico-components/src/hooks/use-media-query.ts"]
+  file_lexico_components_src_hooks_use_mobile_tsx["lexico-components/src/hooks/use-mobile.tsx"]
+  file_lexico_components_src_index_ts["lexico-components/src/index.ts"]
+  file_lexico_components_src_lib_utils_ts["lexico-components/src/lib/utils.ts"]
+  file_lexico_components_vite_config_mts["lexico-components/vite.config.mts"]
+  file_lexico_entities_callidescope_config_ts["lexico-entities/callidescope.config.ts"]
+  file_lexico_entities_codependix_config_ts["lexico-entities/codependix.config.ts"]
+  file_lexico_entities_codometer_config_ts["lexico-entities/codometer.config.ts"]
+  file_lexico_entities_eslint_config_ts["lexico-entities/eslint.config.ts"]
+  file_lexico_entities_scripts_extract_migration_sql_ts["lexico-entities/scripts/extract-migration-sql.ts"]
+  file_lexico_entities_src_index_ts["lexico-entities/src/index.ts"]
+  file_lexico_entities_src_modules_database_data_source_constants_ts["lexico-entities/src/modules/database/data-source.constants.ts"]
+  file_lexico_entities_src_modules_database_data_source_constants_unit_test_ts["lexico-entities/src/modules/database/data-source.constants.unit.test.ts"]
+  file_lexico_entities_src_modules_database_data_source_utilities_unit_test_ts["lexico-entities/src/modules/database/data-source.utilities.unit.test.ts"]
+  file_lexico_entities_src_modules_database_database_constants_ts["lexico-entities/src/modules/database/database.constants.ts"]
+  file_lexico_entities_src_modules_database_database_module_ts["lexico-entities/src/modules/database/database.module.ts"]
+  file_lexico_entities_src_modules_database_database_service_ts["lexico-entities/src/modules/database/database.service.ts"]
+  file_lexico_entities_src_modules_database_database_service_unit_test_ts["lexico-entities/src/modules/database/database.service.unit.test.ts"]
+  file_lexico_entities_src_modules_database_database_types_ts["lexico-entities/src/modules/database/database.types.ts"]
+  file_lexico_entities_src_modules_database_migrations_1781126991393_migration_ts["lexico-entities/src/modules/database/migrations/1781126991393-migration.ts"]
+  file_lexico_entities_src_modules_entities_base_Auditable_entity_ts["lexico-entities/src/modules/entities/base/Auditable.entity.ts"]
+  file_lexico_entities_src_modules_entities_base_Creatable_entity_ts["lexico-entities/src/modules/entities/base/Creatable.entity.ts"]
+  file_lexico_entities_src_modules_entities_base_Deletable_entity_ts["lexico-entities/src/modules/entities/base/Deletable.entity.ts"]
+  file_lexico_entities_src_modules_entities_base_Identifiable_entity_ts["lexico-entities/src/modules/entities/base/Identifiable.entity.ts"]
+  file_lexico_entities_src_modules_entities_base_Updatable_entity_ts["lexico-entities/src/modules/entities/base/Updatable.entity.ts"]
+  file_lexico_entities_src_modules_entities_dictionary_form_AdjectivalForm_entity_ts["lexico-entities/src/modules/entities/dictionary/form/AdjectivalForm.entity.ts"]
+  file_lexico_entities_src_modules_entities_dictionary_form_AdverbForm_entity_ts["lexico-entities/src/modules/entities/dictionary/form/AdverbForm.entity.ts"]
+  file_lexico_entities_src_modules_entities_dictionary_form_FiniteVerbForm_entity_ts["lexico-entities/src/modules/entities/dictionary/form/FiniteVerbForm.entity.ts"]
+  file_lexico_entities_src_modules_entities_dictionary_form_Form_entity_ts["lexico-entities/src/modules/entities/dictionary/form/Form.entity.ts"]
+  file_lexico_entities_src_modules_entities_dictionary_form_GerundForm_entity_ts["lexico-entities/src/modules/entities/dictionary/form/GerundForm.entity.ts"]
+  file_lexico_entities_src_modules_entities_dictionary_form_InfinitiveForm_entity_ts["lexico-entities/src/modules/entities/dictionary/form/InfinitiveForm.entity.ts"]
+  file_lexico_entities_src_modules_entities_dictionary_form_NominalForm_entity_ts["lexico-entities/src/modules/entities/dictionary/form/NominalForm.entity.ts"]
+  file_lexico_entities_src_modules_entities_dictionary_form_ParticipleForm_entity_ts["lexico-entities/src/modules/entities/dictionary/form/ParticipleForm.entity.ts"]
+  file_lexico_entities_src_modules_entities_dictionary_form_SupineForm_entity_ts["lexico-entities/src/modules/entities/dictionary/form/SupineForm.entity.ts"]
+  file_lexico_entities_src_modules_entities_dictionary_inflection_AdjectiveInflection_entity_ts["lexico-entities/src/modules/entities/dictionary/inflection/AdjectiveInflection.entity.ts"]
+  file_lexico_entities_src_modules_entities_dictionary_inflection_AdverbInflection_entity_ts["lexico-entities/src/modules/entities/dictionary/inflection/AdverbInflection.entity.ts"]
+  file_lexico_entities_src_modules_entities_dictionary_inflection_Inflection_entity_ts["lexico-entities/src/modules/entities/dictionary/inflection/Inflection.entity.ts"]
+  file_lexico_entities_src_modules_entities_dictionary_inflection_NounInflection_entity_ts["lexico-entities/src/modules/entities/dictionary/inflection/NounInflection.entity.ts"]
+  file_lexico_entities_src_modules_entities_dictionary_inflection_PrepositionInflection_entity_ts["lexico-entities/src/modules/entities/dictionary/inflection/PrepositionInflection.entity.ts"]
+  file_lexico_entities_src_modules_entities_dictionary_inflection_Uninflected_entity_ts["lexico-entities/src/modules/entities/dictionary/inflection/Uninflected.entity.ts"]
+  file_lexico_entities_src_modules_entities_dictionary_inflection_VerbInflection_entity_ts["lexico-entities/src/modules/entities/dictionary/inflection/VerbInflection.entity.ts"]
+  file_lexico_entities_src_modules_entities_dictionary_Lexeme_entity_ts["lexico-entities/src/modules/entities/dictionary/Lexeme.entity.ts"]
+  file_lexico_entities_src_modules_entities_dictionary_PartOfSpeech_entity_ts["lexico-entities/src/modules/entities/dictionary/PartOfSpeech.entity.ts"]
+  file_lexico_entities_src_modules_entities_dictionary_PrincipalPart_entity_ts["lexico-entities/src/modules/entities/dictionary/PrincipalPart.entity.ts"]
+  file_lexico_entities_src_modules_entities_dictionary_Pronunciation_entity_ts["lexico-entities/src/modules/entities/dictionary/Pronunciation.entity.ts"]
+  file_lexico_entities_src_modules_entities_dictionary_Translation_entity_ts["lexico-entities/src/modules/entities/dictionary/Translation.entity.ts"]
+  file_lexico_entities_src_modules_entities_dictionary_Word_entity_ts["lexico-entities/src/modules/entities/dictionary/Word.entity.ts"]
+  file_lexico_entities_src_modules_entities_dictionary_WordForm_entity_ts["lexico-entities/src/modules/entities/dictionary/WordForm.entity.ts"]
+  file_lexico_entities_src_modules_entities_dictionary_WordLexeme_entity_ts["lexico-entities/src/modules/entities/dictionary/WordLexeme.entity.ts"]
+  file_lexico_entities_src_modules_entities_entities_constants_ts["lexico-entities/src/modules/entities/entities.constants.ts"]
+  file_lexico_entities_src_modules_entities_entities_module_ts["lexico-entities/src/modules/entities/entities.module.ts"]
+  file_lexico_entities_src_modules_entities_entities_service_integration_test_ts["lexico-entities/src/modules/entities/entities.service.integration.test.ts"]
+  file_lexico_entities_src_modules_entities_entities_service_ts["lexico-entities/src/modules/entities/entities.service.ts"]
+  file_lexico_entities_src_modules_entities_entities_service_unit_test_ts["lexico-entities/src/modules/entities/entities.service.unit.test.ts"]
+  file_lexico_entities_src_modules_entities_entities_types_ts["lexico-entities/src/modules/entities/entities.types.ts"]
+  file_lexico_entities_src_modules_entities_literature_Author_entity_ts["lexico-entities/src/modules/entities/literature/Author.entity.ts"]
+  file_lexico_entities_src_modules_entities_literature_Line_entity_ts["lexico-entities/src/modules/entities/literature/Line.entity.ts"]
+  file_lexico_entities_src_modules_entities_literature_Text_entity_ts["lexico-entities/src/modules/entities/literature/Text.entity.ts"]
+  file_lexico_entities_src_modules_entities_literature_Token_entity_ts["lexico-entities/src/modules/entities/literature/Token.entity.ts"]
+  file_lexico_entities_testing_entity_definition_assertions_ts["lexico-entities/testing/entity-definition-assertions.ts"]
+  file_lexico_entities_testing_integration_test_data_source_ts["lexico-entities/testing/integration-test-data-source.ts"]
+  file_lexico_entities_testing_setup_ts["lexico-entities/testing/setup.ts"]
+  file_lexico_entities_vitest_config_ts["lexico-entities/vitest.config.ts"]
+  file_lexico_ingestion_callidescope_config_ts["lexico-ingestion/callidescope.config.ts"]
+  file_lexico_ingestion_codependix_config_ts["lexico-ingestion/codependix.config.ts"]
+  file_lexico_ingestion_codometer_config_ts["lexico-ingestion/codometer.config.ts"]
+  file_lexico_ingestion_eslint_config_ts["lexico-ingestion/eslint.config.ts"]
+  file_lexico_ingestion_src_constants_ts["lexico-ingestion/src/constants.ts"]
+  file_lexico_ingestion_src_main_end_to_end_test_ts["lexico-ingestion/src/main.end-to-end.test.ts"]
+  file_lexico_ingestion_src_main_module_ts["lexico-ingestion/src/main.module.ts"]
+  file_lexico_ingestion_src_main_ts["lexico-ingestion/src/main.ts"]
+  file_lexico_ingestion_src_main_unit_test_ts["lexico-ingestion/src/main.unit.test.ts"]
+  file_lexico_ingestion_src_modules_clear_clear_command_ts["lexico-ingestion/src/modules/clear/clear.command.ts"]
+  file_lexico_ingestion_src_modules_clear_clear_command_unit_test_ts["lexico-ingestion/src/modules/clear/clear.command.unit.test.ts"]
+  file_lexico_ingestion_src_modules_clear_clear_constants_ts["lexico-ingestion/src/modules/clear/clear.constants.ts"]
+  file_lexico_ingestion_src_modules_clear_clear_module_ts["lexico-ingestion/src/modules/clear/clear.module.ts"]
+  file_lexico_ingestion_src_modules_clear_clear_types_ts["lexico-ingestion/src/modules/clear/clear.types.ts"]
+  file_lexico_ingestion_src_modules_corpus_scriptorum_ecclesiasticorum_latinorum_corpus_scriptorum_ecclesiasticorum_latinorum_command_ts["lexico-ingestion/src/modules/corpus-scriptorum-ecclesiasticorum-latinorum/corpus-scriptorum-ecclesiasticorum-latinorum.command.ts"]
+  file_lexico_ingestion_src_modules_corpus_scriptorum_ecclesiasticorum_latinorum_corpus_scriptorum_ecclesiasticorum_latinorum_command_unit_test_ts["lexico-ingestion/src/modules/corpus-scriptorum-ecclesiasticorum-latinorum/corpus-scriptorum-ecclesiasticorum-latinorum.command.unit.test.ts"]
+  file_lexico_ingestion_src_modules_corpus_scriptorum_ecclesiasticorum_latinorum_corpus_scriptorum_ecclesiasticorum_latinorum_constants_ts["lexico-ingestion/src/modules/corpus-scriptorum-ecclesiasticorum-latinorum/corpus-scriptorum-ecclesiasticorum-latinorum.constants.ts"]
+  file_lexico_ingestion_src_modules_corpus_scriptorum_ecclesiasticorum_latinorum_corpus_scriptorum_ecclesiasticorum_latinorum_module_ts["lexico-ingestion/src/modules/corpus-scriptorum-ecclesiasticorum-latinorum/corpus-scriptorum-ecclesiasticorum-latinorum.module.ts"]
+  file_lexico_ingestion_src_modules_corpus_scriptorum_ecclesiasticorum_latinorum_corpus_scriptorum_ecclesiasticorum_latinorum_types_ts["lexico-ingestion/src/modules/corpus-scriptorum-ecclesiasticorum-latinorum/corpus-scriptorum-ecclesiasticorum-latinorum.types.ts"]
+  file_lexico_ingestion_src_modules_dictionary_dictionary_command_ts["lexico-ingestion/src/modules/dictionary/dictionary.command.ts"]
+  file_lexico_ingestion_src_modules_dictionary_dictionary_command_unit_test_ts["lexico-ingestion/src/modules/dictionary/dictionary.command.unit.test.ts"]
+  file_lexico_ingestion_src_modules_dictionary_dictionary_constants_ts["lexico-ingestion/src/modules/dictionary/dictionary.constants.ts"]
+  file_lexico_ingestion_src_modules_dictionary_dictionary_module_ts["lexico-ingestion/src/modules/dictionary/dictionary.module.ts"]
+  file_lexico_ingestion_src_modules_dictionary_dictionary_types_ts["lexico-ingestion/src/modules/dictionary/dictionary.types.ts"]
+  file_lexico_ingestion_src_modules_epigraphik_datenbank_clauss_slaby_epigraphik_datenbank_clauss_slaby_command_ts["lexico-ingestion/src/modules/epigraphik-datenbank-clauss-slaby/epigraphik-datenbank-clauss-slaby.command.ts"]
+  file_lexico_ingestion_src_modules_epigraphik_datenbank_clauss_slaby_epigraphik_datenbank_clauss_slaby_command_unit_test_ts["lexico-ingestion/src/modules/epigraphik-datenbank-clauss-slaby/epigraphik-datenbank-clauss-slaby.command.unit.test.ts"]
+  file_lexico_ingestion_src_modules_epigraphik_datenbank_clauss_slaby_epigraphik_datenbank_clauss_slaby_constants_ts["lexico-ingestion/src/modules/epigraphik-datenbank-clauss-slaby/epigraphik-datenbank-clauss-slaby.constants.ts"]
+  file_lexico_ingestion_src_modules_epigraphik_datenbank_clauss_slaby_epigraphik_datenbank_clauss_slaby_module_ts["lexico-ingestion/src/modules/epigraphik-datenbank-clauss-slaby/epigraphik-datenbank-clauss-slaby.module.ts"]
+  file_lexico_ingestion_src_modules_epigraphik_datenbank_clauss_slaby_epigraphik_datenbank_clauss_slaby_types_ts["lexico-ingestion/src/modules/epigraphik-datenbank-clauss-slaby/epigraphik-datenbank-clauss-slaby.types.ts"]
+  file_lexico_ingestion_src_modules_etymology_etymology_constants_ts["lexico-ingestion/src/modules/etymology/etymology.constants.ts"]
+  file_lexico_ingestion_src_modules_etymology_etymology_module_ts["lexico-ingestion/src/modules/etymology/etymology.module.ts"]
+  file_lexico_ingestion_src_modules_etymology_etymology_service_ts["lexico-ingestion/src/modules/etymology/etymology.service.ts"]
+  file_lexico_ingestion_src_modules_etymology_etymology_service_unit_test_ts["lexico-ingestion/src/modules/etymology/etymology.service.unit.test.ts"]
+  file_lexico_ingestion_src_modules_etymology_etymology_types_ts["lexico-ingestion/src/modules/etymology/etymology.types.ts"]
+  file_lexico_ingestion_src_modules_forms_forms_builder_guards_service_ts["lexico-ingestion/src/modules/forms/forms-builder-guards.service.ts"]
+  file_lexico_ingestion_src_modules_forms_forms_builder_guards_service_unit_test_ts["lexico-ingestion/src/modules/forms/forms-builder-guards.service.unit.test.ts"]
+  file_lexico_ingestion_src_modules_forms_forms_builder_verb_service_ts["lexico-ingestion/src/modules/forms/forms-builder-verb.service.ts"]
+  file_lexico_ingestion_src_modules_forms_forms_builder_verb_service_unit_test_ts["lexico-ingestion/src/modules/forms/forms-builder-verb.service.unit.test.ts"]
+  file_lexico_ingestion_src_modules_forms_forms_builder_service_ts["lexico-ingestion/src/modules/forms/forms-builder.service.ts"]
+  file_lexico_ingestion_src_modules_forms_forms_builder_service_unit_test_ts["lexico-ingestion/src/modules/forms/forms-builder.service.unit.test.ts"]
+  file_lexico_ingestion_src_modules_forms_forms_transient_words_service_ts["lexico-ingestion/src/modules/forms/forms-transient-words.service.ts"]
+  file_lexico_ingestion_src_modules_forms_forms_transient_words_service_unit_test_ts["lexico-ingestion/src/modules/forms/forms-transient-words.service.unit.test.ts"]
+  file_lexico_ingestion_src_modules_forms_forms_constants_ts["lexico-ingestion/src/modules/forms/forms.constants.ts"]
+  file_lexico_ingestion_src_modules_forms_forms_constants_unit_test_ts["lexico-ingestion/src/modules/forms/forms.constants.unit.test.ts"]
+  file_lexico_ingestion_src_modules_forms_forms_module_ts["lexico-ingestion/src/modules/forms/forms.module.ts"]
+  file_lexico_ingestion_src_modules_forms_forms_service_ts["lexico-ingestion/src/modules/forms/forms.service.ts"]
+  file_lexico_ingestion_src_modules_forms_forms_service_unit_test_ts["lexico-ingestion/src/modules/forms/forms.service.unit.test.ts"]
+  file_lexico_ingestion_src_modules_forms_forms_types_ts["lexico-ingestion/src/modules/forms/forms.types.ts"]
+  file_lexico_ingestion_src_modules_latin_library_latin_library_command_ts["lexico-ingestion/src/modules/latin-library/latin-library.command.ts"]
+  file_lexico_ingestion_src_modules_latin_library_latin_library_command_unit_test_ts["lexico-ingestion/src/modules/latin-library/latin-library.command.unit.test.ts"]
+  file_lexico_ingestion_src_modules_latin_library_latin_library_constants_ts["lexico-ingestion/src/modules/latin-library/latin-library.constants.ts"]
+  file_lexico_ingestion_src_modules_latin_library_latin_library_module_ts["lexico-ingestion/src/modules/latin-library/latin-library.module.ts"]
+  file_lexico_ingestion_src_modules_latin_library_latin_library_types_ts["lexico-ingestion/src/modules/latin-library/latin-library.types.ts"]
+  file_lexico_ingestion_src_modules_lexemes_lexemes_constants_ts["lexico-ingestion/src/modules/lexemes/lexemes.constants.ts"]
+  file_lexico_ingestion_src_modules_lexemes_lexemes_module_ts["lexico-ingestion/src/modules/lexemes/lexemes.module.ts"]
+  file_lexico_ingestion_src_modules_lexemes_lexemes_service_ts["lexico-ingestion/src/modules/lexemes/lexemes.service.ts"]
+  file_lexico_ingestion_src_modules_lexemes_lexemes_service_unit_test_ts["lexico-ingestion/src/modules/lexemes/lexemes.service.unit.test.ts"]
+  file_lexico_ingestion_src_modules_lexemes_lexemes_types_ts["lexico-ingestion/src/modules/lexemes/lexemes.types.ts"]
+  file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_command_ts["lexico-ingestion/src/modules/lexico-ingestion/lexico-ingestion.command.ts"]
+  file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_command_unit_test_ts["lexico-ingestion/src/modules/lexico-ingestion/lexico-ingestion.command.unit.test.ts"]
+  file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_constants_ts["lexico-ingestion/src/modules/lexico-ingestion/lexico-ingestion.constants.ts"]
+  file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_module_ts["lexico-ingestion/src/modules/lexico-ingestion/lexico-ingestion.module.ts"]
+  file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_types_ts["lexico-ingestion/src/modules/lexico-ingestion/lexico-ingestion.types.ts"]
+  file_lexico_ingestion_src_modules_library_library_command_ts["lexico-ingestion/src/modules/library/library.command.ts"]
+  file_lexico_ingestion_src_modules_library_library_command_unit_test_ts["lexico-ingestion/src/modules/library/library.command.unit.test.ts"]
+  file_lexico_ingestion_src_modules_library_library_constants_ts["lexico-ingestion/src/modules/library/library.constants.ts"]
+  file_lexico_ingestion_src_modules_library_library_module_ts["lexico-ingestion/src/modules/library/library.module.ts"]
+  file_lexico_ingestion_src_modules_library_library_types_ts["lexico-ingestion/src/modules/library/library.types.ts"]
+  file_lexico_ingestion_src_modules_library_library_utilities_ts["lexico-ingestion/src/modules/library/library.utilities.ts"]
+  file_lexico_ingestion_src_modules_library_library_utilities_unit_test_ts["lexico-ingestion/src/modules/library/library.utilities.unit.test.ts"]
+  file_lexico_ingestion_src_modules_library_providers_corpus_scriptorum_ecclesiasticorum_latinorum_library_provider_ts["lexico-ingestion/src/modules/library/providers/corpus-scriptorum-ecclesiasticorum-latinorum-library.provider.ts"]
+  file_lexico_ingestion_src_modules_library_providers_corpus_scriptorum_ecclesiasticorum_latinorum_library_provider_unit_test_ts["lexico-ingestion/src/modules/library/providers/corpus-scriptorum-ecclesiasticorum-latinorum-library.provider.unit.test.ts"]
+  file_lexico_ingestion_src_modules_library_providers_epigraphik_datenbank_clauss_slaby_library_provider_ts["lexico-ingestion/src/modules/library/providers/epigraphik-datenbank-clauss-slaby-library.provider.ts"]
+  file_lexico_ingestion_src_modules_library_providers_epigraphik_datenbank_clauss_slaby_library_provider_unit_test_ts["lexico-ingestion/src/modules/library/providers/epigraphik-datenbank-clauss-slaby-library.provider.unit.test.ts"]
+  file_lexico_ingestion_src_modules_library_providers_latin_library_builder_ts["lexico-ingestion/src/modules/library/providers/latin-library.builder.ts"]
+  file_lexico_ingestion_src_modules_library_providers_latin_library_builder_unit_test_ts["lexico-ingestion/src/modules/library/providers/latin-library.builder.unit.test.ts"]
+  file_lexico_ingestion_src_modules_library_providers_latin_library_provider_ts["lexico-ingestion/src/modules/library/providers/latin-library.provider.ts"]
+  file_lexico_ingestion_src_modules_library_providers_latin_library_provider_unit_test_ts["lexico-ingestion/src/modules/library/providers/latin-library.provider.unit.test.ts"]
+  file_lexico_ingestion_src_modules_library_providers_perseus_library_text_extraction_provider_ts["lexico-ingestion/src/modules/library/providers/perseus-library-text-extraction.provider.ts"]
+  file_lexico_ingestion_src_modules_library_providers_perseus_library_text_extraction_provider_unit_test_ts["lexico-ingestion/src/modules/library/providers/perseus-library-text-extraction.provider.unit.test.ts"]
+  file_lexico_ingestion_src_modules_library_providers_perseus_library_provider_ts["lexico-ingestion/src/modules/library/providers/perseus-library.provider.ts"]
+  file_lexico_ingestion_src_modules_library_providers_perseus_library_provider_unit_test_ts["lexico-ingestion/src/modules/library/providers/perseus-library.provider.unit.test.ts"]
+  file_lexico_ingestion_src_modules_literature_literature_library_scan_service_ts["lexico-ingestion/src/modules/literature/literature-library-scan.service.ts"]
+  file_lexico_ingestion_src_modules_literature_literature_library_scan_service_unit_test_ts["lexico-ingestion/src/modules/literature/literature-library-scan.service.unit.test.ts"]
+  file_lexico_ingestion_src_modules_literature_literature_text_ingestion_service_ts["lexico-ingestion/src/modules/literature/literature-text-ingestion.service.ts"]
+  file_lexico_ingestion_src_modules_literature_literature_text_ingestion_service_unit_test_ts["lexico-ingestion/src/modules/literature/literature-text-ingestion.service.unit.test.ts"]
+  file_lexico_ingestion_src_modules_literature_literature_word_normalization_service_ts["lexico-ingestion/src/modules/literature/literature-word-normalization.service.ts"]
+  file_lexico_ingestion_src_modules_literature_literature_word_normalization_service_unit_test_ts["lexico-ingestion/src/modules/literature/literature-word-normalization.service.unit.test.ts"]
+  file_lexico_ingestion_src_modules_literature_literature_command_ts["lexico-ingestion/src/modules/literature/literature.command.ts"]
+  file_lexico_ingestion_src_modules_literature_literature_command_unit_test_ts["lexico-ingestion/src/modules/literature/literature.command.unit.test.ts"]
+  file_lexico_ingestion_src_modules_literature_literature_constants_ts["lexico-ingestion/src/modules/literature/literature.constants.ts"]
+  file_lexico_ingestion_src_modules_literature_literature_module_ts["lexico-ingestion/src/modules/literature/literature.module.ts"]
+  file_lexico_ingestion_src_modules_literature_literature_service_ts["lexico-ingestion/src/modules/literature/literature.service.ts"]
+  file_lexico_ingestion_src_modules_literature_literature_service_unit_test_ts["lexico-ingestion/src/modules/literature/literature.service.unit.test.ts"]
+  file_lexico_ingestion_src_modules_literature_literature_types_ts["lexico-ingestion/src/modules/literature/literature.types.ts"]
+  file_lexico_ingestion_src_modules_manual_manual_constants_ts["lexico-ingestion/src/modules/manual/manual.constants.ts"]
+  file_lexico_ingestion_src_modules_manual_manual_module_ts["lexico-ingestion/src/modules/manual/manual.module.ts"]
+  file_lexico_ingestion_src_modules_manual_manual_service_ts["lexico-ingestion/src/modules/manual/manual.service.ts"]
+  file_lexico_ingestion_src_modules_manual_manual_service_unit_test_ts["lexico-ingestion/src/modules/manual/manual.service.unit.test.ts"]
+  file_lexico_ingestion_src_modules_manual_manual_types_ts["lexico-ingestion/src/modules/manual/manual.types.ts"]
+  file_lexico_ingestion_src_modules_manual_manual_utilities_ts["lexico-ingestion/src/modules/manual/manual.utilities.ts"]
+  file_lexico_ingestion_src_modules_numerals_numerals_constants_ts["lexico-ingestion/src/modules/numerals/numerals.constants.ts"]
+  file_lexico_ingestion_src_modules_numerals_numerals_module_ts["lexico-ingestion/src/modules/numerals/numerals.module.ts"]
+  file_lexico_ingestion_src_modules_numerals_numerals_service_ts["lexico-ingestion/src/modules/numerals/numerals.service.ts"]
+  file_lexico_ingestion_src_modules_numerals_numerals_service_unit_test_ts["lexico-ingestion/src/modules/numerals/numerals.service.unit.test.ts"]
+  file_lexico_ingestion_src_modules_numerals_numerals_types_ts["lexico-ingestion/src/modules/numerals/numerals.types.ts"]
+  file_lexico_ingestion_src_modules_part_of_speech_part_of_speech_forms_service_ts["lexico-ingestion/src/modules/part-of-speech/part-of-speech-forms.service.ts"]
+  file_lexico_ingestion_src_modules_part_of_speech_part_of_speech_forms_service_unit_test_ts["lexico-ingestion/src/modules/part-of-speech/part-of-speech-forms.service.unit.test.ts"]
+  file_lexico_ingestion_src_modules_part_of_speech_part_of_speech_constants_ts["lexico-ingestion/src/modules/part-of-speech/part-of-speech.constants.ts"]
+  file_lexico_ingestion_src_modules_part_of_speech_part_of_speech_module_ts["lexico-ingestion/src/modules/part-of-speech/part-of-speech.module.ts"]
+  file_lexico_ingestion_src_modules_part_of_speech_part_of_speech_service_ts["lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts"]
+  file_lexico_ingestion_src_modules_part_of_speech_part_of_speech_service_unit_test_ts["lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.unit.test.ts"]
+  file_lexico_ingestion_src_modules_part_of_speech_part_of_speech_types_ts["lexico-ingestion/src/modules/part-of-speech/part-of-speech.types.ts"]
+  file_lexico_ingestion_src_modules_perseus_perseus_command_ts["lexico-ingestion/src/modules/perseus/perseus.command.ts"]
+  file_lexico_ingestion_src_modules_perseus_perseus_command_unit_test_ts["lexico-ingestion/src/modules/perseus/perseus.command.unit.test.ts"]
+  file_lexico_ingestion_src_modules_perseus_perseus_constants_ts["lexico-ingestion/src/modules/perseus/perseus.constants.ts"]
+  file_lexico_ingestion_src_modules_perseus_perseus_module_ts["lexico-ingestion/src/modules/perseus/perseus.module.ts"]
+  file_lexico_ingestion_src_modules_perseus_perseus_types_ts["lexico-ingestion/src/modules/perseus/perseus.types.ts"]
+  file_lexico_ingestion_src_modules_principal_parts_principal_parts_constants_ts["lexico-ingestion/src/modules/principal-parts/principal-parts.constants.ts"]
+  file_lexico_ingestion_src_modules_principal_parts_principal_parts_module_ts["lexico-ingestion/src/modules/principal-parts/principal-parts.module.ts"]
+  file_lexico_ingestion_src_modules_principal_parts_principal_parts_service_ts["lexico-ingestion/src/modules/principal-parts/principal-parts.service.ts"]
+  file_lexico_ingestion_src_modules_principal_parts_principal_parts_service_unit_test_ts["lexico-ingestion/src/modules/principal-parts/principal-parts.service.unit.test.ts"]
+  file_lexico_ingestion_src_modules_principal_parts_principal_parts_types_ts["lexico-ingestion/src/modules/principal-parts/principal-parts.types.ts"]
+  file_lexico_ingestion_src_modules_pronunciation_pronunciation_classical_service_ts["lexico-ingestion/src/modules/pronunciation/pronunciation-classical.service.ts"]
+  file_lexico_ingestion_src_modules_pronunciation_pronunciation_classical_service_unit_test_ts["lexico-ingestion/src/modules/pronunciation/pronunciation-classical.service.unit.test.ts"]
+  file_lexico_ingestion_src_modules_pronunciation_pronunciation_classifier_service_ts["lexico-ingestion/src/modules/pronunciation/pronunciation-classifier.service.ts"]
+  file_lexico_ingestion_src_modules_pronunciation_pronunciation_classifier_service_unit_test_ts["lexico-ingestion/src/modules/pronunciation/pronunciation-classifier.service.unit.test.ts"]
+  file_lexico_ingestion_src_modules_pronunciation_pronunciation_ecclesiastical_service_ts["lexico-ingestion/src/modules/pronunciation/pronunciation-ecclesiastical.service.ts"]
+  file_lexico_ingestion_src_modules_pronunciation_pronunciation_ecclesiastical_service_unit_test_ts["lexico-ingestion/src/modules/pronunciation/pronunciation-ecclesiastical.service.unit.test.ts"]
+  file_lexico_ingestion_src_modules_pronunciation_pronunciation_phonemes_service_ts["lexico-ingestion/src/modules/pronunciation/pronunciation-phonemes.service.ts"]
+  file_lexico_ingestion_src_modules_pronunciation_pronunciation_phonemes_service_unit_test_ts["lexico-ingestion/src/modules/pronunciation/pronunciation-phonemes.service.unit.test.ts"]
+  file_lexico_ingestion_src_modules_pronunciation_pronunciation_constants_ts["lexico-ingestion/src/modules/pronunciation/pronunciation.constants.ts"]
+  file_lexico_ingestion_src_modules_pronunciation_pronunciation_module_ts["lexico-ingestion/src/modules/pronunciation/pronunciation.module.ts"]
+  file_lexico_ingestion_src_modules_pronunciation_pronunciation_service_ts["lexico-ingestion/src/modules/pronunciation/pronunciation.service.ts"]
+  file_lexico_ingestion_src_modules_pronunciation_pronunciation_service_unit_test_ts["lexico-ingestion/src/modules/pronunciation/pronunciation.service.unit.test.ts"]
+  file_lexico_ingestion_src_modules_pronunciation_pronunciation_types_ts["lexico-ingestion/src/modules/pronunciation/pronunciation.types.ts"]
+  file_lexico_ingestion_src_modules_translations_translations_constants_ts["lexico-ingestion/src/modules/translations/translations.constants.ts"]
+  file_lexico_ingestion_src_modules_translations_translations_module_ts["lexico-ingestion/src/modules/translations/translations.module.ts"]
+  file_lexico_ingestion_src_modules_translations_translations_service_ts["lexico-ingestion/src/modules/translations/translations.service.ts"]
+  file_lexico_ingestion_src_modules_translations_translations_service_unit_test_ts["lexico-ingestion/src/modules/translations/translations.service.unit.test.ts"]
+  file_lexico_ingestion_src_modules_translations_translations_types_ts["lexico-ingestion/src/modules/translations/translations.types.ts"]
+  file_lexico_ingestion_src_modules_wiktionary_wiktionary_command_ts["lexico-ingestion/src/modules/wiktionary/wiktionary.command.ts"]
+  file_lexico_ingestion_src_modules_wiktionary_wiktionary_command_unit_test_ts["lexico-ingestion/src/modules/wiktionary/wiktionary.command.unit.test.ts"]
+  file_lexico_ingestion_src_modules_wiktionary_wiktionary_constants_ts["lexico-ingestion/src/modules/wiktionary/wiktionary.constants.ts"]
+  file_lexico_ingestion_src_modules_wiktionary_wiktionary_module_ts["lexico-ingestion/src/modules/wiktionary/wiktionary.module.ts"]
+  file_lexico_ingestion_src_modules_wiktionary_wiktionary_types_ts["lexico-ingestion/src/modules/wiktionary/wiktionary.types.ts"]
+  file_lexico_ingestion_src_modules_words_words_constants_ts["lexico-ingestion/src/modules/words/words.constants.ts"]
+  file_lexico_ingestion_src_modules_words_words_module_ts["lexico-ingestion/src/modules/words/words.module.ts"]
+  file_lexico_ingestion_src_modules_words_words_service_ts["lexico-ingestion/src/modules/words/words.service.ts"]
+  file_lexico_ingestion_src_modules_words_words_service_unit_test_ts["lexico-ingestion/src/modules/words/words.service.unit.test.ts"]
+  file_lexico_ingestion_src_modules_words_words_types_ts["lexico-ingestion/src/modules/words/words.types.ts"]
+  file_lexico_ingestion_src_repl_ts["lexico-ingestion/src/repl.ts"]
+  file_lexico_ingestion_src_repl_unit_test_ts["lexico-ingestion/src/repl.unit.test.ts"]
+  file_lexico_ingestion_testing_command_harness_ts["lexico-ingestion/testing/command-harness.ts"]
+  file_lexico_ingestion_testing_mocks_ts["lexico-ingestion/testing/mocks.ts"]
+  file_lexico_ingestion_testing_setup_ts["lexico-ingestion/testing/setup.ts"]
+  file_lexico_ingestion_vitest_config_ts["lexico-ingestion/vitest.config.ts"]
+  file_lexico_callidescope_config_ts["lexico/callidescope.config.ts"]
+  file_lexico_codependix_config_ts["lexico/codependix.config.ts"]
+  file_lexico_codometer_config_ts["lexico/codometer.config.ts"]
+  file_lexico_eslint_config_ts["lexico/eslint.config.ts"]
+  file_lexico_src_components_entry_adjective_forms_table_tsx["lexico/src/components/entry/adjective-forms-table.tsx"]
+  file_lexico_src_components_entry_entry_card_tsx["lexico/src/components/entry/entry-card.tsx"]
+  file_lexico_src_components_entry_form_cell_tsx["lexico/src/components/entry/form-cell.tsx"]
+  file_lexico_src_components_entry_form_tabs_tsx["lexico/src/components/entry/form-tabs.tsx"]
+  file_lexico_src_components_entry_forms_table_tsx["lexico/src/components/entry/forms-table.tsx"]
+  file_lexico_src_components_entry_identifier_tsx["lexico/src/components/entry/identifier.tsx"]
+  file_lexico_src_components_entry_noun_forms_table_tsx["lexico/src/components/entry/noun-forms-table.tsx"]
+  file_lexico_src_components_entry_principal_parts_tsx["lexico/src/components/entry/principal-parts.tsx"]
+  file_lexico_src_components_entry_translations_tsx["lexico/src/components/entry/translations.tsx"]
+  file_lexico_src_components_entry_verb_forms_table_tsx["lexico/src/components/entry/verb-forms-table.tsx"]
+  file_lexico_src_components_layout_index_ts["lexico/src/components/layout/index.ts"]
+  file_lexico_src_components_layout_logo_tsx["lexico/src/components/layout/logo.tsx"]
+  file_lexico_src_components_PronunciationButton_test_tsx["lexico/src/components/PronunciationButton.test.tsx"]
+  file_lexico_src_components_PronunciationButton_tsx["lexico/src/components/PronunciationButton.tsx"]
+  file_lexico_src_lib_auth_ts["lexico/src/lib/auth.ts"]
+  file_lexico_src_lib_bookmarks_ts["lexico/src/lib/bookmarks.ts"]
+  file_lexico_src_lib_client_tsx["lexico/src/lib/client.tsx"]
+  file_lexico_src_lib_forms_ts["lexico/src/lib/forms.ts"]
+  file_lexico_src_lib_library_ts["lexico/src/lib/library.ts"]
+  file_lexico_src_lib_pronunciation_ts["lexico/src/lib/pronunciation.ts"]
+  file_lexico_src_lib_routeTree_gen_ts["lexico/src/lib/routeTree.gen.ts"]
+  file_lexico_src_lib_search_ts["lexico/src/lib/search.ts"]
+  file_lexico_src_lib_types_ts["lexico/src/lib/types.ts"]
+  file_lexico_src_router_tsx["lexico/src/router.tsx"]
+  file_lexico_src_routes___root_tsx["lexico/src/routes/__root.tsx"]
+  file_lexico_src_routes_bookmarks_tsx["lexico/src/routes/bookmarks.tsx"]
+  file_lexico_src_routes_hooks_useLibraryPage_ts["lexico/src/routes/hooks/useLibraryPage.ts"]
+  file_lexico_src_routes_index_tsx["lexico/src/routes/index.tsx"]
+  file_lexico_src_routes_library_tsx["lexico/src/routes/library.tsx"]
+  file_lexico_src_routes_search_tsx["lexico/src/routes/search.tsx"]
+  file_lexico_src_routes_settings_tsx["lexico/src/routes/settings.tsx"]
+  file_lexico_src_routes_tools_tsx["lexico/src/routes/tools.tsx"]
+  file_lexico_src_routes_word__id_tsx["lexico/src/routes/word.$id.tsx"]
+  file_lexico_vite_config_mts["lexico/vite.config.mts"]
+  file_lexico_vitest_config_ts["lexico/vitest.config.ts"]
+  file_logger_callidescope_config_ts["logger/callidescope.config.ts"]
+  file_logger_codependix_config_ts["logger/codependix.config.ts"]
+  file_logger_codometer_config_ts["logger/codometer.config.ts"]
+  file_logger_eslint_config_ts["logger/eslint.config.ts"]
+  file_logger_src_index_ts["logger/src/index.ts"]
+  file_logger_src_lib_conventional_log_message_eslint_rule_ts["logger/src/lib/conventional-log-message.eslint-rule.ts"]
+  file_logger_src_lib_conventional_log_message_eslint_rule_unit_test_ts["logger/src/lib/conventional-log-message.eslint-rule.unit.test.ts"]
+  file_logger_src_modules_logger_logger_constants_ts["logger/src/modules/logger/logger.constants.ts"]
+  file_logger_src_modules_logger_logger_module_ts["logger/src/modules/logger/logger.module.ts"]
+  file_logger_src_modules_logger_logger_module_unit_test_ts["logger/src/modules/logger/logger.module.unit.test.ts"]
+  file_logger_src_modules_logger_logger_service_ts["logger/src/modules/logger/logger.service.ts"]
+  file_logger_src_modules_logger_logger_service_unit_test_ts["logger/src/modules/logger/logger.service.unit.test.ts"]
+  file_logger_src_modules_logger_logger_types_ts["logger/src/modules/logger/logger.types.ts"]
+  file_logger_testing_mocks_ts["logger/testing/mocks.ts"]
+  file_logger_testing_setup_ts["logger/testing/setup.ts"]
+  file_logger_vitest_config_ts["logger/vitest.config.ts"]
+  file_meanderaw_callidescope_config_ts["meanderaw/callidescope.config.ts"]
+  file_meanderaw_codependix_config_ts["meanderaw/codependix.config.ts"]
+  file_meanderaw_codometer_config_ts["meanderaw/codometer.config.ts"]
+  file_meanderaw_eslint_config_ts["meanderaw/eslint.config.ts"]
+  file_meanderaw_src_constants_ts["meanderaw/src/constants.ts"]
+  file_meanderaw_src_main_end_to_end_test_ts["meanderaw/src/main.end-to-end.test.ts"]
+  file_meanderaw_src_main_module_ts["meanderaw/src/main.module.ts"]
+  file_meanderaw_src_main_ts["meanderaw/src/main.ts"]
+  file_meanderaw_src_main_unit_test_ts["meanderaw/src/main.unit.test.ts"]
+  file_meanderaw_src_modules_characteristics_characteristics_constants_ts["meanderaw/src/modules/characteristics/characteristics.constants.ts"]
+  file_meanderaw_src_modules_characteristics_characteristics_module_ts["meanderaw/src/modules/characteristics/characteristics.module.ts"]
+  file_meanderaw_src_modules_characteristics_characteristics_service_ts["meanderaw/src/modules/characteristics/characteristics.service.ts"]
+  file_meanderaw_src_modules_characteristics_characteristics_service_unit_test_ts["meanderaw/src/modules/characteristics/characteristics.service.unit.test.ts"]
+  file_meanderaw_src_modules_characteristics_characteristics_types_ts["meanderaw/src/modules/characteristics/characteristics.types.ts"]
+  file_meanderaw_src_modules_characteristics_connectivity_service_ts["meanderaw/src/modules/characteristics/connectivity.service.ts"]
+  file_meanderaw_src_modules_characteristics_connectivity_service_unit_test_ts["meanderaw/src/modules/characteristics/connectivity.service.unit.test.ts"]
+  file_meanderaw_src_modules_classification_classification_constants_ts["meanderaw/src/modules/classification/classification.constants.ts"]
+  file_meanderaw_src_modules_classification_classification_module_ts["meanderaw/src/modules/classification/classification.module.ts"]
+  file_meanderaw_src_modules_classification_classification_service_ts["meanderaw/src/modules/classification/classification.service.ts"]
+  file_meanderaw_src_modules_classification_classification_service_unit_test_ts["meanderaw/src/modules/classification/classification.service.unit.test.ts"]
+  file_meanderaw_src_modules_classification_classification_types_ts["meanderaw/src/modules/classification/classification.types.ts"]
+  file_meanderaw_src_modules_classification_sub_family_constants_ts["meanderaw/src/modules/classification/sub-family.constants.ts"]
+  file_meanderaw_src_modules_classification_sub_family_service_ts["meanderaw/src/modules/classification/sub-family.service.ts"]
+  file_meanderaw_src_modules_classification_sub_family_service_unit_test_ts["meanderaw/src/modules/classification/sub-family.service.unit.test.ts"]
+  file_meanderaw_src_modules_classification_sub_family_types_ts["meanderaw/src/modules/classification/sub-family.types.ts"]
+  file_meanderaw_src_modules_code_code_constants_ts["meanderaw/src/modules/code/code.constants.ts"]
+  file_meanderaw_src_modules_code_code_module_ts["meanderaw/src/modules/code/code.module.ts"]
+  file_meanderaw_src_modules_code_code_service_ts["meanderaw/src/modules/code/code.service.ts"]
+  file_meanderaw_src_modules_code_code_service_unit_test_ts["meanderaw/src/modules/code/code.service.unit.test.ts"]
+  file_meanderaw_src_modules_code_code_types_ts["meanderaw/src/modules/code/code.types.ts"]
+  file_meanderaw_src_modules_corpus_boxes_constants_ts["meanderaw/src/modules/corpus/boxes.constants.ts"]
+  file_meanderaw_src_modules_corpus_branch_constants_ts["meanderaw/src/modules/corpus/branch.constants.ts"]
+  file_meanderaw_src_modules_corpus_chain_constants_ts["meanderaw/src/modules/corpus/chain.constants.ts"]
+  file_meanderaw_src_modules_corpus_corpus_constants_ts["meanderaw/src/modules/corpus/corpus.constants.ts"]
+  file_meanderaw_src_modules_corpus_corpus_module_ts["meanderaw/src/modules/corpus/corpus.module.ts"]
+  file_meanderaw_src_modules_corpus_corpus_service_ts["meanderaw/src/modules/corpus/corpus.service.ts"]
+  file_meanderaw_src_modules_corpus_corpus_service_unit_test_ts["meanderaw/src/modules/corpus/corpus.service.unit.test.ts"]
+  file_meanderaw_src_modules_corpus_corpus_types_ts["meanderaw/src/modules/corpus/corpus.types.ts"]
+  file_meanderaw_src_modules_corpus_cross_constants_ts["meanderaw/src/modules/corpus/cross.constants.ts"]
+  file_meanderaw_src_modules_corpus_negative_constants_ts["meanderaw/src/modules/corpus/negative.constants.ts"]
+  file_meanderaw_src_modules_corpus_parallel_1_constants_ts["meanderaw/src/modules/corpus/parallel-1.constants.ts"]
+  file_meanderaw_src_modules_corpus_parallel_2_constants_ts["meanderaw/src/modules/corpus/parallel-2.constants.ts"]
+  file_meanderaw_src_modules_corpus_parallel_3_constants_ts["meanderaw/src/modules/corpus/parallel-3.constants.ts"]
+  file_meanderaw_src_modules_corpus_parallel_4_constants_ts["meanderaw/src/modules/corpus/parallel-4.constants.ts"]
+  file_meanderaw_src_modules_corpus_parallel_5_constants_ts["meanderaw/src/modules/corpus/parallel-5.constants.ts"]
+  file_meanderaw_src_modules_corpus_parallel_constants_ts["meanderaw/src/modules/corpus/parallel.constants.ts"]
+  file_meanderaw_src_modules_corpus_snake_constants_ts["meanderaw/src/modules/corpus/snake.constants.ts"]
+  file_meanderaw_src_modules_corpus_swirl_constants_ts["meanderaw/src/modules/corpus/swirl.constants.ts"]
+  file_meanderaw_src_modules_corpus_whirl_constants_ts["meanderaw/src/modules/corpus/whirl.constants.ts"]
+  file_meanderaw_src_modules_database_database_constants_ts["meanderaw/src/modules/database/database.constants.ts"]
+  file_meanderaw_src_modules_database_database_module_ts["meanderaw/src/modules/database/database.module.ts"]
+  file_meanderaw_src_modules_database_database_service_integration_test_ts["meanderaw/src/modules/database/database.service.integration.test.ts"]
+  file_meanderaw_src_modules_database_database_service_ts["meanderaw/src/modules/database/database.service.ts"]
+  file_meanderaw_src_modules_database_database_service_unit_test_ts["meanderaw/src/modules/database/database.service.unit.test.ts"]
+  file_meanderaw_src_modules_database_database_types_ts["meanderaw/src/modules/database/database.types.ts"]
+  file_meanderaw_src_modules_database_entities_Meander_entity_ts["meanderaw/src/modules/database/entities/Meander.entity.ts"]
+  file_meanderaw_src_modules_draw_draw_check_sweep_module_ts["meanderaw/src/modules/draw/draw-check-sweep.module.ts"]
+  file_meanderaw_src_modules_draw_draw_check_command_integration_test_ts["meanderaw/src/modules/draw/draw-check.command.integration.test.ts"]
+  file_meanderaw_src_modules_draw_draw_check_constants_ts["meanderaw/src/modules/draw/draw-check.constants.ts"]
+  file_meanderaw_src_modules_draw_draw_check_service_ts["meanderaw/src/modules/draw/draw-check.service.ts"]
+  file_meanderaw_src_modules_draw_draw_check_service_unit_test_ts["meanderaw/src/modules/draw/draw-check.service.unit.test.ts"]
+  file_meanderaw_src_modules_draw_draw_check_types_ts["meanderaw/src/modules/draw/draw-check.types.ts"]
+  file_meanderaw_src_modules_draw_draw_code_service_ts["meanderaw/src/modules/draw/draw-code.service.ts"]
+  file_meanderaw_src_modules_draw_draw_code_service_unit_test_ts["meanderaw/src/modules/draw/draw-code.service.unit.test.ts"]
+  file_meanderaw_src_modules_draw_draw_enumeration_service_integration_test_ts["meanderaw/src/modules/draw/draw-enumeration.service.integration.test.ts"]
+  file_meanderaw_src_modules_draw_draw_enumeration_service_ts["meanderaw/src/modules/draw/draw-enumeration.service.ts"]
+  file_meanderaw_src_modules_draw_draw_enumeration_service_unit_test_ts["meanderaw/src/modules/draw/draw-enumeration.service.unit.test.ts"]
+  file_meanderaw_src_modules_draw_draw_index_constants_ts["meanderaw/src/modules/draw/draw-index.constants.ts"]
+  file_meanderaw_src_modules_draw_draw_index_service_integration_test_ts["meanderaw/src/modules/draw/draw-index.service.integration.test.ts"]
+  file_meanderaw_src_modules_draw_draw_index_service_ts["meanderaw/src/modules/draw/draw-index.service.ts"]
+  file_meanderaw_src_modules_draw_draw_index_service_unit_test_ts["meanderaw/src/modules/draw/draw-index.service.unit.test.ts"]
+  file_meanderaw_src_modules_draw_draw_index_types_ts["meanderaw/src/modules/draw/draw-index.types.ts"]
+  file_meanderaw_src_modules_draw_draw_record_service_ts["meanderaw/src/modules/draw/draw-record.service.ts"]
+  file_meanderaw_src_modules_draw_draw_record_service_unit_test_ts["meanderaw/src/modules/draw/draw-record.service.unit.test.ts"]
+  file_meanderaw_src_modules_draw_draw_sweep_command_integration_test_ts["meanderaw/src/modules/draw/draw-sweep.command.integration.test.ts"]
+  file_meanderaw_src_modules_draw_draw_command_integration_test_ts["meanderaw/src/modules/draw/draw.command.integration.test.ts"]
+  file_meanderaw_src_modules_draw_draw_command_ts["meanderaw/src/modules/draw/draw.command.ts"]
+  file_meanderaw_src_modules_draw_draw_command_unit_test_ts["meanderaw/src/modules/draw/draw.command.unit.test.ts"]
+  file_meanderaw_src_modules_draw_draw_constants_ts["meanderaw/src/modules/draw/draw.constants.ts"]
+  file_meanderaw_src_modules_draw_draw_module_ts["meanderaw/src/modules/draw/draw.module.ts"]
+  file_meanderaw_src_modules_draw_draw_types_ts["meanderaw/src/modules/draw/draw.types.ts"]
+  file_meanderaw_src_modules_drawing_address_constants_ts["meanderaw/src/modules/drawing/address.constants.ts"]
+  file_meanderaw_src_modules_drawing_address_service_ts["meanderaw/src/modules/drawing/address.service.ts"]
+  file_meanderaw_src_modules_drawing_address_service_unit_test_ts["meanderaw/src/modules/drawing/address.service.unit.test.ts"]
+  file_meanderaw_src_modules_drawing_address_types_ts["meanderaw/src/modules/drawing/address.types.ts"]
+  file_meanderaw_src_modules_drawing_drawing_constants_ts["meanderaw/src/modules/drawing/drawing.constants.ts"]
+  file_meanderaw_src_modules_drawing_drawing_module_ts["meanderaw/src/modules/drawing/drawing.module.ts"]
+  file_meanderaw_src_modules_drawing_drawing_service_ts["meanderaw/src/modules/drawing/drawing.service.ts"]
+  file_meanderaw_src_modules_drawing_drawing_service_unit_test_ts["meanderaw/src/modules/drawing/drawing.service.unit.test.ts"]
+  file_meanderaw_src_modules_drawing_drawing_types_ts["meanderaw/src/modules/drawing/drawing.types.ts"]
+  file_meanderaw_src_modules_drawing_lattice_constants_ts["meanderaw/src/modules/drawing/lattice.constants.ts"]
+  file_meanderaw_src_modules_drawing_lattice_service_ts["meanderaw/src/modules/drawing/lattice.service.ts"]
+  file_meanderaw_src_modules_drawing_lattice_service_unit_test_ts["meanderaw/src/modules/drawing/lattice.service.unit.test.ts"]
+  file_meanderaw_src_modules_drawing_lattice_types_ts["meanderaw/src/modules/drawing/lattice.types.ts"]
+  file_meanderaw_src_modules_drawing_measurement_constants_ts["meanderaw/src/modules/drawing/measurement.constants.ts"]
+  file_meanderaw_src_modules_drawing_measurement_service_ts["meanderaw/src/modules/drawing/measurement.service.ts"]
+  file_meanderaw_src_modules_drawing_measurement_service_unit_test_ts["meanderaw/src/modules/drawing/measurement.service.unit.test.ts"]
+  file_meanderaw_src_modules_drawing_measurement_types_ts["meanderaw/src/modules/drawing/measurement.types.ts"]
+  file_meanderaw_src_modules_enumeration_enumeration_constants_ts["meanderaw/src/modules/enumeration/enumeration.constants.ts"]
+  file_meanderaw_src_modules_enumeration_enumeration_module_ts["meanderaw/src/modules/enumeration/enumeration.module.ts"]
+  file_meanderaw_src_modules_enumeration_enumeration_service_ts["meanderaw/src/modules/enumeration/enumeration.service.ts"]
+  file_meanderaw_src_modules_enumeration_enumeration_service_unit_test_ts["meanderaw/src/modules/enumeration/enumeration.service.unit.test.ts"]
+  file_meanderaw_src_modules_enumeration_enumeration_types_ts["meanderaw/src/modules/enumeration/enumeration.types.ts"]
+  file_meanderaw_src_modules_enumeration_tile_enumeration_service_ts["meanderaw/src/modules/enumeration/tile-enumeration.service.ts"]
+  file_meanderaw_src_modules_enumeration_tile_enumeration_service_unit_test_ts["meanderaw/src/modules/enumeration/tile-enumeration.service.unit.test.ts"]
+  file_meanderaw_src_modules_geometry_geometry_constants_ts["meanderaw/src/modules/geometry/geometry.constants.ts"]
+  file_meanderaw_src_modules_geometry_geometry_module_ts["meanderaw/src/modules/geometry/geometry.module.ts"]
+  file_meanderaw_src_modules_geometry_geometry_service_ts["meanderaw/src/modules/geometry/geometry.service.ts"]
+  file_meanderaw_src_modules_geometry_geometry_service_unit_test_ts["meanderaw/src/modules/geometry/geometry.service.unit.test.ts"]
+  file_meanderaw_src_modules_geometry_geometry_types_ts["meanderaw/src/modules/geometry/geometry.types.ts"]
+  file_meanderaw_src_modules_graph_graph_constants_ts["meanderaw/src/modules/graph/graph.constants.ts"]
+  file_meanderaw_src_modules_graph_graph_module_ts["meanderaw/src/modules/graph/graph.module.ts"]
+  file_meanderaw_src_modules_graph_graph_service_ts["meanderaw/src/modules/graph/graph.service.ts"]
+  file_meanderaw_src_modules_graph_graph_service_unit_test_ts["meanderaw/src/modules/graph/graph.service.unit.test.ts"]
+  file_meanderaw_src_modules_graph_graph_types_ts["meanderaw/src/modules/graph/graph.types.ts"]
+  file_meanderaw_src_modules_svg_svg_constants_ts["meanderaw/src/modules/svg/svg.constants.ts"]
+  file_meanderaw_src_modules_svg_svg_module_ts["meanderaw/src/modules/svg/svg.module.ts"]
+  file_meanderaw_src_modules_svg_svg_service_ts["meanderaw/src/modules/svg/svg.service.ts"]
+  file_meanderaw_src_modules_svg_svg_service_unit_test_ts["meanderaw/src/modules/svg/svg.service.unit.test.ts"]
+  file_meanderaw_src_modules_svg_svg_types_ts["meanderaw/src/modules/svg/svg.types.ts"]
+  file_meanderaw_src_modules_symmetry_symmetry_constants_ts["meanderaw/src/modules/symmetry/symmetry.constants.ts"]
+  file_meanderaw_src_modules_symmetry_symmetry_module_ts["meanderaw/src/modules/symmetry/symmetry.module.ts"]
+  file_meanderaw_src_modules_symmetry_symmetry_service_ts["meanderaw/src/modules/symmetry/symmetry.service.ts"]
+  file_meanderaw_src_modules_symmetry_symmetry_service_unit_test_ts["meanderaw/src/modules/symmetry/symmetry.service.unit.test.ts"]
+  file_meanderaw_src_modules_symmetry_symmetry_types_ts["meanderaw/src/modules/symmetry/symmetry.types.ts"]
+  file_meanderaw_src_modules_tile_tile_constants_ts["meanderaw/src/modules/tile/tile.constants.ts"]
+  file_meanderaw_src_modules_tile_tile_module_ts["meanderaw/src/modules/tile/tile.module.ts"]
+  file_meanderaw_src_modules_tile_tile_service_ts["meanderaw/src/modules/tile/tile.service.ts"]
+  file_meanderaw_src_modules_tile_tile_service_unit_test_ts["meanderaw/src/modules/tile/tile.service.unit.test.ts"]
+  file_meanderaw_src_modules_tile_tile_types_ts["meanderaw/src/modules/tile/tile.types.ts"]
+  file_meanderaw_src_repl_ts["meanderaw/src/repl.ts"]
+  file_meanderaw_testing_mocks_ts["meanderaw/testing/mocks.ts"]
+  file_meanderaw_testing_path_data_ts["meanderaw/testing/path-data.ts"]
+  file_meanderaw_testing_setup_ts["meanderaw/testing/setup.ts"]
+  file_meanderaw_testing_tiles_ts["meanderaw/testing/tiles.ts"]
+  file_meanderaw_vitest_config_ts["meanderaw/vitest.config.ts"]
+  file_synchronization_callidescope_config_ts["synchronization/callidescope.config.ts"]
+  file_synchronization_codependix_config_ts["synchronization/codependix.config.ts"]
+  file_synchronization_codometer_config_ts["synchronization/codometer.config.ts"]
+  file_synchronization_eslint_config_ts["synchronization/eslint.config.ts"]
+  file_synchronization_src_constants_ts["synchronization/src/constants.ts"]
+  file_synchronization_src_main_end_to_end_test_ts["synchronization/src/main.end-to-end.test.ts"]
+  file_synchronization_src_main_module_ts["synchronization/src/main.module.ts"]
+  file_synchronization_src_main_ts["synchronization/src/main.ts"]
+  file_synchronization_src_main_unit_test_ts["synchronization/src/main.unit.test.ts"]
+  file_synchronization_src_modules_conformetry_generators_conformetry_generators_command_ts["synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts"]
+  file_synchronization_src_modules_conformetry_generators_conformetry_generators_command_unit_test_ts["synchronization/src/modules/conformetry-generators/conformetry-generators.command.unit.test.ts"]
+  file_synchronization_src_modules_conformetry_generators_conformetry_generators_constants_ts["synchronization/src/modules/conformetry-generators/conformetry-generators.constants.ts"]
+  file_synchronization_src_modules_conformetry_generators_conformetry_generators_module_ts["synchronization/src/modules/conformetry-generators/conformetry-generators.module.ts"]
+  file_synchronization_src_modules_conformetry_generators_conformetry_generators_types_ts["synchronization/src/modules/conformetry-generators/conformetry-generators.types.ts"]
+  file_synchronization_src_modules_conventional_config_conventional_config_io_service_ts["synchronization/src/modules/conventional-config/conventional-config-io.service.ts"]
+  file_synchronization_src_modules_conventional_config_conventional_config_io_service_unit_test_ts["synchronization/src/modules/conventional-config/conventional-config-io.service.unit.test.ts"]
+  file_synchronization_src_modules_conventional_config_conventional_config_validators_service_ts["synchronization/src/modules/conventional-config/conventional-config-validators.service.ts"]
+  file_synchronization_src_modules_conventional_config_conventional_config_validators_service_unit_test_ts["synchronization/src/modules/conventional-config/conventional-config-validators.service.unit.test.ts"]
+  file_synchronization_src_modules_conventional_config_conventional_config_command_ts["synchronization/src/modules/conventional-config/conventional-config.command.ts"]
+  file_synchronization_src_modules_conventional_config_conventional_config_command_unit_test_ts["synchronization/src/modules/conventional-config/conventional-config.command.unit.test.ts"]
+  file_synchronization_src_modules_conventional_config_conventional_config_constants_integration_test_ts["synchronization/src/modules/conventional-config/conventional-config.constants.integration.test.ts"]
+  file_synchronization_src_modules_conventional_config_conventional_config_constants_ts["synchronization/src/modules/conventional-config/conventional-config.constants.ts"]
+  file_synchronization_src_modules_conventional_config_conventional_config_module_ts["synchronization/src/modules/conventional-config/conventional-config.module.ts"]
+  file_synchronization_src_modules_conventional_config_conventional_config_service_ts["synchronization/src/modules/conventional-config/conventional-config.service.ts"]
+  file_synchronization_src_modules_conventional_config_conventional_config_service_unit_test_ts["synchronization/src/modules/conventional-config/conventional-config.service.unit.test.ts"]
+  file_synchronization_src_modules_conventional_config_conventional_config_types_ts["synchronization/src/modules/conventional-config/conventional-config.types.ts"]
+  file_synchronization_src_modules_devcontainer_configuration_devcontainer_configuration_command_ts["synchronization/src/modules/devcontainer-configuration/devcontainer-configuration.command.ts"]
+  file_synchronization_src_modules_devcontainer_configuration_devcontainer_configuration_command_unit_test_ts["synchronization/src/modules/devcontainer-configuration/devcontainer-configuration.command.unit.test.ts"]
+  file_synchronization_src_modules_devcontainer_configuration_devcontainer_configuration_constants_ts["synchronization/src/modules/devcontainer-configuration/devcontainer-configuration.constants.ts"]
+  file_synchronization_src_modules_devcontainer_configuration_devcontainer_configuration_module_ts["synchronization/src/modules/devcontainer-configuration/devcontainer-configuration.module.ts"]
+  file_synchronization_src_modules_devcontainer_configuration_devcontainer_configuration_types_ts["synchronization/src/modules/devcontainer-configuration/devcontainer-configuration.types.ts"]
+  file_synchronization_src_modules_issue_labels_issue_labels_github_service_ts["synchronization/src/modules/issue-labels/issue-labels-github.service.ts"]
+  file_synchronization_src_modules_issue_labels_issue_labels_github_service_unit_test_ts["synchronization/src/modules/issue-labels/issue-labels-github.service.unit.test.ts"]
+  file_synchronization_src_modules_issue_labels_issue_labels_command_ts["synchronization/src/modules/issue-labels/issue-labels.command.ts"]
+  file_synchronization_src_modules_issue_labels_issue_labels_command_unit_test_ts["synchronization/src/modules/issue-labels/issue-labels.command.unit.test.ts"]
+  file_synchronization_src_modules_issue_labels_issue_labels_constants_ts["synchronization/src/modules/issue-labels/issue-labels.constants.ts"]
+  file_synchronization_src_modules_issue_labels_issue_labels_module_ts["synchronization/src/modules/issue-labels/issue-labels.module.ts"]
+  file_synchronization_src_modules_issue_labels_issue_labels_module_unit_test_ts["synchronization/src/modules/issue-labels/issue-labels.module.unit.test.ts"]
+  file_synchronization_src_modules_issue_labels_issue_labels_service_ts["synchronization/src/modules/issue-labels/issue-labels.service.ts"]
+  file_synchronization_src_modules_issue_labels_issue_labels_service_unit_test_ts["synchronization/src/modules/issue-labels/issue-labels.service.unit.test.ts"]
+  file_synchronization_src_modules_issue_labels_issue_labels_types_ts["synchronization/src/modules/issue-labels/issue-labels.types.ts"]
+  file_synchronization_src_modules_pull_request_labels_pull_request_labels_github_service_ts["synchronization/src/modules/pull-request-labels/pull-request-labels-github.service.ts"]
+  file_synchronization_src_modules_pull_request_labels_pull_request_labels_github_service_unit_test_ts["synchronization/src/modules/pull-request-labels/pull-request-labels-github.service.unit.test.ts"]
+  file_synchronization_src_modules_pull_request_labels_pull_request_labels_command_ts["synchronization/src/modules/pull-request-labels/pull-request-labels.command.ts"]
+  file_synchronization_src_modules_pull_request_labels_pull_request_labels_command_unit_test_ts["synchronization/src/modules/pull-request-labels/pull-request-labels.command.unit.test.ts"]
+  file_synchronization_src_modules_pull_request_labels_pull_request_labels_constants_ts["synchronization/src/modules/pull-request-labels/pull-request-labels.constants.ts"]
+  file_synchronization_src_modules_pull_request_labels_pull_request_labels_module_ts["synchronization/src/modules/pull-request-labels/pull-request-labels.module.ts"]
+  file_synchronization_src_modules_pull_request_labels_pull_request_labels_service_ts["synchronization/src/modules/pull-request-labels/pull-request-labels.service.ts"]
+  file_synchronization_src_modules_pull_request_labels_pull_request_labels_service_unit_test_ts["synchronization/src/modules/pull-request-labels/pull-request-labels.service.unit.test.ts"]
+  file_synchronization_src_modules_pull_request_labels_pull_request_labels_types_ts["synchronization/src/modules/pull-request-labels/pull-request-labels.types.ts"]
+  file_synchronization_src_modules_pull_request_template_pull_request_template_command_ts["synchronization/src/modules/pull-request-template/pull-request-template.command.ts"]
+  file_synchronization_src_modules_pull_request_template_pull_request_template_command_unit_test_ts["synchronization/src/modules/pull-request-template/pull-request-template.command.unit.test.ts"]
+  file_synchronization_src_modules_pull_request_template_pull_request_template_constants_ts["synchronization/src/modules/pull-request-template/pull-request-template.constants.ts"]
+  file_synchronization_src_modules_pull_request_template_pull_request_template_module_ts["synchronization/src/modules/pull-request-template/pull-request-template.module.ts"]
+  file_synchronization_src_modules_pull_request_template_pull_request_template_types_ts["synchronization/src/modules/pull-request-template/pull-request-template.types.ts"]
+  file_synchronization_src_modules_skill_exclusions_skill_exclusions_command_ts["synchronization/src/modules/skill-exclusions/skill-exclusions.command.ts"]
+  file_synchronization_src_modules_skill_exclusions_skill_exclusions_command_unit_test_ts["synchronization/src/modules/skill-exclusions/skill-exclusions.command.unit.test.ts"]
+  file_synchronization_src_modules_skill_exclusions_skill_exclusions_constants_ts["synchronization/src/modules/skill-exclusions/skill-exclusions.constants.ts"]
+  file_synchronization_src_modules_skill_exclusions_skill_exclusions_module_ts["synchronization/src/modules/skill-exclusions/skill-exclusions.module.ts"]
+  file_synchronization_src_modules_skill_exclusions_skill_exclusions_types_ts["synchronization/src/modules/skill-exclusions/skill-exclusions.types.ts"]
+  file_synchronization_src_modules_synchronization_synchronization_markers_service_ts["synchronization/src/modules/synchronization/synchronization-markers.service.ts"]
+  file_synchronization_src_modules_synchronization_synchronization_markers_service_unit_test_ts["synchronization/src/modules/synchronization/synchronization-markers.service.unit.test.ts"]
+  file_synchronization_src_modules_synchronization_synchronization_command_ts["synchronization/src/modules/synchronization/synchronization.command.ts"]
+  file_synchronization_src_modules_synchronization_synchronization_command_unit_test_ts["synchronization/src/modules/synchronization/synchronization.command.unit.test.ts"]
+  file_synchronization_src_modules_synchronization_synchronization_constants_ts["synchronization/src/modules/synchronization/synchronization.constants.ts"]
+  file_synchronization_src_modules_synchronization_synchronization_module_ts["synchronization/src/modules/synchronization/synchronization.module.ts"]
+  file_synchronization_src_modules_synchronization_synchronization_module_unit_test_ts["synchronization/src/modules/synchronization/synchronization.module.unit.test.ts"]
+  file_synchronization_src_modules_synchronization_synchronization_service_ts["synchronization/src/modules/synchronization/synchronization.service.ts"]
+  file_synchronization_src_modules_synchronization_synchronization_service_unit_test_ts["synchronization/src/modules/synchronization/synchronization.service.unit.test.ts"]
+  file_synchronization_src_modules_synchronization_synchronization_types_ts["synchronization/src/modules/synchronization/synchronization.types.ts"]
+  file_synchronization_src_repl_ts["synchronization/src/repl.ts"]
+  file_synchronization_src_repl_unit_test_ts["synchronization/src/repl.unit.test.ts"]
+  file_synchronization_testing_mocks_ts["synchronization/testing/mocks.ts"]
+  file_synchronization_testing_setup_ts["synchronization/testing/setup.ts"]
+  file_synchronization_vitest_config_ts["synchronization/vitest.config.ts"]
+  file_validation_callidescope_config_ts["validation/callidescope.config.ts"]
+  file_validation_codependix_config_ts["validation/codependix.config.ts"]
+  file_validation_codometer_config_ts["validation/codometer.config.ts"]
+  file_validation_eslint_config_ts["validation/eslint.config.ts"]
+  file_validation_src_constants_ts["validation/src/constants.ts"]
+  file_validation_src_main_end_to_end_test_ts["validation/src/main.end-to-end.test.ts"]
+  file_validation_src_main_module_ts["validation/src/main.module.ts"]
+  file_validation_src_main_ts["validation/src/main.ts"]
+  file_validation_src_main_unit_test_ts["validation/src/main.unit.test.ts"]
+  file_validation_src_modules_catalog_manifests_catalog_manifests_command_ts["validation/src/modules/catalog-manifests/catalog-manifests.command.ts"]
+  file_validation_src_modules_catalog_manifests_catalog_manifests_command_unit_test_ts["validation/src/modules/catalog-manifests/catalog-manifests.command.unit.test.ts"]
+  file_validation_src_modules_catalog_manifests_catalog_manifests_constants_ts["validation/src/modules/catalog-manifests/catalog-manifests.constants.ts"]
+  file_validation_src_modules_catalog_manifests_catalog_manifests_module_ts["validation/src/modules/catalog-manifests/catalog-manifests.module.ts"]
+  file_validation_src_modules_catalog_manifests_catalog_manifests_module_unit_test_ts["validation/src/modules/catalog-manifests/catalog-manifests.module.unit.test.ts"]
+  file_validation_src_modules_catalog_manifests_catalog_manifests_service_ts["validation/src/modules/catalog-manifests/catalog-manifests.service.ts"]
+  file_validation_src_modules_catalog_manifests_catalog_manifests_service_unit_test_ts["validation/src/modules/catalog-manifests/catalog-manifests.service.unit.test.ts"]
+  file_validation_src_modules_catalog_manifests_catalog_manifests_types_ts["validation/src/modules/catalog-manifests/catalog-manifests.types.ts"]
+  file_validation_src_modules_issue_metadata_issue_metadata_github_service_ts["validation/src/modules/issue-metadata/issue-metadata-github.service.ts"]
+  file_validation_src_modules_issue_metadata_issue_metadata_github_service_unit_test_ts["validation/src/modules/issue-metadata/issue-metadata-github.service.unit.test.ts"]
+  file_validation_src_modules_issue_metadata_issue_metadata_command_ts["validation/src/modules/issue-metadata/issue-metadata.command.ts"]
+  file_validation_src_modules_issue_metadata_issue_metadata_command_unit_test_ts["validation/src/modules/issue-metadata/issue-metadata.command.unit.test.ts"]
+  file_validation_src_modules_issue_metadata_issue_metadata_constants_ts["validation/src/modules/issue-metadata/issue-metadata.constants.ts"]
+  file_validation_src_modules_issue_metadata_issue_metadata_module_ts["validation/src/modules/issue-metadata/issue-metadata.module.ts"]
+  file_validation_src_modules_issue_metadata_issue_metadata_module_unit_test_ts["validation/src/modules/issue-metadata/issue-metadata.module.unit.test.ts"]
+  file_validation_src_modules_issue_metadata_issue_metadata_service_ts["validation/src/modules/issue-metadata/issue-metadata.service.ts"]
+  file_validation_src_modules_issue_metadata_issue_metadata_service_unit_test_ts["validation/src/modules/issue-metadata/issue-metadata.service.unit.test.ts"]
+  file_validation_src_modules_issue_metadata_issue_metadata_types_ts["validation/src/modules/issue-metadata/issue-metadata.types.ts"]
+  file_validation_src_modules_lockfile_lockfile_command_ts["validation/src/modules/lockfile/lockfile.command.ts"]
+  file_validation_src_modules_lockfile_lockfile_command_unit_test_ts["validation/src/modules/lockfile/lockfile.command.unit.test.ts"]
+  file_validation_src_modules_lockfile_lockfile_constants_ts["validation/src/modules/lockfile/lockfile.constants.ts"]
+  file_validation_src_modules_lockfile_lockfile_module_ts["validation/src/modules/lockfile/lockfile.module.ts"]
+  file_validation_src_modules_lockfile_lockfile_module_unit_test_ts["validation/src/modules/lockfile/lockfile.module.unit.test.ts"]
+  file_validation_src_modules_lockfile_lockfile_service_ts["validation/src/modules/lockfile/lockfile.service.ts"]
+  file_validation_src_modules_lockfile_lockfile_service_unit_test_ts["validation/src/modules/lockfile/lockfile.service.unit.test.ts"]
+  file_validation_src_modules_lockfile_lockfile_types_ts["validation/src/modules/lockfile/lockfile.types.ts"]
+  file_validation_src_modules_pull_request_body_pull_request_body_command_ts["validation/src/modules/pull-request-body/pull-request-body.command.ts"]
+  file_validation_src_modules_pull_request_body_pull_request_body_command_unit_test_ts["validation/src/modules/pull-request-body/pull-request-body.command.unit.test.ts"]
+  file_validation_src_modules_pull_request_body_pull_request_body_constants_ts["validation/src/modules/pull-request-body/pull-request-body.constants.ts"]
+  file_validation_src_modules_pull_request_body_pull_request_body_module_ts["validation/src/modules/pull-request-body/pull-request-body.module.ts"]
+  file_validation_src_modules_pull_request_body_pull_request_body_module_unit_test_ts["validation/src/modules/pull-request-body/pull-request-body.module.unit.test.ts"]
+  file_validation_src_modules_pull_request_body_pull_request_body_service_ts["validation/src/modules/pull-request-body/pull-request-body.service.ts"]
+  file_validation_src_modules_pull_request_body_pull_request_body_service_unit_test_ts["validation/src/modules/pull-request-body/pull-request-body.service.unit.test.ts"]
+  file_validation_src_modules_pull_request_body_pull_request_body_types_ts["validation/src/modules/pull-request-body/pull-request-body.types.ts"]
+  file_validation_src_modules_pull_request_metadata_pull_request_metadata_github_service_ts["validation/src/modules/pull-request-metadata/pull-request-metadata-github.service.ts"]
+  file_validation_src_modules_pull_request_metadata_pull_request_metadata_github_service_unit_test_ts["validation/src/modules/pull-request-metadata/pull-request-metadata-github.service.unit.test.ts"]
+  file_validation_src_modules_pull_request_metadata_pull_request_metadata_command_ts["validation/src/modules/pull-request-metadata/pull-request-metadata.command.ts"]
+  file_validation_src_modules_pull_request_metadata_pull_request_metadata_command_unit_test_ts["validation/src/modules/pull-request-metadata/pull-request-metadata.command.unit.test.ts"]
+  file_validation_src_modules_pull_request_metadata_pull_request_metadata_constants_ts["validation/src/modules/pull-request-metadata/pull-request-metadata.constants.ts"]
+  file_validation_src_modules_pull_request_metadata_pull_request_metadata_module_ts["validation/src/modules/pull-request-metadata/pull-request-metadata.module.ts"]
+  file_validation_src_modules_pull_request_metadata_pull_request_metadata_module_unit_test_ts["validation/src/modules/pull-request-metadata/pull-request-metadata.module.unit.test.ts"]
+  file_validation_src_modules_pull_request_metadata_pull_request_metadata_service_ts["validation/src/modules/pull-request-metadata/pull-request-metadata.service.ts"]
+  file_validation_src_modules_pull_request_metadata_pull_request_metadata_service_unit_test_ts["validation/src/modules/pull-request-metadata/pull-request-metadata.service.unit.test.ts"]
+  file_validation_src_modules_pull_request_metadata_pull_request_metadata_types_ts["validation/src/modules/pull-request-metadata/pull-request-metadata.types.ts"]
+  file_validation_src_modules_pull_request_release_significance_pull_request_release_significance_github_service_ts["validation/src/modules/pull-request-release-significance/pull-request-release-significance-github.service.ts"]
+  file_validation_src_modules_pull_request_release_significance_pull_request_release_significance_github_service_unit_test_ts["validation/src/modules/pull-request-release-significance/pull-request-release-significance-github.service.unit.test.ts"]
+  file_validation_src_modules_pull_request_release_significance_pull_request_release_significance_command_ts["validation/src/modules/pull-request-release-significance/pull-request-release-significance.command.ts"]
+  file_validation_src_modules_pull_request_release_significance_pull_request_release_significance_command_unit_test_ts["validation/src/modules/pull-request-release-significance/pull-request-release-significance.command.unit.test.ts"]
+  file_validation_src_modules_pull_request_release_significance_pull_request_release_significance_constants_ts["validation/src/modules/pull-request-release-significance/pull-request-release-significance.constants.ts"]
+  file_validation_src_modules_pull_request_release_significance_pull_request_release_significance_module_ts["validation/src/modules/pull-request-release-significance/pull-request-release-significance.module.ts"]
+  file_validation_src_modules_pull_request_release_significance_pull_request_release_significance_module_unit_test_ts["validation/src/modules/pull-request-release-significance/pull-request-release-significance.module.unit.test.ts"]
+  file_validation_src_modules_pull_request_release_significance_pull_request_release_significance_service_ts["validation/src/modules/pull-request-release-significance/pull-request-release-significance.service.ts"]
+  file_validation_src_modules_pull_request_release_significance_pull_request_release_significance_service_unit_test_ts["validation/src/modules/pull-request-release-significance/pull-request-release-significance.service.unit.test.ts"]
+  file_validation_src_modules_pull_request_release_significance_pull_request_release_significance_types_ts["validation/src/modules/pull-request-release-significance/pull-request-release-significance.types.ts"]
+  file_validation_src_modules_readme_projects_readme_projects_command_ts["validation/src/modules/readme-projects/readme-projects.command.ts"]
+  file_validation_src_modules_readme_projects_readme_projects_command_unit_test_ts["validation/src/modules/readme-projects/readme-projects.command.unit.test.ts"]
+  file_validation_src_modules_readme_projects_readme_projects_constants_ts["validation/src/modules/readme-projects/readme-projects.constants.ts"]
+  file_validation_src_modules_readme_projects_readme_projects_module_ts["validation/src/modules/readme-projects/readme-projects.module.ts"]
+  file_validation_src_modules_readme_projects_readme_projects_module_unit_test_ts["validation/src/modules/readme-projects/readme-projects.module.unit.test.ts"]
+  file_validation_src_modules_readme_projects_readme_projects_service_ts["validation/src/modules/readme-projects/readme-projects.service.ts"]
+  file_validation_src_modules_readme_projects_readme_projects_service_unit_test_ts["validation/src/modules/readme-projects/readme-projects.service.unit.test.ts"]
+  file_validation_src_modules_readme_projects_readme_projects_types_ts["validation/src/modules/readme-projects/readme-projects.types.ts"]
+  file_validation_src_repl_ts["validation/src/repl.ts"]
+  file_validation_src_repl_unit_test_ts["validation/src/repl.unit.test.ts"]
+  file_validation_testing_mocks_ts["validation/testing/mocks.ts"]
+  file_validation_testing_setup_ts["validation/testing/setup.ts"]
+  file_validation_vitest_config_ts["validation/vitest.config.ts"]
+  file_affirmations_src_models_py --> file_affirmations_src_grammars_py
+  file_affirmations_src_models_py --> file_affirmations_src_subjects_py
+  file_affirmations_testing_test_grammars_py --> file_affirmations_src_grammars_py
+  file_affirmations_testing_test_models_py --> file_affirmations_src_grammars_py
+  file_affirmations_testing_test_models_py --> file_affirmations_src_models_py
+  file_affirmations_testing_test_models_py --> file_affirmations_src_subjects_py
+  file_affirmations_testing_test_output_py --> file_affirmations_src_grammars_py
+  file_affirmations_testing_test_output_py --> file_affirmations_src_models_py
+  file_affirmations_testing_test_output_py --> file_affirmations_src_output_py
+  file_affirmations_testing_test_output_py --> file_affirmations_src_subjects_py
+  file_affirmations_testing_test_prompts_py --> file_affirmations_src_prompts_py
+  file_affirmations_testing_test_subjects_py --> file_affirmations_src_subjects_py
+  file_caelundas_src_main_end_to_end_test_ts --> file_caelundas_src_constants_ts
+  file_caelundas_src_main_end_to_end_test_ts --> file_caelundas_src_modules_calendar_calendar_service_ts
+  file_caelundas_src_main_end_to_end_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_aggregation_service_ts
+  file_caelundas_src_main_end_to_end_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_constants_service_ts
+  file_caelundas_src_main_end_to_end_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_coordinate_service_ts
+  file_caelundas_src_main_end_to_end_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_horizon_service_ts
+  file_caelundas_src_main_end_to_end_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_phenomena_service_ts
+  file_caelundas_src_main_end_to_end_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_time_service_ts
+  file_caelundas_src_main_end_to_end_test_ts --> file_caelundas_src_modules_input_input_types_ts
+  file_caelundas_src_main_module_ts --> file_caelundas_src_constants_ts
+  file_caelundas_src_main_module_ts --> file_caelundas_src_modules_caelundas_caelundas_module_ts
+  file_caelundas_src_main_ts --> file_caelundas_src_main_module_ts
+  file_caelundas_src_main_unit_test_ts --> file_caelundas_src_main_module_ts
+  file_caelundas_src_modules_annual_solar_cycle_annual_solar_cycle_events_service_ts --> file_caelundas_src_modules_annual_solar_cycle_annual_solar_cycle_constants_ts
+  file_caelundas_src_modules_annual_solar_cycle_annual_solar_cycle_events_service_ts --> file_caelundas_src_modules_annual_solar_cycle_annual_solar_cycle_types_ts
+  file_caelundas_src_modules_annual_solar_cycle_annual_solar_cycle_events_service_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_annual_solar_cycle_annual_solar_cycle_events_service_unit_test_ts --> file_caelundas_src_modules_annual_solar_cycle_annual_solar_cycle_events_service_ts
+  file_caelundas_src_modules_annual_solar_cycle_annual_solar_cycle_module_ts --> file_caelundas_src_modules_annual_solar_cycle_annual_solar_cycle_events_service_ts
+  file_caelundas_src_modules_annual_solar_cycle_annual_solar_cycle_module_ts --> file_caelundas_src_modules_annual_solar_cycle_annual_solar_cycle_service_ts
+  file_caelundas_src_modules_annual_solar_cycle_annual_solar_cycle_module_ts --> file_caelundas_src_modules_ephemeris_ephemeris_module_ts
+  file_caelundas_src_modules_annual_solar_cycle_annual_solar_cycle_module_ts --> file_caelundas_src_modules_math_math_module_ts
+  file_caelundas_src_modules_annual_solar_cycle_annual_solar_cycle_module_ts --> file_caelundas_src_modules_progressive_progressive_utilities_module_ts
+  file_caelundas_src_modules_annual_solar_cycle_annual_solar_cycle_service_ts --> file_caelundas_src_modules_annual_solar_cycle_annual_solar_cycle_events_service_ts
+  file_caelundas_src_modules_annual_solar_cycle_annual_solar_cycle_service_ts --> file_caelundas_src_modules_annual_solar_cycle_annual_solar_cycle_constants_ts
+  file_caelundas_src_modules_annual_solar_cycle_annual_solar_cycle_service_ts --> file_caelundas_src_modules_annual_solar_cycle_annual_solar_cycle_types_ts
+  file_caelundas_src_modules_annual_solar_cycle_annual_solar_cycle_service_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_annual_solar_cycle_annual_solar_cycle_service_ts --> file_caelundas_src_modules_ephemeris_ephemeris_service_ts
+  file_caelundas_src_modules_annual_solar_cycle_annual_solar_cycle_service_ts --> file_caelundas_src_modules_ephemeris_ephemeris_types_ts
+  file_caelundas_src_modules_annual_solar_cycle_annual_solar_cycle_service_ts --> file_caelundas_src_modules_math_math_service_ts
+  file_caelundas_src_modules_annual_solar_cycle_annual_solar_cycle_service_ts --> file_caelundas_src_modules_progressive_progressive_utilities_service_ts
+  file_caelundas_src_modules_annual_solar_cycle_annual_solar_cycle_service_unit_test_ts --> file_caelundas_src_modules_annual_solar_cycle_annual_solar_cycle_events_service_ts
+  file_caelundas_src_modules_annual_solar_cycle_annual_solar_cycle_service_unit_test_ts --> file_caelundas_src_modules_annual_solar_cycle_annual_solar_cycle_service_ts
+  file_caelundas_src_modules_annual_solar_cycle_annual_solar_cycle_service_unit_test_ts --> file_caelundas_src_modules_caelundas_caelundas_constants_ts
+  file_caelundas_src_modules_annual_solar_cycle_annual_solar_cycle_service_unit_test_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_annual_solar_cycle_annual_solar_cycle_service_unit_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_module_ts
+  file_caelundas_src_modules_annual_solar_cycle_annual_solar_cycle_service_unit_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_types_ts
+  file_caelundas_src_modules_annual_solar_cycle_annual_solar_cycle_service_unit_test_ts --> file_caelundas_src_modules_math_math_service_ts
+  file_caelundas_src_modules_annual_solar_cycle_annual_solar_cycle_service_unit_test_ts --> file_caelundas_src_modules_progressive_progressive_utilities_service_ts
+  file_caelundas_src_modules_annual_solar_cycle_annual_solar_cycle_types_ts --> file_caelundas_src_modules_ephemeris_ephemeris_types_ts
+  file_caelundas_src_modules_aspects_aspect_calculation_support_service_ts --> file_caelundas_src_modules_aspects_aspects_types_ts
+  file_caelundas_src_modules_aspects_aspect_calculation_support_service_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_aspects_aspect_calculation_support_service_ts --> file_caelundas_src_modules_ephemeris_ephemeris_service_ts
+  file_caelundas_src_modules_aspects_aspect_calculation_support_service_ts --> file_caelundas_src_modules_ephemeris_ephemeris_types_ts
+  file_caelundas_src_modules_aspects_aspect_calculation_support_service_unit_test_ts --> file_caelundas_src_modules_aspects_aspect_calculation_support_service_ts
+  file_caelundas_src_modules_aspects_aspect_ephemeris_service_ts --> file_caelundas_src_modules_aspects_aspect_calculation_support_service_ts
+  file_caelundas_src_modules_aspects_aspect_ephemeris_service_ts --> file_caelundas_src_modules_ephemeris_ephemeris_service_ts
+  file_caelundas_src_modules_aspects_aspect_ephemeris_service_unit_test_ts --> file_caelundas_src_modules_aspects_aspect_ephemeris_service_ts
+  file_caelundas_src_modules_aspects_aspect_ephemeris_service_unit_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_service_ts
+  file_caelundas_src_modules_aspects_aspect_event_formatting_service_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_aspects_aspect_event_formatting_service_ts --> file_caelundas_src_modules_caelundas_symbol_caelundas_constants_ts
+  file_caelundas_src_modules_aspects_aspect_event_formatting_service_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_aspects_aspect_event_formatting_service_unit_test_ts --> file_caelundas_src_modules_aspects_aspect_event_formatting_service_ts
+  file_caelundas_src_modules_aspects_aspect_graph_service_ts --> file_caelundas_src_modules_aspects_aspects_types_ts
+  file_caelundas_src_modules_aspects_aspect_graph_service_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_aspects_aspect_graph_service_unit_test_ts --> file_caelundas_src_modules_aspects_aspect_graph_service_ts
+  file_caelundas_src_modules_aspects_aspect_phase_emoji_service_ts --> file_caelundas_src_modules_aspects_aspect_event_formatting_service_ts
+  file_caelundas_src_modules_aspects_aspect_phase_emoji_service_unit_test_ts --> file_caelundas_src_modules_aspects_aspect_phase_emoji_service_ts
+  file_caelundas_src_modules_aspects_aspects_utilities_module_ts --> file_caelundas_src_modules_aspects_aspect_calculation_support_service_ts
+  file_caelundas_src_modules_aspects_aspects_utilities_module_ts --> file_caelundas_src_modules_aspects_aspect_ephemeris_service_ts
+  file_caelundas_src_modules_aspects_aspects_utilities_module_ts --> file_caelundas_src_modules_aspects_aspect_event_formatting_service_ts
+  file_caelundas_src_modules_aspects_aspects_utilities_module_ts --> file_caelundas_src_modules_aspects_aspect_graph_service_ts
+  file_caelundas_src_modules_aspects_aspects_utilities_module_ts --> file_caelundas_src_modules_aspects_aspect_phase_emoji_service_ts
+  file_caelundas_src_modules_aspects_aspects_utilities_module_ts --> file_caelundas_src_modules_aspects_aspects_utilities_service_ts
+  file_caelundas_src_modules_aspects_aspects_utilities_module_ts --> file_caelundas_src_modules_aspects_compound_phase_service_ts
+  file_caelundas_src_modules_aspects_aspects_utilities_module_ts --> file_caelundas_src_modules_aspects_progressive_compound_event_service_ts
+  file_caelundas_src_modules_aspects_aspects_utilities_module_ts --> file_caelundas_src_modules_ephemeris_ephemeris_module_ts
+  file_caelundas_src_modules_aspects_aspects_utilities_module_ts --> file_caelundas_src_modules_math_math_module_ts
+  file_caelundas_src_modules_aspects_aspects_utilities_service_ts --> file_caelundas_src_modules_caelundas_caelundas_constants_ts
+  file_caelundas_src_modules_aspects_aspects_utilities_service_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_aspects_aspects_utilities_service_ts --> file_caelundas_src_modules_math_math_service_ts
+  file_caelundas_src_modules_aspects_aspects_utilities_service_unit_test_ts --> file_caelundas_src_modules_aspects_aspects_utilities_service_ts
+  file_caelundas_src_modules_aspects_aspects_utilities_service_unit_test_ts --> file_caelundas_src_modules_math_math_service_ts
+  file_caelundas_src_modules_aspects_aspects_module_ts --> file_caelundas_src_modules_aspects_aspects_constants_ts
+  file_caelundas_src_modules_aspects_aspects_module_ts --> file_caelundas_src_modules_aspects_aspects_service_ts
+  file_caelundas_src_modules_aspects_aspects_module_ts --> file_caelundas_src_modules_aspects_aspects_types_ts
+  file_caelundas_src_modules_aspects_aspects_module_ts --> file_caelundas_src_modules_major_aspects_major_aspects_module_ts
+  file_caelundas_src_modules_aspects_aspects_module_ts --> file_caelundas_src_modules_major_aspects_major_aspects_service_ts
+  file_caelundas_src_modules_aspects_aspects_module_ts --> file_caelundas_src_modules_minor_aspects_minor_aspects_module_ts
+  file_caelundas_src_modules_aspects_aspects_module_ts --> file_caelundas_src_modules_minor_aspects_minor_aspects_service_ts
+  file_caelundas_src_modules_aspects_aspects_module_ts --> file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_module_ts
+  file_caelundas_src_modules_aspects_aspects_module_ts --> file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_service_ts
+  file_caelundas_src_modules_aspects_aspects_module_ts --> file_caelundas_src_modules_quintuple_aspects_quintuple_aspects_module_ts
+  file_caelundas_src_modules_aspects_aspects_module_ts --> file_caelundas_src_modules_quintuple_aspects_quintuple_aspects_service_ts
+  file_caelundas_src_modules_aspects_aspects_module_ts --> file_caelundas_src_modules_sextuple_aspects_sextuple_aspects_module_ts
+  file_caelundas_src_modules_aspects_aspects_module_ts --> file_caelundas_src_modules_sextuple_aspects_sextuple_aspects_service_ts
+  file_caelundas_src_modules_aspects_aspects_module_ts --> file_caelundas_src_modules_specialty_aspects_specialty_aspects_module_ts
+  file_caelundas_src_modules_aspects_aspects_module_ts --> file_caelundas_src_modules_specialty_aspects_specialty_aspects_service_ts
+  file_caelundas_src_modules_aspects_aspects_module_ts --> file_caelundas_src_modules_stellium_stellium_module_ts
+  file_caelundas_src_modules_aspects_aspects_module_ts --> file_caelundas_src_modules_stellium_stellium_service_ts
+  file_caelundas_src_modules_aspects_aspects_module_ts --> file_caelundas_src_modules_triple_aspects_triple_aspects_module_ts
+  file_caelundas_src_modules_aspects_aspects_module_ts --> file_caelundas_src_modules_triple_aspects_triple_aspects_service_ts
+  file_caelundas_src_modules_aspects_aspects_service_ts --> file_caelundas_src_modules_aspects_aspects_constants_ts
+  file_caelundas_src_modules_aspects_aspects_service_ts --> file_caelundas_src_modules_aspects_aspects_types_ts
+  file_caelundas_src_modules_aspects_aspects_service_ts --> file_caelundas_src_modules_caelundas_caelundas_constants_ts
+  file_caelundas_src_modules_aspects_aspects_service_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_aspects_aspects_service_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_aspects_aspects_service_ts --> file_caelundas_src_modules_ephemeris_ephemeris_types_ts
+  file_caelundas_src_modules_aspects_aspects_service_unit_test_ts --> file_caelundas_src_modules_aspects_aspect_ephemeris_service_ts
+  file_caelundas_src_modules_aspects_aspects_service_unit_test_ts --> file_caelundas_src_modules_aspects_aspect_event_formatting_service_ts
+  file_caelundas_src_modules_aspects_aspects_service_unit_test_ts --> file_caelundas_src_modules_aspects_aspect_graph_service_ts
+  file_caelundas_src_modules_aspects_aspects_service_unit_test_ts --> file_caelundas_src_modules_aspects_aspect_phase_emoji_service_ts
+  file_caelundas_src_modules_aspects_aspects_service_unit_test_ts --> file_caelundas_src_modules_aspects_aspects_utilities_service_ts
+  file_caelundas_src_modules_aspects_aspects_service_unit_test_ts --> file_caelundas_src_modules_aspects_aspects_constants_ts
+  file_caelundas_src_modules_aspects_aspects_service_unit_test_ts --> file_caelundas_src_modules_aspects_aspects_service_ts
+  file_caelundas_src_modules_aspects_aspects_service_unit_test_ts --> file_caelundas_src_modules_aspects_aspects_types_ts
+  file_caelundas_src_modules_aspects_aspects_service_unit_test_ts --> file_caelundas_src_modules_aspects_compound_phase_service_ts
+  file_caelundas_src_modules_aspects_aspects_service_unit_test_ts --> file_caelundas_src_modules_aspects_progressive_compound_event_service_ts
+  file_caelundas_src_modules_aspects_aspects_service_unit_test_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_aspects_aspects_service_unit_test_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_aspects_aspects_service_unit_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_module_ts
+  file_caelundas_src_modules_aspects_aspects_service_unit_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_types_ts
+  file_caelundas_src_modules_aspects_aspects_service_unit_test_ts --> file_caelundas_src_modules_major_aspects_major_aspect_event_service_ts
+  file_caelundas_src_modules_aspects_aspects_service_unit_test_ts --> file_caelundas_src_modules_major_aspects_major_aspect_progressive_service_ts
+  file_caelundas_src_modules_aspects_aspects_service_unit_test_ts --> file_caelundas_src_modules_major_aspects_major_aspects_service_ts
+  file_caelundas_src_modules_aspects_aspects_service_unit_test_ts --> file_caelundas_src_modules_math_math_service_ts
+  file_caelundas_src_modules_aspects_aspects_service_unit_test_ts --> file_caelundas_src_modules_minor_aspects_minor_aspects_composer_service_ts
+  file_caelundas_src_modules_aspects_aspects_service_unit_test_ts --> file_caelundas_src_modules_minor_aspects_minor_aspects_event_service_ts
+  file_caelundas_src_modules_aspects_aspects_service_unit_test_ts --> file_caelundas_src_modules_minor_aspects_minor_aspects_progressive_service_ts
+  file_caelundas_src_modules_aspects_aspects_service_unit_test_ts --> file_caelundas_src_modules_minor_aspects_minor_aspects_service_ts
+  file_caelundas_src_modules_aspects_aspects_service_unit_test_ts --> file_caelundas_src_modules_progressive_progressive_aspect_service_ts
+  file_caelundas_src_modules_aspects_aspects_service_unit_test_ts --> file_caelundas_src_modules_progressive_progressive_utilities_service_ts
+  file_caelundas_src_modules_aspects_aspects_service_unit_test_ts --> file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_base_service_ts
+  file_caelundas_src_modules_aspects_aspects_service_unit_test_ts --> file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_composer_service_ts
+  file_caelundas_src_modules_aspects_aspects_service_unit_test_ts --> file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_service_ts
+  file_caelundas_src_modules_aspects_aspects_service_unit_test_ts --> file_caelundas_src_modules_quintuple_aspects_quintuple_aspects_composer_service_ts
+  file_caelundas_src_modules_aspects_aspects_service_unit_test_ts --> file_caelundas_src_modules_quintuple_aspects_quintuple_aspects_service_ts
+  file_caelundas_src_modules_aspects_aspects_service_unit_test_ts --> file_caelundas_src_modules_sextuple_aspects_sextuple_aspects_composer_service_ts
+  file_caelundas_src_modules_aspects_aspects_service_unit_test_ts --> file_caelundas_src_modules_sextuple_aspects_sextuple_aspects_service_ts
+  file_caelundas_src_modules_aspects_aspects_service_unit_test_ts --> file_caelundas_src_modules_specialty_aspects_specialty_aspects_composer_service_ts
+  file_caelundas_src_modules_aspects_aspects_service_unit_test_ts --> file_caelundas_src_modules_specialty_aspects_specialty_aspects_event_service_ts
+  file_caelundas_src_modules_aspects_aspects_service_unit_test_ts --> file_caelundas_src_modules_specialty_aspects_specialty_aspects_progressive_service_ts
+  file_caelundas_src_modules_aspects_aspects_service_unit_test_ts --> file_caelundas_src_modules_specialty_aspects_specialty_aspects_service_ts
+  file_caelundas_src_modules_aspects_aspects_service_unit_test_ts --> file_caelundas_src_modules_stellium_stellium_service_ts
+  file_caelundas_src_modules_aspects_aspects_service_unit_test_ts --> file_caelundas_src_modules_triple_aspects_triple_aspects_composer_service_ts
+  file_caelundas_src_modules_aspects_aspects_service_unit_test_ts --> file_caelundas_src_modules_triple_aspects_triple_aspects_detector_service_ts
+  file_caelundas_src_modules_aspects_aspects_service_unit_test_ts --> file_caelundas_src_modules_triple_aspects_triple_aspects_service_ts
+  file_caelundas_src_modules_aspects_aspects_types_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_aspects_aspects_types_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_aspects_aspects_types_ts --> file_caelundas_src_modules_ephemeris_ephemeris_types_ts
+  file_caelundas_src_modules_aspects_compound_phase_service_ts --> file_caelundas_src_modules_aspects_aspect_calculation_support_service_ts
+  file_caelundas_src_modules_aspects_compound_phase_service_ts --> file_caelundas_src_modules_ephemeris_ephemeris_service_ts
+  file_caelundas_src_modules_aspects_compound_phase_service_unit_test_ts --> file_caelundas_src_modules_aspects_compound_phase_service_ts
+  file_caelundas_src_modules_aspects_progressive_compound_event_service_ts --> file_caelundas_src_modules_aspects_aspect_event_formatting_service_ts
+  file_caelundas_src_modules_aspects_progressive_compound_event_service_unit_test_ts --> file_caelundas_src_modules_aspects_progressive_compound_event_service_ts
+  file_caelundas_src_modules_caelundas_caelundas_command_ts --> file_caelundas_src_modules_calendar_calendar_service_ts
+  file_caelundas_src_modules_caelundas_caelundas_command_ts --> file_caelundas_src_modules_input_input_service_ts
+  file_caelundas_src_modules_caelundas_caelundas_command_ts --> file_caelundas_src_modules_perfective_perfective_service_ts
+  file_caelundas_src_modules_caelundas_caelundas_command_ts --> file_caelundas_src_modules_progressive_progressive_service_ts
+  file_caelundas_src_modules_caelundas_caelundas_command_unit_test_ts --> file_caelundas_src_modules_caelundas_caelundas_command_ts
+  file_caelundas_src_modules_caelundas_caelundas_command_unit_test_ts --> file_caelundas_src_modules_calendar_calendar_service_ts
+  file_caelundas_src_modules_caelundas_caelundas_command_unit_test_ts --> file_caelundas_src_modules_input_input_service_ts
+  file_caelundas_src_modules_caelundas_caelundas_command_unit_test_ts --> file_caelundas_src_modules_perfective_perfective_service_ts
+  file_caelundas_src_modules_caelundas_caelundas_command_unit_test_ts --> file_caelundas_src_modules_progressive_progressive_service_ts
+  file_caelundas_src_modules_caelundas_caelundas_constants_ts --> file_caelundas_src_modules_caelundas_caelundas_utilities_ts
+  file_caelundas_src_modules_caelundas_caelundas_constants_ts --> file_caelundas_src_modules_caelundas_symbol_caelundas_constants_ts
+  file_caelundas_src_modules_caelundas_caelundas_module_ts --> file_caelundas_src_modules_annual_solar_cycle_annual_solar_cycle_module_ts
+  file_caelundas_src_modules_caelundas_caelundas_module_ts --> file_caelundas_src_modules_aspects_aspects_module_ts
+  file_caelundas_src_modules_caelundas_caelundas_module_ts --> file_caelundas_src_modules_caelundas_caelundas_command_ts
+  file_caelundas_src_modules_caelundas_caelundas_module_ts --> file_caelundas_src_modules_calendar_calendar_module_ts
+  file_caelundas_src_modules_caelundas_caelundas_module_ts --> file_caelundas_src_modules_daily_cycles_daily_cycles_module_ts
+  file_caelundas_src_modules_caelundas_caelundas_module_ts --> file_caelundas_src_modules_eclipses_eclipses_module_ts
+  file_caelundas_src_modules_caelundas_caelundas_module_ts --> file_caelundas_src_modules_ephemeris_ephemeris_module_ts
+  file_caelundas_src_modules_caelundas_caelundas_module_ts --> file_caelundas_src_modules_ingresses_ingresses_module_ts
+  file_caelundas_src_modules_caelundas_caelundas_module_ts --> file_caelundas_src_modules_input_input_module_ts
+  file_caelundas_src_modules_caelundas_caelundas_module_ts --> file_caelundas_src_modules_major_aspects_major_aspects_module_ts
+  file_caelundas_src_modules_caelundas_caelundas_module_ts --> file_caelundas_src_modules_math_math_module_ts
+  file_caelundas_src_modules_caelundas_caelundas_module_ts --> file_caelundas_src_modules_minor_aspects_minor_aspects_module_ts
+  file_caelundas_src_modules_caelundas_caelundas_module_ts --> file_caelundas_src_modules_monthly_lunar_cycle_monthly_lunar_cycle_module_ts
+  file_caelundas_src_modules_caelundas_caelundas_module_ts --> file_caelundas_src_modules_perfective_perfective_module_ts
+  file_caelundas_src_modules_caelundas_caelundas_module_ts --> file_caelundas_src_modules_phases_phases_module_ts
+  file_caelundas_src_modules_caelundas_caelundas_module_ts --> file_caelundas_src_modules_progressive_progressive_module_ts
+  file_caelundas_src_modules_caelundas_caelundas_module_ts --> file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_module_ts
+  file_caelundas_src_modules_caelundas_caelundas_module_ts --> file_caelundas_src_modules_quintuple_aspects_quintuple_aspects_module_ts
+  file_caelundas_src_modules_caelundas_caelundas_module_ts --> file_caelundas_src_modules_retrogrades_retrogrades_module_ts
+  file_caelundas_src_modules_caelundas_caelundas_module_ts --> file_caelundas_src_modules_sextuple_aspects_sextuple_aspects_module_ts
+  file_caelundas_src_modules_caelundas_caelundas_module_ts --> file_caelundas_src_modules_specialty_aspects_specialty_aspects_module_ts
+  file_caelundas_src_modules_caelundas_caelundas_module_ts --> file_caelundas_src_modules_stellium_stellium_module_ts
+  file_caelundas_src_modules_caelundas_caelundas_module_ts --> file_caelundas_src_modules_triple_aspects_triple_aspects_module_ts
+  file_caelundas_src_modules_caelundas_caelundas_module_ts --> file_caelundas_src_modules_twilights_twilights_module_ts
+  file_caelundas_src_modules_caelundas_caelundas_types_ts --> file_caelundas_src_modules_caelundas_caelundas_constants_ts
+  file_caelundas_src_modules_caelundas_caelundas_types_ts --> file_caelundas_src_modules_caelundas_symbol_caelundas_constants_ts
+  file_caelundas_src_modules_caelundas_caelundas_types_unit_test_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_calendar_calendar_module_ts --> file_caelundas_src_modules_calendar_calendar_service_ts
+  file_caelundas_src_modules_calendar_calendar_service_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_calendar_calendar_service_ts --> file_caelundas_src_modules_input_input_types_ts
+  file_caelundas_src_modules_calendar_calendar_service_unit_test_ts --> file_caelundas_src_modules_calendar_calendar_service_ts
+  file_caelundas_src_modules_calendar_calendar_service_unit_test_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_calendar_calendar_service_unit_test_ts --> file_caelundas_testing_mocks_ts
+  file_caelundas_src_modules_daily_cycles_daily_cycles_builder_service_ts --> file_caelundas_src_modules_calendar_calendar_service_ts
+  file_caelundas_src_modules_daily_cycles_daily_cycles_builder_service_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_daily_cycles_daily_cycles_builder_service_ts --> file_caelundas_src_modules_ephemeris_ephemeris_service_ts
+  file_caelundas_src_modules_daily_cycles_daily_cycles_builder_service_ts --> file_caelundas_src_modules_ephemeris_ephemeris_types_ts
+  file_caelundas_src_modules_daily_cycles_daily_cycles_builder_service_ts --> file_caelundas_src_modules_math_math_service_ts
+  file_caelundas_src_modules_daily_cycles_daily_cycles_builder_service_unit_test_ts --> file_caelundas_src_modules_calendar_calendar_service_ts
+  file_caelundas_src_modules_daily_cycles_daily_cycles_builder_service_unit_test_ts --> file_caelundas_src_modules_daily_cycles_daily_cycles_builder_service_ts
+  file_caelundas_src_modules_daily_cycles_daily_cycles_builder_service_unit_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_service_ts
+  file_caelundas_src_modules_daily_cycles_daily_cycles_module_ts --> file_caelundas_src_modules_calendar_calendar_module_ts
+  file_caelundas_src_modules_daily_cycles_daily_cycles_module_ts --> file_caelundas_src_modules_daily_cycles_daily_cycles_builder_service_ts
+  file_caelundas_src_modules_daily_cycles_daily_cycles_module_ts --> file_caelundas_src_modules_daily_cycles_daily_cycles_service_ts
+  file_caelundas_src_modules_daily_cycles_daily_cycles_module_ts --> file_caelundas_src_modules_ephemeris_ephemeris_module_ts
+  file_caelundas_src_modules_daily_cycles_daily_cycles_module_ts --> file_caelundas_src_modules_math_math_module_ts
+  file_caelundas_src_modules_daily_cycles_daily_cycles_service_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_daily_cycles_daily_cycles_service_ts --> file_caelundas_src_modules_daily_cycles_daily_cycles_builder_service_ts
+  file_caelundas_src_modules_daily_cycles_daily_cycles_service_ts --> file_caelundas_src_modules_ephemeris_ephemeris_types_ts
+  file_caelundas_src_modules_daily_cycles_daily_cycles_service_ts --> file_caelundas_src_modules_math_math_service_ts
+  file_caelundas_src_modules_daily_cycles_daily_cycles_service_unit_test_ts --> file_caelundas_src_modules_calendar_calendar_service_ts
+  file_caelundas_src_modules_daily_cycles_daily_cycles_service_unit_test_ts --> file_caelundas_src_modules_daily_cycles_daily_cycles_builder_service_ts
+  file_caelundas_src_modules_daily_cycles_daily_cycles_service_unit_test_ts --> file_caelundas_src_modules_daily_cycles_daily_cycles_service_ts
+  file_caelundas_src_modules_daily_cycles_daily_cycles_service_unit_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_module_ts
+  file_caelundas_src_modules_daily_cycles_daily_cycles_service_unit_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_types_ts
+  file_caelundas_src_modules_daily_cycles_daily_cycles_service_unit_test_ts --> file_caelundas_src_modules_math_math_service_ts
+  file_caelundas_src_modules_datetime_datetime_module_ts --> file_caelundas_src_modules_datetime_datetime_service_ts
+  file_caelundas_src_modules_datetime_datetime_service_unit_test_ts --> file_caelundas_src_modules_datetime_datetime_service_ts
+  file_caelundas_src_modules_eclipses_eclipse_calculation_service_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_eclipses_eclipse_calculation_service_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_eclipses_eclipse_calculation_service_ts --> file_caelundas_src_modules_eclipses_eclipse_event_service_ts
+  file_caelundas_src_modules_eclipses_eclipse_calculation_service_ts --> file_caelundas_src_modules_eclipses_eclipse_geometry_service_ts
+  file_caelundas_src_modules_eclipses_eclipse_calculation_service_ts --> file_caelundas_src_modules_eclipses_eclipse_topocentric_service_ts
+  file_caelundas_src_modules_eclipses_eclipse_calculation_service_ts --> file_caelundas_src_modules_eclipses_eclipses_types_ts
+  file_caelundas_src_modules_eclipses_eclipse_calculation_service_ts --> file_caelundas_src_modules_ephemeris_ephemeris_types_ts
+  file_caelundas_src_modules_eclipses_eclipse_calculation_service_ts --> file_caelundas_src_modules_math_math_service_ts
+  file_caelundas_src_modules_eclipses_eclipse_calculation_service_unit_test_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_eclipses_eclipse_calculation_service_unit_test_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_eclipses_eclipse_calculation_service_unit_test_ts --> file_caelundas_src_modules_eclipses_eclipse_calculation_service_ts
+  file_caelundas_src_modules_eclipses_eclipse_calculation_service_unit_test_ts --> file_caelundas_src_modules_eclipses_eclipse_event_service_ts
+  file_caelundas_src_modules_eclipses_eclipse_calculation_service_unit_test_ts --> file_caelundas_src_modules_eclipses_eclipse_geometry_service_ts
+  file_caelundas_src_modules_eclipses_eclipse_calculation_service_unit_test_ts --> file_caelundas_src_modules_eclipses_eclipse_topocentric_service_ts
+  file_caelundas_src_modules_eclipses_eclipse_calculation_service_unit_test_ts --> file_caelundas_src_modules_eclipses_eclipses_types_ts
+  file_caelundas_src_modules_eclipses_eclipse_calculation_service_unit_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_service_ts
+  file_caelundas_src_modules_eclipses_eclipse_calculation_service_unit_test_ts --> file_caelundas_src_modules_math_math_service_ts
+  file_caelundas_src_modules_eclipses_eclipse_calculation_service_unit_test_ts --> file_caelundas_src_modules_math_math_types_ts
+  file_caelundas_src_modules_eclipses_eclipse_event_service_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_eclipses_eclipse_event_service_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_eclipses_eclipse_event_service_ts --> file_caelundas_src_modules_eclipses_eclipses_types_ts
+  file_caelundas_src_modules_eclipses_eclipse_event_service_ts --> file_caelundas_src_modules_progressive_progressive_utilities_service_ts
+  file_caelundas_src_modules_eclipses_eclipse_event_service_unit_test_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_eclipses_eclipse_event_service_unit_test_ts --> file_caelundas_src_modules_eclipses_eclipse_event_service_ts
+  file_caelundas_src_modules_eclipses_eclipse_event_service_unit_test_ts --> file_caelundas_src_modules_progressive_progressive_utilities_service_ts
+  file_caelundas_src_modules_eclipses_eclipse_geometry_service_ts --> file_caelundas_src_modules_eclipses_eclipses_types_ts
+  file_caelundas_src_modules_eclipses_eclipse_geometry_service_ts --> file_caelundas_src_modules_ephemeris_ephemeris_service_ts
+  file_caelundas_src_modules_eclipses_eclipse_geometry_service_ts --> file_caelundas_src_modules_ephemeris_ephemeris_types_ts
+  file_caelundas_src_modules_eclipses_eclipse_geometry_service_ts --> file_caelundas_src_modules_math_math_service_ts
+  file_caelundas_src_modules_eclipses_eclipse_geometry_service_unit_test_ts --> file_caelundas_src_modules_eclipses_eclipse_geometry_service_ts
+  file_caelundas_src_modules_eclipses_eclipse_geometry_service_unit_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_service_ts
+  file_caelundas_src_modules_eclipses_eclipse_geometry_service_unit_test_ts --> file_caelundas_src_modules_math_math_service_ts
+  file_caelundas_src_modules_eclipses_eclipse_topocentric_service_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_eclipses_eclipse_topocentric_service_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_eclipses_eclipse_topocentric_service_ts --> file_caelundas_src_modules_eclipses_eclipse_event_service_ts
+  file_caelundas_src_modules_eclipses_eclipse_topocentric_service_ts --> file_caelundas_src_modules_eclipses_eclipse_geometry_service_ts
+  file_caelundas_src_modules_eclipses_eclipse_topocentric_service_ts --> file_caelundas_src_modules_eclipses_eclipses_types_ts
+  file_caelundas_src_modules_eclipses_eclipse_topocentric_service_ts --> file_caelundas_src_modules_ephemeris_ephemeris_types_ts
+  file_caelundas_src_modules_eclipses_eclipse_topocentric_service_ts --> file_caelundas_src_modules_math_math_service_ts
+  file_caelundas_src_modules_eclipses_eclipse_topocentric_service_unit_test_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_eclipses_eclipse_topocentric_service_unit_test_ts --> file_caelundas_src_modules_eclipses_eclipse_event_service_ts
+  file_caelundas_src_modules_eclipses_eclipse_topocentric_service_unit_test_ts --> file_caelundas_src_modules_eclipses_eclipse_geometry_service_ts
+  file_caelundas_src_modules_eclipses_eclipse_topocentric_service_unit_test_ts --> file_caelundas_src_modules_eclipses_eclipse_topocentric_service_ts
+  file_caelundas_src_modules_eclipses_eclipse_topocentric_service_unit_test_ts --> file_caelundas_src_modules_eclipses_eclipses_types_ts
+  file_caelundas_src_modules_eclipses_eclipse_topocentric_service_unit_test_ts --> file_caelundas_src_modules_math_math_service_ts
+  file_caelundas_src_modules_eclipses_eclipses_module_ts --> file_caelundas_src_modules_eclipses_eclipse_calculation_service_ts
+  file_caelundas_src_modules_eclipses_eclipses_module_ts --> file_caelundas_src_modules_eclipses_eclipse_event_service_ts
+  file_caelundas_src_modules_eclipses_eclipses_module_ts --> file_caelundas_src_modules_eclipses_eclipse_geometry_service_ts
+  file_caelundas_src_modules_eclipses_eclipses_module_ts --> file_caelundas_src_modules_eclipses_eclipse_topocentric_service_ts
+  file_caelundas_src_modules_eclipses_eclipses_module_ts --> file_caelundas_src_modules_eclipses_eclipses_service_ts
+  file_caelundas_src_modules_eclipses_eclipses_module_ts --> file_caelundas_src_modules_ephemeris_ephemeris_module_ts
+  file_caelundas_src_modules_eclipses_eclipses_module_ts --> file_caelundas_src_modules_math_math_module_ts
+  file_caelundas_src_modules_eclipses_eclipses_module_ts --> file_caelundas_src_modules_progressive_progressive_utilities_module_ts
+  file_caelundas_src_modules_eclipses_eclipses_service_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_eclipses_eclipses_service_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_eclipses_eclipses_service_ts --> file_caelundas_src_modules_eclipses_eclipse_calculation_service_ts
+  file_caelundas_src_modules_eclipses_eclipses_service_ts --> file_caelundas_src_modules_eclipses_eclipse_event_service_ts
+  file_caelundas_src_modules_eclipses_eclipses_service_ts --> file_caelundas_src_modules_eclipses_eclipses_types_ts
+  file_caelundas_src_modules_eclipses_eclipses_service_ts --> file_caelundas_src_modules_ephemeris_ephemeris_types_ts
+  file_caelundas_src_modules_eclipses_eclipses_service_unit_test_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_eclipses_eclipses_service_unit_test_ts --> file_caelundas_src_modules_eclipses_eclipse_calculation_service_ts
+  file_caelundas_src_modules_eclipses_eclipses_service_unit_test_ts --> file_caelundas_src_modules_eclipses_eclipse_event_service_ts
+  file_caelundas_src_modules_eclipses_eclipses_service_unit_test_ts --> file_caelundas_src_modules_eclipses_eclipses_service_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_aggregation_service_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_aggregation_service_ts --> file_caelundas_src_modules_ephemeris_ephemeris_constants_service_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_aggregation_service_ts --> file_caelundas_src_modules_ephemeris_ephemeris_coordinate_service_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_aggregation_service_ts --> file_caelundas_src_modules_ephemeris_ephemeris_horizon_service_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_aggregation_service_ts --> file_caelundas_src_modules_ephemeris_ephemeris_phenomena_service_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_aggregation_service_ts --> file_caelundas_src_modules_ephemeris_ephemeris_time_service_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_aggregation_service_ts --> file_caelundas_src_modules_ephemeris_ephemeris_types_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_aggregation_service_ts --> file_caelundas_src_modules_ephemeris_internal_ephemeris_types_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_aggregation_service_unit_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_aggregation_service_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_aggregation_service_unit_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_constants_service_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_aggregation_service_unit_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_coordinate_service_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_aggregation_service_unit_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_horizon_service_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_aggregation_service_unit_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_phenomena_service_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_aggregation_service_unit_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_time_service_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_constants_service_ts --> file_caelundas_src_modules_caelundas_caelundas_constants_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_constants_service_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_constants_service_ts --> file_caelundas_src_modules_ephemeris_ephemeris_constants_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_constants_service_unit_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_constants_service_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_coordinate_service_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_coordinate_service_ts --> file_caelundas_src_modules_ephemeris_ephemeris_constants_service_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_coordinate_service_ts --> file_caelundas_src_modules_ephemeris_ephemeris_time_service_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_coordinate_service_ts --> file_caelundas_src_modules_ephemeris_ephemeris_constants_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_coordinate_service_ts --> file_caelundas_src_modules_ephemeris_ephemeris_types_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_coordinate_service_ts --> file_caelundas_src_modules_math_math_service_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_coordinate_service_unit_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_constants_service_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_coordinate_service_unit_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_coordinate_service_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_coordinate_service_unit_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_time_service_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_coordinate_service_unit_test_ts --> file_caelundas_src_modules_math_math_service_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_horizon_service_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_horizon_service_ts --> file_caelundas_src_modules_ephemeris_ephemeris_coordinate_service_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_horizon_service_ts --> file_caelundas_src_modules_ephemeris_ephemeris_time_service_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_horizon_service_ts --> file_caelundas_src_modules_ephemeris_ephemeris_constants_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_horizon_service_ts --> file_caelundas_src_modules_ephemeris_ephemeris_types_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_horizon_service_unit_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_coordinate_service_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_horizon_service_unit_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_horizon_service_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_horizon_service_unit_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_time_service_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_phenomena_service_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_phenomena_service_ts --> file_caelundas_src_modules_ephemeris_ephemeris_constants_service_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_phenomena_service_ts --> file_caelundas_src_modules_ephemeris_ephemeris_time_service_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_phenomena_service_ts --> file_caelundas_src_modules_ephemeris_ephemeris_constants_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_phenomena_service_ts --> file_caelundas_src_modules_ephemeris_ephemeris_types_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_phenomena_service_unit_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_constants_service_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_phenomena_service_unit_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_phenomena_service_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_phenomena_service_unit_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_time_service_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_time_service_ts --> file_caelundas_src_modules_ephemeris_ephemeris_constants_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_time_service_ts --> file_caelundas_src_modules_ephemeris_internal_ephemeris_types_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_time_service_unit_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_time_service_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_constants_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_constants_unit_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_constants_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_module_ts --> file_caelundas_src_modules_ephemeris_ephemeris_aggregation_service_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_module_ts --> file_caelundas_src_modules_ephemeris_ephemeris_constants_service_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_module_ts --> file_caelundas_src_modules_ephemeris_ephemeris_coordinate_service_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_module_ts --> file_caelundas_src_modules_ephemeris_ephemeris_horizon_service_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_module_ts --> file_caelundas_src_modules_ephemeris_ephemeris_phenomena_service_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_module_ts --> file_caelundas_src_modules_ephemeris_ephemeris_time_service_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_module_ts --> file_caelundas_src_modules_ephemeris_ephemeris_service_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_module_ts --> file_caelundas_src_modules_math_math_module_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_service_ts --> file_caelundas_src_modules_caelundas_caelundas_constants_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_service_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_service_ts --> file_caelundas_src_modules_ephemeris_ephemeris_aggregation_service_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_service_ts --> file_caelundas_src_modules_ephemeris_ephemeris_constants_service_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_service_ts --> file_caelundas_src_modules_ephemeris_ephemeris_coordinate_service_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_service_ts --> file_caelundas_src_modules_ephemeris_ephemeris_horizon_service_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_service_ts --> file_caelundas_src_modules_ephemeris_ephemeris_phenomena_service_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_service_ts --> file_caelundas_src_modules_ephemeris_ephemeris_time_service_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_service_ts --> file_caelundas_src_modules_ephemeris_ephemeris_constants_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_service_ts --> file_caelundas_src_modules_ephemeris_ephemeris_types_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_service_unit_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_aggregation_service_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_service_unit_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_constants_service_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_service_unit_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_coordinate_service_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_service_unit_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_horizon_service_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_service_unit_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_phenomena_service_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_service_unit_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_time_service_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_service_unit_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_constants_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_service_unit_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_service_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_service_unit_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_types_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_service_unit_test_ts --> file_caelundas_src_modules_ephemeris_internal_ephemeris_types_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_types_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_ephemeris_ephemeris_types_unit_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_types_ts
+  file_caelundas_src_modules_ephemeris_internal_ephemeris_types_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_ephemeris_internal_ephemeris_types_ts --> file_caelundas_src_modules_ephemeris_ephemeris_types_ts
+  file_caelundas_src_modules_ingresses_ingresses_composer_service_ts --> file_caelundas_src_modules_caelundas_caelundas_constants_ts
+  file_caelundas_src_modules_ingresses_ingresses_composer_service_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_ingresses_ingresses_composer_service_ts --> file_caelundas_src_modules_caelundas_symbol_caelundas_constants_ts
+  file_caelundas_src_modules_ingresses_ingresses_composer_service_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_ingresses_ingresses_composer_service_ts --> file_caelundas_src_modules_ephemeris_ephemeris_service_ts
+  file_caelundas_src_modules_ingresses_ingresses_composer_service_ts --> file_caelundas_src_modules_ephemeris_ephemeris_types_ts
+  file_caelundas_src_modules_ingresses_ingresses_composer_service_unit_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_service_ts
+  file_caelundas_src_modules_ingresses_ingresses_composer_service_unit_test_ts --> file_caelundas_src_modules_ingresses_ingresses_composer_service_ts
+  file_caelundas_src_modules_ingresses_ingresses_module_ts --> file_caelundas_src_modules_ephemeris_ephemeris_module_ts
+  file_caelundas_src_modules_ingresses_ingresses_module_ts --> file_caelundas_src_modules_ingresses_ingresses_composer_service_ts
+  file_caelundas_src_modules_ingresses_ingresses_module_ts --> file_caelundas_src_modules_ingresses_ingresses_service_ts
+  file_caelundas_src_modules_ingresses_ingresses_service_integration_test_ts --> file_caelundas_src_modules_caelundas_caelundas_constants_ts
+  file_caelundas_src_modules_ingresses_ingresses_service_integration_test_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_ingresses_ingresses_service_integration_test_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_ingresses_ingresses_service_integration_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_aggregation_service_ts
+  file_caelundas_src_modules_ingresses_ingresses_service_integration_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_constants_service_ts
+  file_caelundas_src_modules_ingresses_ingresses_service_integration_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_coordinate_service_ts
+  file_caelundas_src_modules_ingresses_ingresses_service_integration_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_horizon_service_ts
+  file_caelundas_src_modules_ingresses_ingresses_service_integration_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_phenomena_service_ts
+  file_caelundas_src_modules_ingresses_ingresses_service_integration_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_time_service_ts
+  file_caelundas_src_modules_ingresses_ingresses_service_integration_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_service_ts
+  file_caelundas_src_modules_ingresses_ingresses_service_integration_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_types_ts
+  file_caelundas_src_modules_ingresses_ingresses_service_integration_test_ts --> file_caelundas_src_modules_ingresses_ingresses_composer_service_ts
+  file_caelundas_src_modules_ingresses_ingresses_service_integration_test_ts --> file_caelundas_src_modules_ingresses_ingresses_service_ts
+  file_caelundas_src_modules_ingresses_ingresses_service_ts --> file_caelundas_src_modules_caelundas_caelundas_constants_ts
+  file_caelundas_src_modules_ingresses_ingresses_service_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_ingresses_ingresses_service_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_ingresses_ingresses_service_ts --> file_caelundas_src_modules_ephemeris_ephemeris_types_ts
+  file_caelundas_src_modules_ingresses_ingresses_service_ts --> file_caelundas_src_modules_ingresses_ingresses_composer_service_ts
+  file_caelundas_src_modules_ingresses_ingresses_service_unit_test_ts --> file_caelundas_src_modules_caelundas_caelundas_constants_ts
+  file_caelundas_src_modules_ingresses_ingresses_service_unit_test_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_ingresses_ingresses_service_unit_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_module_ts
+  file_caelundas_src_modules_ingresses_ingresses_service_unit_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_types_ts
+  file_caelundas_src_modules_ingresses_ingresses_service_unit_test_ts --> file_caelundas_src_modules_ingresses_ingresses_composer_service_ts
+  file_caelundas_src_modules_ingresses_ingresses_service_unit_test_ts --> file_caelundas_src_modules_ingresses_ingresses_service_ts
+  file_caelundas_src_modules_ingresses_ingresses_service_unit_test_ts --> file_caelundas_src_modules_math_math_service_ts
+  file_caelundas_src_modules_input_input_module_ts --> file_caelundas_src_modules_input_input_service_ts
+  file_caelundas_src_modules_input_input_service_ts --> file_caelundas_src_modules_input_input_constants_ts
+  file_caelundas_src_modules_input_input_service_ts --> file_caelundas_src_modules_input_input_types_ts
+  file_caelundas_src_modules_input_input_service_unit_test_ts --> file_caelundas_src_constants_ts
+  file_caelundas_src_modules_input_input_service_unit_test_ts --> file_caelundas_src_modules_input_input_constants_ts
+  file_caelundas_src_modules_input_input_service_unit_test_ts --> file_caelundas_src_modules_input_input_service_ts
+  file_caelundas_src_modules_input_input_service_unit_test_ts --> file_caelundas_src_modules_input_input_types_ts
+  file_caelundas_src_modules_input_input_service_unit_test_ts --> file_caelundas_testing_mocks_ts
+  file_caelundas_src_modules_input_input_types_ts --> file_caelundas_src_constants_ts
+  file_caelundas_src_modules_input_input_types_ts --> file_caelundas_src_modules_input_input_constants_ts
+  file_caelundas_src_modules_major_aspects_major_aspect_event_service_ts --> file_caelundas_src_modules_aspects_aspects_utilities_service_ts
+  file_caelundas_src_modules_major_aspects_major_aspect_event_service_ts --> file_caelundas_src_modules_caelundas_caelundas_constants_ts
+  file_caelundas_src_modules_major_aspects_major_aspect_event_service_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_major_aspects_major_aspect_event_service_ts --> file_caelundas_src_modules_caelundas_symbol_caelundas_constants_ts
+  file_caelundas_src_modules_major_aspects_major_aspect_event_service_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_major_aspects_major_aspect_event_service_unit_test_ts --> file_caelundas_src_modules_aspects_aspects_utilities_service_ts
+  file_caelundas_src_modules_major_aspects_major_aspect_event_service_unit_test_ts --> file_caelundas_src_modules_major_aspects_major_aspect_event_service_ts
+  file_caelundas_src_modules_major_aspects_major_aspect_event_service_unit_test_ts --> file_caelundas_src_modules_math_math_service_ts
+  file_caelundas_src_modules_major_aspects_major_aspect_progressive_service_ts --> file_caelundas_src_modules_caelundas_caelundas_constants_ts
+  file_caelundas_src_modules_major_aspects_major_aspect_progressive_service_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_major_aspects_major_aspect_progressive_service_ts --> file_caelundas_src_modules_caelundas_symbol_caelundas_constants_ts
+  file_caelundas_src_modules_major_aspects_major_aspect_progressive_service_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_major_aspects_major_aspect_progressive_service_ts --> file_caelundas_src_modules_progressive_progressive_aspect_service_ts
+  file_caelundas_src_modules_major_aspects_major_aspect_progressive_service_ts --> file_caelundas_src_modules_progressive_progressive_utilities_service_ts
+  file_caelundas_src_modules_major_aspects_major_aspect_progressive_service_unit_test_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_major_aspects_major_aspect_progressive_service_unit_test_ts --> file_caelundas_src_modules_major_aspects_major_aspect_progressive_service_ts
+  file_caelundas_src_modules_major_aspects_major_aspect_progressive_service_unit_test_ts --> file_caelundas_src_modules_progressive_progressive_aspect_service_ts
+  file_caelundas_src_modules_major_aspects_major_aspect_progressive_service_unit_test_ts --> file_caelundas_src_modules_progressive_progressive_utilities_service_ts
+  file_caelundas_src_modules_major_aspects_major_aspects_module_ts --> file_caelundas_src_modules_aspects_aspects_utilities_module_ts
+  file_caelundas_src_modules_major_aspects_major_aspects_module_ts --> file_caelundas_src_modules_ephemeris_ephemeris_module_ts
+  file_caelundas_src_modules_major_aspects_major_aspects_module_ts --> file_caelundas_src_modules_major_aspects_major_aspect_event_service_ts
+  file_caelundas_src_modules_major_aspects_major_aspects_module_ts --> file_caelundas_src_modules_major_aspects_major_aspect_progressive_service_ts
+  file_caelundas_src_modules_major_aspects_major_aspects_module_ts --> file_caelundas_src_modules_major_aspects_major_aspects_service_ts
+  file_caelundas_src_modules_major_aspects_major_aspects_module_ts --> file_caelundas_src_modules_progressive_progressive_utilities_module_ts
+  file_caelundas_src_modules_major_aspects_major_aspects_service_integration_test_ts --> file_caelundas_src_modules_aspects_aspect_ephemeris_service_ts
+  file_caelundas_src_modules_major_aspects_major_aspects_service_integration_test_ts --> file_caelundas_src_modules_aspects_aspects_utilities_service_ts
+  file_caelundas_src_modules_major_aspects_major_aspects_service_integration_test_ts --> file_caelundas_src_modules_caelundas_caelundas_constants_ts
+  file_caelundas_src_modules_major_aspects_major_aspects_service_integration_test_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_major_aspects_major_aspects_service_integration_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_module_ts
+  file_caelundas_src_modules_major_aspects_major_aspects_service_integration_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_types_ts
+  file_caelundas_src_modules_major_aspects_major_aspects_service_integration_test_ts --> file_caelundas_src_modules_major_aspects_major_aspect_event_service_ts
+  file_caelundas_src_modules_major_aspects_major_aspects_service_integration_test_ts --> file_caelundas_src_modules_major_aspects_major_aspect_progressive_service_ts
+  file_caelundas_src_modules_major_aspects_major_aspects_service_integration_test_ts --> file_caelundas_src_modules_major_aspects_major_aspects_service_ts
+  file_caelundas_src_modules_major_aspects_major_aspects_service_integration_test_ts --> file_caelundas_src_modules_math_math_service_ts
+  file_caelundas_src_modules_major_aspects_major_aspects_service_integration_test_ts --> file_caelundas_src_modules_progressive_progressive_aspect_service_ts
+  file_caelundas_src_modules_major_aspects_major_aspects_service_integration_test_ts --> file_caelundas_src_modules_progressive_progressive_utilities_service_ts
+  file_caelundas_src_modules_major_aspects_major_aspects_service_ts --> file_caelundas_src_modules_aspects_aspect_ephemeris_service_ts
+  file_caelundas_src_modules_major_aspects_major_aspects_service_ts --> file_caelundas_src_modules_aspects_aspects_utilities_service_ts
+  file_caelundas_src_modules_major_aspects_major_aspects_service_ts --> file_caelundas_src_modules_caelundas_caelundas_constants_ts
+  file_caelundas_src_modules_major_aspects_major_aspects_service_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_major_aspects_major_aspects_service_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_major_aspects_major_aspects_service_ts --> file_caelundas_src_modules_ephemeris_ephemeris_types_ts
+  file_caelundas_src_modules_major_aspects_major_aspects_service_ts --> file_caelundas_src_modules_major_aspects_major_aspect_event_service_ts
+  file_caelundas_src_modules_major_aspects_major_aspects_service_ts --> file_caelundas_src_modules_major_aspects_major_aspect_progressive_service_ts
+  file_caelundas_src_modules_major_aspects_major_aspects_service_ts --> file_caelundas_src_modules_major_aspects_major_aspects_types_ts
+  file_caelundas_src_modules_major_aspects_major_aspects_service_unit_test_ts --> file_caelundas_src_modules_aspects_aspect_ephemeris_service_ts
+  file_caelundas_src_modules_major_aspects_major_aspects_service_unit_test_ts --> file_caelundas_src_modules_aspects_aspects_utilities_service_ts
+  file_caelundas_src_modules_major_aspects_major_aspects_service_unit_test_ts --> file_caelundas_src_modules_caelundas_caelundas_constants_ts
+  file_caelundas_src_modules_major_aspects_major_aspects_service_unit_test_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_major_aspects_major_aspects_service_unit_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_module_ts
+  file_caelundas_src_modules_major_aspects_major_aspects_service_unit_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_types_ts
+  file_caelundas_src_modules_major_aspects_major_aspects_service_unit_test_ts --> file_caelundas_src_modules_major_aspects_major_aspect_event_service_ts
+  file_caelundas_src_modules_major_aspects_major_aspects_service_unit_test_ts --> file_caelundas_src_modules_major_aspects_major_aspect_progressive_service_ts
+  file_caelundas_src_modules_major_aspects_major_aspects_service_unit_test_ts --> file_caelundas_src_modules_major_aspects_major_aspects_service_ts
+  file_caelundas_src_modules_major_aspects_major_aspects_service_unit_test_ts --> file_caelundas_src_modules_math_math_service_ts
+  file_caelundas_src_modules_major_aspects_major_aspects_service_unit_test_ts --> file_caelundas_src_modules_progressive_progressive_aspect_service_ts
+  file_caelundas_src_modules_major_aspects_major_aspects_service_unit_test_ts --> file_caelundas_src_modules_progressive_progressive_utilities_service_ts
+  file_caelundas_src_modules_major_aspects_major_aspects_types_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_major_aspects_major_aspects_types_ts --> file_caelundas_src_modules_ephemeris_ephemeris_types_ts
+  file_caelundas_src_modules_math_math_module_ts --> file_caelundas_src_modules_math_math_service_ts
+  file_caelundas_src_modules_math_math_service_ts --> file_caelundas_src_modules_ephemeris_ephemeris_types_ts
+  file_caelundas_src_modules_math_math_service_ts --> file_caelundas_src_modules_math_math_types_ts
+  file_caelundas_src_modules_math_math_service_unit_test_ts --> file_caelundas_src_modules_math_math_service_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_composer_service_ts --> file_caelundas_src_modules_aspects_aspect_ephemeris_service_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_composer_service_ts --> file_caelundas_src_modules_caelundas_caelundas_constants_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_composer_service_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_composer_service_ts --> file_caelundas_src_modules_caelundas_symbol_caelundas_constants_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_composer_service_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_composer_service_ts --> file_caelundas_src_modules_ephemeris_ephemeris_types_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_composer_service_ts --> file_caelundas_src_modules_minor_aspects_minor_aspects_types_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_composer_service_ts --> file_caelundas_src_modules_progressive_progressive_utilities_service_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_composer_service_unit_test_ts --> file_caelundas_src_modules_aspects_aspect_ephemeris_service_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_composer_service_unit_test_ts --> file_caelundas_src_modules_minor_aspects_minor_aspects_composer_service_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_composer_service_unit_test_ts --> file_caelundas_src_modules_progressive_progressive_utilities_service_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_event_service_ts --> file_caelundas_src_modules_aspects_aspect_ephemeris_service_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_event_service_ts --> file_caelundas_src_modules_aspects_aspect_event_formatting_service_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_event_service_ts --> file_caelundas_src_modules_aspects_aspects_utilities_service_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_event_service_ts --> file_caelundas_src_modules_caelundas_caelundas_constants_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_event_service_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_event_service_ts --> file_caelundas_src_modules_caelundas_symbol_caelundas_constants_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_event_service_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_event_service_ts --> file_caelundas_src_modules_ephemeris_ephemeris_types_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_event_service_unit_test_ts --> file_caelundas_src_modules_aspects_aspect_ephemeris_service_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_event_service_unit_test_ts --> file_caelundas_src_modules_aspects_aspect_event_formatting_service_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_event_service_unit_test_ts --> file_caelundas_src_modules_aspects_aspects_utilities_service_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_event_service_unit_test_ts --> file_caelundas_src_modules_minor_aspects_minor_aspects_event_service_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_progressive_service_ts --> file_caelundas_src_modules_caelundas_caelundas_constants_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_progressive_service_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_progressive_service_ts --> file_caelundas_src_modules_caelundas_symbol_caelundas_constants_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_progressive_service_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_progressive_service_ts --> file_caelundas_src_modules_progressive_progressive_aspect_service_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_progressive_service_ts --> file_caelundas_src_modules_progressive_progressive_utilities_service_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_progressive_service_unit_test_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_progressive_service_unit_test_ts --> file_caelundas_src_modules_minor_aspects_minor_aspects_progressive_service_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_progressive_service_unit_test_ts --> file_caelundas_src_modules_progressive_progressive_aspect_service_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_progressive_service_unit_test_ts --> file_caelundas_src_modules_progressive_progressive_utilities_service_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_module_ts --> file_caelundas_src_modules_aspects_aspects_utilities_module_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_module_ts --> file_caelundas_src_modules_ephemeris_ephemeris_module_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_module_ts --> file_caelundas_src_modules_minor_aspects_minor_aspects_event_service_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_module_ts --> file_caelundas_src_modules_minor_aspects_minor_aspects_progressive_service_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_module_ts --> file_caelundas_src_modules_minor_aspects_minor_aspects_service_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_module_ts --> file_caelundas_src_modules_progressive_progressive_utilities_module_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_service_integration_test_ts --> file_caelundas_src_modules_aspects_aspect_ephemeris_service_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_service_integration_test_ts --> file_caelundas_src_modules_aspects_aspect_event_formatting_service_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_service_integration_test_ts --> file_caelundas_src_modules_aspects_aspects_utilities_service_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_service_integration_test_ts --> file_caelundas_src_modules_caelundas_caelundas_constants_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_service_integration_test_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_service_integration_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_module_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_service_integration_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_types_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_service_integration_test_ts --> file_caelundas_src_modules_math_math_service_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_service_integration_test_ts --> file_caelundas_src_modules_minor_aspects_minor_aspects_event_service_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_service_integration_test_ts --> file_caelundas_src_modules_minor_aspects_minor_aspects_progressive_service_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_service_integration_test_ts --> file_caelundas_src_modules_minor_aspects_minor_aspects_service_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_service_integration_test_ts --> file_caelundas_src_modules_progressive_progressive_aspect_service_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_service_integration_test_ts --> file_caelundas_src_modules_progressive_progressive_utilities_service_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_service_ts --> file_caelundas_src_modules_aspects_aspects_utilities_service_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_service_ts --> file_caelundas_src_modules_caelundas_caelundas_constants_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_service_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_service_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_service_ts --> file_caelundas_src_modules_ephemeris_ephemeris_types_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_service_ts --> file_caelundas_src_modules_minor_aspects_minor_aspects_event_service_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_service_ts --> file_caelundas_src_modules_minor_aspects_minor_aspects_progressive_service_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_service_ts --> file_caelundas_src_modules_minor_aspects_minor_aspects_types_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_service_unit_test_ts --> file_caelundas_src_modules_aspects_aspect_ephemeris_service_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_service_unit_test_ts --> file_caelundas_src_modules_aspects_aspect_event_formatting_service_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_service_unit_test_ts --> file_caelundas_src_modules_aspects_aspects_utilities_service_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_service_unit_test_ts --> file_caelundas_src_modules_caelundas_caelundas_constants_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_service_unit_test_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_service_unit_test_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_service_unit_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_module_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_service_unit_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_types_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_service_unit_test_ts --> file_caelundas_src_modules_math_math_service_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_service_unit_test_ts --> file_caelundas_src_modules_minor_aspects_minor_aspects_event_service_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_service_unit_test_ts --> file_caelundas_src_modules_minor_aspects_minor_aspects_progressive_service_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_service_unit_test_ts --> file_caelundas_src_modules_minor_aspects_minor_aspects_service_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_service_unit_test_ts --> file_caelundas_src_modules_progressive_progressive_aspect_service_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_service_unit_test_ts --> file_caelundas_src_modules_progressive_progressive_utilities_service_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_types_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_minor_aspects_minor_aspects_types_ts --> file_caelundas_src_modules_ephemeris_ephemeris_types_ts
+  file_caelundas_src_modules_monthly_lunar_cycle_monthly_lunar_cycle_module_ts --> file_caelundas_src_modules_calendar_calendar_module_ts
+  file_caelundas_src_modules_monthly_lunar_cycle_monthly_lunar_cycle_module_ts --> file_caelundas_src_modules_ephemeris_ephemeris_module_ts
+  file_caelundas_src_modules_monthly_lunar_cycle_monthly_lunar_cycle_module_ts --> file_caelundas_src_modules_monthly_lunar_cycle_monthly_lunar_cycle_service_ts
+  file_caelundas_src_modules_monthly_lunar_cycle_monthly_lunar_cycle_service_integration_test_ts --> file_caelundas_src_modules_caelundas_caelundas_constants_ts
+  file_caelundas_src_modules_monthly_lunar_cycle_monthly_lunar_cycle_service_integration_test_ts --> file_caelundas_src_modules_calendar_calendar_service_ts
+  file_caelundas_src_modules_monthly_lunar_cycle_monthly_lunar_cycle_service_integration_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_module_ts
+  file_caelundas_src_modules_monthly_lunar_cycle_monthly_lunar_cycle_service_integration_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_types_ts
+  file_caelundas_src_modules_monthly_lunar_cycle_monthly_lunar_cycle_service_integration_test_ts --> file_caelundas_src_modules_math_math_service_ts
+  file_caelundas_src_modules_monthly_lunar_cycle_monthly_lunar_cycle_service_integration_test_ts --> file_caelundas_src_modules_monthly_lunar_cycle_monthly_lunar_cycle_service_ts
+  file_caelundas_src_modules_monthly_lunar_cycle_monthly_lunar_cycle_service_ts --> file_caelundas_src_modules_caelundas_caelundas_constants_ts
+  file_caelundas_src_modules_monthly_lunar_cycle_monthly_lunar_cycle_service_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_monthly_lunar_cycle_monthly_lunar_cycle_service_ts --> file_caelundas_src_modules_caelundas_symbol_caelundas_constants_ts
+  file_caelundas_src_modules_monthly_lunar_cycle_monthly_lunar_cycle_service_ts --> file_caelundas_src_modules_calendar_calendar_service_ts
+  file_caelundas_src_modules_monthly_lunar_cycle_monthly_lunar_cycle_service_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_monthly_lunar_cycle_monthly_lunar_cycle_service_ts --> file_caelundas_src_modules_ephemeris_ephemeris_service_ts
+  file_caelundas_src_modules_monthly_lunar_cycle_monthly_lunar_cycle_service_ts --> file_caelundas_src_modules_ephemeris_ephemeris_types_ts
+  file_caelundas_src_modules_monthly_lunar_cycle_monthly_lunar_cycle_service_unit_test_ts --> file_caelundas_src_modules_caelundas_caelundas_constants_ts
+  file_caelundas_src_modules_monthly_lunar_cycle_monthly_lunar_cycle_service_unit_test_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_monthly_lunar_cycle_monthly_lunar_cycle_service_unit_test_ts --> file_caelundas_src_modules_caelundas_symbol_caelundas_constants_ts
+  file_caelundas_src_modules_monthly_lunar_cycle_monthly_lunar_cycle_service_unit_test_ts --> file_caelundas_src_modules_calendar_calendar_service_ts
+  file_caelundas_src_modules_monthly_lunar_cycle_monthly_lunar_cycle_service_unit_test_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_monthly_lunar_cycle_monthly_lunar_cycle_service_unit_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_module_ts
+  file_caelundas_src_modules_monthly_lunar_cycle_monthly_lunar_cycle_service_unit_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_types_ts
+  file_caelundas_src_modules_monthly_lunar_cycle_monthly_lunar_cycle_service_unit_test_ts --> file_caelundas_src_modules_math_math_service_ts
+  file_caelundas_src_modules_monthly_lunar_cycle_monthly_lunar_cycle_service_unit_test_ts --> file_caelundas_src_modules_monthly_lunar_cycle_monthly_lunar_cycle_service_ts
+  file_caelundas_src_modules_perfective_perfective_module_ts --> file_caelundas_src_modules_annual_solar_cycle_annual_solar_cycle_module_ts
+  file_caelundas_src_modules_perfective_perfective_module_ts --> file_caelundas_src_modules_aspects_aspects_module_ts
+  file_caelundas_src_modules_perfective_perfective_module_ts --> file_caelundas_src_modules_daily_cycles_daily_cycles_module_ts
+  file_caelundas_src_modules_perfective_perfective_module_ts --> file_caelundas_src_modules_datetime_datetime_module_ts
+  file_caelundas_src_modules_perfective_perfective_module_ts --> file_caelundas_src_modules_eclipses_eclipses_module_ts
+  file_caelundas_src_modules_perfective_perfective_module_ts --> file_caelundas_src_modules_ephemeris_ephemeris_module_ts
+  file_caelundas_src_modules_perfective_perfective_module_ts --> file_caelundas_src_modules_ingresses_ingresses_module_ts
+  file_caelundas_src_modules_perfective_perfective_module_ts --> file_caelundas_src_modules_monthly_lunar_cycle_monthly_lunar_cycle_module_ts
+  file_caelundas_src_modules_perfective_perfective_module_ts --> file_caelundas_src_modules_perfective_perfective_service_ts
+  file_caelundas_src_modules_perfective_perfective_module_ts --> file_caelundas_src_modules_phases_phases_module_ts
+  file_caelundas_src_modules_perfective_perfective_module_ts --> file_caelundas_src_modules_retrogrades_retrogrades_module_ts
+  file_caelundas_src_modules_perfective_perfective_module_ts --> file_caelundas_src_modules_twilights_twilights_module_ts
+  file_caelundas_src_modules_perfective_perfective_service_ts --> file_caelundas_src_modules_annual_solar_cycle_annual_solar_cycle_service_ts
+  file_caelundas_src_modules_perfective_perfective_service_ts --> file_caelundas_src_modules_aspects_aspects_service_ts
+  file_caelundas_src_modules_perfective_perfective_service_ts --> file_caelundas_src_modules_aspects_aspects_types_ts
+  file_caelundas_src_modules_perfective_perfective_service_ts --> file_caelundas_src_modules_caelundas_caelundas_constants_ts
+  file_caelundas_src_modules_perfective_perfective_service_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_perfective_perfective_service_ts --> file_caelundas_src_modules_daily_cycles_daily_cycles_service_ts
+  file_caelundas_src_modules_perfective_perfective_service_ts --> file_caelundas_src_modules_datetime_datetime_service_ts
+  file_caelundas_src_modules_perfective_perfective_service_ts --> file_caelundas_src_modules_eclipses_eclipses_service_ts
+  file_caelundas_src_modules_perfective_perfective_service_ts --> file_caelundas_src_modules_ephemeris_ephemeris_service_ts
+  file_caelundas_src_modules_perfective_perfective_service_ts --> file_caelundas_src_modules_ephemeris_ephemeris_types_ts
+  file_caelundas_src_modules_perfective_perfective_service_ts --> file_caelundas_src_modules_ingresses_ingresses_service_ts
+  file_caelundas_src_modules_perfective_perfective_service_ts --> file_caelundas_src_modules_input_input_types_ts
+  file_caelundas_src_modules_perfective_perfective_service_ts --> file_caelundas_src_modules_monthly_lunar_cycle_monthly_lunar_cycle_service_ts
+  file_caelundas_src_modules_perfective_perfective_service_ts --> file_caelundas_src_modules_phases_phases_service_ts
+  file_caelundas_src_modules_perfective_perfective_service_ts --> file_caelundas_src_modules_retrogrades_retrogrades_service_ts
+  file_caelundas_src_modules_perfective_perfective_service_ts --> file_caelundas_src_modules_twilights_twilights_service_ts
+  file_caelundas_src_modules_perfective_perfective_service_unit_test_ts --> file_caelundas_src_modules_annual_solar_cycle_annual_solar_cycle_service_ts
+  file_caelundas_src_modules_perfective_perfective_service_unit_test_ts --> file_caelundas_src_modules_aspects_aspects_service_ts
+  file_caelundas_src_modules_perfective_perfective_service_unit_test_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_perfective_perfective_service_unit_test_ts --> file_caelundas_src_modules_daily_cycles_daily_cycles_service_ts
+  file_caelundas_src_modules_perfective_perfective_service_unit_test_ts --> file_caelundas_src_modules_datetime_datetime_service_ts
+  file_caelundas_src_modules_perfective_perfective_service_unit_test_ts --> file_caelundas_src_modules_eclipses_eclipses_service_ts
+  file_caelundas_src_modules_perfective_perfective_service_unit_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_service_ts
+  file_caelundas_src_modules_perfective_perfective_service_unit_test_ts --> file_caelundas_src_modules_ingresses_ingresses_service_ts
+  file_caelundas_src_modules_perfective_perfective_service_unit_test_ts --> file_caelundas_src_modules_input_input_types_ts
+  file_caelundas_src_modules_perfective_perfective_service_unit_test_ts --> file_caelundas_src_modules_monthly_lunar_cycle_monthly_lunar_cycle_service_ts
+  file_caelundas_src_modules_perfective_perfective_service_unit_test_ts --> file_caelundas_src_modules_perfective_perfective_service_ts
+  file_caelundas_src_modules_perfective_perfective_service_unit_test_ts --> file_caelundas_src_modules_phases_phases_service_ts
+  file_caelundas_src_modules_perfective_perfective_service_unit_test_ts --> file_caelundas_src_modules_phases_phases_types_ts
+  file_caelundas_src_modules_perfective_perfective_service_unit_test_ts --> file_caelundas_src_modules_retrogrades_retrogrades_service_ts
+  file_caelundas_src_modules_perfective_perfective_service_unit_test_ts --> file_caelundas_src_modules_twilights_twilights_service_ts
+  file_caelundas_src_modules_perfective_perfective_types_ts --> file_caelundas_src_modules_aspects_aspects_types_ts
+  file_caelundas_src_modules_phases_martian_phase_service_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_phases_martian_phase_service_ts --> file_caelundas_src_modules_caelundas_symbol_caelundas_constants_ts
+  file_caelundas_src_modules_phases_martian_phase_service_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_phases_martian_phase_service_ts --> file_caelundas_src_modules_phases_phase_calculation_service_ts
+  file_caelundas_src_modules_phases_martian_phase_service_ts --> file_caelundas_src_modules_phases_phases_constants_ts
+  file_caelundas_src_modules_phases_martian_phase_service_ts --> file_caelundas_src_modules_phases_phases_types_ts
+  file_caelundas_src_modules_phases_martian_phase_service_ts --> file_caelundas_src_modules_progressive_progressive_utilities_service_ts
+  file_caelundas_src_modules_phases_martian_phase_service_unit_test_ts --> file_caelundas_src_modules_caelundas_symbol_caelundas_constants_ts
+  file_caelundas_src_modules_phases_martian_phase_service_unit_test_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_phases_martian_phase_service_unit_test_ts --> file_caelundas_src_modules_phases_martian_phase_service_ts
+  file_caelundas_src_modules_phases_martian_phase_service_unit_test_ts --> file_caelundas_src_modules_phases_phase_calculation_service_ts
+  file_caelundas_src_modules_phases_martian_phase_service_unit_test_ts --> file_caelundas_src_modules_phases_phases_constants_ts
+  file_caelundas_src_modules_phases_martian_phase_service_unit_test_ts --> file_caelundas_src_modules_phases_phases_types_ts
+  file_caelundas_src_modules_phases_martian_phase_service_unit_test_ts --> file_caelundas_src_modules_progressive_progressive_utilities_service_ts
+  file_caelundas_src_modules_phases_mercurian_phase_service_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_phases_mercurian_phase_service_ts --> file_caelundas_src_modules_caelundas_symbol_caelundas_constants_ts
+  file_caelundas_src_modules_phases_mercurian_phase_service_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_phases_mercurian_phase_service_ts --> file_caelundas_src_modules_phases_phase_calculation_service_ts
+  file_caelundas_src_modules_phases_mercurian_phase_service_ts --> file_caelundas_src_modules_phases_phases_constants_ts
+  file_caelundas_src_modules_phases_mercurian_phase_service_ts --> file_caelundas_src_modules_phases_phases_types_ts
+  file_caelundas_src_modules_phases_mercurian_phase_service_ts --> file_caelundas_src_modules_progressive_progressive_utilities_service_ts
+  file_caelundas_src_modules_phases_mercurian_phase_service_unit_test_ts --> file_caelundas_src_modules_caelundas_symbol_caelundas_constants_ts
+  file_caelundas_src_modules_phases_mercurian_phase_service_unit_test_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_phases_mercurian_phase_service_unit_test_ts --> file_caelundas_src_modules_phases_mercurian_phase_service_ts
+  file_caelundas_src_modules_phases_mercurian_phase_service_unit_test_ts --> file_caelundas_src_modules_phases_phase_calculation_service_ts
+  file_caelundas_src_modules_phases_mercurian_phase_service_unit_test_ts --> file_caelundas_src_modules_phases_phases_constants_ts
+  file_caelundas_src_modules_phases_mercurian_phase_service_unit_test_ts --> file_caelundas_src_modules_phases_phases_types_ts
+  file_caelundas_src_modules_phases_mercurian_phase_service_unit_test_ts --> file_caelundas_src_modules_progressive_progressive_utilities_service_ts
+  file_caelundas_src_modules_phases_phase_calculation_service_ts --> file_caelundas_src_modules_caelundas_caelundas_constants_ts
+  file_caelundas_src_modules_phases_phase_calculation_service_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_phases_phase_calculation_service_ts --> file_caelundas_src_modules_ephemeris_ephemeris_service_ts
+  file_caelundas_src_modules_phases_phase_calculation_service_ts --> file_caelundas_src_modules_math_math_service_ts
+  file_caelundas_src_modules_phases_phase_calculation_service_ts --> file_caelundas_src_modules_phases_phases_types_ts
+  file_caelundas_src_modules_phases_phase_calculation_service_ts --> file_caelundas_src_modules_twilights_twilights_service_ts
+  file_caelundas_src_modules_phases_phase_calculation_service_unit_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_service_ts
+  file_caelundas_src_modules_phases_phase_calculation_service_unit_test_ts --> file_caelundas_src_modules_math_math_service_ts
+  file_caelundas_src_modules_phases_phase_calculation_service_unit_test_ts --> file_caelundas_src_modules_phases_phase_calculation_service_ts
+  file_caelundas_src_modules_phases_phases_module_ts --> file_caelundas_src_modules_ephemeris_ephemeris_module_ts
+  file_caelundas_src_modules_phases_phases_module_ts --> file_caelundas_src_modules_math_math_module_ts
+  file_caelundas_src_modules_phases_phases_module_ts --> file_caelundas_src_modules_phases_martian_phase_service_ts
+  file_caelundas_src_modules_phases_phases_module_ts --> file_caelundas_src_modules_phases_mercurian_phase_service_ts
+  file_caelundas_src_modules_phases_phases_module_ts --> file_caelundas_src_modules_phases_phase_calculation_service_ts
+  file_caelundas_src_modules_phases_phases_module_ts --> file_caelundas_src_modules_phases_phases_service_ts
+  file_caelundas_src_modules_phases_phases_module_ts --> file_caelundas_src_modules_phases_venusian_phase_service_ts
+  file_caelundas_src_modules_phases_phases_module_ts --> file_caelundas_src_modules_progressive_progressive_utilities_module_ts
+  file_caelundas_src_modules_phases_phases_service_integration_test_ts --> file_caelundas_src_modules_caelundas_caelundas_constants_ts
+  file_caelundas_src_modules_phases_phases_service_integration_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_service_ts
+  file_caelundas_src_modules_phases_phases_service_integration_test_ts --> file_caelundas_src_modules_math_math_service_ts
+  file_caelundas_src_modules_phases_phases_service_integration_test_ts --> file_caelundas_src_modules_phases_martian_phase_service_ts
+  file_caelundas_src_modules_phases_phases_service_integration_test_ts --> file_caelundas_src_modules_phases_mercurian_phase_service_ts
+  file_caelundas_src_modules_phases_phases_service_integration_test_ts --> file_caelundas_src_modules_phases_phase_calculation_service_ts
+  file_caelundas_src_modules_phases_phases_service_integration_test_ts --> file_caelundas_src_modules_phases_phases_service_ts
+  file_caelundas_src_modules_phases_phases_service_integration_test_ts --> file_caelundas_src_modules_phases_venusian_phase_service_ts
+  file_caelundas_src_modules_phases_phases_service_integration_test_ts --> file_caelundas_src_modules_progressive_progressive_utilities_service_ts
+  file_caelundas_src_modules_phases_phases_service_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_phases_phases_service_ts --> file_caelundas_src_modules_phases_martian_phase_service_ts
+  file_caelundas_src_modules_phases_phases_service_ts --> file_caelundas_src_modules_phases_mercurian_phase_service_ts
+  file_caelundas_src_modules_phases_phases_service_ts --> file_caelundas_src_modules_phases_phases_constants_ts
+  file_caelundas_src_modules_phases_phases_service_ts --> file_caelundas_src_modules_phases_phases_types_ts
+  file_caelundas_src_modules_phases_phases_service_ts --> file_caelundas_src_modules_phases_venusian_phase_service_ts
+  file_caelundas_src_modules_phases_phases_service_unit_test_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_phases_phases_service_unit_test_ts --> file_caelundas_src_modules_phases_martian_phase_service_ts
+  file_caelundas_src_modules_phases_phases_service_unit_test_ts --> file_caelundas_src_modules_phases_mercurian_phase_service_ts
+  file_caelundas_src_modules_phases_phases_service_unit_test_ts --> file_caelundas_src_modules_phases_phases_service_ts
+  file_caelundas_src_modules_phases_phases_service_unit_test_ts --> file_caelundas_src_modules_phases_phases_types_ts
+  file_caelundas_src_modules_phases_phases_service_unit_test_ts --> file_caelundas_src_modules_phases_venusian_phase_service_ts
+  file_caelundas_src_modules_phases_phases_types_ts --> file_caelundas_src_modules_ephemeris_ephemeris_types_ts
+  file_caelundas_src_modules_phases_venusian_phase_service_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_phases_venusian_phase_service_ts --> file_caelundas_src_modules_caelundas_symbol_caelundas_constants_ts
+  file_caelundas_src_modules_phases_venusian_phase_service_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_phases_venusian_phase_service_ts --> file_caelundas_src_modules_phases_phase_calculation_service_ts
+  file_caelundas_src_modules_phases_venusian_phase_service_ts --> file_caelundas_src_modules_phases_phases_constants_ts
+  file_caelundas_src_modules_phases_venusian_phase_service_ts --> file_caelundas_src_modules_phases_phases_types_ts
+  file_caelundas_src_modules_phases_venusian_phase_service_ts --> file_caelundas_src_modules_progressive_progressive_utilities_service_ts
+  file_caelundas_src_modules_phases_venusian_phase_service_unit_test_ts --> file_caelundas_src_modules_caelundas_symbol_caelundas_constants_ts
+  file_caelundas_src_modules_phases_venusian_phase_service_unit_test_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_phases_venusian_phase_service_unit_test_ts --> file_caelundas_src_modules_phases_phase_calculation_service_ts
+  file_caelundas_src_modules_phases_venusian_phase_service_unit_test_ts --> file_caelundas_src_modules_phases_phases_constants_ts
+  file_caelundas_src_modules_phases_venusian_phase_service_unit_test_ts --> file_caelundas_src_modules_phases_phases_types_ts
+  file_caelundas_src_modules_phases_venusian_phase_service_unit_test_ts --> file_caelundas_src_modules_phases_venusian_phase_service_ts
+  file_caelundas_src_modules_phases_venusian_phase_service_unit_test_ts --> file_caelundas_src_modules_progressive_progressive_utilities_service_ts
+  file_caelundas_src_modules_progressive_progressive_aspect_service_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_progressive_progressive_aspect_service_ts --> file_caelundas_src_modules_progressive_progressive_types_ts
+  file_caelundas_src_modules_progressive_progressive_aspect_service_unit_test_ts --> file_caelundas_src_modules_progressive_progressive_aspect_service_ts
+  file_caelundas_src_modules_progressive_progressive_utilities_module_ts --> file_caelundas_src_modules_progressive_progressive_aspect_service_ts
+  file_caelundas_src_modules_progressive_progressive_utilities_module_ts --> file_caelundas_src_modules_progressive_progressive_utilities_service_ts
+  file_caelundas_src_modules_progressive_progressive_utilities_service_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_progressive_progressive_utilities_service_unit_test_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_progressive_progressive_utilities_service_unit_test_ts --> file_caelundas_src_modules_progressive_progressive_utilities_service_ts
+  file_caelundas_src_modules_progressive_progressive_module_ts --> file_caelundas_src_modules_annual_solar_cycle_annual_solar_cycle_module_ts
+  file_caelundas_src_modules_progressive_progressive_module_ts --> file_caelundas_src_modules_aspects_aspects_module_ts
+  file_caelundas_src_modules_progressive_progressive_module_ts --> file_caelundas_src_modules_eclipses_eclipses_module_ts
+  file_caelundas_src_modules_progressive_progressive_module_ts --> file_caelundas_src_modules_ingresses_ingresses_module_ts
+  file_caelundas_src_modules_progressive_progressive_module_ts --> file_caelundas_src_modules_monthly_lunar_cycle_monthly_lunar_cycle_module_ts
+  file_caelundas_src_modules_progressive_progressive_module_ts --> file_caelundas_src_modules_phases_phases_module_ts
+  file_caelundas_src_modules_progressive_progressive_module_ts --> file_caelundas_src_modules_progressive_progressive_service_ts
+  file_caelundas_src_modules_progressive_progressive_module_ts --> file_caelundas_src_modules_retrogrades_retrogrades_module_ts
+  file_caelundas_src_modules_progressive_progressive_module_ts --> file_caelundas_src_modules_twilights_twilights_module_ts
+  file_caelundas_src_modules_progressive_progressive_service_ts --> file_caelundas_src_modules_annual_solar_cycle_annual_solar_cycle_service_ts
+  file_caelundas_src_modules_progressive_progressive_service_ts --> file_caelundas_src_modules_aspects_aspects_service_ts
+  file_caelundas_src_modules_progressive_progressive_service_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_progressive_progressive_service_ts --> file_caelundas_src_modules_eclipses_eclipses_service_ts
+  file_caelundas_src_modules_progressive_progressive_service_ts --> file_caelundas_src_modules_ingresses_ingresses_service_ts
+  file_caelundas_src_modules_progressive_progressive_service_ts --> file_caelundas_src_modules_monthly_lunar_cycle_monthly_lunar_cycle_service_ts
+  file_caelundas_src_modules_progressive_progressive_service_ts --> file_caelundas_src_modules_phases_phases_service_ts
+  file_caelundas_src_modules_progressive_progressive_service_ts --> file_caelundas_src_modules_retrogrades_retrogrades_service_ts
+  file_caelundas_src_modules_progressive_progressive_service_ts --> file_caelundas_src_modules_twilights_twilights_service_ts
+  file_caelundas_src_modules_progressive_progressive_service_unit_test_ts --> file_caelundas_src_modules_annual_solar_cycle_annual_solar_cycle_service_ts
+  file_caelundas_src_modules_progressive_progressive_service_unit_test_ts --> file_caelundas_src_modules_aspects_aspects_service_ts
+  file_caelundas_src_modules_progressive_progressive_service_unit_test_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_progressive_progressive_service_unit_test_ts --> file_caelundas_src_modules_eclipses_eclipses_service_ts
+  file_caelundas_src_modules_progressive_progressive_service_unit_test_ts --> file_caelundas_src_modules_ingresses_ingresses_service_ts
+  file_caelundas_src_modules_progressive_progressive_service_unit_test_ts --> file_caelundas_src_modules_monthly_lunar_cycle_monthly_lunar_cycle_service_ts
+  file_caelundas_src_modules_progressive_progressive_service_unit_test_ts --> file_caelundas_src_modules_phases_phases_service_ts
+  file_caelundas_src_modules_progressive_progressive_service_unit_test_ts --> file_caelundas_src_modules_progressive_progressive_utilities_service_ts
+  file_caelundas_src_modules_progressive_progressive_service_unit_test_ts --> file_caelundas_src_modules_progressive_progressive_service_ts
+  file_caelundas_src_modules_progressive_progressive_service_unit_test_ts --> file_caelundas_src_modules_retrogrades_retrogrades_service_ts
+  file_caelundas_src_modules_progressive_progressive_service_unit_test_ts --> file_caelundas_src_modules_twilights_twilights_service_ts
+  file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_base_service_ts --> file_caelundas_src_modules_aspects_aspect_graph_service_ts
+  file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_base_service_ts --> file_caelundas_src_modules_aspects_aspect_phase_emoji_service_ts
+  file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_base_service_ts --> file_caelundas_src_modules_aspects_aspects_types_ts
+  file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_base_service_ts --> file_caelundas_src_modules_caelundas_caelundas_constants_ts
+  file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_base_service_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_base_service_ts --> file_caelundas_src_modules_caelundas_symbol_caelundas_constants_ts
+  file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_base_service_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_base_service_ts --> file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_types_ts
+  file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_base_service_unit_test_ts --> file_caelundas_src_modules_aspects_aspect_graph_service_ts
+  file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_base_service_unit_test_ts --> file_caelundas_src_modules_aspects_aspect_phase_emoji_service_ts
+  file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_base_service_unit_test_ts --> file_caelundas_src_modules_aspects_aspects_types_ts
+  file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_base_service_unit_test_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_base_service_unit_test_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_base_service_unit_test_ts --> file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_base_service_ts
+  file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_composer_service_ts --> file_caelundas_src_modules_aspects_aspects_types_ts
+  file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_composer_service_ts --> file_caelundas_src_modules_aspects_compound_phase_service_ts
+  file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_composer_service_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_composer_service_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_composer_service_ts --> file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_base_service_ts
+  file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_composer_service_unit_test_ts --> file_caelundas_src_modules_aspects_aspect_graph_service_ts
+  file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_composer_service_unit_test_ts --> file_caelundas_src_modules_aspects_aspect_phase_emoji_service_ts
+  file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_composer_service_unit_test_ts --> file_caelundas_src_modules_aspects_aspects_types_ts
+  file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_composer_service_unit_test_ts --> file_caelundas_src_modules_aspects_compound_phase_service_ts
+  file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_composer_service_unit_test_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_composer_service_unit_test_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_composer_service_unit_test_ts --> file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_base_service_ts
+  file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_composer_service_unit_test_ts --> file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_composer_service_ts
+  file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_module_ts --> file_caelundas_src_modules_aspects_aspects_utilities_module_ts
+  file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_module_ts --> file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_base_service_ts
+  file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_module_ts --> file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_composer_service_ts
+  file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_module_ts --> file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_service_ts
+  file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_service_integration_test_ts --> file_caelundas_src_modules_aspects_aspect_graph_service_ts
+  file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_service_integration_test_ts --> file_caelundas_src_modules_aspects_aspect_phase_emoji_service_ts
+  file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_service_integration_test_ts --> file_caelundas_src_modules_aspects_aspects_types_ts
+  file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_service_integration_test_ts --> file_caelundas_src_modules_aspects_compound_phase_service_ts
+  file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_service_integration_test_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_service_integration_test_ts --> file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_base_service_ts
+  file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_service_integration_test_ts --> file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_composer_service_ts
+  file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_service_integration_test_ts --> file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_service_ts
+  file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_service_ts --> file_caelundas_src_modules_aspects_aspects_types_ts
+  file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_service_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_service_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_service_ts --> file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_base_service_ts
+  file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_service_ts --> file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_composer_service_ts
+  file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_service_unit_test_ts --> file_caelundas_src_modules_aspects_aspect_graph_service_ts
+  file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_service_unit_test_ts --> file_caelundas_src_modules_aspects_aspect_phase_emoji_service_ts
+  file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_service_unit_test_ts --> file_caelundas_src_modules_aspects_aspects_types_ts
+  file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_service_unit_test_ts --> file_caelundas_src_modules_aspects_compound_phase_service_ts
+  file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_service_unit_test_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_service_unit_test_ts --> file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_base_service_ts
+  file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_service_unit_test_ts --> file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_composer_service_ts
+  file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_service_unit_test_ts --> file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_service_ts
+  file_caelundas_src_modules_quadruple_aspects_quadruple_aspects_types_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_quintuple_aspects_quintuple_aspects_composer_service_ts --> file_caelundas_src_modules_aspects_aspect_phase_emoji_service_ts
+  file_caelundas_src_modules_quintuple_aspects_quintuple_aspects_composer_service_ts --> file_caelundas_src_modules_aspects_aspects_types_ts
+  file_caelundas_src_modules_quintuple_aspects_quintuple_aspects_composer_service_ts --> file_caelundas_src_modules_aspects_compound_phase_service_ts
+  file_caelundas_src_modules_quintuple_aspects_quintuple_aspects_composer_service_ts --> file_caelundas_src_modules_aspects_progressive_compound_event_service_ts
+  file_caelundas_src_modules_quintuple_aspects_quintuple_aspects_composer_service_ts --> file_caelundas_src_modules_caelundas_caelundas_constants_ts
+  file_caelundas_src_modules_quintuple_aspects_quintuple_aspects_composer_service_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_quintuple_aspects_quintuple_aspects_composer_service_ts --> file_caelundas_src_modules_caelundas_symbol_caelundas_constants_ts
+  file_caelundas_src_modules_quintuple_aspects_quintuple_aspects_composer_service_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_quintuple_aspects_quintuple_aspects_composer_service_ts --> file_caelundas_src_modules_math_math_service_ts
+  file_caelundas_src_modules_quintuple_aspects_quintuple_aspects_composer_service_ts --> file_caelundas_src_modules_quintuple_aspects_quintuple_aspects_types_ts
+  file_caelundas_src_modules_quintuple_aspects_quintuple_aspects_composer_service_unit_test_ts --> file_caelundas_src_modules_aspects_aspect_phase_emoji_service_ts
+  file_caelundas_src_modules_quintuple_aspects_quintuple_aspects_composer_service_unit_test_ts --> file_caelundas_src_modules_aspects_compound_phase_service_ts
+  file_caelundas_src_modules_quintuple_aspects_quintuple_aspects_composer_service_unit_test_ts --> file_caelundas_src_modules_aspects_progressive_compound_event_service_ts
+  file_caelundas_src_modules_quintuple_aspects_quintuple_aspects_composer_service_unit_test_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_quintuple_aspects_quintuple_aspects_composer_service_unit_test_ts --> file_caelundas_src_modules_math_math_service_ts
+  file_caelundas_src_modules_quintuple_aspects_quintuple_aspects_composer_service_unit_test_ts --> file_caelundas_src_modules_quintuple_aspects_quintuple_aspects_composer_service_ts
+  file_caelundas_src_modules_quintuple_aspects_quintuple_aspects_module_ts --> file_caelundas_src_modules_aspects_aspects_utilities_module_ts
+  file_caelundas_src_modules_quintuple_aspects_quintuple_aspects_module_ts --> file_caelundas_src_modules_math_math_module_ts
+  file_caelundas_src_modules_quintuple_aspects_quintuple_aspects_module_ts --> file_caelundas_src_modules_quintuple_aspects_quintuple_aspects_composer_service_ts
+  file_caelundas_src_modules_quintuple_aspects_quintuple_aspects_module_ts --> file_caelundas_src_modules_quintuple_aspects_quintuple_aspects_service_ts
+  file_caelundas_src_modules_quintuple_aspects_quintuple_aspects_service_integration_test_ts --> file_caelundas_src_modules_aspects_aspect_phase_emoji_service_ts
+  file_caelundas_src_modules_quintuple_aspects_quintuple_aspects_service_integration_test_ts --> file_caelundas_src_modules_aspects_aspects_types_ts
+  file_caelundas_src_modules_quintuple_aspects_quintuple_aspects_service_integration_test_ts --> file_caelundas_src_modules_aspects_compound_phase_service_ts
+  file_caelundas_src_modules_quintuple_aspects_quintuple_aspects_service_integration_test_ts --> file_caelundas_src_modules_aspects_progressive_compound_event_service_ts
+  file_caelundas_src_modules_quintuple_aspects_quintuple_aspects_service_integration_test_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_quintuple_aspects_quintuple_aspects_service_integration_test_ts --> file_caelundas_src_modules_math_math_service_ts
+  file_caelundas_src_modules_quintuple_aspects_quintuple_aspects_service_integration_test_ts --> file_caelundas_src_modules_quintuple_aspects_quintuple_aspects_composer_service_ts
+  file_caelundas_src_modules_quintuple_aspects_quintuple_aspects_service_integration_test_ts --> file_caelundas_src_modules_quintuple_aspects_quintuple_aspects_service_ts
+  file_caelundas_src_modules_quintuple_aspects_quintuple_aspects_service_ts --> file_caelundas_src_modules_aspects_aspects_types_ts
+  file_caelundas_src_modules_quintuple_aspects_quintuple_aspects_service_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_quintuple_aspects_quintuple_aspects_service_ts --> file_caelundas_src_modules_quintuple_aspects_quintuple_aspects_composer_service_ts
+  file_caelundas_src_modules_quintuple_aspects_quintuple_aspects_service_unit_test_ts --> file_caelundas_src_modules_aspects_aspect_phase_emoji_service_ts
+  file_caelundas_src_modules_quintuple_aspects_quintuple_aspects_service_unit_test_ts --> file_caelundas_src_modules_aspects_aspects_types_ts
+  file_caelundas_src_modules_quintuple_aspects_quintuple_aspects_service_unit_test_ts --> file_caelundas_src_modules_aspects_compound_phase_service_ts
+  file_caelundas_src_modules_quintuple_aspects_quintuple_aspects_service_unit_test_ts --> file_caelundas_src_modules_aspects_progressive_compound_event_service_ts
+  file_caelundas_src_modules_quintuple_aspects_quintuple_aspects_service_unit_test_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_quintuple_aspects_quintuple_aspects_service_unit_test_ts --> file_caelundas_src_modules_math_math_service_ts
+  file_caelundas_src_modules_quintuple_aspects_quintuple_aspects_service_unit_test_ts --> file_caelundas_src_modules_quintuple_aspects_quintuple_aspects_composer_service_ts
+  file_caelundas_src_modules_quintuple_aspects_quintuple_aspects_service_unit_test_ts --> file_caelundas_src_modules_quintuple_aspects_quintuple_aspects_service_ts
+  file_caelundas_src_modules_quintuple_aspects_quintuple_aspects_types_ts --> file_caelundas_src_modules_aspects_aspects_types_ts
+  file_caelundas_src_modules_quintuple_aspects_quintuple_aspects_types_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_retrogrades_retrogrades_module_ts --> file_caelundas_src_modules_ephemeris_ephemeris_module_ts
+  file_caelundas_src_modules_retrogrades_retrogrades_module_ts --> file_caelundas_src_modules_math_math_module_ts
+  file_caelundas_src_modules_retrogrades_retrogrades_module_ts --> file_caelundas_src_modules_progressive_progressive_utilities_module_ts
+  file_caelundas_src_modules_retrogrades_retrogrades_module_ts --> file_caelundas_src_modules_retrogrades_retrogrades_service_ts
+  file_caelundas_src_modules_retrogrades_retrogrades_service_integration_test_ts --> file_caelundas_src_modules_caelundas_caelundas_constants_ts
+  file_caelundas_src_modules_retrogrades_retrogrades_service_integration_test_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_retrogrades_retrogrades_service_integration_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_module_ts
+  file_caelundas_src_modules_retrogrades_retrogrades_service_integration_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_types_ts
+  file_caelundas_src_modules_retrogrades_retrogrades_service_integration_test_ts --> file_caelundas_src_modules_math_math_service_ts
+  file_caelundas_src_modules_retrogrades_retrogrades_service_integration_test_ts --> file_caelundas_src_modules_progressive_progressive_utilities_service_ts
+  file_caelundas_src_modules_retrogrades_retrogrades_service_integration_test_ts --> file_caelundas_src_modules_retrogrades_retrogrades_service_ts
+  file_caelundas_src_modules_retrogrades_retrogrades_service_ts --> file_caelundas_src_modules_caelundas_caelundas_constants_ts
+  file_caelundas_src_modules_retrogrades_retrogrades_service_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_retrogrades_retrogrades_service_ts --> file_caelundas_src_modules_caelundas_symbol_caelundas_constants_ts
+  file_caelundas_src_modules_retrogrades_retrogrades_service_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_retrogrades_retrogrades_service_ts --> file_caelundas_src_modules_ephemeris_ephemeris_service_ts
+  file_caelundas_src_modules_retrogrades_retrogrades_service_ts --> file_caelundas_src_modules_ephemeris_ephemeris_types_ts
+  file_caelundas_src_modules_retrogrades_retrogrades_service_ts --> file_caelundas_src_modules_math_math_service_ts
+  file_caelundas_src_modules_retrogrades_retrogrades_service_ts --> file_caelundas_src_modules_progressive_progressive_utilities_service_ts
+  file_caelundas_src_modules_retrogrades_retrogrades_service_unit_test_ts --> file_caelundas_src_modules_caelundas_caelundas_constants_ts
+  file_caelundas_src_modules_retrogrades_retrogrades_service_unit_test_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_retrogrades_retrogrades_service_unit_test_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_retrogrades_retrogrades_service_unit_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_module_ts
+  file_caelundas_src_modules_retrogrades_retrogrades_service_unit_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_types_ts
+  file_caelundas_src_modules_retrogrades_retrogrades_service_unit_test_ts --> file_caelundas_src_modules_math_math_service_ts
+  file_caelundas_src_modules_retrogrades_retrogrades_service_unit_test_ts --> file_caelundas_src_modules_progressive_progressive_utilities_service_ts
+  file_caelundas_src_modules_retrogrades_retrogrades_service_unit_test_ts --> file_caelundas_src_modules_retrogrades_retrogrades_service_ts
+  file_caelundas_src_modules_sextuple_aspects_sextuple_aspects_composer_service_ts --> file_caelundas_src_modules_aspects_aspect_phase_emoji_service_ts
+  file_caelundas_src_modules_sextuple_aspects_sextuple_aspects_composer_service_ts --> file_caelundas_src_modules_aspects_aspects_types_ts
+  file_caelundas_src_modules_sextuple_aspects_sextuple_aspects_composer_service_ts --> file_caelundas_src_modules_aspects_progressive_compound_event_service_ts
+  file_caelundas_src_modules_sextuple_aspects_sextuple_aspects_composer_service_ts --> file_caelundas_src_modules_caelundas_caelundas_constants_ts
+  file_caelundas_src_modules_sextuple_aspects_sextuple_aspects_composer_service_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_sextuple_aspects_sextuple_aspects_composer_service_ts --> file_caelundas_src_modules_caelundas_symbol_caelundas_constants_ts
+  file_caelundas_src_modules_sextuple_aspects_sextuple_aspects_composer_service_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_sextuple_aspects_sextuple_aspects_composer_service_ts --> file_caelundas_src_modules_sextuple_aspects_sextuple_aspects_types_ts
+  file_caelundas_src_modules_sextuple_aspects_sextuple_aspects_composer_service_unit_test_ts --> file_caelundas_src_modules_aspects_aspect_phase_emoji_service_ts
+  file_caelundas_src_modules_sextuple_aspects_sextuple_aspects_composer_service_unit_test_ts --> file_caelundas_src_modules_aspects_progressive_compound_event_service_ts
+  file_caelundas_src_modules_sextuple_aspects_sextuple_aspects_composer_service_unit_test_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_sextuple_aspects_sextuple_aspects_composer_service_unit_test_ts --> file_caelundas_src_modules_sextuple_aspects_sextuple_aspects_composer_service_ts
+  file_caelundas_src_modules_sextuple_aspects_sextuple_aspects_module_ts --> file_caelundas_src_modules_aspects_aspects_utilities_module_ts
+  file_caelundas_src_modules_sextuple_aspects_sextuple_aspects_module_ts --> file_caelundas_src_modules_math_math_module_ts
+  file_caelundas_src_modules_sextuple_aspects_sextuple_aspects_module_ts --> file_caelundas_src_modules_sextuple_aspects_sextuple_aspects_composer_service_ts
+  file_caelundas_src_modules_sextuple_aspects_sextuple_aspects_module_ts --> file_caelundas_src_modules_sextuple_aspects_sextuple_aspects_service_ts
+  file_caelundas_src_modules_sextuple_aspects_sextuple_aspects_service_integration_test_ts --> file_caelundas_src_modules_aspects_aspect_phase_emoji_service_ts
+  file_caelundas_src_modules_sextuple_aspects_sextuple_aspects_service_integration_test_ts --> file_caelundas_src_modules_aspects_aspects_types_ts
+  file_caelundas_src_modules_sextuple_aspects_sextuple_aspects_service_integration_test_ts --> file_caelundas_src_modules_aspects_compound_phase_service_ts
+  file_caelundas_src_modules_sextuple_aspects_sextuple_aspects_service_integration_test_ts --> file_caelundas_src_modules_aspects_progressive_compound_event_service_ts
+  file_caelundas_src_modules_sextuple_aspects_sextuple_aspects_service_integration_test_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_sextuple_aspects_sextuple_aspects_service_integration_test_ts --> file_caelundas_src_modules_math_math_service_ts
+  file_caelundas_src_modules_sextuple_aspects_sextuple_aspects_service_integration_test_ts --> file_caelundas_src_modules_sextuple_aspects_sextuple_aspects_composer_service_ts
+  file_caelundas_src_modules_sextuple_aspects_sextuple_aspects_service_integration_test_ts --> file_caelundas_src_modules_sextuple_aspects_sextuple_aspects_service_ts
+  file_caelundas_src_modules_sextuple_aspects_sextuple_aspects_service_ts --> file_caelundas_src_modules_aspects_aspects_types_ts
+  file_caelundas_src_modules_sextuple_aspects_sextuple_aspects_service_ts --> file_caelundas_src_modules_aspects_compound_phase_service_ts
+  file_caelundas_src_modules_sextuple_aspects_sextuple_aspects_service_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_sextuple_aspects_sextuple_aspects_service_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_sextuple_aspects_sextuple_aspects_service_ts --> file_caelundas_src_modules_math_math_service_ts
+  file_caelundas_src_modules_sextuple_aspects_sextuple_aspects_service_ts --> file_caelundas_src_modules_sextuple_aspects_sextuple_aspects_composer_service_ts
+  file_caelundas_src_modules_sextuple_aspects_sextuple_aspects_service_ts --> file_caelundas_src_modules_sextuple_aspects_sextuple_aspects_types_ts
+  file_caelundas_src_modules_sextuple_aspects_sextuple_aspects_service_unit_test_ts --> file_caelundas_src_modules_aspects_aspect_phase_emoji_service_ts
+  file_caelundas_src_modules_sextuple_aspects_sextuple_aspects_service_unit_test_ts --> file_caelundas_src_modules_aspects_aspects_types_ts
+  file_caelundas_src_modules_sextuple_aspects_sextuple_aspects_service_unit_test_ts --> file_caelundas_src_modules_aspects_compound_phase_service_ts
+  file_caelundas_src_modules_sextuple_aspects_sextuple_aspects_service_unit_test_ts --> file_caelundas_src_modules_aspects_progressive_compound_event_service_ts
+  file_caelundas_src_modules_sextuple_aspects_sextuple_aspects_service_unit_test_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_sextuple_aspects_sextuple_aspects_service_unit_test_ts --> file_caelundas_src_modules_math_math_service_ts
+  file_caelundas_src_modules_sextuple_aspects_sextuple_aspects_service_unit_test_ts --> file_caelundas_src_modules_sextuple_aspects_sextuple_aspects_composer_service_ts
+  file_caelundas_src_modules_sextuple_aspects_sextuple_aspects_service_unit_test_ts --> file_caelundas_src_modules_sextuple_aspects_sextuple_aspects_service_ts
+  file_caelundas_src_modules_sextuple_aspects_sextuple_aspects_types_ts --> file_caelundas_src_modules_aspects_aspects_types_ts
+  file_caelundas_src_modules_sextuple_aspects_sextuple_aspects_types_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_specialty_aspects_specialty_aspects_composer_service_ts --> file_caelundas_src_modules_caelundas_caelundas_constants_ts
+  file_caelundas_src_modules_specialty_aspects_specialty_aspects_composer_service_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_specialty_aspects_specialty_aspects_composer_service_ts --> file_caelundas_src_modules_caelundas_symbol_caelundas_constants_ts
+  file_caelundas_src_modules_specialty_aspects_specialty_aspects_composer_service_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_specialty_aspects_specialty_aspects_composer_service_ts --> file_caelundas_src_modules_ephemeris_ephemeris_service_ts
+  file_caelundas_src_modules_specialty_aspects_specialty_aspects_composer_service_ts --> file_caelundas_src_modules_ephemeris_ephemeris_types_ts
+  file_caelundas_src_modules_specialty_aspects_specialty_aspects_composer_service_unit_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_service_ts
+  file_caelundas_src_modules_specialty_aspects_specialty_aspects_composer_service_unit_test_ts --> file_caelundas_src_modules_specialty_aspects_specialty_aspects_composer_service_ts
+  file_caelundas_src_modules_specialty_aspects_specialty_aspects_event_service_ts --> file_caelundas_src_modules_aspects_aspect_event_formatting_service_ts
+  file_caelundas_src_modules_specialty_aspects_specialty_aspects_event_service_ts --> file_caelundas_src_modules_aspects_aspects_utilities_service_ts
+  file_caelundas_src_modules_specialty_aspects_specialty_aspects_event_service_ts --> file_caelundas_src_modules_caelundas_caelundas_constants_ts
+  file_caelundas_src_modules_specialty_aspects_specialty_aspects_event_service_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_specialty_aspects_specialty_aspects_event_service_ts --> file_caelundas_src_modules_caelundas_symbol_caelundas_constants_ts
+  file_caelundas_src_modules_specialty_aspects_specialty_aspects_event_service_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_specialty_aspects_specialty_aspects_event_service_ts --> file_caelundas_src_modules_ephemeris_ephemeris_service_ts
+  file_caelundas_src_modules_specialty_aspects_specialty_aspects_event_service_ts --> file_caelundas_src_modules_ephemeris_ephemeris_types_ts
+  file_caelundas_src_modules_specialty_aspects_specialty_aspects_event_service_unit_test_ts --> file_caelundas_src_modules_aspects_aspect_event_formatting_service_ts
+  file_caelundas_src_modules_specialty_aspects_specialty_aspects_event_service_unit_test_ts --> file_caelundas_src_modules_aspects_aspects_utilities_service_ts
+  file_caelundas_src_modules_specialty_aspects_specialty_aspects_event_service_unit_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_service_ts
+  file_caelundas_src_modules_specialty_aspects_specialty_aspects_event_service_unit_test_ts --> file_caelundas_src_modules_specialty_aspects_specialty_aspects_event_service_ts
+  file_caelundas_src_modules_specialty_aspects_specialty_aspects_progressive_service_ts --> file_caelundas_src_modules_caelundas_caelundas_constants_ts
+  file_caelundas_src_modules_specialty_aspects_specialty_aspects_progressive_service_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_specialty_aspects_specialty_aspects_progressive_service_ts --> file_caelundas_src_modules_caelundas_symbol_caelundas_constants_ts
+  file_caelundas_src_modules_specialty_aspects_specialty_aspects_progressive_service_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_specialty_aspects_specialty_aspects_progressive_service_ts --> file_caelundas_src_modules_progressive_progressive_aspect_service_ts
+  file_caelundas_src_modules_specialty_aspects_specialty_aspects_progressive_service_ts --> file_caelundas_src_modules_progressive_progressive_utilities_service_ts
+  file_caelundas_src_modules_specialty_aspects_specialty_aspects_progressive_service_unit_test_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_specialty_aspects_specialty_aspects_progressive_service_unit_test_ts --> file_caelundas_src_modules_progressive_progressive_aspect_service_ts
+  file_caelundas_src_modules_specialty_aspects_specialty_aspects_progressive_service_unit_test_ts --> file_caelundas_src_modules_progressive_progressive_utilities_service_ts
+  file_caelundas_src_modules_specialty_aspects_specialty_aspects_progressive_service_unit_test_ts --> file_caelundas_src_modules_specialty_aspects_specialty_aspects_progressive_service_ts
+  file_caelundas_src_modules_specialty_aspects_specialty_aspects_module_ts --> file_caelundas_src_modules_aspects_aspects_utilities_module_ts
+  file_caelundas_src_modules_specialty_aspects_specialty_aspects_module_ts --> file_caelundas_src_modules_ephemeris_ephemeris_module_ts
+  file_caelundas_src_modules_specialty_aspects_specialty_aspects_module_ts --> file_caelundas_src_modules_progressive_progressive_utilities_module_ts
+  file_caelundas_src_modules_specialty_aspects_specialty_aspects_module_ts --> file_caelundas_src_modules_specialty_aspects_specialty_aspects_event_service_ts
+  file_caelundas_src_modules_specialty_aspects_specialty_aspects_module_ts --> file_caelundas_src_modules_specialty_aspects_specialty_aspects_progressive_service_ts
+  file_caelundas_src_modules_specialty_aspects_specialty_aspects_module_ts --> file_caelundas_src_modules_specialty_aspects_specialty_aspects_service_ts
+  file_caelundas_src_modules_specialty_aspects_specialty_aspects_service_ts --> file_caelundas_src_modules_aspects_aspects_utilities_service_ts
+  file_caelundas_src_modules_specialty_aspects_specialty_aspects_service_ts --> file_caelundas_src_modules_caelundas_caelundas_constants_ts
+  file_caelundas_src_modules_specialty_aspects_specialty_aspects_service_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_specialty_aspects_specialty_aspects_service_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_specialty_aspects_specialty_aspects_service_ts --> file_caelundas_src_modules_ephemeris_ephemeris_types_ts
+  file_caelundas_src_modules_specialty_aspects_specialty_aspects_service_ts --> file_caelundas_src_modules_specialty_aspects_specialty_aspects_event_service_ts
+  file_caelundas_src_modules_specialty_aspects_specialty_aspects_service_ts --> file_caelundas_src_modules_specialty_aspects_specialty_aspects_progressive_service_ts
+  file_caelundas_src_modules_specialty_aspects_specialty_aspects_service_ts --> file_caelundas_src_modules_specialty_aspects_specialty_aspects_types_ts
+  file_caelundas_src_modules_specialty_aspects_specialty_aspects_service_unit_test_ts --> file_caelundas_src_modules_aspects_aspect_event_formatting_service_ts
+  file_caelundas_src_modules_specialty_aspects_specialty_aspects_service_unit_test_ts --> file_caelundas_src_modules_aspects_aspects_utilities_service_ts
+  file_caelundas_src_modules_specialty_aspects_specialty_aspects_service_unit_test_ts --> file_caelundas_src_modules_caelundas_caelundas_constants_ts
+  file_caelundas_src_modules_specialty_aspects_specialty_aspects_service_unit_test_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_specialty_aspects_specialty_aspects_service_unit_test_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_specialty_aspects_specialty_aspects_service_unit_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_module_ts
+  file_caelundas_src_modules_specialty_aspects_specialty_aspects_service_unit_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_types_ts
+  file_caelundas_src_modules_specialty_aspects_specialty_aspects_service_unit_test_ts --> file_caelundas_src_modules_math_math_service_ts
+  file_caelundas_src_modules_specialty_aspects_specialty_aspects_service_unit_test_ts --> file_caelundas_src_modules_progressive_progressive_aspect_service_ts
+  file_caelundas_src_modules_specialty_aspects_specialty_aspects_service_unit_test_ts --> file_caelundas_src_modules_progressive_progressive_utilities_service_ts
+  file_caelundas_src_modules_specialty_aspects_specialty_aspects_service_unit_test_ts --> file_caelundas_src_modules_specialty_aspects_specialty_aspects_event_service_ts
+  file_caelundas_src_modules_specialty_aspects_specialty_aspects_service_unit_test_ts --> file_caelundas_src_modules_specialty_aspects_specialty_aspects_progressive_service_ts
+  file_caelundas_src_modules_specialty_aspects_specialty_aspects_service_unit_test_ts --> file_caelundas_src_modules_specialty_aspects_specialty_aspects_service_ts
+  file_caelundas_src_modules_stellium_stellium_module_ts --> file_caelundas_src_modules_aspects_aspects_utilities_module_ts
+  file_caelundas_src_modules_stellium_stellium_module_ts --> file_caelundas_src_modules_stellium_stellium_service_ts
+  file_caelundas_src_modules_stellium_stellium_service_ts --> file_caelundas_src_modules_aspects_aspect_graph_service_ts
+  file_caelundas_src_modules_stellium_stellium_service_ts --> file_caelundas_src_modules_aspects_aspects_types_ts
+  file_caelundas_src_modules_stellium_stellium_service_ts --> file_caelundas_src_modules_aspects_compound_phase_service_ts
+  file_caelundas_src_modules_stellium_stellium_service_ts --> file_caelundas_src_modules_aspects_progressive_compound_event_service_ts
+  file_caelundas_src_modules_stellium_stellium_service_ts --> file_caelundas_src_modules_caelundas_caelundas_constants_ts
+  file_caelundas_src_modules_stellium_stellium_service_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_stellium_stellium_service_ts --> file_caelundas_src_modules_caelundas_symbol_caelundas_constants_ts
+  file_caelundas_src_modules_stellium_stellium_service_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_stellium_stellium_service_unit_test_ts --> file_caelundas_src_modules_aspects_aspect_graph_service_ts
+  file_caelundas_src_modules_stellium_stellium_service_unit_test_ts --> file_caelundas_src_modules_aspects_aspects_types_ts
+  file_caelundas_src_modules_stellium_stellium_service_unit_test_ts --> file_caelundas_src_modules_aspects_compound_phase_service_ts
+  file_caelundas_src_modules_stellium_stellium_service_unit_test_ts --> file_caelundas_src_modules_aspects_progressive_compound_event_service_ts
+  file_caelundas_src_modules_stellium_stellium_service_unit_test_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_stellium_stellium_service_unit_test_ts --> file_caelundas_src_modules_stellium_stellium_service_ts
+  file_caelundas_src_modules_triple_aspects_triple_aspects_composer_service_ts --> file_caelundas_src_modules_aspects_aspect_graph_service_ts
+  file_caelundas_src_modules_triple_aspects_triple_aspects_composer_service_ts --> file_caelundas_src_modules_aspects_aspect_phase_emoji_service_ts
+  file_caelundas_src_modules_triple_aspects_triple_aspects_composer_service_ts --> file_caelundas_src_modules_aspects_aspects_types_ts
+  file_caelundas_src_modules_triple_aspects_triple_aspects_composer_service_ts --> file_caelundas_src_modules_caelundas_caelundas_constants_ts
+  file_caelundas_src_modules_triple_aspects_triple_aspects_composer_service_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_triple_aspects_triple_aspects_composer_service_ts --> file_caelundas_src_modules_caelundas_symbol_caelundas_constants_ts
+  file_caelundas_src_modules_triple_aspects_triple_aspects_composer_service_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_triple_aspects_triple_aspects_composer_service_ts --> file_caelundas_src_modules_triple_aspects_triple_aspects_types_ts
+  file_caelundas_src_modules_triple_aspects_triple_aspects_composer_service_unit_test_ts --> file_caelundas_src_modules_aspects_aspect_graph_service_ts
+  file_caelundas_src_modules_triple_aspects_triple_aspects_composer_service_unit_test_ts --> file_caelundas_src_modules_aspects_aspect_phase_emoji_service_ts
+  file_caelundas_src_modules_triple_aspects_triple_aspects_composer_service_unit_test_ts --> file_caelundas_src_modules_aspects_aspects_types_ts
+  file_caelundas_src_modules_triple_aspects_triple_aspects_composer_service_unit_test_ts --> file_caelundas_src_modules_aspects_compound_phase_service_ts
+  file_caelundas_src_modules_triple_aspects_triple_aspects_composer_service_unit_test_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_triple_aspects_triple_aspects_composer_service_unit_test_ts --> file_caelundas_src_modules_triple_aspects_triple_aspects_composer_service_ts
+  file_caelundas_src_modules_triple_aspects_triple_aspects_detector_service_ts --> file_caelundas_src_modules_aspects_aspect_graph_service_ts
+  file_caelundas_src_modules_triple_aspects_triple_aspects_detector_service_ts --> file_caelundas_src_modules_aspects_aspects_types_ts
+  file_caelundas_src_modules_triple_aspects_triple_aspects_detector_service_ts --> file_caelundas_src_modules_aspects_compound_phase_service_ts
+  file_caelundas_src_modules_triple_aspects_triple_aspects_detector_service_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_triple_aspects_triple_aspects_detector_service_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_triple_aspects_triple_aspects_detector_service_ts --> file_caelundas_src_modules_triple_aspects_triple_aspects_composer_service_ts
+  file_caelundas_src_modules_triple_aspects_triple_aspects_detector_service_unit_test_ts --> file_caelundas_src_modules_aspects_aspect_graph_service_ts
+  file_caelundas_src_modules_triple_aspects_triple_aspects_detector_service_unit_test_ts --> file_caelundas_src_modules_aspects_aspect_phase_emoji_service_ts
+  file_caelundas_src_modules_triple_aspects_triple_aspects_detector_service_unit_test_ts --> file_caelundas_src_modules_aspects_aspects_types_ts
+  file_caelundas_src_modules_triple_aspects_triple_aspects_detector_service_unit_test_ts --> file_caelundas_src_modules_aspects_compound_phase_service_ts
+  file_caelundas_src_modules_triple_aspects_triple_aspects_detector_service_unit_test_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_triple_aspects_triple_aspects_detector_service_unit_test_ts --> file_caelundas_src_modules_triple_aspects_triple_aspects_composer_service_ts
+  file_caelundas_src_modules_triple_aspects_triple_aspects_detector_service_unit_test_ts --> file_caelundas_src_modules_triple_aspects_triple_aspects_detector_service_ts
+  file_caelundas_src_modules_triple_aspects_triple_aspects_module_ts --> file_caelundas_src_modules_aspects_aspects_utilities_module_ts
+  file_caelundas_src_modules_triple_aspects_triple_aspects_module_ts --> file_caelundas_src_modules_triple_aspects_triple_aspects_composer_service_ts
+  file_caelundas_src_modules_triple_aspects_triple_aspects_module_ts --> file_caelundas_src_modules_triple_aspects_triple_aspects_detector_service_ts
+  file_caelundas_src_modules_triple_aspects_triple_aspects_module_ts --> file_caelundas_src_modules_triple_aspects_triple_aspects_service_ts
+  file_caelundas_src_modules_triple_aspects_triple_aspects_service_integration_test_ts --> file_caelundas_src_modules_aspects_aspect_graph_service_ts
+  file_caelundas_src_modules_triple_aspects_triple_aspects_service_integration_test_ts --> file_caelundas_src_modules_aspects_aspect_phase_emoji_service_ts
+  file_caelundas_src_modules_triple_aspects_triple_aspects_service_integration_test_ts --> file_caelundas_src_modules_aspects_aspects_types_ts
+  file_caelundas_src_modules_triple_aspects_triple_aspects_service_integration_test_ts --> file_caelundas_src_modules_aspects_compound_phase_service_ts
+  file_caelundas_src_modules_triple_aspects_triple_aspects_service_integration_test_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_triple_aspects_triple_aspects_service_integration_test_ts --> file_caelundas_src_modules_triple_aspects_triple_aspects_composer_service_ts
+  file_caelundas_src_modules_triple_aspects_triple_aspects_service_integration_test_ts --> file_caelundas_src_modules_triple_aspects_triple_aspects_detector_service_ts
+  file_caelundas_src_modules_triple_aspects_triple_aspects_service_integration_test_ts --> file_caelundas_src_modules_triple_aspects_triple_aspects_service_ts
+  file_caelundas_src_modules_triple_aspects_triple_aspects_service_ts --> file_caelundas_src_modules_aspects_aspects_types_ts
+  file_caelundas_src_modules_triple_aspects_triple_aspects_service_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_triple_aspects_triple_aspects_service_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_triple_aspects_triple_aspects_service_ts --> file_caelundas_src_modules_triple_aspects_triple_aspects_composer_service_ts
+  file_caelundas_src_modules_triple_aspects_triple_aspects_service_ts --> file_caelundas_src_modules_triple_aspects_triple_aspects_detector_service_ts
+  file_caelundas_src_modules_triple_aspects_triple_aspects_service_unit_test_ts --> file_caelundas_src_modules_aspects_aspect_graph_service_ts
+  file_caelundas_src_modules_triple_aspects_triple_aspects_service_unit_test_ts --> file_caelundas_src_modules_aspects_aspect_phase_emoji_service_ts
+  file_caelundas_src_modules_triple_aspects_triple_aspects_service_unit_test_ts --> file_caelundas_src_modules_aspects_aspects_types_ts
+  file_caelundas_src_modules_triple_aspects_triple_aspects_service_unit_test_ts --> file_caelundas_src_modules_aspects_compound_phase_service_ts
+  file_caelundas_src_modules_triple_aspects_triple_aspects_service_unit_test_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_triple_aspects_triple_aspects_service_unit_test_ts --> file_caelundas_src_modules_triple_aspects_triple_aspects_composer_service_ts
+  file_caelundas_src_modules_triple_aspects_triple_aspects_service_unit_test_ts --> file_caelundas_src_modules_triple_aspects_triple_aspects_detector_service_ts
+  file_caelundas_src_modules_triple_aspects_triple_aspects_service_unit_test_ts --> file_caelundas_src_modules_triple_aspects_triple_aspects_service_ts
+  file_caelundas_src_modules_triple_aspects_triple_aspects_types_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_src_modules_twilights_twilights_builder_service_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_twilights_twilights_builder_service_unit_test_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_twilights_twilights_builder_service_unit_test_ts --> file_caelundas_src_modules_twilights_twilights_builder_service_ts
+  file_caelundas_src_modules_twilights_twilights_composer_service_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_twilights_twilights_composer_service_ts --> file_caelundas_src_modules_progressive_progressive_utilities_service_ts
+  file_caelundas_src_modules_twilights_twilights_composer_service_ts --> file_caelundas_src_modules_twilights_twilights_builder_service_ts
+  file_caelundas_src_modules_twilights_twilights_composer_service_unit_test_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_twilights_twilights_composer_service_unit_test_ts --> file_caelundas_src_modules_progressive_progressive_utilities_service_ts
+  file_caelundas_src_modules_twilights_twilights_composer_service_unit_test_ts --> file_caelundas_src_modules_twilights_twilights_builder_service_ts
+  file_caelundas_src_modules_twilights_twilights_composer_service_unit_test_ts --> file_caelundas_src_modules_twilights_twilights_composer_service_ts
+  file_caelundas_src_modules_twilights_twilights_detector_service_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_twilights_twilights_detector_service_ts --> file_caelundas_src_modules_ephemeris_ephemeris_service_ts
+  file_caelundas_src_modules_twilights_twilights_detector_service_ts --> file_caelundas_src_modules_ephemeris_ephemeris_types_ts
+  file_caelundas_src_modules_twilights_twilights_detector_service_ts --> file_caelundas_src_modules_twilights_twilights_builder_service_ts
+  file_caelundas_src_modules_twilights_twilights_detector_service_ts --> file_caelundas_src_modules_twilights_twilights_types_ts
+  file_caelundas_src_modules_twilights_twilights_detector_service_unit_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_service_ts
+  file_caelundas_src_modules_twilights_twilights_detector_service_unit_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_types_ts
+  file_caelundas_src_modules_twilights_twilights_detector_service_unit_test_ts --> file_caelundas_src_modules_twilights_twilights_builder_service_ts
+  file_caelundas_src_modules_twilights_twilights_detector_service_unit_test_ts --> file_caelundas_src_modules_twilights_twilights_detector_service_ts
+  file_caelundas_src_modules_twilights_twilights_module_ts --> file_caelundas_src_modules_ephemeris_ephemeris_module_ts
+  file_caelundas_src_modules_twilights_twilights_module_ts --> file_caelundas_src_modules_math_math_module_ts
+  file_caelundas_src_modules_twilights_twilights_module_ts --> file_caelundas_src_modules_progressive_progressive_utilities_module_ts
+  file_caelundas_src_modules_twilights_twilights_module_ts --> file_caelundas_src_modules_twilights_twilights_builder_service_ts
+  file_caelundas_src_modules_twilights_twilights_module_ts --> file_caelundas_src_modules_twilights_twilights_composer_service_ts
+  file_caelundas_src_modules_twilights_twilights_module_ts --> file_caelundas_src_modules_twilights_twilights_detector_service_ts
+  file_caelundas_src_modules_twilights_twilights_module_ts --> file_caelundas_src_modules_twilights_twilights_service_ts
+  file_caelundas_src_modules_twilights_twilights_service_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_twilights_twilights_service_ts --> file_caelundas_src_modules_ephemeris_ephemeris_types_ts
+  file_caelundas_src_modules_twilights_twilights_service_ts --> file_caelundas_src_modules_math_math_service_ts
+  file_caelundas_src_modules_twilights_twilights_service_ts --> file_caelundas_src_modules_twilights_twilights_builder_service_ts
+  file_caelundas_src_modules_twilights_twilights_service_ts --> file_caelundas_src_modules_twilights_twilights_composer_service_ts
+  file_caelundas_src_modules_twilights_twilights_service_ts --> file_caelundas_src_modules_twilights_twilights_detector_service_ts
+  file_caelundas_src_modules_twilights_twilights_service_ts --> file_caelundas_src_modules_twilights_twilights_types_ts
+  file_caelundas_src_modules_twilights_twilights_service_unit_test_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_src_modules_twilights_twilights_service_unit_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_module_ts
+  file_caelundas_src_modules_twilights_twilights_service_unit_test_ts --> file_caelundas_src_modules_ephemeris_ephemeris_types_ts
+  file_caelundas_src_modules_twilights_twilights_service_unit_test_ts --> file_caelundas_src_modules_math_math_service_ts
+  file_caelundas_src_modules_twilights_twilights_service_unit_test_ts --> file_caelundas_src_modules_progressive_progressive_utilities_service_ts
+  file_caelundas_src_modules_twilights_twilights_service_unit_test_ts --> file_caelundas_src_modules_twilights_twilights_builder_service_ts
+  file_caelundas_src_modules_twilights_twilights_service_unit_test_ts --> file_caelundas_src_modules_twilights_twilights_composer_service_ts
+  file_caelundas_src_modules_twilights_twilights_service_unit_test_ts --> file_caelundas_src_modules_twilights_twilights_detector_service_ts
+  file_caelundas_src_modules_twilights_twilights_service_unit_test_ts --> file_caelundas_src_modules_twilights_twilights_service_ts
+  file_caelundas_src_repl_ts --> file_caelundas_src_main_module_ts
+  file_caelundas_testing_aspect_test_utilities_ts --> file_caelundas_src_modules_caelundas_caelundas_constants_ts
+  file_caelundas_testing_aspect_test_utilities_ts --> file_caelundas_src_modules_caelundas_caelundas_types_ts
+  file_caelundas_testing_aspect_test_utilities_ts --> file_caelundas_src_modules_calendar_calendar_types_ts
+  file_caelundas_testing_aspect_test_utilities_ts --> file_caelundas_src_modules_ephemeris_ephemeris_types_ts
+  file_callidescope_cli_src_main_end_to_end_test_ts --> file_callidescope_cli_src_constants_ts
+  file_callidescope_cli_src_main_module_ts --> file_callidescope_cli_src_constants_ts
+  file_callidescope_cli_src_main_module_ts --> file_callidescope_cli_src_modules_breadth_breadth_module_ts
+  file_callidescope_cli_src_main_module_ts --> file_callidescope_cli_src_modules_callidescope_callidescope_module_ts
+  file_callidescope_cli_src_main_module_ts --> file_callidescope_cli_src_modules_depth_depth_module_ts
+  file_callidescope_cli_src_main_module_ts --> file_callidescope_cli_src_modules_limits_limits_module_ts
+  file_callidescope_cli_src_main_ts --> file_callidescope_cli_src_main_module_ts
+  file_callidescope_cli_src_modules_address_lookup_address_lookup_constants_unit_test_ts --> file_callidescope_cli_src_modules_address_lookup_address_lookup_constants_ts
+  file_callidescope_cli_src_modules_address_lookup_address_lookup_module_ts --> file_callidescope_cli_src_modules_address_lookup_address_lookup_service_ts
+  file_callidescope_cli_src_modules_address_lookup_address_lookup_module_ts --> file_callidescope_cli_src_modules_callidescope_callidescope_module_ts
+  file_callidescope_cli_src_modules_address_lookup_address_lookup_service_ts --> file_callidescope_cli_src_modules_address_lookup_address_lookup_constants_ts
+  file_callidescope_cli_src_modules_address_lookup_address_lookup_service_ts --> file_callidescope_cli_src_modules_address_lookup_address_lookup_types_ts
+  file_callidescope_cli_src_modules_address_lookup_address_lookup_service_ts --> file_callidescope_cli_src_modules_callidescope_callidescope_service_ts
+  file_callidescope_cli_src_modules_address_lookup_address_lookup_service_unit_test_ts --> file_callidescope_cli_src_modules_address_lookup_address_lookup_service_ts
+  file_callidescope_cli_src_modules_address_lookup_address_lookup_service_unit_test_ts --> file_callidescope_cli_src_modules_callidescope_callidescope_service_ts
+  file_callidescope_cli_src_modules_address_lookup_address_lookup_service_unit_test_ts --> file_callidescope_cli_src_modules_callidescope_callidescope_types_ts
+  file_callidescope_cli_src_modules_address_lookup_address_lookup_types_ts --> file_callidescope_cli_src_modules_callidescope_callidescope_types_ts
+  file_callidescope_cli_src_modules_breadth_breadth_command_ts --> file_callidescope_cli_src_modules_address_lookup_address_lookup_constants_ts
+  file_callidescope_cli_src_modules_breadth_breadth_command_ts --> file_callidescope_cli_src_modules_address_lookup_address_lookup_service_ts
+  file_callidescope_cli_src_modules_breadth_breadth_command_ts --> file_callidescope_cli_src_modules_address_lookup_address_lookup_types_ts
+  file_callidescope_cli_src_modules_breadth_breadth_command_ts --> file_callidescope_cli_src_modules_callidescope_callidescope_constants_ts
+  file_callidescope_cli_src_modules_breadth_breadth_command_unit_test_ts --> file_callidescope_cli_src_modules_address_lookup_address_lookup_service_ts
+  file_callidescope_cli_src_modules_breadth_breadth_command_unit_test_ts --> file_callidescope_cli_src_modules_address_lookup_address_lookup_types_ts
+  file_callidescope_cli_src_modules_breadth_breadth_command_unit_test_ts --> file_callidescope_cli_src_modules_breadth_breadth_command_ts
+  file_callidescope_cli_src_modules_breadth_breadth_command_unit_test_ts --> file_callidescope_cli_testing_mocks_ts
+  file_callidescope_cli_src_modules_breadth_breadth_module_ts --> file_callidescope_cli_src_modules_address_lookup_address_lookup_module_ts
+  file_callidescope_cli_src_modules_breadth_breadth_module_ts --> file_callidescope_cli_src_modules_breadth_breadth_command_ts
+  file_callidescope_cli_src_modules_callidescope_callidescope_command_ts --> file_callidescope_cli_src_modules_address_lookup_address_lookup_constants_ts
+  file_callidescope_cli_src_modules_callidescope_callidescope_command_ts --> file_callidescope_cli_src_modules_callidescope_callidescope_constants_ts
+  file_callidescope_cli_src_modules_callidescope_callidescope_command_ts --> file_callidescope_cli_src_modules_callidescope_callidescope_service_ts
+  file_callidescope_cli_src_modules_callidescope_callidescope_command_unit_test_ts --> file_callidescope_cli_src_modules_callidescope_callidescope_command_ts
+  file_callidescope_cli_src_modules_callidescope_callidescope_command_unit_test_ts --> file_callidescope_cli_src_modules_callidescope_callidescope_constants_ts
+  file_callidescope_cli_src_modules_callidescope_callidescope_command_unit_test_ts --> file_callidescope_cli_src_modules_callidescope_callidescope_service_ts
+  file_callidescope_cli_src_modules_callidescope_callidescope_command_unit_test_ts --> file_callidescope_cli_testing_mocks_ts
+  file_callidescope_cli_src_modules_callidescope_callidescope_constants_ts --> file_callidescope_cli_src_modules_address_lookup_address_lookup_constants_ts
+  file_callidescope_cli_src_modules_callidescope_callidescope_module_ts --> file_callidescope_cli_src_modules_callidescope_callidescope_command_ts
+  file_callidescope_cli_src_modules_callidescope_callidescope_module_ts --> file_callidescope_cli_src_modules_callidescope_callidescope_service_ts
+  file_callidescope_cli_src_modules_callidescope_callidescope_service_integration_test_ts --> file_callidescope_cli_src_modules_callidescope_callidescope_service_ts
+  file_callidescope_cli_src_modules_callidescope_callidescope_service_integration_test_ts --> file_callidescope_cli_testing_modules_ts
+  file_callidescope_cli_src_modules_callidescope_callidescope_service_ts --> file_callidescope_cli_src_modules_callidescope_callidescope_constants_ts
+  file_callidescope_cli_src_modules_callidescope_callidescope_service_ts --> file_callidescope_cli_src_modules_callidescope_callidescope_types_ts
+  file_callidescope_cli_src_modules_callidescope_callidescope_service_unit_test_ts --> file_callidescope_cli_src_modules_callidescope_callidescope_service_ts
+  file_callidescope_cli_src_modules_callidescope_callidescope_service_unit_test_ts --> file_callidescope_cli_testing_modules_ts
+  file_callidescope_cli_src_modules_callidescope_callidescope_service_unit_test_ts --> file_callidescope_cli_testing_programs_ts
+  file_callidescope_cli_src_modules_depth_depth_command_ts --> file_callidescope_cli_src_modules_address_lookup_address_lookup_constants_ts
+  file_callidescope_cli_src_modules_depth_depth_command_ts --> file_callidescope_cli_src_modules_address_lookup_address_lookup_service_ts
+  file_callidescope_cli_src_modules_depth_depth_command_ts --> file_callidescope_cli_src_modules_address_lookup_address_lookup_types_ts
+  file_callidescope_cli_src_modules_depth_depth_command_ts --> file_callidescope_cli_src_modules_callidescope_callidescope_constants_ts
+  file_callidescope_cli_src_modules_depth_depth_command_unit_test_ts --> file_callidescope_cli_src_modules_address_lookup_address_lookup_service_ts
+  file_callidescope_cli_src_modules_depth_depth_command_unit_test_ts --> file_callidescope_cli_src_modules_address_lookup_address_lookup_types_ts
+  file_callidescope_cli_src_modules_depth_depth_command_unit_test_ts --> file_callidescope_cli_src_modules_callidescope_callidescope_types_ts
+  file_callidescope_cli_src_modules_depth_depth_command_unit_test_ts --> file_callidescope_cli_src_modules_depth_depth_command_ts
+  file_callidescope_cli_src_modules_depth_depth_module_ts --> file_callidescope_cli_src_modules_address_lookup_address_lookup_module_ts
+  file_callidescope_cli_src_modules_depth_depth_module_ts --> file_callidescope_cli_src_modules_depth_depth_command_ts
+  file_callidescope_cli_src_modules_limits_limits_command_ts --> file_callidescope_cli_src_modules_callidescope_callidescope_constants_ts
+  file_callidescope_cli_src_modules_limits_limits_command_ts --> file_callidescope_cli_src_modules_limits_limits_service_ts
+  file_callidescope_cli_src_modules_limits_limits_command_ts --> file_callidescope_cli_src_modules_limits_limits_types_ts
+  file_callidescope_cli_src_modules_limits_limits_command_ts --> file_callidescope_cli_src_modules_limits_render_limits_service_ts
+  file_callidescope_cli_src_modules_limits_limits_command_unit_test_ts --> file_callidescope_cli_src_modules_limits_limits_command_ts
+  file_callidescope_cli_src_modules_limits_limits_command_unit_test_ts --> file_callidescope_cli_src_modules_limits_limits_service_ts
+  file_callidescope_cli_src_modules_limits_limits_command_unit_test_ts --> file_callidescope_cli_src_modules_limits_render_limits_service_ts
+  file_callidescope_cli_src_modules_limits_limits_module_ts --> file_callidescope_cli_src_modules_limits_limits_command_ts
+  file_callidescope_cli_src_modules_limits_limits_module_ts --> file_callidescope_cli_src_modules_limits_limits_service_ts
+  file_callidescope_cli_src_modules_limits_limits_module_ts --> file_callidescope_cli_src_modules_limits_render_limits_service_ts
+  file_callidescope_cli_src_modules_limits_limits_service_ts --> file_callidescope_cli_src_modules_limits_limits_types_ts
+  file_callidescope_cli_src_modules_limits_limits_service_unit_test_ts --> file_callidescope_cli_src_modules_limits_limits_service_ts
+  file_callidescope_cli_src_modules_limits_render_limits_service_ts --> file_callidescope_cli_src_modules_limits_limits_constants_ts
+  file_callidescope_cli_src_modules_limits_render_limits_service_ts --> file_callidescope_cli_src_modules_limits_limits_types_ts
+  file_callidescope_cli_src_modules_limits_render_limits_service_unit_test_ts --> file_callidescope_cli_src_modules_limits_limits_types_ts
+  file_callidescope_cli_src_modules_limits_render_limits_service_unit_test_ts --> file_callidescope_cli_src_modules_limits_render_limits_service_ts
+  file_callidescope_cli_src_repl_ts --> file_callidescope_cli_src_main_module_ts
+  file_callidescope_configuration_src_index_unit_test_ts --> file_callidescope_configuration_src_index_ts
+  file_callidescope_configuration_src_modules_configuration_configuration_file_module_ts --> file_callidescope_configuration_src_modules_configuration_configuration_file_service_ts
+  file_callidescope_configuration_src_modules_configuration_configuration_file_service_ts --> file_callidescope_configuration_src_modules_configuration_configuration_constants_ts
+  file_callidescope_configuration_src_modules_configuration_configuration_file_service_ts --> file_callidescope_configuration_src_modules_configuration_configuration_types_ts
+  file_callidescope_configuration_src_modules_configuration_configuration_file_service_unit_test_ts --> file_callidescope_configuration_src_modules_configuration_configuration_file_service_ts
+  file_callidescope_configuration_src_modules_configuration_configuration_file_service_unit_test_ts --> file_callidescope_configuration_src_modules_configuration_configuration_constants_ts
+  file_callidescope_configuration_src_modules_configuration_configuration_file_types_ts --> file_callidescope_configuration_src_modules_configuration_configuration_types_ts
+  file_callidescope_configuration_src_modules_configuration_configuration_constants_ts --> file_callidescope_configuration_src_modules_configuration_configuration_types_ts
+  file_callidescope_configuration_src_modules_configuration_configuration_module_ts --> file_callidescope_configuration_src_modules_configuration_configuration_file_module_ts
+  file_callidescope_configuration_src_modules_configuration_configuration_module_ts --> file_callidescope_configuration_src_modules_configuration_configuration_service_ts
+  file_callidescope_configuration_src_modules_configuration_configuration_module_ts --> file_callidescope_configuration_src_modules_configuration_project_configuration_service_ts
+  file_callidescope_configuration_src_modules_configuration_configuration_module_ts --> file_callidescope_configuration_src_modules_input_input_module_ts
+  file_callidescope_configuration_src_modules_configuration_configuration_module_ts --> file_callidescope_configuration_src_modules_run_plan_run_plan_module_ts
+  file_callidescope_configuration_src_modules_configuration_configuration_module_unit_test_ts --> file_callidescope_configuration_src_modules_configuration_configuration_module_ts
+  file_callidescope_configuration_src_modules_configuration_configuration_module_unit_test_ts --> file_callidescope_configuration_src_modules_configuration_configuration_service_ts
+  file_callidescope_configuration_src_modules_configuration_configuration_module_unit_test_ts --> file_callidescope_configuration_src_modules_configuration_project_configuration_service_ts
+  file_callidescope_configuration_src_modules_configuration_configuration_service_ts --> file_callidescope_configuration_src_modules_configuration_configuration_file_service_ts
+  file_callidescope_configuration_src_modules_configuration_configuration_service_ts --> file_callidescope_configuration_src_modules_configuration_configuration_file_types_ts
+  file_callidescope_configuration_src_modules_configuration_configuration_service_ts --> file_callidescope_configuration_src_modules_configuration_configuration_constants_ts
+  file_callidescope_configuration_src_modules_configuration_configuration_service_ts --> file_callidescope_configuration_src_modules_configuration_configuration_types_ts
+  file_callidescope_configuration_src_modules_configuration_configuration_service_ts --> file_callidescope_configuration_src_modules_configuration_project_configuration_service_ts
+  file_callidescope_configuration_src_modules_configuration_configuration_service_ts --> file_callidescope_configuration_src_modules_input_input_service_ts
+  file_callidescope_configuration_src_modules_configuration_configuration_service_ts --> file_callidescope_configuration_src_modules_input_input_types_ts
+  file_callidescope_configuration_src_modules_configuration_configuration_service_ts --> file_callidescope_configuration_src_modules_run_plan_run_plan_service_ts
+  file_callidescope_configuration_src_modules_configuration_configuration_service_ts --> file_callidescope_configuration_src_modules_run_plan_run_plan_types_ts
+  file_callidescope_configuration_src_modules_configuration_configuration_service_unit_test_ts --> file_callidescope_configuration_src_modules_configuration_configuration_file_service_ts
+  file_callidescope_configuration_src_modules_configuration_configuration_service_unit_test_ts --> file_callidescope_configuration_src_modules_configuration_configuration_service_ts
+  file_callidescope_configuration_src_modules_configuration_configuration_service_unit_test_ts --> file_callidescope_configuration_src_modules_configuration_configuration_types_ts
+  file_callidescope_configuration_src_modules_configuration_configuration_service_unit_test_ts --> file_callidescope_configuration_src_modules_configuration_project_configuration_service_ts
+  file_callidescope_configuration_src_modules_configuration_configuration_service_unit_test_ts --> file_callidescope_configuration_src_modules_input_input_service_ts
+  file_callidescope_configuration_src_modules_configuration_configuration_service_unit_test_ts --> file_callidescope_configuration_src_modules_input_input_types_ts
+  file_callidescope_configuration_src_modules_configuration_configuration_service_unit_test_ts --> file_callidescope_configuration_src_modules_run_plan_run_plan_service_ts
+  file_callidescope_configuration_src_modules_configuration_project_configuration_service_ts --> file_callidescope_configuration_src_modules_configuration_configuration_file_types_ts
+  file_callidescope_configuration_src_modules_configuration_project_configuration_service_ts --> file_callidescope_configuration_src_modules_configuration_configuration_constants_ts
+  file_callidescope_configuration_src_modules_configuration_project_configuration_service_ts --> file_callidescope_configuration_src_modules_configuration_configuration_types_ts
+  file_callidescope_configuration_src_modules_configuration_project_configuration_service_unit_test_ts --> file_callidescope_configuration_src_modules_configuration_configuration_file_service_ts
+  file_callidescope_configuration_src_modules_configuration_project_configuration_service_unit_test_ts --> file_callidescope_configuration_src_modules_configuration_configuration_constants_ts
+  file_callidescope_configuration_src_modules_configuration_project_configuration_service_unit_test_ts --> file_callidescope_configuration_src_modules_configuration_configuration_types_ts
+  file_callidescope_configuration_src_modules_configuration_project_configuration_service_unit_test_ts --> file_callidescope_configuration_src_modules_configuration_project_configuration_service_ts
+  file_callidescope_configuration_src_modules_flag_resolution_flag_resolution_constants_ts --> file_callidescope_configuration_src_modules_configuration_configuration_constants_ts
+  file_callidescope_configuration_src_modules_flag_resolution_flag_resolution_constants_ts --> file_callidescope_configuration_src_modules_input_input_constants_ts
+  file_callidescope_configuration_src_modules_flag_resolution_flag_resolution_module_ts --> file_callidescope_configuration_src_modules_flag_resolution_flag_resolution_service_ts
+  file_callidescope_configuration_src_modules_flag_resolution_flag_resolution_service_ts --> file_callidescope_configuration_src_modules_configuration_configuration_constants_ts
+  file_callidescope_configuration_src_modules_flag_resolution_flag_resolution_service_ts --> file_callidescope_configuration_src_modules_configuration_configuration_types_ts
+  file_callidescope_configuration_src_modules_flag_resolution_flag_resolution_service_ts --> file_callidescope_configuration_src_modules_flag_resolution_flag_resolution_constants_ts
+  file_callidescope_configuration_src_modules_flag_resolution_flag_resolution_service_ts --> file_callidescope_configuration_src_modules_flag_resolution_flag_resolution_types_ts
+  file_callidescope_configuration_src_modules_flag_resolution_flag_resolution_service_unit_test_ts --> file_callidescope_configuration_src_modules_configuration_configuration_file_service_ts
+  file_callidescope_configuration_src_modules_flag_resolution_flag_resolution_service_unit_test_ts --> file_callidescope_configuration_src_modules_configuration_configuration_constants_ts
+  file_callidescope_configuration_src_modules_flag_resolution_flag_resolution_service_unit_test_ts --> file_callidescope_configuration_src_modules_configuration_configuration_types_ts
+  file_callidescope_configuration_src_modules_flag_resolution_flag_resolution_service_unit_test_ts --> file_callidescope_configuration_src_modules_flag_resolution_flag_resolution_service_ts
+  file_callidescope_configuration_src_modules_flag_resolution_flag_resolution_service_unit_test_ts --> file_callidescope_configuration_src_modules_flag_resolution_flag_resolution_types_ts
+  file_callidescope_configuration_src_modules_flag_resolution_flag_resolution_types_ts --> file_callidescope_configuration_src_modules_configuration_configuration_types_ts
+  file_callidescope_configuration_src_modules_input_input_module_ts --> file_callidescope_configuration_src_modules_input_input_service_ts
+  file_callidescope_configuration_src_modules_input_input_service_ts --> file_callidescope_configuration_src_modules_input_input_constants_ts
+  file_callidescope_configuration_src_modules_input_input_service_ts --> file_callidescope_configuration_src_modules_input_input_types_ts
+  file_callidescope_configuration_src_modules_input_input_service_unit_test_ts --> file_callidescope_configuration_src_modules_input_input_service_ts
+  file_callidescope_configuration_src_modules_run_plan_run_plan_module_ts --> file_callidescope_configuration_src_modules_flag_resolution_flag_resolution_module_ts
+  file_callidescope_configuration_src_modules_run_plan_run_plan_module_ts --> file_callidescope_configuration_src_modules_run_plan_run_plan_service_ts
+  file_callidescope_configuration_src_modules_run_plan_run_plan_service_ts --> file_callidescope_configuration_src_modules_configuration_configuration_file_types_ts
+  file_callidescope_configuration_src_modules_run_plan_run_plan_service_ts --> file_callidescope_configuration_src_modules_flag_resolution_flag_resolution_constants_ts
+  file_callidescope_configuration_src_modules_run_plan_run_plan_service_ts --> file_callidescope_configuration_src_modules_flag_resolution_flag_resolution_service_ts
+  file_callidescope_configuration_src_modules_run_plan_run_plan_service_ts --> file_callidescope_configuration_src_modules_run_plan_run_plan_constants_ts
+  file_callidescope_configuration_src_modules_run_plan_run_plan_service_ts --> file_callidescope_configuration_src_modules_run_plan_run_plan_types_ts
+  file_callidescope_configuration_src_modules_run_plan_run_plan_service_unit_test_ts --> file_callidescope_configuration_src_modules_configuration_configuration_file_service_ts
+  file_callidescope_configuration_src_modules_run_plan_run_plan_service_unit_test_ts --> file_callidescope_configuration_src_modules_configuration_configuration_types_ts
+  file_callidescope_configuration_src_modules_run_plan_run_plan_service_unit_test_ts --> file_callidescope_configuration_src_modules_flag_resolution_flag_resolution_service_ts
+  file_callidescope_configuration_src_modules_run_plan_run_plan_service_unit_test_ts --> file_callidescope_configuration_src_modules_run_plan_run_plan_service_ts
+  file_callidescope_configuration_src_modules_run_plan_run_plan_types_ts --> file_callidescope_configuration_src_modules_configuration_configuration_types_ts
+  file_callidescope_core_src_index_unit_test_ts --> file_callidescope_core_src_index_ts
+  file_callidescope_examples_examples_base_class_base_class_ts --> file_callidescope_examples_examples_base_class_base_task_ts
+  file_callidescope_examples_examples_constructed_class_constructed_class_ts --> file_callidescope_examples_examples_constructed_class_parser_ts
+  file_callidescope_examples_examples_deep_stack_deep_stack_ts --> file_callidescope_examples_examples_shared_tail_round_to_cents_ts
+  file_callidescope_examples_examples_forwarding_stack_forwarding_stack_ts --> file_callidescope_examples_examples_shared_tail_round_to_cents_ts
+  file_callidescope_examples_examples_injected_dependency_injected_dependency_module_ts --> file_callidescope_examples_examples_injected_dependency_inventory_ts
+  file_callidescope_examples_examples_injected_dependency_injected_dependency_module_ts --> file_callidescope_examples_examples_injected_dependency_orders_ts
+  file_callidescope_examples_examples_injected_dependency_orders_ts --> file_callidescope_examples_examples_injected_dependency_inventory_ts
+  file_callidescope_examples_examples_plain_call_plain_call_ts --> file_callidescope_examples_examples_plain_call_normalize_label_ts
+  file_callidescope_examples_examples_structural_interface_structural_interface_ts --> file_callidescope_examples_examples_structural_interface_structural_provider_ts
+  file_callidescope_examples_src_index_ts --> file_callidescope_examples_examples_plain_call_normalize_label_ts
+  file_callidescope_examples_src_main_ts --> file_callidescope_examples_examples_injected_dependency_inventory_ts
+  file_callidescope_examples_src_main_ts --> file_callidescope_examples_examples_injected_dependency_orders_ts
+  file_callidescope_examples_testing_examples_integration_test_ts --> file_callidescope_examples_callidescope_workspace_config_ts
+  file_callidescope_graph_src_modules_callables_address_service_ts --> file_callidescope_graph_src_modules_callables_address_constants_ts
+  file_callidescope_graph_src_modules_callables_address_service_ts --> file_callidescope_graph_src_modules_callables_address_types_ts
+  file_callidescope_graph_src_modules_callables_address_service_ts --> file_callidescope_graph_src_modules_callables_callables_types_ts
+  file_callidescope_graph_src_modules_callables_address_service_unit_test_ts --> file_callidescope_graph_src_modules_callables_address_service_ts
+  file_callidescope_graph_src_modules_callables_address_service_unit_test_ts --> file_callidescope_graph_src_modules_callables_callables_types_ts
+  file_callidescope_graph_src_modules_callables_address_service_unit_test_ts --> file_callidescope_graph_testing_mocks_ts
+  file_callidescope_graph_src_modules_callables_address_service_unit_test_ts --> file_callidescope_graph_testing_modules_ts
+  file_callidescope_graph_src_modules_callables_address_types_ts --> file_callidescope_graph_src_modules_callables_callables_types_ts
+  file_callidescope_graph_src_modules_callables_callable_identity_service_ts --> file_callidescope_graph_src_modules_callables_callables_constants_ts
+  file_callidescope_graph_src_modules_callables_callable_identity_service_ts --> file_callidescope_graph_src_modules_callables_callables_types_ts
+  file_callidescope_graph_src_modules_callables_callable_identity_service_unit_test_ts --> file_callidescope_graph_src_modules_callables_callable_identity_service_ts
+  file_callidescope_graph_src_modules_callables_callable_identity_service_unit_test_ts --> file_callidescope_graph_testing_modules_ts
+  file_callidescope_graph_src_modules_callables_callable_identity_service_unit_test_ts --> file_callidescope_graph_testing_programs_ts
+  file_callidescope_graph_src_modules_callables_callables_module_ts --> file_callidescope_graph_src_modules_callables_address_service_ts
+  file_callidescope_graph_src_modules_callables_callables_module_ts --> file_callidescope_graph_src_modules_callables_callable_identity_service_ts
+  file_callidescope_graph_src_modules_callables_callables_module_ts --> file_callidescope_graph_src_modules_callables_callables_service_ts
+  file_callidescope_graph_src_modules_callables_callables_module_ts --> file_callidescope_graph_src_modules_program_program_module_ts
+  file_callidescope_graph_src_modules_callables_callables_module_ts --> file_callidescope_graph_src_modules_workspace_workspace_module_ts
+  file_callidescope_graph_src_modules_callables_callables_service_ts --> file_callidescope_graph_src_modules_callables_callable_identity_service_ts
+  file_callidescope_graph_src_modules_callables_callables_service_ts --> file_callidescope_graph_src_modules_callables_callables_types_ts
+  file_callidescope_graph_src_modules_callables_callables_service_ts --> file_callidescope_graph_src_modules_program_program_service_ts
+  file_callidescope_graph_src_modules_callables_callables_service_ts --> file_callidescope_graph_src_modules_program_program_types_ts
+  file_callidescope_graph_src_modules_callables_callables_service_ts --> file_callidescope_graph_src_modules_workspace_workspace_service_ts
+  file_callidescope_graph_src_modules_callables_callables_service_unit_test_ts --> file_callidescope_graph_src_modules_callables_callables_service_ts
+  file_callidescope_graph_src_modules_callables_callables_service_unit_test_ts --> file_callidescope_graph_src_modules_callables_callables_types_ts
+  file_callidescope_graph_src_modules_callables_callables_service_unit_test_ts --> file_callidescope_graph_testing_modules_ts
+  file_callidescope_graph_src_modules_callables_callables_service_unit_test_ts --> file_callidescope_graph_testing_programs_ts
+  file_callidescope_graph_src_modules_callables_callables_types_ts --> file_callidescope_graph_src_modules_program_program_types_ts
+  file_callidescope_graph_src_modules_callables_callables_types_ts --> file_callidescope_graph_src_modules_workspace_workspace_types_ts
+  file_callidescope_graph_src_modules_classes_classes_module_ts --> file_callidescope_graph_src_modules_classes_classes_service_ts
+  file_callidescope_graph_src_modules_classes_classes_module_ts --> file_callidescope_graph_src_modules_classes_external_service_ts
+  file_callidescope_graph_src_modules_classes_classes_service_ts --> file_callidescope_graph_src_modules_classes_classes_constants_ts
+  file_callidescope_graph_src_modules_classes_classes_service_ts --> file_callidescope_graph_src_modules_classes_classes_types_ts
+  file_callidescope_graph_src_modules_classes_classes_service_ts --> file_callidescope_graph_src_modules_classes_external_service_ts
+  file_callidescope_graph_src_modules_classes_classes_service_ts --> file_callidescope_graph_src_modules_program_program_types_ts
+  file_callidescope_graph_src_modules_classes_classes_service_unit_test_ts --> file_callidescope_graph_src_modules_classes_classes_constants_ts
+  file_callidescope_graph_src_modules_classes_classes_service_unit_test_ts --> file_callidescope_graph_src_modules_classes_classes_service_ts
+  file_callidescope_graph_src_modules_classes_classes_service_unit_test_ts --> file_callidescope_graph_src_modules_classes_classes_types_ts
+  file_callidescope_graph_src_modules_classes_classes_service_unit_test_ts --> file_callidescope_graph_src_modules_classes_external_service_ts
+  file_callidescope_graph_src_modules_classes_classes_service_unit_test_ts --> file_callidescope_graph_testing_modules_ts
+  file_callidescope_graph_src_modules_classes_classes_service_unit_test_ts --> file_callidescope_graph_testing_programs_ts
+  file_callidescope_graph_src_modules_classes_classes_types_ts --> file_callidescope_graph_src_modules_program_program_types_ts
+  file_callidescope_graph_src_modules_classes_external_service_unit_test_ts --> file_callidescope_graph_src_modules_classes_external_service_ts
+  file_callidescope_graph_src_modules_classes_external_service_unit_test_ts --> file_callidescope_graph_testing_modules_ts
+  file_callidescope_graph_src_modules_documentation_documentation_module_ts --> file_callidescope_graph_src_modules_documentation_documentation_service_ts
+  file_callidescope_graph_src_modules_documentation_documentation_service_ts --> file_callidescope_graph_src_modules_documentation_documentation_constants_ts
+  file_callidescope_graph_src_modules_documentation_documentation_service_ts --> file_callidescope_graph_src_modules_documentation_documentation_types_ts
+  file_callidescope_graph_src_modules_documentation_documentation_service_unit_test_ts --> file_callidescope_graph_src_modules_documentation_documentation_service_ts
+  file_callidescope_graph_src_modules_documentation_documentation_service_unit_test_ts --> file_callidescope_graph_src_modules_documentation_documentation_types_ts
+  file_callidescope_graph_src_modules_documentation_documentation_service_unit_test_ts --> file_callidescope_graph_testing_modules_ts
+  file_callidescope_graph_src_modules_documentation_documentation_service_unit_test_ts --> file_callidescope_graph_testing_programs_ts
+  file_callidescope_graph_src_modules_documentation_documentation_types_ts --> file_callidescope_graph_src_modules_callables_callables_types_ts
+  file_callidescope_graph_src_modules_edges_call_sites_service_ts --> file_callidescope_graph_src_modules_callables_callables_types_ts
+  file_callidescope_graph_src_modules_edges_call_sites_service_ts --> file_callidescope_graph_src_modules_edges_edges_types_ts
+  file_callidescope_graph_src_modules_edges_call_sites_service_unit_test_ts --> file_callidescope_graph_src_modules_edges_call_sites_service_ts
+  file_callidescope_graph_src_modules_edges_call_sites_service_unit_test_ts --> file_callidescope_graph_testing_modules_ts
+  file_callidescope_graph_src_modules_edges_call_sites_service_unit_test_ts --> file_callidescope_graph_testing_programs_ts
+  file_callidescope_graph_src_modules_edges_edges_constants_ts --> file_callidescope_graph_src_modules_edges_edges_types_ts
+  file_callidescope_graph_src_modules_edges_edges_module_ts --> file_callidescope_graph_src_modules_callables_callables_module_ts
+  file_callidescope_graph_src_modules_edges_edges_module_ts --> file_callidescope_graph_src_modules_classes_classes_module_ts
+  file_callidescope_graph_src_modules_edges_edges_module_ts --> file_callidescope_graph_src_modules_edges_call_sites_service_ts
+  file_callidescope_graph_src_modules_edges_edges_module_ts --> file_callidescope_graph_src_modules_edges_edges_service_ts
+  file_callidescope_graph_src_modules_edges_edges_module_ts --> file_callidescope_graph_src_modules_edges_symbol_resolution_service_ts
+  file_callidescope_graph_src_modules_edges_edges_module_ts --> file_callidescope_graph_src_modules_program_program_module_ts
+  file_callidescope_graph_src_modules_edges_edges_module_ts --> file_callidescope_graph_src_modules_workspace_workspace_module_ts
+  file_callidescope_graph_src_modules_edges_edges_service_ts --> file_callidescope_graph_src_modules_callables_callables_types_ts
+  file_callidescope_graph_src_modules_edges_edges_service_ts --> file_callidescope_graph_src_modules_classes_external_service_ts
+  file_callidescope_graph_src_modules_edges_edges_service_ts --> file_callidescope_graph_src_modules_edges_call_sites_service_ts
+  file_callidescope_graph_src_modules_edges_edges_service_ts --> file_callidescope_graph_src_modules_edges_edges_types_ts
+  file_callidescope_graph_src_modules_edges_edges_service_ts --> file_callidescope_graph_src_modules_edges_symbol_resolution_service_ts
+  file_callidescope_graph_src_modules_edges_edges_service_ts --> file_callidescope_graph_src_modules_program_program_service_ts
+  file_callidescope_graph_src_modules_edges_edges_service_ts --> file_callidescope_graph_src_modules_workspace_workspace_service_ts
+  file_callidescope_graph_src_modules_edges_edges_service_unit_test_ts --> file_callidescope_graph_src_modules_classes_classes_constants_ts
+  file_callidescope_graph_src_modules_edges_edges_service_unit_test_ts --> file_callidescope_graph_src_modules_edges_call_sites_service_ts
+  file_callidescope_graph_src_modules_edges_edges_service_unit_test_ts --> file_callidescope_graph_src_modules_edges_edges_service_ts
+  file_callidescope_graph_src_modules_edges_edges_service_unit_test_ts --> file_callidescope_graph_src_modules_edges_symbol_resolution_service_ts
+  file_callidescope_graph_src_modules_edges_edges_service_unit_test_ts --> file_callidescope_graph_testing_modules_ts
+  file_callidescope_graph_src_modules_edges_edges_service_unit_test_ts --> file_callidescope_graph_testing_programs_ts
+  file_callidescope_graph_src_modules_edges_edges_types_ts --> file_callidescope_graph_src_modules_callables_callables_types_ts
+  file_callidescope_graph_src_modules_edges_symbol_resolution_service_ts --> file_callidescope_graph_src_modules_classes_classes_service_ts
+  file_callidescope_graph_src_modules_edges_symbol_resolution_service_ts --> file_callidescope_graph_src_modules_classes_external_service_ts
+  file_callidescope_graph_src_modules_edges_symbol_resolution_service_ts --> file_callidescope_graph_src_modules_edges_edges_constants_ts
+  file_callidescope_graph_src_modules_edges_symbol_resolution_service_ts --> file_callidescope_graph_src_modules_edges_edges_types_ts
+  file_callidescope_graph_src_modules_edges_symbol_resolution_service_unit_test_ts --> file_callidescope_graph_src_modules_classes_classes_service_ts
+  file_callidescope_graph_src_modules_edges_symbol_resolution_service_unit_test_ts --> file_callidescope_graph_src_modules_classes_external_service_ts
+  file_callidescope_graph_src_modules_edges_symbol_resolution_service_unit_test_ts --> file_callidescope_graph_src_modules_edges_edges_constants_ts
+  file_callidescope_graph_src_modules_edges_symbol_resolution_service_unit_test_ts --> file_callidescope_graph_src_modules_edges_edges_types_ts
+  file_callidescope_graph_src_modules_edges_symbol_resolution_service_unit_test_ts --> file_callidescope_graph_src_modules_edges_symbol_resolution_service_ts
+  file_callidescope_graph_src_modules_edges_symbol_resolution_service_unit_test_ts --> file_callidescope_graph_testing_modules_ts
+  file_callidescope_graph_src_modules_edges_symbol_resolution_service_unit_test_ts --> file_callidescope_graph_testing_programs_ts
+  file_callidescope_graph_src_modules_entries_entries_module_ts --> file_callidescope_graph_src_modules_callables_callables_module_ts
+  file_callidescope_graph_src_modules_entries_entries_module_ts --> file_callidescope_graph_src_modules_entries_entries_service_ts
+  file_callidescope_graph_src_modules_entries_entries_service_ts --> file_callidescope_graph_src_modules_callables_address_service_ts
+  file_callidescope_graph_src_modules_entries_entries_service_ts --> file_callidescope_graph_src_modules_callables_callables_types_ts
+  file_callidescope_graph_src_modules_entries_entries_service_ts --> file_callidescope_graph_src_modules_entries_entries_constants_ts
+  file_callidescope_graph_src_modules_entries_entries_service_ts --> file_callidescope_graph_src_modules_entries_entries_types_ts
+  file_callidescope_graph_src_modules_entries_entries_service_unit_test_ts --> file_callidescope_graph_src_modules_callables_address_service_ts
+  file_callidescope_graph_src_modules_entries_entries_service_unit_test_ts --> file_callidescope_graph_src_modules_callables_callables_types_ts
+  file_callidescope_graph_src_modules_entries_entries_service_unit_test_ts --> file_callidescope_graph_src_modules_entries_entries_service_ts
+  file_callidescope_graph_src_modules_entries_entries_service_unit_test_ts --> file_callidescope_graph_src_modules_entries_entries_types_ts
+  file_callidescope_graph_src_modules_entries_entries_service_unit_test_ts --> file_callidescope_graph_src_modules_graph_graph_service_ts
+  file_callidescope_graph_src_modules_entries_entries_service_unit_test_ts --> file_callidescope_graph_src_modules_graph_graph_types_ts
+  file_callidescope_graph_src_modules_entries_entries_service_unit_test_ts --> file_callidescope_graph_testing_mocks_ts
+  file_callidescope_graph_src_modules_entries_entries_service_unit_test_ts --> file_callidescope_graph_testing_modules_ts
+  file_callidescope_graph_src_modules_entries_entries_service_unit_test_ts --> file_callidescope_graph_testing_programs_ts
+  file_callidescope_graph_src_modules_entries_entries_types_ts --> file_callidescope_graph_src_modules_callables_address_types_ts
+  file_callidescope_graph_src_modules_entries_entries_types_ts --> file_callidescope_graph_src_modules_callables_callables_types_ts
+  file_callidescope_graph_src_modules_entries_entries_types_ts --> file_callidescope_graph_src_modules_graph_graph_types_ts
+  file_callidescope_graph_src_modules_graph_address_depth_service_ts --> file_callidescope_graph_src_modules_callables_callables_types_ts
+  file_callidescope_graph_src_modules_graph_address_depth_service_ts --> file_callidescope_graph_src_modules_graph_address_depth_constants_ts
+  file_callidescope_graph_src_modules_graph_address_depth_service_ts --> file_callidescope_graph_src_modules_graph_address_depth_types_ts
+  file_callidescope_graph_src_modules_graph_address_depth_service_ts --> file_callidescope_graph_src_modules_graph_paths_service_ts
+  file_callidescope_graph_src_modules_graph_address_depth_service_unit_test_ts --> file_callidescope_graph_src_modules_callables_callables_types_ts
+  file_callidescope_graph_src_modules_graph_address_depth_service_unit_test_ts --> file_callidescope_graph_src_modules_documentation_documentation_service_ts
+  file_callidescope_graph_src_modules_graph_address_depth_service_unit_test_ts --> file_callidescope_graph_src_modules_graph_address_depth_service_ts
+  file_callidescope_graph_src_modules_graph_address_depth_service_unit_test_ts --> file_callidescope_graph_src_modules_graph_graph_service_ts
+  file_callidescope_graph_src_modules_graph_address_depth_service_unit_test_ts --> file_callidescope_graph_src_modules_graph_paths_service_ts
+  file_callidescope_graph_src_modules_graph_address_depth_service_unit_test_ts --> file_callidescope_graph_src_modules_signatures_signatures_service_ts
+  file_callidescope_graph_src_modules_graph_address_depth_service_unit_test_ts --> file_callidescope_graph_testing_mocks_ts
+  file_callidescope_graph_src_modules_graph_address_depth_service_unit_test_ts --> file_callidescope_graph_testing_modules_ts
+  file_callidescope_graph_src_modules_graph_address_depth_types_ts --> file_callidescope_graph_src_modules_callables_callables_types_ts
+  file_callidescope_graph_src_modules_graph_address_depth_types_ts --> file_callidescope_graph_src_modules_graph_graph_types_ts
+  file_callidescope_graph_src_modules_graph_breadth_service_ts --> file_callidescope_graph_src_modules_callables_callables_types_ts
+  file_callidescope_graph_src_modules_graph_breadth_service_ts --> file_callidescope_graph_src_modules_graph_graph_types_ts
+  file_callidescope_graph_src_modules_graph_breadth_service_unit_test_ts --> file_callidescope_graph_src_modules_graph_breadth_service_ts
+  file_callidescope_graph_src_modules_graph_breadth_service_unit_test_ts --> file_callidescope_graph_src_modules_graph_graph_service_ts
+  file_callidescope_graph_src_modules_graph_breadth_service_unit_test_ts --> file_callidescope_graph_src_modules_graph_graph_types_ts
+  file_callidescope_graph_src_modules_graph_breadth_service_unit_test_ts --> file_callidescope_graph_testing_mocks_ts
+  file_callidescope_graph_src_modules_graph_breadth_service_unit_test_ts --> file_callidescope_graph_testing_modules_ts
+  file_callidescope_graph_src_modules_graph_components_service_ts --> file_callidescope_graph_src_modules_graph_components_constants_ts
+  file_callidescope_graph_src_modules_graph_components_service_ts --> file_callidescope_graph_src_modules_graph_components_types_ts
+  file_callidescope_graph_src_modules_graph_components_service_ts --> file_callidescope_graph_src_modules_graph_graph_types_ts
+  file_callidescope_graph_src_modules_graph_components_service_unit_test_ts --> file_callidescope_graph_src_modules_graph_components_service_ts
+  file_callidescope_graph_src_modules_graph_components_service_unit_test_ts --> file_callidescope_graph_src_modules_graph_graph_service_ts
+  file_callidescope_graph_src_modules_graph_components_service_unit_test_ts --> file_callidescope_graph_src_modules_graph_graph_types_ts
+  file_callidescope_graph_src_modules_graph_components_service_unit_test_ts --> file_callidescope_graph_testing_modules_ts
+  file_callidescope_graph_src_modules_graph_graph_assembly_service_ts --> file_callidescope_graph_src_modules_edges_edges_service_ts
+  file_callidescope_graph_src_modules_graph_graph_assembly_service_ts --> file_callidescope_graph_src_modules_graph_breadth_service_ts
+  file_callidescope_graph_src_modules_graph_graph_assembly_service_ts --> file_callidescope_graph_src_modules_graph_components_service_ts
+  file_callidescope_graph_src_modules_graph_graph_assembly_service_ts --> file_callidescope_graph_src_modules_graph_graph_assembly_types_ts
+  file_callidescope_graph_src_modules_graph_graph_assembly_service_ts --> file_callidescope_graph_src_modules_graph_graph_depth_service_ts
+  file_callidescope_graph_src_modules_graph_graph_assembly_service_ts --> file_callidescope_graph_src_modules_graph_graph_service_ts
+  file_callidescope_graph_src_modules_graph_graph_assembly_service_unit_test_ts --> file_callidescope_graph_src_modules_graph_breadth_service_ts
+  file_callidescope_graph_src_modules_graph_graph_assembly_service_unit_test_ts --> file_callidescope_graph_src_modules_graph_components_service_ts
+  file_callidescope_graph_src_modules_graph_graph_assembly_service_unit_test_ts --> file_callidescope_graph_src_modules_graph_graph_assembly_service_ts
+  file_callidescope_graph_src_modules_graph_graph_assembly_service_unit_test_ts --> file_callidescope_graph_src_modules_graph_graph_assembly_types_ts
+  file_callidescope_graph_src_modules_graph_graph_assembly_service_unit_test_ts --> file_callidescope_graph_src_modules_graph_graph_depth_service_ts
+  file_callidescope_graph_src_modules_graph_graph_assembly_service_unit_test_ts --> file_callidescope_graph_src_modules_graph_graph_service_ts
+  file_callidescope_graph_src_modules_graph_graph_assembly_service_unit_test_ts --> file_callidescope_graph_testing_modules_ts
+  file_callidescope_graph_src_modules_graph_graph_assembly_service_unit_test_ts --> file_callidescope_graph_testing_programs_ts
+  file_callidescope_graph_src_modules_graph_graph_assembly_types_ts --> file_callidescope_graph_src_modules_callables_callables_types_ts
+  file_callidescope_graph_src_modules_graph_graph_assembly_types_ts --> file_callidescope_graph_src_modules_graph_graph_types_ts
+  file_callidescope_graph_src_modules_graph_graph_depth_service_ts --> file_callidescope_graph_src_modules_graph_graph_types_ts
+  file_callidescope_graph_src_modules_graph_graph_depth_service_unit_test_ts --> file_callidescope_graph_src_modules_graph_components_service_ts
+  file_callidescope_graph_src_modules_graph_graph_depth_service_unit_test_ts --> file_callidescope_graph_src_modules_graph_graph_depth_service_ts
+  file_callidescope_graph_src_modules_graph_graph_depth_service_unit_test_ts --> file_callidescope_graph_src_modules_graph_graph_service_ts
+  file_callidescope_graph_src_modules_graph_graph_depth_service_unit_test_ts --> file_callidescope_graph_src_modules_graph_graph_types_ts
+  file_callidescope_graph_src_modules_graph_graph_depth_service_unit_test_ts --> file_callidescope_graph_testing_modules_ts
+  file_callidescope_graph_src_modules_graph_graph_module_ts --> file_callidescope_graph_src_modules_documentation_documentation_module_ts
+  file_callidescope_graph_src_modules_graph_graph_module_ts --> file_callidescope_graph_src_modules_edges_edges_module_ts
+  file_callidescope_graph_src_modules_graph_graph_module_ts --> file_callidescope_graph_src_modules_graph_address_depth_service_ts
+  file_callidescope_graph_src_modules_graph_graph_module_ts --> file_callidescope_graph_src_modules_graph_breadth_service_ts
+  file_callidescope_graph_src_modules_graph_graph_module_ts --> file_callidescope_graph_src_modules_graph_components_service_ts
+  file_callidescope_graph_src_modules_graph_graph_module_ts --> file_callidescope_graph_src_modules_graph_graph_assembly_service_ts
+  file_callidescope_graph_src_modules_graph_graph_module_ts --> file_callidescope_graph_src_modules_graph_graph_depth_service_ts
+  file_callidescope_graph_src_modules_graph_graph_module_ts --> file_callidescope_graph_src_modules_graph_graph_service_ts
+  file_callidescope_graph_src_modules_graph_graph_module_ts --> file_callidescope_graph_src_modules_graph_paths_service_ts
+  file_callidescope_graph_src_modules_graph_graph_module_ts --> file_callidescope_graph_src_modules_signatures_signatures_module_ts
+  file_callidescope_graph_src_modules_graph_graph_service_ts --> file_callidescope_graph_src_modules_edges_edges_types_ts
+  file_callidescope_graph_src_modules_graph_graph_service_ts --> file_callidescope_graph_src_modules_graph_graph_types_ts
+  file_callidescope_graph_src_modules_graph_graph_service_unit_test_ts --> file_callidescope_graph_src_modules_graph_graph_service_ts
+  file_callidescope_graph_src_modules_graph_graph_service_unit_test_ts --> file_callidescope_graph_testing_modules_ts
+  file_callidescope_graph_src_modules_graph_paths_service_ts --> file_callidescope_graph_src_modules_callables_callables_types_ts
+  file_callidescope_graph_src_modules_graph_paths_service_ts --> file_callidescope_graph_src_modules_documentation_documentation_service_ts
+  file_callidescope_graph_src_modules_graph_paths_service_ts --> file_callidescope_graph_src_modules_graph_graph_types_ts
+  file_callidescope_graph_src_modules_graph_paths_service_ts --> file_callidescope_graph_src_modules_signatures_signatures_service_ts
+  file_callidescope_graph_src_modules_graph_paths_service_unit_test_ts --> file_callidescope_graph_src_modules_callables_callables_types_ts
+  file_callidescope_graph_src_modules_graph_paths_service_unit_test_ts --> file_callidescope_graph_src_modules_documentation_documentation_service_ts
+  file_callidescope_graph_src_modules_graph_paths_service_unit_test_ts --> file_callidescope_graph_src_modules_graph_components_service_ts
+  file_callidescope_graph_src_modules_graph_paths_service_unit_test_ts --> file_callidescope_graph_src_modules_graph_graph_depth_service_ts
+  file_callidescope_graph_src_modules_graph_paths_service_unit_test_ts --> file_callidescope_graph_src_modules_graph_graph_service_ts
+  file_callidescope_graph_src_modules_graph_paths_service_unit_test_ts --> file_callidescope_graph_src_modules_graph_paths_service_ts
+  file_callidescope_graph_src_modules_graph_paths_service_unit_test_ts --> file_callidescope_graph_src_modules_signatures_signatures_service_ts
+  file_callidescope_graph_src_modules_graph_paths_service_unit_test_ts --> file_callidescope_graph_testing_mocks_ts
+  file_callidescope_graph_src_modules_graph_paths_service_unit_test_ts --> file_callidescope_graph_testing_modules_ts
+  file_callidescope_graph_src_modules_program_compiler_host_service_unit_test_ts --> file_callidescope_graph_src_modules_program_compiler_host_service_ts
+  file_callidescope_graph_src_modules_program_compiler_host_service_unit_test_ts --> file_callidescope_graph_testing_modules_ts
+  file_callidescope_graph_src_modules_program_program_module_ts --> file_callidescope_graph_src_modules_program_compiler_host_service_ts
+  file_callidescope_graph_src_modules_program_program_module_ts --> file_callidescope_graph_src_modules_program_program_service_ts
+  file_callidescope_graph_src_modules_program_program_module_ts --> file_callidescope_graph_src_modules_workspace_workspace_module_ts
+  file_callidescope_graph_src_modules_program_program_service_ts --> file_callidescope_graph_src_modules_program_compiler_host_service_ts
+  file_callidescope_graph_src_modules_program_program_service_ts --> file_callidescope_graph_src_modules_program_program_constants_ts
+  file_callidescope_graph_src_modules_program_program_service_ts --> file_callidescope_graph_src_modules_program_program_types_ts
+  file_callidescope_graph_src_modules_program_program_service_ts --> file_callidescope_graph_src_modules_workspace_workspace_service_ts
+  file_callidescope_graph_src_modules_program_program_service_ts --> file_callidescope_graph_src_modules_workspace_workspace_types_ts
+  file_callidescope_graph_src_modules_program_program_service_unit_test_ts --> file_callidescope_graph_src_modules_program_compiler_host_service_ts
+  file_callidescope_graph_src_modules_program_program_service_unit_test_ts --> file_callidescope_graph_src_modules_program_program_constants_ts
+  file_callidescope_graph_src_modules_program_program_service_unit_test_ts --> file_callidescope_graph_src_modules_program_program_service_ts
+  file_callidescope_graph_src_modules_program_program_service_unit_test_ts --> file_callidescope_graph_src_modules_workspace_workspace_service_ts
+  file_callidescope_graph_src_modules_program_program_service_unit_test_ts --> file_callidescope_graph_src_modules_workspace_workspace_types_ts
+  file_callidescope_graph_src_modules_program_program_service_unit_test_ts --> file_callidescope_graph_testing_modules_ts
+  file_callidescope_graph_src_modules_program_program_types_ts --> file_callidescope_graph_src_modules_workspace_workspace_types_ts
+  file_callidescope_graph_src_modules_signatures_signatures_module_ts --> file_callidescope_graph_src_modules_signatures_signatures_service_ts
+  file_callidescope_graph_src_modules_signatures_signatures_service_ts --> file_callidescope_graph_src_modules_callables_callables_types_ts
+  file_callidescope_graph_src_modules_signatures_signatures_service_ts --> file_callidescope_graph_src_modules_signatures_signatures_constants_ts
+  file_callidescope_graph_src_modules_signatures_signatures_service_ts --> file_callidescope_graph_src_modules_signatures_signatures_types_ts
+  file_callidescope_graph_src_modules_signatures_signatures_service_unit_test_ts --> file_callidescope_graph_src_modules_signatures_signatures_service_ts
+  file_callidescope_graph_src_modules_signatures_signatures_service_unit_test_ts --> file_callidescope_graph_src_modules_signatures_signatures_types_ts
+  file_callidescope_graph_src_modules_signatures_signatures_service_unit_test_ts --> file_callidescope_graph_testing_modules_ts
+  file_callidescope_graph_src_modules_signatures_signatures_service_unit_test_ts --> file_callidescope_graph_testing_programs_ts
+  file_callidescope_graph_src_modules_signatures_signatures_types_ts --> file_callidescope_graph_src_modules_callables_callables_types_ts
+  file_callidescope_graph_src_modules_workspace_file_filter_service_ts --> file_callidescope_graph_src_modules_workspace_workspace_service_ts
+  file_callidescope_graph_src_modules_workspace_file_filter_service_ts --> file_callidescope_graph_src_modules_workspace_workspace_types_ts
+  file_callidescope_graph_src_modules_workspace_file_filter_service_unit_test_ts --> file_callidescope_graph_src_modules_workspace_file_filter_service_ts
+  file_callidescope_graph_src_modules_workspace_file_filter_service_unit_test_ts --> file_callidescope_graph_src_modules_workspace_workspace_service_ts
+  file_callidescope_graph_src_modules_workspace_file_filter_service_unit_test_ts --> file_callidescope_graph_src_modules_workspace_workspace_types_ts
+  file_callidescope_graph_src_modules_workspace_file_filter_service_unit_test_ts --> file_callidescope_graph_testing_modules_ts
+  file_callidescope_graph_src_modules_workspace_workspace_module_ts --> file_callidescope_graph_src_modules_workspace_file_filter_service_ts
+  file_callidescope_graph_src_modules_workspace_workspace_module_ts --> file_callidescope_graph_src_modules_workspace_workspace_service_ts
+  file_callidescope_graph_src_modules_workspace_workspace_service_ts --> file_callidescope_graph_src_modules_program_program_constants_ts
+  file_callidescope_graph_src_modules_workspace_workspace_service_ts --> file_callidescope_graph_src_modules_workspace_workspace_constants_ts
+  file_callidescope_graph_src_modules_workspace_workspace_service_ts --> file_callidescope_graph_src_modules_workspace_workspace_types_ts
+  file_callidescope_graph_src_modules_workspace_workspace_service_unit_test_ts --> file_callidescope_graph_src_modules_program_program_constants_ts
+  file_callidescope_graph_src_modules_workspace_workspace_service_unit_test_ts --> file_callidescope_graph_src_modules_workspace_workspace_service_ts
+  file_callidescope_graph_src_modules_workspace_workspace_service_unit_test_ts --> file_callidescope_graph_src_modules_workspace_workspace_types_ts
+  file_callidescope_graph_src_modules_workspace_workspace_service_unit_test_ts --> file_callidescope_graph_testing_modules_ts
+  file_callidescope_graph_testing_mocks_ts --> file_callidescope_graph_src_modules_callables_callables_types_ts
+  file_callidescope_graph_testing_modules_ts --> file_callidescope_graph_src_modules_callables_callables_module_ts
+  file_callidescope_graph_testing_modules_ts --> file_callidescope_graph_src_modules_classes_classes_module_ts
+  file_callidescope_graph_testing_modules_ts --> file_callidescope_graph_src_modules_documentation_documentation_module_ts
+  file_callidescope_graph_testing_modules_ts --> file_callidescope_graph_src_modules_edges_edges_module_ts
+  file_callidescope_graph_testing_modules_ts --> file_callidescope_graph_src_modules_entries_entries_module_ts
+  file_callidescope_graph_testing_modules_ts --> file_callidescope_graph_src_modules_graph_graph_module_ts
+  file_callidescope_graph_testing_modules_ts --> file_callidescope_graph_src_modules_program_program_module_ts
+  file_callidescope_graph_testing_modules_ts --> file_callidescope_graph_src_modules_signatures_signatures_module_ts
+  file_callidescope_graph_testing_modules_ts --> file_callidescope_graph_src_modules_workspace_workspace_module_ts
+  file_callidescope_graph_testing_programs_ts --> file_callidescope_graph_src_modules_callables_callable_identity_service_ts
+  file_callidescope_graph_testing_programs_ts --> file_callidescope_graph_src_modules_callables_callables_service_ts
+  file_callidescope_graph_testing_programs_ts --> file_callidescope_graph_src_modules_classes_classes_service_ts
+  file_callidescope_graph_testing_programs_ts --> file_callidescope_graph_src_modules_classes_external_service_ts
+  file_callidescope_graph_testing_programs_ts --> file_callidescope_graph_src_modules_edges_call_sites_service_ts
+  file_callidescope_graph_testing_programs_ts --> file_callidescope_graph_src_modules_edges_edges_service_ts
+  file_callidescope_graph_testing_programs_ts --> file_callidescope_graph_src_modules_edges_symbol_resolution_service_ts
+  file_callidescope_graph_testing_programs_ts --> file_callidescope_graph_src_modules_program_compiler_host_service_ts
+  file_callidescope_graph_testing_programs_ts --> file_callidescope_graph_src_modules_program_program_service_ts
+  file_callidescope_graph_testing_programs_ts --> file_callidescope_graph_src_modules_program_program_types_ts
+  file_callidescope_graph_testing_programs_ts --> file_callidescope_graph_src_modules_workspace_workspace_service_ts
+  file_callidescope_nx_src_executors_breadth_executor_ts --> file_callidescope_nx_src_executors_address_types_ts
+  file_callidescope_nx_src_executors_breadth_executor_ts --> file_callidescope_nx_src_modules_address_address_utilities_ts
+  file_callidescope_nx_src_executors_breadth_executor_unit_test_ts --> file_callidescope_nx_src_executors_breadth_executor_ts
+  file_callidescope_nx_src_executors_breadth_executor_unit_test_ts --> file_callidescope_nx_src_modules_address_address_utilities_ts
+  file_callidescope_nx_src_executors_depth_executor_ts --> file_callidescope_nx_src_executors_address_types_ts
+  file_callidescope_nx_src_executors_depth_executor_ts --> file_callidescope_nx_src_modules_address_address_utilities_ts
+  file_callidescope_nx_src_executors_depth_executor_unit_test_ts --> file_callidescope_nx_src_executors_depth_executor_ts
+  file_callidescope_nx_src_executors_depth_executor_unit_test_ts --> file_callidescope_nx_src_modules_address_address_utilities_ts
+  file_callidescope_nx_src_executors_gate_executor_integration_test_ts --> file_callidescope_nx_src_executors_gate_executor_ts
+  file_callidescope_nx_src_executors_gate_executor_integration_test_ts --> file_callidescope_nx_src_executors_gate_executor_types_ts
+  file_callidescope_nx_src_executors_gate_executor_integration_test_ts --> file_callidescope_nx_src_modules_plugin_plugin_constants_ts
+  file_callidescope_nx_src_executors_gate_executor_integration_test_ts --> file_callidescope_nx_src_modules_projects_projects_service_ts
+  file_callidescope_nx_src_executors_gate_executor_ts --> file_callidescope_nx_src_executors_gate_executor_types_ts
+  file_callidescope_nx_src_executors_gate_executor_ts --> file_callidescope_nx_src_modules_plugin_plugin_context_utilities_ts
+  file_callidescope_nx_src_executors_gate_executor_ts --> file_callidescope_nx_src_modules_plugin_plugin_constants_ts
+  file_callidescope_nx_src_executors_gate_executor_ts --> file_callidescope_nx_src_modules_plugin_plugin_utilities_ts
+  file_callidescope_nx_src_executors_gate_executor_unit_test_ts --> file_callidescope_nx_src_executors_gate_executor_ts
+  file_callidescope_nx_src_executors_gate_executor_unit_test_ts --> file_callidescope_nx_src_modules_options_options_service_ts
+  file_callidescope_nx_src_executors_gate_executor_unit_test_ts --> file_callidescope_nx_src_modules_plugin_plugin_constants_ts
+  file_callidescope_nx_src_executors_gate_executor_unit_test_ts --> file_callidescope_nx_src_modules_plugin_plugin_service_ts
+  file_callidescope_nx_src_executors_gate_executor_unit_test_ts --> file_callidescope_nx_src_modules_plugin_plugin_types_ts
+  file_callidescope_nx_src_executors_trace_executor_ts --> file_callidescope_nx_src_executors_trace_executor_types_ts
+  file_callidescope_nx_src_executors_trace_executor_ts --> file_callidescope_nx_src_modules_plugin_plugin_context_utilities_ts
+  file_callidescope_nx_src_executors_trace_executor_ts --> file_callidescope_nx_src_modules_plugin_plugin_utilities_ts
+  file_callidescope_nx_src_executors_trace_executor_unit_test_ts --> file_callidescope_nx_src_executors_trace_executor_ts
+  file_callidescope_nx_src_executors_trace_executor_unit_test_ts --> file_callidescope_nx_src_modules_options_options_service_ts
+  file_callidescope_nx_src_executors_trace_executor_unit_test_ts --> file_callidescope_nx_src_modules_plugin_plugin_service_ts
+  file_callidescope_nx_src_executors_trace_executor_unit_test_ts --> file_callidescope_nx_src_modules_plugin_plugin_types_ts
+  file_callidescope_nx_src_index_ts --> file_callidescope_nx_src_modules_plugin_plugin_context_utilities_ts
+  file_callidescope_nx_src_index_ts --> file_callidescope_nx_src_modules_plugin_plugin_constants_ts
+  file_callidescope_nx_src_index_unit_test_ts --> file_callidescope_nx_src_index_ts
+  file_callidescope_nx_src_index_unit_test_ts --> file_callidescope_nx_src_modules_plugin_plugin_service_ts
+  file_callidescope_nx_src_index_unit_test_ts --> file_callidescope_nx_src_modules_plugin_plugin_types_ts
+  file_callidescope_nx_src_main_module_ts --> file_callidescope_nx_src_modules_address_address_module_ts
+  file_callidescope_nx_src_main_module_ts --> file_callidescope_nx_src_modules_plugin_plugin_module_ts
+  file_callidescope_nx_src_modules_address_address_module_ts --> file_callidescope_nx_src_modules_address_address_service_ts
+  file_callidescope_nx_src_modules_address_address_service_ts --> file_callidescope_nx_src_modules_address_address_types_ts
+  file_callidescope_nx_src_modules_address_address_service_unit_test_ts --> file_callidescope_nx_src_modules_address_address_service_ts
+  file_callidescope_nx_src_modules_address_address_utilities_ts --> file_callidescope_nx_src_executors_address_types_ts
+  file_callidescope_nx_src_modules_address_address_utilities_ts --> file_callidescope_nx_src_modules_plugin_plugin_context_utilities_ts
+  file_callidescope_nx_src_modules_address_address_utilities_ts --> file_callidescope_nx_src_modules_plugin_plugin_utilities_ts
+  file_callidescope_nx_src_modules_address_address_utilities_unit_test_ts --> file_callidescope_nx_src_modules_address_address_service_ts
+  file_callidescope_nx_src_modules_address_address_utilities_unit_test_ts --> file_callidescope_nx_src_modules_address_address_utilities_ts
+  file_callidescope_nx_src_modules_address_address_utilities_unit_test_ts --> file_callidescope_nx_src_modules_options_options_service_ts
+  file_callidescope_nx_src_modules_address_address_utilities_unit_test_ts --> file_callidescope_nx_src_modules_plugin_plugin_service_ts
+  file_callidescope_nx_src_modules_address_address_utilities_unit_test_ts --> file_callidescope_nx_src_modules_plugin_plugin_types_ts
+  file_callidescope_nx_src_modules_options_options_module_ts --> file_callidescope_nx_src_modules_options_options_service_ts
+  file_callidescope_nx_src_modules_options_options_service_ts --> file_callidescope_nx_src_modules_options_options_constants_ts
+  file_callidescope_nx_src_modules_options_options_service_ts --> file_callidescope_nx_src_modules_options_options_types_ts
+  file_callidescope_nx_src_modules_options_options_service_unit_test_ts --> file_callidescope_nx_src_modules_options_options_service_ts
+  file_callidescope_nx_src_modules_plugin_plugin_context_utilities_ts --> file_callidescope_nx_src_main_module_ts
+  file_callidescope_nx_src_modules_plugin_plugin_context_utilities_ts --> file_callidescope_nx_src_modules_address_address_service_ts
+  file_callidescope_nx_src_modules_plugin_plugin_context_utilities_ts --> file_callidescope_nx_src_modules_options_options_service_ts
+  file_callidescope_nx_src_modules_plugin_plugin_context_utilities_ts --> file_callidescope_nx_src_modules_plugin_plugin_constants_ts
+  file_callidescope_nx_src_modules_plugin_plugin_context_utilities_ts --> file_callidescope_nx_src_modules_plugin_plugin_service_ts
+  file_callidescope_nx_src_modules_plugin_plugin_context_utilities_ts --> file_callidescope_nx_src_modules_plugin_plugin_types_ts
+  file_callidescope_nx_src_modules_plugin_plugin_context_utilities_ts --> file_callidescope_nx_src_modules_projects_projects_service_ts
+  file_callidescope_nx_src_modules_plugin_plugin_context_utilities_unit_test_ts --> file_callidescope_nx_src_modules_address_address_service_ts
+  file_callidescope_nx_src_modules_plugin_plugin_context_utilities_unit_test_ts --> file_callidescope_nx_src_modules_options_options_service_ts
+  file_callidescope_nx_src_modules_plugin_plugin_context_utilities_unit_test_ts --> file_callidescope_nx_src_modules_plugin_plugin_context_utilities_ts
+  file_callidescope_nx_src_modules_plugin_plugin_context_utilities_unit_test_ts --> file_callidescope_nx_src_modules_plugin_plugin_service_ts
+  file_callidescope_nx_src_modules_plugin_plugin_context_utilities_unit_test_ts --> file_callidescope_nx_src_modules_projects_projects_service_ts
+  file_callidescope_nx_src_modules_plugin_plugin_module_ts --> file_callidescope_nx_src_modules_options_options_module_ts
+  file_callidescope_nx_src_modules_plugin_plugin_module_ts --> file_callidescope_nx_src_modules_plugin_plugin_service_ts
+  file_callidescope_nx_src_modules_plugin_plugin_module_ts --> file_callidescope_nx_src_modules_projects_projects_module_ts
+  file_callidescope_nx_src_modules_plugin_plugin_module_ts --> file_callidescope_nx_src_modules_run_configuration_run_configuration_module_ts
+  file_callidescope_nx_src_modules_plugin_plugin_service_ts --> file_callidescope_nx_src_modules_options_options_constants_ts
+  file_callidescope_nx_src_modules_plugin_plugin_service_ts --> file_callidescope_nx_src_modules_options_options_service_ts
+  file_callidescope_nx_src_modules_plugin_plugin_service_ts --> file_callidescope_nx_src_modules_options_options_types_ts
+  file_callidescope_nx_src_modules_plugin_plugin_service_ts --> file_callidescope_nx_src_modules_plugin_plugin_constants_ts
+  file_callidescope_nx_src_modules_plugin_plugin_service_ts --> file_callidescope_nx_src_modules_plugin_plugin_types_ts
+  file_callidescope_nx_src_modules_plugin_plugin_service_ts --> file_callidescope_nx_src_modules_projects_projects_service_ts
+  file_callidescope_nx_src_modules_plugin_plugin_service_ts --> file_callidescope_nx_src_modules_run_configuration_run_configuration_service_ts
+  file_callidescope_nx_src_modules_plugin_plugin_service_unit_test_ts --> file_callidescope_nx_src_modules_options_options_service_ts
+  file_callidescope_nx_src_modules_plugin_plugin_service_unit_test_ts --> file_callidescope_nx_src_modules_plugin_plugin_constants_ts
+  file_callidescope_nx_src_modules_plugin_plugin_service_unit_test_ts --> file_callidescope_nx_src_modules_plugin_plugin_service_ts
+  file_callidescope_nx_src_modules_plugin_plugin_service_unit_test_ts --> file_callidescope_nx_src_modules_plugin_plugin_types_ts
+  file_callidescope_nx_src_modules_plugin_plugin_service_unit_test_ts --> file_callidescope_nx_src_modules_projects_projects_service_ts
+  file_callidescope_nx_src_modules_plugin_plugin_service_unit_test_ts --> file_callidescope_nx_src_modules_run_configuration_run_configuration_service_ts
+  file_callidescope_nx_src_modules_plugin_plugin_types_ts --> file_callidescope_nx_src_modules_plugin_plugin_constants_ts
+  file_callidescope_nx_src_modules_plugin_plugin_utilities_ts --> file_callidescope_nx_src_modules_plugin_plugin_context_utilities_ts
+  file_callidescope_nx_src_modules_plugin_plugin_utilities_ts --> file_callidescope_nx_src_modules_plugin_plugin_types_ts
+  file_callidescope_nx_src_modules_projects_projects_module_ts --> file_callidescope_nx_src_modules_projects_projects_service_ts
+  file_callidescope_nx_src_modules_projects_projects_service_ts --> file_callidescope_nx_src_modules_projects_projects_types_ts
+  file_callidescope_nx_src_modules_projects_projects_service_unit_test_ts --> file_callidescope_nx_src_modules_projects_projects_service_ts
+  file_callidescope_nx_src_modules_run_configuration_run_configuration_module_ts --> file_callidescope_nx_src_modules_options_options_module_ts
+  file_callidescope_nx_src_modules_run_configuration_run_configuration_module_ts --> file_callidescope_nx_src_modules_run_configuration_run_configuration_service_ts
+  file_callidescope_nx_src_modules_run_configuration_run_configuration_service_ts --> file_callidescope_nx_src_modules_options_options_service_ts
+  file_callidescope_nx_src_modules_run_configuration_run_configuration_service_ts --> file_callidescope_nx_src_modules_run_configuration_run_configuration_constants_ts
+  file_callidescope_nx_src_modules_run_configuration_run_configuration_service_ts --> file_callidescope_nx_src_modules_run_configuration_run_configuration_types_ts
+  file_callidescope_nx_src_modules_run_configuration_run_configuration_service_unit_test_ts --> file_callidescope_nx_src_modules_options_options_service_ts
+  file_callidescope_nx_src_modules_run_configuration_run_configuration_service_unit_test_ts --> file_callidescope_nx_src_modules_run_configuration_run_configuration_service_ts
+  file_callidescope_output_src_modules_address_report_address_report_module_ts --> file_callidescope_output_src_modules_address_report_address_report_service_ts
+  file_callidescope_output_src_modules_address_report_address_report_module_ts --> file_callidescope_output_src_modules_report_report_module_ts
+  file_callidescope_output_src_modules_address_report_address_report_service_ts --> file_callidescope_output_src_modules_address_report_address_report_types_ts
+  file_callidescope_output_src_modules_address_report_address_report_service_ts --> file_callidescope_output_src_modules_report_mermaid_report_service_ts
+  file_callidescope_output_src_modules_address_report_address_report_service_ts --> file_callidescope_output_src_modules_report_report_service_ts
+  file_callidescope_output_src_modules_address_report_address_report_service_ts --> file_callidescope_output_src_modules_report_report_types_ts
+  file_callidescope_output_src_modules_address_report_address_report_service_unit_test_ts --> file_callidescope_output_src_modules_address_report_address_report_service_ts
+  file_callidescope_output_src_modules_address_report_address_report_service_unit_test_ts --> file_callidescope_output_src_modules_report_mermaid_report_service_ts
+  file_callidescope_output_src_modules_address_report_address_report_service_unit_test_ts --> file_callidescope_output_src_modules_report_report_service_ts
+  file_callidescope_output_src_modules_address_report_address_report_service_unit_test_ts --> file_callidescope_output_testing_mocks_ts
+  file_callidescope_output_src_modules_output_json_output_json_module_ts --> file_callidescope_output_src_modules_output_json_output_json_service_ts
+  file_callidescope_output_src_modules_output_json_output_json_service_ts --> file_callidescope_output_src_modules_output_json_output_json_types_ts
+  file_callidescope_output_src_modules_output_json_output_json_service_unit_test_ts --> file_callidescope_output_src_modules_output_json_output_json_service_ts
+  file_callidescope_output_src_modules_output_json_output_json_service_unit_test_ts --> file_callidescope_output_testing_mocks_ts
+  file_callidescope_output_src_modules_output_json_output_json_service_unit_test_ts --> file_callidescope_output_testing_modules_ts
+  file_callidescope_output_src_modules_output_markdown_output_markdown_module_ts --> file_callidescope_output_src_modules_output_markdown_output_markdown_service_ts
+  file_callidescope_output_src_modules_output_markdown_output_markdown_service_ts --> file_callidescope_output_src_modules_output_markdown_output_markdown_constants_ts
+  file_callidescope_output_src_modules_output_markdown_output_markdown_service_ts --> file_callidescope_output_src_modules_output_markdown_output_markdown_types_ts
+  file_callidescope_output_src_modules_output_markdown_output_markdown_service_unit_test_ts --> file_callidescope_output_src_modules_output_markdown_output_markdown_constants_ts
+  file_callidescope_output_src_modules_output_markdown_output_markdown_service_unit_test_ts --> file_callidescope_output_src_modules_output_markdown_output_markdown_service_ts
+  file_callidescope_output_src_modules_output_markdown_output_markdown_service_unit_test_ts --> file_callidescope_output_testing_mocks_ts
+  file_callidescope_output_src_modules_output_markdown_output_markdown_service_unit_test_ts --> file_callidescope_output_testing_modules_ts
+  file_callidescope_output_src_modules_project_reports_project_reports_module_ts --> file_callidescope_output_src_modules_project_reports_project_reports_service_ts
+  file_callidescope_output_src_modules_project_reports_project_reports_service_ts --> file_callidescope_output_src_modules_project_reports_project_reports_constants_ts
+  file_callidescope_output_src_modules_project_reports_project_reports_service_ts --> file_callidescope_output_src_modules_project_reports_project_reports_types_ts
+  file_callidescope_output_src_modules_project_reports_project_reports_service_unit_test_ts --> file_callidescope_output_src_modules_project_reports_project_reports_service_ts
+  file_callidescope_output_src_modules_project_reports_project_reports_service_unit_test_ts --> file_callidescope_output_src_modules_project_reports_project_reports_types_ts
+  file_callidescope_output_src_modules_project_reports_project_reports_service_unit_test_ts --> file_callidescope_output_testing_mocks_ts
+  file_callidescope_output_src_modules_project_reports_project_reports_service_unit_test_ts --> file_callidescope_output_testing_modules_ts
+  file_callidescope_output_src_modules_report_findings_report_findings_module_ts --> file_callidescope_output_src_modules_report_findings_report_findings_service_ts
+  file_callidescope_output_src_modules_report_findings_report_findings_service_ts --> file_callidescope_output_src_modules_report_findings_report_findings_types_ts
+  file_callidescope_output_src_modules_report_findings_report_findings_service_unit_test_ts --> file_callidescope_output_src_modules_report_findings_report_findings_service_ts
+  file_callidescope_output_src_modules_report_findings_report_findings_service_unit_test_ts --> file_callidescope_output_src_modules_report_findings_report_findings_types_ts
+  file_callidescope_output_src_modules_report_findings_report_findings_service_unit_test_ts --> file_callidescope_output_testing_mocks_ts
+  file_callidescope_output_src_modules_report_markdown_report_service_ts --> file_callidescope_output_src_modules_report_mermaid_report_service_ts
+  file_callidescope_output_src_modules_report_markdown_report_service_ts --> file_callidescope_output_src_modules_report_report_constants_ts
+  file_callidescope_output_src_modules_report_markdown_report_service_ts --> file_callidescope_output_src_modules_report_report_service_ts
+  file_callidescope_output_src_modules_report_markdown_report_service_ts --> file_callidescope_output_src_modules_report_report_types_ts
+  file_callidescope_output_src_modules_report_markdown_report_service_ts --> file_callidescope_output_src_modules_report_workspace_report_service_ts
+  file_callidescope_output_src_modules_report_markdown_report_service_unit_test_ts --> file_callidescope_output_src_modules_report_markdown_report_service_ts
+  file_callidescope_output_src_modules_report_markdown_report_service_unit_test_ts --> file_callidescope_output_src_modules_report_report_constants_ts
+  file_callidescope_output_src_modules_report_markdown_report_service_unit_test_ts --> file_callidescope_output_testing_mocks_ts
+  file_callidescope_output_src_modules_report_markdown_report_service_unit_test_ts --> file_callidescope_output_testing_modules_ts
+  file_callidescope_output_src_modules_report_mermaid_report_service_ts --> file_callidescope_output_src_modules_report_report_constants_ts
+  file_callidescope_output_src_modules_report_mermaid_report_service_ts --> file_callidescope_output_src_modules_report_report_types_ts
+  file_callidescope_output_src_modules_report_mermaid_report_service_unit_test_ts --> file_callidescope_output_src_modules_report_mermaid_report_service_ts
+  file_callidescope_output_src_modules_report_mermaid_report_service_unit_test_ts --> file_callidescope_output_src_modules_report_report_constants_ts
+  file_callidescope_output_src_modules_report_mermaid_report_service_unit_test_ts --> file_callidescope_output_testing_mocks_ts
+  file_callidescope_output_src_modules_report_mermaid_report_service_unit_test_ts --> file_callidescope_output_testing_modules_ts
+  file_callidescope_output_src_modules_report_report_module_ts --> file_callidescope_output_src_modules_report_markdown_report_service_ts
+  file_callidescope_output_src_modules_report_report_module_ts --> file_callidescope_output_src_modules_report_mermaid_report_service_ts
+  file_callidescope_output_src_modules_report_report_module_ts --> file_callidescope_output_src_modules_report_report_service_ts
+  file_callidescope_output_src_modules_report_report_module_ts --> file_callidescope_output_src_modules_report_workspace_report_service_ts
+  file_callidescope_output_src_modules_report_report_service_ts --> file_callidescope_output_src_modules_report_report_constants_ts
+  file_callidescope_output_src_modules_report_report_service_unit_test_ts --> file_callidescope_output_src_modules_report_report_service_ts
+  file_callidescope_output_src_modules_report_report_service_unit_test_ts --> file_callidescope_output_testing_mocks_ts
+  file_callidescope_output_src_modules_report_report_service_unit_test_ts --> file_callidescope_output_testing_modules_ts
+  file_callidescope_output_src_modules_report_report_types_ts --> file_callidescope_output_src_modules_project_reports_project_reports_types_ts
+  file_callidescope_output_src_modules_report_workspace_report_service_ts --> file_callidescope_output_src_modules_report_report_constants_ts
+  file_callidescope_output_src_modules_report_workspace_report_service_ts --> file_callidescope_output_src_modules_report_report_types_ts
+  file_callidescope_output_src_modules_report_workspace_report_service_unit_test_ts --> file_callidescope_output_src_modules_report_report_constants_ts
+  file_callidescope_output_src_modules_report_workspace_report_service_unit_test_ts --> file_callidescope_output_src_modules_report_workspace_report_service_ts
+  file_callidescope_output_src_modules_report_workspace_report_service_unit_test_ts --> file_callidescope_output_testing_mocks_ts
+  file_callidescope_output_src_modules_report_workspace_report_service_unit_test_ts --> file_callidescope_output_testing_modules_ts
+  file_callidescope_output_src_modules_write_destinations_write_destinations_module_ts --> file_callidescope_output_src_modules_output_json_output_json_module_ts
+  file_callidescope_output_src_modules_write_destinations_write_destinations_module_ts --> file_callidescope_output_src_modules_output_markdown_output_markdown_module_ts
+  file_callidescope_output_src_modules_write_destinations_write_destinations_module_ts --> file_callidescope_output_src_modules_report_report_module_ts
+  file_callidescope_output_src_modules_write_destinations_write_destinations_module_ts --> file_callidescope_output_src_modules_write_destinations_write_destinations_service_ts
+  file_callidescope_output_src_modules_write_destinations_write_destinations_service_ts --> file_callidescope_output_src_modules_output_json_output_json_service_ts
+  file_callidescope_output_src_modules_write_destinations_write_destinations_service_ts --> file_callidescope_output_src_modules_output_markdown_output_markdown_service_ts
+  file_callidescope_output_src_modules_write_destinations_write_destinations_service_ts --> file_callidescope_output_src_modules_report_markdown_report_service_ts
+  file_callidescope_output_src_modules_write_destinations_write_destinations_service_ts --> file_callidescope_output_src_modules_write_destinations_write_destinations_constants_ts
+  file_callidescope_output_src_modules_write_destinations_write_destinations_service_ts --> file_callidescope_output_src_modules_write_destinations_write_destinations_types_ts
+  file_callidescope_output_src_modules_write_destinations_write_destinations_service_unit_test_ts --> file_callidescope_output_src_modules_output_json_output_json_service_ts
+  file_callidescope_output_src_modules_write_destinations_write_destinations_service_unit_test_ts --> file_callidescope_output_src_modules_output_markdown_output_markdown_service_ts
+  file_callidescope_output_src_modules_write_destinations_write_destinations_service_unit_test_ts --> file_callidescope_output_src_modules_report_markdown_report_service_ts
+  file_callidescope_output_src_modules_write_destinations_write_destinations_service_unit_test_ts --> file_callidescope_output_src_modules_report_mermaid_report_service_ts
+  file_callidescope_output_src_modules_write_destinations_write_destinations_service_unit_test_ts --> file_callidescope_output_src_modules_report_report_service_ts
+  file_callidescope_output_src_modules_write_destinations_write_destinations_service_unit_test_ts --> file_callidescope_output_src_modules_report_workspace_report_service_ts
+  file_callidescope_output_src_modules_write_destinations_write_destinations_service_unit_test_ts --> file_callidescope_output_src_modules_write_destinations_write_destinations_service_ts
+  file_callidescope_output_src_modules_write_destinations_write_destinations_service_unit_test_ts --> file_callidescope_output_src_modules_write_destinations_write_destinations_types_ts
+  file_callidescope_output_src_modules_write_destinations_write_destinations_service_unit_test_ts --> file_callidescope_output_testing_mocks_ts
+  file_callidescope_output_testing_modules_ts --> file_callidescope_output_src_modules_output_json_output_json_module_ts
+  file_callidescope_output_testing_modules_ts --> file_callidescope_output_src_modules_output_markdown_output_markdown_module_ts
+  file_callidescope_output_testing_modules_ts --> file_callidescope_output_src_modules_project_reports_project_reports_module_ts
+  file_callidescope_output_testing_modules_ts --> file_callidescope_output_src_modules_report_report_module_ts
+  file_codependix_boundaries_src_modules_boundaries_boundaries_module_ts --> file_codependix_boundaries_src_modules_boundaries_boundaries_service_ts
+  file_codependix_boundaries_src_modules_boundaries_boundaries_module_ts --> file_codependix_boundaries_src_modules_boundaries_boundary_cycles_service_ts
+  file_codependix_boundaries_src_modules_boundaries_boundaries_module_ts --> file_codependix_boundaries_src_modules_boundaries_boundary_report_service_ts
+  file_codependix_boundaries_src_modules_boundaries_boundaries_module_ts --> file_codependix_boundaries_src_modules_boundaries_boundary_selector_service_ts
+  file_codependix_boundaries_src_modules_boundaries_boundaries_module_unit_test_ts --> file_codependix_boundaries_src_modules_boundaries_boundaries_module_ts
+  file_codependix_boundaries_src_modules_boundaries_boundaries_module_unit_test_ts --> file_codependix_boundaries_src_modules_boundaries_boundaries_service_ts
+  file_codependix_boundaries_src_modules_boundaries_boundaries_module_unit_test_ts --> file_codependix_boundaries_src_modules_boundaries_boundary_cycles_service_ts
+  file_codependix_boundaries_src_modules_boundaries_boundaries_module_unit_test_ts --> file_codependix_boundaries_src_modules_boundaries_boundary_report_service_ts
+  file_codependix_boundaries_src_modules_boundaries_boundaries_module_unit_test_ts --> file_codependix_boundaries_src_modules_boundaries_boundary_selector_service_ts
+  file_codependix_boundaries_src_modules_boundaries_boundaries_service_ts --> file_codependix_boundaries_src_modules_boundaries_boundaries_constants_ts
+  file_codependix_boundaries_src_modules_boundaries_boundaries_service_ts --> file_codependix_boundaries_src_modules_boundaries_boundaries_types_ts
+  file_codependix_boundaries_src_modules_boundaries_boundaries_service_ts --> file_codependix_boundaries_src_modules_boundaries_boundary_cycles_service_ts
+  file_codependix_boundaries_src_modules_boundaries_boundaries_service_ts --> file_codependix_boundaries_src_modules_boundaries_boundary_selector_service_ts
+  file_codependix_boundaries_src_modules_boundaries_boundaries_service_unit_test_ts --> file_codependix_boundaries_src_modules_boundaries_boundaries_service_ts
+  file_codependix_boundaries_src_modules_boundaries_boundaries_service_unit_test_ts --> file_codependix_boundaries_src_modules_boundaries_boundaries_types_ts
+  file_codependix_boundaries_src_modules_boundaries_boundaries_service_unit_test_ts --> file_codependix_boundaries_src_modules_boundaries_boundary_cycles_service_ts
+  file_codependix_boundaries_src_modules_boundaries_boundaries_service_unit_test_ts --> file_codependix_boundaries_src_modules_boundaries_boundary_selector_service_ts
+  file_codependix_boundaries_src_modules_boundaries_boundary_cycles_service_ts --> file_codependix_boundaries_src_modules_boundaries_boundaries_types_ts
+  file_codependix_boundaries_src_modules_boundaries_boundary_cycles_service_unit_test_ts --> file_codependix_boundaries_src_modules_boundaries_boundaries_types_ts
+  file_codependix_boundaries_src_modules_boundaries_boundary_cycles_service_unit_test_ts --> file_codependix_boundaries_src_modules_boundaries_boundary_cycles_service_ts
+  file_codependix_boundaries_src_modules_boundaries_boundary_report_service_ts --> file_codependix_boundaries_src_modules_boundaries_boundaries_types_ts
+  file_codependix_boundaries_src_modules_boundaries_boundary_report_service_unit_test_ts --> file_codependix_boundaries_src_modules_boundaries_boundaries_types_ts
+  file_codependix_boundaries_src_modules_boundaries_boundary_report_service_unit_test_ts --> file_codependix_boundaries_src_modules_boundaries_boundary_report_service_ts
+  file_codependix_boundaries_src_modules_boundaries_boundary_selector_service_ts --> file_codependix_boundaries_src_modules_boundaries_boundaries_types_ts
+  file_codependix_boundaries_src_modules_boundaries_boundary_selector_service_unit_test_ts --> file_codependix_boundaries_src_modules_boundaries_boundaries_types_ts
+  file_codependix_boundaries_src_modules_boundaries_boundary_selector_service_unit_test_ts --> file_codependix_boundaries_src_modules_boundaries_boundary_selector_service_ts
+  file_codependix_boundaries_src_modules_boundary_check_boundary_check_constants_ts --> file_codependix_boundaries_src_modules_boundaries_boundaries_types_ts
+  file_codependix_boundaries_src_modules_boundary_check_boundary_check_module_ts --> file_codependix_boundaries_src_modules_boundaries_boundaries_module_ts
+  file_codependix_boundaries_src_modules_boundary_check_boundary_check_module_ts --> file_codependix_boundaries_src_modules_boundary_check_boundary_check_service_ts
+  file_codependix_boundaries_src_modules_boundary_check_boundary_check_module_ts --> file_codependix_boundaries_src_modules_boundary_check_boundary_graph_service_ts
+  file_codependix_boundaries_src_modules_boundary_check_boundary_check_module_unit_test_ts --> file_codependix_boundaries_src_modules_boundary_check_boundary_check_module_ts
+  file_codependix_boundaries_src_modules_boundary_check_boundary_check_module_unit_test_ts --> file_codependix_boundaries_src_modules_boundary_check_boundary_check_service_ts
+  file_codependix_boundaries_src_modules_boundary_check_boundary_check_module_unit_test_ts --> file_codependix_boundaries_src_modules_boundary_check_boundary_graph_service_ts
+  file_codependix_boundaries_src_modules_boundary_check_boundary_check_service_ts --> file_codependix_boundaries_src_modules_boundaries_boundaries_service_ts
+  file_codependix_boundaries_src_modules_boundary_check_boundary_check_service_ts --> file_codependix_boundaries_src_modules_boundaries_boundaries_types_ts
+  file_codependix_boundaries_src_modules_boundary_check_boundary_check_service_ts --> file_codependix_boundaries_src_modules_boundary_check_boundary_check_constants_ts
+  file_codependix_boundaries_src_modules_boundary_check_boundary_check_service_ts --> file_codependix_boundaries_src_modules_boundary_check_boundary_check_types_ts
+  file_codependix_boundaries_src_modules_boundary_check_boundary_check_service_ts --> file_codependix_boundaries_src_modules_boundary_check_boundary_graph_service_ts
+  file_codependix_boundaries_src_modules_boundary_check_boundary_check_service_unit_test_ts --> file_codependix_boundaries_src_modules_boundaries_boundaries_service_ts
+  file_codependix_boundaries_src_modules_boundary_check_boundary_check_service_unit_test_ts --> file_codependix_boundaries_src_modules_boundaries_boundaries_types_ts
+  file_codependix_boundaries_src_modules_boundary_check_boundary_check_service_unit_test_ts --> file_codependix_boundaries_src_modules_boundary_check_boundary_check_service_ts
+  file_codependix_boundaries_src_modules_boundary_check_boundary_check_service_unit_test_ts --> file_codependix_boundaries_src_modules_boundary_check_boundary_check_types_ts
+  file_codependix_boundaries_src_modules_boundary_check_boundary_check_service_unit_test_ts --> file_codependix_boundaries_src_modules_boundary_check_boundary_graph_service_ts
+  file_codependix_boundaries_src_modules_boundary_check_boundary_check_types_ts --> file_codependix_boundaries_src_modules_boundaries_boundaries_types_ts
+  file_codependix_boundaries_src_modules_boundary_check_boundary_graph_service_ts --> file_codependix_boundaries_src_modules_boundaries_boundaries_types_ts
+  file_codependix_boundaries_src_modules_boundary_check_boundary_graph_service_unit_test_ts --> file_codependix_boundaries_src_modules_boundary_check_boundary_graph_service_ts
+  file_codependix_boundaries_src_modules_run_context_run_context_module_ts --> file_codependix_boundaries_src_modules_run_context_run_context_service_ts
+  file_codependix_boundaries_src_modules_run_context_run_context_module_unit_test_ts --> file_codependix_boundaries_src_modules_run_context_run_context_module_ts
+  file_codependix_boundaries_src_modules_run_context_run_context_module_unit_test_ts --> file_codependix_boundaries_src_modules_run_context_run_context_service_ts
+  file_codependix_boundaries_src_modules_run_context_run_context_service_ts --> file_codependix_boundaries_src_modules_run_context_run_context_types_ts
+  file_codependix_boundaries_src_modules_run_context_run_context_service_unit_test_ts --> file_codependix_boundaries_src_modules_run_context_run_context_service_ts
+  file_codependix_cli_src_index_unit_test_ts --> file_codependix_cli_src_index_ts
+  file_codependix_cli_src_main_end_to_end_test_ts --> file_codependix_cli_src_constants_ts
+  file_codependix_cli_src_main_module_ts --> file_codependix_cli_src_constants_ts
+  file_codependix_cli_src_main_module_ts --> file_codependix_cli_src_modules_map_map_module_ts
+  file_codependix_cli_src_main_ts --> file_codependix_cli_src_main_module_ts
+  file_codependix_cli_src_modules_map_map_command_integration_test_ts --> file_codependix_cli_src_main_module_ts
+  file_codependix_cli_src_modules_map_map_command_integration_test_ts --> file_codependix_cli_src_modules_map_map_command_ts
+  file_codependix_cli_src_modules_map_map_command_unit_test_ts --> file_codependix_cli_src_modules_map_map_command_ts
+  file_codependix_cli_src_modules_map_map_module_ts --> file_codependix_cli_src_modules_map_map_command_ts
+  file_codependix_cli_src_modules_map_map_module_unit_test_ts --> file_codependix_cli_src_modules_map_map_command_ts
+  file_codependix_cli_src_modules_map_map_module_unit_test_ts --> file_codependix_cli_src_modules_map_map_module_ts
+  file_codependix_cli_src_repl_ts --> file_codependix_cli_src_main_module_ts
+  file_codependix_configuration_src_index_unit_test_ts --> file_codependix_configuration_src_index_ts
+  file_codependix_configuration_src_modules_configuration_configuration_loader_service_ts --> file_codependix_configuration_src_modules_configuration_configuration_constants_ts
+  file_codependix_configuration_src_modules_configuration_configuration_loader_service_ts --> file_codependix_configuration_src_modules_configuration_configuration_types_ts
+  file_codependix_configuration_src_modules_configuration_configuration_loader_service_unit_test_ts --> file_codependix_configuration_src_modules_configuration_configuration_loader_service_ts
+  file_codependix_configuration_src_modules_configuration_configuration_constants_ts --> file_codependix_configuration_src_modules_configuration_configuration_types_ts
+  file_codependix_configuration_src_modules_configuration_configuration_module_ts --> file_codependix_configuration_src_modules_configuration_configuration_loader_service_ts
+  file_codependix_configuration_src_modules_configuration_configuration_module_ts --> file_codependix_configuration_src_modules_configuration_configuration_service_ts
+  file_codependix_configuration_src_modules_configuration_configuration_module_ts --> file_codependix_configuration_src_modules_configuration_flag_resolution_service_ts
+  file_codependix_configuration_src_modules_configuration_configuration_module_ts --> file_codependix_configuration_src_modules_input_input_module_ts
+  file_codependix_configuration_src_modules_configuration_configuration_module_ts --> file_codependix_configuration_src_modules_override_resolution_override_resolution_module_ts
+  file_codependix_configuration_src_modules_configuration_configuration_module_unit_test_ts --> file_codependix_configuration_src_modules_configuration_configuration_module_ts
+  file_codependix_configuration_src_modules_configuration_configuration_module_unit_test_ts --> file_codependix_configuration_src_modules_configuration_configuration_service_ts
+  file_codependix_configuration_src_modules_configuration_configuration_service_ts --> file_codependix_configuration_src_modules_configuration_configuration_loader_service_ts
+  file_codependix_configuration_src_modules_configuration_configuration_service_ts --> file_codependix_configuration_src_modules_configuration_configuration_constants_ts
+  file_codependix_configuration_src_modules_configuration_configuration_service_ts --> file_codependix_configuration_src_modules_configuration_configuration_types_ts
+  file_codependix_configuration_src_modules_configuration_configuration_service_ts --> file_codependix_configuration_src_modules_configuration_flag_resolution_service_ts
+  file_codependix_configuration_src_modules_configuration_configuration_service_ts --> file_codependix_configuration_src_modules_input_input_service_ts
+  file_codependix_configuration_src_modules_configuration_configuration_service_ts --> file_codependix_configuration_src_modules_override_resolution_override_resolution_service_ts
+  file_codependix_configuration_src_modules_configuration_configuration_service_unit_test_ts --> file_codependix_configuration_src_modules_configuration_configuration_loader_service_ts
+  file_codependix_configuration_src_modules_configuration_configuration_service_unit_test_ts --> file_codependix_configuration_src_modules_configuration_configuration_constants_ts
+  file_codependix_configuration_src_modules_configuration_configuration_service_unit_test_ts --> file_codependix_configuration_src_modules_configuration_configuration_service_ts
+  file_codependix_configuration_src_modules_configuration_configuration_service_unit_test_ts --> file_codependix_configuration_src_modules_configuration_configuration_types_ts
+  file_codependix_configuration_src_modules_configuration_configuration_service_unit_test_ts --> file_codependix_configuration_src_modules_configuration_flag_resolution_service_ts
+  file_codependix_configuration_src_modules_configuration_configuration_service_unit_test_ts --> file_codependix_configuration_src_modules_input_input_service_ts
+  file_codependix_configuration_src_modules_configuration_configuration_service_unit_test_ts --> file_codependix_configuration_src_modules_override_resolution_override_resolution_service_ts
+  file_codependix_configuration_src_modules_configuration_flag_resolution_service_ts --> file_codependix_configuration_src_modules_configuration_configuration_constants_ts
+  file_codependix_configuration_src_modules_configuration_flag_resolution_service_ts --> file_codependix_configuration_src_modules_configuration_configuration_types_ts
+  file_codependix_configuration_src_modules_configuration_flag_resolution_service_ts --> file_codependix_configuration_src_modules_input_input_service_ts
+  file_codependix_configuration_src_modules_configuration_flag_resolution_service_unit_test_ts --> file_codependix_configuration_src_modules_configuration_configuration_constants_ts
+  file_codependix_configuration_src_modules_configuration_flag_resolution_service_unit_test_ts --> file_codependix_configuration_src_modules_configuration_flag_resolution_service_ts
+  file_codependix_configuration_src_modules_configuration_flag_resolution_service_unit_test_ts --> file_codependix_configuration_src_modules_input_input_constants_ts
+  file_codependix_configuration_src_modules_configuration_flag_resolution_service_unit_test_ts --> file_codependix_configuration_src_modules_input_input_service_ts
+  file_codependix_configuration_src_modules_input_input_module_ts --> file_codependix_configuration_src_modules_input_input_service_ts
+  file_codependix_configuration_src_modules_input_input_module_unit_test_ts --> file_codependix_configuration_src_modules_input_input_module_ts
+  file_codependix_configuration_src_modules_input_input_module_unit_test_ts --> file_codependix_configuration_src_modules_input_input_service_ts
+  file_codependix_configuration_src_modules_input_input_service_ts --> file_codependix_configuration_src_modules_input_input_constants_ts
+  file_codependix_configuration_src_modules_input_input_service_ts --> file_codependix_configuration_src_modules_input_input_types_ts
+  file_codependix_configuration_src_modules_input_input_service_unit_test_ts --> file_codependix_configuration_src_modules_input_input_constants_ts
+  file_codependix_configuration_src_modules_input_input_service_unit_test_ts --> file_codependix_configuration_src_modules_input_input_service_ts
+  file_codependix_configuration_src_modules_override_resolution_override_resolution_module_ts --> file_codependix_configuration_src_modules_override_resolution_override_resolution_service_ts
+  file_codependix_configuration_src_modules_override_resolution_override_resolution_service_ts --> file_codependix_configuration_src_modules_configuration_configuration_types_ts
+  file_codependix_configuration_src_modules_override_resolution_override_resolution_service_ts --> file_codependix_configuration_src_modules_input_input_constants_ts
+  file_codependix_configuration_src_modules_override_resolution_override_resolution_service_ts --> file_codependix_configuration_src_modules_override_resolution_override_resolution_constants_ts
+  file_codependix_configuration_src_modules_override_resolution_override_resolution_service_ts --> file_codependix_configuration_src_modules_override_resolution_override_resolution_types_ts
+  file_codependix_configuration_src_modules_override_resolution_override_resolution_service_unit_test_ts --> file_codependix_configuration_src_modules_configuration_configuration_types_ts
+  file_codependix_configuration_src_modules_override_resolution_override_resolution_service_unit_test_ts --> file_codependix_configuration_src_modules_override_resolution_override_resolution_service_ts
+  file_codependix_configuration_src_modules_override_resolution_override_resolution_types_ts --> file_codependix_configuration_src_modules_configuration_configuration_types_ts
+  file_codependix_core_src_index_unit_test_ts --> file_codependix_core_src_index_ts
+  file_codependix_examples_testing_examples_integration_test_ts --> file_codependix_examples_testing_render_anchor_placement_ts
+  file_codependix_examples_testing_examples_integration_test_ts --> file_codependix_examples_testing_render_catalog_ts
+  file_codependix_examples_testing_examples_integration_test_ts --> file_codependix_examples_testing_render_configuration_ts
+  file_codependix_examples_testing_examples_integration_test_ts --> file_codependix_examples_testing_render_document_ts
+  file_codependix_examples_testing_examples_integration_test_ts --> file_codependix_examples_testing_render_export_delivery_ts
+  file_codependix_examples_testing_examples_integration_test_ts --> file_codependix_examples_testing_render_paths_ts
+  file_codependix_examples_testing_examples_integration_test_ts --> file_codependix_examples_testing_render_reading_order_ts
+  file_codependix_examples_testing_examples_integration_test_ts --> file_codependix_examples_testing_render_run_ts
+  file_codependix_examples_testing_graphs_integration_test_ts --> file_codependix_examples_testing_render_nestjs_graphs_ts
+  file_codependix_examples_testing_graphs_integration_test_ts --> file_codependix_examples_testing_render_nx_graphs_ts
+  file_codependix_examples_testing_graphs_integration_test_ts --> file_codependix_examples_testing_render_paths_ts
+  file_codependix_examples_testing_graphs_integration_test_ts --> file_codependix_examples_testing_render_python_imports_ts
+  file_codependix_examples_testing_graphs_integration_test_ts --> file_codependix_examples_testing_render_typescript_imports_ts
+  file_codependix_examples_testing_render_examples_ts --> file_codependix_examples_testing_render_run_ts
+  file_codependix_examples_testing_render_anchor_placement_ts --> file_codependix_examples_testing_render_builders_ts
+  file_codependix_examples_testing_render_anchor_placement_ts --> file_codependix_examples_testing_render_document_ts
+  file_codependix_examples_testing_render_anchor_placement_ts --> file_codependix_examples_testing_render_export_delivery_ts
+  file_codependix_examples_testing_render_anchor_placement_ts --> file_codependix_examples_testing_render_paths_ts
+  file_codependix_examples_testing_render_anchor_placement_ts --> file_codependix_examples_testing_render_types_ts
+  file_codependix_examples_testing_render_boundary_rules_ts --> file_codependix_examples_testing_render_builders_ts
+  file_codependix_examples_testing_render_boundary_rules_ts --> file_codependix_examples_testing_render_document_ts
+  file_codependix_examples_testing_render_boundary_rules_ts --> file_codependix_examples_testing_render_types_ts
+  file_codependix_examples_testing_render_catalog_ts --> file_codependix_examples_testing_render_anchor_placement_ts
+  file_codependix_examples_testing_render_catalog_ts --> file_codependix_examples_testing_render_boundary_rules_ts
+  file_codependix_examples_testing_render_catalog_ts --> file_codependix_examples_testing_render_configuration_ts
+  file_codependix_examples_testing_render_catalog_ts --> file_codependix_examples_testing_render_export_delivery_ts
+  file_codependix_examples_testing_render_catalog_ts --> file_codependix_examples_testing_render_graph_levels_ts
+  file_codependix_examples_testing_render_catalog_ts --> file_codependix_examples_testing_render_nestjs_graphs_ts
+  file_codependix_examples_testing_render_catalog_ts --> file_codependix_examples_testing_render_nx_graphs_ts
+  file_codependix_examples_testing_render_catalog_ts --> file_codependix_examples_testing_render_python_imports_ts
+  file_codependix_examples_testing_render_catalog_ts --> file_codependix_examples_testing_render_reading_order_ts
+  file_codependix_examples_testing_render_catalog_ts --> file_codependix_examples_testing_render_types_ts
+  file_codependix_examples_testing_render_catalog_ts --> file_codependix_examples_testing_render_typescript_imports_ts
+  file_codependix_examples_testing_render_configuration_ts --> file_codependix_examples_testing_render_builders_ts
+  file_codependix_examples_testing_render_configuration_ts --> file_codependix_examples_testing_render_document_ts
+  file_codependix_examples_testing_render_configuration_ts --> file_codependix_examples_testing_render_paths_ts
+  file_codependix_examples_testing_render_configuration_ts --> file_codependix_examples_testing_render_types_ts
+  file_codependix_examples_testing_render_document_ts --> file_codependix_examples_testing_render_reading_order_ts
+  file_codependix_examples_testing_render_document_ts --> file_codependix_examples_testing_render_types_ts
+  file_codependix_examples_testing_render_export_delivery_ts --> file_codependix_examples_testing_render_builders_ts
+  file_codependix_examples_testing_render_export_delivery_ts --> file_codependix_examples_testing_render_document_ts
+  file_codependix_examples_testing_render_export_delivery_ts --> file_codependix_examples_testing_render_graph_levels_ts
+  file_codependix_examples_testing_render_export_delivery_ts --> file_codependix_examples_testing_render_paths_ts
+  file_codependix_examples_testing_render_export_delivery_ts --> file_codependix_examples_testing_render_types_ts
+  file_codependix_examples_testing_render_graph_levels_ts --> file_codependix_examples_testing_render_builders_ts
+  file_codependix_examples_testing_render_graph_levels_ts --> file_codependix_examples_testing_render_nestjs_graphs_ts
+  file_codependix_examples_testing_render_graph_levels_ts --> file_codependix_examples_testing_render_nx_graphs_ts
+  file_codependix_examples_testing_render_graph_levels_ts --> file_codependix_examples_testing_render_paths_ts
+  file_codependix_examples_testing_render_graph_levels_ts --> file_codependix_examples_testing_render_python_imports_ts
+  file_codependix_examples_testing_render_graph_levels_ts --> file_codependix_examples_testing_render_types_ts
+  file_codependix_examples_testing_render_graph_levels_ts --> file_codependix_examples_testing_render_typescript_imports_ts
+  file_codependix_examples_testing_render_nestjs_graphs_ts --> file_codependix_examples_testing_render_builders_ts
+  file_codependix_examples_testing_render_nestjs_graphs_ts --> file_codependix_examples_testing_render_document_ts
+  file_codependix_examples_testing_render_nestjs_graphs_ts --> file_codependix_examples_testing_render_paths_ts
+  file_codependix_examples_testing_render_nestjs_graphs_ts --> file_codependix_examples_testing_render_types_ts
+  file_codependix_examples_testing_render_nx_graphs_ts --> file_codependix_examples_testing_render_builders_ts
+  file_codependix_examples_testing_render_nx_graphs_ts --> file_codependix_examples_testing_render_document_ts
+  file_codependix_examples_testing_render_nx_graphs_ts --> file_codependix_examples_testing_render_types_ts
+  file_codependix_examples_testing_render_python_imports_ts --> file_codependix_examples_testing_render_builders_ts
+  file_codependix_examples_testing_render_python_imports_ts --> file_codependix_examples_testing_render_document_ts
+  file_codependix_examples_testing_render_python_imports_ts --> file_codependix_examples_testing_render_paths_ts
+  file_codependix_examples_testing_render_python_imports_ts --> file_codependix_examples_testing_render_types_ts
+  file_codependix_examples_testing_render_run_ts --> file_codependix_examples_testing_render_builders_ts
+  file_codependix_examples_testing_render_run_ts --> file_codependix_examples_testing_render_catalog_ts
+  file_codependix_examples_testing_render_run_ts --> file_codependix_examples_testing_render_document_ts
+  file_codependix_examples_testing_render_run_ts --> file_codependix_examples_testing_render_paths_ts
+  file_codependix_examples_testing_render_run_ts --> file_codependix_examples_testing_render_types_ts
+  file_codependix_examples_testing_render_typescript_imports_ts --> file_codependix_examples_testing_render_builders_ts
+  file_codependix_examples_testing_render_typescript_imports_ts --> file_codependix_examples_testing_render_document_ts
+  file_codependix_examples_testing_render_typescript_imports_ts --> file_codependix_examples_testing_render_paths_ts
+  file_codependix_examples_testing_render_typescript_imports_ts --> file_codependix_examples_testing_render_types_ts
+  file_codependix_file_imports_src_modules_file_imports_workspace_graph_file_imports_workspace_graph_module_ts --> file_codependix_file_imports_src_modules_file_imports_workspace_graph_file_imports_workspace_graph_service_ts
+  file_codependix_file_imports_src_modules_file_imports_workspace_graph_file_imports_workspace_graph_module_unit_test_ts --> file_codependix_file_imports_src_modules_file_imports_workspace_graph_file_imports_workspace_graph_module_ts
+  file_codependix_file_imports_src_modules_file_imports_workspace_graph_file_imports_workspace_graph_module_unit_test_ts --> file_codependix_file_imports_src_modules_file_imports_workspace_graph_file_imports_workspace_graph_service_ts
+  file_codependix_file_imports_src_modules_file_imports_workspace_graph_file_imports_workspace_graph_service_ts --> file_codependix_file_imports_src_modules_file_imports_workspace_graph_file_imports_workspace_graph_constants_ts
+  file_codependix_file_imports_src_modules_file_imports_workspace_graph_file_imports_workspace_graph_service_ts --> file_codependix_file_imports_src_modules_file_imports_workspace_graph_file_imports_workspace_graph_types_ts
+  file_codependix_file_imports_src_modules_file_imports_workspace_graph_file_imports_workspace_graph_service_ts --> file_codependix_file_imports_src_modules_python_python_types_ts
+  file_codependix_file_imports_src_modules_file_imports_workspace_graph_file_imports_workspace_graph_service_ts --> file_codependix_file_imports_src_modules_typescript_typescript_types_ts
+  file_codependix_file_imports_src_modules_file_imports_workspace_graph_file_imports_workspace_graph_service_unit_test_ts --> file_codependix_file_imports_src_modules_file_imports_workspace_graph_file_imports_workspace_graph_service_ts
+  file_codependix_file_imports_src_modules_file_imports_workspace_graph_file_imports_workspace_graph_service_unit_test_ts --> file_codependix_file_imports_src_modules_python_python_types_ts
+  file_codependix_file_imports_src_modules_file_imports_workspace_graph_file_imports_workspace_graph_service_unit_test_ts --> file_codependix_file_imports_src_modules_typescript_typescript_types_ts
+  file_codependix_file_imports_src_modules_python_python_import_graph_service_ts --> file_codependix_file_imports_src_modules_python_python_import_parser_service_ts
+  file_codependix_file_imports_src_modules_python_python_import_graph_service_ts --> file_codependix_file_imports_src_modules_python_python_import_parser_types_ts
+  file_codependix_file_imports_src_modules_python_python_import_graph_service_ts --> file_codependix_file_imports_src_modules_python_python_project_service_ts
+  file_codependix_file_imports_src_modules_python_python_import_graph_service_ts --> file_codependix_file_imports_src_modules_python_python_constants_ts
+  file_codependix_file_imports_src_modules_python_python_import_graph_service_ts --> file_codependix_file_imports_src_modules_python_python_types_ts
+  file_codependix_file_imports_src_modules_python_python_import_graph_service_unit_test_ts --> file_codependix_file_imports_src_modules_python_python_import_graph_service_ts
+  file_codependix_file_imports_src_modules_python_python_import_graph_service_unit_test_ts --> file_codependix_file_imports_src_modules_python_python_import_parser_service_ts
+  file_codependix_file_imports_src_modules_python_python_import_graph_service_unit_test_ts --> file_codependix_file_imports_src_modules_python_python_project_service_ts
+  file_codependix_file_imports_src_modules_python_python_import_graph_service_unit_test_ts --> file_codependix_file_imports_src_modules_python_python_constants_ts
+  file_codependix_file_imports_src_modules_python_python_import_graph_service_unit_test_ts --> file_codependix_file_imports_src_modules_python_python_types_ts
+  file_codependix_file_imports_src_modules_python_python_import_parser_service_ts --> file_codependix_file_imports_src_modules_python_python_import_parser_constants_ts
+  file_codependix_file_imports_src_modules_python_python_import_parser_service_ts --> file_codependix_file_imports_src_modules_python_python_import_parser_types_ts
+  file_codependix_file_imports_src_modules_python_python_import_parser_service_unit_test_ts --> file_codependix_file_imports_src_modules_python_python_import_parser_service_ts
+  file_codependix_file_imports_src_modules_python_python_project_service_ts --> file_codependix_file_imports_src_modules_python_python_constants_ts
+  file_codependix_file_imports_src_modules_python_python_project_service_ts --> file_codependix_file_imports_src_modules_python_python_types_ts
+  file_codependix_file_imports_src_modules_python_python_project_service_unit_test_ts --> file_codependix_file_imports_src_modules_python_python_project_service_ts
+  file_codependix_file_imports_src_modules_python_python_module_ts --> file_codependix_file_imports_src_modules_python_python_import_graph_service_ts
+  file_codependix_file_imports_src_modules_python_python_module_ts --> file_codependix_file_imports_src_modules_python_python_import_parser_service_ts
+  file_codependix_file_imports_src_modules_python_python_module_ts --> file_codependix_file_imports_src_modules_python_python_project_service_ts
+  file_codependix_file_imports_src_modules_python_python_module_ts --> file_codependix_file_imports_src_modules_python_python_service_ts
+  file_codependix_file_imports_src_modules_python_python_module_unit_test_ts --> file_codependix_file_imports_src_modules_python_python_module_ts
+  file_codependix_file_imports_src_modules_python_python_module_unit_test_ts --> file_codependix_file_imports_src_modules_python_python_service_ts
+  file_codependix_file_imports_src_modules_python_python_service_ts --> file_codependix_file_imports_src_modules_python_python_import_graph_service_ts
+  file_codependix_file_imports_src_modules_python_python_service_ts --> file_codependix_file_imports_src_modules_python_python_project_service_ts
+  file_codependix_file_imports_src_modules_python_python_service_ts --> file_codependix_file_imports_src_modules_python_python_types_ts
+  file_codependix_file_imports_src_modules_python_python_service_unit_test_ts --> file_codependix_file_imports_src_modules_python_python_import_graph_service_ts
+  file_codependix_file_imports_src_modules_python_python_service_unit_test_ts --> file_codependix_file_imports_src_modules_python_python_project_service_ts
+  file_codependix_file_imports_src_modules_python_python_service_unit_test_ts --> file_codependix_file_imports_src_modules_python_python_service_ts
+  file_codependix_file_imports_src_modules_python_python_service_unit_test_ts --> file_codependix_file_imports_src_modules_python_python_types_ts
+  file_codependix_file_imports_src_modules_typescript_typescript_import_graph_service_ts --> file_codependix_file_imports_src_modules_typescript_typescript_project_service_ts
+  file_codependix_file_imports_src_modules_typescript_typescript_import_graph_service_ts --> file_codependix_file_imports_src_modules_typescript_typescript_constants_ts
+  file_codependix_file_imports_src_modules_typescript_typescript_import_graph_service_ts --> file_codependix_file_imports_src_modules_typescript_typescript_types_ts
+  file_codependix_file_imports_src_modules_typescript_typescript_import_graph_service_unit_test_ts --> file_codependix_file_imports_src_modules_typescript_typescript_import_graph_service_ts
+  file_codependix_file_imports_src_modules_typescript_typescript_import_graph_service_unit_test_ts --> file_codependix_file_imports_src_modules_typescript_typescript_project_service_ts
+  file_codependix_file_imports_src_modules_typescript_typescript_import_graph_service_unit_test_ts --> file_codependix_file_imports_src_modules_typescript_typescript_constants_ts
+  file_codependix_file_imports_src_modules_typescript_typescript_import_graph_service_unit_test_ts --> file_codependix_file_imports_testing_programs_ts
+  file_codependix_file_imports_src_modules_typescript_typescript_project_service_ts --> file_codependix_file_imports_src_modules_typescript_typescript_constants_ts
+  file_codependix_file_imports_src_modules_typescript_typescript_project_service_ts --> file_codependix_file_imports_src_modules_typescript_typescript_types_ts
+  file_codependix_file_imports_src_modules_typescript_typescript_project_service_unit_test_ts --> file_codependix_file_imports_src_modules_typescript_typescript_project_service_ts
+  file_codependix_file_imports_src_modules_typescript_typescript_project_service_unit_test_ts --> file_codependix_file_imports_src_modules_typescript_typescript_constants_ts
+  file_codependix_file_imports_src_modules_typescript_typescript_project_service_unit_test_ts --> file_codependix_file_imports_src_modules_typescript_typescript_types_ts
+  file_codependix_file_imports_src_modules_typescript_typescript_module_ts --> file_codependix_file_imports_src_modules_typescript_typescript_import_graph_service_ts
+  file_codependix_file_imports_src_modules_typescript_typescript_module_ts --> file_codependix_file_imports_src_modules_typescript_typescript_project_service_ts
+  file_codependix_file_imports_src_modules_typescript_typescript_module_ts --> file_codependix_file_imports_src_modules_typescript_typescript_service_ts
+  file_codependix_file_imports_src_modules_typescript_typescript_module_unit_test_ts --> file_codependix_file_imports_src_modules_typescript_typescript_module_ts
+  file_codependix_file_imports_src_modules_typescript_typescript_module_unit_test_ts --> file_codependix_file_imports_src_modules_typescript_typescript_service_ts
+  file_codependix_file_imports_src_modules_typescript_typescript_service_ts --> file_codependix_file_imports_src_modules_typescript_typescript_import_graph_service_ts
+  file_codependix_file_imports_src_modules_typescript_typescript_service_ts --> file_codependix_file_imports_src_modules_typescript_typescript_project_service_ts
+  file_codependix_file_imports_src_modules_typescript_typescript_service_ts --> file_codependix_file_imports_src_modules_typescript_typescript_types_ts
+  file_codependix_file_imports_src_modules_typescript_typescript_service_unit_test_ts --> file_codependix_file_imports_src_modules_typescript_typescript_import_graph_service_ts
+  file_codependix_file_imports_src_modules_typescript_typescript_service_unit_test_ts --> file_codependix_file_imports_src_modules_typescript_typescript_project_service_ts
+  file_codependix_file_imports_src_modules_typescript_typescript_service_unit_test_ts --> file_codependix_file_imports_src_modules_typescript_typescript_service_ts
+  file_codependix_file_imports_src_modules_typescript_typescript_service_unit_test_ts --> file_codependix_file_imports_src_modules_typescript_typescript_types_ts
+  file_codependix_file_imports_testing_programs_ts --> file_codependix_file_imports_src_modules_typescript_typescript_types_ts
+  file_codependix_nestjs_modules_src_index_unit_test_ts --> file_codependix_nestjs_modules_src_index_ts
+  file_codependix_nestjs_modules_src_modules_module_graph_module_graph_module_ts --> file_codependix_nestjs_modules_src_modules_module_graph_module_graph_service_ts
+  file_codependix_nestjs_modules_src_modules_module_graph_module_graph_module_unit_test_ts --> file_codependix_nestjs_modules_src_modules_module_graph_module_graph_module_ts
+  file_codependix_nestjs_modules_src_modules_module_graph_module_graph_module_unit_test_ts --> file_codependix_nestjs_modules_src_modules_module_graph_module_graph_service_ts
+  file_codependix_nestjs_modules_src_modules_module_graph_module_graph_service_ts --> file_codependix_nestjs_modules_src_modules_module_graph_module_graph_constants_ts
+  file_codependix_nestjs_modules_src_modules_module_graph_module_graph_service_ts --> file_codependix_nestjs_modules_src_modules_module_graph_module_graph_types_ts
+  file_codependix_nestjs_modules_src_modules_module_graph_module_graph_service_unit_test_ts --> file_codependix_nestjs_modules_src_modules_module_graph_module_graph_service_ts
+  file_codependix_nestjs_modules_src_modules_nestjs_modules_workspace_graph_nestjs_modules_workspace_graph_module_ts --> file_codependix_nestjs_modules_src_modules_nestjs_modules_workspace_graph_nestjs_modules_workspace_graph_service_ts
+  file_codependix_nestjs_modules_src_modules_nestjs_modules_workspace_graph_nestjs_modules_workspace_graph_module_unit_test_ts --> file_codependix_nestjs_modules_src_modules_nestjs_modules_workspace_graph_nestjs_modules_workspace_graph_module_ts
+  file_codependix_nestjs_modules_src_modules_nestjs_modules_workspace_graph_nestjs_modules_workspace_graph_module_unit_test_ts --> file_codependix_nestjs_modules_src_modules_nestjs_modules_workspace_graph_nestjs_modules_workspace_graph_service_ts
+  file_codependix_nestjs_modules_src_modules_nestjs_modules_workspace_graph_nestjs_modules_workspace_graph_service_ts --> file_codependix_nestjs_modules_src_modules_module_graph_module_graph_types_ts
+  file_codependix_nestjs_modules_src_modules_nestjs_modules_workspace_graph_nestjs_modules_workspace_graph_service_ts --> file_codependix_nestjs_modules_src_modules_nestjs_modules_workspace_graph_nestjs_modules_workspace_graph_constants_ts
+  file_codependix_nestjs_modules_src_modules_nestjs_modules_workspace_graph_nestjs_modules_workspace_graph_service_ts --> file_codependix_nestjs_modules_src_modules_nestjs_modules_workspace_graph_nestjs_modules_workspace_graph_types_ts
+  file_codependix_nestjs_modules_src_modules_nestjs_modules_workspace_graph_nestjs_modules_workspace_graph_service_unit_test_ts --> file_codependix_nestjs_modules_src_modules_module_graph_module_graph_types_ts
+  file_codependix_nestjs_modules_src_modules_nestjs_modules_workspace_graph_nestjs_modules_workspace_graph_service_unit_test_ts --> file_codependix_nestjs_modules_src_modules_nestjs_modules_workspace_graph_nestjs_modules_workspace_graph_service_ts
+  file_codependix_nestjs_modules_src_modules_nestjs_project_nestjs_project_module_ts --> file_codependix_nestjs_modules_src_modules_nestjs_project_nestjs_project_service_ts
+  file_codependix_nestjs_modules_src_modules_nestjs_project_nestjs_project_module_unit_test_ts --> file_codependix_nestjs_modules_src_modules_nestjs_project_nestjs_project_module_ts
+  file_codependix_nestjs_modules_src_modules_nestjs_project_nestjs_project_module_unit_test_ts --> file_codependix_nestjs_modules_src_modules_nestjs_project_nestjs_project_service_ts
+  file_codependix_nestjs_modules_src_modules_nestjs_project_nestjs_project_service_ts --> file_codependix_nestjs_modules_src_modules_nestjs_project_nestjs_project_synthetic_module_ts
+  file_codependix_nestjs_modules_src_modules_nestjs_project_nestjs_project_service_ts --> file_codependix_nestjs_modules_src_modules_nestjs_project_nestjs_project_constants_ts
+  file_codependix_nestjs_modules_src_modules_nestjs_project_nestjs_project_service_ts --> file_codependix_nestjs_modules_src_modules_nestjs_project_nestjs_project_types_ts
+  file_codependix_nestjs_modules_src_modules_nestjs_project_nestjs_project_service_unit_test_ts --> file_codependix_nestjs_modules_src_modules_nestjs_project_nestjs_project_service_ts
+  file_codependix_nestjs_modules_src_modules_nestjs_project_nestjs_project_service_unit_test_ts --> file_codependix_nestjs_modules_src_modules_nestjs_project_nestjs_project_types_ts
+  file_codependix_nestjs_modules_src_modules_nestjs_project_nestjs_project_service_unit_test_ts --> file_codependix_nestjs_modules_testing_main_module_ts
+  file_codependix_nx_projects_src_index_unit_test_ts --> file_codependix_nx_projects_src_index_ts
+  file_codependix_nx_projects_src_modules_neighborhood_neighborhood_module_ts --> file_codependix_nx_projects_src_modules_neighborhood_neighborhood_service_ts
+  file_codependix_nx_projects_src_modules_neighborhood_neighborhood_module_unit_test_ts --> file_codependix_nx_projects_src_modules_neighborhood_neighborhood_module_ts
+  file_codependix_nx_projects_src_modules_neighborhood_neighborhood_module_unit_test_ts --> file_codependix_nx_projects_src_modules_neighborhood_neighborhood_service_ts
+  file_codependix_nx_projects_src_modules_neighborhood_neighborhood_service_ts --> file_codependix_nx_projects_src_modules_neighborhood_neighborhood_constants_ts
+  file_codependix_nx_projects_src_modules_neighborhood_neighborhood_service_ts --> file_codependix_nx_projects_src_modules_neighborhood_neighborhood_types_ts
+  file_codependix_nx_projects_src_modules_neighborhood_neighborhood_service_unit_test_ts --> file_codependix_nx_projects_src_modules_neighborhood_neighborhood_constants_ts
+  file_codependix_nx_projects_src_modules_neighborhood_neighborhood_service_unit_test_ts --> file_codependix_nx_projects_src_modules_neighborhood_neighborhood_service_ts
+  file_codependix_nx_projects_src_modules_neighborhood_neighborhood_service_unit_test_ts --> file_codependix_nx_projects_src_modules_neighborhood_neighborhood_types_ts
+  file_codependix_nx_projects_src_modules_workspace_graph_workspace_graph_module_ts --> file_codependix_nx_projects_src_modules_neighborhood_neighborhood_module_ts
+  file_codependix_nx_projects_src_modules_workspace_graph_workspace_graph_module_ts --> file_codependix_nx_projects_src_modules_workspace_graph_workspace_graph_service_ts
+  file_codependix_nx_projects_src_modules_workspace_graph_workspace_graph_module_unit_test_ts --> file_codependix_nx_projects_src_modules_workspace_graph_workspace_graph_module_ts
+  file_codependix_nx_projects_src_modules_workspace_graph_workspace_graph_module_unit_test_ts --> file_codependix_nx_projects_src_modules_workspace_graph_workspace_graph_service_ts
+  file_codependix_nx_projects_src_modules_workspace_graph_workspace_graph_service_ts --> file_codependix_nx_projects_src_modules_neighborhood_neighborhood_constants_ts
+  file_codependix_nx_projects_src_modules_workspace_graph_workspace_graph_service_ts --> file_codependix_nx_projects_src_modules_neighborhood_neighborhood_service_ts
+  file_codependix_nx_projects_src_modules_workspace_graph_workspace_graph_service_ts --> file_codependix_nx_projects_src_modules_neighborhood_neighborhood_types_ts
+  file_codependix_nx_projects_src_modules_workspace_graph_workspace_graph_service_ts --> file_codependix_nx_projects_src_modules_workspace_graph_workspace_graph_constants_ts
+  file_codependix_nx_projects_src_modules_workspace_graph_workspace_graph_service_ts --> file_codependix_nx_projects_src_modules_workspace_graph_workspace_graph_types_ts
+  file_codependix_nx_projects_src_modules_workspace_graph_workspace_graph_service_unit_test_ts --> file_codependix_nx_projects_src_modules_neighborhood_neighborhood_service_ts
+  file_codependix_nx_projects_src_modules_workspace_graph_workspace_graph_service_unit_test_ts --> file_codependix_nx_projects_src_modules_neighborhood_neighborhood_types_ts
+  file_codependix_nx_projects_src_modules_workspace_graph_workspace_graph_service_unit_test_ts --> file_codependix_nx_projects_src_modules_workspace_graph_workspace_graph_service_ts
+  file_codependix_nx_projects_src_modules_workspace_graph_workspace_graph_types_ts --> file_codependix_nx_projects_src_modules_neighborhood_neighborhood_types_ts
+  file_codependix_output_src_modules_anchors_anchors_module_ts --> file_codependix_output_src_modules_anchors_anchors_service_ts
+  file_codependix_output_src_modules_anchors_anchors_module_unit_test_ts --> file_codependix_output_src_modules_anchors_anchors_module_ts
+  file_codependix_output_src_modules_anchors_anchors_module_unit_test_ts --> file_codependix_output_src_modules_anchors_anchors_service_ts
+  file_codependix_output_src_modules_anchors_anchors_service_ts --> file_codependix_output_src_modules_anchors_anchors_constants_ts
+  file_codependix_output_src_modules_anchors_anchors_service_ts --> file_codependix_output_src_modules_anchors_anchors_types_ts
+  file_codependix_output_src_modules_anchors_anchors_service_unit_test_ts --> file_codependix_output_src_modules_anchors_anchors_constants_ts
+  file_codependix_output_src_modules_anchors_anchors_service_unit_test_ts --> file_codependix_output_src_modules_anchors_anchors_service_ts
+  file_codependix_output_src_modules_combined_output_combined_output_constants_ts --> file_codependix_output_src_modules_graph_run_graph_run_constants_ts
+  file_codependix_output_src_modules_combined_output_combined_output_module_ts --> file_codependix_output_src_modules_anchors_anchors_module_ts
+  file_codependix_output_src_modules_combined_output_combined_output_module_ts --> file_codependix_output_src_modules_combined_output_combined_output_service_ts
+  file_codependix_output_src_modules_combined_output_combined_output_module_unit_test_ts --> file_codependix_output_src_modules_combined_output_combined_output_module_ts
+  file_codependix_output_src_modules_combined_output_combined_output_module_unit_test_ts --> file_codependix_output_src_modules_combined_output_combined_output_service_ts
+  file_codependix_output_src_modules_combined_output_combined_output_service_ts --> file_codependix_output_src_modules_anchors_anchors_service_ts
+  file_codependix_output_src_modules_combined_output_combined_output_service_ts --> file_codependix_output_src_modules_combined_output_combined_output_constants_ts
+  file_codependix_output_src_modules_combined_output_combined_output_service_ts --> file_codependix_output_src_modules_combined_output_combined_output_types_ts
+  file_codependix_output_src_modules_combined_output_combined_output_service_ts --> file_codependix_output_src_modules_delivery_delivery_constants_ts
+  file_codependix_output_src_modules_combined_output_combined_output_service_ts --> file_codependix_output_src_modules_graph_run_graph_run_constants_ts
+  file_codependix_output_src_modules_combined_output_combined_output_service_ts --> file_codependix_output_src_modules_graph_run_graph_run_types_ts
+  file_codependix_output_src_modules_combined_output_combined_output_service_unit_test_ts --> file_codependix_output_src_modules_anchors_anchors_service_ts
+  file_codependix_output_src_modules_combined_output_combined_output_service_unit_test_ts --> file_codependix_output_src_modules_combined_output_combined_output_service_ts
+  file_codependix_output_src_modules_combined_output_combined_output_service_unit_test_ts --> file_codependix_output_src_modules_graph_run_graph_run_types_ts
+  file_codependix_output_src_modules_combined_output_combined_output_types_ts --> file_codependix_output_src_modules_combined_output_combined_output_constants_ts
+  file_codependix_output_src_modules_combined_output_combined_output_types_ts --> file_codependix_output_src_modules_graph_run_graph_run_types_ts
+  file_codependix_output_src_modules_delivery_delivery_module_ts --> file_codependix_output_src_modules_anchors_anchors_module_ts
+  file_codependix_output_src_modules_delivery_delivery_module_ts --> file_codependix_output_src_modules_delivery_delivery_service_ts
+  file_codependix_output_src_modules_delivery_delivery_module_unit_test_ts --> file_codependix_output_src_modules_delivery_delivery_module_ts
+  file_codependix_output_src_modules_delivery_delivery_module_unit_test_ts --> file_codependix_output_src_modules_delivery_delivery_service_ts
+  file_codependix_output_src_modules_delivery_delivery_service_ts --> file_codependix_output_src_modules_anchors_anchors_constants_ts
+  file_codependix_output_src_modules_delivery_delivery_service_ts --> file_codependix_output_src_modules_anchors_anchors_service_ts
+  file_codependix_output_src_modules_delivery_delivery_service_ts --> file_codependix_output_src_modules_delivery_delivery_constants_ts
+  file_codependix_output_src_modules_delivery_delivery_service_ts --> file_codependix_output_src_modules_delivery_delivery_types_ts
+  file_codependix_output_src_modules_delivery_delivery_service_unit_test_ts --> file_codependix_output_src_modules_anchors_anchors_constants_ts
+  file_codependix_output_src_modules_delivery_delivery_service_unit_test_ts --> file_codependix_output_src_modules_anchors_anchors_service_ts
+  file_codependix_output_src_modules_delivery_delivery_service_unit_test_ts --> file_codependix_output_src_modules_delivery_delivery_service_ts
+  file_codependix_output_src_modules_graph_run_graph_run_constants_ts --> file_codependix_output_src_modules_graph_run_graph_run_types_ts
+  file_codependix_output_src_modules_graph_run_graph_run_module_ts --> file_codependix_output_src_modules_graph_run_graph_run_service_ts
+  file_codependix_output_src_modules_graph_run_graph_run_module_ts --> file_codependix_output_src_modules_project_graphs_project_graphs_module_ts
+  file_codependix_output_src_modules_graph_run_graph_run_module_ts --> file_codependix_output_src_modules_python_imports_python_imports_module_ts
+  file_codependix_output_src_modules_graph_run_graph_run_module_ts --> file_codependix_output_src_modules_workspace_graphs_workspace_graphs_module_ts
+  file_codependix_output_src_modules_graph_run_graph_run_module_unit_test_ts --> file_codependix_output_src_modules_graph_run_graph_run_module_ts
+  file_codependix_output_src_modules_graph_run_graph_run_module_unit_test_ts --> file_codependix_output_src_modules_graph_run_graph_run_service_ts
+  file_codependix_output_src_modules_graph_run_graph_run_service_ts --> file_codependix_output_src_modules_graph_run_graph_run_constants_ts
+  file_codependix_output_src_modules_graph_run_graph_run_service_ts --> file_codependix_output_src_modules_graph_run_graph_run_types_ts
+  file_codependix_output_src_modules_graph_run_graph_run_service_ts --> file_codependix_output_src_modules_project_graphs_project_graphs_service_ts
+  file_codependix_output_src_modules_graph_run_graph_run_service_ts --> file_codependix_output_src_modules_python_imports_python_imports_service_ts
+  file_codependix_output_src_modules_graph_run_graph_run_service_ts --> file_codependix_output_src_modules_workspace_graphs_workspace_graphs_service_ts
+  file_codependix_output_src_modules_graph_run_graph_run_service_ts --> file_codependix_output_src_modules_workspace_graphs_workspace_graphs_types_ts
+  file_codependix_output_src_modules_graph_run_graph_run_service_unit_test_ts --> file_codependix_output_src_modules_graph_run_graph_run_service_ts
+  file_codependix_output_src_modules_graph_run_graph_run_service_unit_test_ts --> file_codependix_output_src_modules_project_graphs_project_graphs_service_ts
+  file_codependix_output_src_modules_graph_run_graph_run_service_unit_test_ts --> file_codependix_output_src_modules_python_imports_python_imports_service_ts
+  file_codependix_output_src_modules_graph_run_graph_run_service_unit_test_ts --> file_codependix_output_src_modules_workspace_graphs_workspace_graphs_service_ts
+  file_codependix_output_src_modules_project_graphs_project_graphs_module_ts --> file_codependix_output_src_modules_delivery_delivery_module_ts
+  file_codependix_output_src_modules_project_graphs_project_graphs_module_ts --> file_codependix_output_src_modules_project_graphs_project_graphs_service_ts
+  file_codependix_output_src_modules_project_graphs_project_graphs_module_unit_test_ts --> file_codependix_output_src_modules_project_graphs_project_graphs_module_ts
+  file_codependix_output_src_modules_project_graphs_project_graphs_module_unit_test_ts --> file_codependix_output_src_modules_project_graphs_project_graphs_service_ts
+  file_codependix_output_src_modules_project_graphs_project_graphs_service_ts --> file_codependix_output_src_modules_delivery_delivery_service_ts
+  file_codependix_output_src_modules_project_graphs_project_graphs_service_ts --> file_codependix_output_src_modules_graph_run_graph_run_constants_ts
+  file_codependix_output_src_modules_project_graphs_project_graphs_service_ts --> file_codependix_output_src_modules_graph_run_graph_run_types_ts
+  file_codependix_output_src_modules_project_graphs_project_graphs_service_unit_test_ts --> file_codependix_output_src_modules_anchors_anchors_service_ts
+  file_codependix_output_src_modules_project_graphs_project_graphs_service_unit_test_ts --> file_codependix_output_src_modules_delivery_delivery_service_ts
+  file_codependix_output_src_modules_project_graphs_project_graphs_service_unit_test_ts --> file_codependix_output_src_modules_project_graphs_project_graphs_service_ts
+  file_codependix_output_src_modules_python_imports_python_imports_module_ts --> file_codependix_output_src_modules_delivery_delivery_module_ts
+  file_codependix_output_src_modules_python_imports_python_imports_module_ts --> file_codependix_output_src_modules_python_imports_python_imports_service_ts
+  file_codependix_output_src_modules_python_imports_python_imports_module_unit_test_ts --> file_codependix_output_src_modules_python_imports_python_imports_module_ts
+  file_codependix_output_src_modules_python_imports_python_imports_module_unit_test_ts --> file_codependix_output_src_modules_python_imports_python_imports_service_ts
+  file_codependix_output_src_modules_python_imports_python_imports_service_ts --> file_codependix_output_src_modules_delivery_delivery_service_ts
+  file_codependix_output_src_modules_python_imports_python_imports_service_ts --> file_codependix_output_src_modules_graph_run_graph_run_constants_ts
+  file_codependix_output_src_modules_python_imports_python_imports_service_ts --> file_codependix_output_src_modules_graph_run_graph_run_types_ts
+  file_codependix_output_src_modules_python_imports_python_imports_service_unit_test_ts --> file_codependix_output_src_modules_anchors_anchors_service_ts
+  file_codependix_output_src_modules_python_imports_python_imports_service_unit_test_ts --> file_codependix_output_src_modules_delivery_delivery_service_ts
+  file_codependix_output_src_modules_python_imports_python_imports_service_unit_test_ts --> file_codependix_output_src_modules_python_imports_python_imports_service_ts
+  file_codependix_output_src_modules_reporting_reporting_module_ts --> file_codependix_output_src_modules_reporting_reporting_service_ts
+  file_codependix_output_src_modules_reporting_reporting_module_unit_test_ts --> file_codependix_output_src_modules_reporting_reporting_module_ts
+  file_codependix_output_src_modules_reporting_reporting_module_unit_test_ts --> file_codependix_output_src_modules_reporting_reporting_service_ts
+  file_codependix_output_src_modules_reporting_reporting_service_ts --> file_codependix_output_src_modules_graph_run_graph_run_types_ts
+  file_codependix_output_src_modules_reporting_reporting_service_unit_test_ts --> file_codependix_output_src_modules_graph_run_graph_run_types_ts
+  file_codependix_output_src_modules_reporting_reporting_service_unit_test_ts --> file_codependix_output_src_modules_reporting_reporting_service_ts
+  file_codependix_output_src_modules_workspace_graphs_workspace_graphs_module_ts --> file_codependix_output_src_modules_delivery_delivery_module_ts
+  file_codependix_output_src_modules_workspace_graphs_workspace_graphs_module_ts --> file_codependix_output_src_modules_workspace_graphs_workspace_graphs_service_ts
+  file_codependix_output_src_modules_workspace_graphs_workspace_graphs_module_unit_test_ts --> file_codependix_output_src_modules_workspace_graphs_workspace_graphs_module_ts
+  file_codependix_output_src_modules_workspace_graphs_workspace_graphs_module_unit_test_ts --> file_codependix_output_src_modules_workspace_graphs_workspace_graphs_service_ts
+  file_codependix_output_src_modules_workspace_graphs_workspace_graphs_service_ts --> file_codependix_output_src_modules_delivery_delivery_service_ts
+  file_codependix_output_src_modules_workspace_graphs_workspace_graphs_service_ts --> file_codependix_output_src_modules_graph_run_graph_run_constants_ts
+  file_codependix_output_src_modules_workspace_graphs_workspace_graphs_service_ts --> file_codependix_output_src_modules_graph_run_graph_run_types_ts
+  file_codependix_output_src_modules_workspace_graphs_workspace_graphs_service_ts --> file_codependix_output_src_modules_workspace_graphs_workspace_graphs_types_ts
+  file_codependix_output_src_modules_workspace_graphs_workspace_graphs_service_unit_test_ts --> file_codependix_output_src_modules_anchors_anchors_service_ts
+  file_codependix_output_src_modules_workspace_graphs_workspace_graphs_service_unit_test_ts --> file_codependix_output_src_modules_delivery_delivery_service_ts
+  file_codependix_output_src_modules_workspace_graphs_workspace_graphs_service_unit_test_ts --> file_codependix_output_src_modules_graph_run_graph_run_constants_ts
+  file_codependix_output_src_modules_workspace_graphs_workspace_graphs_service_unit_test_ts --> file_codependix_output_src_modules_workspace_graphs_workspace_graphs_service_ts
+  file_codependix_output_src_modules_workspace_graphs_workspace_graphs_types_ts --> file_codependix_output_src_modules_graph_run_graph_run_types_ts
+  file_codometer_cli_src_main_end_to_end_test_ts --> file_codometer_cli_src_constants_ts
+  file_codometer_cli_src_main_end_to_end_test_ts --> file_codometer_cli_testing_fixture_tree_ts
+  file_codometer_cli_src_main_module_ts --> file_codometer_cli_src_constants_ts
+  file_codometer_cli_src_main_module_ts --> file_codometer_cli_src_modules_changes_changes_module_ts
+  file_codometer_cli_src_main_module_ts --> file_codometer_cli_src_modules_configuration_configuration_module_ts
+  file_codometer_cli_src_main_module_ts --> file_codometer_cli_src_modules_measure_measure_module_ts
+  file_codometer_cli_src_main_ts --> file_codometer_cli_src_main_module_ts
+  file_codometer_cli_src_main_ts --> file_codometer_cli_src_main_utilities_ts
+  file_codometer_cli_src_main_utilities_unit_test_ts --> file_codometer_cli_src_main_utilities_ts
+  file_codometer_cli_src_modules_changes_changes_command_ts --> file_codometer_cli_src_modules_changes_changes_types_ts
+  file_codometer_cli_src_modules_changes_changes_command_unit_test_ts --> file_codometer_cli_src_modules_changes_changes_command_ts
+  file_codometer_cli_src_modules_changes_changes_module_ts --> file_codometer_cli_src_modules_changes_changes_command_ts
+  file_codometer_cli_src_modules_configuration_configuration_command_ts --> file_codometer_cli_src_modules_configuration_configuration_constants_ts
+  file_codometer_cli_src_modules_configuration_configuration_command_ts --> file_codometer_cli_src_modules_configuration_configuration_types_ts
+  file_codometer_cli_src_modules_configuration_configuration_command_unit_test_ts --> file_codometer_cli_src_modules_configuration_configuration_command_ts
+  file_codometer_cli_src_modules_configuration_configuration_module_ts --> file_codometer_cli_src_modules_configuration_configuration_command_ts
+  file_codometer_cli_src_modules_measure_measure_command_integration_test_ts --> file_codometer_cli_src_main_module_ts
+  file_codometer_cli_src_modules_measure_measure_command_integration_test_ts --> file_codometer_cli_src_modules_measure_measure_command_ts
+  file_codometer_cli_src_modules_measure_measure_command_integration_test_ts --> file_codometer_cli_testing_fixture_tree_ts
+  file_codometer_cli_src_modules_measure_measure_command_ts --> file_codometer_cli_src_modules_measure_measure_types_ts
+  file_codometer_cli_src_modules_measure_measure_command_unit_test_ts --> file_codometer_cli_src_modules_measure_measure_command_ts
+  file_codometer_cli_src_modules_measure_measure_command_unit_test_ts --> file_codometer_cli_testing_mocks_ts
+  file_codometer_cli_src_modules_measure_measure_module_ts --> file_codometer_cli_src_modules_measure_measure_command_ts
+  file_codometer_cli_src_repl_ts --> file_codometer_cli_src_main_module_ts
+  file_codometer_configuration_src_index_unit_test_ts --> file_codometer_configuration_src_index_ts
+  file_codometer_configuration_src_modules_configuration_configuration_flags_service_ts --> file_codometer_configuration_src_modules_configuration_configuration_flags_constants_ts
+  file_codometer_configuration_src_modules_configuration_configuration_flags_service_ts --> file_codometer_configuration_src_modules_configuration_configuration_types_ts
+  file_codometer_configuration_src_modules_configuration_configuration_flags_service_unit_test_ts --> file_codometer_configuration_src_modules_configuration_configuration_flags_service_ts
+  file_codometer_configuration_src_modules_configuration_configuration_flags_service_unit_test_ts --> file_codometer_configuration_src_modules_configuration_configuration_types_ts
+  file_codometer_configuration_src_modules_configuration_configuration_loader_service_ts --> file_codometer_configuration_src_modules_configuration_configuration_loader_types_ts
+  file_codometer_configuration_src_modules_configuration_configuration_loader_service_ts --> file_codometer_configuration_src_modules_configuration_configuration_constants_ts
+  file_codometer_configuration_src_modules_configuration_configuration_loader_service_ts --> file_codometer_configuration_src_modules_configuration_configuration_types_ts
+  file_codometer_configuration_src_modules_configuration_configuration_loader_service_unit_test_ts --> file_codometer_configuration_src_modules_configuration_configuration_loader_service_ts
+  file_codometer_configuration_src_modules_configuration_configuration_resolver_service_ts --> file_codometer_configuration_src_modules_configuration_configuration_schema_constants_ts
+  file_codometer_configuration_src_modules_configuration_configuration_resolver_service_ts --> file_codometer_configuration_src_modules_configuration_configuration_constants_ts
+  file_codometer_configuration_src_modules_configuration_configuration_resolver_service_ts --> file_codometer_configuration_src_modules_configuration_configuration_types_ts
+  file_codometer_configuration_src_modules_configuration_configuration_resolver_service_ts --> file_codometer_configuration_src_modules_configuration_resolved_types_ts
+  file_codometer_configuration_src_modules_configuration_configuration_resolver_service_unit_test_ts --> file_codometer_configuration_src_modules_configuration_configuration_resolver_service_ts
+  file_codometer_configuration_src_modules_configuration_configuration_schema_constants_ts --> file_codometer_configuration_src_modules_configuration_configuration_constants_ts
+  file_codometer_configuration_src_modules_configuration_configuration_schema_constants_ts --> file_codometer_configuration_src_modules_configuration_output_types_ts
+  file_codometer_configuration_src_modules_configuration_configuration_constants_ts --> file_codometer_configuration_src_modules_configuration_configuration_types_ts
+  file_codometer_configuration_src_modules_configuration_configuration_module_ts --> file_codometer_configuration_src_modules_configuration_configuration_flags_service_ts
+  file_codometer_configuration_src_modules_configuration_configuration_module_ts --> file_codometer_configuration_src_modules_configuration_configuration_loader_service_ts
+  file_codometer_configuration_src_modules_configuration_configuration_module_ts --> file_codometer_configuration_src_modules_configuration_configuration_resolver_service_ts
+  file_codometer_configuration_src_modules_configuration_configuration_module_ts --> file_codometer_configuration_src_modules_configuration_configuration_service_ts
+  file_codometer_configuration_src_modules_configuration_configuration_module_unit_test_ts --> file_codometer_configuration_src_modules_configuration_configuration_loader_service_ts
+  file_codometer_configuration_src_modules_configuration_configuration_module_unit_test_ts --> file_codometer_configuration_src_modules_configuration_configuration_module_ts
+  file_codometer_configuration_src_modules_configuration_configuration_module_unit_test_ts --> file_codometer_configuration_src_modules_configuration_configuration_service_ts
+  file_codometer_configuration_src_modules_configuration_configuration_service_ts --> file_codometer_configuration_src_modules_configuration_configuration_flags_service_ts
+  file_codometer_configuration_src_modules_configuration_configuration_service_ts --> file_codometer_configuration_src_modules_configuration_configuration_loader_service_ts
+  file_codometer_configuration_src_modules_configuration_configuration_service_ts --> file_codometer_configuration_src_modules_configuration_configuration_resolver_service_ts
+  file_codometer_configuration_src_modules_configuration_configuration_service_ts --> file_codometer_configuration_src_modules_configuration_configuration_types_ts
+  file_codometer_configuration_src_modules_configuration_configuration_service_ts --> file_codometer_configuration_src_modules_configuration_resolved_types_ts
+  file_codometer_configuration_src_modules_configuration_configuration_service_unit_test_ts --> file_codometer_configuration_src_modules_configuration_configuration_flags_service_ts
+  file_codometer_configuration_src_modules_configuration_configuration_service_unit_test_ts --> file_codometer_configuration_src_modules_configuration_configuration_loader_service_ts
+  file_codometer_configuration_src_modules_configuration_configuration_service_unit_test_ts --> file_codometer_configuration_src_modules_configuration_configuration_resolver_service_ts
+  file_codometer_configuration_src_modules_configuration_configuration_service_unit_test_ts --> file_codometer_configuration_src_modules_configuration_configuration_constants_ts
+  file_codometer_configuration_src_modules_configuration_configuration_service_unit_test_ts --> file_codometer_configuration_src_modules_configuration_configuration_service_ts
+  file_codometer_configuration_src_modules_configuration_configuration_service_unit_test_ts --> file_codometer_configuration_src_modules_configuration_configuration_types_ts
+  file_codometer_configuration_src_modules_configuration_configuration_types_ts --> file_codometer_configuration_src_modules_configuration_configuration_flags_constants_ts
+  file_codometer_configuration_src_modules_configuration_configuration_types_ts --> file_codometer_configuration_src_modules_configuration_output_types_ts
+  file_codometer_configuration_src_modules_configuration_resolved_types_ts --> file_codometer_configuration_src_modules_configuration_configuration_types_ts
+  file_codometer_configuration_src_modules_configuration_resolved_types_ts --> file_codometer_configuration_src_modules_configuration_output_types_ts
+  file_codometer_core_src_index_unit_test_ts --> file_codometer_core_src_index_ts
+  file_codometer_core_src_lib_report_types_ts --> file_codometer_core_src_lib_statistics_types_ts
+  file_codometer_core_src_lib_symbols_constants_ts --> file_codometer_core_src_lib_report_types_ts
+  file_codometer_core_src_lib_symbols_constants_ts --> file_codometer_core_src_lib_statistics_types_ts
+  file_codometer_core_src_lib_symbols_constants_ts --> file_codometer_core_src_lib_symbols_types_ts
+  file_codometer_examples_testing_corpus_integration_test_ts --> file_codometer_examples_testing_codometer_ts
+  file_codometer_examples_testing_examples_integration_test_ts --> file_codometer_examples_testing_codometer_ts
+  file_codometer_examples_testing_run_examples_ts --> file_codometer_examples_testing_codometer_ts
+  file_codometer_languages_src_modules_comments_comments_module_ts --> file_codometer_languages_src_modules_comments_comments_service_ts
+  file_codometer_languages_src_modules_comments_comments_module_ts --> file_codometer_languages_src_modules_comments_css_comments_service_ts
+  file_codometer_languages_src_modules_comments_comments_module_ts --> file_codometer_languages_src_modules_comments_hash_comments_service_ts
+  file_codometer_languages_src_modules_comments_comments_module_ts --> file_codometer_languages_src_modules_comments_hcl_comments_service_ts
+  file_codometer_languages_src_modules_comments_comments_module_ts --> file_codometer_languages_src_modules_comments_language_comments_service_ts
+  file_codometer_languages_src_modules_comments_comments_module_ts --> file_codometer_languages_src_modules_comments_sql_comments_service_ts
+  file_codometer_languages_src_modules_comments_comments_module_ts --> file_codometer_languages_src_modules_comments_typescript_comments_service_ts
+  file_codometer_languages_src_modules_comments_comments_module_ts --> file_codometer_languages_src_modules_comments_yaml_comments_service_ts
+  file_codometer_languages_src_modules_comments_comments_module_unit_test_ts --> file_codometer_languages_src_modules_comments_comments_module_ts
+  file_codometer_languages_src_modules_comments_comments_module_unit_test_ts --> file_codometer_languages_src_modules_comments_comments_service_ts
+  file_codometer_languages_src_modules_comments_comments_module_unit_test_ts --> file_codometer_languages_src_modules_comments_css_comments_service_ts
+  file_codometer_languages_src_modules_comments_comments_module_unit_test_ts --> file_codometer_languages_src_modules_comments_hash_comments_service_ts
+  file_codometer_languages_src_modules_comments_comments_module_unit_test_ts --> file_codometer_languages_src_modules_comments_hcl_comments_service_ts
+  file_codometer_languages_src_modules_comments_comments_module_unit_test_ts --> file_codometer_languages_src_modules_comments_language_comments_service_ts
+  file_codometer_languages_src_modules_comments_comments_module_unit_test_ts --> file_codometer_languages_src_modules_comments_sql_comments_service_ts
+  file_codometer_languages_src_modules_comments_comments_module_unit_test_ts --> file_codometer_languages_src_modules_comments_typescript_comments_service_ts
+  file_codometer_languages_src_modules_comments_comments_module_unit_test_ts --> file_codometer_languages_src_modules_comments_yaml_comments_service_ts
+  file_codometer_languages_src_modules_comments_comments_service_ts --> file_codometer_languages_src_modules_comments_comments_constants_ts
+  file_codometer_languages_src_modules_comments_comments_service_ts --> file_codometer_languages_src_modules_comments_comments_types_ts
+  file_codometer_languages_src_modules_comments_comments_service_unit_test_ts --> file_codometer_languages_src_modules_comments_comments_service_ts
+  file_codometer_languages_src_modules_comments_comments_service_unit_test_ts --> file_codometer_languages_src_modules_comments_comments_types_ts
+  file_codometer_languages_src_modules_comments_comments_service_unit_test_ts --> file_codometer_languages_src_modules_comments_hash_comments_service_ts
+  file_codometer_languages_src_modules_comments_css_comments_service_ts --> file_codometer_languages_src_modules_comments_comments_types_ts
+  file_codometer_languages_src_modules_comments_css_comments_service_unit_test_ts --> file_codometer_languages_src_modules_comments_css_comments_service_ts
+  file_codometer_languages_src_modules_comments_hash_comments_service_ts --> file_codometer_languages_src_modules_comments_comments_constants_ts
+  file_codometer_languages_src_modules_comments_hash_comments_service_ts --> file_codometer_languages_src_modules_comments_comments_types_ts
+  file_codometer_languages_src_modules_comments_hash_comments_service_unit_test_ts --> file_codometer_languages_src_modules_comments_hash_comments_service_ts
+  file_codometer_languages_src_modules_comments_hcl_comments_service_ts --> file_codometer_languages_src_modules_comments_comments_constants_ts
+  file_codometer_languages_src_modules_comments_hcl_comments_service_ts --> file_codometer_languages_src_modules_comments_comments_types_ts
+  file_codometer_languages_src_modules_comments_hcl_comments_service_unit_test_ts --> file_codometer_languages_src_modules_comments_hcl_comments_service_ts
+  file_codometer_languages_src_modules_comments_language_comments_service_ts --> file_codometer_languages_src_modules_comments_comments_service_ts
+  file_codometer_languages_src_modules_comments_language_comments_service_ts --> file_codometer_languages_src_modules_comments_comments_types_ts
+  file_codometer_languages_src_modules_comments_language_comments_service_ts --> file_codometer_languages_src_modules_comments_css_comments_service_ts
+  file_codometer_languages_src_modules_comments_language_comments_service_ts --> file_codometer_languages_src_modules_comments_hash_comments_service_ts
+  file_codometer_languages_src_modules_comments_language_comments_service_ts --> file_codometer_languages_src_modules_comments_hcl_comments_service_ts
+  file_codometer_languages_src_modules_comments_language_comments_service_ts --> file_codometer_languages_src_modules_comments_sql_comments_service_ts
+  file_codometer_languages_src_modules_comments_language_comments_service_ts --> file_codometer_languages_src_modules_comments_typescript_comments_service_ts
+  file_codometer_languages_src_modules_comments_language_comments_service_ts --> file_codometer_languages_src_modules_comments_yaml_comments_service_ts
+  file_codometer_languages_src_modules_comments_language_comments_service_unit_test_ts --> file_codometer_languages_src_modules_comments_comments_service_ts
+  file_codometer_languages_src_modules_comments_language_comments_service_unit_test_ts --> file_codometer_languages_src_modules_comments_comments_types_ts
+  file_codometer_languages_src_modules_comments_language_comments_service_unit_test_ts --> file_codometer_languages_src_modules_comments_css_comments_service_ts
+  file_codometer_languages_src_modules_comments_language_comments_service_unit_test_ts --> file_codometer_languages_src_modules_comments_hash_comments_service_ts
+  file_codometer_languages_src_modules_comments_language_comments_service_unit_test_ts --> file_codometer_languages_src_modules_comments_hcl_comments_service_ts
+  file_codometer_languages_src_modules_comments_language_comments_service_unit_test_ts --> file_codometer_languages_src_modules_comments_language_comments_service_ts
+  file_codometer_languages_src_modules_comments_language_comments_service_unit_test_ts --> file_codometer_languages_src_modules_comments_sql_comments_service_ts
+  file_codometer_languages_src_modules_comments_language_comments_service_unit_test_ts --> file_codometer_languages_src_modules_comments_typescript_comments_service_ts
+  file_codometer_languages_src_modules_comments_language_comments_service_unit_test_ts --> file_codometer_languages_src_modules_comments_yaml_comments_service_ts
+  file_codometer_languages_src_modules_comments_sql_comments_service_ts --> file_codometer_languages_src_modules_comments_comments_types_ts
+  file_codometer_languages_src_modules_comments_sql_comments_service_ts --> file_codometer_languages_src_modules_sql_sql_constants_ts
+  file_codometer_languages_src_modules_comments_sql_comments_service_unit_test_ts --> file_codometer_languages_src_modules_comments_sql_comments_service_ts
+  file_codometer_languages_src_modules_comments_typescript_comments_service_ts --> file_codometer_languages_src_modules_comments_comments_types_ts
+  file_codometer_languages_src_modules_comments_typescript_comments_service_ts --> file_codometer_languages_src_modules_comments_typescript_comments_constants_ts
+  file_codometer_languages_src_modules_comments_typescript_comments_service_unit_test_ts --> file_codometer_languages_src_modules_comments_typescript_comments_service_ts
+  file_codometer_languages_src_modules_comments_yaml_comments_service_ts --> file_codometer_languages_src_modules_comments_comments_constants_ts
+  file_codometer_languages_src_modules_comments_yaml_comments_service_ts --> file_codometer_languages_src_modules_comments_comments_types_ts
+  file_codometer_languages_src_modules_comments_yaml_comments_service_unit_test_ts --> file_codometer_languages_src_modules_comments_yaml_comments_service_ts
+  file_codometer_languages_src_modules_css_css_constants_ts --> file_codometer_languages_src_modules_css_css_types_ts
+  file_codometer_languages_src_modules_css_css_module_ts --> file_codometer_languages_src_modules_css_css_service_ts
+  file_codometer_languages_src_modules_css_css_module_unit_test_ts --> file_codometer_languages_src_modules_css_css_module_ts
+  file_codometer_languages_src_modules_css_css_module_unit_test_ts --> file_codometer_languages_src_modules_css_css_service_ts
+  file_codometer_languages_src_modules_css_css_service_ts --> file_codometer_languages_src_modules_css_css_constants_ts
+  file_codometer_languages_src_modules_css_css_service_ts --> file_codometer_languages_src_modules_css_css_types_ts
+  file_codometer_languages_src_modules_css_css_service_unit_test_ts --> file_codometer_languages_src_modules_css_css_service_ts
+  file_codometer_languages_src_modules_hcl_hcl_constants_ts --> file_codometer_languages_src_modules_hcl_hcl_types_ts
+  file_codometer_languages_src_modules_hcl_hcl_module_ts --> file_codometer_languages_src_modules_hcl_hcl_service_ts
+  file_codometer_languages_src_modules_hcl_hcl_module_unit_test_ts --> file_codometer_languages_src_modules_hcl_hcl_module_ts
+  file_codometer_languages_src_modules_hcl_hcl_module_unit_test_ts --> file_codometer_languages_src_modules_hcl_hcl_service_ts
+  file_codometer_languages_src_modules_hcl_hcl_service_ts --> file_codometer_languages_src_modules_hcl_hcl_constants_ts
+  file_codometer_languages_src_modules_hcl_hcl_service_ts --> file_codometer_languages_src_modules_hcl_hcl_types_ts
+  file_codometer_languages_src_modules_hcl_hcl_service_unit_test_ts --> file_codometer_languages_src_modules_hcl_hcl_service_ts
+  file_codometer_languages_src_modules_json_json_constants_ts --> file_codometer_languages_src_modules_json_json_types_ts
+  file_codometer_languages_src_modules_json_json_module_ts --> file_codometer_languages_src_modules_json_json_service_ts
+  file_codometer_languages_src_modules_json_json_module_unit_test_ts --> file_codometer_languages_src_modules_json_json_module_ts
+  file_codometer_languages_src_modules_json_json_module_unit_test_ts --> file_codometer_languages_src_modules_json_json_service_ts
+  file_codometer_languages_src_modules_json_json_service_ts --> file_codometer_languages_src_modules_json_json_constants_ts
+  file_codometer_languages_src_modules_json_json_service_ts --> file_codometer_languages_src_modules_json_json_types_ts
+  file_codometer_languages_src_modules_json_json_service_unit_test_ts --> file_codometer_languages_src_modules_json_json_service_ts
+  file_codometer_languages_src_modules_jupyter_jupyter_constants_ts --> file_codometer_languages_src_modules_jupyter_jupyter_types_ts
+  file_codometer_languages_src_modules_jupyter_jupyter_module_ts --> file_codometer_languages_src_modules_json_json_module_ts
+  file_codometer_languages_src_modules_jupyter_jupyter_module_ts --> file_codometer_languages_src_modules_jupyter_jupyter_service_ts
+  file_codometer_languages_src_modules_jupyter_jupyter_module_ts --> file_codometer_languages_src_modules_markdown_markdown_module_ts
+  file_codometer_languages_src_modules_jupyter_jupyter_module_ts --> file_codometer_languages_src_modules_python_python_module_ts
+  file_codometer_languages_src_modules_jupyter_jupyter_module_unit_test_ts --> file_codometer_languages_src_modules_jupyter_jupyter_module_ts
+  file_codometer_languages_src_modules_jupyter_jupyter_module_unit_test_ts --> file_codometer_languages_src_modules_jupyter_jupyter_service_ts
+  file_codometer_languages_src_modules_jupyter_jupyter_service_ts --> file_codometer_languages_src_modules_json_json_service_ts
+  file_codometer_languages_src_modules_jupyter_jupyter_service_ts --> file_codometer_languages_src_modules_jupyter_jupyter_constants_ts
+  file_codometer_languages_src_modules_jupyter_jupyter_service_ts --> file_codometer_languages_src_modules_jupyter_jupyter_types_ts
+  file_codometer_languages_src_modules_jupyter_jupyter_service_ts --> file_codometer_languages_src_modules_markdown_markdown_service_ts
+  file_codometer_languages_src_modules_jupyter_jupyter_service_ts --> file_codometer_languages_src_modules_markdown_markdown_types_ts
+  file_codometer_languages_src_modules_jupyter_jupyter_service_ts --> file_codometer_languages_src_modules_python_python_service_ts
+  file_codometer_languages_src_modules_jupyter_jupyter_service_unit_test_ts --> file_codometer_languages_src_modules_json_json_service_ts
+  file_codometer_languages_src_modules_jupyter_jupyter_service_unit_test_ts --> file_codometer_languages_src_modules_jupyter_jupyter_service_ts
+  file_codometer_languages_src_modules_jupyter_jupyter_service_unit_test_ts --> file_codometer_languages_src_modules_markdown_markdown_service_ts
+  file_codometer_languages_src_modules_jupyter_jupyter_service_unit_test_ts --> file_codometer_languages_src_modules_python_python_constants_ts
+  file_codometer_languages_src_modules_jupyter_jupyter_service_unit_test_ts --> file_codometer_languages_src_modules_python_python_service_ts
+  file_codometer_languages_src_modules_languages_languages_module_ts --> file_codometer_languages_src_modules_comments_comments_module_ts
+  file_codometer_languages_src_modules_languages_languages_module_ts --> file_codometer_languages_src_modules_css_css_module_ts
+  file_codometer_languages_src_modules_languages_languages_module_ts --> file_codometer_languages_src_modules_hcl_hcl_module_ts
+  file_codometer_languages_src_modules_languages_languages_module_ts --> file_codometer_languages_src_modules_json_json_module_ts
+  file_codometer_languages_src_modules_languages_languages_module_ts --> file_codometer_languages_src_modules_jupyter_jupyter_module_ts
+  file_codometer_languages_src_modules_languages_languages_module_ts --> file_codometer_languages_src_modules_languages_languages_service_ts
+  file_codometer_languages_src_modules_languages_languages_module_ts --> file_codometer_languages_src_modules_markdown_markdown_module_ts
+  file_codometer_languages_src_modules_languages_languages_module_ts --> file_codometer_languages_src_modules_python_python_module_ts
+  file_codometer_languages_src_modules_languages_languages_module_ts --> file_codometer_languages_src_modules_shell_shell_module_ts
+  file_codometer_languages_src_modules_languages_languages_module_ts --> file_codometer_languages_src_modules_sql_sql_module_ts
+  file_codometer_languages_src_modules_languages_languages_module_ts --> file_codometer_languages_src_modules_toml_toml_module_ts
+  file_codometer_languages_src_modules_languages_languages_module_ts --> file_codometer_languages_src_modules_typescript_typescript_module_ts
+  file_codometer_languages_src_modules_languages_languages_module_ts --> file_codometer_languages_src_modules_yaml_yaml_module_ts
+  file_codometer_languages_src_modules_languages_languages_module_unit_test_ts --> file_codometer_languages_src_modules_languages_languages_module_ts
+  file_codometer_languages_src_modules_languages_languages_module_unit_test_ts --> file_codometer_languages_src_modules_languages_languages_service_ts
+  file_codometer_languages_src_modules_languages_languages_service_ts --> file_codometer_languages_src_modules_comments_language_comments_service_ts
+  file_codometer_languages_src_modules_languages_languages_service_ts --> file_codometer_languages_src_modules_css_css_service_ts
+  file_codometer_languages_src_modules_languages_languages_service_ts --> file_codometer_languages_src_modules_hcl_hcl_service_ts
+  file_codometer_languages_src_modules_languages_languages_service_ts --> file_codometer_languages_src_modules_json_json_service_ts
+  file_codometer_languages_src_modules_languages_languages_service_ts --> file_codometer_languages_src_modules_jupyter_jupyter_service_ts
+  file_codometer_languages_src_modules_languages_languages_service_ts --> file_codometer_languages_src_modules_languages_languages_types_ts
+  file_codometer_languages_src_modules_languages_languages_service_ts --> file_codometer_languages_src_modules_markdown_markdown_service_ts
+  file_codometer_languages_src_modules_languages_languages_service_ts --> file_codometer_languages_src_modules_python_python_service_ts
+  file_codometer_languages_src_modules_languages_languages_service_ts --> file_codometer_languages_src_modules_shell_shell_service_ts
+  file_codometer_languages_src_modules_languages_languages_service_ts --> file_codometer_languages_src_modules_sql_sql_service_ts
+  file_codometer_languages_src_modules_languages_languages_service_ts --> file_codometer_languages_src_modules_toml_toml_service_ts
+  file_codometer_languages_src_modules_languages_languages_service_ts --> file_codometer_languages_src_modules_typescript_typescript_service_ts
+  file_codometer_languages_src_modules_languages_languages_service_ts --> file_codometer_languages_src_modules_yaml_yaml_service_ts
+  file_codometer_languages_src_modules_languages_languages_service_unit_test_ts --> file_codometer_languages_src_modules_comments_comments_service_ts
+  file_codometer_languages_src_modules_languages_languages_service_unit_test_ts --> file_codometer_languages_src_modules_comments_comments_types_ts
+  file_codometer_languages_src_modules_languages_languages_service_unit_test_ts --> file_codometer_languages_src_modules_comments_css_comments_service_ts
+  file_codometer_languages_src_modules_languages_languages_service_unit_test_ts --> file_codometer_languages_src_modules_comments_hash_comments_service_ts
+  file_codometer_languages_src_modules_languages_languages_service_unit_test_ts --> file_codometer_languages_src_modules_comments_hcl_comments_service_ts
+  file_codometer_languages_src_modules_languages_languages_service_unit_test_ts --> file_codometer_languages_src_modules_comments_language_comments_service_ts
+  file_codometer_languages_src_modules_languages_languages_service_unit_test_ts --> file_codometer_languages_src_modules_comments_sql_comments_service_ts
+  file_codometer_languages_src_modules_languages_languages_service_unit_test_ts --> file_codometer_languages_src_modules_comments_typescript_comments_service_ts
+  file_codometer_languages_src_modules_languages_languages_service_unit_test_ts --> file_codometer_languages_src_modules_comments_yaml_comments_service_ts
+  file_codometer_languages_src_modules_languages_languages_service_unit_test_ts --> file_codometer_languages_src_modules_css_css_service_ts
+  file_codometer_languages_src_modules_languages_languages_service_unit_test_ts --> file_codometer_languages_src_modules_hcl_hcl_service_ts
+  file_codometer_languages_src_modules_languages_languages_service_unit_test_ts --> file_codometer_languages_src_modules_json_json_service_ts
+  file_codometer_languages_src_modules_languages_languages_service_unit_test_ts --> file_codometer_languages_src_modules_jupyter_jupyter_service_ts
+  file_codometer_languages_src_modules_languages_languages_service_unit_test_ts --> file_codometer_languages_src_modules_languages_languages_service_ts
+  file_codometer_languages_src_modules_languages_languages_service_unit_test_ts --> file_codometer_languages_src_modules_languages_languages_types_ts
+  file_codometer_languages_src_modules_languages_languages_service_unit_test_ts --> file_codometer_languages_src_modules_markdown_markdown_service_ts
+  file_codometer_languages_src_modules_languages_languages_service_unit_test_ts --> file_codometer_languages_src_modules_python_python_service_ts
+  file_codometer_languages_src_modules_languages_languages_service_unit_test_ts --> file_codometer_languages_src_modules_shell_shell_service_ts
+  file_codometer_languages_src_modules_languages_languages_service_unit_test_ts --> file_codometer_languages_src_modules_sql_sql_service_ts
+  file_codometer_languages_src_modules_languages_languages_service_unit_test_ts --> file_codometer_languages_src_modules_toml_toml_service_ts
+  file_codometer_languages_src_modules_languages_languages_service_unit_test_ts --> file_codometer_languages_src_modules_typescript_typescript_service_ts
+  file_codometer_languages_src_modules_languages_languages_service_unit_test_ts --> file_codometer_languages_src_modules_yaml_yaml_service_ts
+  file_codometer_languages_src_modules_languages_languages_types_ts --> file_codometer_languages_src_modules_comments_comments_types_ts
+  file_codometer_languages_src_modules_languages_languages_types_ts --> file_codometer_languages_src_modules_css_css_types_ts
+  file_codometer_languages_src_modules_languages_languages_types_ts --> file_codometer_languages_src_modules_hcl_hcl_types_ts
+  file_codometer_languages_src_modules_languages_languages_types_ts --> file_codometer_languages_src_modules_json_json_types_ts
+  file_codometer_languages_src_modules_languages_languages_types_ts --> file_codometer_languages_src_modules_jupyter_jupyter_types_ts
+  file_codometer_languages_src_modules_languages_languages_types_ts --> file_codometer_languages_src_modules_markdown_markdown_types_ts
+  file_codometer_languages_src_modules_languages_languages_types_ts --> file_codometer_languages_src_modules_python_python_types_ts
+  file_codometer_languages_src_modules_languages_languages_types_ts --> file_codometer_languages_src_modules_shell_shell_types_ts
+  file_codometer_languages_src_modules_languages_languages_types_ts --> file_codometer_languages_src_modules_sql_sql_types_ts
+  file_codometer_languages_src_modules_languages_languages_types_ts --> file_codometer_languages_src_modules_toml_toml_types_ts
+  file_codometer_languages_src_modules_languages_languages_types_ts --> file_codometer_languages_src_modules_typescript_typescript_types_ts
+  file_codometer_languages_src_modules_languages_languages_types_ts --> file_codometer_languages_src_modules_yaml_yaml_types_ts
+  file_codometer_languages_src_modules_markdown_markdown_constants_ts --> file_codometer_languages_src_modules_markdown_markdown_types_ts
+  file_codometer_languages_src_modules_markdown_markdown_module_ts --> file_codometer_languages_src_modules_markdown_markdown_service_ts
+  file_codometer_languages_src_modules_markdown_markdown_module_unit_test_ts --> file_codometer_languages_src_modules_markdown_markdown_module_ts
+  file_codometer_languages_src_modules_markdown_markdown_module_unit_test_ts --> file_codometer_languages_src_modules_markdown_markdown_service_ts
+  file_codometer_languages_src_modules_markdown_markdown_service_ts --> file_codometer_languages_src_modules_markdown_markdown_constants_ts
+  file_codometer_languages_src_modules_markdown_markdown_service_ts --> file_codometer_languages_src_modules_markdown_markdown_types_ts
+  file_codometer_languages_src_modules_markdown_markdown_service_unit_test_ts --> file_codometer_languages_src_modules_markdown_markdown_service_ts
+  file_codometer_languages_src_modules_python_python_constants_ts --> file_codometer_languages_src_modules_python_python_types_ts
+  file_codometer_languages_src_modules_python_python_module_ts --> file_codometer_languages_src_modules_python_python_service_ts
+  file_codometer_languages_src_modules_python_python_module_unit_test_ts --> file_codometer_languages_src_modules_python_python_module_ts
+  file_codometer_languages_src_modules_python_python_module_unit_test_ts --> file_codometer_languages_src_modules_python_python_service_ts
+  file_codometer_languages_src_modules_python_python_service_ts --> file_codometer_languages_src_modules_python_python_constants_ts
+  file_codometer_languages_src_modules_python_python_service_ts --> file_codometer_languages_src_modules_python_python_types_ts
+  file_codometer_languages_src_modules_python_python_service_unit_test_ts --> file_codometer_languages_src_modules_python_python_constants_ts
+  file_codometer_languages_src_modules_python_python_service_unit_test_ts --> file_codometer_languages_src_modules_python_python_service_ts
+  file_codometer_languages_src_modules_python_python_types_ts --> file_codometer_languages_src_modules_comments_comments_types_ts
+  file_codometer_languages_src_modules_shell_shell_constants_ts --> file_codometer_languages_src_modules_shell_shell_types_ts
+  file_codometer_languages_src_modules_shell_shell_module_ts --> file_codometer_languages_src_modules_shell_shell_service_ts
+  file_codometer_languages_src_modules_shell_shell_module_unit_test_ts --> file_codometer_languages_src_modules_shell_shell_module_ts
+  file_codometer_languages_src_modules_shell_shell_module_unit_test_ts --> file_codometer_languages_src_modules_shell_shell_service_ts
+  file_codometer_languages_src_modules_shell_shell_service_ts --> file_codometer_languages_src_modules_shell_shell_constants_ts
+  file_codometer_languages_src_modules_shell_shell_service_ts --> file_codometer_languages_src_modules_shell_shell_types_ts
+  file_codometer_languages_src_modules_shell_shell_service_unit_test_ts --> file_codometer_languages_src_modules_shell_shell_service_ts
+  file_codometer_languages_src_modules_sql_sql_constants_ts --> file_codometer_languages_src_modules_sql_sql_types_ts
+  file_codometer_languages_src_modules_sql_sql_module_ts --> file_codometer_languages_src_modules_sql_sql_service_ts
+  file_codometer_languages_src_modules_sql_sql_module_unit_test_ts --> file_codometer_languages_src_modules_sql_sql_module_ts
+  file_codometer_languages_src_modules_sql_sql_module_unit_test_ts --> file_codometer_languages_src_modules_sql_sql_service_ts
+  file_codometer_languages_src_modules_sql_sql_service_ts --> file_codometer_languages_src_modules_sql_sql_constants_ts
+  file_codometer_languages_src_modules_sql_sql_service_ts --> file_codometer_languages_src_modules_sql_sql_types_ts
+  file_codometer_languages_src_modules_sql_sql_service_unit_test_ts --> file_codometer_languages_src_modules_sql_sql_service_ts
+  file_codometer_languages_src_modules_toml_toml_constants_ts --> file_codometer_languages_src_modules_toml_toml_types_ts
+  file_codometer_languages_src_modules_toml_toml_module_ts --> file_codometer_languages_src_modules_toml_toml_service_ts
+  file_codometer_languages_src_modules_toml_toml_module_unit_test_ts --> file_codometer_languages_src_modules_toml_toml_module_ts
+  file_codometer_languages_src_modules_toml_toml_module_unit_test_ts --> file_codometer_languages_src_modules_toml_toml_service_ts
+  file_codometer_languages_src_modules_toml_toml_service_ts --> file_codometer_languages_src_modules_toml_toml_constants_ts
+  file_codometer_languages_src_modules_toml_toml_service_ts --> file_codometer_languages_src_modules_toml_toml_types_ts
+  file_codometer_languages_src_modules_toml_toml_service_unit_test_ts --> file_codometer_languages_src_modules_toml_toml_service_ts
+  file_codometer_languages_src_modules_typescript_declaration_comments_service_ts --> file_codometer_languages_src_modules_comments_comments_service_ts
+  file_codometer_languages_src_modules_typescript_declaration_comments_service_ts --> file_codometer_languages_src_modules_comments_comments_types_ts
+  file_codometer_languages_src_modules_typescript_declaration_comments_service_ts --> file_codometer_languages_src_modules_typescript_typescript_constants_ts
+  file_codometer_languages_src_modules_typescript_declaration_comments_service_ts --> file_codometer_languages_src_modules_typescript_typescript_types_ts
+  file_codometer_languages_src_modules_typescript_declaration_comments_service_unit_test_ts --> file_codometer_languages_src_modules_comments_comments_service_ts
+  file_codometer_languages_src_modules_typescript_declaration_comments_service_unit_test_ts --> file_codometer_languages_src_modules_comments_comments_types_ts
+  file_codometer_languages_src_modules_typescript_declaration_comments_service_unit_test_ts --> file_codometer_languages_src_modules_typescript_declaration_comments_service_ts
+  file_codometer_languages_src_modules_typescript_declaration_comments_service_unit_test_ts --> file_codometer_languages_src_modules_typescript_typescript_types_ts
+  file_codometer_languages_src_modules_typescript_typescript_constants_ts --> file_codometer_languages_src_modules_typescript_typescript_types_ts
+  file_codometer_languages_src_modules_typescript_typescript_module_ts --> file_codometer_languages_src_modules_comments_comments_module_ts
+  file_codometer_languages_src_modules_typescript_typescript_module_ts --> file_codometer_languages_src_modules_typescript_declaration_comments_service_ts
+  file_codometer_languages_src_modules_typescript_typescript_module_ts --> file_codometer_languages_src_modules_typescript_typescript_service_ts
+  file_codometer_languages_src_modules_typescript_typescript_module_unit_test_ts --> file_codometer_languages_src_modules_typescript_declaration_comments_service_ts
+  file_codometer_languages_src_modules_typescript_typescript_module_unit_test_ts --> file_codometer_languages_src_modules_typescript_typescript_module_ts
+  file_codometer_languages_src_modules_typescript_typescript_module_unit_test_ts --> file_codometer_languages_src_modules_typescript_typescript_service_ts
+  file_codometer_languages_src_modules_typescript_typescript_service_ts --> file_codometer_languages_src_modules_comments_comments_types_ts
+  file_codometer_languages_src_modules_typescript_typescript_service_ts --> file_codometer_languages_src_modules_typescript_declaration_comments_service_ts
+  file_codometer_languages_src_modules_typescript_typescript_service_ts --> file_codometer_languages_src_modules_typescript_typescript_constants_ts
+  file_codometer_languages_src_modules_typescript_typescript_service_ts --> file_codometer_languages_src_modules_typescript_typescript_types_ts
+  file_codometer_languages_src_modules_typescript_typescript_service_unit_test_ts --> file_codometer_languages_src_modules_comments_comments_service_ts
+  file_codometer_languages_src_modules_typescript_typescript_service_unit_test_ts --> file_codometer_languages_src_modules_comments_comments_types_ts
+  file_codometer_languages_src_modules_typescript_typescript_service_unit_test_ts --> file_codometer_languages_src_modules_typescript_declaration_comments_service_ts
+  file_codometer_languages_src_modules_typescript_typescript_service_unit_test_ts --> file_codometer_languages_src_modules_typescript_typescript_service_ts
+  file_codometer_languages_src_modules_typescript_typescript_service_unit_test_ts --> file_codometer_languages_src_modules_typescript_typescript_types_ts
+  file_codometer_languages_src_modules_typescript_typescript_types_ts --> file_codometer_languages_src_modules_comments_comments_types_ts
+  file_codometer_languages_src_modules_yaml_yaml_constants_ts --> file_codometer_languages_src_modules_yaml_yaml_types_ts
+  file_codometer_languages_src_modules_yaml_yaml_module_ts --> file_codometer_languages_src_modules_yaml_yaml_service_ts
+  file_codometer_languages_src_modules_yaml_yaml_module_unit_test_ts --> file_codometer_languages_src_modules_yaml_yaml_module_ts
+  file_codometer_languages_src_modules_yaml_yaml_module_unit_test_ts --> file_codometer_languages_src_modules_yaml_yaml_service_ts
+  file_codometer_languages_src_modules_yaml_yaml_service_ts --> file_codometer_languages_src_modules_yaml_yaml_constants_ts
+  file_codometer_languages_src_modules_yaml_yaml_service_ts --> file_codometer_languages_src_modules_yaml_yaml_types_ts
+  file_codometer_languages_src_modules_yaml_yaml_service_unit_test_ts --> file_codometer_languages_src_modules_yaml_yaml_service_ts
+  file_codometer_measurement_src_modules_customization_customization_module_ts --> file_codometer_measurement_src_modules_customization_customization_service_ts
+  file_codometer_measurement_src_modules_customization_customization_module_unit_test_ts --> file_codometer_measurement_src_modules_customization_customization_module_ts
+  file_codometer_measurement_src_modules_customization_customization_module_unit_test_ts --> file_codometer_measurement_src_modules_customization_customization_service_ts
+  file_codometer_measurement_src_modules_customization_customization_service_ts --> file_codometer_measurement_src_modules_customization_customization_types_ts
+  file_codometer_measurement_src_modules_customization_customization_service_unit_test_ts --> file_codometer_measurement_src_modules_customization_customization_service_ts
+  file_codometer_measurement_src_modules_discovery_discovery_module_ts --> file_codometer_measurement_src_modules_discovery_discovery_service_ts
+  file_codometer_measurement_src_modules_discovery_discovery_module_ts --> file_codometer_measurement_src_modules_discovery_ignore_rules_service_ts
+  file_codometer_measurement_src_modules_discovery_discovery_service_integration_test_ts --> file_codometer_measurement_src_modules_discovery_discovery_service_ts
+  file_codometer_measurement_src_modules_discovery_discovery_service_integration_test_ts --> file_codometer_measurement_src_modules_discovery_discovery_types_ts
+  file_codometer_measurement_src_modules_discovery_discovery_service_integration_test_ts --> file_codometer_measurement_src_modules_discovery_ignore_rules_service_ts
+  file_codometer_measurement_src_modules_discovery_discovery_service_integration_test_ts --> file_codometer_measurement_testing_fixture_tree_ts
+  file_codometer_measurement_src_modules_discovery_discovery_service_ts --> file_codometer_measurement_src_modules_discovery_discovery_constants_ts
+  file_codometer_measurement_src_modules_discovery_discovery_service_ts --> file_codometer_measurement_src_modules_discovery_discovery_types_ts
+  file_codometer_measurement_src_modules_discovery_discovery_service_ts --> file_codometer_measurement_src_modules_discovery_ignore_rules_service_ts
+  file_codometer_measurement_src_modules_discovery_discovery_service_ts --> file_codometer_measurement_src_modules_discovery_ignore_rules_types_ts
+  file_codometer_measurement_src_modules_discovery_discovery_service_unit_test_ts --> file_codometer_measurement_src_modules_discovery_discovery_service_ts
+  file_codometer_measurement_src_modules_discovery_discovery_service_unit_test_ts --> file_codometer_measurement_src_modules_discovery_discovery_types_ts
+  file_codometer_measurement_src_modules_discovery_discovery_service_unit_test_ts --> file_codometer_measurement_src_modules_discovery_ignore_rules_service_ts
+  file_codometer_measurement_src_modules_discovery_discovery_types_ts --> file_codometer_measurement_src_modules_discovery_ignore_rules_types_ts
+  file_codometer_measurement_src_modules_discovery_ignore_rules_service_ts --> file_codometer_measurement_src_modules_discovery_ignore_rules_types_ts
+  file_codometer_measurement_src_modules_discovery_ignore_rules_service_unit_test_ts --> file_codometer_measurement_src_modules_discovery_ignore_rules_service_ts
+  file_codometer_measurement_src_modules_discovery_ignore_rules_service_unit_test_ts --> file_codometer_measurement_src_modules_discovery_ignore_rules_types_ts
+  file_codometer_measurement_src_modules_inputs_inputs_module_ts --> file_codometer_measurement_src_modules_inputs_inputs_service_ts
+  file_codometer_measurement_src_modules_inputs_inputs_service_integration_test_ts --> file_codometer_measurement_src_modules_inputs_inputs_service_ts
+  file_codometer_measurement_src_modules_inputs_inputs_service_integration_test_ts --> file_codometer_measurement_testing_input_tree_ts
+  file_codometer_measurement_src_modules_inputs_inputs_service_ts --> file_codometer_measurement_src_modules_inputs_inputs_constants_ts
+  file_codometer_measurement_src_modules_inputs_inputs_service_ts --> file_codometer_measurement_src_modules_inputs_inputs_types_ts
+  file_codometer_measurement_src_modules_inputs_inputs_service_unit_test_ts --> file_codometer_measurement_src_modules_inputs_inputs_constants_ts
+  file_codometer_measurement_src_modules_inputs_inputs_service_unit_test_ts --> file_codometer_measurement_src_modules_inputs_inputs_service_ts
+  file_codometer_measurement_src_modules_limits_limits_module_ts --> file_codometer_measurement_src_modules_limits_limits_service_ts
+  file_codometer_measurement_src_modules_limits_limits_module_ts --> file_codometer_measurement_src_modules_limits_metric_index_service_ts
+  file_codometer_measurement_src_modules_limits_limits_service_integration_test_ts --> file_codometer_measurement_src_modules_limits_limits_service_ts
+  file_codometer_measurement_src_modules_limits_limits_service_integration_test_ts --> file_codometer_measurement_src_modules_limits_limits_types_ts
+  file_codometer_measurement_src_modules_limits_limits_service_integration_test_ts --> file_codometer_measurement_src_modules_limits_metric_index_service_ts
+  file_codometer_measurement_src_modules_limits_limits_service_integration_test_ts --> file_codometer_measurement_testing_fixture_tree_ts
+  file_codometer_measurement_src_modules_limits_limits_service_integration_test_ts --> file_codometer_measurement_testing_mocks_ts
+  file_codometer_measurement_src_modules_limits_limits_service_ts --> file_codometer_measurement_src_modules_limits_limits_constants_ts
+  file_codometer_measurement_src_modules_limits_limits_service_ts --> file_codometer_measurement_src_modules_limits_limits_types_ts
+  file_codometer_measurement_src_modules_limits_limits_service_unit_test_ts --> file_codometer_measurement_src_modules_limits_limits_service_ts
+  file_codometer_measurement_src_modules_limits_limits_service_unit_test_ts --> file_codometer_measurement_src_modules_limits_limits_types_ts
+  file_codometer_measurement_src_modules_limits_limits_service_unit_test_ts --> file_codometer_measurement_src_modules_limits_metric_index_service_ts
+  file_codometer_measurement_src_modules_limits_limits_service_unit_test_ts --> file_codometer_measurement_testing_mocks_ts
+  file_codometer_measurement_src_modules_limits_limits_types_ts --> file_codometer_measurement_src_modules_size_size_types_ts
+  file_codometer_measurement_src_modules_limits_metric_index_service_ts --> file_codometer_measurement_src_modules_limits_limits_constants_ts
+  file_codometer_measurement_src_modules_limits_metric_index_service_ts --> file_codometer_measurement_src_modules_limits_limits_types_ts
+  file_codometer_measurement_src_modules_limits_metric_index_service_unit_test_ts --> file_codometer_measurement_src_modules_limits_limits_types_ts
+  file_codometer_measurement_src_modules_limits_metric_index_service_unit_test_ts --> file_codometer_measurement_src_modules_limits_metric_index_service_ts
+  file_codometer_measurement_src_modules_limits_metric_index_service_unit_test_ts --> file_codometer_measurement_testing_mocks_ts
+  file_codometer_measurement_src_modules_measure_measure_module_ts --> file_codometer_measurement_src_modules_customization_customization_module_ts
+  file_codometer_measurement_src_modules_measure_measure_module_ts --> file_codometer_measurement_src_modules_discovery_discovery_module_ts
+  file_codometer_measurement_src_modules_measure_measure_module_ts --> file_codometer_measurement_src_modules_inputs_inputs_module_ts
+  file_codometer_measurement_src_modules_measure_measure_module_ts --> file_codometer_measurement_src_modules_limits_limits_module_ts
+  file_codometer_measurement_src_modules_measure_measure_module_ts --> file_codometer_measurement_src_modules_measure_measure_service_ts
+  file_codometer_measurement_src_modules_measure_measure_module_ts --> file_codometer_measurement_src_modules_size_size_module_ts
+  file_codometer_measurement_src_modules_measure_measure_service_ts --> file_codometer_measurement_src_modules_customization_customization_service_ts
+  file_codometer_measurement_src_modules_measure_measure_service_ts --> file_codometer_measurement_src_modules_discovery_discovery_service_ts
+  file_codometer_measurement_src_modules_measure_measure_service_ts --> file_codometer_measurement_src_modules_inputs_inputs_service_ts
+  file_codometer_measurement_src_modules_measure_measure_service_ts --> file_codometer_measurement_src_modules_limits_limits_service_ts
+  file_codometer_measurement_src_modules_measure_measure_service_ts --> file_codometer_measurement_src_modules_limits_limits_types_ts
+  file_codometer_measurement_src_modules_measure_measure_service_ts --> file_codometer_measurement_src_modules_limits_metric_index_service_ts
+  file_codometer_measurement_src_modules_measure_measure_service_ts --> file_codometer_measurement_src_modules_measure_measure_constants_ts
+  file_codometer_measurement_src_modules_measure_measure_service_ts --> file_codometer_measurement_src_modules_measure_measure_types_ts
+  file_codometer_measurement_src_modules_measure_measure_service_ts --> file_codometer_measurement_src_modules_size_size_service_ts
+  file_codometer_measurement_src_modules_measure_measure_service_unit_test_ts --> file_codometer_measurement_src_modules_customization_customization_service_ts
+  file_codometer_measurement_src_modules_measure_measure_service_unit_test_ts --> file_codometer_measurement_src_modules_discovery_discovery_service_ts
+  file_codometer_measurement_src_modules_measure_measure_service_unit_test_ts --> file_codometer_measurement_src_modules_discovery_discovery_types_ts
+  file_codometer_measurement_src_modules_measure_measure_service_unit_test_ts --> file_codometer_measurement_src_modules_inputs_inputs_service_ts
+  file_codometer_measurement_src_modules_measure_measure_service_unit_test_ts --> file_codometer_measurement_src_modules_limits_limits_service_ts
+  file_codometer_measurement_src_modules_measure_measure_service_unit_test_ts --> file_codometer_measurement_src_modules_limits_metric_index_service_ts
+  file_codometer_measurement_src_modules_measure_measure_service_unit_test_ts --> file_codometer_measurement_src_modules_measure_measure_service_ts
+  file_codometer_measurement_src_modules_measure_measure_service_unit_test_ts --> file_codometer_measurement_src_modules_size_size_service_ts
+  file_codometer_measurement_src_modules_measure_measure_service_unit_test_ts --> file_codometer_measurement_testing_mocks_ts
+  file_codometer_measurement_src_modules_measure_measure_types_ts --> file_codometer_measurement_src_modules_discovery_discovery_types_ts
+  file_codometer_measurement_src_modules_measure_measure_types_ts --> file_codometer_measurement_src_modules_limits_limits_types_ts
+  file_codometer_measurement_src_modules_measure_measure_types_ts --> file_codometer_measurement_src_modules_size_size_types_ts
+  file_codometer_measurement_src_modules_size_size_module_ts --> file_codometer_measurement_src_modules_size_size_service_ts
+  file_codometer_measurement_src_modules_size_size_module_unit_test_ts --> file_codometer_measurement_src_modules_size_size_module_ts
+  file_codometer_measurement_src_modules_size_size_module_unit_test_ts --> file_codometer_measurement_src_modules_size_size_service_ts
+  file_codometer_measurement_src_modules_size_size_service_integration_test_ts --> file_codometer_measurement_src_modules_size_size_constants_ts
+  file_codometer_measurement_src_modules_size_size_service_integration_test_ts --> file_codometer_measurement_src_modules_size_size_service_ts
+  file_codometer_measurement_src_modules_size_size_service_integration_test_ts --> file_codometer_measurement_testing_target_tree_ts
+  file_codometer_measurement_src_modules_size_size_service_ts --> file_codometer_measurement_src_modules_size_size_constants_ts
+  file_codometer_measurement_src_modules_size_size_service_ts --> file_codometer_measurement_src_modules_size_size_types_ts
+  file_codometer_measurement_src_modules_size_size_service_unit_test_ts --> file_codometer_measurement_src_modules_size_size_constants_ts
+  file_codometer_measurement_src_modules_size_size_service_unit_test_ts --> file_codometer_measurement_src_modules_size_size_service_ts
+  file_codometer_output_src_modules_changes_changes_module_ts --> file_codometer_output_src_modules_changes_changes_service_ts
+  file_codometer_output_src_modules_changes_changes_module_unit_test_ts --> file_codometer_output_src_modules_changes_changes_module_ts
+  file_codometer_output_src_modules_changes_changes_module_unit_test_ts --> file_codometer_output_src_modules_changes_changes_service_ts
+  file_codometer_output_src_modules_changes_changes_service_ts --> file_codometer_output_src_modules_changes_changes_constants_ts
+  file_codometer_output_src_modules_changes_changes_service_ts --> file_codometer_output_src_modules_changes_changes_types_ts
+  file_codometer_output_src_modules_changes_changes_service_unit_test_ts --> file_codometer_output_src_modules_changes_changes_service_ts
+  file_codometer_output_src_modules_changes_changes_service_unit_test_ts --> file_codometer_output_src_modules_changes_changes_types_ts
+  file_codometer_output_src_modules_changes_changes_types_ts --> file_codometer_output_src_modules_changes_changes_constants_ts
+  file_codometer_output_src_modules_configuration_listing_configuration_listing_module_ts --> file_codometer_output_src_modules_configuration_listing_configuration_listing_service_ts
+  file_codometer_output_src_modules_configuration_listing_configuration_listing_module_ts --> file_codometer_output_src_modules_configuration_listing_render_configuration_service_ts
+  file_codometer_output_src_modules_configuration_listing_configuration_listing_service_ts --> file_codometer_output_src_modules_configuration_listing_configuration_listing_constants_ts
+  file_codometer_output_src_modules_configuration_listing_configuration_listing_service_ts --> file_codometer_output_src_modules_configuration_listing_configuration_listing_types_ts
+  file_codometer_output_src_modules_configuration_listing_configuration_listing_service_ts --> file_codometer_output_src_modules_render_render_utilities_ts
+  file_codometer_output_src_modules_configuration_listing_configuration_listing_service_unit_test_ts --> file_codometer_output_src_modules_configuration_listing_configuration_listing_service_ts
+  file_codometer_output_src_modules_configuration_listing_render_configuration_service_ts --> file_codometer_output_src_modules_configuration_listing_configuration_listing_constants_ts
+  file_codometer_output_src_modules_configuration_listing_render_configuration_service_ts --> file_codometer_output_src_modules_configuration_listing_configuration_listing_types_ts
+  file_codometer_output_src_modules_configuration_listing_render_configuration_service_unit_test_ts --> file_codometer_output_src_modules_configuration_listing_configuration_listing_types_ts
+  file_codometer_output_src_modules_configuration_listing_render_configuration_service_unit_test_ts --> file_codometer_output_src_modules_configuration_listing_render_configuration_service_ts
+  file_codometer_output_src_modules_delivery_delivery_constants_ts --> file_codometer_output_src_modules_destinations_destinations_types_ts
+  file_codometer_output_src_modules_delivery_delivery_module_ts --> file_codometer_output_src_modules_delivery_delivery_service_ts
+  file_codometer_output_src_modules_delivery_delivery_module_ts --> file_codometer_output_src_modules_json_json_module_ts
+  file_codometer_output_src_modules_delivery_delivery_module_ts --> file_codometer_output_src_modules_markdown_markdown_module_ts
+  file_codometer_output_src_modules_delivery_delivery_service_ts --> file_codometer_output_src_modules_delivery_delivery_constants_ts
+  file_codometer_output_src_modules_delivery_delivery_service_ts --> file_codometer_output_src_modules_delivery_delivery_types_ts
+  file_codometer_output_src_modules_delivery_delivery_service_ts --> file_codometer_output_src_modules_json_json_service_ts
+  file_codometer_output_src_modules_delivery_delivery_service_ts --> file_codometer_output_src_modules_markdown_markdown_service_ts
+  file_codometer_output_src_modules_delivery_delivery_service_ts --> file_codometer_output_src_modules_markdown_markdown_types_ts
+  file_codometer_output_src_modules_delivery_delivery_service_unit_test_ts --> file_codometer_output_src_modules_delivery_delivery_service_ts
+  file_codometer_output_src_modules_delivery_delivery_service_unit_test_ts --> file_codometer_output_src_modules_destinations_destinations_types_ts
+  file_codometer_output_src_modules_delivery_delivery_service_unit_test_ts --> file_codometer_output_src_modules_json_json_service_ts
+  file_codometer_output_src_modules_delivery_delivery_service_unit_test_ts --> file_codometer_output_src_modules_markdown_markdown_service_ts
+  file_codometer_output_src_modules_delivery_delivery_service_unit_test_ts --> file_codometer_output_testing_mocks_ts
+  file_codometer_output_src_modules_delivery_delivery_types_ts --> file_codometer_output_src_modules_destinations_destinations_types_ts
+  file_codometer_output_src_modules_delivery_delivery_types_ts --> file_codometer_output_src_modules_markdown_markdown_types_ts
+  file_codometer_output_src_modules_destinations_destinations_constants_ts --> file_codometer_output_src_modules_destinations_destinations_types_ts
+  file_codometer_output_src_modules_destinations_destinations_module_ts --> file_codometer_output_src_modules_destinations_destinations_service_ts
+  file_codometer_output_src_modules_destinations_destinations_service_ts --> file_codometer_output_src_modules_destinations_destinations_types_ts
+  file_codometer_output_src_modules_destinations_destinations_service_ts --> file_codometer_output_src_modules_markdown_markdown_types_ts
+  file_codometer_output_src_modules_destinations_destinations_service_unit_test_ts --> file_codometer_output_src_modules_destinations_destinations_service_ts
+  file_codometer_output_src_modules_destinations_destinations_service_unit_test_ts --> file_codometer_output_src_modules_destinations_destinations_types_ts
+  file_codometer_output_src_modules_documents_documents_module_ts --> file_codometer_output_src_modules_documents_documents_service_ts
+  file_codometer_output_src_modules_documents_documents_module_unit_test_ts --> file_codometer_output_src_modules_documents_documents_module_ts
+  file_codometer_output_src_modules_documents_documents_module_unit_test_ts --> file_codometer_output_src_modules_documents_documents_service_ts
+  file_codometer_output_src_modules_documents_documents_service_ts --> file_codometer_output_src_modules_documents_documents_types_ts
+  file_codometer_output_src_modules_documents_documents_service_unit_test_ts --> file_codometer_output_src_modules_documents_documents_service_ts
+  file_codometer_output_src_modules_documents_documents_service_unit_test_ts --> file_codometer_output_src_modules_documents_documents_types_ts
+  file_codometer_output_src_modules_json_json_module_ts --> file_codometer_output_src_modules_json_json_service_ts
+  file_codometer_output_src_modules_json_json_module_unit_test_ts --> file_codometer_output_src_modules_json_json_module_ts
+  file_codometer_output_src_modules_json_json_module_unit_test_ts --> file_codometer_output_src_modules_json_json_service_ts
+  file_codometer_output_src_modules_json_json_service_ts --> file_codometer_output_src_modules_json_json_types_ts
+  file_codometer_output_src_modules_json_json_service_unit_test_ts --> file_codometer_output_src_modules_json_json_service_ts
+  file_codometer_output_src_modules_markdown_markdown_module_ts --> file_codometer_output_src_modules_markdown_markdown_service_ts
+  file_codometer_output_src_modules_markdown_markdown_module_unit_test_ts --> file_codometer_output_src_modules_markdown_markdown_module_ts
+  file_codometer_output_src_modules_markdown_markdown_module_unit_test_ts --> file_codometer_output_src_modules_markdown_markdown_service_ts
+  file_codometer_output_src_modules_markdown_markdown_service_ts --> file_codometer_output_src_modules_markdown_markdown_constants_ts
+  file_codometer_output_src_modules_markdown_markdown_service_ts --> file_codometer_output_src_modules_markdown_markdown_types_ts
+  file_codometer_output_src_modules_markdown_markdown_service_ts --> file_codometer_output_src_modules_markdown_markdown_utilities_ts
+  file_codometer_output_src_modules_markdown_markdown_service_unit_test_ts --> file_codometer_output_src_modules_markdown_markdown_constants_ts
+  file_codometer_output_src_modules_markdown_markdown_service_unit_test_ts --> file_codometer_output_src_modules_markdown_markdown_service_ts
+  file_codometer_output_src_modules_markdown_markdown_utilities_ts --> file_codometer_output_src_modules_markdown_markdown_types_ts
+  file_codometer_output_src_modules_markdown_markdown_utilities_ts --> file_codometer_output_src_modules_render_render_utilities_ts
+  file_codometer_output_src_modules_markdown_markdown_utilities_unit_test_ts --> file_codometer_output_src_modules_markdown_markdown_utilities_ts
+  file_codometer_output_src_modules_render_render_module_ts --> file_codometer_output_src_modules_render_render_service_ts
+  file_codometer_output_src_modules_render_render_module_unit_test_ts --> file_codometer_output_src_modules_render_render_module_ts
+  file_codometer_output_src_modules_render_render_module_unit_test_ts --> file_codometer_output_src_modules_render_render_service_ts
+  file_codometer_output_src_modules_render_render_service_ts --> file_codometer_output_src_modules_changes_changes_types_ts
+  file_codometer_output_src_modules_render_render_service_ts --> file_codometer_output_src_modules_render_render_constants_ts
+  file_codometer_output_src_modules_render_render_service_ts --> file_codometer_output_src_modules_render_render_types_ts
+  file_codometer_output_src_modules_render_render_service_ts --> file_codometer_output_src_modules_render_render_utilities_ts
+  file_codometer_output_src_modules_render_render_service_unit_test_ts --> file_codometer_output_src_modules_changes_changes_types_ts
+  file_codometer_output_src_modules_render_render_service_unit_test_ts --> file_codometer_output_src_modules_render_render_service_ts
+  file_codometer_output_src_modules_render_render_types_ts --> file_codometer_output_src_modules_changes_changes_types_ts
+  file_codometer_output_src_modules_render_render_utilities_ts --> file_codometer_output_src_modules_changes_changes_types_ts
+  file_codometer_output_src_modules_render_render_utilities_unit_test_ts --> file_codometer_output_src_modules_changes_changes_types_ts
+  file_codometer_output_src_modules_render_render_utilities_unit_test_ts --> file_codometer_output_src_modules_render_render_utilities_ts
+  file_codometer_output_src_modules_report_report_module_ts --> file_codometer_output_src_modules_report_report_service_ts
+  file_codometer_output_src_modules_report_report_service_ts --> file_codometer_output_src_modules_report_report_constants_ts
+  file_codometer_output_src_modules_report_report_service_ts --> file_codometer_output_src_modules_report_report_types_ts
+  file_codometer_output_src_modules_report_report_service_unit_test_ts --> file_codometer_output_src_modules_report_report_service_ts
+  file_conformetry_cli_src_main_end_to_end_test_ts --> file_conformetry_cli_src_constants_ts
+  file_conformetry_cli_src_main_integration_test_ts --> file_conformetry_cli_src_main_module_ts
+  file_conformetry_cli_src_main_integration_test_ts --> file_conformetry_cli_src_modules_generate_generate_command_ts
+  file_conformetry_cli_src_main_integration_test_ts --> file_conformetry_cli_src_modules_instances_instances_command_ts
+  file_conformetry_cli_src_main_integration_test_ts --> file_conformetry_cli_src_modules_templates_templates_command_ts
+  file_conformetry_cli_src_main_integration_test_ts --> file_conformetry_cli_src_modules_validate_validate_command_ts
+  file_conformetry_cli_src_main_module_ts --> file_conformetry_cli_src_constants_ts
+  file_conformetry_cli_src_main_module_ts --> file_conformetry_cli_src_modules_generate_generate_module_ts
+  file_conformetry_cli_src_main_module_ts --> file_conformetry_cli_src_modules_instances_instances_module_ts
+  file_conformetry_cli_src_main_module_ts --> file_conformetry_cli_src_modules_templates_templates_module_ts
+  file_conformetry_cli_src_main_module_ts --> file_conformetry_cli_src_modules_validate_validate_module_ts
+  file_conformetry_cli_src_main_ts --> file_conformetry_cli_src_main_module_ts
+  file_conformetry_cli_src_modules_generate_generate_command_ts --> file_conformetry_cli_src_constants_ts
+  file_conformetry_cli_src_modules_generate_generate_command_ts --> file_conformetry_cli_src_modules_generate_generate_constants_ts
+  file_conformetry_cli_src_modules_generate_generate_command_ts --> file_conformetry_cli_src_modules_generate_generate_types_ts
+  file_conformetry_cli_src_modules_generate_generate_command_unit_test_ts --> file_conformetry_cli_src_modules_generate_generate_command_ts
+  file_conformetry_cli_src_modules_generate_generate_module_ts --> file_conformetry_cli_src_modules_generate_generate_command_ts
+  file_conformetry_cli_src_modules_instances_instances_command_ts --> file_conformetry_cli_src_constants_ts
+  file_conformetry_cli_src_modules_instances_instances_command_ts --> file_conformetry_cli_src_modules_instances_instances_constants_ts
+  file_conformetry_cli_src_modules_instances_instances_command_ts --> file_conformetry_cli_src_modules_instances_instances_types_ts
+  file_conformetry_cli_src_modules_instances_instances_command_unit_test_ts --> file_conformetry_cli_src_modules_instances_instances_command_ts
+  file_conformetry_cli_src_modules_instances_instances_module_ts --> file_conformetry_cli_src_modules_instances_instances_command_ts
+  file_conformetry_cli_src_modules_templates_templates_command_ts --> file_conformetry_cli_src_constants_ts
+  file_conformetry_cli_src_modules_templates_templates_command_ts --> file_conformetry_cli_src_modules_templates_templates_constants_ts
+  file_conformetry_cli_src_modules_templates_templates_command_ts --> file_conformetry_cli_src_modules_templates_templates_types_ts
+  file_conformetry_cli_src_modules_templates_templates_command_unit_test_ts --> file_conformetry_cli_src_modules_templates_templates_command_ts
+  file_conformetry_cli_src_modules_templates_templates_module_ts --> file_conformetry_cli_src_modules_templates_templates_command_ts
+  file_conformetry_cli_src_modules_validate_validate_command_ts --> file_conformetry_cli_src_constants_ts
+  file_conformetry_cli_src_modules_validate_validate_command_ts --> file_conformetry_cli_src_modules_validate_validate_types_ts
+  file_conformetry_cli_src_modules_validate_validate_command_unit_test_ts --> file_conformetry_cli_src_modules_validate_validate_command_ts
+  file_conformetry_cli_src_modules_validate_validate_module_ts --> file_conformetry_cli_src_modules_validate_validate_command_ts
+  file_conformetry_cli_src_repl_ts --> file_conformetry_cli_src_main_module_ts
+  file_conformetry_configuration_src_index_unit_test_ts --> file_conformetry_configuration_src_index_ts
+  file_conformetry_configuration_src_modules_configuration_configuration_constants_ts --> file_conformetry_configuration_src_modules_configuration_configuration_utilities_ts
+  file_conformetry_configuration_src_modules_configuration_configuration_module_ts --> file_conformetry_configuration_src_modules_configuration_configuration_service_ts
+  file_conformetry_configuration_src_modules_configuration_configuration_module_ts --> file_conformetry_configuration_src_modules_configuration_instance_group_service_ts
+  file_conformetry_configuration_src_modules_configuration_configuration_module_unit_test_ts --> file_conformetry_configuration_src_modules_configuration_configuration_module_ts
+  file_conformetry_configuration_src_modules_configuration_configuration_service_ts --> file_conformetry_configuration_src_modules_configuration_configuration_constants_ts
+  file_conformetry_configuration_src_modules_configuration_configuration_service_ts --> file_conformetry_configuration_src_modules_configuration_configuration_types_ts
+  file_conformetry_configuration_src_modules_configuration_configuration_service_unit_test_ts --> file_conformetry_configuration_src_modules_configuration_configuration_constants_ts
+  file_conformetry_configuration_src_modules_configuration_configuration_service_unit_test_ts --> file_conformetry_configuration_src_modules_configuration_configuration_service_ts
+  file_conformetry_configuration_src_modules_configuration_configuration_service_unit_test_ts --> file_conformetry_configuration_src_modules_configuration_configuration_types_ts
+  file_conformetry_configuration_src_modules_configuration_configuration_types_ts --> file_conformetry_configuration_src_modules_configuration_configuration_constants_ts
+  file_conformetry_configuration_src_modules_configuration_configuration_utilities_ts --> file_conformetry_configuration_src_modules_input_input_constants_ts
+  file_conformetry_configuration_src_modules_configuration_instance_group_service_ts --> file_conformetry_configuration_src_modules_configuration_configuration_types_ts
+  file_conformetry_configuration_src_modules_configuration_instance_group_service_unit_test_ts --> file_conformetry_configuration_src_modules_configuration_instance_group_service_ts
+  file_conformetry_configuration_src_modules_input_input_options_service_ts --> file_conformetry_configuration_src_modules_configuration_configuration_types_ts
+  file_conformetry_configuration_src_modules_input_input_options_service_ts --> file_conformetry_configuration_src_modules_input_input_constants_ts
+  file_conformetry_configuration_src_modules_input_input_options_service_unit_test_ts --> file_conformetry_configuration_src_modules_input_input_options_service_ts
+  file_conformetry_configuration_src_modules_input_input_prompting_service_ts --> file_conformetry_configuration_src_modules_input_input_schema_service_ts
+  file_conformetry_configuration_src_modules_input_input_prompting_service_ts --> file_conformetry_configuration_src_modules_input_input_constants_ts
+  file_conformetry_configuration_src_modules_input_input_prompting_service_ts --> file_conformetry_configuration_src_modules_input_input_types_ts
+  file_conformetry_configuration_src_modules_input_input_prompting_service_unit_test_ts --> file_conformetry_configuration_src_modules_input_input_prompting_service_ts
+  file_conformetry_configuration_src_modules_input_input_prompting_service_unit_test_ts --> file_conformetry_configuration_src_modules_input_input_schema_service_ts
+  file_conformetry_configuration_src_modules_input_input_schema_service_ts --> file_conformetry_configuration_src_modules_configuration_configuration_types_ts
+  file_conformetry_configuration_src_modules_input_input_schema_service_ts --> file_conformetry_configuration_src_modules_input_input_types_ts
+  file_conformetry_configuration_src_modules_input_input_schema_service_unit_test_ts --> file_conformetry_configuration_src_modules_input_input_schema_service_ts
+  file_conformetry_configuration_src_modules_input_input_module_ts --> file_conformetry_configuration_src_modules_input_input_options_service_ts
+  file_conformetry_configuration_src_modules_input_input_module_ts --> file_conformetry_configuration_src_modules_input_input_prompting_service_ts
+  file_conformetry_configuration_src_modules_input_input_module_ts --> file_conformetry_configuration_src_modules_input_input_schema_service_ts
+  file_conformetry_configuration_src_modules_input_input_module_ts --> file_conformetry_configuration_src_modules_input_input_service_ts
+  file_conformetry_configuration_src_modules_input_input_service_ts --> file_conformetry_configuration_src_modules_input_input_options_service_ts
+  file_conformetry_configuration_src_modules_input_input_service_ts --> file_conformetry_configuration_src_modules_input_input_prompting_service_ts
+  file_conformetry_configuration_src_modules_input_input_service_ts --> file_conformetry_configuration_src_modules_input_input_schema_service_ts
+  file_conformetry_configuration_src_modules_input_input_service_ts --> file_conformetry_configuration_src_modules_input_input_constants_ts
+  file_conformetry_configuration_src_modules_input_input_service_ts --> file_conformetry_configuration_src_modules_input_input_types_ts
+  file_conformetry_configuration_src_modules_input_input_service_unit_test_ts --> file_conformetry_configuration_src_modules_input_input_options_service_ts
+  file_conformetry_configuration_src_modules_input_input_service_unit_test_ts --> file_conformetry_configuration_src_modules_input_input_prompting_service_ts
+  file_conformetry_configuration_src_modules_input_input_service_unit_test_ts --> file_conformetry_configuration_src_modules_input_input_schema_service_ts
+  file_conformetry_configuration_src_modules_input_input_service_unit_test_ts --> file_conformetry_configuration_src_modules_input_input_service_ts
+  file_conformetry_configuration_src_modules_input_input_types_ts --> file_conformetry_configuration_src_modules_configuration_configuration_types_ts
+  file_conformetry_configuration_src_modules_instance_discovery_instance_discovery_locating_service_ts --> file_conformetry_configuration_src_modules_instance_discovery_instance_discovery_constants_ts
+  file_conformetry_configuration_src_modules_instance_discovery_instance_discovery_locating_service_ts --> file_conformetry_configuration_src_modules_instance_discovery_instance_discovery_types_ts
+  file_conformetry_configuration_src_modules_instance_discovery_instance_discovery_locating_service_unit_test_ts --> file_conformetry_configuration_src_modules_instance_discovery_instance_discovery_locating_service_ts
+  file_conformetry_configuration_src_modules_instance_discovery_instance_discovery_matching_service_ts --> file_conformetry_configuration_src_modules_instance_discovery_instance_discovery_constants_ts
+  file_conformetry_configuration_src_modules_instance_discovery_instance_discovery_matching_service_ts --> file_conformetry_configuration_src_modules_instance_discovery_instance_discovery_types_ts
+  file_conformetry_configuration_src_modules_instance_discovery_instance_discovery_matching_service_ts --> file_conformetry_configuration_src_modules_rendering_rendering_service_ts
+  file_conformetry_configuration_src_modules_instance_discovery_instance_discovery_matching_service_ts --> file_conformetry_configuration_src_modules_rendering_rendering_types_ts
+  file_conformetry_configuration_src_modules_instance_discovery_instance_discovery_matching_service_ts --> file_conformetry_configuration_src_modules_template_discovery_template_discovery_service_ts
+  file_conformetry_configuration_src_modules_instance_discovery_instance_discovery_matching_service_ts --> file_conformetry_configuration_src_modules_template_discovery_template_discovery_types_ts
+  file_conformetry_configuration_src_modules_instance_discovery_instance_discovery_matching_service_unit_test_ts --> file_conformetry_configuration_src_modules_instance_discovery_instance_discovery_matching_service_ts
+  file_conformetry_configuration_src_modules_instance_discovery_instance_discovery_matching_service_unit_test_ts --> file_conformetry_configuration_src_modules_rendering_rendering_service_ts
+  file_conformetry_configuration_src_modules_instance_discovery_instance_discovery_matching_service_unit_test_ts --> file_conformetry_configuration_src_modules_template_discovery_template_discovery_service_ts
+  file_conformetry_configuration_src_modules_instance_discovery_instance_discovery_matching_service_unit_test_ts --> file_conformetry_configuration_src_modules_template_discovery_template_discovery_types_ts
+  file_conformetry_configuration_src_modules_instance_discovery_instance_discovery_module_ts --> file_conformetry_configuration_src_modules_configuration_configuration_module_ts
+  file_conformetry_configuration_src_modules_instance_discovery_instance_discovery_module_ts --> file_conformetry_configuration_src_modules_instance_discovery_instance_discovery_locating_service_ts
+  file_conformetry_configuration_src_modules_instance_discovery_instance_discovery_module_ts --> file_conformetry_configuration_src_modules_instance_discovery_instance_discovery_matching_service_ts
+  file_conformetry_configuration_src_modules_instance_discovery_instance_discovery_module_ts --> file_conformetry_configuration_src_modules_instance_discovery_instance_discovery_service_ts
+  file_conformetry_configuration_src_modules_instance_discovery_instance_discovery_module_ts --> file_conformetry_configuration_src_modules_rendering_rendering_module_ts
+  file_conformetry_configuration_src_modules_instance_discovery_instance_discovery_module_ts --> file_conformetry_configuration_src_modules_template_discovery_template_discovery_module_ts
+  file_conformetry_configuration_src_modules_instance_discovery_instance_discovery_service_ts --> file_conformetry_configuration_src_modules_configuration_configuration_types_ts
+  file_conformetry_configuration_src_modules_instance_discovery_instance_discovery_service_ts --> file_conformetry_configuration_src_modules_configuration_instance_group_service_ts
+  file_conformetry_configuration_src_modules_instance_discovery_instance_discovery_service_ts --> file_conformetry_configuration_src_modules_instance_discovery_instance_discovery_locating_service_ts
+  file_conformetry_configuration_src_modules_instance_discovery_instance_discovery_service_ts --> file_conformetry_configuration_src_modules_instance_discovery_instance_discovery_matching_service_ts
+  file_conformetry_configuration_src_modules_instance_discovery_instance_discovery_service_ts --> file_conformetry_configuration_src_modules_instance_discovery_instance_discovery_types_ts
+  file_conformetry_configuration_src_modules_instance_discovery_instance_discovery_service_ts --> file_conformetry_configuration_src_modules_template_discovery_template_discovery_service_ts
+  file_conformetry_configuration_src_modules_instance_discovery_instance_discovery_service_ts --> file_conformetry_configuration_src_modules_template_discovery_template_discovery_types_ts
+  file_conformetry_configuration_src_modules_instance_discovery_instance_discovery_service_unit_test_ts --> file_conformetry_configuration_src_modules_configuration_configuration_types_ts
+  file_conformetry_configuration_src_modules_instance_discovery_instance_discovery_service_unit_test_ts --> file_conformetry_configuration_src_modules_configuration_instance_group_service_ts
+  file_conformetry_configuration_src_modules_instance_discovery_instance_discovery_service_unit_test_ts --> file_conformetry_configuration_src_modules_instance_discovery_instance_discovery_module_ts
+  file_conformetry_configuration_src_modules_instance_discovery_instance_discovery_service_unit_test_ts --> file_conformetry_configuration_src_modules_instance_discovery_instance_discovery_service_ts
+  file_conformetry_configuration_src_modules_instance_discovery_instance_discovery_types_ts --> file_conformetry_configuration_src_modules_configuration_configuration_types_ts
+  file_conformetry_configuration_src_modules_instance_discovery_instance_discovery_types_ts --> file_conformetry_configuration_src_modules_rendering_rendering_types_ts
+  file_conformetry_configuration_src_modules_instance_discovery_instance_discovery_types_ts --> file_conformetry_configuration_src_modules_template_discovery_template_discovery_types_ts
+  file_conformetry_configuration_src_modules_rendering_rendering_module_ts --> file_conformetry_configuration_src_modules_rendering_rendering_service_ts
+  file_conformetry_configuration_src_modules_rendering_rendering_service_ts --> file_conformetry_configuration_src_modules_rendering_rendering_constants_ts
+  file_conformetry_configuration_src_modules_rendering_rendering_service_ts --> file_conformetry_configuration_src_modules_rendering_rendering_types_ts
+  file_conformetry_configuration_src_modules_rendering_rendering_service_unit_test_ts --> file_conformetry_configuration_src_modules_rendering_rendering_constants_ts
+  file_conformetry_configuration_src_modules_rendering_rendering_service_unit_test_ts --> file_conformetry_configuration_src_modules_rendering_rendering_service_ts
+  file_conformetry_configuration_src_modules_template_discovery_template_discovery_module_ts --> file_conformetry_configuration_src_modules_rendering_rendering_module_ts
+  file_conformetry_configuration_src_modules_template_discovery_template_discovery_module_ts --> file_conformetry_configuration_src_modules_template_discovery_template_discovery_service_ts
+  file_conformetry_configuration_src_modules_template_discovery_template_discovery_service_ts --> file_conformetry_configuration_src_modules_configuration_configuration_types_ts
+  file_conformetry_configuration_src_modules_template_discovery_template_discovery_service_ts --> file_conformetry_configuration_src_modules_rendering_rendering_service_ts
+  file_conformetry_configuration_src_modules_template_discovery_template_discovery_service_ts --> file_conformetry_configuration_src_modules_rendering_rendering_types_ts
+  file_conformetry_configuration_src_modules_template_discovery_template_discovery_service_ts --> file_conformetry_configuration_src_modules_template_discovery_template_discovery_types_ts
+  file_conformetry_configuration_src_modules_template_discovery_template_discovery_service_unit_test_ts --> file_conformetry_configuration_src_modules_rendering_rendering_service_ts
+  file_conformetry_configuration_src_modules_template_discovery_template_discovery_service_unit_test_ts --> file_conformetry_configuration_src_modules_template_discovery_template_discovery_service_ts
+  file_conformetry_configuration_src_modules_template_discovery_template_discovery_service_unit_test_ts --> file_conformetry_configuration_src_modules_template_discovery_template_discovery_types_ts
+  file_conformetry_core_src_index_unit_test_ts --> file_conformetry_core_src_index_ts
+  file_conformetry_core_src_lib_runner_types_ts --> file_conformetry_core_src_lib_differences_types_ts
+  file_conformetry_generation_src_modules_generation_generation_module_ts --> file_conformetry_generation_src_modules_generation_generation_service_ts
+  file_conformetry_generation_src_modules_generation_generation_module_unit_test_ts --> file_conformetry_generation_src_modules_generation_generation_module_ts
+  file_conformetry_generation_src_modules_generation_generation_service_ts --> file_conformetry_generation_src_modules_generation_generation_types_ts
+  file_conformetry_generation_src_modules_generation_generation_service_unit_test_ts --> file_conformetry_generation_src_modules_generation_generation_service_ts
+  file_conformetry_generation_src_modules_generation_generation_service_unit_test_ts --> file_conformetry_generation_src_modules_generation_generation_types_ts
+  file_conformetry_languages_src_modules_differences_differences_module_ts --> file_conformetry_languages_src_modules_differences_differences_service_ts
+  file_conformetry_languages_src_modules_differences_differences_module_unit_test_ts --> file_conformetry_languages_src_modules_differences_differences_module_ts
+  file_conformetry_languages_src_modules_differences_differences_module_unit_test_ts --> file_conformetry_languages_src_modules_differences_differences_service_ts
+  file_conformetry_languages_src_modules_differences_differences_service_ts --> file_conformetry_languages_src_modules_differences_differences_constants_ts
+  file_conformetry_languages_src_modules_differences_differences_service_ts --> file_conformetry_languages_src_modules_differences_differences_types_ts
+  file_conformetry_languages_src_modules_differences_differences_service_unit_test_ts --> file_conformetry_languages_src_modules_differences_differences_service_ts
+  file_conformetry_languages_src_modules_files_files_module_ts --> file_conformetry_languages_src_modules_differences_differences_module_ts
+  file_conformetry_languages_src_modules_files_files_module_ts --> file_conformetry_languages_src_modules_files_files_service_ts
+  file_conformetry_languages_src_modules_files_files_module_unit_test_ts --> file_conformetry_languages_src_modules_files_files_module_ts
+  file_conformetry_languages_src_modules_files_files_module_unit_test_ts --> file_conformetry_languages_src_modules_files_files_service_ts
+  file_conformetry_languages_src_modules_files_files_service_ts --> file_conformetry_languages_src_modules_differences_differences_service_ts
+  file_conformetry_languages_src_modules_files_files_service_ts --> file_conformetry_languages_src_modules_files_files_types_ts
+  file_conformetry_languages_src_modules_files_files_service_unit_test_ts --> file_conformetry_languages_src_modules_differences_differences_module_ts
+  file_conformetry_languages_src_modules_files_files_service_unit_test_ts --> file_conformetry_languages_src_modules_files_files_service_ts
+  file_conformetry_languages_src_modules_json_json_comparison_service_ts --> file_conformetry_languages_src_modules_json_json_types_ts
+  file_conformetry_languages_src_modules_json_json_comparison_service_ts --> file_conformetry_languages_src_modules_scoring_scoring_service_ts
+  file_conformetry_languages_src_modules_json_json_comparison_service_unit_test_ts --> file_conformetry_languages_src_modules_json_json_comparison_service_ts
+  file_conformetry_languages_src_modules_json_json_comparison_service_unit_test_ts --> file_conformetry_languages_src_modules_json_json_types_ts
+  file_conformetry_languages_src_modules_json_json_comparison_service_unit_test_ts --> file_conformetry_languages_src_modules_scoring_scoring_service_ts
+  file_conformetry_languages_src_modules_json_json_module_ts --> file_conformetry_languages_src_modules_json_json_comparison_service_ts
+  file_conformetry_languages_src_modules_json_json_module_ts --> file_conformetry_languages_src_modules_json_json_service_ts
+  file_conformetry_languages_src_modules_json_json_module_ts --> file_conformetry_languages_src_modules_scoring_scoring_module_ts
+  file_conformetry_languages_src_modules_json_json_module_unit_test_ts --> file_conformetry_languages_src_modules_json_json_module_ts
+  file_conformetry_languages_src_modules_json_json_module_unit_test_ts --> file_conformetry_languages_src_modules_json_json_service_ts
+  file_conformetry_languages_src_modules_json_json_service_ts --> file_conformetry_languages_src_modules_json_json_comparison_service_ts
+  file_conformetry_languages_src_modules_json_json_service_ts --> file_conformetry_languages_src_modules_json_json_constants_ts
+  file_conformetry_languages_src_modules_json_json_service_ts --> file_conformetry_languages_src_modules_json_json_types_ts
+  file_conformetry_languages_src_modules_json_json_service_unit_test_ts --> file_conformetry_languages_src_modules_json_json_comparison_service_ts
+  file_conformetry_languages_src_modules_json_json_service_unit_test_ts --> file_conformetry_languages_src_modules_json_json_service_ts
+  file_conformetry_languages_src_modules_json_json_service_unit_test_ts --> file_conformetry_languages_src_modules_scoring_scoring_service_ts
+  file_conformetry_languages_src_modules_jupyter_jupyter_notebook_service_ts --> file_conformetry_languages_src_modules_jupyter_jupyter_types_ts
+  file_conformetry_languages_src_modules_jupyter_jupyter_notebook_service_unit_test_ts --> file_conformetry_languages_src_modules_jupyter_jupyter_notebook_service_ts
+  file_conformetry_languages_src_modules_jupyter_jupyter_module_ts --> file_conformetry_languages_src_modules_json_json_module_ts
+  file_conformetry_languages_src_modules_jupyter_jupyter_module_ts --> file_conformetry_languages_src_modules_jupyter_jupyter_notebook_service_ts
+  file_conformetry_languages_src_modules_jupyter_jupyter_module_ts --> file_conformetry_languages_src_modules_jupyter_jupyter_service_ts
+  file_conformetry_languages_src_modules_jupyter_jupyter_module_ts --> file_conformetry_languages_src_modules_markdown_markdown_module_ts
+  file_conformetry_languages_src_modules_jupyter_jupyter_module_ts --> file_conformetry_languages_src_modules_python_python_module_ts
+  file_conformetry_languages_src_modules_jupyter_jupyter_module_unit_test_ts --> file_conformetry_languages_src_modules_jupyter_jupyter_module_ts
+  file_conformetry_languages_src_modules_jupyter_jupyter_module_unit_test_ts --> file_conformetry_languages_src_modules_jupyter_jupyter_service_ts
+  file_conformetry_languages_src_modules_jupyter_jupyter_service_ts --> file_conformetry_languages_src_modules_json_json_comparison_service_ts
+  file_conformetry_languages_src_modules_jupyter_jupyter_service_ts --> file_conformetry_languages_src_modules_json_json_types_ts
+  file_conformetry_languages_src_modules_jupyter_jupyter_service_ts --> file_conformetry_languages_src_modules_jupyter_jupyter_notebook_service_ts
+  file_conformetry_languages_src_modules_jupyter_jupyter_service_ts --> file_conformetry_languages_src_modules_jupyter_jupyter_constants_ts
+  file_conformetry_languages_src_modules_jupyter_jupyter_service_ts --> file_conformetry_languages_src_modules_jupyter_jupyter_types_ts
+  file_conformetry_languages_src_modules_jupyter_jupyter_service_ts --> file_conformetry_languages_src_modules_markdown_markdown_service_ts
+  file_conformetry_languages_src_modules_jupyter_jupyter_service_ts --> file_conformetry_languages_src_modules_python_python_bridge_service_ts
+  file_conformetry_languages_src_modules_jupyter_jupyter_service_unit_test_ts --> file_conformetry_languages_src_modules_differences_differences_service_ts
+  file_conformetry_languages_src_modules_jupyter_jupyter_service_unit_test_ts --> file_conformetry_languages_src_modules_json_json_comparison_service_ts
+  file_conformetry_languages_src_modules_jupyter_jupyter_service_unit_test_ts --> file_conformetry_languages_src_modules_jupyter_jupyter_notebook_service_ts
+  file_conformetry_languages_src_modules_jupyter_jupyter_service_unit_test_ts --> file_conformetry_languages_src_modules_jupyter_jupyter_service_ts
+  file_conformetry_languages_src_modules_jupyter_jupyter_service_unit_test_ts --> file_conformetry_languages_src_modules_markdown_markdown_nodes_service_ts
+  file_conformetry_languages_src_modules_jupyter_jupyter_service_unit_test_ts --> file_conformetry_languages_src_modules_markdown_markdown_tree_service_ts
+  file_conformetry_languages_src_modules_jupyter_jupyter_service_unit_test_ts --> file_conformetry_languages_src_modules_markdown_markdown_service_ts
+  file_conformetry_languages_src_modules_jupyter_jupyter_service_unit_test_ts --> file_conformetry_languages_src_modules_python_python_bridge_service_ts
+  file_conformetry_languages_src_modules_jupyter_jupyter_service_unit_test_ts --> file_conformetry_languages_src_modules_scoring_scoring_service_ts
+  file_conformetry_languages_src_modules_languages_languages_module_ts --> file_conformetry_languages_src_modules_json_json_module_ts
+  file_conformetry_languages_src_modules_languages_languages_module_ts --> file_conformetry_languages_src_modules_jupyter_jupyter_module_ts
+  file_conformetry_languages_src_modules_languages_languages_module_ts --> file_conformetry_languages_src_modules_languages_languages_service_ts
+  file_conformetry_languages_src_modules_languages_languages_module_ts --> file_conformetry_languages_src_modules_markdown_markdown_module_ts
+  file_conformetry_languages_src_modules_languages_languages_module_ts --> file_conformetry_languages_src_modules_python_python_module_ts
+  file_conformetry_languages_src_modules_languages_languages_module_ts --> file_conformetry_languages_src_modules_text_text_module_ts
+  file_conformetry_languages_src_modules_languages_languages_module_ts --> file_conformetry_languages_src_modules_typescript_typescript_module_ts
+  file_conformetry_languages_src_modules_languages_languages_module_unit_test_ts --> file_conformetry_languages_src_modules_json_json_module_ts
+  file_conformetry_languages_src_modules_languages_languages_module_unit_test_ts --> file_conformetry_languages_src_modules_jupyter_jupyter_module_ts
+  file_conformetry_languages_src_modules_languages_languages_module_unit_test_ts --> file_conformetry_languages_src_modules_languages_languages_module_ts
+  file_conformetry_languages_src_modules_languages_languages_module_unit_test_ts --> file_conformetry_languages_src_modules_languages_languages_service_ts
+  file_conformetry_languages_src_modules_languages_languages_module_unit_test_ts --> file_conformetry_languages_src_modules_markdown_markdown_module_ts
+  file_conformetry_languages_src_modules_languages_languages_module_unit_test_ts --> file_conformetry_languages_src_modules_python_python_module_ts
+  file_conformetry_languages_src_modules_languages_languages_module_unit_test_ts --> file_conformetry_languages_src_modules_text_text_module_ts
+  file_conformetry_languages_src_modules_languages_languages_module_unit_test_ts --> file_conformetry_languages_src_modules_typescript_typescript_module_ts
+  file_conformetry_languages_src_modules_languages_languages_service_ts --> file_conformetry_languages_src_modules_json_json_service_ts
+  file_conformetry_languages_src_modules_languages_languages_service_ts --> file_conformetry_languages_src_modules_jupyter_jupyter_service_ts
+  file_conformetry_languages_src_modules_languages_languages_service_ts --> file_conformetry_languages_src_modules_languages_languages_types_ts
+  file_conformetry_languages_src_modules_languages_languages_service_ts --> file_conformetry_languages_src_modules_markdown_markdown_service_ts
+  file_conformetry_languages_src_modules_languages_languages_service_ts --> file_conformetry_languages_src_modules_python_python_service_ts
+  file_conformetry_languages_src_modules_languages_languages_service_ts --> file_conformetry_languages_src_modules_text_text_service_ts
+  file_conformetry_languages_src_modules_languages_languages_service_ts --> file_conformetry_languages_src_modules_typescript_typescript_service_ts
+  file_conformetry_languages_src_modules_languages_languages_service_unit_test_ts --> file_conformetry_languages_src_modules_languages_languages_module_ts
+  file_conformetry_languages_src_modules_languages_languages_service_unit_test_ts --> file_conformetry_languages_src_modules_languages_languages_service_ts
+  file_conformetry_languages_src_modules_markdown_markdown_nodes_service_ts --> file_conformetry_languages_src_modules_markdown_markdown_constants_ts
+  file_conformetry_languages_src_modules_markdown_markdown_nodes_service_ts --> file_conformetry_languages_src_modules_markdown_markdown_types_ts
+  file_conformetry_languages_src_modules_markdown_markdown_nodes_service_unit_test_ts --> file_conformetry_languages_src_modules_markdown_markdown_nodes_service_ts
+  file_conformetry_languages_src_modules_markdown_markdown_nodes_service_unit_test_ts --> file_conformetry_languages_src_modules_markdown_markdown_types_ts
+  file_conformetry_languages_src_modules_markdown_markdown_tree_service_ts --> file_conformetry_languages_src_modules_markdown_markdown_nodes_service_ts
+  file_conformetry_languages_src_modules_markdown_markdown_tree_service_ts --> file_conformetry_languages_src_modules_markdown_markdown_constants_ts
+  file_conformetry_languages_src_modules_markdown_markdown_tree_service_ts --> file_conformetry_languages_src_modules_markdown_markdown_types_ts
+  file_conformetry_languages_src_modules_markdown_markdown_tree_service_ts --> file_conformetry_languages_src_modules_scoring_scoring_service_ts
+  file_conformetry_languages_src_modules_markdown_markdown_tree_service_unit_test_ts --> file_conformetry_languages_src_modules_markdown_markdown_nodes_service_ts
+  file_conformetry_languages_src_modules_markdown_markdown_tree_service_unit_test_ts --> file_conformetry_languages_src_modules_markdown_markdown_tree_service_ts
+  file_conformetry_languages_src_modules_markdown_markdown_tree_service_unit_test_ts --> file_conformetry_languages_src_modules_markdown_markdown_types_ts
+  file_conformetry_languages_src_modules_markdown_markdown_tree_service_unit_test_ts --> file_conformetry_languages_src_modules_scoring_scoring_service_ts
+  file_conformetry_languages_src_modules_markdown_markdown_module_ts --> file_conformetry_languages_src_modules_markdown_markdown_nodes_service_ts
+  file_conformetry_languages_src_modules_markdown_markdown_module_ts --> file_conformetry_languages_src_modules_markdown_markdown_tree_service_ts
+  file_conformetry_languages_src_modules_markdown_markdown_module_ts --> file_conformetry_languages_src_modules_markdown_markdown_service_ts
+  file_conformetry_languages_src_modules_markdown_markdown_module_ts --> file_conformetry_languages_src_modules_scoring_scoring_module_ts
+  file_conformetry_languages_src_modules_markdown_markdown_module_unit_test_ts --> file_conformetry_languages_src_modules_markdown_markdown_module_ts
+  file_conformetry_languages_src_modules_markdown_markdown_module_unit_test_ts --> file_conformetry_languages_src_modules_markdown_markdown_service_ts
+  file_conformetry_languages_src_modules_markdown_markdown_service_ts --> file_conformetry_languages_src_modules_markdown_markdown_nodes_service_ts
+  file_conformetry_languages_src_modules_markdown_markdown_service_ts --> file_conformetry_languages_src_modules_markdown_markdown_tree_service_ts
+  file_conformetry_languages_src_modules_markdown_markdown_service_ts --> file_conformetry_languages_src_modules_markdown_markdown_constants_ts
+  file_conformetry_languages_src_modules_markdown_markdown_service_unit_test_ts --> file_conformetry_languages_src_modules_markdown_markdown_nodes_service_ts
+  file_conformetry_languages_src_modules_markdown_markdown_service_unit_test_ts --> file_conformetry_languages_src_modules_markdown_markdown_tree_service_ts
+  file_conformetry_languages_src_modules_markdown_markdown_service_unit_test_ts --> file_conformetry_languages_src_modules_markdown_markdown_service_ts
+  file_conformetry_languages_src_modules_markdown_markdown_service_unit_test_ts --> file_conformetry_languages_src_modules_scoring_scoring_service_ts
+  file_conformetry_languages_src_modules_python_python_bridge_service_ts --> file_conformetry_languages_src_modules_differences_differences_service_ts
+  file_conformetry_languages_src_modules_python_python_bridge_service_ts --> file_conformetry_languages_src_modules_python_python_constants_ts
+  file_conformetry_languages_src_modules_python_python_bridge_service_ts --> file_conformetry_languages_src_modules_python_python_types_ts
+  file_conformetry_languages_src_modules_python_python_bridge_service_ts --> file_conformetry_languages_src_modules_scoring_scoring_service_ts
+  file_conformetry_languages_src_modules_python_python_bridge_service_unit_test_ts --> file_conformetry_languages_src_modules_differences_differences_module_ts
+  file_conformetry_languages_src_modules_python_python_bridge_service_unit_test_ts --> file_conformetry_languages_src_modules_python_python_bridge_service_ts
+  file_conformetry_languages_src_modules_python_python_bridge_service_unit_test_ts --> file_conformetry_languages_src_modules_scoring_scoring_module_ts
+  file_conformetry_languages_src_modules_python_python_module_ts --> file_conformetry_languages_src_modules_differences_differences_module_ts
+  file_conformetry_languages_src_modules_python_python_module_ts --> file_conformetry_languages_src_modules_python_python_bridge_service_ts
+  file_conformetry_languages_src_modules_python_python_module_ts --> file_conformetry_languages_src_modules_python_python_service_ts
+  file_conformetry_languages_src_modules_python_python_module_ts --> file_conformetry_languages_src_modules_scoring_scoring_module_ts
+  file_conformetry_languages_src_modules_python_python_module_unit_test_ts --> file_conformetry_languages_src_modules_python_python_module_ts
+  file_conformetry_languages_src_modules_python_python_module_unit_test_ts --> file_conformetry_languages_src_modules_python_python_service_ts
+  file_conformetry_languages_src_modules_python_python_service_ts --> file_conformetry_languages_src_modules_python_python_bridge_service_ts
+  file_conformetry_languages_src_modules_python_python_service_ts --> file_conformetry_languages_src_modules_python_python_constants_ts
+  file_conformetry_languages_src_modules_python_python_service_unit_test_ts --> file_conformetry_languages_src_modules_differences_differences_service_ts
+  file_conformetry_languages_src_modules_python_python_service_unit_test_ts --> file_conformetry_languages_src_modules_python_python_bridge_service_ts
+  file_conformetry_languages_src_modules_python_python_service_unit_test_ts --> file_conformetry_languages_src_modules_python_python_service_ts
+  file_conformetry_languages_src_modules_python_python_service_unit_test_ts --> file_conformetry_languages_src_modules_scoring_scoring_service_ts
+  file_conformetry_languages_src_modules_scoring_scoring_module_ts --> file_conformetry_languages_src_modules_scoring_scoring_service_ts
+  file_conformetry_languages_src_modules_scoring_scoring_module_unit_test_ts --> file_conformetry_languages_src_modules_scoring_scoring_module_ts
+  file_conformetry_languages_src_modules_scoring_scoring_module_unit_test_ts --> file_conformetry_languages_src_modules_scoring_scoring_service_ts
+  file_conformetry_languages_src_modules_scoring_scoring_service_ts --> file_conformetry_languages_src_modules_scoring_scoring_constants_ts
+  file_conformetry_languages_src_modules_scoring_scoring_service_ts --> file_conformetry_languages_src_modules_scoring_scoring_types_ts
+  file_conformetry_languages_src_modules_scoring_scoring_service_unit_test_ts --> file_conformetry_languages_src_modules_scoring_scoring_service_ts
+  file_conformetry_languages_src_modules_text_text_module_ts --> file_conformetry_languages_src_modules_text_text_service_ts
+  file_conformetry_languages_src_modules_text_text_module_unit_test_ts --> file_conformetry_languages_src_modules_text_text_module_ts
+  file_conformetry_languages_src_modules_text_text_module_unit_test_ts --> file_conformetry_languages_src_modules_text_text_service_ts
+  file_conformetry_languages_src_modules_text_text_service_ts --> file_conformetry_languages_src_modules_text_text_constants_ts
+  file_conformetry_languages_src_modules_text_text_service_ts --> file_conformetry_languages_src_modules_text_text_types_ts
+  file_conformetry_languages_src_modules_text_text_service_unit_test_ts --> file_conformetry_languages_src_modules_text_text_service_ts
+  file_conformetry_languages_src_modules_typescript_typescript_comments_service_ts --> file_conformetry_languages_src_modules_typescript_typescript_constants_ts
+  file_conformetry_languages_src_modules_typescript_typescript_comments_service_ts --> file_conformetry_languages_src_modules_typescript_typescript_types_ts
+  file_conformetry_languages_src_modules_typescript_typescript_comments_service_unit_test_ts --> file_conformetry_languages_src_modules_typescript_typescript_comments_service_ts
+  file_conformetry_languages_src_modules_typescript_typescript_nodes_service_unit_test_ts --> file_conformetry_languages_src_modules_typescript_typescript_nodes_service_ts
+  file_conformetry_languages_src_modules_typescript_typescript_tree_service_ts --> file_conformetry_languages_src_modules_scoring_scoring_service_ts
+  file_conformetry_languages_src_modules_typescript_typescript_tree_service_ts --> file_conformetry_languages_src_modules_typescript_typescript_nodes_service_ts
+  file_conformetry_languages_src_modules_typescript_typescript_tree_service_ts --> file_conformetry_languages_src_modules_typescript_typescript_types_ts
+  file_conformetry_languages_src_modules_typescript_typescript_tree_service_unit_test_ts --> file_conformetry_languages_src_modules_scoring_scoring_service_ts
+  file_conformetry_languages_src_modules_typescript_typescript_tree_service_unit_test_ts --> file_conformetry_languages_src_modules_typescript_typescript_nodes_service_ts
+  file_conformetry_languages_src_modules_typescript_typescript_tree_service_unit_test_ts --> file_conformetry_languages_src_modules_typescript_typescript_tree_service_ts
+  file_conformetry_languages_src_modules_typescript_typescript_module_ts --> file_conformetry_languages_src_modules_scoring_scoring_module_ts
+  file_conformetry_languages_src_modules_typescript_typescript_module_ts --> file_conformetry_languages_src_modules_typescript_typescript_comments_service_ts
+  file_conformetry_languages_src_modules_typescript_typescript_module_ts --> file_conformetry_languages_src_modules_typescript_typescript_nodes_service_ts
+  file_conformetry_languages_src_modules_typescript_typescript_module_ts --> file_conformetry_languages_src_modules_typescript_typescript_tree_service_ts
+  file_conformetry_languages_src_modules_typescript_typescript_module_ts --> file_conformetry_languages_src_modules_typescript_typescript_service_ts
+  file_conformetry_languages_src_modules_typescript_typescript_module_unit_test_ts --> file_conformetry_languages_src_modules_typescript_typescript_module_ts
+  file_conformetry_languages_src_modules_typescript_typescript_module_unit_test_ts --> file_conformetry_languages_src_modules_typescript_typescript_service_ts
+  file_conformetry_languages_src_modules_typescript_typescript_service_ts --> file_conformetry_languages_src_modules_typescript_typescript_comments_service_ts
+  file_conformetry_languages_src_modules_typescript_typescript_service_ts --> file_conformetry_languages_src_modules_typescript_typescript_tree_service_ts
+  file_conformetry_languages_src_modules_typescript_typescript_service_ts --> file_conformetry_languages_src_modules_typescript_typescript_constants_ts
+  file_conformetry_languages_src_modules_typescript_typescript_service_unit_test_ts --> file_conformetry_languages_src_modules_scoring_scoring_service_ts
+  file_conformetry_languages_src_modules_typescript_typescript_service_unit_test_ts --> file_conformetry_languages_src_modules_typescript_typescript_comments_service_ts
+  file_conformetry_languages_src_modules_typescript_typescript_service_unit_test_ts --> file_conformetry_languages_src_modules_typescript_typescript_nodes_service_ts
+  file_conformetry_languages_src_modules_typescript_typescript_service_unit_test_ts --> file_conformetry_languages_src_modules_typescript_typescript_tree_service_ts
+  file_conformetry_languages_src_modules_typescript_typescript_service_unit_test_ts --> file_conformetry_languages_src_modules_typescript_typescript_service_ts
+  file_conformetry_nx_src_executors_validate_executor_ts --> file_conformetry_nx_src_executors_validate_executor_types_ts
+  file_conformetry_nx_src_executors_validate_executor_ts --> file_conformetry_nx_src_modules_plugin_plugin_context_utilities_ts
+  file_conformetry_nx_src_executors_validate_executor_unit_test_ts --> file_conformetry_nx_src_executors_validate_executor_ts
+  file_conformetry_nx_src_executors_validate_executor_unit_test_ts --> file_conformetry_nx_src_modules_plugin_plugin_context_utilities_ts
+  file_conformetry_nx_src_generators_sync_generator_ts --> file_conformetry_nx_src_generators_sync_generator_types_ts
+  file_conformetry_nx_src_generators_sync_generator_ts --> file_conformetry_nx_src_modules_generator_generator_constants_ts
+  file_conformetry_nx_src_generators_sync_generator_ts --> file_conformetry_nx_src_modules_options_options_constants_ts
+  file_conformetry_nx_src_generators_sync_generator_ts --> file_conformetry_nx_src_modules_plugin_plugin_context_utilities_ts
+  file_conformetry_nx_src_generators_sync_generator_unit_test_ts --> file_conformetry_nx_src_generators_sync_generator_ts
+  file_conformetry_nx_src_generators_sync_generator_unit_test_ts --> file_conformetry_nx_src_modules_plugin_plugin_context_utilities_ts
+  file_conformetry_nx_src_index_ts --> file_conformetry_nx_src_modules_plugin_plugin_context_utilities_ts
+  file_conformetry_nx_src_index_ts --> file_conformetry_nx_src_modules_plugin_plugin_constants_ts
+  file_conformetry_nx_src_index_unit_test_ts --> file_conformetry_nx_src_index_ts
+  file_conformetry_nx_src_index_unit_test_ts --> file_conformetry_nx_src_modules_plugin_plugin_context_utilities_ts
+  file_conformetry_nx_src_main_module_ts --> file_conformetry_nx_src_modules_generator_generator_module_ts
+  file_conformetry_nx_src_main_module_ts --> file_conformetry_nx_src_modules_plugin_plugin_module_ts
+  file_conformetry_nx_src_modules_adapter_adapter_module_ts --> file_conformetry_nx_src_modules_adapter_adapter_service_ts
+  file_conformetry_nx_src_modules_adapter_adapter_service_ts --> file_conformetry_nx_src_modules_adapter_adapter_constants_ts
+  file_conformetry_nx_src_modules_adapter_adapter_service_ts --> file_conformetry_nx_src_modules_adapter_adapter_types_ts
+  file_conformetry_nx_src_modules_adapter_adapter_service_unit_test_ts --> file_conformetry_nx_src_modules_adapter_adapter_service_ts
+  file_conformetry_nx_src_modules_generator_bootstrap_utilities_ts --> file_conformetry_nx_src_modules_generator_generator_constants_ts
+  file_conformetry_nx_src_modules_generator_bootstrap_utilities_ts --> file_conformetry_nx_src_modules_generator_generator_types_ts
+  file_conformetry_nx_src_modules_generator_bootstrap_utilities_ts --> file_conformetry_nx_src_modules_options_options_constants_ts
+  file_conformetry_nx_src_modules_generator_bootstrap_utilities_ts --> file_conformetry_nx_src_modules_plugin_plugin_context_utilities_ts
+  file_conformetry_nx_src_modules_generator_bootstrap_utilities_unit_test_ts --> file_conformetry_nx_src_modules_generator_bootstrap_utilities_ts
+  file_conformetry_nx_src_modules_generator_bootstrap_utilities_unit_test_ts --> file_conformetry_nx_src_modules_generator_generator_constants_ts
+  file_conformetry_nx_src_modules_generator_bootstrap_utilities_unit_test_ts --> file_conformetry_nx_src_modules_plugin_plugin_context_utilities_ts
+  file_conformetry_nx_src_modules_generator_generator_module_ts --> file_conformetry_nx_src_modules_generator_generator_service_ts
+  file_conformetry_nx_src_modules_generator_generator_module_ts --> file_conformetry_nx_src_modules_scope_scope_module_ts
+  file_conformetry_nx_src_modules_generator_generator_service_ts --> file_conformetry_nx_src_modules_generator_generator_constants_ts
+  file_conformetry_nx_src_modules_generator_generator_service_ts --> file_conformetry_nx_src_modules_generator_generator_types_ts
+  file_conformetry_nx_src_modules_generator_generator_service_ts --> file_conformetry_nx_src_modules_instances_instances_types_ts
+  file_conformetry_nx_src_modules_generator_generator_service_ts --> file_conformetry_nx_src_modules_paths_paths_constants_ts
+  file_conformetry_nx_src_modules_generator_generator_service_ts --> file_conformetry_nx_src_modules_scope_scope_service_ts
+  file_conformetry_nx_src_modules_generator_generator_service_unit_test_ts --> file_conformetry_nx_src_modules_generator_generator_module_ts
+  file_conformetry_nx_src_modules_generator_generator_service_unit_test_ts --> file_conformetry_nx_src_modules_generator_generator_service_ts
+  file_conformetry_nx_src_modules_generator_generator_service_unit_test_ts --> file_conformetry_nx_src_modules_generator_generator_types_ts
+  file_conformetry_nx_src_modules_generator_generator_types_ts --> file_conformetry_nx_src_modules_instances_instances_types_ts
+  file_conformetry_nx_src_modules_instances_instances_module_ts --> file_conformetry_nx_src_modules_instances_instances_service_ts
+  file_conformetry_nx_src_modules_instances_instances_module_ts --> file_conformetry_nx_src_modules_scope_scope_module_ts
+  file_conformetry_nx_src_modules_instances_instances_service_ts --> file_conformetry_nx_src_modules_instances_instances_types_ts
+  file_conformetry_nx_src_modules_instances_instances_service_ts --> file_conformetry_nx_src_modules_scope_scope_service_ts
+  file_conformetry_nx_src_modules_instances_instances_service_unit_test_ts --> file_conformetry_nx_src_modules_instances_instances_service_ts
+  file_conformetry_nx_src_modules_instances_instances_service_unit_test_ts --> file_conformetry_nx_src_modules_instances_instances_types_ts
+  file_conformetry_nx_src_modules_instances_instances_service_unit_test_ts --> file_conformetry_nx_src_modules_scope_scope_module_ts
+  file_conformetry_nx_src_modules_options_options_module_ts --> file_conformetry_nx_src_modules_options_options_service_ts
+  file_conformetry_nx_src_modules_options_options_service_ts --> file_conformetry_nx_src_modules_options_options_constants_ts
+  file_conformetry_nx_src_modules_options_options_service_ts --> file_conformetry_nx_src_modules_options_options_types_ts
+  file_conformetry_nx_src_modules_options_options_service_unit_test_ts --> file_conformetry_nx_src_modules_options_options_constants_ts
+  file_conformetry_nx_src_modules_options_options_service_unit_test_ts --> file_conformetry_nx_src_modules_options_options_service_ts
+  file_conformetry_nx_src_modules_paths_paths_module_ts --> file_conformetry_nx_src_modules_instances_instances_module_ts
+  file_conformetry_nx_src_modules_paths_paths_module_ts --> file_conformetry_nx_src_modules_paths_paths_service_ts
+  file_conformetry_nx_src_modules_paths_paths_module_ts --> file_conformetry_nx_src_modules_scope_scope_module_ts
+  file_conformetry_nx_src_modules_paths_paths_service_ts --> file_conformetry_nx_src_modules_instances_instances_service_ts
+  file_conformetry_nx_src_modules_paths_paths_service_ts --> file_conformetry_nx_src_modules_paths_paths_constants_ts
+  file_conformetry_nx_src_modules_paths_paths_service_ts --> file_conformetry_nx_src_modules_paths_paths_types_ts
+  file_conformetry_nx_src_modules_paths_paths_service_ts --> file_conformetry_nx_src_modules_scope_scope_service_ts
+  file_conformetry_nx_src_modules_paths_paths_service_unit_test_ts --> file_conformetry_nx_src_modules_instances_instances_service_ts
+  file_conformetry_nx_src_modules_paths_paths_service_unit_test_ts --> file_conformetry_nx_src_modules_paths_paths_module_ts
+  file_conformetry_nx_src_modules_paths_paths_service_unit_test_ts --> file_conformetry_nx_src_modules_paths_paths_service_ts
+  file_conformetry_nx_src_modules_paths_paths_service_unit_test_ts --> file_conformetry_nx_src_modules_scope_scope_service_ts
+  file_conformetry_nx_src_modules_plugin_plugin_context_utilities_ts --> file_conformetry_nx_src_main_module_ts
+  file_conformetry_nx_src_modules_plugin_plugin_context_utilities_ts --> file_conformetry_nx_src_modules_generator_generator_service_ts
+  file_conformetry_nx_src_modules_plugin_plugin_context_utilities_ts --> file_conformetry_nx_src_modules_options_options_service_ts
+  file_conformetry_nx_src_modules_plugin_plugin_context_utilities_ts --> file_conformetry_nx_src_modules_plugin_plugin_constants_ts
+  file_conformetry_nx_src_modules_plugin_plugin_context_utilities_ts --> file_conformetry_nx_src_modules_plugin_plugin_service_ts
+  file_conformetry_nx_src_modules_plugin_plugin_context_utilities_ts --> file_conformetry_nx_src_modules_plugin_plugin_types_ts
+  file_conformetry_nx_src_modules_plugin_plugin_context_utilities_ts --> file_conformetry_nx_src_modules_projects_projects_service_ts
+  file_conformetry_nx_src_modules_plugin_plugin_context_utilities_unit_test_ts --> file_conformetry_nx_src_modules_generator_generator_service_ts
+  file_conformetry_nx_src_modules_plugin_plugin_context_utilities_unit_test_ts --> file_conformetry_nx_src_modules_options_options_service_ts
+  file_conformetry_nx_src_modules_plugin_plugin_context_utilities_unit_test_ts --> file_conformetry_nx_src_modules_plugin_plugin_context_utilities_ts
+  file_conformetry_nx_src_modules_plugin_plugin_context_utilities_unit_test_ts --> file_conformetry_nx_src_modules_plugin_plugin_constants_ts
+  file_conformetry_nx_src_modules_plugin_plugin_context_utilities_unit_test_ts --> file_conformetry_nx_src_modules_plugin_plugin_service_ts
+  file_conformetry_nx_src_modules_plugin_plugin_context_utilities_unit_test_ts --> file_conformetry_nx_src_modules_projects_projects_service_ts
+  file_conformetry_nx_src_modules_plugin_plugin_module_ts --> file_conformetry_nx_src_modules_adapter_adapter_module_ts
+  file_conformetry_nx_src_modules_plugin_plugin_module_ts --> file_conformetry_nx_src_modules_generator_generator_module_ts
+  file_conformetry_nx_src_modules_plugin_plugin_module_ts --> file_conformetry_nx_src_modules_instances_instances_module_ts
+  file_conformetry_nx_src_modules_plugin_plugin_module_ts --> file_conformetry_nx_src_modules_options_options_module_ts
+  file_conformetry_nx_src_modules_plugin_plugin_module_ts --> file_conformetry_nx_src_modules_paths_paths_module_ts
+  file_conformetry_nx_src_modules_plugin_plugin_module_ts --> file_conformetry_nx_src_modules_plugin_plugin_service_ts
+  file_conformetry_nx_src_modules_plugin_plugin_module_ts --> file_conformetry_nx_src_modules_projects_projects_module_ts
+  file_conformetry_nx_src_modules_plugin_plugin_module_ts --> file_conformetry_nx_src_modules_scope_scope_module_ts
+  file_conformetry_nx_src_modules_plugin_plugin_service_ts --> file_conformetry_nx_src_modules_adapter_adapter_service_ts
+  file_conformetry_nx_src_modules_plugin_plugin_service_ts --> file_conformetry_nx_src_modules_generator_generator_constants_ts
+  file_conformetry_nx_src_modules_plugin_plugin_service_ts --> file_conformetry_nx_src_modules_generator_generator_service_ts
+  file_conformetry_nx_src_modules_plugin_plugin_service_ts --> file_conformetry_nx_src_modules_instances_instances_service_ts
+  file_conformetry_nx_src_modules_plugin_plugin_service_ts --> file_conformetry_nx_src_modules_options_options_constants_ts
+  file_conformetry_nx_src_modules_plugin_plugin_service_ts --> file_conformetry_nx_src_modules_options_options_service_ts
+  file_conformetry_nx_src_modules_plugin_plugin_service_ts --> file_conformetry_nx_src_modules_options_options_types_ts
+  file_conformetry_nx_src_modules_plugin_plugin_service_ts --> file_conformetry_nx_src_modules_paths_paths_service_ts
+  file_conformetry_nx_src_modules_plugin_plugin_service_ts --> file_conformetry_nx_src_modules_plugin_plugin_constants_ts
+  file_conformetry_nx_src_modules_plugin_plugin_service_ts --> file_conformetry_nx_src_modules_plugin_plugin_types_ts
+  file_conformetry_nx_src_modules_plugin_plugin_service_ts --> file_conformetry_nx_src_modules_projects_projects_service_ts
+  file_conformetry_nx_src_modules_plugin_plugin_service_unit_test_ts --> file_conformetry_nx_src_modules_generator_generator_constants_ts
+  file_conformetry_nx_src_modules_plugin_plugin_service_unit_test_ts --> file_conformetry_nx_src_modules_generator_generator_service_ts
+  file_conformetry_nx_src_modules_plugin_plugin_service_unit_test_ts --> file_conformetry_nx_src_modules_instances_instances_types_ts
+  file_conformetry_nx_src_modules_plugin_plugin_service_unit_test_ts --> file_conformetry_nx_src_modules_plugin_plugin_module_ts
+  file_conformetry_nx_src_modules_plugin_plugin_service_unit_test_ts --> file_conformetry_nx_src_modules_plugin_plugin_service_ts
+  file_conformetry_nx_src_modules_plugin_plugin_types_ts --> file_conformetry_nx_src_modules_instances_instances_types_ts
+  file_conformetry_nx_src_modules_plugin_plugin_types_ts --> file_conformetry_nx_src_modules_plugin_plugin_constants_ts
+  file_conformetry_nx_src_modules_projects_projects_module_ts --> file_conformetry_nx_src_modules_projects_projects_service_ts
+  file_conformetry_nx_src_modules_projects_projects_service_ts --> file_conformetry_nx_src_modules_instances_instances_types_ts
+  file_conformetry_nx_src_modules_projects_projects_service_ts --> file_conformetry_nx_src_modules_projects_projects_constants_ts
+  file_conformetry_nx_src_modules_projects_projects_service_ts --> file_conformetry_nx_src_modules_projects_projects_types_ts
+  file_conformetry_nx_src_modules_projects_projects_service_unit_test_ts --> file_conformetry_nx_src_modules_projects_projects_service_ts
+  file_conformetry_nx_src_modules_scope_scope_module_ts --> file_conformetry_nx_src_modules_scope_scope_service_ts
+  file_conformetry_nx_src_modules_scope_scope_service_ts --> file_conformetry_nx_src_modules_instances_instances_types_ts
+  file_conformetry_nx_src_modules_scope_scope_service_ts --> file_conformetry_nx_src_modules_scope_scope_constants_ts
+  file_conformetry_nx_src_modules_scope_scope_service_unit_test_ts --> file_conformetry_nx_src_modules_instances_instances_types_ts
+  file_conformetry_nx_src_modules_scope_scope_service_unit_test_ts --> file_conformetry_nx_src_modules_scope_scope_service_ts
+  file_conformetry_output_src_modules_inventory_inventory_module_ts --> file_conformetry_output_src_modules_inventory_inventory_service_ts
+  file_conformetry_output_src_modules_inventory_inventory_module_unit_test_ts --> file_conformetry_output_src_modules_inventory_inventory_module_ts
+  file_conformetry_output_src_modules_inventory_inventory_module_unit_test_ts --> file_conformetry_output_src_modules_inventory_inventory_service_ts
+  file_conformetry_output_src_modules_inventory_inventory_service_ts --> file_conformetry_output_src_modules_inventory_inventory_constants_ts
+  file_conformetry_output_src_modules_inventory_inventory_service_unit_test_ts --> file_conformetry_output_src_modules_inventory_inventory_service_ts
+  file_conformetry_output_src_modules_reporting_reporting_module_ts --> file_conformetry_output_src_modules_reporting_reporting_service_ts
+  file_conformetry_output_src_modules_reporting_reporting_module_unit_test_ts --> file_conformetry_output_src_modules_reporting_reporting_module_ts
+  file_conformetry_output_src_modules_reporting_reporting_module_unit_test_ts --> file_conformetry_output_src_modules_reporting_reporting_service_ts
+  file_conformetry_output_src_modules_reporting_reporting_service_ts --> file_conformetry_output_src_modules_reporting_reporting_constants_ts
+  file_conformetry_output_src_modules_reporting_reporting_service_ts --> file_conformetry_output_src_modules_reporting_reporting_types_ts
+  file_conformetry_output_src_modules_reporting_reporting_service_unit_test_ts --> file_conformetry_output_src_modules_reporting_reporting_service_ts
+  file_conformetry_validation_src_modules_runner_runner_module_ts --> file_conformetry_validation_src_modules_runner_runner_service_ts
+  file_conformetry_validation_src_modules_runner_runner_module_unit_test_ts --> file_conformetry_validation_src_modules_runner_runner_module_ts
+  file_conformetry_validation_src_modules_runner_runner_module_unit_test_ts --> file_conformetry_validation_src_modules_runner_runner_service_ts
+  file_conformetry_validation_src_modules_runner_runner_service_ts --> file_conformetry_validation_src_modules_runner_runner_types_ts
+  file_conformetry_validation_src_modules_runner_runner_service_unit_test_ts --> file_conformetry_validation_src_modules_runner_runner_service_ts
+  file_conformetry_validation_src_modules_validation_validation_deduplication_service_ts --> file_conformetry_validation_src_modules_validation_validation_constants_ts
+  file_conformetry_validation_src_modules_validation_validation_deduplication_service_ts --> file_conformetry_validation_src_modules_validation_validation_types_ts
+  file_conformetry_validation_src_modules_validation_validation_deduplication_service_unit_test_ts --> file_conformetry_validation_src_modules_validation_validation_deduplication_service_ts
+  file_conformetry_validation_src_modules_validation_validation_deduplication_service_unit_test_ts --> file_conformetry_validation_src_modules_validation_validation_types_ts
+  file_conformetry_validation_src_modules_validation_validation_findings_service_unit_test_ts --> file_conformetry_validation_src_modules_validation_validation_findings_service_ts
+  file_conformetry_validation_src_modules_validation_validation_scoring_service_ts --> file_conformetry_validation_src_modules_validation_validation_constants_ts
+  file_conformetry_validation_src_modules_validation_validation_scoring_service_ts --> file_conformetry_validation_src_modules_validation_validation_types_ts
+  file_conformetry_validation_src_modules_validation_validation_scoring_service_unit_test_ts --> file_conformetry_validation_src_modules_validation_validation_scoring_service_ts
+  file_conformetry_validation_src_modules_validation_validation_module_ts --> file_conformetry_validation_src_modules_runner_runner_module_ts
+  file_conformetry_validation_src_modules_validation_validation_module_ts --> file_conformetry_validation_src_modules_validation_validation_deduplication_service_ts
+  file_conformetry_validation_src_modules_validation_validation_module_ts --> file_conformetry_validation_src_modules_validation_validation_findings_service_ts
+  file_conformetry_validation_src_modules_validation_validation_module_ts --> file_conformetry_validation_src_modules_validation_validation_scoring_service_ts
+  file_conformetry_validation_src_modules_validation_validation_module_ts --> file_conformetry_validation_src_modules_validation_validation_service_ts
+  file_conformetry_validation_src_modules_validation_validation_service_ts --> file_conformetry_validation_src_modules_runner_runner_service_ts
+  file_conformetry_validation_src_modules_validation_validation_service_ts --> file_conformetry_validation_src_modules_validation_validation_deduplication_service_ts
+  file_conformetry_validation_src_modules_validation_validation_service_ts --> file_conformetry_validation_src_modules_validation_validation_findings_service_ts
+  file_conformetry_validation_src_modules_validation_validation_service_ts --> file_conformetry_validation_src_modules_validation_validation_scoring_service_ts
+  file_conformetry_validation_src_modules_validation_validation_service_ts --> file_conformetry_validation_src_modules_validation_validation_types_ts
+  file_conformetry_validation_src_modules_validation_validation_service_unit_test_ts --> file_conformetry_validation_src_modules_validation_validation_module_ts
+  file_conformetry_validation_src_modules_validation_validation_service_unit_test_ts --> file_conformetry_validation_src_modules_validation_validation_service_ts
+  file_lexico_components_src_components_ui_accordion_tsx --> file_lexico_components_src_lib_utils_ts
+  file_lexico_components_src_components_ui_alert_dialog_tsx --> file_lexico_components_src_components_ui_button_tsx
+  file_lexico_components_src_components_ui_alert_dialog_tsx --> file_lexico_components_src_lib_utils_ts
+  file_lexico_components_src_components_ui_alert_tsx --> file_lexico_components_src_lib_utils_ts
+  file_lexico_components_src_components_ui_avatar_tsx --> file_lexico_components_src_lib_utils_ts
+  file_lexico_components_src_components_ui_badge_tsx --> file_lexico_components_src_lib_utils_ts
+  file_lexico_components_src_components_ui_breadcrumb_tsx --> file_lexico_components_src_lib_utils_ts
+  file_lexico_components_src_components_ui_button_group_tsx --> file_lexico_components_src_components_ui_separator_tsx
+  file_lexico_components_src_components_ui_button_group_tsx --> file_lexico_components_src_lib_utils_ts
+  file_lexico_components_src_components_ui_button_tsx --> file_lexico_components_src_lib_utils_ts
+  file_lexico_components_src_components_ui_calendar_tsx --> file_lexico_components_src_components_ui_button_tsx
+  file_lexico_components_src_components_ui_calendar_tsx --> file_lexico_components_src_lib_utils_ts
+  file_lexico_components_src_components_ui_card_tsx --> file_lexico_components_src_lib_utils_ts
+  file_lexico_components_src_components_ui_carousel_tsx --> file_lexico_components_src_components_ui_button_tsx
+  file_lexico_components_src_components_ui_carousel_tsx --> file_lexico_components_src_lib_utils_ts
+  file_lexico_components_src_components_ui_chart_tsx --> file_lexico_components_src_lib_utils_ts
+  file_lexico_components_src_components_ui_checkbox_tsx --> file_lexico_components_src_lib_utils_ts
+  file_lexico_components_src_components_ui_command_tsx --> file_lexico_components_src_components_ui_dialog_tsx
+  file_lexico_components_src_components_ui_command_tsx --> file_lexico_components_src_lib_utils_ts
+  file_lexico_components_src_components_ui_context_menu_tsx --> file_lexico_components_src_lib_utils_ts
+  file_lexico_components_src_components_ui_dialog_tsx --> file_lexico_components_src_lib_utils_ts
+  file_lexico_components_src_components_ui_drawer_tsx --> file_lexico_components_src_lib_utils_ts
+  file_lexico_components_src_components_ui_dropdown_menu_tsx --> file_lexico_components_src_lib_utils_ts
+  file_lexico_components_src_components_ui_empty_tsx --> file_lexico_components_src_lib_utils_ts
+  file_lexico_components_src_components_ui_field_tsx --> file_lexico_components_src_components_ui_label_tsx
+  file_lexico_components_src_components_ui_field_tsx --> file_lexico_components_src_components_ui_separator_tsx
+  file_lexico_components_src_components_ui_field_tsx --> file_lexico_components_src_lib_utils_ts
+  file_lexico_components_src_components_ui_form_tsx --> file_lexico_components_src_components_ui_label_tsx
+  file_lexico_components_src_components_ui_form_tsx --> file_lexico_components_src_lib_utils_ts
+  file_lexico_components_src_components_ui_hover_card_tsx --> file_lexico_components_src_lib_utils_ts
+  file_lexico_components_src_components_ui_input_group_tsx --> file_lexico_components_src_components_ui_button_tsx
+  file_lexico_components_src_components_ui_input_group_tsx --> file_lexico_components_src_components_ui_input_tsx
+  file_lexico_components_src_components_ui_input_group_tsx --> file_lexico_components_src_components_ui_textarea_tsx
+  file_lexico_components_src_components_ui_input_group_tsx --> file_lexico_components_src_lib_utils_ts
+  file_lexico_components_src_components_ui_input_otp_tsx --> file_lexico_components_src_lib_utils_ts
+  file_lexico_components_src_components_ui_input_tsx --> file_lexico_components_src_lib_utils_ts
+  file_lexico_components_src_components_ui_item_tsx --> file_lexico_components_src_components_ui_separator_tsx
+  file_lexico_components_src_components_ui_item_tsx --> file_lexico_components_src_lib_utils_ts
+  file_lexico_components_src_components_ui_kbd_tsx --> file_lexico_components_src_lib_utils_ts
+  file_lexico_components_src_components_ui_label_tsx --> file_lexico_components_src_lib_utils_ts
+  file_lexico_components_src_components_ui_menubar_tsx --> file_lexico_components_src_lib_utils_ts
+  file_lexico_components_src_components_ui_navigation_menu_tsx --> file_lexico_components_src_lib_utils_ts
+  file_lexico_components_src_components_ui_pagination_tsx --> file_lexico_components_src_components_ui_button_tsx
+  file_lexico_components_src_components_ui_pagination_tsx --> file_lexico_components_src_lib_utils_ts
+  file_lexico_components_src_components_ui_popover_tsx --> file_lexico_components_src_lib_utils_ts
+  file_lexico_components_src_components_ui_progress_tsx --> file_lexico_components_src_lib_utils_ts
+  file_lexico_components_src_components_ui_radio_group_tsx --> file_lexico_components_src_lib_utils_ts
+  file_lexico_components_src_components_ui_resizable_tsx --> file_lexico_components_src_lib_utils_ts
+  file_lexico_components_src_components_ui_scroll_area_tsx --> file_lexico_components_src_lib_utils_ts
+  file_lexico_components_src_components_ui_select_tsx --> file_lexico_components_src_lib_utils_ts
+  file_lexico_components_src_components_ui_separator_tsx --> file_lexico_components_src_lib_utils_ts
+  file_lexico_components_src_components_ui_sheet_tsx --> file_lexico_components_src_lib_utils_ts
+  file_lexico_components_src_components_ui_sidebar_tsx --> file_lexico_components_src_components_ui_button_tsx
+  file_lexico_components_src_components_ui_sidebar_tsx --> file_lexico_components_src_components_ui_input_tsx
+  file_lexico_components_src_components_ui_sidebar_tsx --> file_lexico_components_src_components_ui_separator_tsx
+  file_lexico_components_src_components_ui_sidebar_tsx --> file_lexico_components_src_components_ui_sheet_tsx
+  file_lexico_components_src_components_ui_sidebar_tsx --> file_lexico_components_src_components_ui_skeleton_tsx
+  file_lexico_components_src_components_ui_sidebar_tsx --> file_lexico_components_src_components_ui_tooltip_tsx
+  file_lexico_components_src_components_ui_sidebar_tsx --> file_lexico_components_src_hooks_use_mobile_tsx
+  file_lexico_components_src_components_ui_sidebar_tsx --> file_lexico_components_src_lib_utils_ts
+  file_lexico_components_src_components_ui_skeleton_tsx --> file_lexico_components_src_lib_utils_ts
+  file_lexico_components_src_components_ui_slider_tsx --> file_lexico_components_src_lib_utils_ts
+  file_lexico_components_src_components_ui_spinner_tsx --> file_lexico_components_src_lib_utils_ts
+  file_lexico_components_src_components_ui_switch_tsx --> file_lexico_components_src_lib_utils_ts
+  file_lexico_components_src_components_ui_table_tsx --> file_lexico_components_src_lib_utils_ts
+  file_lexico_components_src_components_ui_tabs_tsx --> file_lexico_components_src_lib_utils_ts
+  file_lexico_components_src_components_ui_textarea_tsx --> file_lexico_components_src_lib_utils_ts
+  file_lexico_components_src_components_ui_toggle_group_tsx --> file_lexico_components_src_components_ui_toggle_tsx
+  file_lexico_components_src_components_ui_toggle_group_tsx --> file_lexico_components_src_lib_utils_ts
+  file_lexico_components_src_components_ui_toggle_tsx --> file_lexico_components_src_lib_utils_ts
+  file_lexico_components_src_components_ui_tooltip_tsx --> file_lexico_components_src_lib_utils_ts
+  file_lexico_entities_src_modules_database_data_source_constants_ts --> file_lexico_entities_src_modules_database_database_constants_ts
+  file_lexico_entities_src_modules_database_data_source_constants_ts --> file_lexico_entities_src_modules_entities_dictionary_form_AdjectivalForm_entity_ts
+  file_lexico_entities_src_modules_database_data_source_constants_ts --> file_lexico_entities_src_modules_entities_dictionary_form_AdverbForm_entity_ts
+  file_lexico_entities_src_modules_database_data_source_constants_ts --> file_lexico_entities_src_modules_entities_dictionary_form_FiniteVerbForm_entity_ts
+  file_lexico_entities_src_modules_database_data_source_constants_ts --> file_lexico_entities_src_modules_entities_dictionary_form_Form_entity_ts
+  file_lexico_entities_src_modules_database_data_source_constants_ts --> file_lexico_entities_src_modules_entities_dictionary_form_GerundForm_entity_ts
+  file_lexico_entities_src_modules_database_data_source_constants_ts --> file_lexico_entities_src_modules_entities_dictionary_form_InfinitiveForm_entity_ts
+  file_lexico_entities_src_modules_database_data_source_constants_ts --> file_lexico_entities_src_modules_entities_dictionary_form_NominalForm_entity_ts
+  file_lexico_entities_src_modules_database_data_source_constants_ts --> file_lexico_entities_src_modules_entities_dictionary_form_ParticipleForm_entity_ts
+  file_lexico_entities_src_modules_database_data_source_constants_ts --> file_lexico_entities_src_modules_entities_dictionary_form_SupineForm_entity_ts
+  file_lexico_entities_src_modules_database_data_source_constants_ts --> file_lexico_entities_src_modules_entities_dictionary_inflection_AdjectiveInflection_entity_ts
+  file_lexico_entities_src_modules_database_data_source_constants_ts --> file_lexico_entities_src_modules_entities_dictionary_inflection_AdverbInflection_entity_ts
+  file_lexico_entities_src_modules_database_data_source_constants_ts --> file_lexico_entities_src_modules_entities_dictionary_inflection_Inflection_entity_ts
+  file_lexico_entities_src_modules_database_data_source_constants_ts --> file_lexico_entities_src_modules_entities_dictionary_inflection_NounInflection_entity_ts
+  file_lexico_entities_src_modules_database_data_source_constants_ts --> file_lexico_entities_src_modules_entities_dictionary_inflection_PrepositionInflection_entity_ts
+  file_lexico_entities_src_modules_database_data_source_constants_ts --> file_lexico_entities_src_modules_entities_dictionary_inflection_Uninflected_entity_ts
+  file_lexico_entities_src_modules_database_data_source_constants_ts --> file_lexico_entities_src_modules_entities_dictionary_inflection_VerbInflection_entity_ts
+  file_lexico_entities_src_modules_database_data_source_constants_ts --> file_lexico_entities_src_modules_entities_dictionary_Lexeme_entity_ts
+  file_lexico_entities_src_modules_database_data_source_constants_ts --> file_lexico_entities_src_modules_entities_dictionary_PrincipalPart_entity_ts
+  file_lexico_entities_src_modules_database_data_source_constants_ts --> file_lexico_entities_src_modules_entities_dictionary_Pronunciation_entity_ts
+  file_lexico_entities_src_modules_database_data_source_constants_ts --> file_lexico_entities_src_modules_entities_dictionary_Translation_entity_ts
+  file_lexico_entities_src_modules_database_data_source_constants_ts --> file_lexico_entities_src_modules_entities_dictionary_Word_entity_ts
+  file_lexico_entities_src_modules_database_data_source_constants_ts --> file_lexico_entities_src_modules_entities_dictionary_WordForm_entity_ts
+  file_lexico_entities_src_modules_database_data_source_constants_ts --> file_lexico_entities_src_modules_entities_dictionary_WordLexeme_entity_ts
+  file_lexico_entities_src_modules_database_data_source_constants_ts --> file_lexico_entities_src_modules_entities_literature_Author_entity_ts
+  file_lexico_entities_src_modules_database_data_source_constants_ts --> file_lexico_entities_src_modules_entities_literature_Line_entity_ts
+  file_lexico_entities_src_modules_database_data_source_constants_ts --> file_lexico_entities_src_modules_entities_literature_Text_entity_ts
+  file_lexico_entities_src_modules_database_data_source_constants_ts --> file_lexico_entities_src_modules_entities_literature_Token_entity_ts
+  file_lexico_entities_src_modules_database_database_module_ts --> file_lexico_entities_src_modules_database_data_source_constants_ts
+  file_lexico_entities_src_modules_database_database_module_ts --> file_lexico_entities_src_modules_database_database_constants_ts
+  file_lexico_entities_src_modules_database_database_module_ts --> file_lexico_entities_src_modules_database_database_service_ts
+  file_lexico_entities_src_modules_database_database_service_unit_test_ts --> file_lexico_entities_src_modules_database_database_service_ts
+  file_lexico_entities_src_modules_entities_base_Auditable_entity_ts --> file_lexico_entities_src_modules_entities_base_Deletable_entity_ts
+  file_lexico_entities_src_modules_entities_base_Creatable_entity_ts --> file_lexico_entities_src_modules_entities_base_Identifiable_entity_ts
+  file_lexico_entities_src_modules_entities_base_Deletable_entity_ts --> file_lexico_entities_src_modules_entities_base_Updatable_entity_ts
+  file_lexico_entities_src_modules_entities_base_Updatable_entity_ts --> file_lexico_entities_src_modules_entities_base_Creatable_entity_ts
+  file_lexico_entities_src_modules_entities_dictionary_form_AdjectivalForm_entity_ts --> file_lexico_entities_src_modules_database_database_constants_ts
+  file_lexico_entities_src_modules_entities_dictionary_form_AdjectivalForm_entity_ts --> file_lexico_entities_src_modules_entities_dictionary_form_Form_entity_ts
+  file_lexico_entities_src_modules_entities_dictionary_form_AdverbForm_entity_ts --> file_lexico_entities_src_modules_database_database_constants_ts
+  file_lexico_entities_src_modules_entities_dictionary_form_AdverbForm_entity_ts --> file_lexico_entities_src_modules_entities_dictionary_form_Form_entity_ts
+  file_lexico_entities_src_modules_entities_dictionary_form_FiniteVerbForm_entity_ts --> file_lexico_entities_src_modules_database_database_constants_ts
+  file_lexico_entities_src_modules_entities_dictionary_form_FiniteVerbForm_entity_ts --> file_lexico_entities_src_modules_entities_dictionary_form_Form_entity_ts
+  file_lexico_entities_src_modules_entities_dictionary_form_Form_entity_ts --> file_lexico_entities_src_modules_entities_base_Auditable_entity_ts
+  file_lexico_entities_src_modules_entities_dictionary_form_Form_entity_ts --> file_lexico_entities_src_modules_entities_dictionary_Lexeme_entity_ts
+  file_lexico_entities_src_modules_entities_dictionary_form_Form_entity_ts --> file_lexico_entities_src_modules_entities_dictionary_WordForm_entity_ts
+  file_lexico_entities_src_modules_entities_dictionary_form_GerundForm_entity_ts --> file_lexico_entities_src_modules_database_database_constants_ts
+  file_lexico_entities_src_modules_entities_dictionary_form_GerundForm_entity_ts --> file_lexico_entities_src_modules_entities_dictionary_form_Form_entity_ts
+  file_lexico_entities_src_modules_entities_dictionary_form_InfinitiveForm_entity_ts --> file_lexico_entities_src_modules_database_database_constants_ts
+  file_lexico_entities_src_modules_entities_dictionary_form_InfinitiveForm_entity_ts --> file_lexico_entities_src_modules_entities_dictionary_form_Form_entity_ts
+  file_lexico_entities_src_modules_entities_dictionary_form_NominalForm_entity_ts --> file_lexico_entities_src_modules_database_database_constants_ts
+  file_lexico_entities_src_modules_entities_dictionary_form_NominalForm_entity_ts --> file_lexico_entities_src_modules_entities_dictionary_form_Form_entity_ts
+  file_lexico_entities_src_modules_entities_dictionary_form_ParticipleForm_entity_ts --> file_lexico_entities_src_modules_database_database_constants_ts
+  file_lexico_entities_src_modules_entities_dictionary_form_ParticipleForm_entity_ts --> file_lexico_entities_src_modules_entities_dictionary_form_Form_entity_ts
+  file_lexico_entities_src_modules_entities_dictionary_form_SupineForm_entity_ts --> file_lexico_entities_src_modules_database_database_constants_ts
+  file_lexico_entities_src_modules_entities_dictionary_form_SupineForm_entity_ts --> file_lexico_entities_src_modules_entities_dictionary_form_Form_entity_ts
+  file_lexico_entities_src_modules_entities_dictionary_inflection_AdjectiveInflection_entity_ts --> file_lexico_entities_src_modules_database_database_constants_ts
+  file_lexico_entities_src_modules_entities_dictionary_inflection_AdjectiveInflection_entity_ts --> file_lexico_entities_src_modules_entities_dictionary_inflection_Inflection_entity_ts
+  file_lexico_entities_src_modules_entities_dictionary_inflection_AdverbInflection_entity_ts --> file_lexico_entities_src_modules_database_database_constants_ts
+  file_lexico_entities_src_modules_entities_dictionary_inflection_AdverbInflection_entity_ts --> file_lexico_entities_src_modules_entities_dictionary_inflection_Inflection_entity_ts
+  file_lexico_entities_src_modules_entities_dictionary_inflection_Inflection_entity_ts --> file_lexico_entities_src_modules_entities_dictionary_Lexeme_entity_ts
+  file_lexico_entities_src_modules_entities_dictionary_inflection_NounInflection_entity_ts --> file_lexico_entities_src_modules_database_database_constants_ts
+  file_lexico_entities_src_modules_entities_dictionary_inflection_NounInflection_entity_ts --> file_lexico_entities_src_modules_entities_dictionary_inflection_Inflection_entity_ts
+  file_lexico_entities_src_modules_entities_dictionary_inflection_PrepositionInflection_entity_ts --> file_lexico_entities_src_modules_database_database_constants_ts
+  file_lexico_entities_src_modules_entities_dictionary_inflection_PrepositionInflection_entity_ts --> file_lexico_entities_src_modules_entities_dictionary_inflection_Inflection_entity_ts
+  file_lexico_entities_src_modules_entities_dictionary_inflection_Uninflected_entity_ts --> file_lexico_entities_src_modules_entities_dictionary_inflection_Inflection_entity_ts
+  file_lexico_entities_src_modules_entities_dictionary_inflection_VerbInflection_entity_ts --> file_lexico_entities_src_modules_database_database_constants_ts
+  file_lexico_entities_src_modules_entities_dictionary_inflection_VerbInflection_entity_ts --> file_lexico_entities_src_modules_entities_dictionary_inflection_Inflection_entity_ts
+  file_lexico_entities_src_modules_entities_dictionary_Lexeme_entity_ts --> file_lexico_entities_src_modules_entities_base_Auditable_entity_ts
+  file_lexico_entities_src_modules_entities_dictionary_Lexeme_entity_ts --> file_lexico_entities_src_modules_entities_dictionary_form_Form_entity_ts
+  file_lexico_entities_src_modules_entities_dictionary_Lexeme_entity_ts --> file_lexico_entities_src_modules_entities_dictionary_inflection_Inflection_entity_ts
+  file_lexico_entities_src_modules_entities_dictionary_Lexeme_entity_ts --> file_lexico_entities_src_modules_entities_dictionary_PartOfSpeech_entity_ts
+  file_lexico_entities_src_modules_entities_dictionary_Lexeme_entity_ts --> file_lexico_entities_src_modules_entities_dictionary_PrincipalPart_entity_ts
+  file_lexico_entities_src_modules_entities_dictionary_Lexeme_entity_ts --> file_lexico_entities_src_modules_entities_dictionary_Pronunciation_entity_ts
+  file_lexico_entities_src_modules_entities_dictionary_Lexeme_entity_ts --> file_lexico_entities_src_modules_entities_dictionary_Translation_entity_ts
+  file_lexico_entities_src_modules_entities_dictionary_Lexeme_entity_ts --> file_lexico_entities_src_modules_entities_dictionary_WordLexeme_entity_ts
+  file_lexico_entities_src_modules_entities_dictionary_PrincipalPart_entity_ts --> file_lexico_entities_src_modules_entities_base_Auditable_entity_ts
+  file_lexico_entities_src_modules_entities_dictionary_PrincipalPart_entity_ts --> file_lexico_entities_src_modules_entities_dictionary_Lexeme_entity_ts
+  file_lexico_entities_src_modules_entities_dictionary_Pronunciation_entity_ts --> file_lexico_entities_src_modules_entities_base_Auditable_entity_ts
+  file_lexico_entities_src_modules_entities_dictionary_Pronunciation_entity_ts --> file_lexico_entities_src_modules_entities_dictionary_Lexeme_entity_ts
+  file_lexico_entities_src_modules_entities_dictionary_Translation_entity_ts --> file_lexico_entities_src_modules_entities_base_Auditable_entity_ts
+  file_lexico_entities_src_modules_entities_dictionary_Translation_entity_ts --> file_lexico_entities_src_modules_entities_dictionary_Lexeme_entity_ts
+  file_lexico_entities_src_modules_entities_dictionary_Word_entity_ts --> file_lexico_entities_src_modules_entities_base_Auditable_entity_ts
+  file_lexico_entities_src_modules_entities_dictionary_Word_entity_ts --> file_lexico_entities_src_modules_entities_dictionary_WordForm_entity_ts
+  file_lexico_entities_src_modules_entities_dictionary_Word_entity_ts --> file_lexico_entities_src_modules_entities_dictionary_WordLexeme_entity_ts
+  file_lexico_entities_src_modules_entities_dictionary_WordForm_entity_ts --> file_lexico_entities_src_modules_entities_base_Auditable_entity_ts
+  file_lexico_entities_src_modules_entities_dictionary_WordForm_entity_ts --> file_lexico_entities_src_modules_entities_dictionary_form_Form_entity_ts
+  file_lexico_entities_src_modules_entities_dictionary_WordForm_entity_ts --> file_lexico_entities_src_modules_entities_dictionary_Word_entity_ts
+  file_lexico_entities_src_modules_entities_dictionary_WordLexeme_entity_ts --> file_lexico_entities_src_modules_entities_base_Auditable_entity_ts
+  file_lexico_entities_src_modules_entities_dictionary_WordLexeme_entity_ts --> file_lexico_entities_src_modules_entities_dictionary_Lexeme_entity_ts
+  file_lexico_entities_src_modules_entities_dictionary_WordLexeme_entity_ts --> file_lexico_entities_src_modules_entities_dictionary_Word_entity_ts
+  file_lexico_entities_src_modules_entities_entities_module_ts --> file_lexico_entities_src_modules_entities_entities_service_ts
+  file_lexico_entities_src_modules_entities_entities_service_integration_test_ts --> file_lexico_entities_testing_integration_test_data_source_ts
+  file_lexico_entities_src_modules_entities_entities_service_unit_test_ts --> file_lexico_entities_src_modules_database_data_source_constants_ts
+  file_lexico_entities_src_modules_entities_entities_service_unit_test_ts --> file_lexico_entities_src_modules_database_database_constants_ts
+  file_lexico_entities_src_modules_entities_entities_service_unit_test_ts --> file_lexico_entities_src_modules_entities_dictionary_PartOfSpeech_entity_ts
+  file_lexico_entities_src_modules_entities_entities_service_unit_test_ts --> file_lexico_entities_src_modules_entities_dictionary_Pronunciation_entity_ts
+  file_lexico_entities_src_modules_entities_entities_service_unit_test_ts --> file_lexico_entities_src_modules_entities_entities_service_ts
+  file_lexico_entities_src_modules_entities_entities_service_unit_test_ts --> file_lexico_entities_testing_entity_definition_assertions_ts
+  file_lexico_entities_src_modules_entities_literature_Author_entity_ts --> file_lexico_entities_src_modules_entities_base_Auditable_entity_ts
+  file_lexico_entities_src_modules_entities_literature_Author_entity_ts --> file_lexico_entities_src_modules_entities_literature_Text_entity_ts
+  file_lexico_entities_src_modules_entities_literature_Line_entity_ts --> file_lexico_entities_src_modules_entities_base_Auditable_entity_ts
+  file_lexico_entities_src_modules_entities_literature_Line_entity_ts --> file_lexico_entities_src_modules_entities_literature_Author_entity_ts
+  file_lexico_entities_src_modules_entities_literature_Line_entity_ts --> file_lexico_entities_src_modules_entities_literature_Text_entity_ts
+  file_lexico_entities_src_modules_entities_literature_Line_entity_ts --> file_lexico_entities_src_modules_entities_literature_Token_entity_ts
+  file_lexico_entities_src_modules_entities_literature_Text_entity_ts --> file_lexico_entities_src_modules_entities_base_Auditable_entity_ts
+  file_lexico_entities_src_modules_entities_literature_Text_entity_ts --> file_lexico_entities_src_modules_entities_literature_Author_entity_ts
+  file_lexico_entities_src_modules_entities_literature_Text_entity_ts --> file_lexico_entities_src_modules_entities_literature_Line_entity_ts
+  file_lexico_entities_src_modules_entities_literature_Token_entity_ts --> file_lexico_entities_src_modules_entities_base_Auditable_entity_ts
+  file_lexico_entities_src_modules_entities_literature_Token_entity_ts --> file_lexico_entities_src_modules_entities_dictionary_Word_entity_ts
+  file_lexico_entities_src_modules_entities_literature_Token_entity_ts --> file_lexico_entities_src_modules_entities_literature_Author_entity_ts
+  file_lexico_entities_src_modules_entities_literature_Token_entity_ts --> file_lexico_entities_src_modules_entities_literature_Line_entity_ts
+  file_lexico_entities_src_modules_entities_literature_Token_entity_ts --> file_lexico_entities_src_modules_entities_literature_Text_entity_ts
+  file_lexico_entities_testing_integration_test_data_source_ts --> file_lexico_entities_src_modules_database_data_source_constants_ts
+  file_lexico_ingestion_src_main_end_to_end_test_ts --> file_lexico_ingestion_src_constants_ts
+  file_lexico_ingestion_src_main_module_ts --> file_lexico_ingestion_src_constants_ts
+  file_lexico_ingestion_src_main_module_ts --> file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_module_ts
+  file_lexico_ingestion_src_main_ts --> file_lexico_ingestion_src_main_module_ts
+  file_lexico_ingestion_src_modules_clear_clear_command_ts --> file_lexico_ingestion_src_modules_clear_clear_types_ts
+  file_lexico_ingestion_src_modules_clear_clear_command_unit_test_ts --> file_lexico_ingestion_src_modules_clear_clear_command_ts
+  file_lexico_ingestion_src_modules_clear_clear_command_unit_test_ts --> file_lexico_ingestion_testing_command_harness_ts
+  file_lexico_ingestion_src_modules_clear_clear_command_unit_test_ts --> file_lexico_ingestion_testing_mocks_ts
+  file_lexico_ingestion_src_modules_clear_clear_module_ts --> file_lexico_ingestion_src_modules_clear_clear_command_ts
+  file_lexico_ingestion_src_modules_corpus_scriptorum_ecclesiasticorum_latinorum_corpus_scriptorum_ecclesiasticorum_latinorum_command_ts --> file_lexico_ingestion_src_modules_corpus_scriptorum_ecclesiasticorum_latinorum_corpus_scriptorum_ecclesiasticorum_latinorum_constants_ts
+  file_lexico_ingestion_src_modules_corpus_scriptorum_ecclesiasticorum_latinorum_corpus_scriptorum_ecclesiasticorum_latinorum_command_ts --> file_lexico_ingestion_src_modules_corpus_scriptorum_ecclesiasticorum_latinorum_corpus_scriptorum_ecclesiasticorum_latinorum_types_ts
+  file_lexico_ingestion_src_modules_corpus_scriptorum_ecclesiasticorum_latinorum_corpus_scriptorum_ecclesiasticorum_latinorum_command_unit_test_ts --> file_lexico_ingestion_src_modules_corpus_scriptorum_ecclesiasticorum_latinorum_corpus_scriptorum_ecclesiasticorum_latinorum_command_ts
+  file_lexico_ingestion_src_modules_corpus_scriptorum_ecclesiasticorum_latinorum_corpus_scriptorum_ecclesiasticorum_latinorum_command_unit_test_ts --> file_lexico_ingestion_testing_command_harness_ts
+  file_lexico_ingestion_src_modules_corpus_scriptorum_ecclesiasticorum_latinorum_corpus_scriptorum_ecclesiasticorum_latinorum_module_ts --> file_lexico_ingestion_src_modules_corpus_scriptorum_ecclesiasticorum_latinorum_corpus_scriptorum_ecclesiasticorum_latinorum_command_ts
+  file_lexico_ingestion_src_modules_dictionary_dictionary_command_ts --> file_lexico_ingestion_src_modules_dictionary_dictionary_types_ts
+  file_lexico_ingestion_src_modules_dictionary_dictionary_command_ts --> file_lexico_ingestion_src_modules_lexemes_lexemes_service_ts
+  file_lexico_ingestion_src_modules_dictionary_dictionary_command_ts --> file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_types_ts
+  file_lexico_ingestion_src_modules_dictionary_dictionary_command_ts --> file_lexico_ingestion_src_modules_manual_manual_service_ts
+  file_lexico_ingestion_src_modules_dictionary_dictionary_command_ts --> file_lexico_ingestion_src_modules_translations_translations_service_ts
+  file_lexico_ingestion_src_modules_dictionary_dictionary_command_unit_test_ts --> file_lexico_ingestion_src_modules_dictionary_dictionary_command_ts
+  file_lexico_ingestion_src_modules_dictionary_dictionary_command_unit_test_ts --> file_lexico_ingestion_src_modules_lexemes_lexemes_service_ts
+  file_lexico_ingestion_src_modules_dictionary_dictionary_command_unit_test_ts --> file_lexico_ingestion_src_modules_manual_manual_service_ts
+  file_lexico_ingestion_src_modules_dictionary_dictionary_command_unit_test_ts --> file_lexico_ingestion_src_modules_translations_translations_service_ts
+  file_lexico_ingestion_src_modules_dictionary_dictionary_command_unit_test_ts --> file_lexico_ingestion_testing_command_harness_ts
+  file_lexico_ingestion_src_modules_dictionary_dictionary_command_unit_test_ts --> file_lexico_ingestion_testing_mocks_ts
+  file_lexico_ingestion_src_modules_dictionary_dictionary_module_ts --> file_lexico_ingestion_src_modules_dictionary_dictionary_command_ts
+  file_lexico_ingestion_src_modules_dictionary_dictionary_module_ts --> file_lexico_ingestion_src_modules_forms_forms_module_ts
+  file_lexico_ingestion_src_modules_dictionary_dictionary_module_ts --> file_lexico_ingestion_src_modules_lexemes_lexemes_module_ts
+  file_lexico_ingestion_src_modules_dictionary_dictionary_module_ts --> file_lexico_ingestion_src_modules_manual_manual_module_ts
+  file_lexico_ingestion_src_modules_dictionary_dictionary_module_ts --> file_lexico_ingestion_src_modules_principal_parts_principal_parts_module_ts
+  file_lexico_ingestion_src_modules_dictionary_dictionary_module_ts --> file_lexico_ingestion_src_modules_pronunciation_pronunciation_module_ts
+  file_lexico_ingestion_src_modules_dictionary_dictionary_module_ts --> file_lexico_ingestion_src_modules_translations_translations_module_ts
+  file_lexico_ingestion_src_modules_dictionary_dictionary_module_ts --> file_lexico_ingestion_src_modules_words_words_module_ts
+  file_lexico_ingestion_src_modules_epigraphik_datenbank_clauss_slaby_epigraphik_datenbank_clauss_slaby_command_ts --> file_lexico_ingestion_src_modules_epigraphik_datenbank_clauss_slaby_epigraphik_datenbank_clauss_slaby_constants_ts
+  file_lexico_ingestion_src_modules_epigraphik_datenbank_clauss_slaby_epigraphik_datenbank_clauss_slaby_command_ts --> file_lexico_ingestion_src_modules_epigraphik_datenbank_clauss_slaby_epigraphik_datenbank_clauss_slaby_types_ts
+  file_lexico_ingestion_src_modules_epigraphik_datenbank_clauss_slaby_epigraphik_datenbank_clauss_slaby_command_unit_test_ts --> file_lexico_ingestion_src_modules_epigraphik_datenbank_clauss_slaby_epigraphik_datenbank_clauss_slaby_command_ts
+  file_lexico_ingestion_src_modules_epigraphik_datenbank_clauss_slaby_epigraphik_datenbank_clauss_slaby_command_unit_test_ts --> file_lexico_ingestion_testing_command_harness_ts
+  file_lexico_ingestion_src_modules_epigraphik_datenbank_clauss_slaby_epigraphik_datenbank_clauss_slaby_module_ts --> file_lexico_ingestion_src_modules_epigraphik_datenbank_clauss_slaby_epigraphik_datenbank_clauss_slaby_command_ts
+  file_lexico_ingestion_src_modules_etymology_etymology_module_ts --> file_lexico_ingestion_src_modules_etymology_etymology_service_ts
+  file_lexico_ingestion_src_modules_etymology_etymology_service_unit_test_ts --> file_lexico_ingestion_src_modules_etymology_etymology_service_ts
+  file_lexico_ingestion_src_modules_forms_forms_builder_guards_service_ts --> file_lexico_ingestion_src_modules_forms_forms_constants_ts
+  file_lexico_ingestion_src_modules_forms_forms_builder_guards_service_ts --> file_lexico_ingestion_src_modules_forms_forms_types_ts
+  file_lexico_ingestion_src_modules_forms_forms_builder_guards_service_unit_test_ts --> file_lexico_ingestion_src_modules_forms_forms_builder_guards_service_ts
+  file_lexico_ingestion_src_modules_forms_forms_builder_verb_service_ts --> file_lexico_ingestion_src_modules_forms_forms_builder_guards_service_ts
+  file_lexico_ingestion_src_modules_forms_forms_builder_verb_service_ts --> file_lexico_ingestion_src_modules_forms_forms_transient_words_service_ts
+  file_lexico_ingestion_src_modules_forms_forms_builder_verb_service_ts --> file_lexico_ingestion_src_modules_forms_forms_types_ts
+  file_lexico_ingestion_src_modules_forms_forms_builder_verb_service_unit_test_ts --> file_lexico_ingestion_src_modules_forms_forms_builder_guards_service_ts
+  file_lexico_ingestion_src_modules_forms_forms_builder_verb_service_unit_test_ts --> file_lexico_ingestion_src_modules_forms_forms_builder_verb_service_ts
+  file_lexico_ingestion_src_modules_forms_forms_builder_verb_service_unit_test_ts --> file_lexico_ingestion_src_modules_forms_forms_transient_words_service_ts
+  file_lexico_ingestion_src_modules_forms_forms_builder_service_ts --> file_lexico_ingestion_src_modules_forms_forms_builder_guards_service_ts
+  file_lexico_ingestion_src_modules_forms_forms_builder_service_ts --> file_lexico_ingestion_src_modules_forms_forms_builder_verb_service_ts
+  file_lexico_ingestion_src_modules_forms_forms_builder_service_ts --> file_lexico_ingestion_src_modules_forms_forms_transient_words_service_ts
+  file_lexico_ingestion_src_modules_forms_forms_builder_service_ts --> file_lexico_ingestion_src_modules_forms_forms_constants_ts
+  file_lexico_ingestion_src_modules_forms_forms_builder_service_ts --> file_lexico_ingestion_src_modules_forms_forms_types_ts
+  file_lexico_ingestion_src_modules_forms_forms_builder_service_unit_test_ts --> file_lexico_ingestion_src_modules_forms_forms_builder_guards_service_ts
+  file_lexico_ingestion_src_modules_forms_forms_builder_service_unit_test_ts --> file_lexico_ingestion_src_modules_forms_forms_builder_verb_service_ts
+  file_lexico_ingestion_src_modules_forms_forms_builder_service_unit_test_ts --> file_lexico_ingestion_src_modules_forms_forms_builder_service_ts
+  file_lexico_ingestion_src_modules_forms_forms_builder_service_unit_test_ts --> file_lexico_ingestion_src_modules_forms_forms_transient_words_service_ts
+  file_lexico_ingestion_src_modules_forms_forms_transient_words_service_unit_test_ts --> file_lexico_ingestion_src_modules_forms_forms_transient_words_service_ts
+  file_lexico_ingestion_src_modules_forms_forms_module_ts --> file_lexico_ingestion_src_modules_forms_forms_builder_guards_service_ts
+  file_lexico_ingestion_src_modules_forms_forms_module_ts --> file_lexico_ingestion_src_modules_forms_forms_builder_verb_service_ts
+  file_lexico_ingestion_src_modules_forms_forms_module_ts --> file_lexico_ingestion_src_modules_forms_forms_builder_service_ts
+  file_lexico_ingestion_src_modules_forms_forms_module_ts --> file_lexico_ingestion_src_modules_forms_forms_transient_words_service_ts
+  file_lexico_ingestion_src_modules_forms_forms_module_ts --> file_lexico_ingestion_src_modules_forms_forms_service_ts
+  file_lexico_ingestion_src_modules_forms_forms_module_ts --> file_lexico_ingestion_src_modules_words_words_module_ts
+  file_lexico_ingestion_src_modules_forms_forms_service_ts --> file_lexico_ingestion_src_modules_forms_forms_transient_words_service_ts
+  file_lexico_ingestion_src_modules_forms_forms_service_ts --> file_lexico_ingestion_src_modules_words_words_service_ts
+  file_lexico_ingestion_src_modules_forms_forms_service_unit_test_ts --> file_lexico_ingestion_src_modules_forms_forms_transient_words_service_ts
+  file_lexico_ingestion_src_modules_forms_forms_service_unit_test_ts --> file_lexico_ingestion_src_modules_forms_forms_service_ts
+  file_lexico_ingestion_src_modules_forms_forms_service_unit_test_ts --> file_lexico_ingestion_src_modules_words_words_service_ts
+  file_lexico_ingestion_src_modules_forms_forms_service_unit_test_ts --> file_lexico_ingestion_testing_mocks_ts
+  file_lexico_ingestion_src_modules_latin_library_latin_library_command_unit_test_ts --> file_lexico_ingestion_src_modules_latin_library_latin_library_command_ts
+  file_lexico_ingestion_src_modules_latin_library_latin_library_command_unit_test_ts --> file_lexico_ingestion_testing_command_harness_ts
+  file_lexico_ingestion_src_modules_latin_library_latin_library_module_ts --> file_lexico_ingestion_src_modules_latin_library_latin_library_command_ts
+  file_lexico_ingestion_src_modules_lexemes_lexemes_module_ts --> file_lexico_ingestion_src_modules_etymology_etymology_module_ts
+  file_lexico_ingestion_src_modules_lexemes_lexemes_module_ts --> file_lexico_ingestion_src_modules_forms_forms_module_ts
+  file_lexico_ingestion_src_modules_lexemes_lexemes_module_ts --> file_lexico_ingestion_src_modules_lexemes_lexemes_service_ts
+  file_lexico_ingestion_src_modules_lexemes_lexemes_module_ts --> file_lexico_ingestion_src_modules_part_of_speech_part_of_speech_module_ts
+  file_lexico_ingestion_src_modules_lexemes_lexemes_module_ts --> file_lexico_ingestion_src_modules_principal_parts_principal_parts_module_ts
+  file_lexico_ingestion_src_modules_lexemes_lexemes_module_ts --> file_lexico_ingestion_src_modules_pronunciation_pronunciation_module_ts
+  file_lexico_ingestion_src_modules_lexemes_lexemes_module_ts --> file_lexico_ingestion_src_modules_translations_translations_module_ts
+  file_lexico_ingestion_src_modules_lexemes_lexemes_module_ts --> file_lexico_ingestion_src_modules_words_words_module_ts
+  file_lexico_ingestion_src_modules_lexemes_lexemes_service_ts --> file_lexico_ingestion_src_modules_etymology_etymology_service_ts
+  file_lexico_ingestion_src_modules_lexemes_lexemes_service_ts --> file_lexico_ingestion_src_modules_forms_forms_builder_service_ts
+  file_lexico_ingestion_src_modules_lexemes_lexemes_service_ts --> file_lexico_ingestion_src_modules_forms_forms_service_ts
+  file_lexico_ingestion_src_modules_lexemes_lexemes_service_ts --> file_lexico_ingestion_src_modules_lexemes_lexemes_constants_ts
+  file_lexico_ingestion_src_modules_lexemes_lexemes_service_ts --> file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_constants_ts
+  file_lexico_ingestion_src_modules_lexemes_lexemes_service_ts --> file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_types_ts
+  file_lexico_ingestion_src_modules_lexemes_lexemes_service_ts --> file_lexico_ingestion_src_modules_part_of_speech_part_of_speech_service_ts
+  file_lexico_ingestion_src_modules_lexemes_lexemes_service_ts --> file_lexico_ingestion_src_modules_principal_parts_principal_parts_service_ts
+  file_lexico_ingestion_src_modules_lexemes_lexemes_service_ts --> file_lexico_ingestion_src_modules_pronunciation_pronunciation_service_ts
+  file_lexico_ingestion_src_modules_lexemes_lexemes_service_ts --> file_lexico_ingestion_src_modules_translations_translations_service_ts
+  file_lexico_ingestion_src_modules_lexemes_lexemes_service_ts --> file_lexico_ingestion_src_modules_words_words_service_ts
+  file_lexico_ingestion_src_modules_lexemes_lexemes_service_unit_test_ts --> file_lexico_ingestion_src_modules_etymology_etymology_service_ts
+  file_lexico_ingestion_src_modules_lexemes_lexemes_service_unit_test_ts --> file_lexico_ingestion_src_modules_forms_forms_builder_service_ts
+  file_lexico_ingestion_src_modules_lexemes_lexemes_service_unit_test_ts --> file_lexico_ingestion_src_modules_forms_forms_service_ts
+  file_lexico_ingestion_src_modules_lexemes_lexemes_service_unit_test_ts --> file_lexico_ingestion_src_modules_lexemes_lexemes_service_ts
+  file_lexico_ingestion_src_modules_lexemes_lexemes_service_unit_test_ts --> file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_types_ts
+  file_lexico_ingestion_src_modules_lexemes_lexemes_service_unit_test_ts --> file_lexico_ingestion_src_modules_part_of_speech_part_of_speech_service_ts
+  file_lexico_ingestion_src_modules_lexemes_lexemes_service_unit_test_ts --> file_lexico_ingestion_src_modules_principal_parts_principal_parts_service_ts
+  file_lexico_ingestion_src_modules_lexemes_lexemes_service_unit_test_ts --> file_lexico_ingestion_src_modules_pronunciation_pronunciation_service_ts
+  file_lexico_ingestion_src_modules_lexemes_lexemes_service_unit_test_ts --> file_lexico_ingestion_src_modules_translations_translations_service_ts
+  file_lexico_ingestion_src_modules_lexemes_lexemes_service_unit_test_ts --> file_lexico_ingestion_src_modules_words_words_service_ts
+  file_lexico_ingestion_src_modules_lexemes_lexemes_service_unit_test_ts --> file_lexico_ingestion_testing_mocks_ts
+  file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_command_ts --> file_lexico_ingestion_src_modules_corpus_scriptorum_ecclesiasticorum_latinorum_corpus_scriptorum_ecclesiasticorum_latinorum_command_ts
+  file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_command_ts --> file_lexico_ingestion_src_modules_dictionary_dictionary_command_ts
+  file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_command_ts --> file_lexico_ingestion_src_modules_epigraphik_datenbank_clauss_slaby_epigraphik_datenbank_clauss_slaby_command_ts
+  file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_command_ts --> file_lexico_ingestion_src_modules_latin_library_latin_library_command_ts
+  file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_command_ts --> file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_types_ts
+  file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_command_ts --> file_lexico_ingestion_src_modules_library_library_command_ts
+  file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_command_ts --> file_lexico_ingestion_src_modules_literature_literature_command_ts
+  file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_command_ts --> file_lexico_ingestion_src_modules_perseus_perseus_command_ts
+  file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_command_ts --> file_lexico_ingestion_src_modules_wiktionary_wiktionary_command_ts
+  file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_command_unit_test_ts --> file_lexico_ingestion_src_modules_corpus_scriptorum_ecclesiasticorum_latinorum_corpus_scriptorum_ecclesiasticorum_latinorum_command_ts
+  file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_command_unit_test_ts --> file_lexico_ingestion_src_modules_dictionary_dictionary_command_ts
+  file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_command_unit_test_ts --> file_lexico_ingestion_src_modules_epigraphik_datenbank_clauss_slaby_epigraphik_datenbank_clauss_slaby_command_ts
+  file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_command_unit_test_ts --> file_lexico_ingestion_src_modules_latin_library_latin_library_command_ts
+  file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_command_unit_test_ts --> file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_command_ts
+  file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_command_unit_test_ts --> file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_types_ts
+  file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_command_unit_test_ts --> file_lexico_ingestion_src_modules_library_library_command_ts
+  file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_command_unit_test_ts --> file_lexico_ingestion_src_modules_literature_literature_command_ts
+  file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_command_unit_test_ts --> file_lexico_ingestion_src_modules_perseus_perseus_command_ts
+  file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_command_unit_test_ts --> file_lexico_ingestion_src_modules_wiktionary_wiktionary_command_ts
+  file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_command_unit_test_ts --> file_lexico_ingestion_testing_mocks_ts
+  file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_module_ts --> file_lexico_ingestion_src_modules_clear_clear_module_ts
+  file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_module_ts --> file_lexico_ingestion_src_modules_corpus_scriptorum_ecclesiasticorum_latinorum_corpus_scriptorum_ecclesiasticorum_latinorum_module_ts
+  file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_module_ts --> file_lexico_ingestion_src_modules_dictionary_dictionary_module_ts
+  file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_module_ts --> file_lexico_ingestion_src_modules_epigraphik_datenbank_clauss_slaby_epigraphik_datenbank_clauss_slaby_module_ts
+  file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_module_ts --> file_lexico_ingestion_src_modules_latin_library_latin_library_module_ts
+  file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_module_ts --> file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_command_ts
+  file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_module_ts --> file_lexico_ingestion_src_modules_library_library_module_ts
+  file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_module_ts --> file_lexico_ingestion_src_modules_literature_literature_module_ts
+  file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_module_ts --> file_lexico_ingestion_src_modules_manual_manual_module_ts
+  file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_module_ts --> file_lexico_ingestion_src_modules_perseus_perseus_module_ts
+  file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_module_ts --> file_lexico_ingestion_src_modules_wiktionary_wiktionary_module_ts
+  file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_module_ts --> file_lexico_ingestion_src_modules_words_words_module_ts
+  file_lexico_ingestion_src_modules_library_library_command_ts --> file_lexico_ingestion_src_modules_library_library_constants_ts
+  file_lexico_ingestion_src_modules_library_library_command_ts --> file_lexico_ingestion_src_modules_library_library_types_ts
+  file_lexico_ingestion_src_modules_library_library_command_unit_test_ts --> file_lexico_ingestion_src_modules_library_library_command_ts
+  file_lexico_ingestion_src_modules_library_library_command_unit_test_ts --> file_lexico_ingestion_src_modules_library_library_constants_ts
+  file_lexico_ingestion_src_modules_library_library_command_unit_test_ts --> file_lexico_ingestion_src_modules_library_library_types_ts
+  file_lexico_ingestion_src_modules_library_library_command_unit_test_ts --> file_lexico_ingestion_testing_command_harness_ts
+  file_lexico_ingestion_src_modules_library_library_command_unit_test_ts --> file_lexico_ingestion_testing_mocks_ts
+  file_lexico_ingestion_src_modules_library_library_module_ts --> file_lexico_ingestion_src_modules_library_library_command_ts
+  file_lexico_ingestion_src_modules_library_library_module_ts --> file_lexico_ingestion_src_modules_library_library_constants_ts
+  file_lexico_ingestion_src_modules_library_library_module_ts --> file_lexico_ingestion_src_modules_library_library_types_ts
+  file_lexico_ingestion_src_modules_library_library_module_ts --> file_lexico_ingestion_src_modules_library_providers_corpus_scriptorum_ecclesiasticorum_latinorum_library_provider_ts
+  file_lexico_ingestion_src_modules_library_library_module_ts --> file_lexico_ingestion_src_modules_library_providers_epigraphik_datenbank_clauss_slaby_library_provider_ts
+  file_lexico_ingestion_src_modules_library_library_module_ts --> file_lexico_ingestion_src_modules_library_providers_latin_library_builder_ts
+  file_lexico_ingestion_src_modules_library_library_module_ts --> file_lexico_ingestion_src_modules_library_providers_latin_library_provider_ts
+  file_lexico_ingestion_src_modules_library_library_module_ts --> file_lexico_ingestion_src_modules_library_providers_perseus_library_text_extraction_provider_ts
+  file_lexico_ingestion_src_modules_library_library_module_ts --> file_lexico_ingestion_src_modules_library_providers_perseus_library_provider_ts
+  file_lexico_ingestion_src_modules_library_library_utilities_unit_test_ts --> file_lexico_ingestion_src_modules_library_library_utilities_ts
+  file_lexico_ingestion_src_modules_library_providers_corpus_scriptorum_ecclesiasticorum_latinorum_library_provider_ts --> file_lexico_ingestion_src_modules_library_library_utilities_ts
+  file_lexico_ingestion_src_modules_library_providers_corpus_scriptorum_ecclesiasticorum_latinorum_library_provider_unit_test_ts --> file_lexico_ingestion_src_modules_library_providers_corpus_scriptorum_ecclesiasticorum_latinorum_library_provider_ts
+  file_lexico_ingestion_src_modules_library_providers_epigraphik_datenbank_clauss_slaby_library_provider_unit_test_ts --> file_lexico_ingestion_src_modules_library_providers_epigraphik_datenbank_clauss_slaby_library_provider_ts
+  file_lexico_ingestion_src_modules_library_providers_latin_library_builder_ts --> file_lexico_ingestion_src_modules_library_library_utilities_ts
+  file_lexico_ingestion_src_modules_library_providers_latin_library_builder_ts --> file_lexico_ingestion_src_modules_literature_literature_constants_ts
+  file_lexico_ingestion_src_modules_library_providers_latin_library_builder_unit_test_ts --> file_lexico_ingestion_src_modules_library_providers_latin_library_builder_ts
+  file_lexico_ingestion_src_modules_library_providers_latin_library_provider_ts --> file_lexico_ingestion_src_modules_library_library_utilities_ts
+  file_lexico_ingestion_src_modules_library_providers_latin_library_provider_ts --> file_lexico_ingestion_src_modules_library_providers_latin_library_builder_ts
+  file_lexico_ingestion_src_modules_library_providers_latin_library_provider_unit_test_ts --> file_lexico_ingestion_src_modules_library_providers_latin_library_builder_ts
+  file_lexico_ingestion_src_modules_library_providers_latin_library_provider_unit_test_ts --> file_lexico_ingestion_src_modules_library_providers_latin_library_provider_ts
+  file_lexico_ingestion_src_modules_library_providers_perseus_library_text_extraction_provider_ts --> file_lexico_ingestion_src_modules_library_library_utilities_ts
+  file_lexico_ingestion_src_modules_library_providers_perseus_library_text_extraction_provider_unit_test_ts --> file_lexico_ingestion_src_modules_library_providers_perseus_library_text_extraction_provider_ts
+  file_lexico_ingestion_src_modules_library_providers_perseus_library_provider_ts --> file_lexico_ingestion_src_modules_library_providers_perseus_library_text_extraction_provider_ts
+  file_lexico_ingestion_src_modules_library_providers_perseus_library_provider_unit_test_ts --> file_lexico_ingestion_src_modules_library_providers_perseus_library_text_extraction_provider_ts
+  file_lexico_ingestion_src_modules_library_providers_perseus_library_provider_unit_test_ts --> file_lexico_ingestion_src_modules_library_providers_perseus_library_provider_ts
+  file_lexico_ingestion_src_modules_literature_literature_library_scan_service_ts --> file_lexico_ingestion_src_modules_literature_literature_types_ts
+  file_lexico_ingestion_src_modules_literature_literature_library_scan_service_unit_test_ts --> file_lexico_ingestion_src_modules_literature_literature_library_scan_service_ts
+  file_lexico_ingestion_src_modules_literature_literature_text_ingestion_service_ts --> file_lexico_ingestion_src_modules_literature_literature_types_ts
+  file_lexico_ingestion_src_modules_literature_literature_text_ingestion_service_unit_test_ts --> file_lexico_ingestion_src_modules_literature_literature_text_ingestion_service_ts
+  file_lexico_ingestion_src_modules_literature_literature_text_ingestion_service_unit_test_ts --> file_lexico_ingestion_src_modules_literature_literature_types_ts
+  file_lexico_ingestion_src_modules_literature_literature_word_normalization_service_ts --> file_lexico_ingestion_src_modules_literature_literature_constants_ts
+  file_lexico_ingestion_src_modules_literature_literature_word_normalization_service_unit_test_ts --> file_lexico_ingestion_src_modules_literature_literature_word_normalization_service_ts
+  file_lexico_ingestion_src_modules_literature_literature_command_ts --> file_lexico_ingestion_src_modules_literature_literature_service_ts
+  file_lexico_ingestion_src_modules_literature_literature_command_ts --> file_lexico_ingestion_src_modules_literature_literature_types_ts
+  file_lexico_ingestion_src_modules_literature_literature_command_unit_test_ts --> file_lexico_ingestion_src_modules_literature_literature_command_ts
+  file_lexico_ingestion_src_modules_literature_literature_command_unit_test_ts --> file_lexico_ingestion_src_modules_literature_literature_service_ts
+  file_lexico_ingestion_src_modules_literature_literature_command_unit_test_ts --> file_lexico_ingestion_src_modules_literature_literature_types_ts
+  file_lexico_ingestion_src_modules_literature_literature_command_unit_test_ts --> file_lexico_ingestion_testing_command_harness_ts
+  file_lexico_ingestion_src_modules_literature_literature_command_unit_test_ts --> file_lexico_ingestion_testing_mocks_ts
+  file_lexico_ingestion_src_modules_literature_literature_module_ts --> file_lexico_ingestion_src_modules_literature_literature_library_scan_service_ts
+  file_lexico_ingestion_src_modules_literature_literature_module_ts --> file_lexico_ingestion_src_modules_literature_literature_text_ingestion_service_ts
+  file_lexico_ingestion_src_modules_literature_literature_module_ts --> file_lexico_ingestion_src_modules_literature_literature_word_normalization_service_ts
+  file_lexico_ingestion_src_modules_literature_literature_module_ts --> file_lexico_ingestion_src_modules_literature_literature_command_ts
+  file_lexico_ingestion_src_modules_literature_literature_module_ts --> file_lexico_ingestion_src_modules_literature_literature_service_ts
+  file_lexico_ingestion_src_modules_literature_literature_module_ts --> file_lexico_ingestion_src_modules_numerals_numerals_module_ts
+  file_lexico_ingestion_src_modules_literature_literature_service_ts --> file_lexico_ingestion_src_modules_literature_literature_library_scan_service_ts
+  file_lexico_ingestion_src_modules_literature_literature_service_ts --> file_lexico_ingestion_src_modules_literature_literature_text_ingestion_service_ts
+  file_lexico_ingestion_src_modules_literature_literature_service_ts --> file_lexico_ingestion_src_modules_literature_literature_word_normalization_service_ts
+  file_lexico_ingestion_src_modules_literature_literature_service_ts --> file_lexico_ingestion_src_modules_literature_literature_constants_ts
+  file_lexico_ingestion_src_modules_literature_literature_service_ts --> file_lexico_ingestion_src_modules_literature_literature_types_ts
+  file_lexico_ingestion_src_modules_literature_literature_service_ts --> file_lexico_ingestion_src_modules_numerals_numerals_service_ts
+  file_lexico_ingestion_src_modules_literature_literature_service_unit_test_ts --> file_lexico_ingestion_src_modules_literature_literature_library_scan_service_ts
+  file_lexico_ingestion_src_modules_literature_literature_service_unit_test_ts --> file_lexico_ingestion_src_modules_literature_literature_text_ingestion_service_ts
+  file_lexico_ingestion_src_modules_literature_literature_service_unit_test_ts --> file_lexico_ingestion_src_modules_literature_literature_word_normalization_service_ts
+  file_lexico_ingestion_src_modules_literature_literature_service_unit_test_ts --> file_lexico_ingestion_src_modules_literature_literature_service_ts
+  file_lexico_ingestion_src_modules_literature_literature_service_unit_test_ts --> file_lexico_ingestion_src_modules_literature_literature_types_ts
+  file_lexico_ingestion_src_modules_literature_literature_service_unit_test_ts --> file_lexico_ingestion_src_modules_numerals_numerals_service_ts
+  file_lexico_ingestion_src_modules_literature_literature_service_unit_test_ts --> file_lexico_ingestion_testing_mocks_ts
+  file_lexico_ingestion_src_modules_manual_manual_constants_ts --> file_lexico_ingestion_src_modules_manual_manual_types_ts
+  file_lexico_ingestion_src_modules_manual_manual_module_ts --> file_lexico_ingestion_src_modules_manual_manual_service_ts
+  file_lexico_ingestion_src_modules_manual_manual_module_ts --> file_lexico_ingestion_src_modules_numerals_numerals_module_ts
+  file_lexico_ingestion_src_modules_manual_manual_module_ts --> file_lexico_ingestion_src_modules_words_words_module_ts
+  file_lexico_ingestion_src_modules_manual_manual_service_ts --> file_lexico_ingestion_src_modules_manual_manual_constants_ts
+  file_lexico_ingestion_src_modules_manual_manual_service_ts --> file_lexico_ingestion_src_modules_manual_manual_types_ts
+  file_lexico_ingestion_src_modules_manual_manual_service_ts --> file_lexico_ingestion_src_modules_manual_manual_utilities_ts
+  file_lexico_ingestion_src_modules_manual_manual_service_ts --> file_lexico_ingestion_src_modules_numerals_numerals_service_ts
+  file_lexico_ingestion_src_modules_manual_manual_service_ts --> file_lexico_ingestion_src_modules_words_words_service_ts
+  file_lexico_ingestion_src_modules_manual_manual_service_unit_test_ts --> file_lexico_ingestion_src_modules_manual_manual_constants_ts
+  file_lexico_ingestion_src_modules_manual_manual_service_unit_test_ts --> file_lexico_ingestion_src_modules_manual_manual_service_ts
+  file_lexico_ingestion_src_modules_manual_manual_service_unit_test_ts --> file_lexico_ingestion_src_modules_manual_manual_types_ts
+  file_lexico_ingestion_src_modules_manual_manual_service_unit_test_ts --> file_lexico_ingestion_src_modules_manual_manual_utilities_ts
+  file_lexico_ingestion_src_modules_manual_manual_service_unit_test_ts --> file_lexico_ingestion_src_modules_numerals_numerals_service_ts
+  file_lexico_ingestion_src_modules_manual_manual_service_unit_test_ts --> file_lexico_ingestion_src_modules_words_words_service_ts
+  file_lexico_ingestion_src_modules_manual_manual_service_unit_test_ts --> file_lexico_ingestion_testing_mocks_ts
+  file_lexico_ingestion_src_modules_numerals_numerals_module_ts --> file_lexico_ingestion_src_modules_numerals_numerals_service_ts
+  file_lexico_ingestion_src_modules_numerals_numerals_service_ts --> file_lexico_ingestion_src_modules_numerals_numerals_constants_ts
+  file_lexico_ingestion_src_modules_numerals_numerals_service_unit_test_ts --> file_lexico_ingestion_src_modules_numerals_numerals_service_ts
+  file_lexico_ingestion_src_modules_part_of_speech_part_of_speech_forms_service_ts --> file_lexico_ingestion_src_modules_part_of_speech_part_of_speech_constants_ts
+  file_lexico_ingestion_src_modules_part_of_speech_part_of_speech_forms_service_unit_test_ts --> file_lexico_ingestion_src_modules_part_of_speech_part_of_speech_forms_service_ts
+  file_lexico_ingestion_src_modules_part_of_speech_part_of_speech_forms_service_unit_test_ts --> file_lexico_ingestion_testing_mocks_ts
+  file_lexico_ingestion_src_modules_part_of_speech_part_of_speech_module_ts --> file_lexico_ingestion_src_modules_part_of_speech_part_of_speech_forms_service_ts
+  file_lexico_ingestion_src_modules_part_of_speech_part_of_speech_module_ts --> file_lexico_ingestion_src_modules_part_of_speech_part_of_speech_service_ts
+  file_lexico_ingestion_src_modules_part_of_speech_part_of_speech_service_ts --> file_lexico_ingestion_src_modules_part_of_speech_part_of_speech_forms_service_ts
+  file_lexico_ingestion_src_modules_part_of_speech_part_of_speech_service_ts --> file_lexico_ingestion_src_modules_part_of_speech_part_of_speech_constants_ts
+  file_lexico_ingestion_src_modules_part_of_speech_part_of_speech_service_unit_test_ts --> file_lexico_ingestion_src_modules_part_of_speech_part_of_speech_forms_service_ts
+  file_lexico_ingestion_src_modules_part_of_speech_part_of_speech_service_unit_test_ts --> file_lexico_ingestion_src_modules_part_of_speech_part_of_speech_module_ts
+  file_lexico_ingestion_src_modules_part_of_speech_part_of_speech_service_unit_test_ts --> file_lexico_ingestion_src_modules_part_of_speech_part_of_speech_service_ts
+  file_lexico_ingestion_src_modules_perseus_perseus_command_ts --> file_lexico_ingestion_src_modules_perseus_perseus_constants_ts
+  file_lexico_ingestion_src_modules_perseus_perseus_command_ts --> file_lexico_ingestion_src_modules_perseus_perseus_types_ts
+  file_lexico_ingestion_src_modules_perseus_perseus_command_unit_test_ts --> file_lexico_ingestion_src_modules_perseus_perseus_command_ts
+  file_lexico_ingestion_src_modules_perseus_perseus_command_unit_test_ts --> file_lexico_ingestion_testing_command_harness_ts
+  file_lexico_ingestion_src_modules_perseus_perseus_module_ts --> file_lexico_ingestion_src_modules_perseus_perseus_command_ts
+  file_lexico_ingestion_src_modules_principal_parts_principal_parts_module_ts --> file_lexico_ingestion_src_modules_principal_parts_principal_parts_service_ts
+  file_lexico_ingestion_src_modules_principal_parts_principal_parts_service_unit_test_ts --> file_lexico_ingestion_src_modules_principal_parts_principal_parts_service_ts
+  file_lexico_ingestion_src_modules_principal_parts_principal_parts_service_unit_test_ts --> file_lexico_ingestion_testing_mocks_ts
+  file_lexico_ingestion_src_modules_pronunciation_pronunciation_classical_service_ts --> file_lexico_ingestion_src_modules_pronunciation_pronunciation_constants_ts
+  file_lexico_ingestion_src_modules_pronunciation_pronunciation_classical_service_ts --> file_lexico_ingestion_src_modules_pronunciation_pronunciation_types_ts
+  file_lexico_ingestion_src_modules_pronunciation_pronunciation_classical_service_unit_test_ts --> file_lexico_ingestion_src_modules_pronunciation_pronunciation_classical_service_ts
+  file_lexico_ingestion_src_modules_pronunciation_pronunciation_classifier_service_ts --> file_lexico_ingestion_src_modules_pronunciation_pronunciation_classical_service_ts
+  file_lexico_ingestion_src_modules_pronunciation_pronunciation_classifier_service_ts --> file_lexico_ingestion_src_modules_pronunciation_pronunciation_ecclesiastical_service_ts
+  file_lexico_ingestion_src_modules_pronunciation_pronunciation_classifier_service_ts --> file_lexico_ingestion_src_modules_pronunciation_pronunciation_types_ts
+  file_lexico_ingestion_src_modules_pronunciation_pronunciation_classifier_service_unit_test_ts --> file_lexico_ingestion_src_modules_pronunciation_pronunciation_classical_service_ts
+  file_lexico_ingestion_src_modules_pronunciation_pronunciation_classifier_service_unit_test_ts --> file_lexico_ingestion_src_modules_pronunciation_pronunciation_classifier_service_ts
+  file_lexico_ingestion_src_modules_pronunciation_pronunciation_classifier_service_unit_test_ts --> file_lexico_ingestion_src_modules_pronunciation_pronunciation_ecclesiastical_service_ts
+  file_lexico_ingestion_src_modules_pronunciation_pronunciation_classifier_service_unit_test_ts --> file_lexico_ingestion_src_modules_pronunciation_pronunciation_types_ts
+  file_lexico_ingestion_src_modules_pronunciation_pronunciation_ecclesiastical_service_ts --> file_lexico_ingestion_src_modules_pronunciation_pronunciation_phonemes_service_ts
+  file_lexico_ingestion_src_modules_pronunciation_pronunciation_ecclesiastical_service_ts --> file_lexico_ingestion_src_modules_pronunciation_pronunciation_constants_ts
+  file_lexico_ingestion_src_modules_pronunciation_pronunciation_ecclesiastical_service_ts --> file_lexico_ingestion_src_modules_pronunciation_pronunciation_types_ts
+  file_lexico_ingestion_src_modules_pronunciation_pronunciation_ecclesiastical_service_unit_test_ts --> file_lexico_ingestion_src_modules_pronunciation_pronunciation_ecclesiastical_service_ts
+  file_lexico_ingestion_src_modules_pronunciation_pronunciation_ecclesiastical_service_unit_test_ts --> file_lexico_ingestion_src_modules_pronunciation_pronunciation_phonemes_service_ts
+  file_lexico_ingestion_src_modules_pronunciation_pronunciation_ecclesiastical_service_unit_test_ts --> file_lexico_ingestion_src_modules_pronunciation_pronunciation_types_ts
+  file_lexico_ingestion_src_modules_pronunciation_pronunciation_phonemes_service_ts --> file_lexico_ingestion_src_modules_pronunciation_pronunciation_types_ts
+  file_lexico_ingestion_src_modules_pronunciation_pronunciation_phonemes_service_unit_test_ts --> file_lexico_ingestion_src_modules_pronunciation_pronunciation_phonemes_service_ts
+  file_lexico_ingestion_src_modules_pronunciation_pronunciation_constants_ts --> file_lexico_ingestion_src_modules_pronunciation_pronunciation_types_ts
+  file_lexico_ingestion_src_modules_pronunciation_pronunciation_module_ts --> file_lexico_ingestion_src_modules_pronunciation_pronunciation_classical_service_ts
+  file_lexico_ingestion_src_modules_pronunciation_pronunciation_module_ts --> file_lexico_ingestion_src_modules_pronunciation_pronunciation_classifier_service_ts
+  file_lexico_ingestion_src_modules_pronunciation_pronunciation_module_ts --> file_lexico_ingestion_src_modules_pronunciation_pronunciation_ecclesiastical_service_ts
+  file_lexico_ingestion_src_modules_pronunciation_pronunciation_module_ts --> file_lexico_ingestion_src_modules_pronunciation_pronunciation_phonemes_service_ts
+  file_lexico_ingestion_src_modules_pronunciation_pronunciation_module_ts --> file_lexico_ingestion_src_modules_pronunciation_pronunciation_service_ts
+  file_lexico_ingestion_src_modules_pronunciation_pronunciation_service_ts --> file_lexico_ingestion_src_modules_pronunciation_pronunciation_classifier_service_ts
+  file_lexico_ingestion_src_modules_pronunciation_pronunciation_service_ts --> file_lexico_ingestion_src_modules_pronunciation_pronunciation_constants_ts
+  file_lexico_ingestion_src_modules_pronunciation_pronunciation_service_ts --> file_lexico_ingestion_src_modules_pronunciation_pronunciation_types_ts
+  file_lexico_ingestion_src_modules_pronunciation_pronunciation_service_unit_test_ts --> file_lexico_ingestion_src_modules_pronunciation_pronunciation_classical_service_ts
+  file_lexico_ingestion_src_modules_pronunciation_pronunciation_service_unit_test_ts --> file_lexico_ingestion_src_modules_pronunciation_pronunciation_classifier_service_ts
+  file_lexico_ingestion_src_modules_pronunciation_pronunciation_service_unit_test_ts --> file_lexico_ingestion_src_modules_pronunciation_pronunciation_ecclesiastical_service_ts
+  file_lexico_ingestion_src_modules_pronunciation_pronunciation_service_unit_test_ts --> file_lexico_ingestion_src_modules_pronunciation_pronunciation_phonemes_service_ts
+  file_lexico_ingestion_src_modules_pronunciation_pronunciation_service_unit_test_ts --> file_lexico_ingestion_src_modules_pronunciation_pronunciation_service_ts
+  file_lexico_ingestion_src_modules_pronunciation_pronunciation_service_unit_test_ts --> file_lexico_ingestion_src_modules_pronunciation_pronunciation_types_ts
+  file_lexico_ingestion_src_modules_pronunciation_pronunciation_service_unit_test_ts --> file_lexico_ingestion_testing_mocks_ts
+  file_lexico_ingestion_src_modules_translations_translations_module_ts --> file_lexico_ingestion_src_modules_translations_translations_service_ts
+  file_lexico_ingestion_src_modules_translations_translations_service_ts --> file_lexico_ingestion_src_modules_translations_translations_constants_ts
+  file_lexico_ingestion_src_modules_translations_translations_service_unit_test_ts --> file_lexico_ingestion_src_modules_translations_translations_service_ts
+  file_lexico_ingestion_src_modules_translations_translations_service_unit_test_ts --> file_lexico_ingestion_testing_mocks_ts
+  file_lexico_ingestion_src_modules_wiktionary_wiktionary_command_ts --> file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_types_ts
+  file_lexico_ingestion_src_modules_wiktionary_wiktionary_command_ts --> file_lexico_ingestion_src_modules_wiktionary_wiktionary_constants_ts
+  file_lexico_ingestion_src_modules_wiktionary_wiktionary_command_ts --> file_lexico_ingestion_src_modules_wiktionary_wiktionary_types_ts
+  file_lexico_ingestion_src_modules_wiktionary_wiktionary_command_unit_test_ts --> file_lexico_ingestion_src_modules_wiktionary_wiktionary_command_ts
+  file_lexico_ingestion_src_modules_wiktionary_wiktionary_command_unit_test_ts --> file_lexico_ingestion_testing_command_harness_ts
+  file_lexico_ingestion_src_modules_wiktionary_wiktionary_module_ts --> file_lexico_ingestion_src_modules_wiktionary_wiktionary_command_ts
+  file_lexico_ingestion_src_modules_wiktionary_wiktionary_types_ts --> file_lexico_ingestion_src_modules_wiktionary_wiktionary_constants_ts
+  file_lexico_ingestion_src_modules_words_words_module_ts --> file_lexico_ingestion_src_modules_words_words_service_ts
+  file_lexico_ingestion_src_modules_words_words_service_ts --> file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_constants_ts
+  file_lexico_ingestion_src_modules_words_words_service_unit_test_ts --> file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_constants_ts
+  file_lexico_ingestion_src_modules_words_words_service_unit_test_ts --> file_lexico_ingestion_src_modules_words_words_service_ts
+  file_lexico_ingestion_src_modules_words_words_service_unit_test_ts --> file_lexico_ingestion_testing_mocks_ts
+  file_lexico_ingestion_src_repl_ts --> file_lexico_ingestion_src_main_module_ts
+  file_lexico_src_components_entry_adjective_forms_table_tsx --> file_lexico_src_components_entry_form_cell_tsx
+  file_lexico_src_components_entry_adjective_forms_table_tsx --> file_lexico_src_components_entry_form_tabs_tsx
+  file_lexico_src_components_entry_adjective_forms_table_tsx --> file_lexico_src_components_entry_forms_table_tsx
+  file_lexico_src_components_entry_entry_card_tsx --> file_lexico_src_components_entry_adjective_forms_table_tsx
+  file_lexico_src_components_entry_entry_card_tsx --> file_lexico_src_components_entry_noun_forms_table_tsx
+  file_lexico_src_components_entry_entry_card_tsx --> file_lexico_src_components_entry_principal_parts_tsx
+  file_lexico_src_components_entry_entry_card_tsx --> file_lexico_src_components_entry_translations_tsx
+  file_lexico_src_components_entry_entry_card_tsx --> file_lexico_src_components_entry_verb_forms_table_tsx
+  file_lexico_src_components_entry_entry_card_tsx --> file_lexico_src_lib_types_ts
+  file_lexico_src_components_entry_form_cell_tsx --> file_lexico_src_components_entry_identifier_tsx
+  file_lexico_src_components_entry_form_tabs_tsx --> file_lexico_src_components_entry_identifier_tsx
+  file_lexico_src_components_entry_forms_table_tsx --> file_lexico_src_components_entry_form_cell_tsx
+  file_lexico_src_components_entry_noun_forms_table_tsx --> file_lexico_src_components_entry_form_cell_tsx
+  file_lexico_src_components_entry_noun_forms_table_tsx --> file_lexico_src_components_entry_forms_table_tsx
+  file_lexico_src_components_entry_principal_parts_tsx --> file_lexico_src_components_entry_identifier_tsx
+  file_lexico_src_components_entry_principal_parts_tsx --> file_lexico_src_lib_types_ts
+  file_lexico_src_components_entry_verb_forms_table_tsx --> file_lexico_src_components_entry_form_cell_tsx
+  file_lexico_src_components_entry_verb_forms_table_tsx --> file_lexico_src_components_entry_form_tabs_tsx
+  file_lexico_src_components_entry_verb_forms_table_tsx --> file_lexico_src_components_entry_forms_table_tsx
+  file_lexico_src_components_PronunciationButton_test_tsx --> file_lexico_src_components_PronunciationButton_tsx
+  file_lexico_src_components_PronunciationButton_tsx --> file_lexico_src_lib_pronunciation_ts
+  file_lexico_src_lib_bookmarks_ts --> file_lexico_src_lib_types_ts
+  file_lexico_src_lib_forms_ts --> file_lexico_src_components_entry_adjective_forms_table_tsx
+  file_lexico_src_lib_forms_ts --> file_lexico_src_components_entry_noun_forms_table_tsx
+  file_lexico_src_lib_forms_ts --> file_lexico_src_components_entry_verb_forms_table_tsx
+  file_lexico_src_lib_forms_ts --> file_lexico_src_lib_types_ts
+  file_lexico_src_lib_routeTree_gen_ts --> file_lexico_src_router_tsx
+  file_lexico_src_lib_routeTree_gen_ts --> file_lexico_src_routes___root_tsx
+  file_lexico_src_lib_routeTree_gen_ts --> file_lexico_src_routes_bookmarks_tsx
+  file_lexico_src_lib_routeTree_gen_ts --> file_lexico_src_routes_index_tsx
+  file_lexico_src_lib_routeTree_gen_ts --> file_lexico_src_routes_library_tsx
+  file_lexico_src_lib_routeTree_gen_ts --> file_lexico_src_routes_search_tsx
+  file_lexico_src_lib_routeTree_gen_ts --> file_lexico_src_routes_settings_tsx
+  file_lexico_src_lib_routeTree_gen_ts --> file_lexico_src_routes_tools_tsx
+  file_lexico_src_lib_routeTree_gen_ts --> file_lexico_src_routes_word__id_tsx
+  file_lexico_src_lib_search_ts --> file_lexico_src_lib_types_ts
+  file_lexico_src_router_tsx --> file_lexico_src_lib_routeTree_gen_ts
+  file_lexico_src_routes___root_tsx --> file_lexico_src_components_layout_index_ts
+  file_lexico_src_routes___root_tsx --> file_lexico_src_lib_auth_ts
+  file_lexico_src_routes_bookmarks_tsx --> file_lexico_src_components_entry_entry_card_tsx
+  file_lexico_src_routes_bookmarks_tsx --> file_lexico_src_lib_bookmarks_ts
+  file_lexico_src_routes_hooks_useLibraryPage_ts --> file_lexico_src_lib_library_ts
+  file_lexico_src_routes_library_tsx --> file_lexico_src_lib_library_ts
+  file_lexico_src_routes_library_tsx --> file_lexico_src_routes_hooks_useLibraryPage_ts
+  file_lexico_src_routes_search_tsx --> file_lexico_src_components_entry_entry_card_tsx
+  file_lexico_src_routes_search_tsx --> file_lexico_src_lib_forms_ts
+  file_lexico_src_routes_search_tsx --> file_lexico_src_lib_search_ts
+  file_lexico_src_routes_search_tsx --> file_lexico_src_lib_types_ts
+  file_lexico_src_routes_settings_tsx --> file_lexico_src_lib_auth_ts
+  file_lexico_src_routes_word__id_tsx --> file_lexico_src_components_entry_adjective_forms_table_tsx
+  file_lexico_src_routes_word__id_tsx --> file_lexico_src_components_entry_noun_forms_table_tsx
+  file_lexico_src_routes_word__id_tsx --> file_lexico_src_components_entry_principal_parts_tsx
+  file_lexico_src_routes_word__id_tsx --> file_lexico_src_components_entry_verb_forms_table_tsx
+  file_lexico_src_routes_word__id_tsx --> file_lexico_src_components_PronunciationButton_tsx
+  file_lexico_src_routes_word__id_tsx --> file_lexico_src_lib_bookmarks_ts
+  file_lexico_src_routes_word__id_tsx --> file_lexico_src_lib_forms_ts
+  file_lexico_src_routes_word__id_tsx --> file_lexico_src_lib_search_ts
+  file_lexico_src_routes_word__id_tsx --> file_lexico_src_lib_types_ts
+  file_lexico_vitest_config_ts --> file_lexico_vite_config_mts
+  file_logger_src_lib_conventional_log_message_eslint_rule_ts --> file_logger_src_modules_logger_logger_constants_ts
+  file_logger_src_lib_conventional_log_message_eslint_rule_unit_test_ts --> file_logger_src_lib_conventional_log_message_eslint_rule_ts
+  file_logger_src_modules_logger_logger_module_ts --> file_logger_src_modules_logger_logger_service_ts
+  file_logger_src_modules_logger_logger_module_unit_test_ts --> file_logger_src_modules_logger_logger_module_ts
+  file_logger_src_modules_logger_logger_module_unit_test_ts --> file_logger_src_modules_logger_logger_service_ts
+  file_logger_src_modules_logger_logger_service_ts --> file_logger_src_modules_logger_logger_constants_ts
+  file_logger_src_modules_logger_logger_service_ts --> file_logger_src_modules_logger_logger_types_ts
+  file_logger_src_modules_logger_logger_service_unit_test_ts --> file_logger_src_modules_logger_logger_service_ts
+  file_meanderaw_src_constants_ts --> file_meanderaw_src_modules_enumeration_enumeration_constants_ts
+  file_meanderaw_src_main_end_to_end_test_ts --> file_meanderaw_src_constants_ts
+  file_meanderaw_src_main_module_ts --> file_meanderaw_src_constants_ts
+  file_meanderaw_src_main_module_ts --> file_meanderaw_src_modules_draw_draw_module_ts
+  file_meanderaw_src_main_module_ts --> file_meanderaw_src_modules_drawing_drawing_module_ts
+  file_meanderaw_src_main_ts --> file_meanderaw_src_main_module_ts
+  file_meanderaw_src_main_unit_test_ts --> file_meanderaw_src_main_module_ts
+  file_meanderaw_src_modules_characteristics_characteristics_module_ts --> file_meanderaw_src_modules_characteristics_characteristics_service_ts
+  file_meanderaw_src_modules_characteristics_characteristics_module_ts --> file_meanderaw_src_modules_characteristics_connectivity_service_ts
+  file_meanderaw_src_modules_characteristics_characteristics_module_ts --> file_meanderaw_src_modules_code_code_module_ts
+  file_meanderaw_src_modules_characteristics_characteristics_module_ts --> file_meanderaw_src_modules_graph_graph_module_ts
+  file_meanderaw_src_modules_characteristics_characteristics_service_ts --> file_meanderaw_src_modules_characteristics_characteristics_types_ts
+  file_meanderaw_src_modules_characteristics_characteristics_service_ts --> file_meanderaw_src_modules_characteristics_connectivity_service_ts
+  file_meanderaw_src_modules_characteristics_characteristics_service_ts --> file_meanderaw_src_modules_code_code_service_ts
+  file_meanderaw_src_modules_characteristics_characteristics_service_ts --> file_meanderaw_src_modules_code_code_types_ts
+  file_meanderaw_src_modules_characteristics_characteristics_service_ts --> file_meanderaw_src_modules_tile_tile_types_ts
+  file_meanderaw_src_modules_characteristics_characteristics_service_unit_test_ts --> file_meanderaw_src_modules_characteristics_characteristics_service_ts
+  file_meanderaw_src_modules_characteristics_characteristics_service_unit_test_ts --> file_meanderaw_src_modules_characteristics_characteristics_types_ts
+  file_meanderaw_src_modules_characteristics_characteristics_service_unit_test_ts --> file_meanderaw_src_modules_characteristics_connectivity_service_ts
+  file_meanderaw_src_modules_characteristics_characteristics_service_unit_test_ts --> file_meanderaw_src_modules_code_code_service_ts
+  file_meanderaw_src_modules_characteristics_characteristics_service_unit_test_ts --> file_meanderaw_src_modules_graph_graph_service_ts
+  file_meanderaw_src_modules_characteristics_characteristics_service_unit_test_ts --> file_meanderaw_src_modules_symmetry_symmetry_service_ts
+  file_meanderaw_src_modules_characteristics_characteristics_service_unit_test_ts --> file_meanderaw_src_modules_tile_tile_service_ts
+  file_meanderaw_src_modules_characteristics_connectivity_service_ts --> file_meanderaw_src_modules_characteristics_characteristics_types_ts
+  file_meanderaw_src_modules_characteristics_connectivity_service_ts --> file_meanderaw_src_modules_code_code_service_ts
+  file_meanderaw_src_modules_characteristics_connectivity_service_ts --> file_meanderaw_src_modules_code_code_types_ts
+  file_meanderaw_src_modules_characteristics_connectivity_service_ts --> file_meanderaw_src_modules_graph_graph_service_ts
+  file_meanderaw_src_modules_characteristics_connectivity_service_ts --> file_meanderaw_src_modules_graph_graph_types_ts
+  file_meanderaw_src_modules_characteristics_connectivity_service_unit_test_ts --> file_meanderaw_src_modules_characteristics_connectivity_service_ts
+  file_meanderaw_src_modules_characteristics_connectivity_service_unit_test_ts --> file_meanderaw_src_modules_code_code_service_ts
+  file_meanderaw_src_modules_characteristics_connectivity_service_unit_test_ts --> file_meanderaw_src_modules_graph_graph_service_ts
+  file_meanderaw_src_modules_characteristics_connectivity_service_unit_test_ts --> file_meanderaw_src_modules_symmetry_symmetry_service_ts
+  file_meanderaw_src_modules_characteristics_connectivity_service_unit_test_ts --> file_meanderaw_src_modules_tile_tile_service_ts
+  file_meanderaw_src_modules_classification_classification_constants_ts --> file_meanderaw_src_modules_classification_classification_types_ts
+  file_meanderaw_src_modules_classification_classification_constants_ts --> file_meanderaw_src_modules_tile_tile_constants_ts
+  file_meanderaw_src_modules_classification_classification_module_ts --> file_meanderaw_src_modules_classification_classification_service_ts
+  file_meanderaw_src_modules_classification_classification_module_ts --> file_meanderaw_src_modules_classification_sub_family_service_ts
+  file_meanderaw_src_modules_classification_classification_module_ts --> file_meanderaw_src_modules_code_code_module_ts
+  file_meanderaw_src_modules_classification_classification_module_ts --> file_meanderaw_src_modules_tile_tile_module_ts
+  file_meanderaw_src_modules_classification_classification_service_ts --> file_meanderaw_src_modules_characteristics_characteristics_types_ts
+  file_meanderaw_src_modules_classification_classification_service_ts --> file_meanderaw_src_modules_classification_classification_constants_ts
+  file_meanderaw_src_modules_classification_classification_service_ts --> file_meanderaw_src_modules_classification_classification_types_ts
+  file_meanderaw_src_modules_classification_classification_service_ts --> file_meanderaw_src_modules_classification_sub_family_service_ts
+  file_meanderaw_src_modules_classification_classification_service_ts --> file_meanderaw_src_modules_classification_sub_family_types_ts
+  file_meanderaw_src_modules_classification_classification_service_ts --> file_meanderaw_src_modules_code_code_service_ts
+  file_meanderaw_src_modules_classification_classification_service_ts --> file_meanderaw_src_modules_code_code_types_ts
+  file_meanderaw_src_modules_classification_classification_service_unit_test_ts --> file_meanderaw_src_modules_characteristics_characteristics_service_ts
+  file_meanderaw_src_modules_classification_classification_service_unit_test_ts --> file_meanderaw_src_modules_characteristics_connectivity_service_ts
+  file_meanderaw_src_modules_classification_classification_service_unit_test_ts --> file_meanderaw_src_modules_classification_classification_service_ts
+  file_meanderaw_src_modules_classification_classification_service_unit_test_ts --> file_meanderaw_src_modules_classification_classification_types_ts
+  file_meanderaw_src_modules_classification_classification_service_unit_test_ts --> file_meanderaw_src_modules_classification_sub_family_service_ts
+  file_meanderaw_src_modules_classification_classification_service_unit_test_ts --> file_meanderaw_src_modules_code_code_service_ts
+  file_meanderaw_src_modules_classification_classification_service_unit_test_ts --> file_meanderaw_src_modules_drawing_lattice_service_ts
+  file_meanderaw_src_modules_classification_classification_service_unit_test_ts --> file_meanderaw_src_modules_graph_graph_service_ts
+  file_meanderaw_src_modules_classification_classification_service_unit_test_ts --> file_meanderaw_src_modules_symmetry_symmetry_service_ts
+  file_meanderaw_src_modules_classification_classification_service_unit_test_ts --> file_meanderaw_src_modules_tile_tile_service_ts
+  file_meanderaw_src_modules_classification_classification_types_ts --> file_meanderaw_src_modules_characteristics_characteristics_types_ts
+  file_meanderaw_src_modules_classification_classification_types_ts --> file_meanderaw_src_modules_classification_sub_family_types_ts
+  file_meanderaw_src_modules_classification_sub_family_constants_ts --> file_meanderaw_src_modules_classification_sub_family_types_ts
+  file_meanderaw_src_modules_classification_sub_family_service_ts --> file_meanderaw_src_modules_classification_sub_family_types_ts
+  file_meanderaw_src_modules_classification_sub_family_service_ts --> file_meanderaw_src_modules_tile_tile_service_ts
+  file_meanderaw_src_modules_classification_sub_family_service_ts --> file_meanderaw_src_modules_tile_tile_types_ts
+  file_meanderaw_src_modules_classification_sub_family_service_unit_test_ts --> file_meanderaw_src_constants_ts
+  file_meanderaw_src_modules_classification_sub_family_service_unit_test_ts --> file_meanderaw_src_modules_classification_sub_family_service_ts
+  file_meanderaw_src_modules_classification_sub_family_service_unit_test_ts --> file_meanderaw_src_modules_classification_sub_family_types_ts
+  file_meanderaw_src_modules_classification_sub_family_service_unit_test_ts --> file_meanderaw_src_modules_enumeration_enumeration_types_ts
+  file_meanderaw_src_modules_classification_sub_family_service_unit_test_ts --> file_meanderaw_src_modules_enumeration_tile_enumeration_service_ts
+  file_meanderaw_src_modules_classification_sub_family_service_unit_test_ts --> file_meanderaw_src_modules_symmetry_symmetry_service_ts
+  file_meanderaw_src_modules_classification_sub_family_service_unit_test_ts --> file_meanderaw_src_modules_tile_tile_service_ts
+  file_meanderaw_src_modules_classification_sub_family_service_unit_test_ts --> file_meanderaw_src_modules_tile_tile_types_ts
+  file_meanderaw_src_modules_classification_sub_family_service_unit_test_ts --> file_meanderaw_testing_tiles_ts
+  file_meanderaw_src_modules_classification_sub_family_types_ts --> file_meanderaw_src_modules_tile_tile_types_ts
+  file_meanderaw_src_modules_code_code_module_ts --> file_meanderaw_src_modules_code_code_service_ts
+  file_meanderaw_src_modules_code_code_module_ts --> file_meanderaw_src_modules_symmetry_symmetry_module_ts
+  file_meanderaw_src_modules_code_code_service_ts --> file_meanderaw_src_modules_code_code_constants_ts
+  file_meanderaw_src_modules_code_code_service_ts --> file_meanderaw_src_modules_code_code_types_ts
+  file_meanderaw_src_modules_code_code_service_ts --> file_meanderaw_src_modules_symmetry_symmetry_service_ts
+  file_meanderaw_src_modules_code_code_service_ts --> file_meanderaw_src_modules_tile_tile_types_ts
+  file_meanderaw_src_modules_code_code_service_unit_test_ts --> file_meanderaw_src_modules_code_code_constants_ts
+  file_meanderaw_src_modules_code_code_service_unit_test_ts --> file_meanderaw_src_modules_code_code_service_ts
+  file_meanderaw_src_modules_code_code_service_unit_test_ts --> file_meanderaw_src_modules_symmetry_symmetry_service_ts
+  file_meanderaw_src_modules_code_code_service_unit_test_ts --> file_meanderaw_src_modules_tile_tile_service_ts
+  file_meanderaw_src_modules_code_code_service_unit_test_ts --> file_meanderaw_testing_tiles_ts
+  file_meanderaw_src_modules_corpus_boxes_constants_ts --> file_meanderaw_src_modules_corpus_corpus_types_ts
+  file_meanderaw_src_modules_corpus_branch_constants_ts --> file_meanderaw_src_modules_corpus_corpus_types_ts
+  file_meanderaw_src_modules_corpus_chain_constants_ts --> file_meanderaw_src_modules_corpus_corpus_types_ts
+  file_meanderaw_src_modules_corpus_corpus_constants_ts --> file_meanderaw_src_modules_corpus_boxes_constants_ts
+  file_meanderaw_src_modules_corpus_corpus_constants_ts --> file_meanderaw_src_modules_corpus_branch_constants_ts
+  file_meanderaw_src_modules_corpus_corpus_constants_ts --> file_meanderaw_src_modules_corpus_chain_constants_ts
+  file_meanderaw_src_modules_corpus_corpus_constants_ts --> file_meanderaw_src_modules_corpus_corpus_types_ts
+  file_meanderaw_src_modules_corpus_corpus_constants_ts --> file_meanderaw_src_modules_corpus_cross_constants_ts
+  file_meanderaw_src_modules_corpus_corpus_constants_ts --> file_meanderaw_src_modules_corpus_negative_constants_ts
+  file_meanderaw_src_modules_corpus_corpus_constants_ts --> file_meanderaw_src_modules_corpus_parallel_constants_ts
+  file_meanderaw_src_modules_corpus_corpus_constants_ts --> file_meanderaw_src_modules_corpus_snake_constants_ts
+  file_meanderaw_src_modules_corpus_corpus_constants_ts --> file_meanderaw_src_modules_corpus_swirl_constants_ts
+  file_meanderaw_src_modules_corpus_corpus_constants_ts --> file_meanderaw_src_modules_corpus_whirl_constants_ts
+  file_meanderaw_src_modules_corpus_corpus_module_ts --> file_meanderaw_src_modules_characteristics_characteristics_module_ts
+  file_meanderaw_src_modules_corpus_corpus_module_ts --> file_meanderaw_src_modules_code_code_module_ts
+  file_meanderaw_src_modules_corpus_corpus_module_ts --> file_meanderaw_src_modules_corpus_corpus_service_ts
+  file_meanderaw_src_modules_corpus_corpus_module_ts --> file_meanderaw_src_modules_database_database_module_ts
+  file_meanderaw_src_modules_corpus_corpus_module_ts --> file_meanderaw_src_modules_drawing_drawing_module_ts
+  file_meanderaw_src_modules_corpus_corpus_service_ts --> file_meanderaw_src_modules_characteristics_characteristics_service_ts
+  file_meanderaw_src_modules_corpus_corpus_service_ts --> file_meanderaw_src_modules_code_code_service_ts
+  file_meanderaw_src_modules_corpus_corpus_service_ts --> file_meanderaw_src_modules_corpus_corpus_constants_ts
+  file_meanderaw_src_modules_corpus_corpus_service_ts --> file_meanderaw_src_modules_corpus_corpus_types_ts
+  file_meanderaw_src_modules_corpus_corpus_service_ts --> file_meanderaw_src_modules_database_database_service_ts
+  file_meanderaw_src_modules_corpus_corpus_service_ts --> file_meanderaw_src_modules_database_entities_Meander_entity_ts
+  file_meanderaw_src_modules_corpus_corpus_service_ts --> file_meanderaw_src_modules_drawing_drawing_service_ts
+  file_meanderaw_src_modules_corpus_corpus_service_unit_test_ts --> file_meanderaw_src_modules_characteristics_characteristics_service_ts
+  file_meanderaw_src_modules_corpus_corpus_service_unit_test_ts --> file_meanderaw_src_modules_characteristics_characteristics_types_ts
+  file_meanderaw_src_modules_corpus_corpus_service_unit_test_ts --> file_meanderaw_src_modules_code_code_service_ts
+  file_meanderaw_src_modules_corpus_corpus_service_unit_test_ts --> file_meanderaw_src_modules_code_code_types_ts
+  file_meanderaw_src_modules_corpus_corpus_service_unit_test_ts --> file_meanderaw_src_modules_corpus_corpus_constants_ts
+  file_meanderaw_src_modules_corpus_corpus_service_unit_test_ts --> file_meanderaw_src_modules_corpus_corpus_service_ts
+  file_meanderaw_src_modules_corpus_corpus_service_unit_test_ts --> file_meanderaw_src_modules_corpus_corpus_types_ts
+  file_meanderaw_src_modules_corpus_corpus_service_unit_test_ts --> file_meanderaw_src_modules_database_database_service_ts
+  file_meanderaw_src_modules_corpus_corpus_service_unit_test_ts --> file_meanderaw_src_modules_database_entities_Meander_entity_ts
+  file_meanderaw_src_modules_corpus_corpus_service_unit_test_ts --> file_meanderaw_src_modules_drawing_drawing_service_ts
+  file_meanderaw_src_modules_corpus_corpus_types_ts --> file_meanderaw_src_modules_classification_sub_family_types_ts
+  file_meanderaw_src_modules_corpus_cross_constants_ts --> file_meanderaw_src_modules_corpus_corpus_types_ts
+  file_meanderaw_src_modules_corpus_negative_constants_ts --> file_meanderaw_src_modules_corpus_corpus_types_ts
+  file_meanderaw_src_modules_corpus_parallel_1_constants_ts --> file_meanderaw_src_modules_corpus_corpus_types_ts
+  file_meanderaw_src_modules_corpus_parallel_2_constants_ts --> file_meanderaw_src_modules_corpus_corpus_types_ts
+  file_meanderaw_src_modules_corpus_parallel_3_constants_ts --> file_meanderaw_src_modules_corpus_corpus_types_ts
+  file_meanderaw_src_modules_corpus_parallel_4_constants_ts --> file_meanderaw_src_modules_corpus_corpus_types_ts
+  file_meanderaw_src_modules_corpus_parallel_5_constants_ts --> file_meanderaw_src_modules_corpus_corpus_types_ts
+  file_meanderaw_src_modules_corpus_parallel_constants_ts --> file_meanderaw_src_modules_corpus_corpus_types_ts
+  file_meanderaw_src_modules_corpus_parallel_constants_ts --> file_meanderaw_src_modules_corpus_parallel_1_constants_ts
+  file_meanderaw_src_modules_corpus_parallel_constants_ts --> file_meanderaw_src_modules_corpus_parallel_2_constants_ts
+  file_meanderaw_src_modules_corpus_parallel_constants_ts --> file_meanderaw_src_modules_corpus_parallel_3_constants_ts
+  file_meanderaw_src_modules_corpus_parallel_constants_ts --> file_meanderaw_src_modules_corpus_parallel_4_constants_ts
+  file_meanderaw_src_modules_corpus_parallel_constants_ts --> file_meanderaw_src_modules_corpus_parallel_5_constants_ts
+  file_meanderaw_src_modules_corpus_snake_constants_ts --> file_meanderaw_src_modules_corpus_corpus_types_ts
+  file_meanderaw_src_modules_corpus_swirl_constants_ts --> file_meanderaw_src_modules_corpus_corpus_types_ts
+  file_meanderaw_src_modules_corpus_whirl_constants_ts --> file_meanderaw_src_modules_corpus_corpus_types_ts
+  file_meanderaw_src_modules_database_database_module_ts --> file_meanderaw_src_modules_database_database_constants_ts
+  file_meanderaw_src_modules_database_database_module_ts --> file_meanderaw_src_modules_database_database_service_ts
+  file_meanderaw_src_modules_database_database_module_ts --> file_meanderaw_src_modules_database_entities_Meander_entity_ts
+  file_meanderaw_src_modules_database_database_service_integration_test_ts --> file_meanderaw_src_modules_database_database_service_ts
+  file_meanderaw_src_modules_database_database_service_integration_test_ts --> file_meanderaw_src_modules_database_database_types_ts
+  file_meanderaw_src_modules_database_database_service_integration_test_ts --> file_meanderaw_src_modules_database_entities_Meander_entity_ts
+  file_meanderaw_src_modules_database_database_service_ts --> file_meanderaw_src_modules_database_database_constants_ts
+  file_meanderaw_src_modules_database_database_service_ts --> file_meanderaw_src_modules_database_database_types_ts
+  file_meanderaw_src_modules_database_database_service_ts --> file_meanderaw_src_modules_database_entities_Meander_entity_ts
+  file_meanderaw_src_modules_database_database_service_unit_test_ts --> file_meanderaw_src_modules_database_database_service_ts
+  file_meanderaw_src_modules_database_database_service_unit_test_ts --> file_meanderaw_src_modules_database_database_types_ts
+  file_meanderaw_src_modules_database_database_service_unit_test_ts --> file_meanderaw_src_modules_database_entities_Meander_entity_ts
+  file_meanderaw_src_modules_database_database_types_ts --> file_meanderaw_src_modules_classification_classification_types_ts
+  file_meanderaw_src_modules_database_database_types_ts --> file_meanderaw_src_modules_classification_sub_family_types_ts
+  file_meanderaw_src_modules_database_database_types_ts --> file_meanderaw_src_modules_database_database_constants_ts
+  file_meanderaw_src_modules_database_entities_Meander_entity_ts --> file_meanderaw_src_modules_classification_classification_constants_ts
+  file_meanderaw_src_modules_database_entities_Meander_entity_ts --> file_meanderaw_src_modules_classification_classification_types_ts
+  file_meanderaw_src_modules_database_entities_Meander_entity_ts --> file_meanderaw_src_modules_classification_sub_family_constants_ts
+  file_meanderaw_src_modules_database_entities_Meander_entity_ts --> file_meanderaw_src_modules_classification_sub_family_types_ts
+  file_meanderaw_src_modules_database_entities_Meander_entity_ts --> file_meanderaw_src_modules_database_database_constants_ts
+  file_meanderaw_src_modules_database_entities_Meander_entity_ts --> file_meanderaw_src_modules_database_database_types_ts
+  file_meanderaw_src_modules_draw_draw_check_sweep_module_ts --> file_meanderaw_src_constants_ts
+  file_meanderaw_src_modules_draw_draw_check_sweep_module_ts --> file_meanderaw_src_modules_characteristics_characteristics_module_ts
+  file_meanderaw_src_modules_draw_draw_check_sweep_module_ts --> file_meanderaw_src_modules_classification_classification_module_ts
+  file_meanderaw_src_modules_draw_draw_check_sweep_module_ts --> file_meanderaw_src_modules_code_code_module_ts
+  file_meanderaw_src_modules_draw_draw_check_sweep_module_ts --> file_meanderaw_src_modules_corpus_corpus_service_ts
+  file_meanderaw_src_modules_draw_draw_check_sweep_module_ts --> file_meanderaw_src_modules_database_database_service_ts
+  file_meanderaw_src_modules_draw_draw_check_sweep_module_ts --> file_meanderaw_src_modules_database_entities_Meander_entity_ts
+  file_meanderaw_src_modules_draw_draw_check_sweep_module_ts --> file_meanderaw_src_modules_draw_draw_check_constants_ts
+  file_meanderaw_src_modules_draw_draw_check_sweep_module_ts --> file_meanderaw_src_modules_draw_draw_enumeration_service_ts
+  file_meanderaw_src_modules_draw_draw_check_sweep_module_ts --> file_meanderaw_src_modules_draw_draw_record_service_ts
+  file_meanderaw_src_modules_draw_draw_check_sweep_module_ts --> file_meanderaw_src_modules_drawing_drawing_module_ts
+  file_meanderaw_src_modules_draw_draw_check_sweep_module_ts --> file_meanderaw_src_modules_enumeration_enumeration_module_ts
+  file_meanderaw_src_modules_draw_draw_check_command_integration_test_ts --> file_meanderaw_src_modules_corpus_corpus_constants_ts
+  file_meanderaw_src_modules_draw_draw_check_command_integration_test_ts --> file_meanderaw_src_modules_corpus_corpus_service_ts
+  file_meanderaw_src_modules_draw_draw_check_command_integration_test_ts --> file_meanderaw_src_modules_database_entities_Meander_entity_ts
+  file_meanderaw_src_modules_draw_draw_check_command_integration_test_ts --> file_meanderaw_src_modules_draw_draw_check_service_ts
+  file_meanderaw_src_modules_draw_draw_check_command_integration_test_ts --> file_meanderaw_src_modules_draw_draw_code_service_ts
+  file_meanderaw_src_modules_draw_draw_check_command_integration_test_ts --> file_meanderaw_src_modules_draw_draw_enumeration_service_ts
+  file_meanderaw_src_modules_draw_draw_check_command_integration_test_ts --> file_meanderaw_src_modules_draw_draw_index_service_ts
+  file_meanderaw_src_modules_draw_draw_check_command_integration_test_ts --> file_meanderaw_src_modules_draw_draw_command_ts
+  file_meanderaw_src_modules_draw_draw_check_constants_ts --> file_meanderaw_src_modules_database_database_types_ts
+  file_meanderaw_src_modules_draw_draw_check_constants_ts --> file_meanderaw_src_modules_draw_draw_check_types_ts
+  file_meanderaw_src_modules_draw_draw_check_service_ts --> file_meanderaw_src_modules_corpus_corpus_constants_ts
+  file_meanderaw_src_modules_draw_draw_check_service_ts --> file_meanderaw_src_modules_corpus_corpus_service_ts
+  file_meanderaw_src_modules_draw_draw_check_service_ts --> file_meanderaw_src_modules_database_entities_Meander_entity_ts
+  file_meanderaw_src_modules_draw_draw_check_service_ts --> file_meanderaw_src_modules_draw_draw_check_sweep_module_ts
+  file_meanderaw_src_modules_draw_draw_check_service_ts --> file_meanderaw_src_modules_draw_draw_check_constants_ts
+  file_meanderaw_src_modules_draw_draw_check_service_ts --> file_meanderaw_src_modules_draw_draw_check_types_ts
+  file_meanderaw_src_modules_draw_draw_check_service_ts --> file_meanderaw_src_modules_draw_draw_enumeration_service_ts
+  file_meanderaw_src_modules_draw_draw_check_service_unit_test_ts --> file_meanderaw_src_modules_database_entities_Meander_entity_ts
+  file_meanderaw_src_modules_draw_draw_check_service_unit_test_ts --> file_meanderaw_src_modules_draw_draw_check_service_ts
+  file_meanderaw_src_modules_draw_draw_code_service_ts --> file_meanderaw_src_modules_database_database_service_ts
+  file_meanderaw_src_modules_draw_draw_code_service_ts --> file_meanderaw_src_modules_database_entities_Meander_entity_ts
+  file_meanderaw_src_modules_draw_draw_code_service_ts --> file_meanderaw_src_modules_draw_draw_record_service_ts
+  file_meanderaw_src_modules_draw_draw_code_service_ts --> file_meanderaw_src_modules_draw_draw_types_ts
+  file_meanderaw_src_modules_draw_draw_code_service_unit_test_ts --> file_meanderaw_src_modules_database_database_service_ts
+  file_meanderaw_src_modules_draw_draw_code_service_unit_test_ts --> file_meanderaw_src_modules_database_database_types_ts
+  file_meanderaw_src_modules_draw_draw_code_service_unit_test_ts --> file_meanderaw_src_modules_database_entities_Meander_entity_ts
+  file_meanderaw_src_modules_draw_draw_code_service_unit_test_ts --> file_meanderaw_src_modules_draw_draw_code_service_ts
+  file_meanderaw_src_modules_draw_draw_code_service_unit_test_ts --> file_meanderaw_src_modules_draw_draw_record_service_ts
+  file_meanderaw_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_meanderaw_src_constants_ts
+  file_meanderaw_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_meanderaw_src_modules_characteristics_characteristics_service_ts
+  file_meanderaw_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_meanderaw_src_modules_characteristics_connectivity_service_ts
+  file_meanderaw_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_meanderaw_src_modules_classification_classification_service_ts
+  file_meanderaw_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_meanderaw_src_modules_classification_sub_family_service_ts
+  file_meanderaw_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_meanderaw_src_modules_code_code_service_ts
+  file_meanderaw_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_meanderaw_src_modules_database_database_service_ts
+  file_meanderaw_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_meanderaw_src_modules_database_entities_Meander_entity_ts
+  file_meanderaw_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_meanderaw_src_modules_draw_draw_enumeration_service_ts
+  file_meanderaw_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_meanderaw_src_modules_draw_draw_record_service_ts
+  file_meanderaw_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_meanderaw_src_modules_drawing_drawing_service_ts
+  file_meanderaw_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_meanderaw_src_modules_drawing_lattice_service_ts
+  file_meanderaw_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_meanderaw_src_modules_enumeration_enumeration_service_ts
+  file_meanderaw_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_meanderaw_src_modules_enumeration_enumeration_types_ts
+  file_meanderaw_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_meanderaw_src_modules_enumeration_tile_enumeration_service_ts
+  file_meanderaw_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_meanderaw_src_modules_geometry_geometry_service_ts
+  file_meanderaw_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_meanderaw_src_modules_graph_graph_service_ts
+  file_meanderaw_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_meanderaw_src_modules_svg_svg_service_ts
+  file_meanderaw_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_meanderaw_src_modules_symmetry_symmetry_service_ts
+  file_meanderaw_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_meanderaw_src_modules_tile_tile_service_ts
+  file_meanderaw_src_modules_draw_draw_enumeration_service_ts --> file_meanderaw_src_modules_classification_classification_types_ts
+  file_meanderaw_src_modules_draw_draw_enumeration_service_ts --> file_meanderaw_src_modules_database_database_service_ts
+  file_meanderaw_src_modules_draw_draw_enumeration_service_ts --> file_meanderaw_src_modules_database_database_types_ts
+  file_meanderaw_src_modules_draw_draw_enumeration_service_ts --> file_meanderaw_src_modules_draw_draw_record_service_ts
+  file_meanderaw_src_modules_draw_draw_enumeration_service_ts --> file_meanderaw_src_modules_enumeration_enumeration_service_ts
+  file_meanderaw_src_modules_draw_draw_enumeration_service_unit_test_ts --> file_meanderaw_src_modules_database_database_service_ts
+  file_meanderaw_src_modules_draw_draw_enumeration_service_unit_test_ts --> file_meanderaw_src_modules_database_database_types_ts
+  file_meanderaw_src_modules_draw_draw_enumeration_service_unit_test_ts --> file_meanderaw_src_modules_draw_draw_enumeration_service_ts
+  file_meanderaw_src_modules_draw_draw_enumeration_service_unit_test_ts --> file_meanderaw_src_modules_draw_draw_record_service_ts
+  file_meanderaw_src_modules_draw_draw_enumeration_service_unit_test_ts --> file_meanderaw_src_modules_enumeration_enumeration_service_ts
+  file_meanderaw_src_modules_draw_draw_index_service_integration_test_ts --> file_meanderaw_src_modules_database_database_service_ts
+  file_meanderaw_src_modules_draw_draw_index_service_integration_test_ts --> file_meanderaw_src_modules_database_database_types_ts
+  file_meanderaw_src_modules_draw_draw_index_service_integration_test_ts --> file_meanderaw_src_modules_database_entities_Meander_entity_ts
+  file_meanderaw_src_modules_draw_draw_index_service_integration_test_ts --> file_meanderaw_src_modules_draw_draw_index_service_ts
+  file_meanderaw_src_modules_draw_draw_index_service_integration_test_ts --> file_meanderaw_src_modules_geometry_geometry_service_ts
+  file_meanderaw_src_modules_draw_draw_index_service_ts --> file_meanderaw_src_modules_classification_classification_constants_ts
+  file_meanderaw_src_modules_draw_draw_index_service_ts --> file_meanderaw_src_modules_classification_classification_types_ts
+  file_meanderaw_src_modules_draw_draw_index_service_ts --> file_meanderaw_src_modules_database_database_service_ts
+  file_meanderaw_src_modules_draw_draw_index_service_ts --> file_meanderaw_src_modules_database_entities_Meander_entity_ts
+  file_meanderaw_src_modules_draw_draw_index_service_ts --> file_meanderaw_src_modules_draw_draw_index_constants_ts
+  file_meanderaw_src_modules_draw_draw_index_service_ts --> file_meanderaw_src_modules_draw_draw_index_types_ts
+  file_meanderaw_src_modules_draw_draw_index_service_ts --> file_meanderaw_src_modules_geometry_geometry_service_ts
+  file_meanderaw_src_modules_draw_draw_index_service_unit_test_ts --> file_meanderaw_src_modules_database_database_service_ts
+  file_meanderaw_src_modules_draw_draw_index_service_unit_test_ts --> file_meanderaw_src_modules_database_entities_Meander_entity_ts
+  file_meanderaw_src_modules_draw_draw_index_service_unit_test_ts --> file_meanderaw_src_modules_draw_draw_index_service_ts
+  file_meanderaw_src_modules_draw_draw_index_service_unit_test_ts --> file_meanderaw_src_modules_geometry_geometry_service_ts
+  file_meanderaw_src_modules_draw_draw_index_types_ts --> file_meanderaw_src_modules_classification_classification_types_ts
+  file_meanderaw_src_modules_draw_draw_index_types_ts --> file_meanderaw_src_modules_database_entities_Meander_entity_ts
+  file_meanderaw_src_modules_draw_draw_record_service_ts --> file_meanderaw_src_modules_characteristics_characteristics_service_ts
+  file_meanderaw_src_modules_draw_draw_record_service_ts --> file_meanderaw_src_modules_classification_classification_service_ts
+  file_meanderaw_src_modules_draw_draw_record_service_ts --> file_meanderaw_src_modules_classification_classification_types_ts
+  file_meanderaw_src_modules_draw_draw_record_service_ts --> file_meanderaw_src_modules_code_code_service_ts
+  file_meanderaw_src_modules_draw_draw_record_service_ts --> file_meanderaw_src_modules_database_database_types_ts
+  file_meanderaw_src_modules_draw_draw_record_service_ts --> file_meanderaw_src_modules_drawing_drawing_service_ts
+  file_meanderaw_src_modules_draw_draw_record_service_unit_test_ts --> file_meanderaw_src_modules_characteristics_characteristics_service_ts
+  file_meanderaw_src_modules_draw_draw_record_service_unit_test_ts --> file_meanderaw_src_modules_characteristics_connectivity_service_ts
+  file_meanderaw_src_modules_draw_draw_record_service_unit_test_ts --> file_meanderaw_src_modules_classification_classification_service_ts
+  file_meanderaw_src_modules_draw_draw_record_service_unit_test_ts --> file_meanderaw_src_modules_classification_sub_family_service_ts
+  file_meanderaw_src_modules_draw_draw_record_service_unit_test_ts --> file_meanderaw_src_modules_code_code_service_ts
+  file_meanderaw_src_modules_draw_draw_record_service_unit_test_ts --> file_meanderaw_src_modules_draw_draw_record_service_ts
+  file_meanderaw_src_modules_draw_draw_record_service_unit_test_ts --> file_meanderaw_src_modules_drawing_drawing_service_ts
+  file_meanderaw_src_modules_draw_draw_record_service_unit_test_ts --> file_meanderaw_src_modules_drawing_lattice_service_ts
+  file_meanderaw_src_modules_draw_draw_record_service_unit_test_ts --> file_meanderaw_src_modules_geometry_geometry_service_ts
+  file_meanderaw_src_modules_draw_draw_record_service_unit_test_ts --> file_meanderaw_src_modules_graph_graph_service_ts
+  file_meanderaw_src_modules_draw_draw_record_service_unit_test_ts --> file_meanderaw_src_modules_svg_svg_service_ts
+  file_meanderaw_src_modules_draw_draw_record_service_unit_test_ts --> file_meanderaw_src_modules_symmetry_symmetry_service_ts
+  file_meanderaw_src_modules_draw_draw_record_service_unit_test_ts --> file_meanderaw_src_modules_tile_tile_service_ts
+  file_meanderaw_src_modules_draw_draw_sweep_command_integration_test_ts --> file_meanderaw_src_constants_ts
+  file_meanderaw_src_modules_draw_draw_sweep_command_integration_test_ts --> file_meanderaw_src_modules_characteristics_characteristics_module_ts
+  file_meanderaw_src_modules_draw_draw_sweep_command_integration_test_ts --> file_meanderaw_src_modules_classification_classification_module_ts
+  file_meanderaw_src_modules_draw_draw_sweep_command_integration_test_ts --> file_meanderaw_src_modules_code_code_module_ts
+  file_meanderaw_src_modules_draw_draw_sweep_command_integration_test_ts --> file_meanderaw_src_modules_corpus_corpus_constants_ts
+  file_meanderaw_src_modules_draw_draw_sweep_command_integration_test_ts --> file_meanderaw_src_modules_corpus_corpus_service_ts
+  file_meanderaw_src_modules_draw_draw_sweep_command_integration_test_ts --> file_meanderaw_src_modules_database_database_service_ts
+  file_meanderaw_src_modules_draw_draw_sweep_command_integration_test_ts --> file_meanderaw_src_modules_database_entities_Meander_entity_ts
+  file_meanderaw_src_modules_draw_draw_sweep_command_integration_test_ts --> file_meanderaw_src_modules_draw_draw_check_service_ts
+  file_meanderaw_src_modules_draw_draw_sweep_command_integration_test_ts --> file_meanderaw_src_modules_draw_draw_code_service_ts
+  file_meanderaw_src_modules_draw_draw_sweep_command_integration_test_ts --> file_meanderaw_src_modules_draw_draw_enumeration_service_ts
+  file_meanderaw_src_modules_draw_draw_sweep_command_integration_test_ts --> file_meanderaw_src_modules_draw_draw_index_service_ts
+  file_meanderaw_src_modules_draw_draw_sweep_command_integration_test_ts --> file_meanderaw_src_modules_draw_draw_record_service_ts
+  file_meanderaw_src_modules_draw_draw_sweep_command_integration_test_ts --> file_meanderaw_src_modules_draw_draw_command_ts
+  file_meanderaw_src_modules_draw_draw_sweep_command_integration_test_ts --> file_meanderaw_src_modules_draw_draw_constants_ts
+  file_meanderaw_src_modules_draw_draw_sweep_command_integration_test_ts --> file_meanderaw_src_modules_drawing_drawing_module_ts
+  file_meanderaw_src_modules_draw_draw_sweep_command_integration_test_ts --> file_meanderaw_src_modules_enumeration_enumeration_module_ts
+  file_meanderaw_src_modules_draw_draw_sweep_command_integration_test_ts --> file_meanderaw_src_modules_enumeration_enumeration_service_ts
+  file_meanderaw_src_modules_draw_draw_sweep_command_integration_test_ts --> file_meanderaw_src_modules_geometry_geometry_module_ts
+  file_meanderaw_src_modules_draw_draw_command_integration_test_ts --> file_meanderaw_src_modules_characteristics_characteristics_service_ts
+  file_meanderaw_src_modules_draw_draw_command_integration_test_ts --> file_meanderaw_src_modules_characteristics_connectivity_service_ts
+  file_meanderaw_src_modules_draw_draw_command_integration_test_ts --> file_meanderaw_src_modules_classification_classification_service_ts
+  file_meanderaw_src_modules_draw_draw_command_integration_test_ts --> file_meanderaw_src_modules_classification_sub_family_service_ts
+  file_meanderaw_src_modules_draw_draw_command_integration_test_ts --> file_meanderaw_src_modules_code_code_module_ts
+  file_meanderaw_src_modules_draw_draw_command_integration_test_ts --> file_meanderaw_src_modules_corpus_corpus_service_ts
+  file_meanderaw_src_modules_draw_draw_command_integration_test_ts --> file_meanderaw_src_modules_database_database_service_ts
+  file_meanderaw_src_modules_draw_draw_command_integration_test_ts --> file_meanderaw_src_modules_database_entities_Meander_entity_ts
+  file_meanderaw_src_modules_draw_draw_command_integration_test_ts --> file_meanderaw_src_modules_draw_draw_check_service_ts
+  file_meanderaw_src_modules_draw_draw_command_integration_test_ts --> file_meanderaw_src_modules_draw_draw_code_service_ts
+  file_meanderaw_src_modules_draw_draw_command_integration_test_ts --> file_meanderaw_src_modules_draw_draw_enumeration_service_ts
+  file_meanderaw_src_modules_draw_draw_command_integration_test_ts --> file_meanderaw_src_modules_draw_draw_index_service_ts
+  file_meanderaw_src_modules_draw_draw_command_integration_test_ts --> file_meanderaw_src_modules_draw_draw_record_service_ts
+  file_meanderaw_src_modules_draw_draw_command_integration_test_ts --> file_meanderaw_src_modules_draw_draw_command_ts
+  file_meanderaw_src_modules_draw_draw_command_integration_test_ts --> file_meanderaw_src_modules_drawing_drawing_module_ts
+  file_meanderaw_src_modules_draw_draw_command_integration_test_ts --> file_meanderaw_src_modules_drawing_lattice_service_ts
+  file_meanderaw_src_modules_draw_draw_command_integration_test_ts --> file_meanderaw_src_modules_geometry_geometry_service_ts
+  file_meanderaw_src_modules_draw_draw_command_integration_test_ts --> file_meanderaw_src_modules_graph_graph_service_ts
+  file_meanderaw_src_modules_draw_draw_command_integration_test_ts --> file_meanderaw_src_modules_svg_svg_service_ts
+  file_meanderaw_src_modules_draw_draw_command_integration_test_ts --> file_meanderaw_src_modules_tile_tile_service_ts
+  file_meanderaw_src_modules_draw_draw_command_ts --> file_meanderaw_src_modules_corpus_corpus_constants_ts
+  file_meanderaw_src_modules_draw_draw_command_ts --> file_meanderaw_src_modules_corpus_corpus_service_ts
+  file_meanderaw_src_modules_draw_draw_command_ts --> file_meanderaw_src_modules_draw_draw_check_service_ts
+  file_meanderaw_src_modules_draw_draw_command_ts --> file_meanderaw_src_modules_draw_draw_code_service_ts
+  file_meanderaw_src_modules_draw_draw_command_ts --> file_meanderaw_src_modules_draw_draw_enumeration_service_ts
+  file_meanderaw_src_modules_draw_draw_command_ts --> file_meanderaw_src_modules_draw_draw_index_service_ts
+  file_meanderaw_src_modules_draw_draw_command_ts --> file_meanderaw_src_modules_draw_draw_constants_ts
+  file_meanderaw_src_modules_draw_draw_command_ts --> file_meanderaw_src_modules_draw_draw_types_ts
+  file_meanderaw_src_modules_draw_draw_command_unit_test_ts --> file_meanderaw_src_modules_corpus_corpus_service_ts
+  file_meanderaw_src_modules_draw_draw_command_unit_test_ts --> file_meanderaw_src_modules_database_entities_Meander_entity_ts
+  file_meanderaw_src_modules_draw_draw_command_unit_test_ts --> file_meanderaw_src_modules_draw_draw_check_service_ts
+  file_meanderaw_src_modules_draw_draw_command_unit_test_ts --> file_meanderaw_src_modules_draw_draw_check_types_ts
+  file_meanderaw_src_modules_draw_draw_command_unit_test_ts --> file_meanderaw_src_modules_draw_draw_code_service_ts
+  file_meanderaw_src_modules_draw_draw_command_unit_test_ts --> file_meanderaw_src_modules_draw_draw_enumeration_service_ts
+  file_meanderaw_src_modules_draw_draw_command_unit_test_ts --> file_meanderaw_src_modules_draw_draw_index_service_ts
+  file_meanderaw_src_modules_draw_draw_command_unit_test_ts --> file_meanderaw_src_modules_draw_draw_command_ts
+  file_meanderaw_src_modules_draw_draw_command_unit_test_ts --> file_meanderaw_src_modules_draw_draw_constants_ts
+  file_meanderaw_src_modules_draw_draw_module_ts --> file_meanderaw_src_modules_characteristics_characteristics_module_ts
+  file_meanderaw_src_modules_draw_draw_module_ts --> file_meanderaw_src_modules_classification_classification_module_ts
+  file_meanderaw_src_modules_draw_draw_module_ts --> file_meanderaw_src_modules_code_code_module_ts
+  file_meanderaw_src_modules_draw_draw_module_ts --> file_meanderaw_src_modules_corpus_corpus_module_ts
+  file_meanderaw_src_modules_draw_draw_module_ts --> file_meanderaw_src_modules_database_database_module_ts
+  file_meanderaw_src_modules_draw_draw_module_ts --> file_meanderaw_src_modules_draw_draw_check_service_ts
+  file_meanderaw_src_modules_draw_draw_module_ts --> file_meanderaw_src_modules_draw_draw_code_service_ts
+  file_meanderaw_src_modules_draw_draw_module_ts --> file_meanderaw_src_modules_draw_draw_enumeration_service_ts
+  file_meanderaw_src_modules_draw_draw_module_ts --> file_meanderaw_src_modules_draw_draw_index_service_ts
+  file_meanderaw_src_modules_draw_draw_module_ts --> file_meanderaw_src_modules_draw_draw_record_service_ts
+  file_meanderaw_src_modules_draw_draw_module_ts --> file_meanderaw_src_modules_draw_draw_command_ts
+  file_meanderaw_src_modules_draw_draw_module_ts --> file_meanderaw_src_modules_drawing_drawing_module_ts
+  file_meanderaw_src_modules_draw_draw_module_ts --> file_meanderaw_src_modules_enumeration_enumeration_module_ts
+  file_meanderaw_src_modules_draw_draw_module_ts --> file_meanderaw_src_modules_geometry_geometry_module_ts
+  file_meanderaw_src_modules_drawing_address_service_ts --> file_meanderaw_src_modules_classification_sub_family_service_ts
+  file_meanderaw_src_modules_drawing_address_service_ts --> file_meanderaw_src_modules_code_code_service_ts
+  file_meanderaw_src_modules_drawing_address_service_ts --> file_meanderaw_src_modules_drawing_address_constants_ts
+  file_meanderaw_src_modules_drawing_address_service_ts --> file_meanderaw_src_modules_drawing_address_types_ts
+  file_meanderaw_src_modules_drawing_address_service_ts --> file_meanderaw_src_modules_drawing_lattice_service_ts
+  file_meanderaw_src_modules_drawing_address_service_ts --> file_meanderaw_src_modules_drawing_lattice_types_ts
+  file_meanderaw_src_modules_drawing_address_service_ts --> file_meanderaw_src_modules_tile_tile_service_ts
+  file_meanderaw_src_modules_drawing_address_service_ts --> file_meanderaw_src_modules_tile_tile_types_ts
+  file_meanderaw_src_modules_drawing_address_service_unit_test_ts --> file_meanderaw_src_modules_classification_sub_family_service_ts
+  file_meanderaw_src_modules_drawing_address_service_unit_test_ts --> file_meanderaw_src_modules_code_code_service_ts
+  file_meanderaw_src_modules_drawing_address_service_unit_test_ts --> file_meanderaw_src_modules_drawing_address_constants_ts
+  file_meanderaw_src_modules_drawing_address_service_unit_test_ts --> file_meanderaw_src_modules_drawing_address_service_ts
+  file_meanderaw_src_modules_drawing_address_service_unit_test_ts --> file_meanderaw_src_modules_drawing_address_types_ts
+  file_meanderaw_src_modules_drawing_address_service_unit_test_ts --> file_meanderaw_src_modules_drawing_lattice_constants_ts
+  file_meanderaw_src_modules_drawing_address_service_unit_test_ts --> file_meanderaw_src_modules_drawing_lattice_service_ts
+  file_meanderaw_src_modules_drawing_address_service_unit_test_ts --> file_meanderaw_src_modules_symmetry_symmetry_service_ts
+  file_meanderaw_src_modules_drawing_address_service_unit_test_ts --> file_meanderaw_src_modules_tile_tile_service_ts
+  file_meanderaw_src_modules_drawing_address_types_ts --> file_meanderaw_src_modules_classification_sub_family_types_ts
+  file_meanderaw_src_modules_drawing_drawing_module_ts --> file_meanderaw_src_modules_classification_classification_module_ts
+  file_meanderaw_src_modules_drawing_drawing_module_ts --> file_meanderaw_src_modules_code_code_module_ts
+  file_meanderaw_src_modules_drawing_drawing_module_ts --> file_meanderaw_src_modules_drawing_address_service_ts
+  file_meanderaw_src_modules_drawing_drawing_module_ts --> file_meanderaw_src_modules_drawing_drawing_service_ts
+  file_meanderaw_src_modules_drawing_drawing_module_ts --> file_meanderaw_src_modules_drawing_lattice_service_ts
+  file_meanderaw_src_modules_drawing_drawing_module_ts --> file_meanderaw_src_modules_drawing_measurement_service_ts
+  file_meanderaw_src_modules_drawing_drawing_module_ts --> file_meanderaw_src_modules_geometry_geometry_module_ts
+  file_meanderaw_src_modules_drawing_drawing_module_ts --> file_meanderaw_src_modules_graph_graph_module_ts
+  file_meanderaw_src_modules_drawing_drawing_module_ts --> file_meanderaw_src_modules_svg_svg_module_ts
+  file_meanderaw_src_modules_drawing_drawing_module_ts --> file_meanderaw_src_modules_tile_tile_module_ts
+  file_meanderaw_src_modules_drawing_drawing_service_ts --> file_meanderaw_src_modules_code_code_service_ts
+  file_meanderaw_src_modules_drawing_drawing_service_ts --> file_meanderaw_src_modules_code_code_types_ts
+  file_meanderaw_src_modules_drawing_drawing_service_ts --> file_meanderaw_src_modules_drawing_drawing_types_ts
+  file_meanderaw_src_modules_drawing_drawing_service_ts --> file_meanderaw_src_modules_geometry_geometry_service_ts
+  file_meanderaw_src_modules_drawing_drawing_service_ts --> file_meanderaw_src_modules_geometry_geometry_types_ts
+  file_meanderaw_src_modules_drawing_drawing_service_ts --> file_meanderaw_src_modules_svg_svg_service_ts
+  file_meanderaw_src_modules_drawing_drawing_service_ts --> file_meanderaw_src_modules_tile_tile_types_ts
+  file_meanderaw_src_modules_drawing_drawing_service_unit_test_ts --> file_meanderaw_src_modules_code_code_service_ts
+  file_meanderaw_src_modules_drawing_drawing_service_unit_test_ts --> file_meanderaw_src_modules_code_code_types_ts
+  file_meanderaw_src_modules_drawing_drawing_service_unit_test_ts --> file_meanderaw_src_modules_drawing_drawing_service_ts
+  file_meanderaw_src_modules_drawing_drawing_service_unit_test_ts --> file_meanderaw_src_modules_geometry_geometry_service_ts
+  file_meanderaw_src_modules_drawing_drawing_service_unit_test_ts --> file_meanderaw_src_modules_svg_svg_service_ts
+  file_meanderaw_src_modules_drawing_drawing_service_unit_test_ts --> file_meanderaw_src_modules_symmetry_symmetry_service_ts
+  file_meanderaw_src_modules_drawing_drawing_service_unit_test_ts --> file_meanderaw_src_modules_tile_tile_service_ts
+  file_meanderaw_src_modules_drawing_lattice_service_ts --> file_meanderaw_src_modules_drawing_lattice_constants_ts
+  file_meanderaw_src_modules_drawing_lattice_service_ts --> file_meanderaw_src_modules_drawing_lattice_types_ts
+  file_meanderaw_src_modules_drawing_lattice_service_unit_test_ts --> file_meanderaw_src_modules_drawing_lattice_constants_ts
+  file_meanderaw_src_modules_drawing_lattice_service_unit_test_ts --> file_meanderaw_src_modules_drawing_lattice_service_ts
+  file_meanderaw_src_modules_drawing_measurement_service_ts --> file_meanderaw_src_modules_drawing_lattice_service_ts
+  file_meanderaw_src_modules_drawing_measurement_service_ts --> file_meanderaw_src_modules_drawing_lattice_types_ts
+  file_meanderaw_src_modules_drawing_measurement_service_ts --> file_meanderaw_src_modules_drawing_measurement_types_ts
+  file_meanderaw_src_modules_drawing_measurement_service_ts --> file_meanderaw_src_modules_graph_graph_service_ts
+  file_meanderaw_src_modules_drawing_measurement_service_ts --> file_meanderaw_src_modules_graph_graph_types_ts
+  file_meanderaw_src_modules_drawing_measurement_service_unit_test_ts --> file_meanderaw_src_modules_drawing_lattice_service_ts
+  file_meanderaw_src_modules_drawing_measurement_service_unit_test_ts --> file_meanderaw_src_modules_drawing_measurement_service_ts
+  file_meanderaw_src_modules_drawing_measurement_service_unit_test_ts --> file_meanderaw_src_modules_drawing_measurement_types_ts
+  file_meanderaw_src_modules_drawing_measurement_service_unit_test_ts --> file_meanderaw_src_modules_graph_graph_service_ts
+  file_meanderaw_src_modules_enumeration_enumeration_module_ts --> file_meanderaw_src_modules_code_code_module_ts
+  file_meanderaw_src_modules_enumeration_enumeration_module_ts --> file_meanderaw_src_modules_enumeration_enumeration_service_ts
+  file_meanderaw_src_modules_enumeration_enumeration_module_ts --> file_meanderaw_src_modules_enumeration_tile_enumeration_service_ts
+  file_meanderaw_src_modules_enumeration_enumeration_module_ts --> file_meanderaw_src_modules_symmetry_symmetry_module_ts
+  file_meanderaw_src_modules_enumeration_enumeration_module_ts --> file_meanderaw_src_modules_tile_tile_module_ts
+  file_meanderaw_src_modules_enumeration_enumeration_service_ts --> file_meanderaw_src_modules_classification_classification_types_ts
+  file_meanderaw_src_modules_enumeration_enumeration_service_ts --> file_meanderaw_src_modules_code_code_service_ts
+  file_meanderaw_src_modules_enumeration_enumeration_service_ts --> file_meanderaw_src_modules_enumeration_enumeration_constants_ts
+  file_meanderaw_src_modules_enumeration_enumeration_service_ts --> file_meanderaw_src_modules_enumeration_enumeration_types_ts
+  file_meanderaw_src_modules_enumeration_enumeration_service_ts --> file_meanderaw_src_modules_enumeration_tile_enumeration_service_ts
+  file_meanderaw_src_modules_enumeration_enumeration_service_unit_test_ts --> file_meanderaw_src_constants_ts
+  file_meanderaw_src_modules_enumeration_enumeration_service_unit_test_ts --> file_meanderaw_src_modules_classification_sub_family_service_ts
+  file_meanderaw_src_modules_enumeration_enumeration_service_unit_test_ts --> file_meanderaw_src_modules_code_code_service_ts
+  file_meanderaw_src_modules_enumeration_enumeration_service_unit_test_ts --> file_meanderaw_src_modules_drawing_lattice_service_ts
+  file_meanderaw_src_modules_enumeration_enumeration_service_unit_test_ts --> file_meanderaw_src_modules_enumeration_enumeration_service_ts
+  file_meanderaw_src_modules_enumeration_enumeration_service_unit_test_ts --> file_meanderaw_src_modules_enumeration_enumeration_types_ts
+  file_meanderaw_src_modules_enumeration_enumeration_service_unit_test_ts --> file_meanderaw_src_modules_enumeration_tile_enumeration_service_ts
+  file_meanderaw_src_modules_enumeration_enumeration_service_unit_test_ts --> file_meanderaw_src_modules_symmetry_symmetry_service_ts
+  file_meanderaw_src_modules_enumeration_enumeration_service_unit_test_ts --> file_meanderaw_src_modules_tile_tile_service_ts
+  file_meanderaw_src_modules_enumeration_enumeration_types_ts --> file_meanderaw_src_constants_ts
+  file_meanderaw_src_modules_enumeration_enumeration_types_ts --> file_meanderaw_src_modules_tile_tile_types_ts
+  file_meanderaw_src_modules_enumeration_tile_enumeration_service_ts --> file_meanderaw_src_modules_enumeration_enumeration_constants_ts
+  file_meanderaw_src_modules_enumeration_tile_enumeration_service_ts --> file_meanderaw_src_modules_enumeration_enumeration_types_ts
+  file_meanderaw_src_modules_enumeration_tile_enumeration_service_ts --> file_meanderaw_src_modules_symmetry_symmetry_service_ts
+  file_meanderaw_src_modules_enumeration_tile_enumeration_service_ts --> file_meanderaw_src_modules_tile_tile_service_ts
+  file_meanderaw_src_modules_enumeration_tile_enumeration_service_ts --> file_meanderaw_src_modules_tile_tile_types_ts
+  file_meanderaw_src_modules_enumeration_tile_enumeration_service_unit_test_ts --> file_meanderaw_src_constants_ts
+  file_meanderaw_src_modules_enumeration_tile_enumeration_service_unit_test_ts --> file_meanderaw_src_modules_code_code_service_ts
+  file_meanderaw_src_modules_enumeration_tile_enumeration_service_unit_test_ts --> file_meanderaw_src_modules_enumeration_enumeration_constants_ts
+  file_meanderaw_src_modules_enumeration_tile_enumeration_service_unit_test_ts --> file_meanderaw_src_modules_enumeration_enumeration_types_ts
+  file_meanderaw_src_modules_enumeration_tile_enumeration_service_unit_test_ts --> file_meanderaw_src_modules_enumeration_tile_enumeration_service_ts
+  file_meanderaw_src_modules_enumeration_tile_enumeration_service_unit_test_ts --> file_meanderaw_src_modules_symmetry_symmetry_service_ts
+  file_meanderaw_src_modules_enumeration_tile_enumeration_service_unit_test_ts --> file_meanderaw_src_modules_tile_tile_service_ts
+  file_meanderaw_src_modules_geometry_geometry_module_ts --> file_meanderaw_src_modules_geometry_geometry_service_ts
+  file_meanderaw_src_modules_geometry_geometry_service_ts --> file_meanderaw_src_modules_geometry_geometry_constants_ts
+  file_meanderaw_src_modules_geometry_geometry_service_ts --> file_meanderaw_src_modules_geometry_geometry_types_ts
+  file_meanderaw_src_modules_geometry_geometry_service_unit_test_ts --> file_meanderaw_src_modules_geometry_geometry_service_ts
+  file_meanderaw_src_modules_graph_graph_module_ts --> file_meanderaw_src_modules_graph_graph_service_ts
+  file_meanderaw_src_modules_graph_graph_service_ts --> file_meanderaw_src_modules_graph_graph_types_ts
+  file_meanderaw_src_modules_graph_graph_service_unit_test_ts --> file_meanderaw_src_modules_graph_graph_service_ts
+  file_meanderaw_src_modules_graph_graph_service_unit_test_ts --> file_meanderaw_src_modules_graph_graph_types_ts
+  file_meanderaw_src_modules_svg_svg_module_ts --> file_meanderaw_src_modules_svg_svg_service_ts
+  file_meanderaw_src_modules_svg_svg_service_ts --> file_meanderaw_src_modules_svg_svg_constants_ts
+  file_meanderaw_src_modules_svg_svg_service_ts --> file_meanderaw_src_modules_svg_svg_types_ts
+  file_meanderaw_src_modules_svg_svg_service_unit_test_ts --> file_meanderaw_src_modules_svg_svg_service_ts
+  file_meanderaw_src_modules_symmetry_symmetry_module_ts --> file_meanderaw_src_modules_symmetry_symmetry_service_ts
+  file_meanderaw_src_modules_symmetry_symmetry_module_ts --> file_meanderaw_src_modules_tile_tile_module_ts
+  file_meanderaw_src_modules_symmetry_symmetry_service_ts --> file_meanderaw_src_modules_symmetry_symmetry_types_ts
+  file_meanderaw_src_modules_symmetry_symmetry_service_ts --> file_meanderaw_src_modules_tile_tile_service_ts
+  file_meanderaw_src_modules_symmetry_symmetry_service_ts --> file_meanderaw_src_modules_tile_tile_types_ts
+  file_meanderaw_src_modules_symmetry_symmetry_service_unit_test_ts --> file_meanderaw_src_modules_symmetry_symmetry_service_ts
+  file_meanderaw_src_modules_symmetry_symmetry_service_unit_test_ts --> file_meanderaw_src_modules_tile_tile_service_ts
+  file_meanderaw_src_modules_symmetry_symmetry_service_unit_test_ts --> file_meanderaw_testing_tiles_ts
+  file_meanderaw_src_modules_tile_tile_module_ts --> file_meanderaw_src_modules_tile_tile_service_ts
+  file_meanderaw_src_modules_tile_tile_service_ts --> file_meanderaw_src_modules_tile_tile_constants_ts
+  file_meanderaw_src_modules_tile_tile_service_ts --> file_meanderaw_src_modules_tile_tile_types_ts
+  file_meanderaw_src_modules_tile_tile_service_unit_test_ts --> file_meanderaw_src_modules_tile_tile_constants_ts
+  file_meanderaw_src_modules_tile_tile_service_unit_test_ts --> file_meanderaw_src_modules_tile_tile_service_ts
+  file_meanderaw_src_modules_tile_tile_service_unit_test_ts --> file_meanderaw_src_modules_tile_tile_types_ts
+  file_meanderaw_src_modules_tile_tile_service_unit_test_ts --> file_meanderaw_testing_tiles_ts
+  file_meanderaw_src_repl_ts --> file_meanderaw_src_main_module_ts
+  file_meanderaw_testing_tiles_ts --> file_meanderaw_src_modules_tile_tile_service_ts
+  file_meanderaw_testing_tiles_ts --> file_meanderaw_src_modules_tile_tile_types_ts
+  file_synchronization_src_main_end_to_end_test_ts --> file_synchronization_src_constants_ts
+  file_synchronization_src_main_module_ts --> file_synchronization_src_constants_ts
+  file_synchronization_src_main_module_ts --> file_synchronization_src_modules_issue_labels_issue_labels_module_ts
+  file_synchronization_src_main_module_ts --> file_synchronization_src_modules_synchronization_synchronization_module_ts
+  file_synchronization_src_main_ts --> file_synchronization_src_main_module_ts
+  file_synchronization_src_main_unit_test_ts --> file_synchronization_src_modules_issue_labels_issue_labels_module_ts
+  file_synchronization_src_main_unit_test_ts --> file_synchronization_src_modules_synchronization_synchronization_module_ts
+  file_synchronization_src_modules_conformetry_generators_conformetry_generators_command_ts --> file_synchronization_src_modules_conformetry_generators_conformetry_generators_types_ts
+  file_synchronization_src_modules_conformetry_generators_conformetry_generators_command_ts --> file_synchronization_src_modules_synchronization_synchronization_service_ts
+  file_synchronization_src_modules_conformetry_generators_conformetry_generators_command_ts --> file_synchronization_src_modules_synchronization_synchronization_types_ts
+  file_synchronization_src_modules_conformetry_generators_conformetry_generators_command_unit_test_ts --> file_synchronization_src_modules_conformetry_generators_conformetry_generators_command_ts
+  file_synchronization_src_modules_conformetry_generators_conformetry_generators_command_unit_test_ts --> file_synchronization_src_modules_synchronization_synchronization_service_ts
+  file_synchronization_src_modules_conformetry_generators_conformetry_generators_command_unit_test_ts --> file_synchronization_testing_mocks_ts
+  file_synchronization_src_modules_conformetry_generators_conformetry_generators_module_ts --> file_synchronization_src_modules_conformetry_generators_conformetry_generators_command_ts
+  file_synchronization_src_modules_conformetry_generators_conformetry_generators_module_ts --> file_synchronization_src_modules_synchronization_synchronization_service_ts
+  file_synchronization_src_modules_conventional_config_conventional_config_io_service_ts --> file_synchronization_src_modules_conventional_config_conventional_config_constants_ts
+  file_synchronization_src_modules_conventional_config_conventional_config_io_service_ts --> file_synchronization_src_modules_conventional_config_conventional_config_types_ts
+  file_synchronization_src_modules_conventional_config_conventional_config_io_service_unit_test_ts --> file_synchronization_src_modules_conventional_config_conventional_config_io_service_ts
+  file_synchronization_src_modules_conventional_config_conventional_config_io_service_unit_test_ts --> file_synchronization_src_modules_conventional_config_conventional_config_types_ts
+  file_synchronization_src_modules_conventional_config_conventional_config_validators_service_ts --> file_synchronization_src_modules_conventional_config_conventional_config_io_service_ts
+  file_synchronization_src_modules_conventional_config_conventional_config_validators_service_ts --> file_synchronization_src_modules_conventional_config_conventional_config_constants_ts
+  file_synchronization_src_modules_conventional_config_conventional_config_validators_service_ts --> file_synchronization_src_modules_conventional_config_conventional_config_types_ts
+  file_synchronization_src_modules_conventional_config_conventional_config_validators_service_unit_test_ts --> file_synchronization_src_modules_conventional_config_conventional_config_io_service_ts
+  file_synchronization_src_modules_conventional_config_conventional_config_validators_service_unit_test_ts --> file_synchronization_src_modules_conventional_config_conventional_config_validators_service_ts
+  file_synchronization_src_modules_conventional_config_conventional_config_validators_service_unit_test_ts --> file_synchronization_src_modules_conventional_config_conventional_config_types_ts
+  file_synchronization_src_modules_conventional_config_conventional_config_command_ts --> file_synchronization_src_modules_conventional_config_conventional_config_service_ts
+  file_synchronization_src_modules_conventional_config_conventional_config_command_ts --> file_synchronization_src_modules_synchronization_synchronization_service_ts
+  file_synchronization_src_modules_conventional_config_conventional_config_command_ts --> file_synchronization_src_modules_synchronization_synchronization_types_ts
+  file_synchronization_src_modules_conventional_config_conventional_config_command_unit_test_ts --> file_synchronization_src_modules_conventional_config_conventional_config_command_ts
+  file_synchronization_src_modules_conventional_config_conventional_config_command_unit_test_ts --> file_synchronization_src_modules_conventional_config_conventional_config_service_ts
+  file_synchronization_src_modules_conventional_config_conventional_config_command_unit_test_ts --> file_synchronization_src_modules_synchronization_synchronization_service_ts
+  file_synchronization_src_modules_conventional_config_conventional_config_command_unit_test_ts --> file_synchronization_testing_mocks_ts
+  file_synchronization_src_modules_conventional_config_conventional_config_constants_integration_test_ts --> file_synchronization_src_modules_conventional_config_conventional_config_constants_ts
+  file_synchronization_src_modules_conventional_config_conventional_config_module_ts --> file_synchronization_src_modules_conventional_config_conventional_config_io_service_ts
+  file_synchronization_src_modules_conventional_config_conventional_config_module_ts --> file_synchronization_src_modules_conventional_config_conventional_config_validators_service_ts
+  file_synchronization_src_modules_conventional_config_conventional_config_module_ts --> file_synchronization_src_modules_conventional_config_conventional_config_command_ts
+  file_synchronization_src_modules_conventional_config_conventional_config_module_ts --> file_synchronization_src_modules_conventional_config_conventional_config_service_ts
+  file_synchronization_src_modules_conventional_config_conventional_config_module_ts --> file_synchronization_src_modules_synchronization_synchronization_service_ts
+  file_synchronization_src_modules_conventional_config_conventional_config_service_ts --> file_synchronization_src_modules_conventional_config_conventional_config_io_service_ts
+  file_synchronization_src_modules_conventional_config_conventional_config_service_ts --> file_synchronization_src_modules_conventional_config_conventional_config_validators_service_ts
+  file_synchronization_src_modules_conventional_config_conventional_config_service_ts --> file_synchronization_src_modules_conventional_config_conventional_config_constants_ts
+  file_synchronization_src_modules_conventional_config_conventional_config_service_ts --> file_synchronization_src_modules_conventional_config_conventional_config_types_ts
+  file_synchronization_src_modules_conventional_config_conventional_config_service_unit_test_ts --> file_synchronization_src_modules_conventional_config_conventional_config_io_service_ts
+  file_synchronization_src_modules_conventional_config_conventional_config_service_unit_test_ts --> file_synchronization_src_modules_conventional_config_conventional_config_validators_service_ts
+  file_synchronization_src_modules_conventional_config_conventional_config_service_unit_test_ts --> file_synchronization_src_modules_conventional_config_conventional_config_constants_ts
+  file_synchronization_src_modules_conventional_config_conventional_config_service_unit_test_ts --> file_synchronization_src_modules_conventional_config_conventional_config_service_ts
+  file_synchronization_src_modules_conventional_config_conventional_config_service_unit_test_ts --> file_synchronization_src_modules_conventional_config_conventional_config_types_ts
+  file_synchronization_src_modules_devcontainer_configuration_devcontainer_configuration_command_ts --> file_synchronization_src_modules_devcontainer_configuration_devcontainer_configuration_constants_ts
+  file_synchronization_src_modules_devcontainer_configuration_devcontainer_configuration_command_ts --> file_synchronization_src_modules_devcontainer_configuration_devcontainer_configuration_types_ts
+  file_synchronization_src_modules_devcontainer_configuration_devcontainer_configuration_command_ts --> file_synchronization_src_modules_synchronization_synchronization_service_ts
+  file_synchronization_src_modules_devcontainer_configuration_devcontainer_configuration_command_ts --> file_synchronization_src_modules_synchronization_synchronization_types_ts
+  file_synchronization_src_modules_devcontainer_configuration_devcontainer_configuration_command_unit_test_ts --> file_synchronization_src_modules_devcontainer_configuration_devcontainer_configuration_command_ts
+  file_synchronization_src_modules_devcontainer_configuration_devcontainer_configuration_command_unit_test_ts --> file_synchronization_src_modules_synchronization_synchronization_service_ts
+  file_synchronization_src_modules_devcontainer_configuration_devcontainer_configuration_command_unit_test_ts --> file_synchronization_testing_mocks_ts
+  file_synchronization_src_modules_devcontainer_configuration_devcontainer_configuration_module_ts --> file_synchronization_src_modules_devcontainer_configuration_devcontainer_configuration_command_ts
+  file_synchronization_src_modules_devcontainer_configuration_devcontainer_configuration_module_ts --> file_synchronization_src_modules_synchronization_synchronization_service_ts
+  file_synchronization_src_modules_issue_labels_issue_labels_github_service_ts --> file_synchronization_src_modules_issue_labels_issue_labels_constants_ts
+  file_synchronization_src_modules_issue_labels_issue_labels_github_service_ts --> file_synchronization_src_modules_issue_labels_issue_labels_types_ts
+  file_synchronization_src_modules_issue_labels_issue_labels_github_service_unit_test_ts --> file_synchronization_src_modules_issue_labels_issue_labels_github_service_ts
+  file_synchronization_src_modules_issue_labels_issue_labels_github_service_unit_test_ts --> file_synchronization_src_modules_issue_labels_issue_labels_constants_ts
+  file_synchronization_src_modules_issue_labels_issue_labels_command_ts --> file_synchronization_src_modules_issue_labels_issue_labels_github_service_ts
+  file_synchronization_src_modules_issue_labels_issue_labels_command_ts --> file_synchronization_src_modules_issue_labels_issue_labels_constants_ts
+  file_synchronization_src_modules_issue_labels_issue_labels_command_ts --> file_synchronization_src_modules_issue_labels_issue_labels_service_ts
+  file_synchronization_src_modules_issue_labels_issue_labels_command_unit_test_ts --> file_synchronization_src_modules_issue_labels_issue_labels_github_service_ts
+  file_synchronization_src_modules_issue_labels_issue_labels_command_unit_test_ts --> file_synchronization_src_modules_issue_labels_issue_labels_command_ts
+  file_synchronization_src_modules_issue_labels_issue_labels_command_unit_test_ts --> file_synchronization_src_modules_issue_labels_issue_labels_service_ts
+  file_synchronization_src_modules_issue_labels_issue_labels_command_unit_test_ts --> file_synchronization_src_modules_issue_labels_issue_labels_types_ts
+  file_synchronization_src_modules_issue_labels_issue_labels_module_ts --> file_synchronization_src_modules_issue_labels_issue_labels_github_service_ts
+  file_synchronization_src_modules_issue_labels_issue_labels_module_ts --> file_synchronization_src_modules_issue_labels_issue_labels_command_ts
+  file_synchronization_src_modules_issue_labels_issue_labels_module_ts --> file_synchronization_src_modules_issue_labels_issue_labels_service_ts
+  file_synchronization_src_modules_issue_labels_issue_labels_module_unit_test_ts --> file_synchronization_src_modules_issue_labels_issue_labels_github_service_ts
+  file_synchronization_src_modules_issue_labels_issue_labels_module_unit_test_ts --> file_synchronization_src_modules_issue_labels_issue_labels_command_ts
+  file_synchronization_src_modules_issue_labels_issue_labels_module_unit_test_ts --> file_synchronization_src_modules_issue_labels_issue_labels_module_ts
+  file_synchronization_src_modules_issue_labels_issue_labels_module_unit_test_ts --> file_synchronization_src_modules_issue_labels_issue_labels_service_ts
+  file_synchronization_src_modules_issue_labels_issue_labels_service_ts --> file_synchronization_src_modules_issue_labels_issue_labels_constants_ts
+  file_synchronization_src_modules_issue_labels_issue_labels_service_ts --> file_synchronization_src_modules_issue_labels_issue_labels_types_ts
+  file_synchronization_src_modules_issue_labels_issue_labels_service_unit_test_ts --> file_synchronization_src_modules_issue_labels_issue_labels_service_ts
+  file_synchronization_src_modules_pull_request_labels_pull_request_labels_github_service_ts --> file_synchronization_src_modules_pull_request_labels_pull_request_labels_constants_ts
+  file_synchronization_src_modules_pull_request_labels_pull_request_labels_github_service_ts --> file_synchronization_src_modules_pull_request_labels_pull_request_labels_types_ts
+  file_synchronization_src_modules_pull_request_labels_pull_request_labels_github_service_unit_test_ts --> file_synchronization_src_modules_pull_request_labels_pull_request_labels_github_service_ts
+  file_synchronization_src_modules_pull_request_labels_pull_request_labels_command_ts --> file_synchronization_src_modules_pull_request_labels_pull_request_labels_github_service_ts
+  file_synchronization_src_modules_pull_request_labels_pull_request_labels_command_ts --> file_synchronization_src_modules_pull_request_labels_pull_request_labels_constants_ts
+  file_synchronization_src_modules_pull_request_labels_pull_request_labels_command_ts --> file_synchronization_src_modules_pull_request_labels_pull_request_labels_service_ts
+  file_synchronization_src_modules_pull_request_labels_pull_request_labels_command_ts --> file_synchronization_src_modules_pull_request_labels_pull_request_labels_types_ts
+  file_synchronization_src_modules_pull_request_labels_pull_request_labels_command_ts --> file_synchronization_src_modules_synchronization_synchronization_service_ts
+  file_synchronization_src_modules_pull_request_labels_pull_request_labels_command_ts --> file_synchronization_src_modules_synchronization_synchronization_types_ts
+  file_synchronization_src_modules_pull_request_labels_pull_request_labels_command_unit_test_ts --> file_synchronization_src_modules_pull_request_labels_pull_request_labels_github_service_ts
+  file_synchronization_src_modules_pull_request_labels_pull_request_labels_command_unit_test_ts --> file_synchronization_src_modules_pull_request_labels_pull_request_labels_command_ts
+  file_synchronization_src_modules_pull_request_labels_pull_request_labels_command_unit_test_ts --> file_synchronization_src_modules_pull_request_labels_pull_request_labels_constants_ts
+  file_synchronization_src_modules_pull_request_labels_pull_request_labels_command_unit_test_ts --> file_synchronization_src_modules_pull_request_labels_pull_request_labels_service_ts
+  file_synchronization_src_modules_pull_request_labels_pull_request_labels_command_unit_test_ts --> file_synchronization_src_modules_pull_request_labels_pull_request_labels_types_ts
+  file_synchronization_src_modules_pull_request_labels_pull_request_labels_command_unit_test_ts --> file_synchronization_src_modules_synchronization_synchronization_service_ts
+  file_synchronization_src_modules_pull_request_labels_pull_request_labels_command_unit_test_ts --> file_synchronization_testing_mocks_ts
+  file_synchronization_src_modules_pull_request_labels_pull_request_labels_constants_ts --> file_synchronization_src_modules_pull_request_labels_pull_request_labels_types_ts
+  file_synchronization_src_modules_pull_request_labels_pull_request_labels_module_ts --> file_synchronization_src_modules_pull_request_labels_pull_request_labels_github_service_ts
+  file_synchronization_src_modules_pull_request_labels_pull_request_labels_module_ts --> file_synchronization_src_modules_pull_request_labels_pull_request_labels_command_ts
+  file_synchronization_src_modules_pull_request_labels_pull_request_labels_module_ts --> file_synchronization_src_modules_pull_request_labels_pull_request_labels_service_ts
+  file_synchronization_src_modules_pull_request_labels_pull_request_labels_module_ts --> file_synchronization_src_modules_synchronization_synchronization_service_ts
+  file_synchronization_src_modules_pull_request_labels_pull_request_labels_service_ts --> file_synchronization_src_modules_pull_request_labels_pull_request_labels_constants_ts
+  file_synchronization_src_modules_pull_request_labels_pull_request_labels_service_ts --> file_synchronization_src_modules_pull_request_labels_pull_request_labels_types_ts
+  file_synchronization_src_modules_pull_request_labels_pull_request_labels_service_unit_test_ts --> file_synchronization_src_modules_pull_request_labels_pull_request_labels_service_ts
+  file_synchronization_src_modules_pull_request_labels_pull_request_labels_service_unit_test_ts --> file_synchronization_src_modules_pull_request_labels_pull_request_labels_types_ts
+  file_synchronization_src_modules_pull_request_template_pull_request_template_command_ts --> file_synchronization_src_modules_pull_request_template_pull_request_template_constants_ts
+  file_synchronization_src_modules_pull_request_template_pull_request_template_command_ts --> file_synchronization_src_modules_synchronization_synchronization_service_ts
+  file_synchronization_src_modules_pull_request_template_pull_request_template_command_ts --> file_synchronization_src_modules_synchronization_synchronization_types_ts
+  file_synchronization_src_modules_pull_request_template_pull_request_template_command_unit_test_ts --> file_synchronization_src_modules_pull_request_template_pull_request_template_command_ts
+  file_synchronization_src_modules_pull_request_template_pull_request_template_command_unit_test_ts --> file_synchronization_src_modules_pull_request_template_pull_request_template_constants_ts
+  file_synchronization_src_modules_pull_request_template_pull_request_template_command_unit_test_ts --> file_synchronization_src_modules_synchronization_synchronization_service_ts
+  file_synchronization_src_modules_pull_request_template_pull_request_template_command_unit_test_ts --> file_synchronization_testing_mocks_ts
+  file_synchronization_src_modules_pull_request_template_pull_request_template_module_ts --> file_synchronization_src_modules_pull_request_template_pull_request_template_command_ts
+  file_synchronization_src_modules_pull_request_template_pull_request_template_module_ts --> file_synchronization_src_modules_synchronization_synchronization_service_ts
+  file_synchronization_src_modules_skill_exclusions_skill_exclusions_command_ts --> file_synchronization_src_modules_skill_exclusions_skill_exclusions_constants_ts
+  file_synchronization_src_modules_skill_exclusions_skill_exclusions_command_ts --> file_synchronization_src_modules_skill_exclusions_skill_exclusions_types_ts
+  file_synchronization_src_modules_skill_exclusions_skill_exclusions_command_ts --> file_synchronization_src_modules_synchronization_synchronization_service_ts
+  file_synchronization_src_modules_skill_exclusions_skill_exclusions_command_ts --> file_synchronization_src_modules_synchronization_synchronization_types_ts
+  file_synchronization_src_modules_skill_exclusions_skill_exclusions_command_unit_test_ts --> file_synchronization_src_modules_skill_exclusions_skill_exclusions_command_ts
+  file_synchronization_src_modules_skill_exclusions_skill_exclusions_command_unit_test_ts --> file_synchronization_src_modules_skill_exclusions_skill_exclusions_constants_ts
+  file_synchronization_src_modules_skill_exclusions_skill_exclusions_command_unit_test_ts --> file_synchronization_src_modules_skill_exclusions_skill_exclusions_types_ts
+  file_synchronization_src_modules_skill_exclusions_skill_exclusions_command_unit_test_ts --> file_synchronization_src_modules_synchronization_synchronization_service_ts
+  file_synchronization_src_modules_skill_exclusions_skill_exclusions_command_unit_test_ts --> file_synchronization_testing_mocks_ts
+  file_synchronization_src_modules_skill_exclusions_skill_exclusions_constants_ts --> file_synchronization_src_modules_skill_exclusions_skill_exclusions_types_ts
+  file_synchronization_src_modules_skill_exclusions_skill_exclusions_module_ts --> file_synchronization_src_modules_skill_exclusions_skill_exclusions_command_ts
+  file_synchronization_src_modules_skill_exclusions_skill_exclusions_module_ts --> file_synchronization_src_modules_synchronization_synchronization_service_ts
+  file_synchronization_src_modules_synchronization_synchronization_markers_service_unit_test_ts --> file_synchronization_src_modules_synchronization_synchronization_markers_service_ts
+  file_synchronization_src_modules_synchronization_synchronization_command_ts --> file_synchronization_src_modules_conformetry_generators_conformetry_generators_command_ts
+  file_synchronization_src_modules_synchronization_synchronization_command_ts --> file_synchronization_src_modules_conventional_config_conventional_config_command_ts
+  file_synchronization_src_modules_synchronization_synchronization_command_ts --> file_synchronization_src_modules_devcontainer_configuration_devcontainer_configuration_command_ts
+  file_synchronization_src_modules_synchronization_synchronization_command_ts --> file_synchronization_src_modules_pull_request_labels_pull_request_labels_command_ts
+  file_synchronization_src_modules_synchronization_synchronization_command_ts --> file_synchronization_src_modules_pull_request_template_pull_request_template_command_ts
+  file_synchronization_src_modules_synchronization_synchronization_command_ts --> file_synchronization_src_modules_skill_exclusions_skill_exclusions_command_ts
+  file_synchronization_src_modules_synchronization_synchronization_command_ts --> file_synchronization_src_modules_synchronization_synchronization_service_ts
+  file_synchronization_src_modules_synchronization_synchronization_command_ts --> file_synchronization_src_modules_synchronization_synchronization_types_ts
+  file_synchronization_src_modules_synchronization_synchronization_command_unit_test_ts --> file_synchronization_src_modules_conformetry_generators_conformetry_generators_command_ts
+  file_synchronization_src_modules_synchronization_synchronization_command_unit_test_ts --> file_synchronization_src_modules_conventional_config_conventional_config_command_ts
+  file_synchronization_src_modules_synchronization_synchronization_command_unit_test_ts --> file_synchronization_src_modules_devcontainer_configuration_devcontainer_configuration_command_ts
+  file_synchronization_src_modules_synchronization_synchronization_command_unit_test_ts --> file_synchronization_src_modules_pull_request_labels_pull_request_labels_command_ts
+  file_synchronization_src_modules_synchronization_synchronization_command_unit_test_ts --> file_synchronization_src_modules_pull_request_template_pull_request_template_command_ts
+  file_synchronization_src_modules_synchronization_synchronization_command_unit_test_ts --> file_synchronization_src_modules_skill_exclusions_skill_exclusions_command_ts
+  file_synchronization_src_modules_synchronization_synchronization_command_unit_test_ts --> file_synchronization_src_modules_synchronization_synchronization_command_ts
+  file_synchronization_src_modules_synchronization_synchronization_command_unit_test_ts --> file_synchronization_src_modules_synchronization_synchronization_service_ts
+  file_synchronization_src_modules_synchronization_synchronization_command_unit_test_ts --> file_synchronization_src_modules_synchronization_synchronization_types_ts
+  file_synchronization_src_modules_synchronization_synchronization_command_unit_test_ts --> file_synchronization_testing_mocks_ts
+  file_synchronization_src_modules_synchronization_synchronization_module_ts --> file_synchronization_src_modules_conformetry_generators_conformetry_generators_module_ts
+  file_synchronization_src_modules_synchronization_synchronization_module_ts --> file_synchronization_src_modules_conventional_config_conventional_config_module_ts
+  file_synchronization_src_modules_synchronization_synchronization_module_ts --> file_synchronization_src_modules_devcontainer_configuration_devcontainer_configuration_module_ts
+  file_synchronization_src_modules_synchronization_synchronization_module_ts --> file_synchronization_src_modules_pull_request_labels_pull_request_labels_module_ts
+  file_synchronization_src_modules_synchronization_synchronization_module_ts --> file_synchronization_src_modules_pull_request_template_pull_request_template_module_ts
+  file_synchronization_src_modules_synchronization_synchronization_module_ts --> file_synchronization_src_modules_skill_exclusions_skill_exclusions_module_ts
+  file_synchronization_src_modules_synchronization_synchronization_module_ts --> file_synchronization_src_modules_synchronization_synchronization_command_ts
+  file_synchronization_src_modules_synchronization_synchronization_module_ts --> file_synchronization_src_modules_synchronization_synchronization_service_ts
+  file_synchronization_src_modules_synchronization_synchronization_module_unit_test_ts --> file_synchronization_src_modules_conformetry_generators_conformetry_generators_module_ts
+  file_synchronization_src_modules_synchronization_synchronization_module_unit_test_ts --> file_synchronization_src_modules_conventional_config_conventional_config_module_ts
+  file_synchronization_src_modules_synchronization_synchronization_module_unit_test_ts --> file_synchronization_src_modules_devcontainer_configuration_devcontainer_configuration_module_ts
+  file_synchronization_src_modules_synchronization_synchronization_module_unit_test_ts --> file_synchronization_src_modules_pull_request_labels_pull_request_labels_module_ts
+  file_synchronization_src_modules_synchronization_synchronization_module_unit_test_ts --> file_synchronization_src_modules_pull_request_template_pull_request_template_module_ts
+  file_synchronization_src_modules_synchronization_synchronization_module_unit_test_ts --> file_synchronization_src_modules_skill_exclusions_skill_exclusions_module_ts
+  file_synchronization_src_modules_synchronization_synchronization_module_unit_test_ts --> file_synchronization_src_modules_synchronization_synchronization_command_ts
+  file_synchronization_src_modules_synchronization_synchronization_module_unit_test_ts --> file_synchronization_src_modules_synchronization_synchronization_module_ts
+  file_synchronization_src_modules_synchronization_synchronization_module_unit_test_ts --> file_synchronization_src_modules_synchronization_synchronization_service_ts
+  file_synchronization_src_modules_synchronization_synchronization_service_ts --> file_synchronization_src_modules_synchronization_synchronization_types_ts
+  file_synchronization_src_modules_synchronization_synchronization_service_unit_test_ts --> file_synchronization_src_modules_synchronization_synchronization_service_ts
+  file_synchronization_src_repl_ts --> file_synchronization_src_main_module_ts
+  file_synchronization_src_repl_unit_test_ts --> file_synchronization_src_modules_synchronization_synchronization_module_ts
+  file_validation_src_main_end_to_end_test_ts --> file_validation_src_constants_ts
+  file_validation_src_main_module_ts --> file_validation_src_constants_ts
+  file_validation_src_main_module_ts --> file_validation_src_modules_catalog_manifests_catalog_manifests_module_ts
+  file_validation_src_main_module_ts --> file_validation_src_modules_issue_metadata_issue_metadata_module_ts
+  file_validation_src_main_module_ts --> file_validation_src_modules_lockfile_lockfile_module_ts
+  file_validation_src_main_module_ts --> file_validation_src_modules_pull_request_body_pull_request_body_module_ts
+  file_validation_src_main_module_ts --> file_validation_src_modules_pull_request_metadata_pull_request_metadata_module_ts
+  file_validation_src_main_module_ts --> file_validation_src_modules_pull_request_release_significance_pull_request_release_significance_module_ts
+  file_validation_src_main_module_ts --> file_validation_src_modules_readme_projects_readme_projects_module_ts
+  file_validation_src_main_ts --> file_validation_src_main_module_ts
+  file_validation_src_main_unit_test_ts --> file_validation_src_modules_catalog_manifests_catalog_manifests_module_ts
+  file_validation_src_main_unit_test_ts --> file_validation_src_modules_issue_metadata_issue_metadata_module_ts
+  file_validation_src_main_unit_test_ts --> file_validation_src_modules_lockfile_lockfile_module_ts
+  file_validation_src_main_unit_test_ts --> file_validation_src_modules_pull_request_body_pull_request_body_module_ts
+  file_validation_src_main_unit_test_ts --> file_validation_src_modules_pull_request_metadata_pull_request_metadata_module_ts
+  file_validation_src_main_unit_test_ts --> file_validation_src_modules_pull_request_release_significance_pull_request_release_significance_module_ts
+  file_validation_src_main_unit_test_ts --> file_validation_src_modules_readme_projects_readme_projects_module_ts
+  file_validation_src_modules_catalog_manifests_catalog_manifests_command_ts --> file_validation_src_modules_catalog_manifests_catalog_manifests_service_ts
+  file_validation_src_modules_catalog_manifests_catalog_manifests_command_unit_test_ts --> file_validation_src_modules_catalog_manifests_catalog_manifests_command_ts
+  file_validation_src_modules_catalog_manifests_catalog_manifests_command_unit_test_ts --> file_validation_src_modules_catalog_manifests_catalog_manifests_service_ts
+  file_validation_src_modules_catalog_manifests_catalog_manifests_command_unit_test_ts --> file_validation_testing_mocks_ts
+  file_validation_src_modules_catalog_manifests_catalog_manifests_constants_ts --> file_validation_src_modules_catalog_manifests_catalog_manifests_types_ts
+  file_validation_src_modules_catalog_manifests_catalog_manifests_module_ts --> file_validation_src_modules_catalog_manifests_catalog_manifests_command_ts
+  file_validation_src_modules_catalog_manifests_catalog_manifests_module_ts --> file_validation_src_modules_catalog_manifests_catalog_manifests_service_ts
+  file_validation_src_modules_catalog_manifests_catalog_manifests_module_unit_test_ts --> file_validation_src_modules_catalog_manifests_catalog_manifests_command_ts
+  file_validation_src_modules_catalog_manifests_catalog_manifests_module_unit_test_ts --> file_validation_src_modules_catalog_manifests_catalog_manifests_module_ts
+  file_validation_src_modules_catalog_manifests_catalog_manifests_module_unit_test_ts --> file_validation_src_modules_catalog_manifests_catalog_manifests_service_ts
+  file_validation_src_modules_catalog_manifests_catalog_manifests_service_ts --> file_validation_src_modules_catalog_manifests_catalog_manifests_constants_ts
+  file_validation_src_modules_catalog_manifests_catalog_manifests_service_ts --> file_validation_src_modules_catalog_manifests_catalog_manifests_types_ts
+  file_validation_src_modules_catalog_manifests_catalog_manifests_service_unit_test_ts --> file_validation_src_modules_catalog_manifests_catalog_manifests_service_ts
+  file_validation_src_modules_catalog_manifests_catalog_manifests_service_unit_test_ts --> file_validation_src_modules_catalog_manifests_catalog_manifests_types_ts
+  file_validation_src_modules_issue_metadata_issue_metadata_github_service_ts --> file_validation_src_modules_issue_metadata_issue_metadata_constants_ts
+  file_validation_src_modules_issue_metadata_issue_metadata_github_service_ts --> file_validation_src_modules_issue_metadata_issue_metadata_types_ts
+  file_validation_src_modules_issue_metadata_issue_metadata_github_service_unit_test_ts --> file_validation_src_modules_issue_metadata_issue_metadata_github_service_ts
+  file_validation_src_modules_issue_metadata_issue_metadata_github_service_unit_test_ts --> file_validation_src_modules_issue_metadata_issue_metadata_constants_ts
+  file_validation_src_modules_issue_metadata_issue_metadata_command_ts --> file_validation_src_modules_issue_metadata_issue_metadata_github_service_ts
+  file_validation_src_modules_issue_metadata_issue_metadata_command_ts --> file_validation_src_modules_issue_metadata_issue_metadata_constants_ts
+  file_validation_src_modules_issue_metadata_issue_metadata_command_ts --> file_validation_src_modules_issue_metadata_issue_metadata_service_ts
+  file_validation_src_modules_issue_metadata_issue_metadata_command_ts --> file_validation_src_modules_issue_metadata_issue_metadata_types_ts
+  file_validation_src_modules_issue_metadata_issue_metadata_command_unit_test_ts --> file_validation_src_modules_issue_metadata_issue_metadata_github_service_ts
+  file_validation_src_modules_issue_metadata_issue_metadata_command_unit_test_ts --> file_validation_src_modules_issue_metadata_issue_metadata_command_ts
+  file_validation_src_modules_issue_metadata_issue_metadata_command_unit_test_ts --> file_validation_src_modules_issue_metadata_issue_metadata_constants_ts
+  file_validation_src_modules_issue_metadata_issue_metadata_command_unit_test_ts --> file_validation_src_modules_issue_metadata_issue_metadata_service_ts
+  file_validation_src_modules_issue_metadata_issue_metadata_command_unit_test_ts --> file_validation_src_modules_issue_metadata_issue_metadata_types_ts
+  file_validation_src_modules_issue_metadata_issue_metadata_command_unit_test_ts --> file_validation_testing_mocks_ts
+  file_validation_src_modules_issue_metadata_issue_metadata_module_ts --> file_validation_src_modules_issue_metadata_issue_metadata_github_service_ts
+  file_validation_src_modules_issue_metadata_issue_metadata_module_ts --> file_validation_src_modules_issue_metadata_issue_metadata_command_ts
+  file_validation_src_modules_issue_metadata_issue_metadata_module_ts --> file_validation_src_modules_issue_metadata_issue_metadata_service_ts
+  file_validation_src_modules_issue_metadata_issue_metadata_module_unit_test_ts --> file_validation_src_modules_issue_metadata_issue_metadata_github_service_ts
+  file_validation_src_modules_issue_metadata_issue_metadata_module_unit_test_ts --> file_validation_src_modules_issue_metadata_issue_metadata_command_ts
+  file_validation_src_modules_issue_metadata_issue_metadata_module_unit_test_ts --> file_validation_src_modules_issue_metadata_issue_metadata_module_ts
+  file_validation_src_modules_issue_metadata_issue_metadata_module_unit_test_ts --> file_validation_src_modules_issue_metadata_issue_metadata_service_ts
+  file_validation_src_modules_issue_metadata_issue_metadata_service_ts --> file_validation_src_modules_issue_metadata_issue_metadata_constants_ts
+  file_validation_src_modules_issue_metadata_issue_metadata_service_ts --> file_validation_src_modules_issue_metadata_issue_metadata_types_ts
+  file_validation_src_modules_issue_metadata_issue_metadata_service_unit_test_ts --> file_validation_src_modules_issue_metadata_issue_metadata_service_ts
+  file_validation_src_modules_issue_metadata_issue_metadata_service_unit_test_ts --> file_validation_src_modules_issue_metadata_issue_metadata_types_ts
+  file_validation_src_modules_lockfile_lockfile_command_ts --> file_validation_src_modules_lockfile_lockfile_constants_ts
+  file_validation_src_modules_lockfile_lockfile_command_ts --> file_validation_src_modules_lockfile_lockfile_service_ts
+  file_validation_src_modules_lockfile_lockfile_command_unit_test_ts --> file_validation_src_modules_lockfile_lockfile_command_ts
+  file_validation_src_modules_lockfile_lockfile_command_unit_test_ts --> file_validation_src_modules_lockfile_lockfile_service_ts
+  file_validation_src_modules_lockfile_lockfile_command_unit_test_ts --> file_validation_testing_mocks_ts
+  file_validation_src_modules_lockfile_lockfile_module_ts --> file_validation_src_modules_lockfile_lockfile_command_ts
+  file_validation_src_modules_lockfile_lockfile_module_ts --> file_validation_src_modules_lockfile_lockfile_service_ts
+  file_validation_src_modules_lockfile_lockfile_module_unit_test_ts --> file_validation_src_modules_lockfile_lockfile_command_ts
+  file_validation_src_modules_lockfile_lockfile_module_unit_test_ts --> file_validation_src_modules_lockfile_lockfile_module_ts
+  file_validation_src_modules_lockfile_lockfile_module_unit_test_ts --> file_validation_src_modules_lockfile_lockfile_service_ts
+  file_validation_src_modules_lockfile_lockfile_service_ts --> file_validation_src_modules_lockfile_lockfile_constants_ts
+  file_validation_src_modules_lockfile_lockfile_service_ts --> file_validation_src_modules_lockfile_lockfile_types_ts
+  file_validation_src_modules_lockfile_lockfile_service_unit_test_ts --> file_validation_src_modules_lockfile_lockfile_constants_ts
+  file_validation_src_modules_lockfile_lockfile_service_unit_test_ts --> file_validation_src_modules_lockfile_lockfile_service_ts
+  file_validation_src_modules_pull_request_body_pull_request_body_command_ts --> file_validation_src_modules_pull_request_body_pull_request_body_constants_ts
+  file_validation_src_modules_pull_request_body_pull_request_body_command_ts --> file_validation_src_modules_pull_request_body_pull_request_body_service_ts
+  file_validation_src_modules_pull_request_body_pull_request_body_command_ts --> file_validation_src_modules_pull_request_body_pull_request_body_types_ts
+  file_validation_src_modules_pull_request_body_pull_request_body_command_unit_test_ts --> file_validation_src_modules_pull_request_body_pull_request_body_command_ts
+  file_validation_src_modules_pull_request_body_pull_request_body_command_unit_test_ts --> file_validation_src_modules_pull_request_body_pull_request_body_constants_ts
+  file_validation_src_modules_pull_request_body_pull_request_body_command_unit_test_ts --> file_validation_src_modules_pull_request_body_pull_request_body_service_ts
+  file_validation_src_modules_pull_request_body_pull_request_body_command_unit_test_ts --> file_validation_testing_mocks_ts
+  file_validation_src_modules_pull_request_body_pull_request_body_module_ts --> file_validation_src_modules_pull_request_body_pull_request_body_command_ts
+  file_validation_src_modules_pull_request_body_pull_request_body_module_ts --> file_validation_src_modules_pull_request_body_pull_request_body_service_ts
+  file_validation_src_modules_pull_request_body_pull_request_body_module_unit_test_ts --> file_validation_src_modules_pull_request_body_pull_request_body_command_ts
+  file_validation_src_modules_pull_request_body_pull_request_body_module_unit_test_ts --> file_validation_src_modules_pull_request_body_pull_request_body_module_ts
+  file_validation_src_modules_pull_request_body_pull_request_body_module_unit_test_ts --> file_validation_src_modules_pull_request_body_pull_request_body_service_ts
+  file_validation_src_modules_pull_request_body_pull_request_body_service_ts --> file_validation_src_modules_pull_request_body_pull_request_body_constants_ts
+  file_validation_src_modules_pull_request_body_pull_request_body_service_ts --> file_validation_src_modules_pull_request_body_pull_request_body_types_ts
+  file_validation_src_modules_pull_request_body_pull_request_body_service_unit_test_ts --> file_validation_src_modules_pull_request_body_pull_request_body_service_ts
+  file_validation_src_modules_pull_request_metadata_pull_request_metadata_github_service_ts --> file_validation_src_modules_pull_request_metadata_pull_request_metadata_constants_ts
+  file_validation_src_modules_pull_request_metadata_pull_request_metadata_github_service_ts --> file_validation_src_modules_pull_request_metadata_pull_request_metadata_types_ts
+  file_validation_src_modules_pull_request_metadata_pull_request_metadata_github_service_unit_test_ts --> file_validation_src_modules_pull_request_metadata_pull_request_metadata_github_service_ts
+  file_validation_src_modules_pull_request_metadata_pull_request_metadata_github_service_unit_test_ts --> file_validation_src_modules_pull_request_metadata_pull_request_metadata_constants_ts
+  file_validation_src_modules_pull_request_metadata_pull_request_metadata_command_ts --> file_validation_src_modules_pull_request_metadata_pull_request_metadata_github_service_ts
+  file_validation_src_modules_pull_request_metadata_pull_request_metadata_command_ts --> file_validation_src_modules_pull_request_metadata_pull_request_metadata_constants_ts
+  file_validation_src_modules_pull_request_metadata_pull_request_metadata_command_ts --> file_validation_src_modules_pull_request_metadata_pull_request_metadata_service_ts
+  file_validation_src_modules_pull_request_metadata_pull_request_metadata_command_ts --> file_validation_src_modules_pull_request_metadata_pull_request_metadata_types_ts
+  file_validation_src_modules_pull_request_metadata_pull_request_metadata_command_unit_test_ts --> file_validation_src_modules_pull_request_metadata_pull_request_metadata_github_service_ts
+  file_validation_src_modules_pull_request_metadata_pull_request_metadata_command_unit_test_ts --> file_validation_src_modules_pull_request_metadata_pull_request_metadata_command_ts
+  file_validation_src_modules_pull_request_metadata_pull_request_metadata_command_unit_test_ts --> file_validation_src_modules_pull_request_metadata_pull_request_metadata_constants_ts
+  file_validation_src_modules_pull_request_metadata_pull_request_metadata_command_unit_test_ts --> file_validation_src_modules_pull_request_metadata_pull_request_metadata_service_ts
+  file_validation_src_modules_pull_request_metadata_pull_request_metadata_command_unit_test_ts --> file_validation_src_modules_pull_request_metadata_pull_request_metadata_types_ts
+  file_validation_src_modules_pull_request_metadata_pull_request_metadata_command_unit_test_ts --> file_validation_testing_mocks_ts
+  file_validation_src_modules_pull_request_metadata_pull_request_metadata_module_ts --> file_validation_src_modules_pull_request_metadata_pull_request_metadata_github_service_ts
+  file_validation_src_modules_pull_request_metadata_pull_request_metadata_module_ts --> file_validation_src_modules_pull_request_metadata_pull_request_metadata_command_ts
+  file_validation_src_modules_pull_request_metadata_pull_request_metadata_module_ts --> file_validation_src_modules_pull_request_metadata_pull_request_metadata_service_ts
+  file_validation_src_modules_pull_request_metadata_pull_request_metadata_module_unit_test_ts --> file_validation_src_modules_pull_request_metadata_pull_request_metadata_github_service_ts
+  file_validation_src_modules_pull_request_metadata_pull_request_metadata_module_unit_test_ts --> file_validation_src_modules_pull_request_metadata_pull_request_metadata_command_ts
+  file_validation_src_modules_pull_request_metadata_pull_request_metadata_module_unit_test_ts --> file_validation_src_modules_pull_request_metadata_pull_request_metadata_module_ts
+  file_validation_src_modules_pull_request_metadata_pull_request_metadata_module_unit_test_ts --> file_validation_src_modules_pull_request_metadata_pull_request_metadata_service_ts
+  file_validation_src_modules_pull_request_metadata_pull_request_metadata_service_ts --> file_validation_src_modules_pull_request_metadata_pull_request_metadata_constants_ts
+  file_validation_src_modules_pull_request_metadata_pull_request_metadata_service_ts --> file_validation_src_modules_pull_request_metadata_pull_request_metadata_types_ts
+  file_validation_src_modules_pull_request_metadata_pull_request_metadata_service_unit_test_ts --> file_validation_src_modules_pull_request_metadata_pull_request_metadata_service_ts
+  file_validation_src_modules_pull_request_metadata_pull_request_metadata_service_unit_test_ts --> file_validation_src_modules_pull_request_metadata_pull_request_metadata_types_ts
+  file_validation_src_modules_pull_request_release_significance_pull_request_release_significance_github_service_ts --> file_validation_src_modules_pull_request_release_significance_pull_request_release_significance_constants_ts
+  file_validation_src_modules_pull_request_release_significance_pull_request_release_significance_github_service_ts --> file_validation_src_modules_pull_request_release_significance_pull_request_release_significance_types_ts
+  file_validation_src_modules_pull_request_release_significance_pull_request_release_significance_github_service_unit_test_ts --> file_validation_src_modules_pull_request_release_significance_pull_request_release_significance_github_service_ts
+  file_validation_src_modules_pull_request_release_significance_pull_request_release_significance_github_service_unit_test_ts --> file_validation_src_modules_pull_request_release_significance_pull_request_release_significance_constants_ts
+  file_validation_src_modules_pull_request_release_significance_pull_request_release_significance_command_ts --> file_validation_src_modules_pull_request_release_significance_pull_request_release_significance_github_service_ts
+  file_validation_src_modules_pull_request_release_significance_pull_request_release_significance_command_ts --> file_validation_src_modules_pull_request_release_significance_pull_request_release_significance_constants_ts
+  file_validation_src_modules_pull_request_release_significance_pull_request_release_significance_command_ts --> file_validation_src_modules_pull_request_release_significance_pull_request_release_significance_service_ts
+  file_validation_src_modules_pull_request_release_significance_pull_request_release_significance_command_ts --> file_validation_src_modules_pull_request_release_significance_pull_request_release_significance_types_ts
+  file_validation_src_modules_pull_request_release_significance_pull_request_release_significance_command_unit_test_ts --> file_validation_src_modules_pull_request_release_significance_pull_request_release_significance_github_service_ts
+  file_validation_src_modules_pull_request_release_significance_pull_request_release_significance_command_unit_test_ts --> file_validation_src_modules_pull_request_release_significance_pull_request_release_significance_command_ts
+  file_validation_src_modules_pull_request_release_significance_pull_request_release_significance_command_unit_test_ts --> file_validation_src_modules_pull_request_release_significance_pull_request_release_significance_constants_ts
+  file_validation_src_modules_pull_request_release_significance_pull_request_release_significance_command_unit_test_ts --> file_validation_src_modules_pull_request_release_significance_pull_request_release_significance_service_ts
+  file_validation_src_modules_pull_request_release_significance_pull_request_release_significance_command_unit_test_ts --> file_validation_src_modules_pull_request_release_significance_pull_request_release_significance_types_ts
+  file_validation_src_modules_pull_request_release_significance_pull_request_release_significance_command_unit_test_ts --> file_validation_testing_mocks_ts
+  file_validation_src_modules_pull_request_release_significance_pull_request_release_significance_module_ts --> file_validation_src_modules_pull_request_release_significance_pull_request_release_significance_github_service_ts
+  file_validation_src_modules_pull_request_release_significance_pull_request_release_significance_module_ts --> file_validation_src_modules_pull_request_release_significance_pull_request_release_significance_command_ts
+  file_validation_src_modules_pull_request_release_significance_pull_request_release_significance_module_ts --> file_validation_src_modules_pull_request_release_significance_pull_request_release_significance_service_ts
+  file_validation_src_modules_pull_request_release_significance_pull_request_release_significance_module_unit_test_ts --> file_validation_src_modules_pull_request_release_significance_pull_request_release_significance_github_service_ts
+  file_validation_src_modules_pull_request_release_significance_pull_request_release_significance_module_unit_test_ts --> file_validation_src_modules_pull_request_release_significance_pull_request_release_significance_command_ts
+  file_validation_src_modules_pull_request_release_significance_pull_request_release_significance_module_unit_test_ts --> file_validation_src_modules_pull_request_release_significance_pull_request_release_significance_module_ts
+  file_validation_src_modules_pull_request_release_significance_pull_request_release_significance_module_unit_test_ts --> file_validation_src_modules_pull_request_release_significance_pull_request_release_significance_service_ts
+  file_validation_src_modules_pull_request_release_significance_pull_request_release_significance_service_ts --> file_validation_src_modules_pull_request_release_significance_pull_request_release_significance_constants_ts
+  file_validation_src_modules_pull_request_release_significance_pull_request_release_significance_service_ts --> file_validation_src_modules_pull_request_release_significance_pull_request_release_significance_types_ts
+  file_validation_src_modules_pull_request_release_significance_pull_request_release_significance_service_unit_test_ts --> file_validation_src_modules_pull_request_release_significance_pull_request_release_significance_service_ts
+  file_validation_src_modules_pull_request_release_significance_pull_request_release_significance_service_unit_test_ts --> file_validation_src_modules_pull_request_release_significance_pull_request_release_significance_types_ts
+  file_validation_src_modules_readme_projects_readme_projects_command_ts --> file_validation_src_modules_readme_projects_readme_projects_service_ts
+  file_validation_src_modules_readme_projects_readme_projects_command_unit_test_ts --> file_validation_src_modules_readme_projects_readme_projects_command_ts
+  file_validation_src_modules_readme_projects_readme_projects_command_unit_test_ts --> file_validation_src_modules_readme_projects_readme_projects_service_ts
+  file_validation_src_modules_readme_projects_readme_projects_command_unit_test_ts --> file_validation_testing_mocks_ts
+  file_validation_src_modules_readme_projects_readme_projects_module_ts --> file_validation_src_modules_readme_projects_readme_projects_command_ts
+  file_validation_src_modules_readme_projects_readme_projects_module_ts --> file_validation_src_modules_readme_projects_readme_projects_service_ts
+  file_validation_src_modules_readme_projects_readme_projects_module_unit_test_ts --> file_validation_src_modules_readme_projects_readme_projects_command_ts
+  file_validation_src_modules_readme_projects_readme_projects_module_unit_test_ts --> file_validation_src_modules_readme_projects_readme_projects_module_ts
+  file_validation_src_modules_readme_projects_readme_projects_module_unit_test_ts --> file_validation_src_modules_readme_projects_readme_projects_service_ts
+  file_validation_src_modules_readme_projects_readme_projects_service_ts --> file_validation_src_modules_readme_projects_readme_projects_constants_ts
+  file_validation_src_modules_readme_projects_readme_projects_service_unit_test_ts --> file_validation_src_modules_readme_projects_readme_projects_service_ts
+  file_validation_src_repl_ts --> file_validation_src_main_module_ts
+```
+<!-- codependix:end name="codependix-file-imports" -->
+
 ## ⏲️ Codometer
 
 Repository statistics measured by [codometer](packages/ic-suite/codometer/codometer-cli), regenerated by `nx run codebase:codometer`.
 
 ### Repository
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-267970-22c55e?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-267973-22c55e?style=flat-square)
 ![Repository Size](https://img.shields.io/badge/Repository_Size-14.89_MB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-631-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-2210-3178c6?style=flat-square)
@@ -1522,12 +7910,12 @@ Repository statistics measured by [codometer](packages/ic-suite/codometer/codome
 ### YAML
 
 ![YAML Files](https://img.shields.io/badge/YAML_Files-27-cb171e?style=flat-square)
-![YAML Lines](https://img.shields.io/badge/YAML_Lines-3430-e34c26?style=flat-square)
+![YAML Lines](https://img.shields.io/badge/YAML_Lines-3431-e34c26?style=flat-square)
 ![YAML Documents](https://img.shields.io/badge/YAML_Documents-27-f97316?style=flat-square)
 ![YAML Mappings](https://img.shields.io/badge/YAML_Mappings-433-7c3aed?style=flat-square)
 ![YAML Sequences](https://img.shields.io/badge/YAML_Sequences-98-8b5cf6?style=flat-square)
-![YAML Keys](https://img.shields.io/badge/YAML_Keys-1444-0284c7?style=flat-square)
-![YAML Scalars](https://img.shields.io/badge/YAML_Scalars-2950-16a34a?style=flat-square)
+![YAML Keys](https://img.shields.io/badge/YAML_Keys-1445-0284c7?style=flat-square)
+![YAML Scalars](https://img.shields.io/badge/YAML_Scalars-2952-16a34a?style=flat-square)
 ![YAML Anchors](https://img.shields.io/badge/YAML_Anchors-0-059669?style=flat-square)
 ![YAML Aliases](https://img.shields.io/badge/YAML_Aliases-0-10b981?style=flat-square)
 ![YAML Comments](https://img.shields.io/badge/YAML_Comments-973-64748b?style=flat-square)
@@ -1642,7 +8030,7 @@ Repository statistics measured by [codometer](packages/ic-suite/codometer/codome
 ### Markdown
 
 ![Markdown Files](https://img.shields.io/badge/Markdown_Files-272-083fa1?style=flat-square)
-![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-74535-1f6feb?style=flat-square)
+![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-74550-1f6feb?style=flat-square)
 ![H1](https://img.shields.io/badge/H1-262-7c3aed?style=flat-square)
 ![H2](https://img.shields.io/badge/H2-1768-8b5cf6?style=flat-square)
 ![H3](https://img.shields.io/badge/H3-1989-a78bfa?style=flat-square)

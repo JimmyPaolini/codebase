@@ -888,6 +888,7 @@ flowchart LR
   ChangesModule
   CommentsModule
   ConfigModule([ConfigModule])
+  ConfigurationListingModule
   ConfigurationModule
   CssModule
   CustomizationModule
@@ -918,10 +919,10 @@ flowchart LR
   ChangesModule --> ConfigurationModule
   ChangesModule --> DocumentsModule
   ChangesModule --> RenderModule
+  ConfigurationListingModule --> ConfigurationModule
+  ConfigurationListingModule --> DiscoveryModule
+  ConfigurationModule --> ConfigurationListingModule
   ConfigurationModule --> ConfigurationModule
-  ConfigurationModule --> ConfigurationModule
-  ConfigurationModule --> ConfigurationModule
-  ConfigurationModule --> DiscoveryModule
   DeliveryModule --> JsonModule
   DeliveryModule --> MarkdownModule
   JupyterModule --> JsonModule
