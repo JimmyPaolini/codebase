@@ -75,6 +75,7 @@ graph LR
   file_vitest_config_ts["vitest.config.ts"]
   file_src_index_unit_test_ts --> file_src_index_ts
   file_src_lib_report_types_ts --> file_src_lib_statistics_types_ts
+  file_src_lib_symbols_constants_ts --> file_src_lib_report_types_ts
   file_src_lib_symbols_constants_ts --> file_src_lib_statistics_types_ts
   file_src_lib_symbols_constants_ts --> file_src_lib_symbols_types_ts
 ```

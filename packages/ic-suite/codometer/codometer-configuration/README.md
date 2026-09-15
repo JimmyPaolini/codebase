@@ -448,9 +448,9 @@ Call stacks traced through `packages/ic-suite/codometer/codometer-configuration`
 
 | Measure | Value |
 | --- | --- |
-| Callables | 69 |
-| Files | 16 |
-| Calls traced | 65 |
+| Callables | 73 |
+| Files | 18 |
+| Calls traced | 68 |
 | Call stacks | 6 |
 | Deepest stack | 3 |
 | Stacks through recursion | 0 |
@@ -462,7 +462,7 @@ What this project is judged against, as declared in its own `callidescope.config
 
 | Limit | Value |
 | --- | --- |
-| `maximumDepth` | 8 |
+| `maximumDepth` | 9 |
 | `maximumBreadth` | 7 |
 
 ### Call stacks (depth)
@@ -520,24 +520,24 @@ What this project is judged against, as declared in its own `callidescope.config
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `ConfigurationFlagsService.readCheckNames` | 4 | `ConfigurationFlagsService.describeAcceptedCheckNames`, `ConfigurationFlagsService.filter(…)`, `ConfigurationFlagsService.map(…)`, `ConfigurationFlagsService.validateCheckNames` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration-flags.service.ts:69` |
+| `ConfigurationFlagsService.readCheckNames` | 4 | `ConfigurationFlagsService.describeAcceptedCheckNames`, `ConfigurationFlagsService.filter(…)`, `ConfigurationFlagsService.map(…)`, `ConfigurationFlagsService.validateCheckNames` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration-flags.service.ts:57` |
 | `ConfigurationLoaderService.load` | 4 | `ConfigurationLoaderService.findConfigurationFile`, `ConfigurationLoaderService.resolveConfigurationPath`, `UnknownConfigurationFileTypeError.constructor`, `ConfigurationLoaderService.loadConfigurationModule` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration-loader.service.ts:190` |
-| `ConfigurationService.resolveConfiguration` | 4 | `ConfigurationService.resolveCustomStatistics`, `ConfigurationService.resolveInputs`, `ConfigurationService.resolveLimits`, `ConfigurationService.resolveOutputs` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration.service.ts:398` |
+| `ConfigurationResolverService.resolveConfiguration` | 4 | `ConfigurationResolverService.resolveCustomStatistics`, `ConfigurationResolverService.resolveInputs`, `ConfigurationResolverService.resolveLimits`, `ConfigurationResolverService.resolveOutputs` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration-resolver.service.ts:336` |
 
 <details>
-<summary>37 more callables</summary>
+<summary>40 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `ConfigurationService.resolveInput` | 3 | `ConfigurationService.map(…)`, `ConfigurationService.filter(…)`, `ConfigurationService.filter(…)` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration.service.ts:209` |
-| `ConfigurationService.loadConfigurationFile` | 3 | `ConfigurationLoaderService.load`, `ConfigurationService.resolveConfiguration`, `ConfigurationService.parseConfiguration` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration.service.ts:368` |
-| `ConfigurationFlagsService.resolveFormat` | 2 | `ConfigurationFlagsService.find(…)`, `ConfigurationFlagsService.map(…)` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration-flags.service.ts:166` |
+| `ConfigurationResolverService.resolveInput` | 3 | `ConfigurationResolverService.map(…)`, `ConfigurationResolverService.filter(…)`, `ConfigurationResolverService.filter(…)` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration-resolver.service.ts:196` |
+| `ConfigurationService.loadConfigurationFile` | 3 | `ConfigurationLoaderService.load`, `ConfigurationService.resolveConfiguration`, `ConfigurationService.parseConfiguration` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration.service.ts:85` |
+| `ConfigurationFlagsService.resolveFormat` | 2 | `ConfigurationFlagsService.find(…)`, `ConfigurationFlagsService.map(…)` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration-flags.service.ts:154` |
 | `ConfigurationLoaderService.loadConfigurationModule` | 2 | `ConfigurationLoaderService.loadJsonConfiguration`, `ConfigurationLoaderService.readDefaultExport` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration-loader.service.ts:105` |
 | `ConfigurationLoaderService.resolveConfigurationPath` | 2 | `ConfigurationLoaderService.findRepositoryRoot`, `ConfigurationFileNotFoundError.constructor` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration-loader.service.ts:156` |
-| `ConfigurationService.parseLimitValue` | 2 | `ConfigurationService.parseLimitValueText`, `InvalidLimitValueError.constructor` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration.service.ts:107` |
-| `ConfigurationService.resolveInputs` | 2 | `ConfigurationService.some(…)`, `ConfigurationService.map(…)` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration.service.ts:237` |
-| `ConfigurationService.map(…)` | 2 | `ConfigurationService.resolveJsonOutput`, `ConfigurationService.resolveMarkdownOutput` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration.service.ts:305` |
-| `ConfigurationService.selectCustomStatistics` | 2 | `ConfigurationService.map(…)`, `ConfigurationService.flatMap(…)` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration.service.ts:321` |
+| `ConfigurationResolverService.parseLimitValue` | 2 | `ConfigurationResolverService.parseLimitValueText`, `InvalidLimitValueError.constructor` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration-resolver.service.ts:94` |
+| `ConfigurationResolverService.resolveInputs` | 2 | `ConfigurationResolverService.some(…)`, `ConfigurationResolverService.map(…)` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration-resolver.service.ts:224` |
+| `ConfigurationResolverService.map(…)` | 2 | `ConfigurationResolverService.resolveJsonOutput`, `ConfigurationResolverService.resolveMarkdownOutput` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration-resolver.service.ts:292` |
+| `ConfigurationResolverService.selectCustomStatistics` | 2 | `ConfigurationResolverService.map(…)`, `ConfigurationResolverService.flatMap(…)` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration-resolver.service.ts:308` |
 | `callbackSchema` | 1 | `custom(…)` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts:36` |
 | `superRefine(…)` | 1 | `some(…)` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts:107` |
 | `refine(…)` | 1 | `map(…)` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts:166` |
@@ -545,27 +545,30 @@ What this project is judged against, as declared in its own `callidescope.config
 | `superRefine(…)` | 1 | `find(…)` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts:209` |
 | `find(…)` | 1 | `findIndex(…)` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts:211` |
 | `superRefine(…)` | 1 | `map(…)` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration-schema.constants.ts:227` |
-| `ConfigurationFlagsService.describeAcceptedCheckNames` | 1 | `ConfigurationFlagsService.map(…)` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration-flags.service.ts:58` |
-| `ConfigurationFlagsService.validateCheckNames` | 1 | `ConfigurationFlagsService.describeAcceptedCheckNames` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration-flags.service.ts:101` |
-| `ConfigurationFlagsService.parseDefaultedOption` | 1 | `ConfigurationFlagsService.parseOptionalOption` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration-flags.service.ts:127` |
-| `ConfigurationFlagsService.parseDirectoryOption` | 1 | `ConfigurationFlagsService.parseDefaultedOption` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration-flags.service.ts:138` |
-| `ConfigurationFlagsService.selectMode` | 1 | `ConfigurationFlagsService.readCheckNames` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration-flags.service.ts:196` |
+| `ConfigurationFlagsService.describeAcceptedCheckNames` | 1 | `ConfigurationFlagsService.map(…)` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration-flags.service.ts:46` |
+| `ConfigurationFlagsService.validateCheckNames` | 1 | `ConfigurationFlagsService.describeAcceptedCheckNames` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration-flags.service.ts:89` |
+| `ConfigurationFlagsService.parseDefaultedOption` | 1 | `ConfigurationFlagsService.parseOptionalOption` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration-flags.service.ts:115` |
+| `ConfigurationFlagsService.parseDirectoryOption` | 1 | `ConfigurationFlagsService.parseDefaultedOption` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration-flags.service.ts:126` |
+| `ConfigurationFlagsService.selectMode` | 1 | `ConfigurationFlagsService.readCheckNames` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration-flags.service.ts:184` |
 | `ConfigurationLoaderService.findRepositoryRoot` | 1 | `ConfigurationLoaderService.some(…)` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration-loader.service.ts:81` |
-| `ConfigurationService.parseConfiguration` | 1 | `InvalidConfigurationError.constructor` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration.service.ts:90` |
-| `ConfigurationService.parseLimitValueText` | 1 | `InvalidLimitValueError.constructor` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration.service.ts:127` |
-| `ConfigurationService.resolveCustomStatistics` | 1 | `ConfigurationService.map(…)` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration.service.ts:163` |
-| `ConfigurationService.map(…)` | 1 | `ConfigurationService.resolveInput` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration.service.ts:248` |
-| `ConfigurationService.resolveJsonOutput` | 1 | `ConfigurationService.selectCustomStatistics` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration.service.ts:252` |
-| `ConfigurationService.resolveLimits` | 1 | `ConfigurationService.map(…)` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration.service.ts:271` |
-| `ConfigurationService.map(…)` | 1 | `ConfigurationService.parseLimitValue` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration.service.ts:274` |
-| `ConfigurationService.resolveMarkdownOutput` | 1 | `ConfigurationService.selectCustomStatistics` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration.service.ts:283` |
-| `ConfigurationService.resolveOutputs` | 1 | `ConfigurationService.map(…)` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration.service.ts:301` |
-| `ConfigurationService.loadConfiguration` | 1 | `ConfigurationService.loadConfigurationFile` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration.service.ts:351` |
-| `ConfigurationService.parseDefaultedOption` | 1 | `ConfigurationFlagsService.parseDefaultedOption` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration.service.ts:435` |
-| `ConfigurationService.parseDirectoryOption` | 1 | `ConfigurationFlagsService.parseDirectoryOption` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration.service.ts:440` |
-| `ConfigurationService.parseOptionalOption` | 1 | `ConfigurationFlagsService.parseOptionalOption` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration.service.ts:445` |
-| `ConfigurationService.resolveFormat` | 1 | `ConfigurationFlagsService.resolveFormat` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration.service.ts:453` |
-| `ConfigurationService.selectMode` | 1 | `ConfigurationFlagsService.selectMode` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration.service.ts:466` |
+| `ConfigurationResolverService.parseConfigurationInternal` | 1 | `InvalidConfigurationError.constructor` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration-resolver.service.ts:75` |
+| `ConfigurationResolverService.parseLimitValueText` | 1 | `InvalidLimitValueError.constructor` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration-resolver.service.ts:114` |
+| `ConfigurationResolverService.resolveCustomStatistics` | 1 | `ConfigurationResolverService.map(…)` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration-resolver.service.ts:150` |
+| `ConfigurationResolverService.map(…)` | 1 | `ConfigurationResolverService.resolveInput` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration-resolver.service.ts:235` |
+| `ConfigurationResolverService.resolveJsonOutput` | 1 | `ConfigurationResolverService.selectCustomStatistics` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration-resolver.service.ts:239` |
+| `ConfigurationResolverService.resolveLimits` | 1 | `ConfigurationResolverService.map(…)` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration-resolver.service.ts:258` |
+| `ConfigurationResolverService.map(…)` | 1 | `ConfigurationResolverService.parseLimitValue` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration-resolver.service.ts:261` |
+| `ConfigurationResolverService.resolveMarkdownOutput` | 1 | `ConfigurationResolverService.selectCustomStatistics` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration-resolver.service.ts:270` |
+| `ConfigurationResolverService.resolveOutputs` | 1 | `ConfigurationResolverService.map(…)` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration-resolver.service.ts:288` |
+| `ConfigurationResolverService.parseConfiguration` | 1 | `ConfigurationResolverService.parseConfigurationInternal` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration-resolver.service.ts:326` |
+| `ConfigurationService.loadConfiguration` | 1 | `ConfigurationService.loadConfigurationFile` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration.service.ts:68` |
+| `ConfigurationService.parseConfiguration` | 1 | `ConfigurationResolverService.parseConfiguration` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration.service.ts:110` |
+| `ConfigurationService.parseDefaultedOption` | 1 | `ConfigurationFlagsService.parseDefaultedOption` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration.service.ts:115` |
+| `ConfigurationService.parseDirectoryOption` | 1 | `ConfigurationFlagsService.parseDirectoryOption` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration.service.ts:120` |
+| `ConfigurationService.parseOptionalOption` | 1 | `ConfigurationFlagsService.parseOptionalOption` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration.service.ts:125` |
+| `ConfigurationService.resolveConfiguration` | 1 | `ConfigurationResolverService.resolveConfiguration` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration.service.ts:130` |
+| `ConfigurationService.resolveFormat` | 1 | `ConfigurationFlagsService.resolveFormat` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration.service.ts:139` |
+| `ConfigurationService.selectMode` | 1 | `ConfigurationFlagsService.selectMode` | `packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration.service.ts:152` |
 
 </details>
 <!-- CALL_STACKS_END -->
@@ -623,6 +626,8 @@ graph LR
   file_src_modules_configuration_configuration_loader_service_ts["src/modules/configuration/configuration-loader.service.ts"]
   file_src_modules_configuration_configuration_loader_service_unit_test_ts["src/modules/configuration/configuration-loader.service.unit.test.ts"]
   file_src_modules_configuration_configuration_loader_types_ts["src/modules/configuration/configuration-loader.types.ts"]
+  file_src_modules_configuration_configuration_resolver_service_ts["src/modules/configuration/configuration-resolver.service.ts"]
+  file_src_modules_configuration_configuration_resolver_service_unit_test_ts["src/modules/configuration/configuration-resolver.service.unit.test.ts"]
   file_src_modules_configuration_configuration_schema_constants_ts["src/modules/configuration/configuration-schema.constants.ts"]
   file_src_modules_configuration_configuration_constants_ts["src/modules/configuration/configuration.constants.ts"]
   file_src_modules_configuration_configuration_module_ts["src/modules/configuration/configuration.module.ts"]
@@ -644,23 +649,29 @@ graph LR
   file_src_modules_configuration_configuration_loader_service_ts --> file_src_modules_configuration_configuration_constants_ts
   file_src_modules_configuration_configuration_loader_service_ts --> file_src_modules_configuration_configuration_types_ts
   file_src_modules_configuration_configuration_loader_service_unit_test_ts --> file_src_modules_configuration_configuration_loader_service_ts
+  file_src_modules_configuration_configuration_resolver_service_ts --> file_src_modules_configuration_configuration_schema_constants_ts
+  file_src_modules_configuration_configuration_resolver_service_ts --> file_src_modules_configuration_configuration_constants_ts
+  file_src_modules_configuration_configuration_resolver_service_ts --> file_src_modules_configuration_configuration_types_ts
+  file_src_modules_configuration_configuration_resolver_service_ts --> file_src_modules_configuration_resolved_types_ts
+  file_src_modules_configuration_configuration_resolver_service_unit_test_ts --> file_src_modules_configuration_configuration_resolver_service_ts
   file_src_modules_configuration_configuration_schema_constants_ts --> file_src_modules_configuration_configuration_constants_ts
   file_src_modules_configuration_configuration_schema_constants_ts --> file_src_modules_configuration_output_types_ts
   file_src_modules_configuration_configuration_constants_ts --> file_src_modules_configuration_configuration_types_ts
   file_src_modules_configuration_configuration_module_ts --> file_src_modules_configuration_configuration_flags_service_ts
   file_src_modules_configuration_configuration_module_ts --> file_src_modules_configuration_configuration_loader_service_ts
+  file_src_modules_configuration_configuration_module_ts --> file_src_modules_configuration_configuration_resolver_service_ts
   file_src_modules_configuration_configuration_module_ts --> file_src_modules_configuration_configuration_service_ts
   file_src_modules_configuration_configuration_module_unit_test_ts --> file_src_modules_configuration_configuration_loader_service_ts
   file_src_modules_configuration_configuration_module_unit_test_ts --> file_src_modules_configuration_configuration_module_ts
   file_src_modules_configuration_configuration_module_unit_test_ts --> file_src_modules_configuration_configuration_service_ts
   file_src_modules_configuration_configuration_service_ts --> file_src_modules_configuration_configuration_flags_service_ts
   file_src_modules_configuration_configuration_service_ts --> file_src_modules_configuration_configuration_loader_service_ts
-  file_src_modules_configuration_configuration_service_ts --> file_src_modules_configuration_configuration_schema_constants_ts
-  file_src_modules_configuration_configuration_service_ts --> file_src_modules_configuration_configuration_constants_ts
+  file_src_modules_configuration_configuration_service_ts --> file_src_modules_configuration_configuration_resolver_service_ts
   file_src_modules_configuration_configuration_service_ts --> file_src_modules_configuration_configuration_types_ts
   file_src_modules_configuration_configuration_service_ts --> file_src_modules_configuration_resolved_types_ts
   file_src_modules_configuration_configuration_service_unit_test_ts --> file_src_modules_configuration_configuration_flags_service_ts
   file_src_modules_configuration_configuration_service_unit_test_ts --> file_src_modules_configuration_configuration_loader_service_ts
+  file_src_modules_configuration_configuration_service_unit_test_ts --> file_src_modules_configuration_configuration_resolver_service_ts
   file_src_modules_configuration_configuration_service_unit_test_ts --> file_src_modules_configuration_configuration_constants_ts
   file_src_modules_configuration_configuration_service_unit_test_ts --> file_src_modules_configuration_configuration_service_ts
   file_src_modules_configuration_configuration_service_unit_test_ts --> file_src_modules_configuration_configuration_types_ts

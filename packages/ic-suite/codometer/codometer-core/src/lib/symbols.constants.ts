@@ -1,5 +1,6 @@
 // ♟️ Constants
 
+import type { CodometerSeverity } from "./report.types";
 import type { CodometerStatisticGroup } from "./statistics.types";
 import type {
   CodometerSymbolKind,
@@ -27,6 +28,12 @@ export const CODOMETER_STATISTIC_GROUPS = [
   "typescript",
   "yaml",
 ] as const satisfies readonly CodometerStatisticGroup[];
+
+/** Severities a limit may declare for the breach it would report. */
+export const CODOMETER_SEVERITIES = [
+  "fail",
+  "warn",
+] as const satisfies readonly CodometerSeverity[];
 
 /** Declaration kinds a symbol counter, or a `comment` selector, may ask for. */
 export const CODOMETER_SYMBOL_KINDS = [

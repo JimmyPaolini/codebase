@@ -12,9 +12,9 @@ Call stacks traced through `packages/ic-suite/codometer/codometer-output`, deepe
 
 | Measure | Value |
 | --- | --- |
-| Callables | 143 |
-| Files | 40 |
-| Calls traced | 317 |
+| Callables | 166 |
+| Files | 45 |
+| Calls traced | 346 |
 | Call stacks | 2 |
 | Deepest stack | 4 |
 | Stacks through recursion | 0 |
@@ -60,16 +60,20 @@ What this project is judged against, as declared in its own `callidescope.config
 | `MarkdownService.syncAnchoredBlock` | 6 | `MissingMarkdownPathError.constructor`, `MarkdownService.readExisting`, `MarkdownService.wrapInAnchors`, `MarkdownService.buildBlockRegex`, `MarkdownService.writeMarkdownFile`, `MarkdownService.replace(…)` | `packages/ic-suite/codometer/codometer-output/src/modules/markdown/markdown.service.ts:204` |
 
 <details>
-<summary>72 more callables</summary>
+<summary>85 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
 | `RenderService.renderSection` | 6 | `RenderService.groupByProject(…)`, `RenderService.groupByProject`, `RenderService.groupByProject(…)`, `RenderService.flatMap(…)`, `RenderService.readProjects`, `RenderService.renderComparison` | `packages/ic-suite/codometer/codometer-output/src/modules/render/render.service.ts:154` |
 | `ChangesService.collect` | 4 | `ChangesService.map(…)`, `ChangesService.readReportPaths`, `ChangesService.flatMap(…)`, `ChangesService.flatMap(…)` | `packages/ic-suite/codometer/codometer-output/src/modules/changes/changes.service.ts:289` |
+| `ConfigurationService.findConfigurationFiles` | 4 | `ConfigurationService.resolveWalkExclusions`, `DiscoveryService.discoverFiles`, `ConfigurationService.toSorted(…)`, `ConfigurationService.filter(…)` | `packages/ic-suite/codometer/codometer-output/src/modules/configuration/configuration.service.ts:185` |
 | `buildRepositoryGroup` | 4 | `buildGroup`, `buildBadge`, `formatBytes`, `buildCustomBadges` | `packages/ic-suite/codometer/codometer-output/src/modules/markdown/markdown.utilities.ts:263` |
 | `RenderService.renderProject` | 4 | `RenderService.filter(…)`, `RenderService.readIsOpen`, `RenderService.renderFailures`, `RenderService.map(…)` | `packages/ic-suite/codometer/codometer-output/src/modules/render/render.service.ts:106` |
 | `ChangesService.map(…)` | 3 | `ChangesService.readBreach`, `ChangesService.readLabel`, `ChangesService.readGoverningLimit` | `packages/ic-suite/codometer/codometer-output/src/modules/changes/changes.service.ts:223` |
 | `ChangesService.readReportPaths` | 3 | `ChangesService.flatMap(…)`, `ChangesService.map(…)`, `ChangesService.flatMap(…)` | `packages/ic-suite/codometer/codometer-output/src/modules/changes/changes.service.ts:264` |
+| `RenderConfigurationService.renderDirectory` | 3 | `RenderConfigurationService.renderNames`, `RenderConfigurationService.map(…)`, `RenderConfigurationService.map(…)` | `packages/ic-suite/codometer/codometer-output/src/modules/configuration/render-configuration.service.ts:36` |
+| `RenderConfigurationService.renderLimitsTable` | 3 | `RenderConfigurationService.renderRow`, `RenderConfigurationService.map(…)`, `RenderConfigurationService.map(…)` | `packages/ic-suite/codometer/codometer-output/src/modules/configuration/render-configuration.service.ts:64` |
+| `RenderConfigurationService.render` | 3 | `RenderConfigurationService.renderRootError`, `RenderConfigurationService.renderLimitsTable`, `RenderConfigurationService.map(…)` | `packages/ic-suite/codometer/codometer-output/src/modules/configuration/render-configuration.service.ts:117` |
 | `buildCssGroup` | 3 | `buildGroup`, `buildBadge`, `buildCustomBadges` | `packages/ic-suite/codometer/codometer-output/src/modules/markdown/markdown.utilities.ts:23` |
 | `buildHclGroup` | 3 | `buildGroup`, `buildBadge`, `buildCustomBadges` | `packages/ic-suite/codometer/codometer-output/src/modules/markdown/markdown.utilities.ts:116` |
 | `buildJsonGroup` | 3 | `buildGroup`, `buildBadge`, `buildCustomBadges` | `packages/ic-suite/codometer/codometer-output/src/modules/markdown/markdown.utilities.ts:156` |
@@ -92,8 +96,10 @@ What this project is judged against, as declared in its own `callidescope.config
 | `ChangesService.readBreach` | 2 | `ChangesService.filter(…)`, `ChangesService.some(…)` | `packages/ic-suite/codometer/codometer-output/src/modules/changes/changes.service.ts:175` |
 | `ChangesService.readGoverningLimit` | 2 | `ChangesService.filter(…)`, `ChangesService.map(…)` | `packages/ic-suite/codometer/codometer-output/src/modules/changes/changes.service.ts:195` |
 | `ChangesService.readReport` | 2 | `ChangesService.parseReport`, `ChangesService.flatMap(…)` | `packages/ic-suite/codometer/codometer-output/src/modules/changes/changes.service.ts:240` |
-| `JsonService.sync` | 2 | `JsonService.render`, `JsonService.readExisting` | `packages/ic-suite/codometer/codometer-output/src/modules/json/json.service.ts:62` |
 | `formatValue` | 2 | `formatBytes`, `formatCount` | `packages/ic-suite/codometer/codometer-output/src/modules/render/render.utilities.ts:34` |
+| `ConfigurationService.formatLimitValue` | 2 | `formatBytes`, `formatCount` | `packages/ic-suite/codometer/codometer-output/src/modules/configuration/configuration.service.ts:98` |
+| `ConfigurationService.describeConfigurations` | 2 | `ConfigurationService.findConfigurationFiles`, `ConfigurationService.describeConfiguration` | `packages/ic-suite/codometer/codometer-output/src/modules/configuration/configuration.service.ts:152` |
+| `JsonService.sync` | 2 | `JsonService.render`, `JsonService.readExisting` | `packages/ic-suite/codometer/codometer-output/src/modules/json/json.service.ts:62` |
 | `buildCustomBadges` | 2 | `map(…)`, `filter(…)` | `packages/ic-suite/codometer/codometer-output/src/modules/markdown/markdown.utilities.ts:47` |
 | `buildCustomGroup` | 2 | `buildCustomBadges`, `buildGroup` | `packages/ic-suite/codometer/codometer-output/src/modules/markdown/markdown.utilities.ts:64` |
 | `buildCustomStatisticInstancesSection` | 2 | `map(…)`, `filter(…)` | `packages/ic-suite/codometer/codometer-output/src/modules/markdown/markdown.utilities.ts:85` |
@@ -117,6 +123,13 @@ What this project is judged against, as declared in its own `callidescope.config
 | `ChangesService.flatMap(…)` | 1 | `ChangesService.readMetrics` | `packages/ic-suite/codometer/codometer-output/src/modules/changes/changes.service.ts:256` |
 | `ChangesService.map(…)` | 1 | `ChangesService.collectProjectRows` | `packages/ic-suite/codometer/codometer-output/src/modules/changes/changes.service.ts:290` |
 | `formatDelta` | 1 | `formatValue` | `packages/ic-suite/codometer/codometer-output/src/modules/render/render.utilities.ts:24` |
+| `ConfigurationService.describeConfiguration` | 1 | `ConfigurationService.loadConfigurationFile` | `packages/ic-suite/codometer/codometer-output/src/modules/configuration/configuration.service.ts:63` |
+| `ConfigurationService.resolveWalkExclusions` | 1 | `ConfigurationService.loadConfigurationFile` | `packages/ic-suite/codometer/codometer-output/src/modules/configuration/configuration.service.ts:117` |
+| `ConfigurationService.toLimitRows` | 1 | `ConfigurationService.flatMap(…)` | `packages/ic-suite/codometer/codometer-output/src/modules/configuration/configuration.service.ts:204` |
+| `ConfigurationService.flatMap(…)` | 1 | `ConfigurationService.map(…)` | `packages/ic-suite/codometer/codometer-output/src/modules/configuration/configuration.service.ts:207` |
+| `ConfigurationService.map(…)` | 1 | `ConfigurationService.formatLimitValue` | `packages/ic-suite/codometer/codometer-output/src/modules/configuration/configuration.service.ts:208` |
+| `RenderConfigurationService.map(…)` | 1 | `RenderConfigurationService.renderRow` | `packages/ic-suite/codometer/codometer-output/src/modules/configuration/render-configuration.service.ts:72` |
+| `RenderConfigurationService.map(…)` | 1 | `RenderConfigurationService.renderDirectory` | `packages/ic-suite/codometer/codometer-output/src/modules/configuration/render-configuration.service.ts:144` |
 | `buildBadge` | 1 | `encodeValue` | `packages/ic-suite/codometer/codometer-output/src/modules/markdown/markdown.utilities.ts:14` |
 | `map(…)` | 1 | `buildBadge` | `packages/ic-suite/codometer/codometer-output/src/modules/markdown/markdown.utilities.ts:53` |
 | `formatTargetSize` | 1 | `formatBytes` | `packages/ic-suite/codometer/codometer-output/src/modules/markdown/markdown.utilities.ts:420` |
@@ -171,14 +184,18 @@ graph LR
 ```mermaid
 flowchart LR
   ChangesModule
+  ConfigurationModule
   DeliveryModule
   DestinationsModule
+  DiscoveryModule
   DocumentsModule
   JsonModule
   LoggerModule([LoggerModule])
   MarkdownModule
   RenderModule
   ReportModule
+  ConfigurationModule --> ConfigurationModule
+  ConfigurationModule --> DiscoveryModule
   DeliveryModule --> JsonModule
   DeliveryModule --> MarkdownModule
 ```
@@ -202,6 +219,13 @@ graph LR
   file_src_modules_changes_changes_service_ts["src/modules/changes/changes.service.ts"]
   file_src_modules_changes_changes_service_unit_test_ts["src/modules/changes/changes.service.unit.test.ts"]
   file_src_modules_changes_changes_types_ts["src/modules/changes/changes.types.ts"]
+  file_src_modules_configuration_configuration_constants_ts["src/modules/configuration/configuration.constants.ts"]
+  file_src_modules_configuration_configuration_module_ts["src/modules/configuration/configuration.module.ts"]
+  file_src_modules_configuration_configuration_service_ts["src/modules/configuration/configuration.service.ts"]
+  file_src_modules_configuration_configuration_service_unit_test_ts["src/modules/configuration/configuration.service.unit.test.ts"]
+  file_src_modules_configuration_configuration_types_ts["src/modules/configuration/configuration.types.ts"]
+  file_src_modules_configuration_render_configuration_service_ts["src/modules/configuration/render-configuration.service.ts"]
+  file_src_modules_configuration_render_configuration_service_unit_test_ts["src/modules/configuration/render-configuration.service.unit.test.ts"]
   file_src_modules_delivery_delivery_constants_ts["src/modules/delivery/delivery.constants.ts"]
   file_src_modules_delivery_delivery_module_ts["src/modules/delivery/delivery.module.ts"]
   file_src_modules_delivery_delivery_service_ts["src/modules/delivery/delivery.service.ts"]
@@ -256,6 +280,16 @@ graph LR
   file_src_modules_changes_changes_service_unit_test_ts --> file_src_modules_changes_changes_service_ts
   file_src_modules_changes_changes_service_unit_test_ts --> file_src_modules_changes_changes_types_ts
   file_src_modules_changes_changes_types_ts --> file_src_modules_changes_changes_constants_ts
+  file_src_modules_configuration_configuration_module_ts --> file_src_modules_configuration_configuration_service_ts
+  file_src_modules_configuration_configuration_module_ts --> file_src_modules_configuration_render_configuration_service_ts
+  file_src_modules_configuration_configuration_service_ts --> file_src_modules_configuration_configuration_constants_ts
+  file_src_modules_configuration_configuration_service_ts --> file_src_modules_configuration_configuration_types_ts
+  file_src_modules_configuration_configuration_service_ts --> file_src_modules_render_render_utilities_ts
+  file_src_modules_configuration_configuration_service_unit_test_ts --> file_src_modules_configuration_configuration_service_ts
+  file_src_modules_configuration_render_configuration_service_ts --> file_src_modules_configuration_configuration_constants_ts
+  file_src_modules_configuration_render_configuration_service_ts --> file_src_modules_configuration_configuration_types_ts
+  file_src_modules_configuration_render_configuration_service_unit_test_ts --> file_src_modules_configuration_configuration_types_ts
+  file_src_modules_configuration_render_configuration_service_unit_test_ts --> file_src_modules_configuration_render_configuration_service_ts
   file_src_modules_delivery_delivery_constants_ts --> file_src_modules_destinations_destinations_types_ts
   file_src_modules_delivery_delivery_module_ts --> file_src_modules_delivery_delivery_service_ts
   file_src_modules_delivery_delivery_module_ts --> file_src_modules_json_json_module_ts
