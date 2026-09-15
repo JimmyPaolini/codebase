@@ -3,7 +3,14 @@ import { projectDefaults } from "../../../../configuration/callidescope.config.j
 /**
  * What conformetry-cli is held to, measured rather than assumed.
  *
- * Fourteen frames from a generator invocation to the files it writes.
+ * Fifteen frames from a generator invocation to the files it writes.
+ *
+ * Fourteen of those fifteen are the same run as before. The fifteenth is
+ * `ConfigurationService`: `@conformetry/configuration` now publishes one
+ * facade, so each command injects it rather than `InstanceDiscoveryService`,
+ * `TemplateDiscoveryService`, `InputService` and `InputPromptingService`, and
+ * every stack through it gains exactly one delegating frame. The measured
+ * depth moved 14 → 15 and nothing got deeper.
  *
  * Measured by a run scoped to this project and its dependency closure, and set
  * **at** what it measured rather than above it: a stack at the limit passes, so
@@ -17,6 +24,6 @@ export default {
   ...projectDefaults,
   limits: {
     maximumBreadth: 9,
-    maximumDepth: 14,
+    maximumDepth: 15,
   },
 };

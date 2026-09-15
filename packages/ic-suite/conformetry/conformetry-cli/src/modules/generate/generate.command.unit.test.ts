@@ -1,9 +1,4 @@
-import {
-  ConfigurationService,
-  InputError,
-  InputPromptingService,
-  InputService,
-} from "@conformetry/configuration";
+import { ConfigurationService, InputError } from "@conformetry/configuration";
 import { GenerationService } from "@conformetry/generation";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
@@ -40,8 +35,6 @@ describe(GenerateCommand, () => {
   let command: GenerateCommand;
   let configurationService: ConfigurationService;
   let generationService: GenerationService;
-  let inputPromptingService: InputPromptingService;
-  let inputService: InputService;
   let commandLogger: LoggerService;
 
   beforeAll(async () => {
@@ -56,11 +49,6 @@ describe(GenerateCommand, () => {
           provide: GenerationService,
           useValue: createMock<GenerationService>(),
         },
-        {
-          provide: InputPromptingService,
-          useValue: createMock<InputPromptingService>(),
-        },
-        { provide: InputService, useValue: createMock<InputService>() },
         { provide: LoggerService, useValue: createMock<LoggerService>() },
       ],
     }).compile();
@@ -68,8 +56,6 @@ describe(GenerateCommand, () => {
     command = await module.resolve(GenerateCommand);
     configurationService = await module.resolve(ConfigurationService);
     generationService = await module.resolve(GenerationService);
-    inputPromptingService = await module.resolve(InputPromptingService);
-    inputService = await module.resolve(InputService);
     commandLogger = await module.resolve(LoggerService);
   });
 
@@ -80,14 +66,14 @@ describe(GenerateCommand, () => {
     vi.mocked(
       configurationService.loadConformetryConfiguration,
     ).mockResolvedValue(CONFIGURATION);
-    vi.mocked(inputService.resolveGeneratorInputs).mockResolvedValue({
+    vi.mocked(configurationService.resolveGeneratorInputs).mockResolvedValue({
       name: "my-widget",
     });
     vi.mocked(generationService.runGenerator).mockResolvedValue({
       generatedFilePaths: ["/w/generated/widget/my-widget.ts"],
       outputDirectoryPath: "/w/generated/widget",
     });
-    vi.mocked(inputPromptingService.isAtTerminal).mockReturnValue(false);
+    vi.mocked(configurationService.isAtTerminal).mockReturnValue(false);
   });
 
   afterEach(() => {
@@ -112,11 +98,6 @@ describe(GenerateCommand, () => {
           provide: GenerationService,
           useValue: createMock<GenerationService>(),
         },
-        {
-          provide: InputPromptingService,
-          useValue: createMock<InputPromptingService>(),
-        },
-        { provide: InputService, useValue: createMock<InputService>() },
         { provide: LoggerService, useValue: createMock<LoggerService>() },
       ],
     }).compile();
@@ -203,7 +184,7 @@ describe(GenerateCommand, () => {
 
       // An exact object rather than `objectContaining`: the point is that
       // nothing else — no `promptWhenMissing` — is passed alongside these two.
-      expect(inputService.resolveGeneratorInputs).toHaveBeenCalledWith({
+      expect(configurationService.resolveGeneratorInputs).toHaveBeenCalledWith({
         rawArguments: expect.any(Array) as string[],
         schema: {
           properties: { name: { type: "string" } },
@@ -213,7 +194,7 @@ describe(GenerateCommand, () => {
     });
 
     it("reports a required input nobody could be asked for as a refused command line", async () => {
-      vi.mocked(inputService.resolveGeneratorInputs).mockRejectedValue(
+      vi.mocked(configurationService.resolveGeneratorInputs).mockRejectedValue(
         new InputError(
           "name is required, and stdin is not a terminal so it cannot be asked for. Pass --name.",
         ),
@@ -248,11 +229,11 @@ describe(GenerateCommand, () => {
     // Supplying a value is itself how a caller opts out of being asked, so a
     // named template must not reach the picker even at a terminal.
     it("never prompts when the caller named a template", async () => {
-      vi.mocked(inputPromptingService.isAtTerminal).mockReturnValue(true);
+      vi.mocked(configurationService.isAtTerminal).mockReturnValue(true);
 
       await command.run([], { template: "widget" });
 
-      expect(inputPromptingService.promptForTemplate).not.toHaveBeenCalled();
+      expect(configurationService.promptForTemplate).not.toHaveBeenCalled();
       expect(generationService.runGenerator).toHaveBeenCalledWith(
         expect.objectContaining({
           definition: expect.objectContaining({ name: "widget" }) as unknown,
@@ -261,8 +242,8 @@ describe(GenerateCommand, () => {
     });
 
     it("offers the configured templates when none was named", async () => {
-      vi.mocked(inputPromptingService.isAtTerminal).mockReturnValue(true);
-      vi.mocked(inputPromptingService.promptForTemplate).mockResolvedValue(
+      vi.mocked(configurationService.isAtTerminal).mockReturnValue(true);
+      vi.mocked(configurationService.promptForTemplate).mockResolvedValue(
         "widget",
       );
 
@@ -270,7 +251,7 @@ describe(GenerateCommand, () => {
 
       // The loaded configuration itself, not a mapping of it: the picker can
       // then never disagree with what this command would actually run.
-      expect(inputPromptingService.promptForTemplate).toHaveBeenCalledWith(
+      expect(configurationService.promptForTemplate).toHaveBeenCalledWith(
         CONFIGURATION,
       );
       expect(generationService.runGenerator).toHaveBeenCalledWith(
@@ -321,8 +302,8 @@ describe(GenerateCommand, () => {
     });
 
     it("refuses a cancelled picker rather than generating nothing", async () => {
-      vi.mocked(inputPromptingService.isAtTerminal).mockReturnValue(true);
-      vi.mocked(inputPromptingService.promptForTemplate).mockResolvedValue(
+      vi.mocked(configurationService.isAtTerminal).mockReturnValue(true);
+      vi.mocked(configurationService.promptForTemplate).mockResolvedValue(
         undefined,
       );
 
@@ -362,7 +343,7 @@ describe(GenerateCommand, () => {
 
       await command.run([], { template: "widget" });
 
-      expect(inputService.resolveGeneratorInputs).toHaveBeenCalledWith({
+      expect(configurationService.resolveGeneratorInputs).toHaveBeenCalledWith({
         rawArguments: expect.any(Array) as string[],
         schema: {
           properties: {
@@ -388,7 +369,7 @@ describe(GenerateCommand, () => {
 
       await command.run([], { template: "widget" });
 
-      expect(inputService.resolveGeneratorInputs).toHaveBeenCalledWith({
+      expect(configurationService.resolveGeneratorInputs).toHaveBeenCalledWith({
         rawArguments: expect.any(Array) as string[],
         schema: { properties: {}, required: [] },
       });

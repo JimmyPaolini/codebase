@@ -1,10 +1,6 @@
 import {
   ALL_TEMPLATES_SELECTION,
   ConfigurationService,
-  InputPromptingService,
-  InputService,
-  InstanceDiscoveryService,
-  TemplateDiscoveryService,
 } from "@conformetry/configuration";
 import { ReportingService } from "@conformetry/output";
 import { ValidationService } from "@conformetry/validation";
@@ -53,10 +49,6 @@ export class ValidateCommand extends CommandRunner {
 
   constructor(
     private readonly configurationService: ConfigurationService,
-    private readonly instanceDiscoveryService: InstanceDiscoveryService,
-    private readonly templateDiscoveryService: TemplateDiscoveryService,
-    private readonly inputPromptingService: InputPromptingService,
-    private readonly inputService: InputService,
     private readonly reportingService: ReportingService,
     private readonly validationService: ValidationService,
     private readonly logger: LoggerService,
@@ -108,10 +100,10 @@ export class ValidateCommand extends CommandRunner {
   }): Instance[] {
     // Tag-scoped groups are dropped rather than expanded: their globs are read
     // inside each project their tags select, and this host resolves no tags.
-    return this.instanceDiscoveryService
+    return this.configurationService
       .readWorkspaceGroups(args.groups)
       .flatMap((group) => {
-        return this.instanceDiscoveryService.findInstances({
+        return this.configurationService.findInstances({
           // A group may name only labels, which this host has nothing to match
           // them against — it locates instances by glob alone.
           patterns: group.patterns ?? [],
@@ -141,11 +133,11 @@ export class ValidateCommand extends CommandRunner {
   private async promptForTemplateNames(
     configuration: ConformetryConfiguration,
   ): Promise<string[] | undefined> {
-    if (!this.inputPromptingService.isAtTerminal()) {
+    if (!this.configurationService.isAtTerminal()) {
       return undefined;
     }
 
-    return this.inputPromptingService.promptForTemplates(configuration);
+    return this.configurationService.promptForTemplates(configuration);
   }
 
   /**
@@ -167,7 +159,7 @@ export class ValidateCommand extends CommandRunner {
       .filter((template) => {
         return (
           template.instances.length > 0 &&
-          this.instanceDiscoveryService.readWorkspaceGroups(template.instances)
+          this.configurationService.readWorkspaceGroups(template.instances)
             .length === 0
         );
       })
@@ -322,7 +314,7 @@ export class ValidateCommand extends CommandRunner {
     flags: "--config [path]",
   })
   public parseConfig(value: string | undefined): string | undefined {
-    return this.inputService.parseOptionalOption(value);
+    return this.configurationService.parseOptionalOption(value);
   }
 
   /** Parses the optional instance glob override. */
@@ -332,7 +324,7 @@ export class ValidateCommand extends CommandRunner {
     flags: "--instances [globs]",
   })
   public parseInstances(value: string | undefined): string[] | undefined {
-    return this.inputService.parseCommaDelimitedOption(value);
+    return this.configurationService.parseCommaDelimitedOption(value);
   }
 
   /** Parses the optional language filter. */
@@ -341,7 +333,7 @@ export class ValidateCommand extends CommandRunner {
     flags: "--languages [languages]",
   })
   public parseLanguages(value: string | undefined): string[] | undefined {
-    return this.inputService.parseCommaDelimitedOption(value);
+    return this.configurationService.parseCommaDelimitedOption(value);
   }
 
   /**
@@ -355,7 +347,7 @@ export class ValidateCommand extends CommandRunner {
     flags: "--templates [names]",
   })
   public parseTemplates(value: string | undefined): string[] | undefined {
-    return this.inputService.parseCommaDelimitedOption(value);
+    return this.configurationService.parseCommaDelimitedOption(value);
   }
 
   /** Parses the optional run-level conformance threshold. */
@@ -365,7 +357,7 @@ export class ValidateCommand extends CommandRunner {
     flags: "--threshold [ratio]",
   })
   public parseThreshold(value: string | undefined): number | undefined {
-    return this.inputService.parseThresholdOption(value);
+    return this.configurationService.parseThresholdOption(value);
   }
 
   /** Runs validation and reports every difference found. */
@@ -407,7 +399,7 @@ export class ValidateCommand extends CommandRunner {
       ...(options.languages === undefined
         ? {}
         : { languageNames: options.languages }),
-      templates: this.templateDiscoveryService.collectTemplates({
+      templates: this.configurationService.collectTemplates({
         configuration: selectedTemplates ?? configuration,
         workingDirectory,
       }),
