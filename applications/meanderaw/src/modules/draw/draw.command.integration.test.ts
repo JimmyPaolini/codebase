@@ -15,7 +15,6 @@ import { CorpusService } from "../corpus/corpus.service";
 import { DatabaseService } from "../database/database.service";
 import { Meander } from "../database/entities/Meander.entity";
 import { DrawingModule } from "../drawing/drawing.module";
-import { LatticeService } from "../drawing/lattice.service";
 import { GeometryService } from "../geometry/geometry.service";
 import { GraphService } from "../graph/graph.service";
 import { SvgService } from "../svg/svg.service";
@@ -71,7 +70,6 @@ describe("drawCommand --code mode", () => {
         ClassificationService,
         ConnectivityService,
         DatabaseService,
-        LatticeService,
         GraphService,
         SubFamilyService,
         TileService,

@@ -29,9 +29,9 @@ import type { SubFamily } from "./sub-family.types";
  * definitions are written down.
  *
  * **Every rule below was measured rather than reasoned out.** Each family's
- * committed drawings were read back onto the lattice through
- * `AddressService.readTile` at the span their own filenames
- * declare, and each rule states what that reading found, per repeat:
+ * committed drawings were read back onto the lattice once, at the span
+ * their own filenames declared, and each rule states what that reading
+ * found, per repeat — see `HISTORICAL_CORPUS`:
  *
  * | family | what one repeat measures |
  * | --- | --- |

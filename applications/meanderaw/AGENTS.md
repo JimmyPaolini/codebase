@@ -35,9 +35,12 @@ value on 131 rows — and of nothing else.
 `enumerated` holds the 30,279 meanders `EnumerationService` walks — the fourteen
 shapes the edge budget admits. `hardcoded` holds the 965 meanders of the historical corpus
 that lie beyond that budget, extracted once as Codes from the retired file tree.
-`CORPUS_BY_FAMILY` carries the filter and why it is by shape rather than by
-Code: the enumeration applies no degree ceiling and no family filter, so at an admitted
-shape _every_ structurally distinct meander is already a row before ingestion begins.
+`CorpusService.isBeyondEnumeration` computes that boundary rather than reading a
+hand-listed one, from two bounds: `EDGE_BUDGET` through `EnumerationService.isAdmitted`,
+and the sweep's own `SWEEP_MINIMUM_ROWS` floor. The filter is by shape rather than by
+Code because the enumeration applies no degree ceiling and no family filter, so at an
+admitted shape _every_ structurally distinct meander is already a row before ingestion
+begins.
 **Raising `EDGE_BUDGET` without re-filtering that corpus is how the two halves
 collide** — `draw-sweep.command.integration.test.ts` is what catches it.
 

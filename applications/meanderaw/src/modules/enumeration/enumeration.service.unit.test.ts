@@ -3,7 +3,6 @@ import { beforeAll, describe, expect, it } from "vitest";
 
 import { SubFamilyService } from "../classification/sub-family.service";
 import { CodeService } from "../code/code.service";
-import { LatticeService } from "../drawing/lattice.service";
 import { SymmetryService } from "../symmetry/symmetry.service";
 import { TileService } from "../tile/tile.service";
 
@@ -20,7 +19,6 @@ describe(EnumerationService, () => {
       providers: [
         CodeService,
         EnumerationService,
-        LatticeService,
         SubFamilyService,
         SymmetryService,
         TileService,

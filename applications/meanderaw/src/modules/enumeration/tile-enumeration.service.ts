@@ -124,8 +124,8 @@ export class TileEnumerationService {
    * The key is the representative's own edge key rather than the name a
    * drawing carries. Both are constant across a symmetry class and tell two
    * classes of one shape apart, so either folds the walk identically — and
-   * the edge key is the one this module can read without depending on
-   * `AddressService`, which depends on this one.
+   * the edge key is the one this module can read without depending on the
+   * spelling.
    */
   private record(enumeration: TileEnumerationState): void {
     const { edges, shape, tilesByKey } = enumeration;
