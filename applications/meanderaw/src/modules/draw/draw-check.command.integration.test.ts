@@ -16,7 +16,23 @@ import { DrawEnumerationService } from "./draw-enumeration.service";
 import { DrawIndexService } from "./draw-index.service";
 import { DrawCommand } from "./draw.command";
 
-const SWEEP_TIMEOUT_MILLISECONDS = 60_000;
+/**
+ * Five minutes per case, the number
+ * `draw-sweep.command.integration.test.ts` already declares for the same
+ * work, rather than the minute this file undercut it by.
+ *
+ * Each case regenerates the whole corpus: 41–47 seconds on a CI runner,
+ * measured at 122.6s across the three in a passing run and 140.0s in a
+ * failing one. A minute left less margin than ordinary runner variance, and
+ * 🧑‍🔬 Test Coverage timed out here on four pushes to `main`.
+ *
+ * Not a hang, and not work that grew — `meanderaw-check` runs the same
+ * regeneration in six seconds locally. The runner is saturated: the job
+ * takes `--parallel=4`, and vitest gives each process
+ * `availableParallelism() - 1` workers. Neither multiplier can drop; serially
+ * the suites need 20.5 minutes against a 12-minute limit.
+ */
+const SWEEP_TIMEOUT_MILLISECONDS = 300_000;
 
 /**
  * Drives `DrawCommand`'s `--check` mode against a real TypeORM connection to
@@ -38,7 +54,10 @@ const SWEEP_TIMEOUT_MILLISECONDS = 60_000;
  *
  * This is real work rather than a hang, so the timeout is declared rather
  * than left to the default five seconds — the same reasoning
- * `draw-sweep.command.integration.test.ts` gives its own, larger timeout.
+ * `draw-sweep.command.integration.test.ts` gives its own, larger timeout,
+ * and now the same number, for the same reason: see
+ * {@link SWEEP_TIMEOUT_MILLISECONDS}.
+ *
  * `--check` mode's own "no drift" happy path is covered at two other levels
  * instead of here: `draw-check.service.unit.test.ts` proves `diff` reports no
  * drift for a matching pair of fixture rows, and running `--check` for real
