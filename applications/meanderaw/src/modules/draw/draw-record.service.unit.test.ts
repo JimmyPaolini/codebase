@@ -1,17 +1,18 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
-import { MeanderCharacteristicsService } from "../meander-characteristics/meander-characteristics.service";
-import { MeanderConnectivityService } from "../meander-characteristics/meander-connectivity.service";
-import { MeanderClassificationService } from "../meander-classification/meander-classification.service";
-import { MeanderDecodingService } from "../meander-decoding/meander-decoding.service";
-import { MeanderLatticeService } from "../meander-lattice/meander-lattice.service";
-import { MeanderRenderingService } from "../meander-rendering/meander-rendering.service";
-import { MeanderTopologyService } from "../meander-topology/meander-topology.service";
-import { MosaicNamingService } from "../mosaic-naming/mosaic-naming.service";
-import { MosaicTileService } from "../mosaic-tile/mosaic-tile.service";
-import { SvgRenderingService } from "../svg-rendering/svg-rendering.service";
+import { CharacteristicsService } from "../characteristics/characteristics.service";
+import { ConnectivityService } from "../characteristics/connectivity.service";
+import { ClassificationService } from "../classification/classification.service";
+import { SubFamilyService } from "../classification/sub-family.service";
+import { CodeService } from "../code/code.service";
+import { DrawingService } from "../drawing/drawing.service";
+import { LatticeService } from "../drawing/lattice.service";
+import { GeometryService } from "../geometry/geometry.service";
+import { GraphService } from "../graph/graph.service";
+import { SvgService } from "../svg/svg.service";
+import { SymmetryService } from "../symmetry/symmetry.service";
+import { TileService } from "../tile/tile.service";
 
 import { DrawRecordService } from "./draw-record.service";
 
@@ -29,17 +30,18 @@ describe(DrawRecordService, () => {
     const module = await Test.createTestingModule({
       providers: [
         DrawRecordService,
-        GridGeometryService,
-        MeanderCharacteristicsService,
-        MeanderClassificationService,
-        MeanderConnectivityService,
-        MeanderDecodingService,
-        MeanderLatticeService,
-        MeanderRenderingService,
-        MeanderTopologyService,
-        MosaicNamingService,
-        MosaicTileService,
-        SvgRenderingService,
+        GeometryService,
+        CharacteristicsService,
+        ClassificationService,
+        ConnectivityService,
+        CodeService,
+        SymmetryService,
+        LatticeService,
+        DrawingService,
+        GraphService,
+        SubFamilyService,
+        TileService,
+        SvgService,
       ],
     }).compile();
 

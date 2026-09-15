@@ -12,7 +12,7 @@ import {
 
 import { LoggerService } from "@codebase/logger";
 
-import { HardcodedMeandersService } from "../hardcoded-meanders/hardcoded-meanders.service";
+import { CorpusService } from "../corpus/corpus.service";
 
 import { DrawCheckService } from "./draw-check.service";
 import { DrawCodeService } from "./draw-code.service";
@@ -21,7 +21,7 @@ import { DrawIndexService } from "./draw-index.service";
 import { DrawCommand } from "./draw.command";
 import { DEFAULT_INDEX_PATH } from "./draw.constants";
 
-import type { Meander } from "../meander-database/entities/Meander.entity";
+import type { Meander } from "../database/entities/Meander.entity";
 import type { MeanderDriftReport } from "./draw-check.types";
 
 const { writeFileMock } = vi.hoisted(() => ({
@@ -88,8 +88,8 @@ describe(DrawCommand, () => {
           useValue: createMock<DrawIndexService>({ build }),
         },
         {
-          provide: HardcodedMeandersService,
-          useValue: createMock<HardcodedMeandersService>({ ingest }),
+          provide: CorpusService,
+          useValue: createMock<CorpusService>({ ingest }),
         },
         {
           provide: LoggerService,
@@ -135,8 +135,8 @@ describe(DrawCommand, () => {
           useValue: createMock<DrawIndexService>(),
         },
         {
-          provide: HardcodedMeandersService,
-          useValue: createMock<HardcodedMeandersService>(),
+          provide: CorpusService,
+          useValue: createMock<CorpusService>(),
         },
         {
           provide: LoggerService,

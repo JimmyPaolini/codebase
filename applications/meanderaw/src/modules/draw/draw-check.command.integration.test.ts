@@ -6,9 +6,9 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { LoggerService } from "@codebase/logger";
 
-import { HARDCODED_MEANDERS_BY_FAMILY } from "../hardcoded-meanders/hardcoded-meanders.constants";
-import { HardcodedMeandersService } from "../hardcoded-meanders/hardcoded-meanders.service";
-import { Meander } from "../meander-database/entities/Meander.entity";
+import { CORPUS_BY_FAMILY } from "../corpus/corpus.constants";
+import { CorpusService } from "../corpus/corpus.service";
+import { Meander } from "../database/entities/Meander.entity";
 
 import { DrawCheckService } from "./draw-check.service";
 import { DrawCodeService } from "./draw-code.service";
@@ -98,8 +98,8 @@ describe("drawCommand --check mode", () => {
           useValue: createMock<DrawIndexService>(),
         },
         {
-          provide: HardcodedMeandersService,
-          useValue: createMock<HardcodedMeandersService>(),
+          provide: CorpusService,
+          useValue: createMock<CorpusService>(),
         },
         {
           provide: LoggerService,
@@ -161,7 +161,7 @@ describe("drawCommand --check mode", () => {
     "throws naming the changed column when a committed row disagrees with the same address's real hardcoded entry",
     async () => {
       const [, entries] =
-        Object.entries(HARDCODED_MEANDERS_BY_FAMILY).find(
+        Object.entries(CORPUS_BY_FAMILY).find(
           ([, familyEntries]) => familyEntries.length > 0,
         ) ?? [];
       const entry = entries?.[0];
