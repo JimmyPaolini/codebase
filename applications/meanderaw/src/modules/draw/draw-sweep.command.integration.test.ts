@@ -6,6 +6,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { LoggerService } from "@codebase/logger";
 
+import { GridGeometryModule } from "../grid-geometry/grid-geometry.module";
 import { HARDCODED_MEANDERS_BY_FAMILY } from "../hardcoded-meanders/hardcoded-meanders.constants";
 import { HardcodedMeandersService } from "../hardcoded-meanders/hardcoded-meanders.service";
 import { MeanderCharacteristicsModule } from "../meander-characteristics/meander-characteristics.module";
@@ -81,6 +82,7 @@ describe("drawCommand sweep mode", () => {
           type: "better-sqlite3",
         }),
         TypeOrmModule.forFeature([Meander]),
+        GridGeometryModule,
         MeanderCharacteristicsModule,
         MeanderClassificationModule,
         MeanderDecodingModule,
