@@ -3,7 +3,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 
 import { RenderService } from "./render.service";
 
-import type { MetricRow, ProjectFailure } from "@codometer/changes";
+import type { MetricRow, ProjectFailure } from "../changes/changes.types";
 
 /** Builds a row with only the fields a case cares about. */
 function buildRow(overrides: Partial<MetricRow> = {}): MetricRow {

@@ -1,6 +1,15 @@
 import path from "node:path";
 
-import { ConfigurationService } from "@codometer/configuration";
+import {
+  ConfigurationModule,
+  ConfigurationService,
+} from "@codometer/configuration";
+import { MeasureService } from "@codometer/measurement";
+import {
+  DeliveryService,
+  DestinationsService,
+  ReportService,
+} from "@codometer/output";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import {
@@ -16,21 +25,20 @@ import {
 import { LoggerService } from "@codebase/logger";
 
 import { buildCodeStatistics, throwUnknown } from "../../../testing/mocks";
-import { DeliveryService } from "../delivery/delivery.service";
-import { ReportService } from "../report/report.service";
-import { RunPlanService } from "../run-plan/run-plan.service";
 
 import { MeasureCommand } from "./measure.command";
-import { MeasureService } from "./measure.service";
 
-import type { EvaluatedLimit } from "../limits/limits.types";
-import type { ResolvedMarkdownDestination } from "../run-plan/run-plan.types";
-import type { MeasureArguments, MeasureCommandOptions } from "./measure.types";
 import type {
+  MeasureCommandOptions,
   ResolvedCodometerConfiguration,
   ResolvedCodometerInput,
 } from "@codometer/configuration";
-import type { JsonService, MarkdownService } from "@codometer/output";
+import type { EvaluatedLimit, MeasureArguments } from "@codometer/measurement";
+import type {
+  JsonService,
+  MarkdownService,
+  ResolvedMarkdownDestination,
+} from "@codometer/output";
 import type { MockInstance } from "vitest";
 
 const statistics = buildCodeStatistics();
@@ -99,6 +107,23 @@ const customStatistic = {
   patterns: [],
 };
 
+/**
+ * Resolves the real configuration service, whose flag reading these tests
+ * exercise rather than mock.
+ *
+ * `ConfigurationModule` is the only way in: the flag reader behind
+ * `selectMode` and `resolveFormat` is a provider of that module rather than a
+ * public export, because the configuration layer has exactly one public
+ * service. Reading a file is still stubbed per test.
+ */
+async function buildConfigurationService(): Promise<ConfigurationService> {
+  const module = await Test.createTestingModule({
+    imports: [ConfigurationModule],
+  }).compile();
+
+  return module.resolve(ConfigurationService);
+}
+
 describe(MeasureCommand, () => {
   let command: MeasureCommand;
   let configurationService: ConfigurationService;
@@ -115,7 +140,7 @@ describe(MeasureCommand, () => {
       measureService,
       new DeliveryService(jsonService, markdownService),
       new ReportService(),
-      new RunPlanService(),
+      new DestinationsService(),
       loggerService,
     );
   }
@@ -148,22 +173,22 @@ describe(MeasureCommand, () => {
         { provide: LoggerService, useValue: createMock<LoggerService>() },
         { provide: DeliveryService, useValue: createMock<DeliveryService>() },
         { provide: ReportService, useValue: new ReportService() },
-        { provide: RunPlanService, useValue: new RunPlanService() },
+        { provide: DestinationsService, useValue: new DestinationsService() },
       ],
     }).compile();
 
     command = await module.resolve(MeasureCommand);
   });
 
-  beforeEach(() => {
+  beforeEach(async () => {
     process.exitCode = 0;
-    configurationService = createMock<ConfigurationService>();
+    configurationService = await buildConfigurationService();
     measureService = createMock<MeasureService>();
     loggerService = createMock<LoggerService>();
     jsonService = createMock<JsonService>();
     markdownService = createMock<MarkdownService>();
     stdoutWriteSpy = vi.spyOn(process.stdout, "write").mockReturnValue(true);
-    vi.mocked(configurationService.loadConfiguration).mockResolvedValue(
+    vi.spyOn(configurationService, "loadConfiguration").mockResolvedValue(
       buildConfiguration(),
     );
     measured([]);
@@ -194,7 +219,7 @@ describe(MeasureCommand, () => {
         { provide: LoggerService, useValue: createMock<LoggerService>() },
         { provide: DeliveryService, useValue: createMock<DeliveryService>() },
         { provide: ReportService, useValue: new ReportService() },
-        { provide: RunPlanService, useValue: new RunPlanService() },
+        { provide: DestinationsService, useValue: new DestinationsService() },
       ],
     }).compile();
 

@@ -12,7 +12,7 @@ import { MainModule } from "../../main.module";
 
 import { MeasureCommand } from "./measure.command";
 
-import type { CodometerReport } from "../report/report.types";
+import type { CodometerReport } from "@codometer/core";
 
 const REPORT_FILE_NAME = "codometer-report.json";
 

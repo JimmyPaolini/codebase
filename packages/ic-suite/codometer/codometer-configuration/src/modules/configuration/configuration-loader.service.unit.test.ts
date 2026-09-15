@@ -2,14 +2,14 @@ import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
+import {
+  ConfigurationFileNotFoundError,
+  UnknownConfigurationFileTypeError,
+} from "@codometer/core";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
 import { ConfigurationLoaderService } from "./configuration-loader.service";
-import {
-  ConfigurationFileNotFoundError,
-  UnknownConfigurationFileTypeError,
-} from "./configuration.constants";
 
 /** Writes a configuration file of the given name into a fresh temp directory. */
 async function writeConfigurationFile(

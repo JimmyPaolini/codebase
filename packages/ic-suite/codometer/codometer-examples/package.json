@@ -1,7 +1,7 @@
 {
   "dependencies": {
-    "@codometer/cli": "workspace:*",
-    "@codometer/configuration": "workspace:*"
+    "@codometer/configuration": "workspace:*",
+    "@codometer/core": "workspace:*"
   },
   "devDependencies": {
     "@nx/eslint-plugin": "catalog:",

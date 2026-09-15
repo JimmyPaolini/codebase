@@ -1,6 +1,9 @@
-import { ChangesModule as CodometerChangesModule } from "@codometer/changes";
-import { InputModule } from "@codometer/configuration";
-import { DocumentsModule, RenderModule } from "@codometer/output";
+import { ConfigurationModule } from "@codometer/configuration";
+import {
+  ChangesModule as CodometerChangesModule,
+  DocumentsModule,
+  RenderModule,
+} from "@codometer/output";
 import { Module } from "@nestjs/common";
 
 import { LoggerModule } from "@codebase/logger";
@@ -13,8 +16,8 @@ import { ChangesCommand } from "./changes.command";
   exports: [ChangesCommand],
   imports: [
     CodometerChangesModule,
+    ConfigurationModule,
     DocumentsModule,
-    InputModule,
     LoggerModule,
     RenderModule,
   ],
