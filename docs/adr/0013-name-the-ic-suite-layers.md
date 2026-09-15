@@ -11,9 +11,13 @@ into a documented set of findings; giving all four toolchains one shared
 layer vocabulary is the fix, and this ADR is where it is recorded so a future
 session does not have to argue the decision from scratch.
 
-Every ic-suite package now depends only downward through five layers, plus an
+Every ic-suite package will depend only downward through five layers, plus an
 optional `nx` plugin layer above `cli` where one exists (callidescope and
-conformetry only):
+conformetry only). This pull request lands the vocabulary first, by design:
+the `layer:*` tags land in the four toolchain pull requests that follow it,
+and the generic boundary rules that gate them land in the pull request after
+that. Until those merge, this is the target shape, not yet the shape on
+disk:
 
 ```text
 core <- configuration <- analysis <- output <- cli
@@ -30,13 +34,25 @@ core <- configuration <- analysis <- output <- cli
 
 `agents` and `examples` carry no layer tag; neither is in the runtime chain.
 
+**The `nx` plugin layer carries `layer:cli`, not a sixth tag.** `layer:cli`
+names an entrypoint layer, not specifically a command-line one — it was
+called `layer:host` through most of this vocabulary's design before being
+renamed to `layer:cli`, and an Nx plugin (`@callidescope/nx`,
+`@conformetry/nx`) is a second host for the same underlying toolchain, not a
+new layer stacked above it. Tagging it `layer:cli` keeps the spine at five
+layers and keeps the generic boundary rules that gate it at four, which is
+this vocabulary's own falsification condition: if a genuine sixth layer were
+needed, the convergence this ADR claims would not be real.
+
 ## The core-versus-configuration test
 
 The sharp test that decides where a type belongs: if it describes **what the
 tool produced**, it is `core`; if it describes **what the user wrote in
 `<tool>.config.ts`**, it is `configuration`. Under that test
 `CodeStatisticsResult` belongs in `core` and `WriteMarkdownOutput` stays in
-`configuration`. A `core` package that fails this test — one that exports a
+`configuration` — despite reading like an output-layer type, it names a
+destination the user declared in `<tool>.config.ts`, which is what the test
+scores rather than the name. A `core` package that fails this test — one that exports a
 live service, or a `configuration` package that exports a result type the tool
 produced rather than a value the user configured — has drifted out of its
 layer regardless of which package it physically sits in.
@@ -101,9 +117,11 @@ package or promoting it out of the analysis layer.
 
 ## Consequences
 
-- **A package's layer is readable from its name and its `layer:*` tag alone**,
-  so an agent moving between toolchains does not have to open a package's
-  `index.ts` to learn its role.
+- **Once the tags are in place, a package's layer will be readable from its
+  name and its `layer:*` tag alone**, so an agent moving between toolchains
+  will not have to open a package's `index.ts` to learn its role. Until the
+  four toolchain pull requests land, no package carries a `layer:*` tag yet —
+  their absence is expected, not a sign that this vocabulary was dropped.
 - **The analysis layer stays the one layer with a per-suite vocabulary.** A
   reader has to learn what each toolchain analyzes — there is no shortcut past
   that — but everything above and below it reads identically across all four.
@@ -113,5 +131,6 @@ package or promoting it out of the analysis layer.
   reopening's starting point, not a prohibition on ever revisiting it.
 - **A new ic-suite package's definition of done includes exactly one
   `layer:*` tag** (`*-agents` and `*-examples` excepted), and the generic
-  `codependix.config.ts` boundary rules keyed on those tags catch an untagged
-  or misplaced package without anyone writing a rule that names it.
+  `codependix.config.ts` boundary rules this ADR's follow-on pull request adds,
+  once keyed on those tags, will catch an untagged or misplaced package
+  without anyone writing a rule that names it.
