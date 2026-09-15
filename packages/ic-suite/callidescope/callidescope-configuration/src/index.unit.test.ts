@@ -26,9 +26,10 @@ describe("callidescope-configuration index", () => {
 
   it("publishes one service and one module, and no other collaborator", () => {
     // The layer's whole contract. `ConfigurationFileService`,
-    // `ProjectConfigurationService`, `RunPlanService` and `InputService` are
-    // still four separate classes in four separate files; they are simply
-    // reached through the facade, so a consumer injects one thing from here.
+    // `ProjectConfigurationService`, `RunPlanService`, `FlagResolutionService`
+    // and `InputService` are all still here, each its own class in its own
+    // file; they are simply reached through the facade, so a consumer injects
+    // one thing from this package rather than five.
     expect(
       Object.entries(surface)
         .filter(([name]) => name.endsWith("Service") || name.endsWith("Module"))

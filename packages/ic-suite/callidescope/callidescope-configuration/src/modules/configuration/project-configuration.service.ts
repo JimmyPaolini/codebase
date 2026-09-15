@@ -12,10 +12,10 @@ import {
   ProjectConfigurationMissingError,
 } from "./configuration.constants";
 
+import type { ConfigurationFileReader } from "./configuration-file.types";
 import type {
   CallidescopeConfiguration,
   CallidescopeLimitOverrides,
-  ConfigurationFileReader,
   LoadedProjectConfiguration,
   LoadProjectConfigurationsArguments,
   ProjectLimits,

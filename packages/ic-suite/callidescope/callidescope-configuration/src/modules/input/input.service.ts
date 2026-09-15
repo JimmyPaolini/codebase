@@ -77,6 +77,11 @@ export class InputService {
    * a terminal. `isTTY` is read as falsy rather than coerced: `@types/node`
    * calls it a `boolean` while it is `undefined` off a terminal, so lint
    * rejects the coercion that would say so.
+   *
+   * Public so that `ConfigurationService.resolveFormatOption` can ask it: the
+   * facade owns the policy of whether to offer a prompt, and this class owns
+   * the question it is deciding on. Package-internal all the same — nothing
+   * outside this package can reach this class at all.
    */
   public isAtTerminal(): boolean {
     return process.stdin.isTTY;

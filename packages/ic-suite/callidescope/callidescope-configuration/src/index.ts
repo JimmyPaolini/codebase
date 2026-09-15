@@ -58,23 +58,6 @@ export type {
   WriteMarkdownArguments,
   WriteMarkdownOutput,
 } from "./modules/configuration/configuration.types";
-export {
-  CHECK_BREADTH,
-  CHECK_DEPTH,
-  CHECK_NAMES,
-  CHECK_REPORTS,
-  CHECK_SEPARATOR,
-  DESTINATION_FLAG_NAMES,
-} from "./modules/configuration/run-plan.constants";
-export type {
-  AddressCommandOptions,
-  CallidescopeCommandOptions,
-  PreparedLookup,
-  PreparedRun,
-  RunMode,
-  RunModeSelection,
-  RunPreparation,
-} from "./modules/configuration/run-plan.types";
 export { flagResolutionError } from "./modules/flag-resolution/flag-resolution.constants";
 export type {
   CallidescopeRunFlags,
@@ -86,3 +69,19 @@ export {
   promptCancelledError,
 } from "./modules/input/input.constants";
 export type { CallidescopeFormatOptions } from "./modules/input/input.types";
+export {
+  CHECK_BREADTH,
+  CHECK_DEPTH,
+  CHECK_NAMES,
+  CHECK_REPORTS,
+  CHECK_SEPARATOR,
+  DESTINATION_FLAG_NAMES,
+} from "./modules/run-plan/run-plan.constants";
+export type {
+  AddressCommandOptions,
+  CallidescopeCommandOptions,
+  PreparedLookup,
+  PreparedRun,
+  RunMode,
+  RunPreparation,
+} from "./modules/run-plan/run-plan.types";

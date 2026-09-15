@@ -222,21 +222,6 @@ export interface CallidescopeWriteConfiguration {
   mermaid?: CallidescopeMarkdownOutputConfiguration | undefined;
 }
 
-/**
- * The two reads a project configuration loader needs from the file loader.
- *
- * Narrow on purpose, and passed in rather than injected: `ConfigurationService`
- * is what a caller reaches the project loader through, so handing it over at
- * the call leaves the whole layer replaceable by a double at its one public
- * surface, without the two classes pointing at each other.
- */
-export interface ConfigurationFileReader {
-  findConfigurationFileAt(directory: string): string | undefined;
-  loadConfigurationFile(
-    args: LoadConfigurationArguments & { configurationPath: string },
-  ): Promise<LoadedCallidescopeConfigurationFile>;
-}
-
 /** Arguments accepted by the configuration loader. */
 export interface LoadConfigurationArguments {
   configurationPath?: string | undefined;

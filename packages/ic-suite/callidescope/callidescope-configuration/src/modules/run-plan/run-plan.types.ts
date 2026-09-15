@@ -5,7 +5,7 @@ import type {
   CallidescopeLimits,
   CallidescopeOutputFormat,
   ResolvedCallidescopeConfiguration,
-} from "./configuration.types";
+} from "../configuration/configuration.types";
 
 /**
  * Options `depth` and `breadth` accept, scoping a lookup to one workspace.

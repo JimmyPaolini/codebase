@@ -182,7 +182,7 @@ export class CallidescopeCommand extends CommandRunner {
     if (run === undefined) {
       // The one headline every refused command line is reported under,
       // whichever of the two gates in the configuration layer refused it.
-      this.reject("🔭 Rejected the command line", { reasons: errors });
+      this.reject(REJECTED_COMMAND_LINE, { reasons: errors });
       return;
     }
 

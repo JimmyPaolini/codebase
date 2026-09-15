@@ -551,7 +551,6 @@ overrides:
   js-yaml@>=4.0.0 <4.3.1: ^4.3.1
   lodash@<=4.17.23: ^4.18.0
   markdown-it@<=14.1.1: ^14.2.0
-  uuid@<11.1.1: ^11.1.1
   ws@>=8.0.0 <8.21.0: ^8.21.0
 
 pnpmfileChecksum: sha256-7t6Un+VI6tKofTaz+YQo4KWFj/1Rz+TGhIMRXYI19Xw=

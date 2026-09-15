@@ -4,10 +4,10 @@
 
 | Measure | Value |
 | --- | --- |
-| Callables | 303 |
-| Files | 115 |
-| Calls traced | 264 |
-| Call stacks | 94 |
+| Callables | 329 |
+| Files | 128 |
+| Calls traced | 316 |
+| Call stacks | 97 |
 | Deepest stack | 8 |
 | Stacks through recursion | 1 |
 | Unfollowable calls | 17 |
@@ -16,12 +16,13 @@
 
 | Project | Deepest | Limit | Headroom | Widest |
 | --- | --- | --- | --- | --- |
-| `packages/callidescope-examples` | 8 | 5 | -3 | 2 |
-| `packages/callidescope-examples/examples/gated-leaf` | 4 | 3 | -1 | 3 |
+| `packages/ic-suite/callidescope/callidescope-examples` | 8 | 5 | -3 | 2 |
+| `packages/ic-suite/callidescope/callidescope-examples/examples/gated-leaf` | 4 | 3 | -1 | 3 |
 | `packages/logger` | 5 | 4 | -1 | 2 |
-| `packages/callidescope-configuration` | 6 | 6 | 0 | 7 |
-| `packages/codependix-configuration` | 6 | 6 | 0 | 4 |
-| `packages/codometer-configuration` | 8 | 8 | 0 | 4 |
+| `packages/ic-suite/callidescope/callidescope-configuration` | 8 | 8 | 0 | 7 |
+| `packages/ic-suite/codependix/codependix-configuration` | 6 | 6 | 0 | 4 |
+| `packages/ic-suite/codometer/codometer-configuration` | 8 | 8 | 0 | 4 |
+| `packages/ic-suite/callidescope/callidescope-core` | 0 | 17 | 17 | 0 |
 
 ## Depth headroom
 
@@ -32,7 +33,7 @@
 | 1 | 0 |
 | 2–3 | 0 |
 | 4+ | 0 |
-| no stacks | 0 |
+| no stacks | 1 |
 
 ## Call stacks over the depth limit (7)
 
@@ -128,6 +129,6 @@ flowchart LR
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `GatedLeafService.read` | 3 | `GatedLeafService.parse`, `GatedLeafService.normalize`, `GatedLeafService.finish` | `packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts:40` |
+| `GatedLeafService.read` | 3 | `GatedLeafService.parse`, `GatedLeafService.normalize`, `GatedLeafService.finish` | `packages/ic-suite/callidescope/callidescope-examples/examples/gated-leaf/gated-leaf.ts:40` |
 
 <!-- CALL_STACKS_END -->
