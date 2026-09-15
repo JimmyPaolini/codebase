@@ -45,12 +45,17 @@ export const SWEEP_MINIMUM_ROWS = 3;
  * crossings included — so this is the only thing bounding the family, and it
  * has to be. At 6 rows adding one column multiplies the space by 2 ** 9,
  * which is about what removing the degree ceiling costs in total.
+ *
+ * This is now only the *default*. `TileEnumerationService` reads the
+ * effective budget from `SWEEP_EDGE_BUDGET`, and this constant is what that
+ * environment variable defaults to, so a bare invocation walks exactly the
+ * space it walks today.
  */
 export const EDGE_BUDGET = 16;
 
 /**
- * Thrown when a tile shape holds more edges than
- * {@link EDGE_BUDGET} admits.
+ * Thrown when a tile shape holds more edges than the configured budget
+ * admits.
  *
  * Refusing is the useful answer rather than a strict one. Enumeration walks
  * `2 ** edges` assignments, so a shape a little past the budget is not a
@@ -59,9 +64,13 @@ export const EDGE_BUDGET = 16;
  * surprise somebody discovers.
  */
 export class OversizedTileError extends Error {
-  constructor(shape: { columns: number; rows: number }, edges: number) {
+  constructor(
+    shape: { columns: number; rows: number },
+    edges: number,
+    budget: number,
+  ) {
     super(
-      `a ${shape.rows}-row tile of ${shape.columns} columns holds ${edges} edges, past the budget of ${EDGE_BUDGET}`,
+      `a ${shape.rows}-row tile of ${shape.columns} columns holds ${edges} edges, past the budget of ${budget}`,
     );
     this.name = "OversizedTileError";
   }
