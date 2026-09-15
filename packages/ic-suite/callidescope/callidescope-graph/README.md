@@ -210,8 +210,8 @@ What this project is judged against, as declared in its own `callidescope.config
 | `EntriesService.readDecoratorNames` | 1 | `EntriesService.map(…)` | `packages/ic-suite/callidescope/callidescope-graph/src/modules/entries/entries.service.ts:192` |
 | `EntriesService.rootDeclaredAddress` | 1 | `AddressService.resolve` | `packages/ic-suite/callidescope/callidescope-graph/src/modules/entries/entries.service.ts:233` |
 | `EntriesService.map(…)` | 1 | `EntriesService.toRules` | `packages/ic-suite/callidescope/callidescope-graph/src/modules/entries/entries.service.ts:320` |
-| `SignaturesService.read` | 1 | `SignaturesService.map(…)` | `packages/ic-suite/callidescope/callidescope-graph/src/modules/signatures/signatures.service.ts:65` |
-| `SignaturesService.map(…)` | 1 | `SignaturesService.readParameter` | `packages/ic-suite/callidescope/callidescope-graph/src/modules/signatures/signatures.service.ts:75` |
+| `SignaturesService.read` | 1 | `SignaturesService.map(…)` | `packages/ic-suite/callidescope/callidescope-graph/src/modules/signatures/signatures.service.ts:62` |
+| `SignaturesService.map(…)` | 1 | `SignaturesService.readParameter` | `packages/ic-suite/callidescope/callidescope-graph/src/modules/signatures/signatures.service.ts:72` |
 | `AddressDepthService.isLowerBound` | 1 | `AddressDepthService.some(…)` | `packages/ic-suite/callidescope/callidescope-graph/src/modules/graph/address-depth.service.ts:71` |
 | `AddressDepthService.step` | 1 | `AddressDepthService.follow` | `packages/ic-suite/callidescope/callidescope-graph/src/modules/graph/address-depth.service.ts:79` |
 | `AddressDepthService.traverse` | 1 | `AddressDepthService.step` | `packages/ic-suite/callidescope/callidescope-graph/src/modules/graph/address-depth.service.ts:143` |

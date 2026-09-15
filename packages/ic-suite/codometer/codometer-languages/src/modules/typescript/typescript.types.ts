@@ -7,7 +7,7 @@ import type {
 import type {
   CodometerSymbolKind,
   CodometerSymbolModifier,
-} from "@codometer/configuration";
+} from "@codometer/core";
 import type { SourceFile } from "typescript";
 
 /** Arguments for analyzing a single source file. */

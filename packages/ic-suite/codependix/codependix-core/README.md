@@ -52,3 +52,37 @@ graph LR
   file_src_index_unit_test_ts --> file_src_index_ts
 ```
 <!-- codependix:end name="codependix-file-imports" -->
+
+<!-- CALL_STACKS_START -->
+
+## 🔭 Callidescope
+
+Call stacks traced through `packages/ic-suite/codependix/codependix-core`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
+
+| Measure | Value |
+| --- | --- |
+| Callables | 0 |
+| Files | 8 |
+| Calls traced | 0 |
+| Call stacks | 0 |
+| Deepest stack | 0 |
+| Stacks through recursion | 0 |
+| Unfollowable calls | 0 |
+
+### Limits
+
+What this project is judged against, as declared in its own `callidescope.config.ts`.
+
+| Limit | Value |
+| --- | --- |
+| `maximumDepth` | 1 |
+| `maximumBreadth` | 1 |
+
+### Call stacks (depth)
+
+None.
+
+### Breadth
+
+None.
+<!-- CALL_STACKS_END -->

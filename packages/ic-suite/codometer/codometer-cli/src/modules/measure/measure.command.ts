@@ -1,24 +1,23 @@
 import path from "node:path";
 
-import { ConfigurationService } from "@codometer/configuration";
+import { ConfigurationService, FORMAT_NAMES } from "@codometer/configuration";
+import { MeasureService } from "@codometer/measurement";
+import {
+  DeliveryService,
+  DestinationsService,
+  ReportService,
+} from "@codometer/output";
 import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
 
 import { LoggerService } from "@codebase/logger";
 
-import { DeliveryService } from "../delivery/delivery.service";
-import { ReportService } from "../report/report.service";
-import { FORMAT_NAMES } from "../run-plan/run-plan.constants";
-import { RunPlanService } from "../run-plan/run-plan.service";
-
-import { MeasureService } from "./measure.service";
-
+import type { ReportFindingsArguments, RunPlan } from "./measure.types";
 import type {
-  ReportFindingsArguments,
-  RunPlan,
-} from "../run-plan/run-plan.types";
-import type { MeasureCommandOptions, MeasurementResult } from "./measure.types";
-import type { ResolvedCodometerConfiguration } from "@codometer/configuration";
+  MeasureCommandOptions,
+  ResolvedCodometerConfiguration,
+} from "@codometer/configuration";
+import type { MeasurementResult } from "@codometer/measurement";
 
 /**
  * CLI entry point for the repository measurement workflow.
@@ -36,7 +35,7 @@ export class MeasureCommand extends CommandRunner {
     private readonly measureService: MeasureService,
     private readonly deliveryService: DeliveryService,
     private readonly reportService: ReportService,
-    private readonly runPlanService: RunPlanService,
+    private readonly destinationsService: DestinationsService,
     private readonly logger: LoggerService,
   ) {
     super();
@@ -229,7 +228,7 @@ export class MeasureCommand extends CommandRunner {
     workingDirectory: string,
   ): Promise<RunPlan | undefined> {
     const { errors: modeErrors, mode } =
-      this.runPlanService.selectMode(options);
+      this.configurationService.selectMode(options);
 
     if (modeErrors.length > 0) {
       this.rejectCommandLine(modeErrors);
@@ -250,13 +249,13 @@ export class MeasureCommand extends CommandRunner {
       options.inputs,
     );
     const formatErrors: string[] = [];
-    const format = this.runPlanService.resolveFormat(
+    const format = this.configurationService.resolveFormat(
       options.format,
       configuration.format,
       formatErrors,
     );
     const { destinations, errors: destinationErrors } =
-      this.runPlanService.resolveDestinations({
+      this.destinationsService.resolveDestinations({
         configuration,
         options,
         workingDirectory,
@@ -267,7 +266,7 @@ export class MeasureCommand extends CommandRunner {
       return undefined;
     }
 
-    const consoleMarkdown = this.runPlanService.resolveConsoleMarkdown({
+    const consoleMarkdown = this.destinationsService.resolveConsoleMarkdown({
       configuration,
       options,
       workingDirectory,
@@ -408,7 +407,7 @@ export class MeasureCommand extends CommandRunner {
     }
 
     const { configuration, consoleMarkdown, destinations, format, mode } = plan;
-    const outputPaths = this.runPlanService.listOutputPaths({
+    const outputPaths = this.destinationsService.listOutputPaths({
       destinations,
       workingDirectory,
     });
@@ -428,7 +427,7 @@ export class MeasureCommand extends CommandRunner {
       measurement,
       mode,
       report,
-      scope: this.runPlanService.selectScope(workingDirectory),
+      scope: this.destinationsService.selectScope(workingDirectory),
     });
 
     this.reportFindings({ measurement, mode, stalePaths });

@@ -1,6 +1,6 @@
 // 🏷️ Types
 
-import type { CodeStatisticsResult } from "./statistics.types";
+import type { CodeStatisticsResult } from "@codometer/core";
 
 /**
  * The anchor mechanics a `write` function would otherwise have to reimplement.

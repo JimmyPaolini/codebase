@@ -18,10 +18,10 @@ import { MissingMarkdownPathError } from "./markdown.constants";
 import { MarkdownService } from "./markdown.service";
 
 import type {
-  CodeStatisticsResult,
   ResolvedCodometerCustomStatistic,
   ResolvedCodometerMarkdownOutput,
 } from "@codometer/configuration";
+import type { CodeStatisticsResult } from "@codometer/core";
 import type { DeepMocked } from "@golevelup/ts-vitest";
 
 /** Builds a resolved custom statistic naming only the fields a test needs. */
