@@ -11,8 +11,9 @@ import { environmentSchema } from "../../constants";
 import { CharacteristicsModule } from "../characteristics/characteristics.module";
 import { ClassificationModule } from "../classification/classification.module";
 import { CodeModule } from "../code/code.module";
-import { CORPUS_BY_FAMILY } from "../corpus/corpus.constants";
+import { CORPUS_FAMILIES } from "../corpus/corpus.constants";
 import { CorpusService } from "../corpus/corpus.service";
+import { HISTORICAL_CORPUS } from "../corpus/historical-corpus.constants";
 import { DatabaseService } from "../database/database.service";
 import { Meander } from "../database/entities/Meander.entity";
 import { DrawingModule } from "../drawing/drawing.module";
@@ -37,6 +38,19 @@ vi.mock("node:fs/promises", () => ({
 }));
 
 /**
+ * How many of the historical corpus's entries lie beyond the sweep's reach,
+ * and so are ingested rather than enumerated.
+ *
+ * Written down rather than computed, because it is the check that the one
+ * extraction lost nothing: it is exactly the number of entries the fourteen
+ * hand-maintained constants files held before they were deleted, and the
+ * boundary is now computed from the edge budget and the sweep's row floor
+ * rather than hand-listed. A budget raised in `EDGE_BUDGET` moves this
+ * number, and should fail here rather than pass quietly.
+ */
+const HISTORICAL_CORPUS_BEYOND_ENUMERATION = 965;
+
+/**
  * Drives the whole of `DrawCommand`'s sweep — the generalized enumeration,
  * the historical corpus's hardcoded ingestion, and the index page rebuilt
  * from both — against a real TypeORM connection to an in-memory
@@ -53,7 +67,7 @@ vi.mock("node:fs/promises", () => ({
  * quietly overwriting the first. Nothing short of running both halves for
  * real catches that: each half passes its own suite alone.
  *
- * `CORPUS_BY_FAMILY` is the real, committed corpus rather than a
+ * `HISTORICAL_CORPUS` is the real, committed corpus rather than a
  * fixture — `DrawCommand.run` reads it directly rather than through an
  * overridable dependency — and the enumeration is the real budgeted walk, so
  * this drives tens of thousands of rows through the decoder, renderer, and
@@ -67,6 +81,7 @@ describe("drawCommand sweep mode", () => {
   const SWEEP_TIMEOUT_MILLISECONDS = 300_000;
 
   let command: DrawCommand;
+  let corpus: CorpusService;
   let dataSource: DataSource;
   let enumeration: EnumerationService;
   let repository: Repository<Meander>;
@@ -120,6 +135,7 @@ describe("drawCommand sweep mode", () => {
 
     command = await module.resolve(DrawCommand);
     dataSource = module.get(DataSource);
+    corpus = module.get(CorpusService);
     enumeration = module.get(EnumerationService);
     repository = module.get(getRepositoryToken(Meander));
   });
@@ -137,10 +153,9 @@ describe("drawCommand sweep mode", () => {
           (total, shape) => total + enumeration.enumerate(shape).length,
           0,
         );
-      const expectedHardcoded = Object.values(CORPUS_BY_FAMILY).reduce(
-        (total, entries) => total + entries.length,
-        0,
-      );
+      const expectedHardcoded = HISTORICAL_CORPUS.filter((entry) =>
+        corpus.isBeyondEnumeration(entry),
+      ).length;
 
       await command.run([], {});
 
@@ -179,16 +194,25 @@ describe("drawCommand sweep mode", () => {
   );
 
   it(
-    "keeps every hardcoded entry outside the shapes the enumeration already covers",
+    "ingests exactly the 965 entries the retired constants files held, computed from the sweep's own reach rather than listed",
+    () => {
+      expect(
+        HISTORICAL_CORPUS.filter((entry) => corpus.isBeyondEnumeration(entry)),
+      ).toHaveLength(HISTORICAL_CORPUS_BEYOND_ENUMERATION);
+    },
+    SWEEP_TIMEOUT_MILLISECONDS,
+  );
+
+  it(
+    "keeps every ingested entry outside the shapes the enumeration already covers",
     () => {
       const swept = new Set(
         enumeration.shapes().map((shape) => `${shape.rows}x${shape.columns}`),
       );
-      const covered = Object.entries(CORPUS_BY_FAMILY).flatMap(
-        ([family, entries]) =>
-          entries
-            .map((entry) => `${family} ${entry.rows}x${entry.columns}`)
-            .filter((label) => swept.has(label.split(" ")[1] ?? "")),
+      const covered = HISTORICAL_CORPUS.filter(
+        (entry) =>
+          corpus.isBeyondEnumeration(entry) &&
+          swept.has(`${entry.rows}x${entry.columns}`),
       );
 
       expect(covered).toStrictEqual([]);
@@ -203,12 +227,10 @@ describe("drawCommand sweep mode", () => {
 
       const rows = await repository.findBy({ provenance: "hardcoded" });
 
+      const filed = new Set<string>(CORPUS_FAMILIES);
+
       expect(rows.length).toBeGreaterThan(0);
-      expect(
-        rows.every((row) =>
-          Object.keys(CORPUS_BY_FAMILY).includes(row.family ?? ""),
-        ),
-      ).toBe(true);
+      expect(rows.every((row) => filed.has(row.family ?? ""))).toBe(true);
     },
     SWEEP_TIMEOUT_MILLISECONDS,
   );
@@ -216,9 +238,9 @@ describe("drawCommand sweep mode", () => {
   it(
     "fails the sweep loudly when a hardcoded entry's lattice address is already committed",
     async () => {
-      const [duplicated] = Object.values(CORPUS_BY_FAMILY).find(
-        (entries) => entries.length > 0,
-      ) ?? [undefined];
+      const duplicated = HISTORICAL_CORPUS.find((entry) =>
+        corpus.isBeyondEnumeration(entry),
+      );
 
       if (duplicated === undefined) {
         throw new Error(
