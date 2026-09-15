@@ -6,7 +6,7 @@ import { RenderConfigurationService } from "./render-configuration.service";
 import type {
   ConfiguredDirectory,
   ConfiguredLimitRow,
-} from "./configuration.types";
+} from "./configuration-listing.types";
 import type { ResolvedCodometerConfiguration } from "@codometer/configuration";
 
 const LIMIT_ROW: ConfiguredLimitRow = {

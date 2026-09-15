@@ -7,7 +7,7 @@ import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { ConfigurationService } from "./configuration.service";
+import { ConfigurationListingService } from "./configuration-listing.service";
 
 import type {
   LoadedConfiguration,
@@ -54,15 +54,15 @@ function buildDiscovery(files: string[]): DiscoveryResult {
   };
 }
 
-describe(ConfigurationService, () => {
-  let service: ConfigurationService;
+describe(ConfigurationListingService, () => {
+  let service: ConfigurationListingService;
   let codometerConfigurationService: CodometerConfigurationService;
   let discoveryService: DiscoveryService;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
       providers: [
-        ConfigurationService,
+        ConfigurationListingService,
         {
           provide: CodometerConfigurationService,
           useValue: createMock<CodometerConfigurationService>(),
@@ -74,7 +74,7 @@ describe(ConfigurationService, () => {
       ],
     }).compile();
 
-    service = await module.resolve(ConfigurationService);
+    service = await module.resolve(ConfigurationListingService);
     codometerConfigurationService = module.get(CodometerConfigurationService);
     discoveryService = module.get(DiscoveryService);
   });
