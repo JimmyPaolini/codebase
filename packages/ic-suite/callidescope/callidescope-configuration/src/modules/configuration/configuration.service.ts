@@ -38,12 +38,17 @@ import type {
  * what makes the configuration layer one layer rather than a bag of
  * collaborators a caller has to know the names of.
  *
- * It delegates and does nothing else. Loading a file, judging a project's own
- * file, planning a run from flags, and prompting are four different jobs and
- * stay four classes in four files behind this one; what they stop being is
- * four public entry points. A facade that implemented any of them would be a
- * facade in name only, and the one-per-job split is what keeps each of them
- * readable.
+ * Nearly every method here forwards and nothing more. Loading a file, judging
+ * a project's own file, planning a run from flags, and prompting are four
+ * different jobs and stay four classes in four files behind this one; what
+ * they stop being is four public entry points. A facade that implemented any
+ * of them would be a facade in name only, and the one-per-job split is what
+ * keeps each of them readable.
+ *
+ * `resolveFormatOption` is the exception, and a small one: deciding whether to
+ * offer a prompt at all is a policy over two collaborators rather than work
+ * either of them does, and it reads a constant the prompting service must not
+ * import. Its whole body is that decision.
  */
 @Injectable()
 export class ConfigurationService implements ConfigurationFileReader {

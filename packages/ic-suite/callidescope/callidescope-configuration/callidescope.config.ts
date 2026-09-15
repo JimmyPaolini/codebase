@@ -8,11 +8,14 @@ import { projectDefaults } from "../../../../configuration/callidescope.config.j
  * one resolver's fan-out over the fields it merges.
  *
  * Six was the number before this package published a single facade, and the
- * deepest stacks are the same stacks they always were: `ConfigurationService`
- * forwarding to the collaborator that answers stands one frame in front of
- * each of them. One frame is what the whole layer having one public entry
- * point costs, and it is paid once per stack that crosses it — measured, not
- * assumed: the reader a collaborator is handed makes no difference to it.
+ * deepest stack is the same stack it always was: resolving every traced
+ * project's own file, down to the repository-root walk the path resolver ends
+ * in. `ConfigurationService` appears in it twice rather than once — first as
+ * the entry point, and again in the middle, because the reader it hands its
+ * collaborators is itself and the file read therefore re-enters the facade on
+ * the way down. Two frames is what one public entry point costs on the stack
+ * that crosses it twice; a stack crossing once, such as `prepareRun`, pays
+ * one and reaches seven.
  *
  * Measured by a run scoped to this project and its dependency closure, and set
  * **at** what it measured rather than above it: a stack at the limit passes, so

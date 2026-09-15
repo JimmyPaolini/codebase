@@ -1495,7 +1495,7 @@
           "callees": [
             {
               "displayName": "ConfigurationService.findConfigurationFileAt",
-              "id": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts#2512"
+              "id": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts#2811"
             },
             {
               "displayName": "ProjectConfigurationMissingError.constructor",
@@ -1671,7 +1671,7 @@
           "callees": [
             {
               "displayName": "ConfigurationService.loadConfigurationFile",
-              "id": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts#3048"
+              "id": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts#3347"
             },
             {
               "displayName": "FlagResolutionService.resolveRunFlags",
@@ -1717,7 +1717,7 @@
             },
             {
               "displayName": "ConfigurationService.loadConfigurationFile",
-              "id": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts#3048"
+              "id": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts#3347"
             },
             {
               "displayName": "FlagResolutionService.resolveRunFlags",
@@ -2147,7 +2147,7 @@
           "callees": [
             {
               "displayName": "ConfigurationService.loadConfigurationFile",
-              "id": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts#3048"
+              "id": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts#3347"
             },
             {
               "displayName": "ProjectConfigurationError.constructor",
@@ -2183,15 +2183,15 @@
             },
             {
               "displayName": "ConfigurationService.promptForSelect",
-              "id": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts#4871"
+              "id": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts#5170"
             }
           ],
           "displayName": "ConfigurationService.resolveFormatOption",
-          "id": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts#5958",
+          "id": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts#6257",
           "location": {
             "column": 3,
             "filePath": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts",
-            "line": 160
+            "line": 165
           },
           "signature": {
             "parameters": [
@@ -2795,11 +2795,11 @@
             }
           ],
           "displayName": "ConfigurationService.findConfigurationFileAt",
-          "id": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts#2512",
+          "id": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts#2811",
           "location": {
             "column": 3,
             "filePath": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts",
-            "line": 68
+            "line": 73
           },
           "signature": {
             "parameters": [
@@ -2823,11 +2823,11 @@
             }
           ],
           "displayName": "ConfigurationService.loadConfigurationFile",
-          "id": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts#3048",
+          "id": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts#3347",
           "location": {
             "column": 3,
             "filePath": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts",
-            "line": 82
+            "line": 87
           },
           "signature": {
             "parameters": [
@@ -2851,11 +2851,11 @@
             }
           ],
           "displayName": "ConfigurationService.loadProjectConfigurations",
-          "id": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts#3334",
+          "id": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts#3633",
           "location": {
             "column": 3,
             "filePath": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts",
-            "line": 89
+            "line": 94
           },
           "signature": {
             "parameters": [
@@ -2879,11 +2879,11 @@
             }
           ],
           "displayName": "ConfigurationService.parseCommaDelimitedOption",
-          "id": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts#3641",
+          "id": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts#3940",
           "location": {
             "column": 3,
             "filePath": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts",
-            "line": 99
+            "line": 104
           },
           "signature": {
             "parameters": [
@@ -2907,11 +2907,11 @@
             }
           ],
           "displayName": "ConfigurationService.parseOptionalOption",
-          "id": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts#3849",
+          "id": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts#4148",
           "location": {
             "column": 3,
             "filePath": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts",
-            "line": 104
+            "line": 109
           },
           "signature": {
             "parameters": [
@@ -2935,11 +2935,11 @@
             }
           ],
           "displayName": "ConfigurationService.prepareLookup",
-          "id": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts#4072",
+          "id": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts#4371",
           "location": {
             "column": 3,
             "filePath": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts",
-            "line": 109
+            "line": 114
           },
           "signature": {
             "parameters": [
@@ -2963,11 +2963,11 @@
             }
           ],
           "displayName": "ConfigurationService.prepareRun",
-          "id": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts#4320",
+          "id": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts#4619",
           "location": {
             "column": 3,
             "filePath": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts",
-            "line": 116
+            "line": 121
           },
           "signature": {
             "parameters": [
@@ -2991,11 +2991,11 @@
             }
           ],
           "displayName": "ConfigurationService.promptForAutocompleteMultiselect",
-          "id": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts#4569",
+          "id": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts#4868",
           "location": {
             "column": 3,
             "filePath": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts",
-            "line": 123
+            "line": 128
           },
           "signature": {
             "parameters": [
@@ -3019,11 +3019,11 @@
             }
           ],
           "displayName": "ConfigurationService.promptForSelect",
-          "id": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts#4871",
+          "id": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts#5170",
           "location": {
             "column": 3,
             "filePath": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts",
-            "line": 132
+            "line": 137
           },
           "signature": {
             "parameters": [
@@ -3047,11 +3047,11 @@
             }
           ],
           "displayName": "ConfigurationService.resolveConfiguration",
-          "id": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts#5160",
+          "id": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts#5459",
           "location": {
             "column": 3,
             "filePath": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts",
-            "line": 141
+            "line": 146
           },
           "signature": {
             "parameters": [
@@ -3075,11 +3075,11 @@
             }
           ],
           "displayName": "ConfigurationService.resolveLimits",
-          "id": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts#6484",
+          "id": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts#6783",
           "location": {
             "column": 3,
             "filePath": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts",
-            "line": 177
+            "line": 182
           },
           "signature": {
             "parameters": [
@@ -3103,11 +3103,11 @@
             }
           ],
           "displayName": "ConfigurationService.touchesFiles",
-          "id": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts#6718",
+          "id": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts#7017",
           "location": {
             "column": 3,
             "filePath": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts",
-            "line": 184
+            "line": 189
           },
           "signature": {
             "parameters": [
@@ -3136,12 +3136,12 @@
                 "summary": "Loads and validates every traced project's own configuration file.",
                 "tags": []
               },
-              "id": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts#3334",
+              "id": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts#3633",
               "isCycle": false,
               "location": {
                 "column": 3,
                 "filePath": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts",
-                "line": 89
+                "line": 94
               },
               "signature": {
                 "parameters": [
@@ -3223,12 +3223,12 @@
                 "summary": "Loads a configuration, and says what the file itself declared and which file answered.",
                 "tags": []
               },
-              "id": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts#3048",
+              "id": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts#3347",
               "isCycle": false,
               "location": {
                 "column": 3,
                 "filePath": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts",
-                "line": 82
+                "line": 87
               },
               "signature": {
                 "parameters": [
@@ -3353,12 +3353,12 @@
                 "summary": "Reads a lookup's scoping flags into a workspace root and a configuration.",
                 "tags": []
               },
-              "id": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts#4072",
+              "id": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts#4371",
               "isCycle": false,
               "location": {
                 "column": 3,
                 "filePath": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts",
-                "line": 109
+                "line": 114
               },
               "signature": {
                 "parameters": [
@@ -3413,12 +3413,12 @@
                 "summary": "Loads a configuration, and says what the file itself declared and which file answered.",
                 "tags": []
               },
-              "id": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts#3048",
+              "id": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts#3347",
               "isCycle": false,
               "location": {
                 "column": 3,
                 "filePath": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts",
-                "line": 82
+                "line": 87
               },
               "signature": {
                 "parameters": [
@@ -3543,12 +3543,12 @@
                 "summary": "Reads a command line and its configuration into what the run will do.",
                 "tags": []
               },
-              "id": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts#4320",
+              "id": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts#4619",
               "isCycle": false,
               "location": {
                 "column": 3,
                 "filePath": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts",
-                "line": 116
+                "line": 121
               },
               "signature": {
                 "parameters": [
@@ -3752,12 +3752,12 @@
                 "summary": "Returns the given options with `--format` filled in where one is wanted. Offered rather than required, which is the one place this differs from every other missing value: the caller applies its own default when nobody is at a terminal to ask, so a run proceeds with nothing typed. Demanding it would fail every scripted run — this repository's own per-project `gate` among them — over a flag those runs have never needed to pass. Generic over the caller's options type, so a command carries its own other flags through unchanged.",
                 "tags": []
               },
-              "id": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts#5958",
+              "id": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts#6257",
               "isCycle": false,
               "location": {
                 "column": 3,
                 "filePath": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts",
-                "line": 160
+                "line": 165
               },
               "signature": {
                 "parameters": [
@@ -3779,12 +3779,12 @@
                 "summary": "Prompts for one value out of a fixed set of choices.",
                 "tags": []
               },
-              "id": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts#4871",
+              "id": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts#5170",
               "isCycle": false,
               "location": {
                 "column": 3,
                 "filePath": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts",
-                "line": 132
+                "line": 137
               },
               "signature": {
                 "parameters": [
@@ -4046,12 +4046,12 @@
                 "summary": "Prompts for several values at once, completing the list as it is typed.",
                 "tags": []
               },
-              "id": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts#4569",
+              "id": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts#4868",
               "isCycle": false,
               "location": {
                 "column": 3,
                 "filePath": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts",
-                "line": 123
+                "line": 128
               },
               "signature": {
                 "parameters": [
@@ -4183,12 +4183,12 @@
                 "summary": "Resolves the limits every traced project is judged against.",
                 "tags": []
               },
-              "id": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts#6484",
+              "id": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts#6783",
               "isCycle": false,
               "location": {
                 "column": 3,
                 "filePath": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts",
-                "line": 177
+                "line": 182
               },
               "signature": {
                 "parameters": [
@@ -4476,12 +4476,12 @@
                 "summary": "Splits a comma-separated flag value into its parts.",
                 "tags": []
               },
-              "id": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts#3641",
+              "id": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts#3940",
               "isCycle": false,
               "location": {
                 "column": 3,
                 "filePath": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts",
-                "line": 99
+                "line": 104
               },
               "signature": {
                 "parameters": [
@@ -4608,12 +4608,12 @@
                 "summary": "Reads a flag that may have been written without a value.",
                 "tags": []
               },
-              "id": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts#3849",
+              "id": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts#4148",
               "isCycle": false,
               "location": {
                 "column": 3,
                 "filePath": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts",
-                "line": 104
+                "line": 109
               },
               "signature": {
                 "parameters": [
@@ -4669,12 +4669,12 @@
                 "summary": "Whether a run reads or rewrites the files its reports live in.",
                 "tags": []
               },
-              "id": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts#6718",
+              "id": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts#7017",
               "isCycle": false,
               "location": {
                 "column": 3,
                 "filePath": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts",
-                "line": 184
+                "line": 189
               },
               "signature": {
                 "parameters": [
@@ -5343,7 +5343,7 @@
           "callees": [
             {
               "displayName": "ConfigurationService.resolveConfiguration",
-              "id": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts#5160"
+              "id": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts#5459"
             }
           ],
           "displayName": "DependencyClosureService.readDepthLimit",
@@ -7336,12 +7336,12 @@
                 "summary": "Fills in every field a configuration file may leave out.",
                 "tags": []
               },
-              "id": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts#5160",
+              "id": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts#5459",
               "isCycle": false,
               "location": {
                 "column": 3,
                 "filePath": "packages/ic-suite/callidescope/callidescope-configuration/src/modules/configuration/configuration.service.ts",
-                "line": 141
+                "line": 146
               },
               "signature": {
                 "parameters": [

@@ -263,41 +263,6 @@ describe(RunPlanService, () => {
     expect(errors).toStrictEqual([]);
   });
 
-  // 📄 Touching files
-
-  it("touches files when it writes", () => {
-    expect(
-      service.touchesFiles({
-        checksBreadth: false,
-        checksDepth: false,
-        checksReports: false,
-        writes: true,
-      }),
-    ).toBe(true);
-  });
-
-  it("touches files when it compares them", () => {
-    expect(
-      service.touchesFiles({
-        checksBreadth: false,
-        checksDepth: false,
-        checksReports: true,
-        writes: false,
-      }),
-    ).toBe(true);
-  });
-
-  it("leaves files alone when it only gates depth", () => {
-    expect(
-      service.touchesFiles({
-        checksBreadth: false,
-        checksDepth: true,
-        checksReports: false,
-        writes: false,
-      }),
-    ).toBe(false);
-  });
-
   // 🔍 Lookup preparation
 
   describe("prepareRun", () => {
@@ -431,17 +396,21 @@ describe(RunPlanService, () => {
 
   // 📄 Touching files
 
+  // The depth row is the one that says what this method is for: a run gating
+  // depth alone reads and writes nothing, which is what makes a bare run safe
+  // to type inside somebody's checkout.
   it.each([
-    { checksReports: true, touched: true, writes: false },
-    { checksReports: false, touched: true, writes: true },
-    { checksReports: false, touched: false, writes: false },
+    { checksDepth: false, checksReports: true, touched: true, writes: false },
+    { checksDepth: false, checksReports: false, touched: true, writes: true },
+    { checksDepth: true, checksReports: false, touched: false, writes: false },
+    { checksDepth: false, checksReports: false, touched: false, writes: false },
   ])(
-    "reads checksReports=$checksReports writes=$writes as touching files: $touched",
-    ({ checksReports, touched, writes }) => {
+    "reads checksDepth=$checksDepth checksReports=$checksReports writes=$writes as touching files: $touched",
+    ({ checksDepth, checksReports, touched, writes }) => {
       expect(
         service.touchesFiles({
           checksBreadth: false,
-          checksDepth: false,
+          checksDepth,
           checksReports,
           writes,
         }),
