@@ -4,6 +4,8 @@
   "projectType": "library",
   "sourceRoot": "packages/ic-suite/codometer/codometer-core",
   "tags": [
+    "framework:nestjs",
+    "generator:nestjs-service-project",
     "language:typescript",
     "layer:core",
     "name:codometer-core",

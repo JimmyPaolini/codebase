@@ -5,9 +5,9 @@ export type {
   MarkdownSectionArguments,
   ProjectRunFailure,
   ProjectRunResult,
-} from "./modules/results/results.types";
+} from "./lib/results.types";
 export type {
   CodependixRunMode,
   RunMode,
   RunModeSelection,
-} from "./modules/run/run.types";
+} from "./lib/run.types";

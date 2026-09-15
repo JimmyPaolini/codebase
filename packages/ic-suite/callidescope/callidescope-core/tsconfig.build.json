@@ -7,8 +7,9 @@
     "node_modules",
     "output",
     "src/**/*.test.ts",
+    "src/**/*.test.tsx",
     "testing/**"
   ],
   "extends": "./tsconfig.json",
-  "include": ["src/**/*.ts"]
+  "include": ["src/**/*.ts", "src/**/*.tsx"]
 }

@@ -44,8 +44,8 @@ graph LR
   file_eslint_config_ts["eslint.config.ts"]
   file_src_index_ts["src/index.ts"]
   file_src_index_unit_test_ts["src/index.unit.test.ts"]
-  file_src_modules_results_results_types_ts["src/modules/results/results.types.ts"]
-  file_src_modules_run_run_types_ts["src/modules/run/run.types.ts"]
+  file_src_lib_results_types_ts["src/lib/results.types.ts"]
+  file_src_lib_run_types_ts["src/lib/run.types.ts"]
   file_testing_mocks_ts["testing/mocks.ts"]
   file_testing_setup_ts["testing/setup.ts"]
   file_vitest_config_ts["vitest.config.ts"]
@@ -54,6 +54,12 @@ graph LR
 <!-- codependix:end name="codependix-file-imports" -->
 
 <!-- CALL_STACKS_START -->
+
+### NestJS Module Graph
+
+<!-- codependix:start name="codependix-nestjs-modules" -->
+_This project defines no NestJS modules to graph._
+<!-- codependix:end name="codependix-nestjs-modules" -->
 
 ## 🔭 Callidescope
 

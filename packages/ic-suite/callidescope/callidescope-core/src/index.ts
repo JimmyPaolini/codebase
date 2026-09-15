@@ -22,4 +22,4 @@ export type {
   UnresolvedReason,
   WideCallableCallee,
   WideCallableFinding,
-} from "./modules/call-graph/call-graph.types";
+} from "./lib/call-graph.types";

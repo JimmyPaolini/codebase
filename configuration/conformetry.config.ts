@@ -136,9 +136,19 @@ const conformetryConfiguration: ConformetryNxConfiguration = [
         ),
     }),
     instances: [
+      // Every `*-core` is an ordinary instance of this template. The template
+      // ships `src/index.ts` and an empty `src/modules/.gitkeep` and requires
+      // no module and no service, so a contracts-only package satisfies it as
+      // written — what it does require is that the contracts live in
+      // `src/lib/` and that `src/modules/` stays empty. A `src/modules/<name>/`
+      // holding only types matches `nestjs-service-module`,
+      // `nestjs-dataloader-module` and `nestjs-graphql-module` equally and
+      // fails as ambiguous, which is why the two cores that had one were moved
+      // to `src/lib/` rather than given a template of their own.
       {
         patterns: [
           "packages/ic-suite/callidescope/callidescope-configuration",
+          "packages/ic-suite/callidescope/callidescope-core",
           "packages/ic-suite/callidescope/callidescope-nx",
           "packages/ic-suite/callidescope/callidescope-graph",
           "packages/ic-suite/callidescope/callidescope-output",
@@ -149,7 +159,17 @@ const conformetryConfiguration: ConformetryNxConfiguration = [
         },
       },
       {
-        patterns: ["packages/ic-suite/codometer/codometer-configuration"],
+        patterns: ["packages/ic-suite/codependix/codependix-core"],
+        substitutions: {
+          type: "packages/ic-suite/codependix",
+          workspaceRelativePrefix: "../../../../",
+        },
+      },
+      {
+        patterns: [
+          "packages/ic-suite/codometer/codometer-configuration",
+          "packages/ic-suite/codometer/codometer-core",
+        ],
         substitutions: {
           type: "packages/ic-suite/codometer",
           workspaceRelativePrefix: "../../../../",
@@ -157,15 +177,7 @@ const conformetryConfiguration: ConformetryNxConfiguration = [
       },
       {
         patterns: [
-          // `conformetry-core` is deliberately absent: it is the contracts
-          // leaf of the ic-suite five-layer spine, so it declares types and
-          // holds no NestJS at all. Listing it here would demand
-          // `@nestjs/common` and `@nestjs/testing` in a manifest that imports
-          // neither, which `@nx/dependency-checks` then strips right back
-          // out. The two gates disagreeing is the signal that it is not an
-          // instance of this template — a contracts-project template of its
-          // own is the fix, once all four toolchains have a `*-core`.
-          "packages/ic-suite/conformetry/conformetry-{configuration,generation,languages,output,validation,nx}",
+          "packages/ic-suite/conformetry/conformetry-{configuration,core,generation,languages,output,validation,nx}",
         ],
         substitutions: {
           type: "packages/ic-suite/conformetry",

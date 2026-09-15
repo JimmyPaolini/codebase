@@ -4,6 +4,7 @@
     "tslib": "catalog:"
   },
   "devDependencies": {
+    "@golevelup/ts-vitest": "catalog:",
     "@nx/eslint-plugin": "catalog:",
     "@swc/helpers": "catalog:",
     "@types/node": "catalog:",
