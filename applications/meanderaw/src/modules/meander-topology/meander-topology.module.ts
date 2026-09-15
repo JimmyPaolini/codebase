@@ -1,5 +1,6 @@
 import { Module } from "@nestjs/common";
 
+import { GraphModule } from "../graph/graph.module";
 import { MeanderLatticeModule } from "../meander-lattice/meander-lattice.module";
 
 import { MeanderTopologyService } from "./meander-topology.service";
@@ -18,7 +19,7 @@ import { MeanderTopologyService } from "./meander-topology.service";
 @Module({
   controllers: [],
   exports: [MeanderTopologyService],
-  imports: [MeanderLatticeModule],
+  imports: [GraphModule, MeanderLatticeModule],
   providers: [MeanderTopologyService],
 })
 export class MeanderTopologyModule {}

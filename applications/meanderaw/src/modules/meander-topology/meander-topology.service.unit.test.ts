@@ -1,6 +1,7 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
+import { GraphService } from "../graph/graph.service";
 import { MeanderLatticeService } from "../meander-lattice/meander-lattice.service";
 
 import { MeanderTopologyService } from "./meander-topology.service";
@@ -86,7 +87,7 @@ describe(MeanderTopologyService, () => {
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [MeanderLatticeService, MeanderTopologyService],
+      providers: [GraphService, MeanderLatticeService, MeanderTopologyService],
     }).compile();
 
     service = await module.resolve(MeanderTopologyService);

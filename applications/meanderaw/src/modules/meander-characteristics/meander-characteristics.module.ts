@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
 
-import { MeanderTopologyModule } from "../meander-topology/meander-topology.module";
+import { GraphModule } from "../graph/graph.module";
 
 import { MeanderCharacteristicsService } from "./meander-characteristics.service";
 import { MeanderConnectivityService } from "./meander-connectivity.service";
@@ -12,7 +12,7 @@ import { MeanderConnectivityService } from "./meander-connectivity.service";
  * Characteristics from the same grid it already decodes to render, with
  * nothing rendered in between.
  *
- * It imports `MeanderTopologyModule` for one thing: the graph walk
+ * It imports `GraphModule` for one thing: the graph walk
  * `MeanderConnectivityService` counts a repeat's pieces with. That service
  * is written against `InkAdjacency` rather than against a document or a
  * tile, precisely so a third caller can bring its own vocabulary — see its
@@ -21,7 +21,7 @@ import { MeanderConnectivityService } from "./meander-connectivity.service";
 @Module({
   controllers: [],
   exports: [MeanderCharacteristicsService, MeanderConnectivityService],
-  imports: [MeanderTopologyModule],
+  imports: [GraphModule],
   providers: [MeanderCharacteristicsService, MeanderConnectivityService],
 })
 export class MeanderCharacteristicsModule {}

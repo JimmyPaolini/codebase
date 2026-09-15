@@ -1,6 +1,7 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
+import { GraphService } from "../graph/graph.service";
 import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
 import { MeanderCharacteristicsService } from "../meander-characteristics/meander-characteristics.service";
 import { MeanderConnectivityService } from "../meander-characteristics/meander-connectivity.service";
@@ -8,7 +9,6 @@ import { MeanderClassificationService } from "../meander-classification/meander-
 import { MeanderDecodingService } from "../meander-decoding/meander-decoding.service";
 import { MeanderLatticeService } from "../meander-lattice/meander-lattice.service";
 import { MeanderRenderingService } from "../meander-rendering/meander-rendering.service";
-import { MeanderTopologyService } from "../meander-topology/meander-topology.service";
 import { MosaicNamingService } from "../mosaic-naming/mosaic-naming.service";
 import { MosaicTileService } from "../mosaic-tile/mosaic-tile.service";
 import { SvgRenderingService } from "../svg-rendering/svg-rendering.service";
@@ -36,7 +36,7 @@ describe(DrawRecordService, () => {
         MeanderDecodingService,
         MeanderLatticeService,
         MeanderRenderingService,
-        MeanderTopologyService,
+        GraphService,
         MosaicNamingService,
         MosaicTileService,
         SvgRenderingService,

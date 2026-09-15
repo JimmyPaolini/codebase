@@ -1,8 +1,8 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
+import { GraphService } from "../graph/graph.service";
 import { MeanderLatticeService } from "../meander-lattice/meander-lattice.service";
-import { MeanderTopologyService } from "../meander-topology/meander-topology.service";
 
 import { MeanderCharacteristicsService } from "./meander-characteristics.service";
 import { MeanderConnectivityService } from "./meander-connectivity.service";
@@ -68,7 +68,7 @@ describe(MeanderCharacteristicsService, () => {
         MeanderCharacteristicsService,
         MeanderConnectivityService,
         MeanderLatticeService,
-        MeanderTopologyService,
+        GraphService,
       ],
     }).compile();
 

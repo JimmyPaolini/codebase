@@ -1,12 +1,12 @@
 import { Inject, Injectable } from "@nestjs/common";
 
-import { MeanderTopologyService } from "../meander-topology/meander-topology.service";
+import { GraphService } from "../graph/graph.service";
 
+import type { InkAdjacency } from "../graph/graph.types";
 import type {
   MeanderPointDirections,
   MeanderPointGrid,
 } from "../meander-decoding/meander-decoding.types";
-import type { InkAdjacency } from "../meander-topology/meander-topology.types";
 import type {
   MeanderConnectivity,
   MeanderGridEdge,
@@ -55,8 +55,8 @@ export class MeanderConnectivityService {
   // 🏗 Dependency Injection
 
   constructor(
-    @Inject(MeanderTopologyService)
-    private readonly meanderTopologyService: MeanderTopologyService,
+    @Inject(GraphService)
+    private readonly graphService: GraphService,
   ) {}
 
   // 🔐 Private Fields
@@ -65,7 +65,7 @@ export class MeanderConnectivityService {
 
   // 🔏 Private Methods
 
-  /** The grid's edges as an {@link InkAdjacency}, which is all {@link MeanderTopologyService.components} needs of it. */
+  /** The grid's edges as an {@link InkAdjacency}, which is all {@link GraphService.components} needs of it. */
   private adjacency(
     grid: MeanderPointGrid,
     edges: readonly MeanderGridEdge[],
@@ -178,7 +178,7 @@ export class MeanderConnectivityService {
   connectivity(grid: MeanderPointGrid): MeanderConnectivity {
     const edges = this.edges(grid);
     const adjacency = this.adjacency(grid, edges);
-    const components = this.meanderTopologyService.components(adjacency);
+    const components = this.graphService.components(adjacency);
 
     return {
       components,

@@ -3,6 +3,7 @@ import { getRepositoryToken, TypeOrmModule } from "@nestjs/typeorm";
 import { DataSource, type Repository } from "typeorm";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
+import { GraphService } from "../graph/graph.service";
 import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
 import { LatticeIdentificationService } from "../lattice-identification/lattice-identification.service";
 import { MeanderCharacteristicsService } from "../meander-characteristics/meander-characteristics.service";
@@ -14,7 +15,6 @@ import { MeanderDecodingService } from "../meander-decoding/meander-decoding.ser
 import { MeanderEnumerationService } from "../meander-enumeration/meander-enumeration.service";
 import { MeanderLatticeService } from "../meander-lattice/meander-lattice.service";
 import { MeanderRenderingService } from "../meander-rendering/meander-rendering.service";
-import { MeanderTopologyService } from "../meander-topology/meander-topology.service";
 import { MosaicNamingService } from "../mosaic-naming/mosaic-naming.service";
 import { MosaicSymmetryService } from "../mosaic-tile/mosaic-symmetry.service";
 import { MosaicTileService } from "../mosaic-tile/mosaic-tile.service";
@@ -77,7 +77,7 @@ describe(DrawEnumerationService, () => {
         MeanderEnumerationService,
         MeanderLatticeService,
         MeanderRenderingService,
-        MeanderTopologyService,
+        GraphService,
         MosaicNamingService,
         MosaicSymmetryService,
         MosaicTileService,

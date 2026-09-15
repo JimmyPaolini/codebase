@@ -1,13 +1,14 @@
 import { Inject, Injectable } from "@nestjs/common";
 
+import { GraphService } from "../graph/graph.service";
 import { MeanderLatticeService } from "../meander-lattice/meander-lattice.service";
 
+import type { InkAdjacency } from "../graph/graph.types";
 import type {
   LatticeGraph,
   LatticePoint,
 } from "../meander-lattice/meander-lattice.types";
 import type {
-  InkAdjacency,
   InkConnectivity,
   JunctionCounts,
   MeanderTopology,
@@ -46,6 +47,8 @@ export class MeanderTopologyService {
   // 🏗 Dependency Injection
 
   constructor(
+    @Inject(GraphService)
+    private readonly graphService: GraphService,
     @Inject(MeanderLatticeService)
     private readonly meanderLatticeService: MeanderLatticeService,
   ) {}
@@ -206,63 +209,7 @@ export class MeanderTopologyService {
     }
   }
 
-  /** Marks every node reachable from `start` along ink as visited. */
-  private walk<Node>(
-    adjacency: InkAdjacency<Node>,
-    start: Node,
-    visited: Set<string>,
-  ): void {
-    const pending: Node[] = [start];
-
-    visited.add(adjacency.key(start));
-
-    while (pending.length > 0) {
-      const node = pending.pop();
-
-      if (node === undefined) {
-        break;
-      }
-
-      for (const neighbor of adjacency.neighbors(node)) {
-        const key = adjacency.key(neighbor);
-
-        if (!visited.has(key)) {
-          visited.add(key);
-          pending.push(neighbor);
-        }
-      }
-    }
-  }
-
   // 🌎 Public Methods
-
-  /**
-   * How many connected pieces an ink graph falls into, which is the one
-   * quantity {@link InkConnectivity}'s two predicates cannot be computed
-   * without and the one that costs a walk.
-   *
-   * It takes an {@link InkAdjacency} rather than a document because this is
-   * also asked of a *repeat unit* whose ink wraps east into its own first
-   * column, and a repeat unit is not a document and never becomes one.
-   * Rendering one in order to measure it would answer a different question:
-   * a rendering of `N` repeats shows `N` copies of whatever one repeat
-   * contains, so its component count says how many repeats were drawn as
-   * much as it says anything about the unit. See
-   * `MeanderConnectivityService`.
-   */
-  components<Node>(adjacency: InkAdjacency<Node>): number {
-    const visited = new Set<string>();
-    let components = 0;
-
-    for (const node of adjacency.nodes) {
-      if (!visited.has(adjacency.key(node))) {
-        components += 1;
-        this.walk(adjacency, node, visited);
-      }
-    }
-
-    return components;
-  }
 
   /**
    * Counts one rendered meander's ink as a graph: its painted lattice
@@ -285,7 +232,7 @@ export class MeanderTopologyService {
     const graph = this.meanderLatticeService.build(document);
 
     return {
-      components: this.components(this.adjacency(graph)),
+      components: this.graphService.components(this.adjacency(graph)),
       edges: graph.horizontalEdges.size + graph.verticalEdges.size,
       freeEnds: this.freeEnds(graph),
       nodes: graph.nodes.size,
