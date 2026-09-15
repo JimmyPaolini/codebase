@@ -1,9 +1,7 @@
 import { describe, expect, it } from "vitest";
 
+import * as core from "./index.js";
 import {
-  CODOMETER_STATISTIC_GROUPS,
-  CODOMETER_SYMBOL_KINDS,
-  CODOMETER_SYMBOL_MODIFIERS,
   ConfigurationFileNotFoundError,
   InvalidConfigurationError,
   InvalidLimitValueError,
@@ -11,10 +9,22 @@ import {
 } from "./index.js";
 
 describe("codometer-core index", () => {
-  it("exports the measured vocabulary", () => {
-    expect(CODOMETER_STATISTIC_GROUPS).toContain("typescript");
-    expect(CODOMETER_SYMBOL_KINDS).toContain("class");
-    expect(CODOMETER_SYMBOL_MODIFIERS).toContain("readonly");
+  // The defining invariant of the core layer, and the only runtime claim a
+  // contracts package can make about itself: everything it ships is either an
+  // error somebody throws or a vocabulary somebody reads. A service or a
+  // NestJS module added here is neither, and fails this outright — which is
+  // what stops the contracts leaf from quietly becoming a live package again.
+  it("ships nothing but errors and vocabularies — no service, no module", () => {
+    const shipped = Object.values(core);
+
+    expect(shipped.length).toBeGreaterThan(0);
+
+    for (const value of shipped) {
+      const isError =
+        typeof value === "function" && value.name.endsWith("Error");
+
+      expect(isError || Array.isArray(value)).toBe(true);
+    }
   });
 
   it("names the file a configuration was looked for in", () => {

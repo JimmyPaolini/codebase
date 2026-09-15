@@ -626,6 +626,7 @@ describe("callidescope examples (integration)", () => {
         GATED_LEAF_DIRECTORY,
         "packages/ic-suite/codependix/codependix-configuration",
         "packages/ic-suite/codometer/codometer-configuration",
+        "packages/ic-suite/codometer/codometer-core",
         "packages/logger",
       ]);
     });
