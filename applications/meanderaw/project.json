@@ -50,7 +50,7 @@
     "spell-check": {},
     "start": {
       "cache": false,
-      "description": "Run the Meanderaw application. With no arguments it sweeps every meander into output/meanders.sqlite — the whole lattice's unit space, enumerated and classified, then the historical corpus's hardcoded Codes beyond that budget; with --args=\"--rows <n> --columns <n> --code <code>\" it writes that one row; with --args=\"--check\" it regenerates that same sweep into a throwaway database and fails if it disagrees with the committed one, which `sweep-check` runs on every commit. `build` compiles this project rather than drawing anything, so populating the database is this target's job.",
+      "description": "Run the Meanderaw application. With no arguments it sweeps every meander into output/meanders.sqlite — the whole lattice's unit space, enumerated and classified, then the historical corpus's hardcoded Codes beyond that budget; with --args=\"--rows <n> --columns <n> --code <code>\" it writes that one row; with --args=\"--check\" it regenerates that same sweep into a throwaway database and fails if it disagrees with the committed one, which `sweep-check` runs (no longer wired into `lint-codebase`, so it must be run directly). `build` compiles this project rather than drawing anything, so populating the database is this target's job.",
       "executor": "nx:run-commands",
       "options": {
         "command": "node --import @swc-node/register/esm-register src/main.ts {args}",
