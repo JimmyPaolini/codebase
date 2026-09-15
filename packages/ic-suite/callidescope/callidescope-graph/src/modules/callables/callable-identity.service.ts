@@ -4,7 +4,7 @@ import ts from "typescript";
 import { ANONYMOUS_MEMBER_NAME } from "./callables.constants";
 
 import type { CallableDeclaration } from "./callables.types";
-import type { CallableKind, SourceLocation } from "@callidescope/configuration";
+import type { CallableKind, SourceLocation } from "@callidescope/core";
 
 /**
  * Gives every callable a stable identifier and a name a report can print.

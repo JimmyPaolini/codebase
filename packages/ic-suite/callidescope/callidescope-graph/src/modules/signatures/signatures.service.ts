@@ -5,10 +5,7 @@ import { SIGNATURE_FORMAT_FLAGS } from "./signatures.constants";
 
 import type { CallableDeclaration } from "../callables/callables.types";
 import type { ReadSignatureArguments } from "./signatures.types";
-import type {
-  CallableParameter,
-  CallableSignature,
-} from "@callidescope/configuration";
+import type { CallableParameter, CallableSignature } from "@callidescope/core";
 
 /**
  * Reads what a callable takes and what it gives back.

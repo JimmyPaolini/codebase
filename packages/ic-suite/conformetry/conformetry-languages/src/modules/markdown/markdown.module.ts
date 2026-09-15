@@ -1,5 +1,6 @@
-import { ScoringModule } from "@conformetry/core";
 import { Module } from "@nestjs/common";
+
+import { ScoringModule } from "../scoring/scoring.module";
 
 import { MarkdownNodesService } from "./markdown-nodes.service";
 import { MarkdownTreeService } from "./markdown-tree.service";

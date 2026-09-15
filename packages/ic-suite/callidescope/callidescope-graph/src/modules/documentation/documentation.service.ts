@@ -4,7 +4,7 @@ import ts from "typescript";
 import { DEPRECATED_TAG } from "./documentation.constants";
 
 import type { ReadDocumentationArguments } from "./documentation.types";
-import type { CallableDocumentation } from "@callidescope/configuration";
+import type { CallableDocumentation } from "@callidescope/core";
 
 /**
  * Reads what a callable's documentation comment says about it.

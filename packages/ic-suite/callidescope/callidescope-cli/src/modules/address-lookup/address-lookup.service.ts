@@ -1,16 +1,16 @@
+import { ConfigurationService } from "@callidescope/configuration";
 import { AddressService } from "@callidescope/graph";
 import { Injectable } from "@nestjs/common";
 
 import { CallidescopeService } from "../callidescope/callidescope.service";
-import { RunPlanService } from "../run-plan/run-plan.service";
 
 import { ADDRESS_NOT_FOUND_ADVICE } from "./address-lookup.constants";
 
 import type {
-  AddressCommandOptions,
   LocatedWorkspace,
   ResolveAddressArguments,
 } from "./address-lookup.types";
+import type { AddressCommandOptions } from "@callidescope/configuration";
 import type { CallableAddressResolution } from "@callidescope/graph";
 
 /**
@@ -26,7 +26,7 @@ export class AddressLookupService {
   constructor(
     private readonly addressService: AddressService,
     private readonly callidescopeService: CallidescopeService,
-    private readonly runPlanService: RunPlanService,
+    private readonly configurationService: ConfigurationService,
   ) {}
 
   // 🔐 Private Fields
@@ -93,7 +93,7 @@ export class AddressLookupService {
       configurationPath,
       format,
       workspaceRoot,
-    } = await this.runPlanService.prepareLookup(options);
+    } = await this.configurationService.prepareLookup(options);
     const located = await this.callidescopeService.locate({
       authoredLimits,
       configuration,

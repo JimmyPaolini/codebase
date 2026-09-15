@@ -5,8 +5,8 @@ import {
   ConfigurationService,
   TemplateDiscoveryService,
 } from "@conformetry/configuration";
-import { ReportingService } from "@conformetry/core";
 import { GenerationService } from "@conformetry/generation";
+import { ReportingService } from "@conformetry/output";
 import { ValidationService } from "@conformetry/validation";
 import { Injectable } from "@nestjs/common";
 

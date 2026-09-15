@@ -1,6 +1,6 @@
 import {
+  ConfigurationModule,
   InputError,
-  InputService,
   ProjectConfigurationError,
   ProjectConfigurationFieldNotPermittedError,
 } from "@callidescope/configuration";
@@ -33,9 +33,9 @@ describe(LimitsCommand, () => {
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
+      imports: [ConfigurationModule],
       providers: [
         LimitsCommand,
-        InputService,
         { provide: LimitsService, useValue: createMock<LimitsService>() },
         {
           provide: RenderLimitsService,
@@ -69,9 +69,9 @@ describe(LimitsCommand, () => {
 
   it("sets logger context", async () => {
     const module = await Test.createTestingModule({
+      imports: [ConfigurationModule],
       providers: [
         LimitsCommand,
-        InputService,
         { provide: LimitsService, useValue: createMock<LimitsService>() },
         {
           provide: RenderLimitsService,
@@ -80,6 +80,8 @@ describe(LimitsCommand, () => {
         { provide: LoggerService, useValue: createMock<LoggerService>() },
       ],
     }).compile();
+
+    await module.resolve(LimitsCommand);
 
     const logger = await module.resolve(LoggerService);
 

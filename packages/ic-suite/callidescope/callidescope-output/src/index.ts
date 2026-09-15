@@ -1,4 +1,10 @@
 // 📤 Exports
+export { AddressReportModule } from "./modules/address-report/address-report.module";
+export { AddressReportService } from "./modules/address-report/address-report.service";
+export type {
+  BreadthReport,
+  DepthReport,
+} from "./modules/address-report/address-report.types";
 export { OutputJsonModule } from "./modules/output-json/output-json.module";
 export { OutputJsonService } from "./modules/output-json/output-json.service";
 export type {
@@ -24,6 +30,9 @@ export type {
   FindOwnedFindingsArguments,
   OwnedFindings,
 } from "./modules/project-reports/project-reports.types";
+export { ReportFindingsModule } from "./modules/report-findings/report-findings.module";
+export { ReportFindingsService } from "./modules/report-findings/report-findings.service";
+export type { ReportFindingsArguments } from "./modules/report-findings/report-findings.types";
 export { MarkdownReportService } from "./modules/report/markdown-report.service";
 export { MermaidReportService } from "./modules/report/mermaid-report.service";
 export {
@@ -69,3 +78,10 @@ export type {
   StackRendering,
 } from "./modules/report/report.types";
 export { WorkspaceReportService } from "./modules/report/workspace-report.service";
+export { MARKDOWN_DESTINATION_RENDERINGS } from "./modules/write-destinations/write-destinations.constants";
+export { WriteDestinationsModule } from "./modules/write-destinations/write-destinations.module";
+export { WriteDestinationsService } from "./modules/write-destinations/write-destinations.service";
+export type {
+  SyncDestinationsArguments,
+  SyncProjectSectionsArguments,
+} from "./modules/write-destinations/write-destinations.types";

@@ -1,6 +1,6 @@
 // 🏷️ Types
 
-import type { CallGraphResult } from "./call-graph.types";
+import type { CallGraphResult } from "@callidescope/core";
 
 /** The shape of a `callidescope.config.ts` default export. */
 export interface CallidescopeConfiguration {

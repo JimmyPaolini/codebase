@@ -410,18 +410,27 @@ export default [
               onlyDependOnLibsWithTags: ["type:package"],
               sourceTag: "type:application",
             },
-            // Callidescope package graph. The configuration reader is the
-            // leaf; the graph builder depends only on it; the output renderer
-            // depends on both the configuration and the graph it renders; the
-            // CLI orchestrates all three, so the dependency only ever points
-            // that way.
+            // Callidescope package graph. Core, holding the domain vocabulary
+            // and nothing executable, is the leaf; the configuration package
+            // resolves the file and the flags over it; the graph builder
+            // analyzes; the output renderer depends on the configuration and
+            // the graph it renders; the CLI composes them, so the dependency
+            // only ever points that way.
             {
               onlyDependOnLibsWithTags: [],
+              sourceTag: "name:callidescope-core",
+            },
+            {
+              onlyDependOnLibsWithTags: [
+                "name:callidescope-core",
+                "name:logger",
+              ],
               sourceTag: "name:callidescope-configuration",
             },
             {
               onlyDependOnLibsWithTags: [
                 "name:callidescope-configuration",
+                "name:callidescope-core",
                 "name:logger",
               ],
               sourceTag: "name:callidescope-graph",
@@ -429,6 +438,7 @@ export default [
             {
               onlyDependOnLibsWithTags: [
                 "name:callidescope-configuration",
+                "name:callidescope-core",
                 "name:callidescope-graph",
                 "name:logger",
               ],
@@ -437,6 +447,7 @@ export default [
             {
               onlyDependOnLibsWithTags: [
                 "name:callidescope-configuration",
+                "name:callidescope-core",
                 "name:callidescope-graph",
                 "name:callidescope-output",
                 "name:logger",
@@ -451,38 +462,33 @@ export default [
               onlyDependOnLibsWithTags: [
                 "name:callidescope-cli",
                 "name:callidescope-configuration",
+                "name:callidescope-core",
                 "name:callidescope-graph",
                 "name:callidescope-output",
                 "name:logger",
               ],
               sourceTag: "name:callidescope-nx",
             },
-            // Codometer package graph. The configuration reader, the change
-            // diffing package, the language analyzers, and the measurement
-            // support packages (discovery, size, customization) are leaves;
-            // the output renderer joins a change collection to a rendered
-            // report, so it depends on the diffing and configuration
-            // packages; the CLI measures whatever the configuration
-            // describes and reports on all of them, so the dependency only
-            // ever points that way.
+            // Codometer package graph, on the ic-suite five-layer spine:
+            // `core <- configuration <- measurement <- output <- cli`. The
+            // contracts leaf holds the measured vocabulary and depends on
+            // nothing; configuration resolves the config file and the command
+            // line over it; the language analyzers and the measurement
+            // package do the measuring; output owns every render target,
+            // report diffing included; and the command-line host wires
+            // commands over all of them.
             {
               onlyDependOnLibsWithTags: [],
+              sourceTag: "name:codometer-core",
+            },
+            {
+              onlyDependOnLibsWithTags: ["name:codometer-core"],
               sourceTag: "name:codometer-configuration",
             },
             {
-              onlyDependOnLibsWithTags: ["name:logger"],
-              sourceTag: "name:codometer-changes",
-            },
-            {
               onlyDependOnLibsWithTags: [
                 "name:codometer-configuration",
-                "name:logger",
-              ],
-              sourceTag: "name:codometer-discovery",
-            },
-            {
-              onlyDependOnLibsWithTags: [
-                "name:codometer-configuration",
+                "name:codometer-core",
                 "name:logger",
               ],
               sourceTag: "name:codometer-languages",
@@ -490,55 +496,44 @@ export default [
             {
               onlyDependOnLibsWithTags: [
                 "name:codometer-configuration",
+                "name:codometer-core",
                 "name:codometer-languages",
-              ],
-              sourceTag: "name:codometer-customization",
-            },
-            {
-              onlyDependOnLibsWithTags: [
-                "name:codometer-configuration",
                 "name:logger",
               ],
-              sourceTag: "name:codometer-size",
+              sourceTag: "name:codometer-measurement",
             },
             {
               onlyDependOnLibsWithTags: [
-                "name:codometer-changes",
                 "name:codometer-configuration",
+                "name:codometer-core",
+                "name:codometer-measurement",
                 "name:logger",
               ],
               sourceTag: "name:codometer-output",
             },
             {
               onlyDependOnLibsWithTags: [
-                "name:codometer-changes",
                 "name:codometer-configuration",
-                "name:codometer-customization",
-                "name:codometer-discovery",
-                "name:codometer-languages",
+                "name:codometer-core",
+                "name:codometer-measurement",
                 "name:codometer-output",
-                "name:codometer-size",
                 "name:logger",
               ],
               sourceTag: "name:codometer-cli",
             },
-            // Conformetry package graph. `conformetry-core` is the leaf every
-            // other package may depend on; `conformetry-generation` owns
-            // template rendering, so configuration depends on it rather than
-            // the reverse.
+            // Conformetry package graph, on the ic-suite five-layer spine:
+            // core, configuration, analysis, output, cli. `conformetry-core`
+            // is the contracts leaf and holds no service, so nothing above it
+            // has to be dragged in to import a type; placeholder rendering
+            // lives in the configuration layer, because substituting a
+            // template or instance path is part of resolving it, and
+            // `conformetry-generation` consumes it upward.
             {
               onlyDependOnLibsWithTags: [],
               sourceTag: "name:conformetry-core",
             },
             {
               onlyDependOnLibsWithTags: ["name:conformetry-core"],
-              sourceTag: "name:conformetry-generation",
-            },
-            {
-              onlyDependOnLibsWithTags: [
-                "name:conformetry-core",
-                "name:conformetry-generation",
-              ],
               sourceTag: "name:conformetry-configuration",
             },
             {
@@ -546,31 +541,44 @@ export default [
                 "name:conformetry-configuration",
                 "name:conformetry-core",
               ],
-              sourceTag: "name:conformetry-files",
+              sourceTag: "name:conformetry-generation",
             },
             // One rule for every Language, because they are one package: the
-            // Languages sit in `conformetry-languages` and reach only the
-            // leaf. Jupyter's delegation to JSON, markdown, and Python is an
-            // intra-package import, which neither this rule nor codependix
-            // polices — accepted, and recorded as such.
+            // Languages sit in `conformetry-languages`, alongside the
+            // extension-agnostic existence pass and the difference and
+            // scoring primitives every validator shares. Jupyter's delegation
+            // to JSON, markdown, and Python is an intra-package import, which
+            // neither this rule nor codependix polices — accepted, and
+            // recorded as such.
             {
-              onlyDependOnLibsWithTags: ["name:conformetry-core"],
+              onlyDependOnLibsWithTags: [
+                "name:conformetry-configuration",
+                "name:conformetry-core",
+              ],
               sourceTag: "name:conformetry-languages",
             },
             {
               onlyDependOnLibsWithTags: [
                 "name:conformetry-configuration",
                 "name:conformetry-core",
-                "name:conformetry-files",
                 "name:conformetry-languages",
               ],
               sourceTag: "name:conformetry-validation",
             },
             {
               onlyDependOnLibsWithTags: [
+                "name:conformetry-core",
+                "name:conformetry-languages",
+                "name:conformetry-validation",
+              ],
+              sourceTag: "name:conformetry-output",
+            },
+            {
+              onlyDependOnLibsWithTags: [
                 "name:conformetry-configuration",
                 "name:conformetry-core",
                 "name:conformetry-generation",
+                "name:conformetry-output",
                 "name:conformetry-validation",
                 "name:logger",
               ],
@@ -581,6 +589,7 @@ export default [
                 "name:conformetry-configuration",
                 "name:conformetry-core",
                 "name:conformetry-generation",
+                "name:conformetry-output",
                 "name:conformetry-validation",
                 "name:logger",
               ],
@@ -597,6 +606,7 @@ export default [
                 "name:conformetry-core",
                 "name:conformetry-generation",
                 "name:conformetry-nx",
+                "name:conformetry-output",
                 "name:conformetry-validation",
               ],
               sourceTag: "name:conformetry-examples",

@@ -1,6 +1,6 @@
 // 🏷️ Types
 
-import type { CallableId } from "@callidescope/configuration";
+import type { CallableId } from "@callidescope/core";
 
 /**
  * The bookkeeping Tarjan's algorithm carries.

@@ -1,6 +1,6 @@
-import { ChangesService } from "@codometer/changes";
-import { InputService } from "@codometer/configuration";
+import { ConfigurationService } from "@codometer/configuration";
 import {
+  ChangesService,
   CODOMETER_MARKERS,
   DocumentsService,
   RenderService,
@@ -30,10 +30,10 @@ export class ChangesCommand extends CommandRunner {
   // 🏗 Dependency Injection
 
   constructor(
+    private readonly configurationService: ConfigurationService,
     private readonly changesService: ChangesService,
     private readonly documentsService: DocumentsService,
     private readonly renderService: RenderService,
-    private readonly inputService: InputService,
     private readonly logger: LoggerService,
   ) {
     super();
@@ -54,7 +54,7 @@ export class ChangesCommand extends CommandRunner {
     flags: "--baseline [baseline]",
   })
   public parseBaseline(value: unknown): string | undefined {
-    return this.inputService.parseOptionalOption(value);
+    return this.configurationService.parseOptionalOption(value);
   }
 
   /** Parse the run URL the baseline came from, linked from the summary. */
@@ -63,7 +63,7 @@ export class ChangesCommand extends CommandRunner {
     flags: "--baseline-url [baselineUrl]",
   })
   public parseBaselineUrl(value: unknown): string | undefined {
-    return this.inputService.parseOptionalOption(value);
+    return this.configurationService.parseOptionalOption(value);
   }
 
   /** Parse the directory to look for codometer reports in. */
@@ -72,7 +72,7 @@ export class ChangesCommand extends CommandRunner {
     flags: "-d, --directory [directory]",
   })
   public parseDirectory(value: unknown): string {
-    return this.inputService.parseDirectoryOption(value);
+    return this.configurationService.parseDirectoryOption(value);
   }
 
   /** Parse the markdown document the report is spliced into. */
@@ -81,7 +81,7 @@ export class ChangesCommand extends CommandRunner {
     flags: "--markdown [markdown]",
   })
   public parseMarkdown(value: unknown): string | undefined {
-    return this.inputService.parseOptionalOption(value);
+    return this.configurationService.parseOptionalOption(value);
   }
 
   /** Parse the file the report is written to on its own. */
@@ -90,7 +90,7 @@ export class ChangesCommand extends CommandRunner {
     flags: "--output [output]",
   })
   public parseOutput(value: unknown): string | undefined {
-    return this.inputService.parseOptionalOption(value);
+    return this.configurationService.parseOptionalOption(value);
   }
 
   /** Diffs every project's report against the baseline, and emits the result. */
@@ -98,8 +98,10 @@ export class ChangesCommand extends CommandRunner {
     _passedParameters: string[],
     options: ChangesCommandOptions,
   ): Promise<void> {
-    const baseline = this.inputService.parseOptionalOption(options.baseline);
-    const workingDirectory = this.inputService.parseDirectoryOption(
+    const baseline = this.configurationService.parseOptionalOption(
+      options.baseline,
+    );
+    const workingDirectory = this.configurationService.parseDirectoryOption(
       options.directory,
     );
 
@@ -114,7 +116,9 @@ export class ChangesCommand extends CommandRunner {
     });
 
     const body = this.renderService.renderSection({
-      baselineUrl: this.inputService.parseOptionalOption(options.baselineUrl),
+      baselineUrl: this.configurationService.parseOptionalOption(
+        options.baselineUrl,
+      ),
       failures: collection.failures,
       rows: collection.rows,
     });
@@ -122,8 +126,10 @@ export class ChangesCommand extends CommandRunner {
     await this.documentsService.emit({
       body,
       destination: {
-        markdown: this.inputService.parseOptionalOption(options.markdown),
-        output: this.inputService.parseOptionalOption(options.output),
+        markdown: this.configurationService.parseOptionalOption(
+          options.markdown,
+        ),
+        output: this.configurationService.parseOptionalOption(options.output),
       },
       label: "codometer changes",
       markers: CODOMETER_MARKERS,

@@ -6,15 +6,17 @@ import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 import { ZodError } from "zod";
 
-import { ConfigurationLoaderService } from "../configuration-loader/configuration-loader.service";
+import { InputService } from "../input/input.service";
 import { OverrideResolutionService } from "../override-resolution/override-resolution.service";
 
+import { ConfigurationLoaderService } from "./configuration-loader.service";
 import {
   codependixConfigurationSchema,
   ConfigurationFileNotFoundError,
   DEFAULT_INCLUDE_GLOBS,
 } from "./configuration.constants";
 import { ConfigurationService } from "./configuration.service";
+import { FlagResolutionService } from "./flag-resolution.service";
 
 import type {
   CodependixBoundaryRule,
@@ -51,6 +53,8 @@ describe(ConfigurationService, () => {
       providers: [
         ConfigurationService,
         ConfigurationLoaderService,
+        FlagResolutionService,
+        InputService,
         OverrideResolutionService,
       ],
     }).compile();
@@ -1103,6 +1107,75 @@ describe(ConfigurationService, () => {
         markdown: undefined,
         target: "json",
       });
+    });
+  });
+
+  // The one public service answers both halves of "what is this run
+  // configured to do": the configuration file above, and the command line
+  // here. Nothing else in this package is exported, so a host that could not
+  // ask these of `ConfigurationService` could not ask them at all.
+  describe("the command line", () => {
+    it("trims an optional option and reads blank as absent", () => {
+      expect(service.parseOptionalOption("  graph.json  ")).toBe("graph.json");
+      expect(service.parseOptionalOption("   ")).toBeUndefined();
+      expect(service.parseOptionalOption(undefined)).toBeUndefined();
+    });
+
+    it("falls back to the working directory for a path option", () => {
+      expect(service.parsePathOption("  packages  ")).toBe("packages");
+      expect(service.parsePathOption(undefined)).toBe(process.cwd());
+    });
+
+    it("splits a comma-separated option, dropping blank entries", () => {
+      expect(service.parseCommaDelimitedOption("a, ,b,")).toStrictEqual([
+        "a",
+        "b",
+      ]);
+      expect(service.parseCommaDelimitedOption(undefined)).toStrictEqual([]);
+    });
+
+    it("reads a valueless flag as present", () => {
+      expect(service.parseFlagOption(undefined)).toBe(true);
+      expect(service.parseFlagOption(false)).toBe(false);
+    });
+
+    it("selects the mode the flags asked for", async () => {
+      const { errors, mode } = await service.selectMode({
+        check: "boundaries",
+      });
+
+      expect(errors).toStrictEqual([]);
+      expect(mode).toStrictEqual({
+        checksBoundaries: true,
+        checksReports: false,
+        writes: false,
+      });
+    });
+
+    it("refuses --write combined with --check reports", async () => {
+      const { errors } = await service.selectMode({
+        check: "reports",
+        write: true,
+      });
+
+      expect(errors).toHaveLength(1);
+    });
+
+    it("knows which modes touch the files an export lives in", () => {
+      expect(
+        service.touchesFiles({
+          checksBoundaries: true,
+          checksReports: false,
+          writes: false,
+        }),
+      ).toBe(false);
+      expect(
+        service.touchesFiles({
+          checksBoundaries: false,
+          checksReports: false,
+          writes: true,
+        }),
+      ).toBe(true);
     });
   });
 });

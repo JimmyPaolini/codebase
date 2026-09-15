@@ -16,10 +16,14 @@ graph LR
   codependix_boundaries["codependix-boundaries"]
   codependix_cli["codependix-cli"]
   codependix_configuration["codependix-configuration"]
+  codependix_core["codependix-core"]
   codependix_examples["codependix-examples"]
+  codependix_output["codependix-output"]
   codependix_boundaries --> codependix_configuration
   codependix_cli --> codependix_configuration
+  codependix_configuration --> codependix_core
   codependix_examples --> codependix_configuration
+  codependix_output --> codependix_configuration
   classDef subject fill:#7c3aed,color:#fff,stroke:#4c1d95,stroke-width:2px
   class codependix_configuration subject
 ```
@@ -30,11 +34,10 @@ graph LR
 <!-- codependix:start name="codependix-nestjs-modules" -->
 ```mermaid
 flowchart LR
-  ConfigurationLoaderModule
   ConfigurationModule
   InputModule
   OverrideResolutionModule
-  ConfigurationModule --> ConfigurationLoaderModule
+  ConfigurationModule --> InputModule
   ConfigurationModule --> OverrideResolutionModule
 ```
 <!-- codependix:end name="codependix-nestjs-modules" -->
@@ -50,17 +53,16 @@ graph LR
   file_eslint_config_ts["eslint.config.ts"]
   file_src_index_ts["src/index.ts"]
   file_src_index_unit_test_ts["src/index.unit.test.ts"]
-  file_src_modules_configuration_loader_configuration_loader_constants_ts["src/modules/configuration-loader/configuration-loader.constants.ts"]
-  file_src_modules_configuration_loader_configuration_loader_module_ts["src/modules/configuration-loader/configuration-loader.module.ts"]
-  file_src_modules_configuration_loader_configuration_loader_service_ts["src/modules/configuration-loader/configuration-loader.service.ts"]
-  file_src_modules_configuration_loader_configuration_loader_service_unit_test_ts["src/modules/configuration-loader/configuration-loader.service.unit.test.ts"]
-  file_src_modules_configuration_loader_configuration_loader_types_ts["src/modules/configuration-loader/configuration-loader.types.ts"]
+  file_src_modules_configuration_configuration_loader_service_ts["src/modules/configuration/configuration-loader.service.ts"]
+  file_src_modules_configuration_configuration_loader_service_unit_test_ts["src/modules/configuration/configuration-loader.service.unit.test.ts"]
   file_src_modules_configuration_configuration_constants_ts["src/modules/configuration/configuration.constants.ts"]
   file_src_modules_configuration_configuration_module_ts["src/modules/configuration/configuration.module.ts"]
   file_src_modules_configuration_configuration_module_unit_test_ts["src/modules/configuration/configuration.module.unit.test.ts"]
   file_src_modules_configuration_configuration_service_ts["src/modules/configuration/configuration.service.ts"]
   file_src_modules_configuration_configuration_service_unit_test_ts["src/modules/configuration/configuration.service.unit.test.ts"]
   file_src_modules_configuration_configuration_types_ts["src/modules/configuration/configuration.types.ts"]
+  file_src_modules_configuration_flag_resolution_service_ts["src/modules/configuration/flag-resolution.service.ts"]
+  file_src_modules_configuration_flag_resolution_service_unit_test_ts["src/modules/configuration/flag-resolution.service.unit.test.ts"]
   file_src_modules_input_input_constants_ts["src/modules/input/input.constants.ts"]
   file_src_modules_input_input_module_ts["src/modules/input/input.module.ts"]
   file_src_modules_input_input_module_unit_test_ts["src/modules/input/input.module.unit.test.ts"]
@@ -76,25 +78,37 @@ graph LR
   file_testing_setup_ts["testing/setup.ts"]
   file_vitest_config_ts["vitest.config.ts"]
   file_src_index_unit_test_ts --> file_src_index_ts
-  file_src_modules_configuration_loader_configuration_loader_module_ts --> file_src_modules_configuration_loader_configuration_loader_service_ts
-  file_src_modules_configuration_loader_configuration_loader_service_ts --> file_src_modules_configuration_configuration_constants_ts
-  file_src_modules_configuration_loader_configuration_loader_service_ts --> file_src_modules_configuration_configuration_types_ts
-  file_src_modules_configuration_loader_configuration_loader_service_unit_test_ts --> file_src_modules_configuration_loader_configuration_loader_service_ts
+  file_src_modules_configuration_configuration_loader_service_ts --> file_src_modules_configuration_configuration_constants_ts
+  file_src_modules_configuration_configuration_loader_service_ts --> file_src_modules_configuration_configuration_types_ts
+  file_src_modules_configuration_configuration_loader_service_unit_test_ts --> file_src_modules_configuration_configuration_loader_service_ts
   file_src_modules_configuration_configuration_constants_ts --> file_src_modules_configuration_configuration_types_ts
-  file_src_modules_configuration_configuration_module_ts --> file_src_modules_configuration_loader_configuration_loader_module_ts
+  file_src_modules_configuration_configuration_module_ts --> file_src_modules_configuration_configuration_loader_service_ts
   file_src_modules_configuration_configuration_module_ts --> file_src_modules_configuration_configuration_service_ts
+  file_src_modules_configuration_configuration_module_ts --> file_src_modules_configuration_flag_resolution_service_ts
+  file_src_modules_configuration_configuration_module_ts --> file_src_modules_input_input_module_ts
   file_src_modules_configuration_configuration_module_ts --> file_src_modules_override_resolution_override_resolution_module_ts
   file_src_modules_configuration_configuration_module_unit_test_ts --> file_src_modules_configuration_configuration_module_ts
   file_src_modules_configuration_configuration_module_unit_test_ts --> file_src_modules_configuration_configuration_service_ts
-  file_src_modules_configuration_configuration_service_ts --> file_src_modules_configuration_loader_configuration_loader_service_ts
+  file_src_modules_configuration_configuration_service_ts --> file_src_modules_configuration_configuration_loader_service_ts
   file_src_modules_configuration_configuration_service_ts --> file_src_modules_configuration_configuration_constants_ts
   file_src_modules_configuration_configuration_service_ts --> file_src_modules_configuration_configuration_types_ts
+  file_src_modules_configuration_configuration_service_ts --> file_src_modules_configuration_flag_resolution_service_ts
+  file_src_modules_configuration_configuration_service_ts --> file_src_modules_input_input_service_ts
   file_src_modules_configuration_configuration_service_ts --> file_src_modules_override_resolution_override_resolution_service_ts
-  file_src_modules_configuration_configuration_service_unit_test_ts --> file_src_modules_configuration_loader_configuration_loader_service_ts
+  file_src_modules_configuration_configuration_service_unit_test_ts --> file_src_modules_configuration_configuration_loader_service_ts
   file_src_modules_configuration_configuration_service_unit_test_ts --> file_src_modules_configuration_configuration_constants_ts
   file_src_modules_configuration_configuration_service_unit_test_ts --> file_src_modules_configuration_configuration_service_ts
   file_src_modules_configuration_configuration_service_unit_test_ts --> file_src_modules_configuration_configuration_types_ts
+  file_src_modules_configuration_configuration_service_unit_test_ts --> file_src_modules_configuration_flag_resolution_service_ts
+  file_src_modules_configuration_configuration_service_unit_test_ts --> file_src_modules_input_input_service_ts
   file_src_modules_configuration_configuration_service_unit_test_ts --> file_src_modules_override_resolution_override_resolution_service_ts
+  file_src_modules_configuration_flag_resolution_service_ts --> file_src_modules_configuration_configuration_constants_ts
+  file_src_modules_configuration_flag_resolution_service_ts --> file_src_modules_configuration_configuration_types_ts
+  file_src_modules_configuration_flag_resolution_service_ts --> file_src_modules_input_input_service_ts
+  file_src_modules_configuration_flag_resolution_service_unit_test_ts --> file_src_modules_configuration_configuration_constants_ts
+  file_src_modules_configuration_flag_resolution_service_unit_test_ts --> file_src_modules_configuration_flag_resolution_service_ts
+  file_src_modules_configuration_flag_resolution_service_unit_test_ts --> file_src_modules_input_input_constants_ts
+  file_src_modules_configuration_flag_resolution_service_unit_test_ts --> file_src_modules_input_input_service_ts
   file_src_modules_input_input_module_ts --> file_src_modules_input_input_service_ts
   file_src_modules_input_input_module_unit_test_ts --> file_src_modules_input_input_module_ts
   file_src_modules_input_input_module_unit_test_ts --> file_src_modules_input_input_service_ts
@@ -121,9 +135,9 @@ Call stacks traced through `packages/ic-suite/codependix/codependix-configuratio
 
 | Measure | Value |
 | --- | --- |
-| Callables | 51 |
-| Files | 22 |
-| Calls traced | 48 |
+| Callables | 68 |
+| Files | 20 |
+| Calls traced | 64 |
 | Call stacks | 1 |
 | Deepest stack | 2 |
 | Stacks through recursion | 0 |
@@ -135,7 +149,7 @@ What this project is judged against, as declared in its own `callidescope.config
 
 | Limit | Value |
 | --- | --- |
-| `maximumDepth` | 6 |
+| `maximumDepth` | 7 |
 | `maximumBreadth` | 5 |
 
 ### Call stacks (depth)
@@ -152,37 +166,48 @@ What this project is judged against, as declared in its own `callidescope.config
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
 | `InputService.promptForSelect` | 4 | `InputService.assertCanPrompt`, `InputService.map(…)`, `promptCancelledError`, `InputService.find(…)` | `packages/ic-suite/codependix/codependix-configuration/src/modules/input/input.service.ts:92` |
-| `ConfigurationLoaderService.readAuthoredConfiguration` | 3 | `ConfigurationLoaderService.findConfigurationFile`, `ConfigurationLoaderService.resolveConfigurationPath`, `ConfigurationLoaderService.parseConfigurationFile` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration-loader/configuration-loader.service.ts:169` |
-| `ConfigurationService.loadConfiguration` | 3 | `ConfigurationLoaderService.readAuthoredConfiguration`, `OverrideResolutionService.applyOverrides`, `ConfigurationService.resolveConfiguration` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:214` |
+| `FlagResolutionService.readCheckNames` | 4 | `FlagResolutionService.filter(…)`, `FlagResolutionService.map(…)`, `FlagResolutionService.describeAcceptedCheckNames`, `FlagResolutionService.validateCheckNames` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/flag-resolution.service.ts:84` |
+| `ConfigurationLoaderService.readAuthoredConfiguration` | 3 | `ConfigurationLoaderService.findConfigurationFile`, `ConfigurationLoaderService.resolveConfigurationPath`, `ConfigurationLoaderService.parseConfigurationFile` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration-loader.service.ts:169` |
 
 <details>
-<summary>23 more callables</summary>
+<summary>34 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `ConfigurationService.loadProjectConfiguration` | 3 | `ConfigurationLoaderService.findProjectConfigurationFile`, `UnknownConfigurationFileTypeError.constructor`, `ConfigurationLoaderService.loadConfigurationModule` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:238` |
-| `ConfigurationLoaderService.parseConfigurationFile` | 2 | `UnknownConfigurationFileTypeError.constructor`, `ConfigurationLoaderService.loadConfigurationModule` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration-loader/configuration-loader.service.ts:151` |
-| `ConfigurationLoaderService.resolveConfigurationPath` | 2 | `ConfigurationLoaderService.findWorkspaceRoot`, `ConfigurationFileNotFoundError.constructor` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration-loader/configuration-loader.service.ts:187` |
+| `FlagResolutionService.selectMode` | 3 | `FlagResolutionService.readCheckNames`, `FlagResolutionService.emptyMode`, `FlagResolutionService.promptForMode` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/flag-resolution.service.ts:139` |
+| `ConfigurationService.loadConfiguration` | 3 | `ConfigurationLoaderService.readAuthoredConfiguration`, `OverrideResolutionService.applyOverrides`, `ConfigurationService.resolveConfiguration` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:220` |
+| `ConfigurationService.loadProjectConfiguration` | 3 | `ConfigurationLoaderService.findProjectConfigurationFile`, `UnknownConfigurationFileTypeError.constructor`, `ConfigurationLoaderService.loadConfigurationModule` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:244` |
 | `OverrideResolutionService.resolveOverride` | 2 | `InputError.constructor`, `buildUndeclaredOverrideMessage` | `packages/ic-suite/codependix/codependix-configuration/src/modules/override-resolution/override-resolution.service.ts:48` |
-| `ConfigurationService.isProjectNamedOnCommandLine` | 2 | `ConfigurationService.matchesAnyName`, `ConfigurationService.some(…)` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:61` |
-| `ConfigurationService.splitSelectionArgument` | 2 | `ConfigurationService.filter(…)`, `ConfigurationService.map(…)` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:151` |
-| `ConfigurationService.isProjectIncluded` | 2 | `ConfigurationService.matchesAnyName`, `ConfigurationService.isProjectNamedOnCommandLine` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:171` |
-| `ConfigurationService.resolveConfiguration` | 2 | `ConfigurationService.resolveBoundaries`, `ConfigurationService.resolveSelection` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:271` |
-| `ConfigurationService.resolveForProject` | 2 | `ConfigurationService.isProjectIncluded`, `ConfigurationService.resolveGraphOutput` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:299` |
+| `ConfigurationLoaderService.parseConfigurationFile` | 2 | `UnknownConfigurationFileTypeError.constructor`, `ConfigurationLoaderService.loadConfigurationModule` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration-loader.service.ts:151` |
+| `ConfigurationLoaderService.resolveConfigurationPath` | 2 | `ConfigurationLoaderService.findWorkspaceRoot`, `ConfigurationFileNotFoundError.constructor` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration-loader.service.ts:187` |
+| `ConfigurationService.isProjectNamedOnCommandLine` | 2 | `ConfigurationService.matchesAnyName`, `ConfigurationService.some(…)` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:67` |
+| `ConfigurationService.splitSelectionArgument` | 2 | `ConfigurationService.filter(…)`, `ConfigurationService.map(…)` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:157` |
+| `ConfigurationService.isProjectIncluded` | 2 | `ConfigurationService.matchesAnyName`, `ConfigurationService.isProjectNamedOnCommandLine` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:177` |
+| `ConfigurationService.resolveConfiguration` | 2 | `ConfigurationService.resolveBoundaries`, `ConfigurationService.resolveSelection` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:305` |
+| `ConfigurationService.resolveForProject` | 2 | `ConfigurationService.isProjectIncluded`, `ConfigurationService.resolveGraphOutput` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:333` |
 | `refine(…)` | 1 | `some(…)` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.constants.ts:103` |
-| `ConfigurationLoaderService.findWorkspaceRoot` | 1 | `ConfigurationLoaderService.some(…)` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration-loader/configuration-loader.service.ts:111` |
-| `ConfigurationLoaderService.loadConfigurationModule` | 1 | `ConfigurationLoaderService.readDefaultExport` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration-loader/configuration-loader.service.ts:135` |
 | `missingInputError` | 1 | `InputError.constructor` | `packages/ic-suite/codependix/codependix-configuration/src/modules/input/input.constants.ts:29` |
 | `promptCancelledError` | 1 | `InputError.constructor` | `packages/ic-suite/codependix/codependix-configuration/src/modules/input/input.constants.ts:41` |
-| `OverrideResolutionService.applyOverrides` | 1 | `OverrideResolutionService.resolveOverride` | `packages/ic-suite/codependix/codependix-configuration/src/modules/override-resolution/override-resolution.service.ts:74` |
-| `ConfigurationService.matchesAnyGlob` | 1 | `ConfigurationService.some(…)` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:76` |
-| `ConfigurationService.matchesAnyName` | 1 | `ConfigurationService.matchesAnyGlob` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:81` |
-| `ConfigurationService.resolveSelection` | 1 | `ConfigurationService.splitSelectionArgument` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:141` |
-| `ConfigurationService.isProjectSelected` | 1 | `ConfigurationService.isProjectNamedOnCommandLine` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:196` |
-| `ConfigurationService.resolveForWorkspace` | 1 | `ConfigurationService.resolveGraphOutput` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:341` |
 | `InputService.assertCanPrompt` | 1 | `missingInputError` | `packages/ic-suite/codependix/codependix-configuration/src/modules/input/input.service.ts:38` |
 | `InputService.parseCommaDelimitedOption` | 1 | `InputService.map(…)` | `packages/ic-suite/codependix/codependix-configuration/src/modules/input/input.service.ts:54` |
 | `InputService.parsePathOption` | 1 | `InputService.parseOptionalOption` | `packages/ic-suite/codependix/codependix-configuration/src/modules/input/input.service.ts:87` |
+| `OverrideResolutionService.applyOverrides` | 1 | `OverrideResolutionService.resolveOverride` | `packages/ic-suite/codependix/codependix-configuration/src/modules/override-resolution/override-resolution.service.ts:74` |
+| `ConfigurationLoaderService.findWorkspaceRoot` | 1 | `ConfigurationLoaderService.some(…)` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration-loader.service.ts:111` |
+| `ConfigurationLoaderService.loadConfigurationModule` | 1 | `ConfigurationLoaderService.readDefaultExport` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration-loader.service.ts:135` |
+| `FlagResolutionService.describeAcceptedCheckNames` | 1 | `FlagResolutionService.map(…)` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/flag-resolution.service.ts:41` |
+| `FlagResolutionService.promptForMode` | 1 | `InputService.promptForSelect` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/flag-resolution.service.ts:57` |
+| `FlagResolutionService.validateCheckNames` | 1 | `FlagResolutionService.describeAcceptedCheckNames` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/flag-resolution.service.ts:109` |
+| `ConfigurationService.matchesAnyGlob` | 1 | `ConfigurationService.some(…)` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:82` |
+| `ConfigurationService.matchesAnyName` | 1 | `ConfigurationService.matchesAnyGlob` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:87` |
+| `ConfigurationService.resolveSelection` | 1 | `ConfigurationService.splitSelectionArgument` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:147` |
+| `ConfigurationService.isProjectSelected` | 1 | `ConfigurationService.isProjectNamedOnCommandLine` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:202` |
+| `ConfigurationService.parseCommaDelimitedOption` | 1 | `InputService.parseCommaDelimitedOption` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:279` |
+| `ConfigurationService.parseFlagOption` | 1 | `InputService.parseFlagOption` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:284` |
+| `ConfigurationService.parseOptionalOption` | 1 | `InputService.parseOptionalOption` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:289` |
+| `ConfigurationService.parsePathOption` | 1 | `InputService.parsePathOption` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:294` |
+| `ConfigurationService.resolveForWorkspace` | 1 | `ConfigurationService.resolveGraphOutput` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:375` |
+| `ConfigurationService.selectMode` | 1 | `FlagResolutionService.selectMode` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:388` |
+| `ConfigurationService.touchesFiles` | 1 | `FlagResolutionService.touchesFiles` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:395` |
 
 </details>
 <!-- CALL_STACKS_END -->

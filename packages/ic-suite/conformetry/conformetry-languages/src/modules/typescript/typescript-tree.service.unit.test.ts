@@ -1,7 +1,8 @@
-import { ScoringService } from "@conformetry/core";
 import { Test } from "@nestjs/testing";
 import ts from "typescript";
 import { beforeAll, describe, expect, it } from "vitest";
+
+import { ScoringService } from "../scoring/scoring.service";
 
 import { TypescriptNodesService } from "./typescript-nodes.service";
 import { TypescriptTreeService } from "./typescript-tree.service";

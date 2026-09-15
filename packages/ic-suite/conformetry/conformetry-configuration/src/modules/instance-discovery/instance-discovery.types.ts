@@ -1,9 +1,9 @@
 // 🏷️ Types
 
 import type { ConformetryConfiguration } from "../configuration/configuration.types.js";
+import type { Substitutions } from "../rendering/rendering.types";
 import type { TemplateDefinition } from "../template-discovery/template-discovery.types.js";
 import type { PreparedValidationDocument } from "@conformetry/core";
-import type { Substitutions } from "@conformetry/generation";
 
 /** Arguments for expanding instance globs into instances. */
 export interface FindInstancesArguments {

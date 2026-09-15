@@ -87,6 +87,34 @@ const codependixConfiguration: CodependixConfiguration = {
    * that arrives red is a backlog rather than a gate, and a red pipeline
    * nobody can act on teaches people to ignore it.
    *
+   * The ic-suite rules are stated twice on purpose, and the two statements
+   * catch different mistakes. Five generic rules keyed on `layer:*` say the
+   * spine once for all four toolchains — a layer reaches its own layer and
+   * every layer beneath it — and gate a package nobody wrote a name rule for.
+   * The per-package `name:*` rules below them stay, and catch what a generic
+   * rule waves through: a package tagged into the wrong layer, and a
+   * cross-toolchain edge, which `layer:*` cannot express at all because there
+   * is no `suite:*` tag. Rules are ANDed, so a name rule only ever tightens a
+   * generic one. No generic rule carries an exception for any one toolchain,
+   * which is what the convergence had to be able to say.
+   *
+   * Five rather than four because the contracts leaf reaches nothing, and the
+   * schema compels that one to be a forbid: `boundarySelectorSchema` in
+   * `codependix-configuration` refuses a selector with no `id`, `path`,
+   * `project` or `tags`, so an allow reaching nothing cannot be written down.
+   * The four `*-core-is-a-leaf` rules below already set the idiom.
+   *
+   * What the generic rules do not reach, stated here rather than left to be
+   * discovered: every one selects `from` by `layer:*`, so an untagged package
+   * is gated only as a target — a tagged consumer reaching it fails, which is
+   * the common case. A new untagged package that merely consumes ic-suite
+   * packages is selected by nothing, since no generic rule matches its `from`
+   * and nobody wrote it a name rule. That hole is inherent: `*-agents` and
+   * `*-examples` deliberately carry no layer tag, so a rule forbidding
+   * untagged consumers would fire on them. The `layer:*` tag being part of a
+   * new ic-suite package's definition of done is what closes it, and that is
+   * a review question rather than a gate.
+   *
    * The `nxProjects` block restates all 32 `depConstraints` from
    * `configuration/eslint.config.ts`, translated mechanically:
    * `onlyDependOnLibsWithTags` is an `allow` rule, `notDependOnLibsWithTags`
@@ -173,32 +201,112 @@ const codependixConfiguration: CodependixConfiguration = {
         name: "applications-depend-only-on-packages",
         to: { tags: ["type:package"] },
       },
-      // 🔭 Callidescope
+      // 🧬 The ic-suite spine
       {
-        from: { tags: ["name:callidescope-configuration"] },
+        from: { tags: ["layer:core"] },
         kind: "forbid",
         message:
-          "The callidescope chain points one way: configuration is the leaf, the graph builder reads it, the output renderer reads both, the command-line host composes all three, and the Nx plugin sits on top so `@nx/devkit` never reaches a package that traces.",
-        name: "callidescope-configuration-is-a-leaf",
+          "A contracts leaf declares types and reaches nothing at all. This is the ic-suite spine stated once for every toolchain rather than four times: core, then configuration, then analysis, then output, then cli, each layer reaching its own layer and every layer beneath it. A forbid because the configuration schema refuses a selector naming no nodes, so the allow that would say the same thing cannot be written.",
+        name: "core-is-a-leaf",
         to: { id: ["*"] },
+      },
+      {
+        from: { tags: ["layer:configuration"] },
+        kind: "allow",
+        message:
+          "The configuration layer resolves the config file and the command line into one object, and the only thing beneath it is the contracts leaf whose vocabulary that object is written in.",
+        name: "configuration-layer-reaches-core",
+        to: { tags: ["layer:configuration", "layer:core", "name:logger"] },
+      },
+      {
+        from: { tags: ["layer:analysis"] },
+        kind: "allow",
+        message:
+          "The analysis layer is what a toolchain actually does. It reads the contracts and the resolved configuration, and composes its sibling analyzers — the one layer named for what it analyzes rather than for its place in the spine — but never renders and never wires a command.",
+        name: "analysis-layer-reaches-configuration",
+        to: {
+          tags: [
+            "layer:analysis",
+            "layer:configuration",
+            "layer:core",
+            "name:logger",
+          ],
+        },
+      },
+      {
+        from: { tags: ["layer:output"] },
+        kind: "allow",
+        message:
+          "The output layer owns every render target — JSON, markdown, mermaid, anchor blocks, destination routing, delivery — so it reads what analysis produced and renders it without running any analysis of its own.",
+        name: "output-layer-reaches-analysis",
+        to: {
+          tags: [
+            "layer:analysis",
+            "layer:configuration",
+            "layer:core",
+            "layer:output",
+            "name:logger",
+          ],
+        },
+      },
+      {
+        from: { tags: ["layer:cli"] },
+        kind: "allow",
+        message:
+          "The cli layer is entrypoints: command modules and Nx plugins, which is why an Nx plugin carries `layer:cli` rather than a sixth tag of its own. It composes every layer beneath it and implements none of them, and reaches its own layer because a plugin delegates to the command-line host beside it.",
+        name: "cli-layer-reaches-output",
+        to: {
+          tags: [
+            "layer:analysis",
+            "layer:cli",
+            "layer:configuration",
+            "layer:core",
+            "layer:output",
+            "name:logger",
+          ],
+        },
+      },
+      // 🔭 Callidescope
+      {
+        from: { tags: ["name:callidescope-core"] },
+        kind: "forbid",
+        message:
+          "The callidescope spine points one way: core is the contracts leaf, configuration resolves the file and the flags over it, the graph builder analyzes, the output renderer reads both, the command-line host composes them, and the Nx plugin sits on top so `@nx/devkit` never reaches a package that traces.",
+        name: "callidescope-core-is-a-leaf",
+        to: { id: ["*"] },
+      },
+      {
+        from: { tags: ["name:callidescope-configuration"] },
+        kind: "allow",
+        message:
+          "The callidescope spine points one way: core is the contracts leaf, configuration resolves the file and the flags over it, the graph builder analyzes, the output renderer reads both, the command-line host composes them, and the Nx plugin sits on top so `@nx/devkit` never reaches a package that traces.",
+        name: "callidescope-configuration-layer",
+        to: { tags: ["name:callidescope-core", "name:logger"] },
       },
       {
         from: { tags: ["name:callidescope-graph"] },
         kind: "allow",
         message:
-          "The callidescope chain points one way: configuration is the leaf, the graph builder reads it, the output renderer reads both, the command-line host composes all three, and the Nx plugin sits on top so `@nx/devkit` never reaches a package that traces.",
+          "The callidescope spine points one way: core is the contracts leaf, configuration resolves the file and the flags over it, the graph builder analyzes, the output renderer reads both, the command-line host composes them, and the Nx plugin sits on top so `@nx/devkit` never reaches a package that traces.",
         name: "callidescope-graph-layer",
-        to: { tags: ["name:callidescope-configuration", "name:logger"] },
+        to: {
+          tags: [
+            "name:callidescope-configuration",
+            "name:callidescope-core",
+            "name:logger",
+          ],
+        },
       },
       {
         from: { tags: ["name:callidescope-output"] },
         kind: "allow",
         message:
-          "The callidescope chain points one way: configuration is the leaf, the graph builder reads it, the output renderer reads both, the command-line host composes all three, and the Nx plugin sits on top so `@nx/devkit` never reaches a package that traces.",
+          "The callidescope spine points one way: core is the contracts leaf, configuration resolves the file and the flags over it, the graph builder analyzes, the output renderer reads both, the command-line host composes them, and the Nx plugin sits on top so `@nx/devkit` never reaches a package that traces.",
         name: "callidescope-output-layer",
         to: {
           tags: [
             "name:callidescope-configuration",
+            "name:callidescope-core",
             "name:callidescope-graph",
             "name:logger",
           ],
@@ -208,11 +316,12 @@ const codependixConfiguration: CodependixConfiguration = {
         from: { tags: ["name:callidescope-cli"] },
         kind: "allow",
         message:
-          "The callidescope chain points one way: configuration is the leaf, the graph builder reads it, the output renderer reads both, the command-line host composes all three, and the Nx plugin sits on top so `@nx/devkit` never reaches a package that traces.",
+          "The callidescope spine points one way: core is the contracts leaf, configuration resolves the file and the flags over it, the graph builder analyzes, the output renderer reads both, the command-line host composes them, and the Nx plugin sits on top so `@nx/devkit` never reaches a package that traces.",
         name: "callidescope-cli-layer",
         to: {
           tags: [
             "name:callidescope-configuration",
+            "name:callidescope-core",
             "name:callidescope-graph",
             "name:callidescope-output",
             "name:logger",
@@ -223,12 +332,13 @@ const codependixConfiguration: CodependixConfiguration = {
         from: { tags: ["name:callidescope-nx"] },
         kind: "allow",
         message:
-          "The callidescope chain points one way: configuration is the leaf, the graph builder reads it, the output renderer reads both, the command-line host composes all three, and the Nx plugin sits on top so `@nx/devkit` never reaches a package that traces.",
+          "The callidescope spine points one way: core is the contracts leaf, configuration resolves the file and the flags over it, the graph builder analyzes, the output renderer reads both, the command-line host composes them, and the Nx plugin sits on top so `@nx/devkit` never reaches a package that traces.",
         name: "callidescope-nx-layer",
         to: {
           tags: [
             "name:callidescope-cli",
             "name:callidescope-configuration",
+            "name:callidescope-core",
             "name:callidescope-graph",
             "name:callidescope-output",
             "name:logger",
@@ -237,89 +347,150 @@ const codependixConfiguration: CodependixConfiguration = {
       },
       // 🕸️ Codependix
       {
+        from: { tags: ["name:codependix-core"] },
+        kind: "forbid",
+        message:
+          "The codependix chain points one way: core is the contracts leaf, configuration resolves the config file and the command line over it, the four analyzers read both, the output renderer reads all of them, and the command-line host composes the lot.",
+        name: "codependix-core-is-a-leaf",
+        to: { id: ["*"] },
+      },
+      {
+        from: { tags: ["name:codependix-configuration"] },
+        kind: "allow",
+        message:
+          "The codependix chain points one way: core is the contracts leaf, configuration resolves the config file and the command line over it, the four analyzers read both, the output renderer reads all of them, and the command-line host composes the lot.",
+        name: "codependix-configuration-layer",
+        to: { tags: ["name:codependix-core"] },
+      },
+      {
         from: {
           id: [
-            "codependix-configuration",
             "codependix-file-imports",
             "codependix-nestjs-modules",
             "codependix-nx-projects",
           ],
         },
-        kind: "forbid",
+        kind: "allow",
         message:
-          "The four graph builders and the configuration package are leaves: none of them may depend on another codependix package. Only codependix-cli composes them, which is what lets a host take one graph builder without dragging the others behind it.",
+          "The three graph builders are analysis leaves: each reads the contracts and the resolved configuration and nothing else, which is what lets a host take one graph builder without dragging the others behind it. Narrowed from the rule that let them reach no codependix package at all, now that core and configuration sit beneath them.",
         name: "codependix-graph-builders-are-leaves",
-        to: { id: ["codependix-*"] },
+        to: {
+          tags: [
+            "name:codependix-configuration",
+            "name:codependix-core",
+            "name:logger",
+          ],
+        },
       },
       {
-        from: { id: ["codependix-boundaries"] },
-        kind: "forbid",
+        from: { tags: ["name:codependix-boundaries"] },
+        kind: "allow",
         message:
-          "codependix-boundaries builds each level's graph and judges it, and is called by a host rather than calling one. Depending back on codependix-cli would close a cycle between the host and the logic it hosts, which is the one direction this package may never point.",
-        name: "codependix-boundaries-does-not-reach-the-host",
-        to: { id: ["codependix-cli"] },
+          "codependix-boundaries builds each level's graph and judges it, and is called by a host rather than calling one. It sits at the top of the analysis layer — the one analyzer that reads the other three — and may never reach the renderer or the host above it.",
+        name: "codependix-boundaries-layer",
+        to: {
+          tags: [
+            "name:codependix-configuration",
+            "name:codependix-core",
+            "name:codependix-file-imports",
+            "name:codependix-nestjs-modules",
+            "name:codependix-nx-projects",
+          ],
+        },
+      },
+      {
+        from: { tags: ["name:codependix-output"] },
+        kind: "allow",
+        message:
+          "The codependix chain points one way: core is the contracts leaf, configuration resolves the config file and the command line over it, the four analyzers read both, the output renderer reads all of them, and the command-line host composes the lot.",
+        name: "codependix-output-layer",
+        to: {
+          tags: [
+            "name:codependix-boundaries",
+            "name:codependix-configuration",
+            "name:codependix-core",
+            "name:codependix-file-imports",
+            "name:codependix-nestjs-modules",
+            "name:codependix-nx-projects",
+            "name:logger",
+          ],
+        },
+      },
+      {
+        from: { tags: ["name:codependix-cli"] },
+        kind: "allow",
+        message:
+          "The codependix chain points one way: core is the contracts leaf, configuration resolves the config file and the command line over it, the four analyzers read both, the output renderer reads all of them, and the command-line host composes the lot.",
+        name: "codependix-cli-layer",
+        to: {
+          tags: [
+            "name:codependix-boundaries",
+            "name:codependix-configuration",
+            "name:codependix-core",
+            "name:codependix-output",
+            "name:logger",
+          ],
+        },
       },
       // ⏲️ Codometer
       {
-        from: { tags: ["name:codometer-configuration"] },
+        from: { tags: ["name:codometer-core"] },
         kind: "forbid",
         message:
-          "The codometer chain points one way: configuration and the measurement packages are leaves, the output renderer joins a change collection to a report, and the command-line host composes all of them.",
-        name: "codometer-configuration-is-a-leaf",
+          "The codometer chain is the ic-suite five-layer spine: `core <- configuration <- measurement <- output <- cli`. Core is the contracts leaf, configuration resolves the config file and the command line, measurement counts, output owns every render target including report diffing, and the command-line host composes all of them.",
+        name: "codometer-core-is-a-leaf",
         to: { id: ["*"] },
       },
       {
-        from: { tags: ["name:codometer-changes"] },
+        from: { tags: ["name:codometer-configuration"] },
         kind: "allow",
         message:
-          "The codometer chain points one way: configuration and the measurement packages are leaves, the output renderer joins a change collection to a report, and the command-line host composes all of them.",
-        name: "codometer-changes-layer",
-        to: { tags: ["name:logger"] },
-      },
-      {
-        from: { tags: ["name:codometer-discovery"] },
-        kind: "allow",
-        message:
-          "The codometer chain points one way: configuration and the measurement packages are leaves, the output renderer joins a change collection to a report, and the command-line host composes all of them.",
-        name: "codometer-discovery-layer",
-        to: { tags: ["name:codometer-configuration", "name:logger"] },
+          "The codometer chain is the ic-suite five-layer spine: `core <- configuration <- measurement <- output <- cli`. Core is the contracts leaf, configuration resolves the config file and the command line, measurement counts, output owns every render target including report diffing, and the command-line host composes all of them.",
+        name: "codometer-configuration-layer",
+        to: {
+          tags: ["name:codometer-core"],
+        },
       },
       {
         from: { tags: ["name:codometer-languages"] },
         kind: "allow",
         message:
-          "The codometer chain points one way: configuration and the measurement packages are leaves, the output renderer joins a change collection to a report, and the command-line host composes all of them.",
+          "The codometer chain is the ic-suite five-layer spine: `core <- configuration <- measurement <- output <- cli`. Core is the contracts leaf, configuration resolves the config file and the command line, measurement counts, output owns every render target including report diffing, and the command-line host composes all of them.",
         name: "codometer-languages-layer",
-        to: { tags: ["name:codometer-configuration", "name:logger"] },
-      },
-      {
-        from: { tags: ["name:codometer-customization"] },
-        kind: "allow",
-        message:
-          "The codometer chain points one way: configuration and the measurement packages are leaves, the output renderer joins a change collection to a report, and the command-line host composes all of them.",
-        name: "codometer-customization-layer",
         to: {
-          tags: ["name:codometer-configuration", "name:codometer-languages"],
+          tags: [
+            "name:codometer-configuration",
+            "name:codometer-core",
+            "name:logger",
+          ],
         },
       },
       {
-        from: { tags: ["name:codometer-size"] },
+        from: { tags: ["name:codometer-measurement"] },
         kind: "allow",
         message:
-          "The codometer chain points one way: configuration and the measurement packages are leaves, the output renderer joins a change collection to a report, and the command-line host composes all of them.",
-        name: "codometer-size-layer",
-        to: { tags: ["name:codometer-configuration", "name:logger"] },
+          "The codometer chain is the ic-suite five-layer spine: `core <- configuration <- measurement <- output <- cli`. Core is the contracts leaf, configuration resolves the config file and the command line, measurement counts, output owns every render target including report diffing, and the command-line host composes all of them.",
+        name: "codometer-measurement-layer",
+        to: {
+          tags: [
+            "name:codometer-configuration",
+            "name:codometer-core",
+            "name:codometer-languages",
+            "name:logger",
+          ],
+        },
       },
       {
         from: { tags: ["name:codometer-output"] },
         kind: "allow",
         message:
-          "The codometer chain points one way: configuration and the measurement packages are leaves, the output renderer joins a change collection to a report, and the command-line host composes all of them.",
+          "The codometer chain is the ic-suite five-layer spine: `core <- configuration <- measurement <- output <- cli`. Core is the contracts leaf, configuration resolves the config file and the command line, measurement counts, output owns every render target including report diffing, and the command-line host composes all of them.",
         name: "codometer-output-layer",
         to: {
           tags: [
-            "name:codometer-changes",
             "name:codometer-configuration",
+            "name:codometer-core",
+            "name:codometer-measurement",
             "name:logger",
           ],
         },
@@ -328,17 +499,14 @@ const codependixConfiguration: CodependixConfiguration = {
         from: { tags: ["name:codometer-cli"] },
         kind: "allow",
         message:
-          "The codometer chain points one way: configuration and the measurement packages are leaves, the output renderer joins a change collection to a report, and the command-line host composes all of them.",
+          "The codometer chain is the ic-suite five-layer spine: `core <- configuration <- measurement <- output <- cli`. Core is the contracts leaf, configuration resolves the config file and the command line, measurement counts, output owns every render target including report diffing, and the command-line host composes all of them.",
         name: "codometer-cli-layer",
         to: {
           tags: [
-            "name:codometer-changes",
             "name:codometer-configuration",
-            "name:codometer-customization",
-            "name:codometer-discovery",
-            "name:codometer-languages",
+            "name:codometer-core",
+            "name:codometer-measurement",
             "name:codometer-output",
-            "name:codometer-size",
             "name:logger",
           ],
         },
@@ -348,32 +516,24 @@ const codependixConfiguration: CodependixConfiguration = {
         from: { tags: ["name:conformetry-core"] },
         kind: "forbid",
         message:
-          "The conformetry chain points one way, with `conformetry-core` as the leaf every other package may reach and `conformetry-generation` owning template rendering.",
+          "The conformetry spine points one way — core, configuration, analysis, output, cli — and `conformetry-core` is the contracts leaf, so it declares types and reaches nothing at all.",
         name: "conformetry-core-is-a-leaf",
         to: { id: ["*"] },
-      },
-      {
-        from: { tags: ["name:conformetry-generation"] },
-        kind: "allow",
-        message:
-          "The conformetry chain points one way, with `conformetry-core` as the leaf every other package may reach and `conformetry-generation` owning template rendering.",
-        name: "conformetry-generation-layer",
-        to: { tags: ["name:conformetry-core"] },
       },
       {
         from: { tags: ["name:conformetry-configuration"] },
         kind: "allow",
         message:
-          "The conformetry chain points one way, with `conformetry-core` as the leaf every other package may reach and `conformetry-generation` owning template rendering.",
+          "The conformetry spine points one way — core, configuration, analysis, output, cli — and the configuration layer resolves the config file, the CLI flags, and the placeholder substitution every template path needs, so it reaches only the contracts leaf.",
         name: "conformetry-configuration-layer",
-        to: { tags: ["name:conformetry-core", "name:conformetry-generation"] },
+        to: { tags: ["name:conformetry-core"] },
       },
       {
-        from: { tags: ["name:conformetry-files"] },
+        from: { tags: ["name:conformetry-generation"] },
         kind: "allow",
         message:
-          "The conformetry chain points one way, with `conformetry-core` as the leaf every other package may reach and `conformetry-generation` owning template rendering.",
-        name: "conformetry-files-layer",
+          "The conformetry spine points one way — core, configuration, analysis, output, cli — and generation is an analysis package, so it consumes rendering upward from the configuration layer rather than owning it.",
+        name: "conformetry-generation-layer",
         to: {
           tags: ["name:conformetry-configuration", "name:conformetry-core"],
         },
@@ -382,22 +542,37 @@ const codependixConfiguration: CodependixConfiguration = {
         from: { tags: ["name:conformetry-languages"] },
         kind: "allow",
         message:
-          "The conformetry chain points one way, with `conformetry-core` as the leaf every other package may reach and `conformetry-generation` owning template rendering.",
+          "The conformetry spine points one way — core, configuration, analysis, output, cli — and the languages package is the analysis package that owns every per-format validator, the extension-agnostic existence pass, and the difference and scoring primitives they all share.",
         name: "conformetry-languages-layer",
-        to: { tags: ["name:conformetry-core"] },
+        to: {
+          tags: ["name:conformetry-configuration", "name:conformetry-core"],
+        },
       },
       {
         from: { tags: ["name:conformetry-validation"] },
         kind: "allow",
         message:
-          "The conformetry chain points one way, with `conformetry-core` as the leaf every other package may reach and `conformetry-generation` owning template rendering.",
+          "The conformetry spine points one way — core, configuration, analysis, output, cli — and validation is the analysis package that drives the language validators, so it reaches its sibling analysis package and the two layers beneath.",
         name: "conformetry-validation-layer",
         to: {
           tags: [
             "name:conformetry-configuration",
             "name:conformetry-core",
-            "name:conformetry-files",
             "name:conformetry-languages",
+          ],
+        },
+      },
+      {
+        from: { tags: ["name:conformetry-output"] },
+        kind: "allow",
+        message:
+          "The conformetry spine points one way — core, configuration, analysis, output, cli — and the output package owns every render target, so it reads what analysis produced and renders it without running any analysis of its own.",
+        name: "conformetry-output-layer",
+        to: {
+          tags: [
+            "name:conformetry-core",
+            "name:conformetry-languages",
+            "name:conformetry-validation",
           ],
         },
       },
@@ -405,13 +580,14 @@ const codependixConfiguration: CodependixConfiguration = {
         from: { tags: ["name:conformetry"] },
         kind: "allow",
         message:
-          "The conformetry chain points one way, with `conformetry-core` as the leaf every other package may reach and `conformetry-generation` owning template rendering.",
+          "The conformetry spine points one way — core, configuration, analysis, output, cli — and the command-line host holds command modules only, so it composes every layer beneath it and implements none of them.",
         name: "conformetry-layer",
         to: {
           tags: [
             "name:conformetry-configuration",
             "name:conformetry-core",
             "name:conformetry-generation",
+            "name:conformetry-output",
             "name:conformetry-validation",
             "name:logger",
           ],
@@ -421,13 +597,14 @@ const codependixConfiguration: CodependixConfiguration = {
         from: { tags: ["name:conformetry-nx"] },
         kind: "allow",
         message:
-          "The conformetry chain points one way, with `conformetry-core` as the leaf every other package may reach and `conformetry-generation` owning template rendering.",
+          "The conformetry spine points one way — core, configuration, analysis, output, cli — and the Nx plugin is a second entrypoint at the same layer as the command-line host rather than a layer of its own.",
         name: "conformetry-nx-layer",
         to: {
           tags: [
             "name:conformetry-configuration",
             "name:conformetry-core",
             "name:conformetry-generation",
+            "name:conformetry-output",
             "name:conformetry-validation",
             "name:logger",
           ],
@@ -446,6 +623,7 @@ const codependixConfiguration: CodependixConfiguration = {
             "name:conformetry-core",
             "name:conformetry-generation",
             "name:conformetry-nx",
+            "name:conformetry-output",
             "name:conformetry-validation",
           ],
         },

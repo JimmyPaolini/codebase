@@ -37,9 +37,9 @@ Call stacks traced through `packages/ic-suite/callidescope/callidescope-output`,
 
 | Measure | Value |
 | --- | --- |
-| Callables | 104 |
-| Files | 25 |
-| Calls traced | 101 |
+| Callables | 137 |
+| Files | 37 |
+| Calls traced | 142 |
 | Call stacks | 2 |
 | Deepest stack | 4 |
 | Stacks through recursion | 0 |
@@ -51,7 +51,7 @@ What this project is judged against, as declared in its own `callidescope.config
 
 | Limit | Value |
 | --- | --- |
-| `maximumDepth` | 10 |
+| `maximumDepth` | 13 |
 | `maximumBreadth` | 7 |
 
 ### Call stacks (depth)
@@ -81,32 +81,27 @@ What this project is judged against, as declared in its own `callidescope.config
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
 | `MarkdownReportService.renderRun` | 7 | `MarkdownReportService.subsectionPrefix`, `WorkspaceReportService.buildRows`, `MarkdownReportService.renderSummaryTable`, `WorkspaceReportService.renderProjectIndex`, `WorkspaceReportService.renderHeadroom`, `MarkdownReportService.renderStacksAs`, `MarkdownReportService.renderCallableBreadths` | `packages/ic-suite/callidescope/callidescope-output/src/modules/report/markdown-report.service.ts:305` |
-| `OutputMarkdownService.syncAnchoredBlock` | 5 | `MissingMarkdownPathError.constructor`, `OutputMarkdownService.readExisting`, `OutputMarkdownService.wrapInAnchors`, `OutputMarkdownService.buildBlockPattern`, `OutputMarkdownService.spliceBlock` | `packages/ic-suite/callidescope/callidescope-output/src/modules/output-markdown/output-markdown.service.ts:206` |
 | `MarkdownReportService.renderProjectSection` | 5 | `MarkdownReportService.renderSummaryTable`, `MarkdownReportService.renderProjectLimits`, `WorkspaceReportService.limitsFor`, `MarkdownReportService.renderStacksAs`, `MarkdownReportService.renderCallableBreadths` | `packages/ic-suite/callidescope/callidescope-output/src/modules/report/markdown-report.service.ts:257` |
+| `OutputMarkdownService.syncAnchoredBlock` | 5 | `MissingMarkdownPathError.constructor`, `OutputMarkdownService.readExisting`, `OutputMarkdownService.wrapInAnchors`, `OutputMarkdownService.buildBlockPattern`, `OutputMarkdownService.spliceBlock` | `packages/ic-suite/callidescope/callidescope-output/src/modules/output-markdown/output-markdown.service.ts:206` |
 
 <details>
-<summary>48 more callables</summary>
+<summary>68 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `ProjectReportsService.buildSummary` | 4 | `ProjectReportsService.filter(…)`, `ProjectReportsService.filter(…)`, `ProjectReportsService.reduce(…)`, `ProjectReportsService.filter(…)` | `packages/ic-suite/callidescope/callidescope-output/src/modules/project-reports/project-reports.service.ts:131` |
-| `OutputMarkdownService.spliceBlock` | 3 | `OutputMarkdownService.replace(…)`, `OutputMarkdownService.appendBlock`, `OutputMarkdownService.replaceOrphanedBlock` | `packages/ic-suite/callidescope/callidescope-output/src/modules/output-markdown/output-markdown.service.ts:123` |
-| `ProjectReportsService.build` | 3 | `ProjectReportsService.buildStacks`, `ProjectReportsService.buildCallableBreadths`, `ProjectReportsService.map(…)` | `packages/ic-suite/callidescope/callidescope-output/src/modules/project-reports/project-reports.service.ts:227` |
-| `ProjectReportsService.map(…)` | 3 | `ProjectReportsService.toSorted(…)`, `ProjectReportsService.toSorted(…)`, `ProjectReportsService.buildSummary` | `packages/ic-suite/callidescope/callidescope-output/src/modules/project-reports/project-reports.service.ts:231` |
-| `ProjectReportsService.findOwnedFindings` | 3 | `ProjectReportsService.filter(…)`, `ProjectReportsService.findDeepStacks`, `ProjectReportsService.findWideCallables` | `packages/ic-suite/callidescope/callidescope-output/src/modules/project-reports/project-reports.service.ts:300` |
+| `AddressReportService.renderBreadthDiagram` | 4 | `AddressReportService.toFrame`, `AddressReportService.map(…)`, `AddressReportService.map(…)`, `MermaidReportService.renderStacks` | `packages/ic-suite/callidescope/callidescope-output/src/modules/address-report/address-report.service.ts:61` |
+| `ProjectReportsService.buildSummary` | 4 | `ProjectReportsService.filter(…)`, `ProjectReportsService.filter(…)`, `ProjectReportsService.reduce(…)`, `ProjectReportsService.filter(…)` | `packages/ic-suite/callidescope/callidescope-output/src/modules/project-reports/project-reports.service.ts:133` |
+| `ReportFindingsService.reportFindings` | 4 | `ReportFindingsService.reportStaleness`, `ReportFindingsService.reportDeepStacks`, `ReportFindingsService.reportWideCallables`, `ReportFindingsService.reportEmptyTrace` | `packages/ic-suite/callidescope/callidescope-output/src/modules/report-findings/report-findings.service.ts:127` |
+| `WriteDestinationsService.syncDestinations` | 4 | `OutputJsonService.sync`, `OutputMarkdownService.sync`, `MarkdownReportService.renderRun`, `WriteDestinationsService.syncProjectDestinations` | `packages/ic-suite/callidescope/callidescope-output/src/modules/write-destinations/write-destinations.service.ts:121` |
 | `MermaidReportService.renderStacks` | 3 | `MermaidReportService.countNewCallables`, `MermaidReportService.addStack`, `MermaidReportService.renderDiagram` | `packages/ic-suite/callidescope/callidescope-output/src/modules/report/mermaid-report.service.ts:139` |
 | `ReportService.renderFrame` | 3 | `ReportService.renderSignature`, `ReportService.renderMarkers`, `ReportService.shortenSummary` | `packages/ic-suite/callidescope/callidescope-output/src/modules/report/report.service.ts:44` |
 | `MarkdownReportService.renderCallableBreadths` | 3 | `MarkdownReportService.renderTable`, `MarkdownReportService.map(…)`, `MarkdownReportService.map(…)` | `packages/ic-suite/callidescope/callidescope-output/src/modules/report/markdown-report.service.ts:69` |
-| `OutputJsonService.sync` | 2 | `OutputJsonService.buildReport`, `OutputJsonService.readExisting` | `packages/ic-suite/callidescope/callidescope-output/src/modules/output-json/output-json.service.ts:63` |
-| `OutputMarkdownService.sync` | 2 | `OutputMarkdownService.syncAnchoredBlock`, `OutputMarkdownService.buildHelpers` | `packages/ic-suite/callidescope/callidescope-output/src/modules/output-markdown/output-markdown.service.ts:177` |
-| `ProjectReportsService.buildCallableBreadths` | 2 | `ProjectReportsService.flatMap(…)`, `SignaturesService.read` | `packages/ic-suite/callidescope/callidescope-output/src/modules/project-reports/project-reports.service.ts:45` |
-| `ProjectReportsService.buildStacks` | 2 | `ProjectReportsService.readDepth`, `PathsService.buildDeepestPath` | `packages/ic-suite/callidescope/callidescope-output/src/modules/project-reports/project-reports.service.ts:85` |
-| `ProjectReportsService.findProjectDeepStacks` | 2 | `ProjectReportsService.map(…)`, `ProjectReportsService.filter(…)` | `packages/ic-suite/callidescope/callidescope-output/src/modules/project-reports/project-reports.service.ts:167` |
-| `ProjectReportsService.findProjectWideCallables` | 2 | `ProjectReportsService.map(…)`, `ProjectReportsService.filter(…)` | `packages/ic-suite/callidescope/callidescope-output/src/modules/project-reports/project-reports.service.ts:177` |
-| `ProjectReportsService.findDeepStacks` | 2 | `ProjectReportsService.toSorted(…)`, `ProjectReportsService.flatMap(…)` | `packages/ic-suite/callidescope/callidescope-output/src/modules/project-reports/project-reports.service.ts:269` |
-| `ProjectReportsService.flatMap(…)` | 2 | `ProjectReportsService.findProjectDeepStacks`, `ProjectReportsService.readProjectLimits` | `packages/ic-suite/callidescope/callidescope-output/src/modules/project-reports/project-reports.service.ts:274` |
-| `ProjectReportsService.findWideCallables` | 2 | `ProjectReportsService.toSorted(…)`, `ProjectReportsService.flatMap(…)` | `packages/ic-suite/callidescope/callidescope-output/src/modules/project-reports/project-reports.service.ts:362` |
-| `ProjectReportsService.flatMap(…)` | 2 | `ProjectReportsService.findProjectWideCallables`, `ProjectReportsService.readProjectLimits` | `packages/ic-suite/callidescope/callidescope-output/src/modules/project-reports/project-reports.service.ts:367` |
+| `AddressReportService.renderBreadth` | 3 | `AddressReportService.buildBreadthPayload`, `AddressReportService.renderBreadthDiagram`, `AddressReportService.renderReferenceTable` | `packages/ic-suite/callidescope/callidescope-output/src/modules/address-report/address-report.service.ts:153` |
+| `AddressReportService.renderDepth` | 3 | `AddressReportService.buildDepthPayload`, `MermaidReportService.renderStacks`, `AddressReportService.renderDepthStacks` | `packages/ic-suite/callidescope/callidescope-output/src/modules/address-report/address-report.service.ts:208` |
+| `OutputMarkdownService.spliceBlock` | 3 | `OutputMarkdownService.replace(…)`, `OutputMarkdownService.appendBlock`, `OutputMarkdownService.replaceOrphanedBlock` | `packages/ic-suite/callidescope/callidescope-output/src/modules/output-markdown/output-markdown.service.ts:123` |
+| `ProjectReportsService.build` | 3 | `ProjectReportsService.buildStacks`, `ProjectReportsService.buildCallableBreadths`, `ProjectReportsService.map(…)` | `packages/ic-suite/callidescope/callidescope-output/src/modules/project-reports/project-reports.service.ts:229` |
+| `ProjectReportsService.map(…)` | 3 | `ProjectReportsService.toSorted(…)`, `ProjectReportsService.toSorted(…)`, `ProjectReportsService.buildSummary` | `packages/ic-suite/callidescope/callidescope-output/src/modules/project-reports/project-reports.service.ts:233` |
+| `ProjectReportsService.findOwnedFindings` | 3 | `ProjectReportsService.filter(…)`, `ProjectReportsService.findDeepStacks`, `ProjectReportsService.findWideCallables` | `packages/ic-suite/callidescope/callidescope-output/src/modules/project-reports/project-reports.service.ts:302` |
 | `MermaidReportService.countNewCallables` | 2 | `MermaidReportService.filter(…)`, `MermaidReportService.map(…)` | `packages/ic-suite/callidescope/callidescope-output/src/modules/report/mermaid-report.service.ts:90` |
 | `WorkspaceReportService.buildRows` | 2 | `WorkspaceReportService.map(…)`, `WorkspaceReportService.toSorted(…)` | `packages/ic-suite/callidescope/callidescope-output/src/modules/report/workspace-report.service.ts:105` |
 | `WorkspaceReportService.map(…)` | 2 | `WorkspaceReportService.limitsFor`, `WorkspaceReportService.widestBreadth` | `packages/ic-suite/callidescope/callidescope-output/src/modules/report/workspace-report.service.ts:106` |
@@ -114,12 +109,21 @@ What this project is judged against, as declared in its own `callidescope.config
 | `WorkspaceReportService.renderProjectIndex` | 2 | `WorkspaceReportService.buildRows`, `WorkspaceReportService.map(…)` | `packages/ic-suite/callidescope/callidescope-output/src/modules/report/workspace-report.service.ts:178` |
 | `MarkdownReportService.renderStacksAs` | 2 | `MermaidReportService.renderStacks`, `MarkdownReportService.renderStacks` | `packages/ic-suite/callidescope/callidescope-output/src/modules/report/markdown-report.service.ts:153` |
 | `MarkdownReportService.renderFindings` | 2 | `MarkdownReportService.renderStacks`, `MarkdownReportService.renderWideCallableLines` | `packages/ic-suite/callidescope/callidescope-output/src/modules/report/markdown-report.service.ts:239` |
-| `OutputMarkdownService.buildBlockPattern` | 1 | `OutputMarkdownService.escapePattern` | `packages/ic-suite/callidescope/callidescope-output/src/modules/output-markdown/output-markdown.service.ts:54` |
-| `OutputMarkdownService.syncAnchoredBlock` | 1 | `OutputMarkdownService.syncAnchoredBlock` | `packages/ic-suite/callidescope/callidescope-output/src/modules/output-markdown/output-markdown.service.ts:161` |
-| `OutputMarkdownService.wrapInAnchors` | 1 | `OutputMarkdownService.wrapInAnchors` | `packages/ic-suite/callidescope/callidescope-output/src/modules/output-markdown/output-markdown.service.ts:168` |
-| `ProjectReportsService.filter(…)` | 1 | `ProjectReportsService.some(…)` | `packages/ic-suite/callidescope/callidescope-output/src/modules/project-reports/project-reports.service.ts:148` |
-| `ProjectReportsService.findUnreadProjects` | 1 | `ProjectReportsService.filter(…)` | `packages/ic-suite/callidescope/callidescope-output/src/modules/project-reports/project-reports.service.ts:337` |
-| `ProjectReportsService.filter(…)` | 1 | `ProjectReportsService.find(…)` | `packages/ic-suite/callidescope/callidescope-output/src/modules/project-reports/project-reports.service.ts:343` |
+| `AddressReportService.renderBreadthReports` | 2 | `AddressReportService.map(…)`, `AddressReportService.map(…)` | `packages/ic-suite/callidescope/callidescope-output/src/modules/address-report/address-report.service.ts:193` |
+| `AddressReportService.renderDepthReports` | 2 | `AddressReportService.map(…)`, `AddressReportService.map(…)` | `packages/ic-suite/callidescope/callidescope-output/src/modules/address-report/address-report.service.ts:256` |
+| `OutputJsonService.sync` | 2 | `OutputJsonService.buildReport`, `OutputJsonService.readExisting` | `packages/ic-suite/callidescope/callidescope-output/src/modules/output-json/output-json.service.ts:63` |
+| `OutputMarkdownService.sync` | 2 | `OutputMarkdownService.syncAnchoredBlock`, `OutputMarkdownService.buildHelpers` | `packages/ic-suite/callidescope/callidescope-output/src/modules/output-markdown/output-markdown.service.ts:177` |
+| `ProjectReportsService.buildCallableBreadths` | 2 | `ProjectReportsService.flatMap(…)`, `SignaturesService.read` | `packages/ic-suite/callidescope/callidescope-output/src/modules/project-reports/project-reports.service.ts:47` |
+| `ProjectReportsService.buildStacks` | 2 | `ProjectReportsService.readDepth`, `PathsService.buildDeepestPath` | `packages/ic-suite/callidescope/callidescope-output/src/modules/project-reports/project-reports.service.ts:87` |
+| `ProjectReportsService.findProjectDeepStacks` | 2 | `ProjectReportsService.map(…)`, `ProjectReportsService.filter(…)` | `packages/ic-suite/callidescope/callidescope-output/src/modules/project-reports/project-reports.service.ts:169` |
+| `ProjectReportsService.findProjectWideCallables` | 2 | `ProjectReportsService.map(…)`, `ProjectReportsService.filter(…)` | `packages/ic-suite/callidescope/callidescope-output/src/modules/project-reports/project-reports.service.ts:179` |
+| `ProjectReportsService.findDeepStacks` | 2 | `ProjectReportsService.toSorted(…)`, `ProjectReportsService.flatMap(…)` | `packages/ic-suite/callidescope/callidescope-output/src/modules/project-reports/project-reports.service.ts:271` |
+| `ProjectReportsService.flatMap(…)` | 2 | `ProjectReportsService.findProjectDeepStacks`, `ProjectReportsService.readProjectLimits` | `packages/ic-suite/callidescope/callidescope-output/src/modules/project-reports/project-reports.service.ts:276` |
+| `ProjectReportsService.findWideCallables` | 2 | `ProjectReportsService.toSorted(…)`, `ProjectReportsService.flatMap(…)` | `packages/ic-suite/callidescope/callidescope-output/src/modules/project-reports/project-reports.service.ts:364` |
+| `ProjectReportsService.flatMap(…)` | 2 | `ProjectReportsService.findProjectWideCallables`, `ProjectReportsService.readProjectLimits` | `packages/ic-suite/callidescope/callidescope-output/src/modules/project-reports/project-reports.service.ts:369` |
+| `ReportFindingsService.reportDeepStacks` | 2 | `ReportFindingsService.map(…)`, `ReportFindingsService.map(…)` | `packages/ic-suite/callidescope/callidescope-output/src/modules/report-findings/report-findings.service.ts:35` |
+| `ReportFindingsService.reportWideCallables` | 2 | `ReportFindingsService.map(…)`, `ReportFindingsService.map(…)` | `packages/ic-suite/callidescope/callidescope-output/src/modules/report-findings/report-findings.service.ts:92` |
+| `WriteDestinationsService.syncProjectSections` | 2 | `OutputMarkdownService.sync`, `MarkdownReportService.renderProjectSection` | `packages/ic-suite/callidescope/callidescope-output/src/modules/write-destinations/write-destinations.service.ts:80` |
 | `MermaidReportService.addFrame` | 1 | `MermaidReportService.renderLabel` | `packages/ic-suite/callidescope/callidescope-output/src/modules/report/mermaid-report.service.ts:39` |
 | `MermaidReportService.addStack` | 1 | `MermaidReportService.addFrame` | `packages/ic-suite/callidescope/callidescope-output/src/modules/report/mermaid-report.service.ts:67` |
 | `ReportService.shortenSummary` | 1 | `ReportService.readFirstSentence` | `packages/ic-suite/callidescope/callidescope-output/src/modules/report/report.service.ts:102` |
@@ -137,6 +141,22 @@ What this project is judged against, as declared in its own `callidescope.config
 | `MarkdownReportService.renderWideCallableLines` | 1 | `MarkdownReportService.map(…)` | `packages/ic-suite/callidescope/callidescope-output/src/modules/report/markdown-report.service.ts:199` |
 | `MarkdownReportService.renderStacks` | 1 | `MarkdownReportService.map(…)` | `packages/ic-suite/callidescope/callidescope-output/src/modules/report/markdown-report.service.ts:355` |
 | `MarkdownReportService.map(…)` | 1 | `MarkdownReportService.renderStack` | `packages/ic-suite/callidescope/callidescope-output/src/modules/report/markdown-report.service.ts:360` |
+| `AddressReportService.map(…)` | 1 | `AddressReportService.toFrame` | `packages/ic-suite/callidescope/callidescope-output/src/modules/address-report/address-report.service.ts:72` |
+| `AddressReportService.map(…)` | 1 | `AddressReportService.toFrame` | `packages/ic-suite/callidescope/callidescope-output/src/modules/address-report/address-report.service.ts:75` |
+| `AddressReportService.renderDepthStacks` | 1 | `AddressReportService.map(…)` | `packages/ic-suite/callidescope/callidescope-output/src/modules/address-report/address-report.service.ts:84` |
+| `AddressReportService.map(…)` | 1 | `ReportService.renderStackTree` | `packages/ic-suite/callidescope/callidescope-output/src/modules/address-report/address-report.service.ts:95` |
+| `AddressReportService.renderReferenceTable` | 1 | `AddressReportService.map(…)` | `packages/ic-suite/callidescope/callidescope-output/src/modules/address-report/address-report.service.ts:116` |
+| `AddressReportService.map(…)` | 1 | `AddressReportService.buildBreadthPayload` | `packages/ic-suite/callidescope/callidescope-output/src/modules/address-report/address-report.service.ts:196` |
+| `AddressReportService.map(…)` | 1 | `AddressReportService.renderBreadth` | `packages/ic-suite/callidescope/callidescope-output/src/modules/address-report/address-report.service.ts:203` |
+| `AddressReportService.map(…)` | 1 | `AddressReportService.buildDepthPayload` | `packages/ic-suite/callidescope/callidescope-output/src/modules/address-report/address-report.service.ts:259` |
+| `AddressReportService.map(…)` | 1 | `AddressReportService.renderDepth` | `packages/ic-suite/callidescope/callidescope-output/src/modules/address-report/address-report.service.ts:266` |
+| `OutputMarkdownService.buildBlockPattern` | 1 | `OutputMarkdownService.escapePattern` | `packages/ic-suite/callidescope/callidescope-output/src/modules/output-markdown/output-markdown.service.ts:54` |
+| `OutputMarkdownService.syncAnchoredBlock` | 1 | `OutputMarkdownService.syncAnchoredBlock` | `packages/ic-suite/callidescope/callidescope-output/src/modules/output-markdown/output-markdown.service.ts:161` |
+| `OutputMarkdownService.wrapInAnchors` | 1 | `OutputMarkdownService.wrapInAnchors` | `packages/ic-suite/callidescope/callidescope-output/src/modules/output-markdown/output-markdown.service.ts:168` |
+| `ProjectReportsService.filter(…)` | 1 | `ProjectReportsService.some(…)` | `packages/ic-suite/callidescope/callidescope-output/src/modules/project-reports/project-reports.service.ts:150` |
+| `ProjectReportsService.findUnreadProjects` | 1 | `ProjectReportsService.filter(…)` | `packages/ic-suite/callidescope/callidescope-output/src/modules/project-reports/project-reports.service.ts:339` |
+| `ProjectReportsService.filter(…)` | 1 | `ProjectReportsService.find(…)` | `packages/ic-suite/callidescope/callidescope-output/src/modules/project-reports/project-reports.service.ts:345` |
+| `WriteDestinationsService.syncProjectDestinations` | 1 | `WriteDestinationsService.syncProjectSections` | `packages/ic-suite/callidescope/callidescope-output/src/modules/write-destinations/write-destinations.service.ts:53` |
 
 </details>
 <!-- CALL_STACKS_END -->
@@ -152,6 +172,7 @@ Dependency graphs exported by [codependix](https://github.com/JimmyPaolini/codeb
 graph LR
   callidescope_cli["callidescope-cli"]
   callidescope_configuration["callidescope-configuration"]
+  callidescope_core["callidescope-core"]
   callidescope_graph["callidescope-graph"]
   callidescope_nx["callidescope-nx"]
   callidescope_output["callidescope-output"]
@@ -159,6 +180,7 @@ graph LR
   callidescope_cli --> callidescope_output
   callidescope_nx --> callidescope_output
   callidescope_output --> callidescope_configuration
+  callidescope_output --> callidescope_core
   callidescope_output --> callidescope_graph
   callidescope_output --> logger
   classDef subject fill:#7c3aed,color:#fff,stroke:#4c1d95,stroke-width:2px
@@ -171,6 +193,7 @@ graph LR
 <!-- codependix:start name="codependix-nestjs-modules" -->
 ```mermaid
 flowchart LR
+  AddressReportModule
   CallablesModule
   ClassesModule
   DocumentationModule
@@ -181,9 +204,12 @@ flowchart LR
   OutputMarkdownModule
   ProgramModule
   ProjectReportsModule
+  ReportFindingsModule
   ReportModule
   SignaturesModule
   WorkspaceModule
+  WriteDestinationsModule
+  AddressReportModule --> ReportModule
   CallablesModule --> ProgramModule
   CallablesModule --> WorkspaceModule
   EdgesModule --> CallablesModule
@@ -196,6 +222,9 @@ flowchart LR
   ProgramModule --> WorkspaceModule
   ProjectReportsModule --> GraphModule
   ProjectReportsModule --> SignaturesModule
+  WriteDestinationsModule --> OutputJsonModule
+  WriteDestinationsModule --> OutputMarkdownModule
+  WriteDestinationsModule --> ReportModule
 ```
 
 _Rounded modules are global: every module can inject them, so their edges are left out._
@@ -211,6 +240,11 @@ graph LR
   file_codometer_config_ts["codometer.config.ts"]
   file_eslint_config_ts["eslint.config.ts"]
   file_src_index_ts["src/index.ts"]
+  file_src_modules_address_report_address_report_constants_ts["src/modules/address-report/address-report.constants.ts"]
+  file_src_modules_address_report_address_report_module_ts["src/modules/address-report/address-report.module.ts"]
+  file_src_modules_address_report_address_report_service_ts["src/modules/address-report/address-report.service.ts"]
+  file_src_modules_address_report_address_report_service_unit_test_ts["src/modules/address-report/address-report.service.unit.test.ts"]
+  file_src_modules_address_report_address_report_types_ts["src/modules/address-report/address-report.types.ts"]
   file_src_modules_output_json_output_json_constants_ts["src/modules/output-json/output-json.constants.ts"]
   file_src_modules_output_json_output_json_module_ts["src/modules/output-json/output-json.module.ts"]
   file_src_modules_output_json_output_json_service_ts["src/modules/output-json/output-json.service.ts"]
@@ -226,6 +260,11 @@ graph LR
   file_src_modules_project_reports_project_reports_service_ts["src/modules/project-reports/project-reports.service.ts"]
   file_src_modules_project_reports_project_reports_service_unit_test_ts["src/modules/project-reports/project-reports.service.unit.test.ts"]
   file_src_modules_project_reports_project_reports_types_ts["src/modules/project-reports/project-reports.types.ts"]
+  file_src_modules_report_findings_report_findings_constants_ts["src/modules/report-findings/report-findings.constants.ts"]
+  file_src_modules_report_findings_report_findings_module_ts["src/modules/report-findings/report-findings.module.ts"]
+  file_src_modules_report_findings_report_findings_service_ts["src/modules/report-findings/report-findings.service.ts"]
+  file_src_modules_report_findings_report_findings_service_unit_test_ts["src/modules/report-findings/report-findings.service.unit.test.ts"]
+  file_src_modules_report_findings_report_findings_types_ts["src/modules/report-findings/report-findings.types.ts"]
   file_src_modules_report_markdown_report_service_ts["src/modules/report/markdown-report.service.ts"]
   file_src_modules_report_markdown_report_service_unit_test_ts["src/modules/report/markdown-report.service.unit.test.ts"]
   file_src_modules_report_mermaid_report_service_ts["src/modules/report/mermaid-report.service.ts"]
@@ -237,10 +276,25 @@ graph LR
   file_src_modules_report_report_types_ts["src/modules/report/report.types.ts"]
   file_src_modules_report_workspace_report_service_ts["src/modules/report/workspace-report.service.ts"]
   file_src_modules_report_workspace_report_service_unit_test_ts["src/modules/report/workspace-report.service.unit.test.ts"]
+  file_src_modules_write_destinations_write_destinations_constants_ts["src/modules/write-destinations/write-destinations.constants.ts"]
+  file_src_modules_write_destinations_write_destinations_module_ts["src/modules/write-destinations/write-destinations.module.ts"]
+  file_src_modules_write_destinations_write_destinations_service_ts["src/modules/write-destinations/write-destinations.service.ts"]
+  file_src_modules_write_destinations_write_destinations_service_unit_test_ts["src/modules/write-destinations/write-destinations.service.unit.test.ts"]
+  file_src_modules_write_destinations_write_destinations_types_ts["src/modules/write-destinations/write-destinations.types.ts"]
   file_testing_mocks_ts["testing/mocks.ts"]
   file_testing_modules_ts["testing/modules.ts"]
   file_testing_setup_ts["testing/setup.ts"]
   file_vitest_config_ts["vitest.config.ts"]
+  file_src_modules_address_report_address_report_module_ts --> file_src_modules_address_report_address_report_service_ts
+  file_src_modules_address_report_address_report_module_ts --> file_src_modules_report_report_module_ts
+  file_src_modules_address_report_address_report_service_ts --> file_src_modules_address_report_address_report_types_ts
+  file_src_modules_address_report_address_report_service_ts --> file_src_modules_report_mermaid_report_service_ts
+  file_src_modules_address_report_address_report_service_ts --> file_src_modules_report_report_service_ts
+  file_src_modules_address_report_address_report_service_ts --> file_src_modules_report_report_types_ts
+  file_src_modules_address_report_address_report_service_unit_test_ts --> file_src_modules_address_report_address_report_service_ts
+  file_src_modules_address_report_address_report_service_unit_test_ts --> file_src_modules_report_mermaid_report_service_ts
+  file_src_modules_address_report_address_report_service_unit_test_ts --> file_src_modules_report_report_service_ts
+  file_src_modules_address_report_address_report_service_unit_test_ts --> file_testing_mocks_ts
   file_src_modules_output_json_output_json_module_ts --> file_src_modules_output_json_output_json_service_ts
   file_src_modules_output_json_output_json_service_ts --> file_src_modules_output_json_output_json_types_ts
   file_src_modules_output_json_output_json_service_unit_test_ts --> file_src_modules_output_json_output_json_service_ts
@@ -260,6 +314,11 @@ graph LR
   file_src_modules_project_reports_project_reports_service_unit_test_ts --> file_src_modules_project_reports_project_reports_types_ts
   file_src_modules_project_reports_project_reports_service_unit_test_ts --> file_testing_mocks_ts
   file_src_modules_project_reports_project_reports_service_unit_test_ts --> file_testing_modules_ts
+  file_src_modules_report_findings_report_findings_module_ts --> file_src_modules_report_findings_report_findings_service_ts
+  file_src_modules_report_findings_report_findings_service_ts --> file_src_modules_report_findings_report_findings_types_ts
+  file_src_modules_report_findings_report_findings_service_unit_test_ts --> file_src_modules_report_findings_report_findings_service_ts
+  file_src_modules_report_findings_report_findings_service_unit_test_ts --> file_src_modules_report_findings_report_findings_types_ts
+  file_src_modules_report_findings_report_findings_service_unit_test_ts --> file_testing_mocks_ts
   file_src_modules_report_markdown_report_service_ts --> file_src_modules_report_mermaid_report_service_ts
   file_src_modules_report_markdown_report_service_ts --> file_src_modules_report_report_constants_ts
   file_src_modules_report_markdown_report_service_ts --> file_src_modules_report_report_service_ts
@@ -290,6 +349,24 @@ graph LR
   file_src_modules_report_workspace_report_service_unit_test_ts --> file_src_modules_report_workspace_report_service_ts
   file_src_modules_report_workspace_report_service_unit_test_ts --> file_testing_mocks_ts
   file_src_modules_report_workspace_report_service_unit_test_ts --> file_testing_modules_ts
+  file_src_modules_write_destinations_write_destinations_module_ts --> file_src_modules_output_json_output_json_module_ts
+  file_src_modules_write_destinations_write_destinations_module_ts --> file_src_modules_output_markdown_output_markdown_module_ts
+  file_src_modules_write_destinations_write_destinations_module_ts --> file_src_modules_report_report_module_ts
+  file_src_modules_write_destinations_write_destinations_module_ts --> file_src_modules_write_destinations_write_destinations_service_ts
+  file_src_modules_write_destinations_write_destinations_service_ts --> file_src_modules_output_json_output_json_service_ts
+  file_src_modules_write_destinations_write_destinations_service_ts --> file_src_modules_output_markdown_output_markdown_service_ts
+  file_src_modules_write_destinations_write_destinations_service_ts --> file_src_modules_report_markdown_report_service_ts
+  file_src_modules_write_destinations_write_destinations_service_ts --> file_src_modules_write_destinations_write_destinations_constants_ts
+  file_src_modules_write_destinations_write_destinations_service_ts --> file_src_modules_write_destinations_write_destinations_types_ts
+  file_src_modules_write_destinations_write_destinations_service_unit_test_ts --> file_src_modules_output_json_output_json_service_ts
+  file_src_modules_write_destinations_write_destinations_service_unit_test_ts --> file_src_modules_output_markdown_output_markdown_service_ts
+  file_src_modules_write_destinations_write_destinations_service_unit_test_ts --> file_src_modules_report_markdown_report_service_ts
+  file_src_modules_write_destinations_write_destinations_service_unit_test_ts --> file_src_modules_report_mermaid_report_service_ts
+  file_src_modules_write_destinations_write_destinations_service_unit_test_ts --> file_src_modules_report_report_service_ts
+  file_src_modules_write_destinations_write_destinations_service_unit_test_ts --> file_src_modules_report_workspace_report_service_ts
+  file_src_modules_write_destinations_write_destinations_service_unit_test_ts --> file_src_modules_write_destinations_write_destinations_service_ts
+  file_src_modules_write_destinations_write_destinations_service_unit_test_ts --> file_src_modules_write_destinations_write_destinations_types_ts
+  file_src_modules_write_destinations_write_destinations_service_unit_test_ts --> file_testing_mocks_ts
   file_testing_modules_ts --> file_src_modules_output_json_output_json_module_ts
   file_testing_modules_ts --> file_src_modules_output_markdown_output_markdown_module_ts
   file_testing_modules_ts --> file_src_modules_project_reports_project_reports_module_ts

@@ -3,16 +3,18 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
+import {
+  ConfigurationFileNotFoundError,
+  UnknownConfigurationFileTypeError,
+} from "@codometer/core";
 import { Injectable } from "@nestjs/common";
 import { createJiti } from "jiti";
 import { parse as parseJsonc } from "jsonc-parser";
 
 import {
   CONFIGURATION_FILE_NAMES,
-  ConfigurationFileNotFoundError,
   REPOSITORY_ROOT_MARKERS,
   SUPPORTED_CONFIGURATION_EXTENSIONS,
-  UnknownConfigurationFileTypeError,
 } from "./configuration.constants";
 
 import type { LoadedConfigurationModule } from "./configuration-loader.types";

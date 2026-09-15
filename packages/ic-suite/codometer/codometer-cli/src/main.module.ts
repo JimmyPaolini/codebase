@@ -1,7 +1,5 @@
-import { ConfigurationModule, InputModule } from "@codometer/configuration";
-import { CustomizationModule } from "@codometer/customization";
-import { DiscoveryModule as CodometerDiscoveryModule } from "@codometer/discovery";
-import { LanguagesModule } from "@codometer/languages";
+import { ConfigurationModule } from "@codometer/configuration";
+import { DiscoveryModule as CodometerDiscoveryModule } from "@codometer/measurement";
 import { JsonModule, MarkdownModule } from "@codometer/output";
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
@@ -32,9 +30,6 @@ import { MeasureModule } from "./modules/measure/measure.module";
     MeasureModule,
     CodometerDiscoveryModule,
     ConfigurationModule,
-    CustomizationModule,
-    InputModule,
-    LanguagesModule,
     JsonModule,
     MarkdownModule,
   ],

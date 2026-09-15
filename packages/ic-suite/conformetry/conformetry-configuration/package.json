@@ -1,11 +1,11 @@
 {
   "dependencies": {
     "@conformetry/core": "workspace:*",
-    "@conformetry/generation": "workspace:*",
     "@nestjs/common": "catalog:",
     "jiti": "catalog:",
     "jsonc-parser": "catalog:",
     "lodash": "catalog:",
+    "mustache": "catalog:",
     "prompts": "catalog:",
     "reflect-metadata": "catalog:",
     "tslib": "catalog:",
@@ -16,6 +16,7 @@
     "@nestjs/testing": "catalog:",
     "@nx/eslint-plugin": "catalog:",
     "@swc/helpers": "catalog:",
+    "@types/mustache": "catalog:",
     "@types/node": "catalog:",
     "@types/prompts": "catalog:",
     "@vitest/coverage-v8": "catalog:",

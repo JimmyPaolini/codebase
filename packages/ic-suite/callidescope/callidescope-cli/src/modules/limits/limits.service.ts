@@ -1,9 +1,6 @@
 import path from "node:path";
 
-import {
-  ConfigurationService,
-  ProjectConfigurationService,
-} from "@callidescope/configuration";
+import { ConfigurationService } from "@callidescope/configuration";
 import { FileFilterService, WorkspaceService } from "@callidescope/graph";
 import { Injectable } from "@nestjs/common";
 
@@ -29,7 +26,7 @@ import type {
  * read them as a set, and this is that place, in milliseconds rather than in
  * however long a trace takes.
  *
- * The numbers come from `ProjectConfigurationService.resolveLimits`, the same
+ * The numbers come from `ConfigurationService.resolveLimits`, the same
  * resolver a gated run reads. A listing that read the files for itself could
  * disagree with the gate about the same limit, and a limit two answers can be
  * given for is worse than no limit.
@@ -41,7 +38,6 @@ export class LimitsService {
   constructor(
     private readonly configurationService: ConfigurationService,
     private readonly fileFilterService: FileFilterService,
-    private readonly projectConfigurationService: ProjectConfigurationService,
     private readonly workspaceService: WorkspaceService,
     private readonly logger: LoggerService,
   ) {
@@ -168,12 +164,12 @@ export class LimitsService {
     });
     const projects = this.discoverProjects({ configuration, workspaceRoot });
     const projectConfigurations =
-      await this.projectConfigurationService.loadProjectConfigurations({
+      await this.configurationService.loadProjectConfigurations({
         projects,
         workspaceConfigurationPath: configurationPath,
         workspaceRoot,
       });
-    const limits = this.projectConfigurationService.resolveLimits({
+    const limits = this.configurationService.resolveLimits({
       projectConfigurations,
       projects,
       workspaceAuthoredLimits: authored.limits,

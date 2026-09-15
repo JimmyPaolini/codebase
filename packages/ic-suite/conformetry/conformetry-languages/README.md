@@ -95,9 +95,9 @@ Call stacks traced through `packages/ic-suite/conformetry/conformetry-languages`
 
 | Measure | Value |
 | --- | --- |
-| Callables | 143 |
-| Files | 42 |
-| Calls traced | 190 |
+| Callables | 159 |
+| Files | 54 |
+| Calls traced | 199 |
 | Call stacks | 14 |
 | Deepest stack | 13 |
 | Stacks through recursion | 3 |
@@ -109,7 +109,7 @@ What this project is judged against, as declared in its own `callidescope.config
 
 | Limit | Value |
 | --- | --- |
-| `maximumDepth` | 4 |
+| `maximumDepth` | 13 |
 | `maximumBreadth` | 11 |
 
 ### Call stacks (depth)
@@ -126,16 +126,16 @@ What this project is judged against, as declared in its own `callidescope.config
          ↳ Validates one paired cell with the validator matching its kind.
         └─> MarkdownService.validateDocument(document: PreparedValidationDocument): DocumentValidationResult [packages/ic-suite/conformetry/conformetry-languages/src/modules/markdown/markdown.service.ts:48]
            ↳ Reports every markdown structure the template requires and the file lacks.
-          └─> MarkdownTreeService.compareContainer(args: CompareNodeArguments): CompareNodeResult (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/markdown/markdown-tree.service.ts:64]
+          └─> MarkdownTreeService.compareContainer(args: CompareNodeArguments): CompareNodeResult (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/markdown/markdown-tree.service.ts:65]
              ↳ Matches a container node, then descends into it.
-            └─> MarkdownTreeService.map(…)(…): { differences: MarkdownComparisonError[]; lastMatchedNode: MarkdownNode; totalWeight: number; } (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/markdown/markdown-tree.service.ts:90]
-              └─> MarkdownTreeService.compareChildren(args: CompareChildrenArguments): CompareChildrenResult (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/markdown/markdown-tree.service.ts:146]
+            └─> MarkdownTreeService.map(…)(…): { differences: MarkdownComparisonError[]; lastMatchedNode: MarkdownNode; totalWeight: number; } (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/markdown/markdown-tree.service.ts:91]
+              └─> MarkdownTreeService.compareChildren(args: CompareChildrenArguments): CompareChildrenResult (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/markdown/markdown-tree.service.ts:147]
                  ↳ Compares one level of two trees, descending into containers.
-                └─> MarkdownTreeService.compareLeaf(args: CompareNodeArguments): CompareNodeResult [packages/ic-suite/conformetry/conformetry-languages/src/modules/markdown/markdown-tree.service.ts:114]
+                └─> MarkdownTreeService.compareLeaf(args: CompareNodeArguments): CompareNodeResult [packages/ic-suite/conformetry/conformetry-languages/src/modules/markdown/markdown-tree.service.ts:115]
                    ↳ Matches a leaf node on its own identity, without descending.
-                  └─> MarkdownTreeService.findCandidates(args: CompareNodeArguments): MarkdownNode[] [packages/ic-suite/conformetry/conformetry-languages/src/modules/markdown/markdown-tree.service.ts:134]
+                  └─> MarkdownTreeService.findCandidates(args: CompareNodeArguments): MarkdownNode[] [packages/ic-suite/conformetry/conformetry-languages/src/modules/markdown/markdown-tree.service.ts:135]
                      ↳ Finds every instance sibling satisfying the template node.
-                    └─> MarkdownTreeService.filter(…)(instanceNode: MarkdownNode): boolean [packages/ic-suite/conformetry/conformetry-languages/src/modules/markdown/markdown-tree.service.ts:135]
+                    └─> MarkdownTreeService.filter(…)(instanceNode: MarkdownNode): boolean [packages/ic-suite/conformetry/conformetry-languages/src/modules/markdown/markdown-tree.service.ts:136]
                       └─> MarkdownNodesService.matches(args: { instanceNode: MarkdownNode; templateNode: MarkdownNode; }): boolean [packages/ic-suite/conformetry/conformetry-languages/src/modules/markdown/markdown-nodes.service.ts:140]
                          ↳ Returns whether an instance node satisfies a template node.
                         └─> MarkdownNodesService.readText(node: MarkdownNode): string [packages/ic-suite/conformetry/conformetry-languages/src/modules/markdown/markdown-nodes.service.ts:163]
@@ -147,22 +147,22 @@ What this project is judged against, as declared in its own `callidescope.config
 ```text
 🚀 JsonService.validateDocument(document: PreparedValidationDocument): DocumentValidationResult [packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json.service.ts:39]
    ↳ Reports every key or value the template requires and the instance lacks.
-  └─> JsonComparisonService.compareArrayItem(…): JsonComparison (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:79]
+  └─> JsonComparisonService.compareArrayItem(…): JsonComparison (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:80]
      ↳ Matches one required array entry against the instance array.
-    └─> JsonComparisonService.map(…)(instanceItem: JsonValue, index: number): JsonComparison (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:122]
-      └─> JsonComparisonService.compare(args: CompareJsonArguments): JsonComparison (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:268]
+    └─> JsonComparisonService.map(…)(instanceItem: JsonValue, index: number): JsonComparison (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:123]
+      └─> JsonComparisonService.compare(args: CompareJsonArguments): JsonComparison (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:269]
          ↳ Compares a template value against an instance value, returning every way the instance fails to contain what the…
-        └─> JsonComparisonService.compareArrays(…): JsonComparison (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:141]
+        └─> JsonComparisonService.compareArrays(…): JsonComparison (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:142]
            ↳ Compares two arrays.
-          └─> JsonComparisonService.map(…)(templateItem: JsonValue): JsonComparison (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:148]
-            └─> JsonComparisonService.compareObjects(…): JsonComparison (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:155]
+          └─> JsonComparisonService.map(…)(templateItem: JsonValue): JsonComparison (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:149]
+            └─> JsonComparisonService.compareObjects(…): JsonComparison (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:156]
                ↳ Compares two objects, requiring every template key to be present.
-              └─> JsonComparisonService.map(…)([key, templateValue]: [string, JsonValue]): JsonComparison (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:164]
-                └─> JsonComparisonService.countNodes(value: JsonValue): number (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:207]
+              └─> JsonComparisonService.map(…)([key, templateValue]: [string, JsonValue]): JsonComparison (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:165]
+                └─> JsonComparisonService.countNodes(value: JsonValue): number (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:208]
                    ↳ Counts a JSON value and every value nested inside it.
-                  └─> JsonComparisonService.reduce(…)(total: number, item: JsonValue): number (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:209]
-                    └─> JsonComparisonService.reduce(…)(total: number, nested: JsonValue): number (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:215]
-                      └─> JsonComparisonService.isJsonObject(value: JsonValue): value is Record<string, JsonValue> [packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:235]
+                  └─> JsonComparisonService.reduce(…)(total: number, item: JsonValue): number (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:210]
+                    └─> JsonComparisonService.reduce(…)(total: number, nested: JsonValue): number (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:216]
+                      └─> JsonComparisonService.isJsonObject(value: JsonValue): value is Record<string, JsonValue> [packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:236]
                          ↳ Returns whether a value is a plain JSON object.
 ```
 
@@ -173,15 +173,15 @@ What this project is judged against, as declared in its own `callidescope.config
    ↳ Reports every declaration and comment the template requires.
   └─> TypescriptService.validateStructure(…): DocumentValidationResult [packages/ic-suite/conformetry/conformetry-languages/src/modules/typescript/typescript.service.ts:107]
      ↳ Compares the syntax trees and describes each missing declaration.
-    └─> TypescriptTreeService.compareBestCandidate(args: { candidates: Node[]; templateChild: Node; }): TreeComparison (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/typescript/typescript-tree.service.ts:67]
+    └─> TypescriptTreeService.compareBestCandidate(args: { candidates: Node[]; templateChild: Node; }): TreeComparison (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/typescript/typescript-tree.service.ts:68]
        ↳ Descends into whichever candidate explains the template best.
-      └─> TypescriptTreeService.map(…)(candidate: Node): TreeComparison (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/typescript/typescript-tree.service.ts:72]
-        └─> TypescriptTreeService.compareTree(args: CompareTreeArguments): TreeComparison (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/typescript/typescript-tree.service.ts:126]
+      └─> TypescriptTreeService.map(…)(candidate: Node): TreeComparison (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/typescript/typescript-tree.service.ts:73]
+        └─> TypescriptTreeService.compareTree(args: CompareTreeArguments): TreeComparison (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/typescript/typescript-tree.service.ts:127]
            ↳ Compares one level of two trees, descending into every match.
-          └─> TypescriptTreeService.map(…)(templateChild: Node): TreeComparison (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/typescript/typescript-tree.service.ts:133]
-            └─> TypescriptTreeService.compareChild(…): TreeComparison (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/typescript/typescript-tree.service.ts:87]
+          └─> TypescriptTreeService.map(…)(templateChild: Node): TreeComparison (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/typescript/typescript-tree.service.ts:134]
+            └─> TypescriptTreeService.compareChild(…): TreeComparison (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/typescript/typescript-tree.service.ts:88]
                ↳ Matches one template child against the instance's children.
-              └─> TypescriptTreeService.buildError(…): TypescriptComparisonError [packages/ic-suite/conformetry/conformetry-languages/src/modules/typescript/typescript-tree.service.ts:42]
+              └─> TypescriptTreeService.buildError(…): TypescriptComparisonError [packages/ic-suite/conformetry/conformetry-languages/src/modules/typescript/typescript-tree.service.ts:43]
                  ↳ Describes a template node with no instance counterpart.
                 └─> TypescriptNodesService.countSubtree(node: Node): number (cycle) [packages/ic-suite/conformetry/conformetry-languages/src/modules/typescript/typescript-nodes.service.ts:176]
                    ↳ Counts a node and everything beneath it.
@@ -199,14 +199,14 @@ What this project is judged against, as declared in its own `callidescope.config
 ```text
 🚀 PythonService.validateDocument(document: PreparedValidationDocument): DocumentValidationResult [packages/ic-suite/conformetry/conformetry-languages/src/modules/python/python.service.ts:38]
    ↳ Reports every declaration and comment the template requires.
-  └─> PythonBridgeService.validatePythonSource(args: RunPythonBridgeArguments): DocumentValidationResult [packages/ic-suite/conformetry/conformetry-languages/src/modules/python/python-bridge.service.ts:160]
+  └─> PythonBridgeService.validatePythonSource(args: RunPythonBridgeArguments): DocumentValidationResult [packages/ic-suite/conformetry/conformetry-languages/src/modules/python/python-bridge.service.ts:162]
      ↳ Compares one Python source against its rendered template.
-    └─> PythonBridgeService.map(…)(error: Readonly<Record<string, unknown>>): ConformetryDifference [packages/ic-suite/conformetry/conformetry-languages/src/modules/python/python-bridge.service.ts:185]
-      └─> PythonBridgeService.toConformetryDifference(error: PythonBridgeError): ConformetryDifference [packages/ic-suite/conformetry/conformetry-languages/src/modules/python/python-bridge.service.ts:132]
+    └─> PythonBridgeService.map(…)(error: Readonly<Record<string, unknown>>): ConformetryDifference [packages/ic-suite/conformetry/conformetry-languages/src/modules/python/python-bridge.service.ts:187]
+      └─> PythonBridgeService.toConformetryDifference(error: PythonBridgeError): ConformetryDifference [packages/ic-suite/conformetry/conformetry-languages/src/modules/python/python-bridge.service.ts:134]
          ↳ Maps one snake_case bridge error onto the shared error shape.
-        └─> PythonBridgeService.readValues(error: PythonBridgeError): Partial<ConformetryDifference> [packages/ic-suite/conformetry/conformetry-languages/src/modules/python/python-bridge.service.ts:121]
+        └─> PythonBridgeService.readValues(error: PythonBridgeError): Partial<ConformetryDifference> [packages/ic-suite/conformetry/conformetry-languages/src/modules/python/python-bridge.service.ts:123]
            ↳ Reads the optional expected and actual values.
-          └─> PythonBridgeService.readString(error: PythonBridgeError, key: string): string | undefined [packages/ic-suite/conformetry/conformetry-languages/src/modules/python/python-bridge.service.ts:111]
+          └─> PythonBridgeService.readString(error: PythonBridgeError, key: string): string | undefined [packages/ic-suite/conformetry/conformetry-languages/src/modules/python/python-bridge.service.ts:113]
              ↳ Narrows an untrusted string field from the bridge payload.
 ```
 
@@ -303,53 +303,59 @@ What this project is judged against, as declared in its own `callidescope.config
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
 | `JupyterService.validateDocument` | 11 | `JupyterNotebookService.parseNotebook`, `JupyterNotebookService.pairCells`, `JsonComparisonService.compare`, `JupyterService.readEnvelope`, `JupyterService.map(…)`, `JupyterService.map(…)`, `JupyterService.map(…)`, `JupyterService.flatMap(…)`, `JupyterService.reduce(…)`, `JupyterService.map(…)`, `JupyterService.map(…)` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/jupyter/jupyter.service.ts:153` |
-| `JsonComparisonService.compare` | 7 | `JsonComparisonService.countContainer`, `JsonComparisonService.compareArrays`, `JsonComparisonService.isJsonObject`, `JsonComparisonService.compareObjects`, `JsonComparisonService.countNodes`, `JsonComparisonService.formatPath`, `JsonComparisonService.buildError` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:268` |
-| `JsonComparisonService.compareArrayItem` | 6 | `JsonComparisonService.formatPath`, `JsonComparisonService.countNodes`, `JsonComparisonService.isJsonPrimitive`, `JsonComparisonService.buildError`, `JsonComparisonService.pickClosestMatch`, `JsonComparisonService.map(…)` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:79` |
+| `JsonComparisonService.compare` | 7 | `JsonComparisonService.countContainer`, `JsonComparisonService.compareArrays`, `JsonComparisonService.isJsonObject`, `JsonComparisonService.compareObjects`, `JsonComparisonService.countNodes`, `JsonComparisonService.formatPath`, `JsonComparisonService.buildError` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:269` |
+| `JsonComparisonService.compareArrayItem` | 6 | `JsonComparisonService.formatPath`, `JsonComparisonService.countNodes`, `JsonComparisonService.isJsonPrimitive`, `JsonComparisonService.buildError`, `JsonComparisonService.pickClosestMatch`, `JsonComparisonService.map(…)` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:80` |
 
 <details>
-<summary>78 more callables</summary>
+<summary>84 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `PythonBridgeService.toConformetryDifference` | 6 | `PythonBridgeService.readValues`, `PythonBridgeService.readLocations`, `DifferencesService.resolveDifferenceType`, `PythonBridgeService.readString`, `DifferencesService.resolveErrorLanguage`, `PythonBridgeService.readNumber` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/python/python-bridge.service.ts:132` |
+| `PythonBridgeService.toConformetryDifference` | 6 | `PythonBridgeService.readValues`, `PythonBridgeService.readLocations`, `DifferencesService.resolveDifferenceType`, `PythonBridgeService.readString`, `DifferencesService.resolveErrorLanguage`, `PythonBridgeService.readNumber` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/python/python-bridge.service.ts:134` |
 | `TypescriptNodesService.readKey` | 6 | `TypescriptNodesService.readImportKey`, `TypescriptNodesService.readExportKey`, `TypescriptNodesService.readDecoratorKey`, `TypescriptNodesService.readExpressionStatementKey`, `TypescriptNodesService.readLiteralKey`, `TypescriptNodesService.readNamedKey` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/typescript/typescript-nodes.service.ts:201` |
-| `MarkdownTreeService.compareContainer` | 5 | `MarkdownTreeService.findCandidates`, `MarkdownTreeService.buildError`, `MarkdownNodesService.readChildren`, `MarkdownTreeService.reduce(…)`, `MarkdownTreeService.map(…)` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/markdown/markdown-tree.service.ts:64` |
-| `TypescriptTreeService.compareChild` | 5 | `TypescriptNodesService.readKey`, `TypescriptTreeService.filter(…)`, `TypescriptTreeService.filter(…)`, `TypescriptTreeService.buildError`, `TypescriptTreeService.compareBestCandidate` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/typescript/typescript-tree.service.ts:87` |
+| `MarkdownTreeService.compareContainer` | 5 | `MarkdownTreeService.findCandidates`, `MarkdownTreeService.buildError`, `MarkdownNodesService.readChildren`, `MarkdownTreeService.reduce(…)`, `MarkdownTreeService.map(…)` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/markdown/markdown-tree.service.ts:65` |
+| `TypescriptTreeService.compareChild` | 5 | `TypescriptNodesService.readKey`, `TypescriptTreeService.filter(…)`, `TypescriptTreeService.filter(…)`, `TypescriptTreeService.buildError`, `TypescriptTreeService.compareBestCandidate` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/typescript/typescript-tree.service.ts:88` |
 | `LanguagesService.resolveValidators` | 5 | `LanguagesService.filter(…)`, `LanguagesService.claimingLanguages`, `LanguagesService.flatMap(…)`, `LanguagesService.filter(…)`, `LanguagesService.widenFallback` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/languages/languages.service.ts:95` |
-| `JsonComparisonService.map(…)` | 4 | `JsonComparisonService.formatPath`, `JsonComparisonService.countNodes`, `JsonComparisonService.buildError`, `JsonComparisonService.compare` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:164` |
-| `JsonComparisonService.countNodes` | 3 | `JsonComparisonService.reduce(…)`, `JsonComparisonService.isJsonObject`, `JsonComparisonService.reduce(…)` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:207` |
+| `JsonComparisonService.map(…)` | 4 | `JsonComparisonService.formatPath`, `JsonComparisonService.countNodes`, `JsonComparisonService.buildError`, `JsonComparisonService.compare` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:165` |
+| `FilesService.checkInstanceFiles` | 3 | `InstanceDiscoveryService.resolveInstanceFiles`, `FilesService.buildMissingDifference`, `FilesService.countExpectedFiles` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/files/files.service.ts:96` |
+| `JsonComparisonService.countNodes` | 3 | `JsonComparisonService.reduce(…)`, `JsonComparisonService.isJsonObject`, `JsonComparisonService.reduce(…)` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:208` |
 | `JupyterNotebookService.pairCells` | 3 | `JupyterNotebookService.groupSourcesByKind`, `JupyterNotebookService.readCellKind`, `JupyterNotebookService.readCellSource` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/jupyter/jupyter-notebook.service.ts:82` |
-| `MarkdownTreeService.compareLeaf` | 3 | `MarkdownTreeService.findCandidates`, `MarkdownNodesService.countSubtree`, `MarkdownTreeService.buildError` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/markdown/markdown-tree.service.ts:114` |
+| `MarkdownTreeService.compareLeaf` | 3 | `MarkdownTreeService.findCandidates`, `MarkdownNodesService.countSubtree`, `MarkdownTreeService.buildError` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/markdown/markdown-tree.service.ts:115` |
 | `MarkdownService.validateDocument` | 3 | `MarkdownTreeService.compareChildren`, `MarkdownNodesService.filterNodes`, `MarkdownService.map(…)` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/markdown/markdown.service.ts:48` |
-| `PythonBridgeService.validatePythonSource` | 3 | `PythonBridgeService.buildBridgeError`, `PythonBridgeService.map(…)`, `ScoringService.sumWeights` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/python/python-bridge.service.ts:160` |
+| `PythonBridgeService.validatePythonSource` | 3 | `PythonBridgeService.buildBridgeError`, `PythonBridgeService.map(…)`, `ScoringService.sumWeights` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/python/python-bridge.service.ts:162` |
 | `JupyterService.validateCell` | 3 | `MarkdownService.validateDocument`, `JupyterService.attributeToCell`, `PythonBridgeService.validatePythonSource` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/jupyter/jupyter.service.ts:90` |
-| `TypescriptTreeService.compareTree` | 3 | `TypescriptNodesService.readChildren`, `TypescriptTreeService.reduce(…)`, `TypescriptTreeService.map(…)` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/typescript/typescript-tree.service.ts:126` |
+| `TypescriptTreeService.compareTree` | 3 | `TypescriptNodesService.readChildren`, `TypescriptTreeService.reduce(…)`, `TypescriptTreeService.map(…)` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/typescript/typescript-tree.service.ts:127` |
 | `TypescriptService.validateDocument` | 3 | `TypescriptService.parseSourceFile`, `TypescriptService.validateStructure`, `TypescriptService.validateComments` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/typescript/typescript.service.ts:164` |
-| `JsonComparisonService.compareArrays` | 2 | `JsonComparisonService.combine`, `JsonComparisonService.map(…)` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:141` |
-| `JsonComparisonService.compareObjects` | 2 | `JsonComparisonService.combine`, `JsonComparisonService.map(…)` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:155` |
+| `FilesService.buildMissingDifference` | 2 | `DifferencesService.buildMissingFileDifference`, `DifferencesService.buildMissingDirectoryDifference` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/files/files.service.ts:52` |
+| `JsonComparisonService.compareArrays` | 2 | `JsonComparisonService.combine`, `JsonComparisonService.map(…)` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:142` |
+| `JsonComparisonService.compareObjects` | 2 | `JsonComparisonService.combine`, `JsonComparisonService.map(…)` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:156` |
 | `JupyterNotebookService.groupSourcesByKind` | 2 | `JupyterNotebookService.readCellKind`, `JupyterNotebookService.readCellSource` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/jupyter/jupyter-notebook.service.ts:31` |
 | `MarkdownNodesService.link` | 2 | `MarkdownNodesService.sameField`, `MarkdownNodesService.readText` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/markdown/markdown-nodes.service.ts:59` |
 | `MarkdownNodesService.countSubtree` | 2 | `MarkdownNodesService.reduce(…)`, `MarkdownNodesService.readChildren` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/markdown/markdown-nodes.service.ts:118` |
-| `MarkdownTreeService.buildError` | 2 | `MarkdownNodesService.readText`, `MarkdownNodesService.countSubtree` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/markdown/markdown-tree.service.ts:44` |
-| `MarkdownTreeService.map(…)` | 2 | `MarkdownTreeService.compareChildren`, `MarkdownNodesService.readChildren` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/markdown/markdown-tree.service.ts:90` |
-| `MarkdownTreeService.compareChildren` | 2 | `MarkdownTreeService.compareContainer`, `MarkdownTreeService.compareLeaf` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/markdown/markdown-tree.service.ts:146` |
+| `MarkdownTreeService.buildError` | 2 | `MarkdownNodesService.readText`, `MarkdownNodesService.countSubtree` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/markdown/markdown-tree.service.ts:45` |
+| `MarkdownTreeService.map(…)` | 2 | `MarkdownTreeService.compareChildren`, `MarkdownNodesService.readChildren` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/markdown/markdown-tree.service.ts:91` |
+| `MarkdownTreeService.compareChildren` | 2 | `MarkdownTreeService.compareContainer`, `MarkdownTreeService.compareLeaf` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/markdown/markdown-tree.service.ts:147` |
 | `TextService.validateDocument` | 2 | `TextService.map(…)`, `TextService.findMissingLines` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/text/text.service.ts:76` |
 | `TypescriptCommentsService.compareComments` | 2 | `TypescriptCommentsService.extractComments`, `TypescriptCommentsService.findIndex(…)` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/typescript/typescript-comments.service.ts:46` |
 | `TypescriptCommentsService.extractComments` | 2 | `TypescriptCommentsService.visit`, `TypescriptCommentsService.toSorted(…)` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/typescript/typescript-comments.service.ts:87` |
 | `TypescriptNodesService.readExpressionStatementKey` | 2 | `TypescriptNodesService.buildDottedName`, `TypescriptNodesService.readLiteralKey` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/typescript/typescript-nodes.service.ts:98` |
 | `TypescriptNodesService.countSubtree` | 2 | `TypescriptNodesService.reduce(…)`, `TypescriptNodesService.readChildren` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/typescript/typescript-nodes.service.ts:176` |
-| `TypescriptTreeService.buildError` | 2 | `TypescriptNodesService.readKindLabel`, `TypescriptNodesService.countSubtree` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/typescript/typescript-tree.service.ts:42` |
-| `TypescriptTreeService.compareBestCandidate` | 2 | `TypescriptTreeService.reduce(…)`, `TypescriptTreeService.map(…)` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/typescript/typescript-tree.service.ts:67` |
+| `TypescriptTreeService.buildError` | 2 | `TypescriptNodesService.readKindLabel`, `TypescriptNodesService.countSubtree` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/typescript/typescript-tree.service.ts:43` |
+| `TypescriptTreeService.compareBestCandidate` | 2 | `TypescriptTreeService.reduce(…)`, `TypescriptTreeService.map(…)` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/typescript/typescript-tree.service.ts:68` |
 | `TypescriptService.validateComments` | 2 | `TypescriptCommentsService.compareComments`, `TypescriptService.map(…)` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/typescript/typescript.service.ts:75` |
 | `TypescriptService.validateStructure` | 2 | `TypescriptTreeService.compareTree`, `TypescriptService.map(…)` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/typescript/typescript.service.ts:107` |
-| `JsonComparisonService.combine` | 1 | `JsonComparisonService.reduce(…)` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:66` |
-| `JsonComparisonService.map(…)` | 1 | `JsonComparisonService.compare` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:122` |
-| `JsonComparisonService.map(…)` | 1 | `JsonComparisonService.compareArrayItem` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:148` |
-| `JsonComparisonService.reduce(…)` | 1 | `JsonComparisonService.countNodes` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:209` |
-| `JsonComparisonService.reduce(…)` | 1 | `JsonComparisonService.countNodes` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:215` |
-| `JsonComparisonService.formatPath` | 1 | `JsonComparisonService.reduce(…)` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:224` |
-| `JsonComparisonService.pickClosestMatch` | 1 | `JsonComparisonService.reduce(…)` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:253` |
-| `JsonComparisonService.reduce(…)` | 1 | `ScoringService.sumWeights` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:254` |
+| `DifferencesService.resolveDifferenceType` | 1 | `DifferencesService.find(…)` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/differences/differences.service.ts:78` |
+| `DifferencesService.resolveErrorLanguage` | 1 | `DifferencesService.find(…)` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/differences/differences.service.ts:91` |
+| `FilesService.countExpectedFiles` | 1 | `FilesService.filter(…)` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/files/files.service.ts:78` |
+| `ScoringService.sumWeights` | 1 | `ScoringService.reduce(…)` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/scoring/scoring.service.ts:53` |
+| `JsonComparisonService.combine` | 1 | `JsonComparisonService.reduce(…)` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:67` |
+| `JsonComparisonService.map(…)` | 1 | `JsonComparisonService.compare` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:123` |
+| `JsonComparisonService.map(…)` | 1 | `JsonComparisonService.compareArrayItem` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:149` |
+| `JsonComparisonService.reduce(…)` | 1 | `JsonComparisonService.countNodes` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:210` |
+| `JsonComparisonService.reduce(…)` | 1 | `JsonComparisonService.countNodes` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:216` |
+| `JsonComparisonService.formatPath` | 1 | `JsonComparisonService.reduce(…)` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:225` |
+| `JsonComparisonService.pickClosestMatch` | 1 | `JsonComparisonService.reduce(…)` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:254` |
+| `JsonComparisonService.reduce(…)` | 1 | `ScoringService.sumWeights` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:255` |
 | `JsonService.validateDocument` | 1 | `JsonComparisonService.compare` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json.service.ts:39` |
 | `JupyterNotebookService.readCellSource` | 1 | `JupyterNotebookService.filter(…)` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/jupyter/jupyter-notebook.service.ts:57` |
 | `JupyterNotebookService.parseNotebook` | 1 | `JupyterNotebookService.filter(…)` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/jupyter/jupyter-notebook.service.ts:122` |
@@ -365,12 +371,12 @@ What this project is judged against, as declared in its own `callidescope.config
 | `MarkdownNodesService.reduce(…)` | 1 | `MarkdownNodesService.countSubtree` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/markdown/markdown-nodes.service.ts:123` |
 | `MarkdownNodesService.filterNodes` | 1 | `MarkdownNodesService.filter(…)` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/markdown/markdown-nodes.service.ts:129` |
 | `MarkdownNodesService.matches` | 1 | `MarkdownNodesService.readText` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/markdown/markdown-nodes.service.ts:140` |
-| `MarkdownTreeService.reduce(…)` | 1 | `ScoringService.sumWeights` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/markdown/markdown-tree.service.ts:103` |
-| `MarkdownTreeService.findCandidates` | 1 | `MarkdownTreeService.filter(…)` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/markdown/markdown-tree.service.ts:134` |
-| `MarkdownTreeService.filter(…)` | 1 | `MarkdownNodesService.matches` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/markdown/markdown-tree.service.ts:135` |
-| `PythonBridgeService.readLocations` | 1 | `PythonBridgeService.readNumber` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/python/python-bridge.service.ts:84` |
-| `PythonBridgeService.readValues` | 1 | `PythonBridgeService.readString` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/python/python-bridge.service.ts:121` |
-| `PythonBridgeService.map(…)` | 1 | `PythonBridgeService.toConformetryDifference` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/python/python-bridge.service.ts:185` |
+| `MarkdownTreeService.reduce(…)` | 1 | `ScoringService.sumWeights` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/markdown/markdown-tree.service.ts:104` |
+| `MarkdownTreeService.findCandidates` | 1 | `MarkdownTreeService.filter(…)` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/markdown/markdown-tree.service.ts:135` |
+| `MarkdownTreeService.filter(…)` | 1 | `MarkdownNodesService.matches` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/markdown/markdown-tree.service.ts:136` |
+| `PythonBridgeService.readLocations` | 1 | `PythonBridgeService.readNumber` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/python/python-bridge.service.ts:86` |
+| `PythonBridgeService.readValues` | 1 | `PythonBridgeService.readString` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/python/python-bridge.service.ts:123` |
+| `PythonBridgeService.map(…)` | 1 | `PythonBridgeService.toConformetryDifference` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/python/python-bridge.service.ts:187` |
 | `PythonService.validateDocument` | 1 | `PythonBridgeService.validatePythonSource` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/python/python.service.ts:38` |
 | `JupyterService.attributeToCell` | 1 | `JupyterService.map(…)` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/jupyter/jupyter.service.ts:52` |
 | `JupyterService.weighMissingCell` | 1 | `JupyterService.validateCell` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/jupyter/jupyter.service.ts:140` |
@@ -381,10 +387,10 @@ What this project is judged against, as declared in its own `callidescope.config
 | `TypescriptNodesService.readNamedKey` | 1 | `TypescriptNodesService.isNode` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/typescript/typescript-nodes.service.ts:143` |
 | `TypescriptNodesService.reduce(…)` | 1 | `TypescriptNodesService.countSubtree` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/typescript/typescript-nodes.service.ts:177` |
 | `TypescriptNodesService.readChildren` | 1 | `TypescriptNodesService.forEachChild(…)` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/typescript/typescript-nodes.service.ts:183` |
-| `TypescriptTreeService.map(…)` | 1 | `TypescriptTreeService.compareTree` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/typescript/typescript-tree.service.ts:72` |
-| `TypescriptTreeService.reduce(…)` | 1 | `ScoringService.sumWeights` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/typescript/typescript-tree.service.ts:78` |
-| `TypescriptTreeService.filter(…)` | 1 | `TypescriptNodesService.readKey` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/typescript/typescript-tree.service.ts:98` |
-| `TypescriptTreeService.map(…)` | 1 | `TypescriptTreeService.compareChild` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/typescript/typescript-tree.service.ts:133` |
+| `TypescriptTreeService.map(…)` | 1 | `TypescriptTreeService.compareTree` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/typescript/typescript-tree.service.ts:73` |
+| `TypescriptTreeService.reduce(…)` | 1 | `ScoringService.sumWeights` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/typescript/typescript-tree.service.ts:79` |
+| `TypescriptTreeService.filter(…)` | 1 | `TypescriptNodesService.readKey` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/typescript/typescript-tree.service.ts:99` |
+| `TypescriptTreeService.map(…)` | 1 | `TypescriptTreeService.compareChild` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/typescript/typescript-tree.service.ts:134` |
 | `TypescriptService.map(…)` | 1 | `TypescriptService.readLocation` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/typescript/typescript.service.ts:81` |
 | `TypescriptService.map(…)` | 1 | `TypescriptService.readLocation` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/typescript/typescript.service.ts:116` |
 | `LanguagesService.validateDocument` | 1 | `TextService.validateDocument` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/languages/languages.service.ts:80` |
@@ -402,10 +408,14 @@ Dependency graphs exported by [codependix](https://github.com/JimmyPaolini/codeb
 <!-- codependix:start name="codependix-nx-projects" -->
 ```mermaid
 graph LR
+  conformetry_configuration["conformetry-configuration"]
   conformetry_core["conformetry-core"]
   conformetry_languages["conformetry-languages"]
+  conformetry_output["conformetry-output"]
   conformetry_validation["conformetry-validation"]
+  conformetry_languages --> conformetry_configuration
   conformetry_languages --> conformetry_core
+  conformetry_output --> conformetry_languages
   conformetry_validation --> conformetry_languages
   classDef subject fill:#7c3aed,color:#fff,stroke:#4c1d95,stroke-width:2px
   class conformetry_languages subject
@@ -417,15 +427,25 @@ graph LR
 <!-- codependix:start name="codependix-nestjs-modules" -->
 ```mermaid
 flowchart LR
+  ConfigurationModule
   DifferencesModule
+  FilesModule
+  InstanceDiscoveryModule
   JsonModule
   JupyterModule
   LanguagesModule
   MarkdownModule
   PythonModule
+  RenderingModule
   ScoringModule
+  TemplateDiscoveryModule
   TextModule
   TypescriptModule
+  FilesModule --> DifferencesModule
+  FilesModule --> InstanceDiscoveryModule
+  InstanceDiscoveryModule --> ConfigurationModule
+  InstanceDiscoveryModule --> RenderingModule
+  InstanceDiscoveryModule --> TemplateDiscoveryModule
   JsonModule --> ScoringModule
   JupyterModule --> JsonModule
   JupyterModule --> MarkdownModule
@@ -439,6 +459,7 @@ flowchart LR
   MarkdownModule --> ScoringModule
   PythonModule --> DifferencesModule
   PythonModule --> ScoringModule
+  TemplateDiscoveryModule --> RenderingModule
   TypescriptModule --> ScoringModule
 ```
 <!-- codependix:end name="codependix-nestjs-modules" -->
@@ -453,6 +474,18 @@ graph LR
   file_codometer_config_ts["codometer.config.ts"]
   file_eslint_config_ts["eslint.config.ts"]
   file_src_index_ts["src/index.ts"]
+  file_src_modules_differences_differences_constants_ts["src/modules/differences/differences.constants.ts"]
+  file_src_modules_differences_differences_module_ts["src/modules/differences/differences.module.ts"]
+  file_src_modules_differences_differences_module_unit_test_ts["src/modules/differences/differences.module.unit.test.ts"]
+  file_src_modules_differences_differences_service_ts["src/modules/differences/differences.service.ts"]
+  file_src_modules_differences_differences_service_unit_test_ts["src/modules/differences/differences.service.unit.test.ts"]
+  file_src_modules_differences_differences_types_ts["src/modules/differences/differences.types.ts"]
+  file_src_modules_files_files_constants_ts["src/modules/files/files.constants.ts"]
+  file_src_modules_files_files_module_ts["src/modules/files/files.module.ts"]
+  file_src_modules_files_files_module_unit_test_ts["src/modules/files/files.module.unit.test.ts"]
+  file_src_modules_files_files_service_ts["src/modules/files/files.service.ts"]
+  file_src_modules_files_files_service_unit_test_ts["src/modules/files/files.service.unit.test.ts"]
+  file_src_modules_files_files_types_ts["src/modules/files/files.types.ts"]
   file_src_modules_json_json_comparison_service_ts["src/modules/json/json-comparison.service.ts"]
   file_src_modules_json_json_comparison_service_unit_test_ts["src/modules/json/json-comparison.service.unit.test.ts"]
   file_src_modules_json_json_constants_ts["src/modules/json/json.constants.ts"]
@@ -493,6 +526,12 @@ graph LR
   file_src_modules_python_python_service_ts["src/modules/python/python.service.ts"]
   file_src_modules_python_python_service_unit_test_ts["src/modules/python/python.service.unit.test.ts"]
   file_src_modules_python_python_types_ts["src/modules/python/python.types.ts"]
+  file_src_modules_scoring_scoring_constants_ts["src/modules/scoring/scoring.constants.ts"]
+  file_src_modules_scoring_scoring_module_ts["src/modules/scoring/scoring.module.ts"]
+  file_src_modules_scoring_scoring_module_unit_test_ts["src/modules/scoring/scoring.module.unit.test.ts"]
+  file_src_modules_scoring_scoring_service_ts["src/modules/scoring/scoring.service.ts"]
+  file_src_modules_scoring_scoring_service_unit_test_ts["src/modules/scoring/scoring.service.unit.test.ts"]
+  file_src_modules_scoring_scoring_types_ts["src/modules/scoring/scoring.types.ts"]
   file_src_modules_text_text_constants_ts["src/modules/text/text.constants.ts"]
   file_src_modules_text_text_module_ts["src/modules/text/text.module.ts"]
   file_src_modules_text_text_module_unit_test_ts["src/modules/text/text.module.unit.test.ts"]
@@ -514,11 +553,28 @@ graph LR
   file_testing_mocks_ts["testing/mocks.ts"]
   file_testing_setup_ts["testing/setup.ts"]
   file_vitest_config_ts["vitest.config.ts"]
+  file_src_modules_differences_differences_module_ts --> file_src_modules_differences_differences_service_ts
+  file_src_modules_differences_differences_module_unit_test_ts --> file_src_modules_differences_differences_module_ts
+  file_src_modules_differences_differences_module_unit_test_ts --> file_src_modules_differences_differences_service_ts
+  file_src_modules_differences_differences_service_ts --> file_src_modules_differences_differences_constants_ts
+  file_src_modules_differences_differences_service_ts --> file_src_modules_differences_differences_types_ts
+  file_src_modules_differences_differences_service_unit_test_ts --> file_src_modules_differences_differences_service_ts
+  file_src_modules_files_files_module_ts --> file_src_modules_differences_differences_module_ts
+  file_src_modules_files_files_module_ts --> file_src_modules_files_files_service_ts
+  file_src_modules_files_files_module_unit_test_ts --> file_src_modules_files_files_module_ts
+  file_src_modules_files_files_module_unit_test_ts --> file_src_modules_files_files_service_ts
+  file_src_modules_files_files_service_ts --> file_src_modules_differences_differences_service_ts
+  file_src_modules_files_files_service_ts --> file_src_modules_files_files_types_ts
+  file_src_modules_files_files_service_unit_test_ts --> file_src_modules_differences_differences_module_ts
+  file_src_modules_files_files_service_unit_test_ts --> file_src_modules_files_files_service_ts
   file_src_modules_json_json_comparison_service_ts --> file_src_modules_json_json_types_ts
+  file_src_modules_json_json_comparison_service_ts --> file_src_modules_scoring_scoring_service_ts
   file_src_modules_json_json_comparison_service_unit_test_ts --> file_src_modules_json_json_comparison_service_ts
   file_src_modules_json_json_comparison_service_unit_test_ts --> file_src_modules_json_json_types_ts
+  file_src_modules_json_json_comparison_service_unit_test_ts --> file_src_modules_scoring_scoring_service_ts
   file_src_modules_json_json_module_ts --> file_src_modules_json_json_comparison_service_ts
   file_src_modules_json_json_module_ts --> file_src_modules_json_json_service_ts
+  file_src_modules_json_json_module_ts --> file_src_modules_scoring_scoring_module_ts
   file_src_modules_json_json_module_unit_test_ts --> file_src_modules_json_json_module_ts
   file_src_modules_json_json_module_unit_test_ts --> file_src_modules_json_json_service_ts
   file_src_modules_json_json_service_ts --> file_src_modules_json_json_comparison_service_ts
@@ -526,6 +582,7 @@ graph LR
   file_src_modules_json_json_service_ts --> file_src_modules_json_json_types_ts
   file_src_modules_json_json_service_unit_test_ts --> file_src_modules_json_json_comparison_service_ts
   file_src_modules_json_json_service_unit_test_ts --> file_src_modules_json_json_service_ts
+  file_src_modules_json_json_service_unit_test_ts --> file_src_modules_scoring_scoring_service_ts
   file_src_modules_jupyter_jupyter_notebook_service_ts --> file_src_modules_jupyter_jupyter_types_ts
   file_src_modules_jupyter_jupyter_notebook_service_unit_test_ts --> file_src_modules_jupyter_jupyter_notebook_service_ts
   file_src_modules_jupyter_jupyter_module_ts --> file_src_modules_json_json_module_ts
@@ -542,6 +599,7 @@ graph LR
   file_src_modules_jupyter_jupyter_service_ts --> file_src_modules_jupyter_jupyter_types_ts
   file_src_modules_jupyter_jupyter_service_ts --> file_src_modules_markdown_markdown_service_ts
   file_src_modules_jupyter_jupyter_service_ts --> file_src_modules_python_python_bridge_service_ts
+  file_src_modules_jupyter_jupyter_service_unit_test_ts --> file_src_modules_differences_differences_service_ts
   file_src_modules_jupyter_jupyter_service_unit_test_ts --> file_src_modules_json_json_comparison_service_ts
   file_src_modules_jupyter_jupyter_service_unit_test_ts --> file_src_modules_jupyter_jupyter_notebook_service_ts
   file_src_modules_jupyter_jupyter_service_unit_test_ts --> file_src_modules_jupyter_jupyter_service_ts
@@ -549,6 +607,7 @@ graph LR
   file_src_modules_jupyter_jupyter_service_unit_test_ts --> file_src_modules_markdown_markdown_tree_service_ts
   file_src_modules_jupyter_jupyter_service_unit_test_ts --> file_src_modules_markdown_markdown_service_ts
   file_src_modules_jupyter_jupyter_service_unit_test_ts --> file_src_modules_python_python_bridge_service_ts
+  file_src_modules_jupyter_jupyter_service_unit_test_ts --> file_src_modules_scoring_scoring_service_ts
   file_src_modules_languages_languages_module_ts --> file_src_modules_json_json_module_ts
   file_src_modules_languages_languages_module_ts --> file_src_modules_jupyter_jupyter_module_ts
   file_src_modules_languages_languages_module_ts --> file_src_modules_languages_languages_service_ts
@@ -580,12 +639,15 @@ graph LR
   file_src_modules_markdown_markdown_tree_service_ts --> file_src_modules_markdown_markdown_nodes_service_ts
   file_src_modules_markdown_markdown_tree_service_ts --> file_src_modules_markdown_markdown_constants_ts
   file_src_modules_markdown_markdown_tree_service_ts --> file_src_modules_markdown_markdown_types_ts
+  file_src_modules_markdown_markdown_tree_service_ts --> file_src_modules_scoring_scoring_service_ts
   file_src_modules_markdown_markdown_tree_service_unit_test_ts --> file_src_modules_markdown_markdown_nodes_service_ts
   file_src_modules_markdown_markdown_tree_service_unit_test_ts --> file_src_modules_markdown_markdown_tree_service_ts
   file_src_modules_markdown_markdown_tree_service_unit_test_ts --> file_src_modules_markdown_markdown_types_ts
+  file_src_modules_markdown_markdown_tree_service_unit_test_ts --> file_src_modules_scoring_scoring_service_ts
   file_src_modules_markdown_markdown_module_ts --> file_src_modules_markdown_markdown_nodes_service_ts
   file_src_modules_markdown_markdown_module_ts --> file_src_modules_markdown_markdown_tree_service_ts
   file_src_modules_markdown_markdown_module_ts --> file_src_modules_markdown_markdown_service_ts
+  file_src_modules_markdown_markdown_module_ts --> file_src_modules_scoring_scoring_module_ts
   file_src_modules_markdown_markdown_module_unit_test_ts --> file_src_modules_markdown_markdown_module_ts
   file_src_modules_markdown_markdown_module_unit_test_ts --> file_src_modules_markdown_markdown_service_ts
   file_src_modules_markdown_markdown_service_ts --> file_src_modules_markdown_markdown_nodes_service_ts
@@ -594,17 +656,32 @@ graph LR
   file_src_modules_markdown_markdown_service_unit_test_ts --> file_src_modules_markdown_markdown_nodes_service_ts
   file_src_modules_markdown_markdown_service_unit_test_ts --> file_src_modules_markdown_markdown_tree_service_ts
   file_src_modules_markdown_markdown_service_unit_test_ts --> file_src_modules_markdown_markdown_service_ts
+  file_src_modules_markdown_markdown_service_unit_test_ts --> file_src_modules_scoring_scoring_service_ts
+  file_src_modules_python_python_bridge_service_ts --> file_src_modules_differences_differences_service_ts
   file_src_modules_python_python_bridge_service_ts --> file_src_modules_python_python_constants_ts
   file_src_modules_python_python_bridge_service_ts --> file_src_modules_python_python_types_ts
+  file_src_modules_python_python_bridge_service_ts --> file_src_modules_scoring_scoring_service_ts
+  file_src_modules_python_python_bridge_service_unit_test_ts --> file_src_modules_differences_differences_module_ts
   file_src_modules_python_python_bridge_service_unit_test_ts --> file_src_modules_python_python_bridge_service_ts
+  file_src_modules_python_python_bridge_service_unit_test_ts --> file_src_modules_scoring_scoring_module_ts
+  file_src_modules_python_python_module_ts --> file_src_modules_differences_differences_module_ts
   file_src_modules_python_python_module_ts --> file_src_modules_python_python_bridge_service_ts
   file_src_modules_python_python_module_ts --> file_src_modules_python_python_service_ts
+  file_src_modules_python_python_module_ts --> file_src_modules_scoring_scoring_module_ts
   file_src_modules_python_python_module_unit_test_ts --> file_src_modules_python_python_module_ts
   file_src_modules_python_python_module_unit_test_ts --> file_src_modules_python_python_service_ts
   file_src_modules_python_python_service_ts --> file_src_modules_python_python_bridge_service_ts
   file_src_modules_python_python_service_ts --> file_src_modules_python_python_constants_ts
+  file_src_modules_python_python_service_unit_test_ts --> file_src_modules_differences_differences_service_ts
   file_src_modules_python_python_service_unit_test_ts --> file_src_modules_python_python_bridge_service_ts
   file_src_modules_python_python_service_unit_test_ts --> file_src_modules_python_python_service_ts
+  file_src_modules_python_python_service_unit_test_ts --> file_src_modules_scoring_scoring_service_ts
+  file_src_modules_scoring_scoring_module_ts --> file_src_modules_scoring_scoring_service_ts
+  file_src_modules_scoring_scoring_module_unit_test_ts --> file_src_modules_scoring_scoring_module_ts
+  file_src_modules_scoring_scoring_module_unit_test_ts --> file_src_modules_scoring_scoring_service_ts
+  file_src_modules_scoring_scoring_service_ts --> file_src_modules_scoring_scoring_constants_ts
+  file_src_modules_scoring_scoring_service_ts --> file_src_modules_scoring_scoring_types_ts
+  file_src_modules_scoring_scoring_service_unit_test_ts --> file_src_modules_scoring_scoring_service_ts
   file_src_modules_text_text_module_ts --> file_src_modules_text_text_service_ts
   file_src_modules_text_text_module_unit_test_ts --> file_src_modules_text_text_module_ts
   file_src_modules_text_text_module_unit_test_ts --> file_src_modules_text_text_service_ts
@@ -615,10 +692,13 @@ graph LR
   file_src_modules_typescript_typescript_comments_service_ts --> file_src_modules_typescript_typescript_types_ts
   file_src_modules_typescript_typescript_comments_service_unit_test_ts --> file_src_modules_typescript_typescript_comments_service_ts
   file_src_modules_typescript_typescript_nodes_service_unit_test_ts --> file_src_modules_typescript_typescript_nodes_service_ts
+  file_src_modules_typescript_typescript_tree_service_ts --> file_src_modules_scoring_scoring_service_ts
   file_src_modules_typescript_typescript_tree_service_ts --> file_src_modules_typescript_typescript_nodes_service_ts
   file_src_modules_typescript_typescript_tree_service_ts --> file_src_modules_typescript_typescript_types_ts
+  file_src_modules_typescript_typescript_tree_service_unit_test_ts --> file_src_modules_scoring_scoring_service_ts
   file_src_modules_typescript_typescript_tree_service_unit_test_ts --> file_src_modules_typescript_typescript_nodes_service_ts
   file_src_modules_typescript_typescript_tree_service_unit_test_ts --> file_src_modules_typescript_typescript_tree_service_ts
+  file_src_modules_typescript_typescript_module_ts --> file_src_modules_scoring_scoring_module_ts
   file_src_modules_typescript_typescript_module_ts --> file_src_modules_typescript_typescript_comments_service_ts
   file_src_modules_typescript_typescript_module_ts --> file_src_modules_typescript_typescript_nodes_service_ts
   file_src_modules_typescript_typescript_module_ts --> file_src_modules_typescript_typescript_tree_service_ts
@@ -628,6 +708,7 @@ graph LR
   file_src_modules_typescript_typescript_service_ts --> file_src_modules_typescript_typescript_comments_service_ts
   file_src_modules_typescript_typescript_service_ts --> file_src_modules_typescript_typescript_tree_service_ts
   file_src_modules_typescript_typescript_service_ts --> file_src_modules_typescript_typescript_constants_ts
+  file_src_modules_typescript_typescript_service_unit_test_ts --> file_src_modules_scoring_scoring_service_ts
   file_src_modules_typescript_typescript_service_unit_test_ts --> file_src_modules_typescript_typescript_comments_service_ts
   file_src_modules_typescript_typescript_service_unit_test_ts --> file_src_modules_typescript_typescript_nodes_service_ts
   file_src_modules_typescript_typescript_service_unit_test_ts --> file_src_modules_typescript_typescript_tree_service_ts

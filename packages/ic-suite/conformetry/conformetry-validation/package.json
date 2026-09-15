@@ -2,7 +2,6 @@
   "dependencies": {
     "@conformetry/configuration": "workspace:*",
     "@conformetry/core": "workspace:*",
-    "@conformetry/files": "workspace:*",
     "@conformetry/languages": "workspace:*",
     "@nestjs/common": "catalog:",
     "reflect-metadata": "catalog:",

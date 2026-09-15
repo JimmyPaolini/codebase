@@ -3,16 +3,18 @@ import { projectDefaults } from "../../../../configuration/callidescope.config.j
 /**
  * What conformetry-core is held to, measured rather than assumed.
  *
- * Six frames. The leaf of the conformetry graph, which depends on nothing.
+ * Zero frames and zero direct callees. A contracts leaf has no callable to
+ * trace: every file here declares types, and a scoped run reports "None."
+ * under both call stacks and breadth. The numbers below say one rather than
+ * zero only because the schema requires a positive value, so one is the floor
+ * this measurement can be written at, not a frame anybody found.
  *
- * Measured by a run scoped to this project and its dependency closure, and set
- * **at** what it measured rather than above it: a stack or a callable at either
- * limit passes, so this gate is green the day it arrives and each number is a
- * starting point to ratchet down from rather than a target to grow into.
- *
- * Four direct callees at the widest — ordinary fan-out rather than a closed
- * enumeration, so the next helper anybody extracts here is what moves the
- * number.
+ * Dropping the file instead is not available: every traced project must
+ * declare its own, and removing it fails the workspace run outright with
+ * `ProjectConfigurationMissingError`. Which is the better outcome anyway —
+ * the gate is also this package's tripwire. The first service or NestJS
+ * module added here breaches it almost immediately, and a breach that names
+ * the layering as the defect is worth more than silence.
  *
  * @see configuration/callidescope.config.ts — `projectDefaults`, spread below
  * for everything this file does not override
@@ -20,7 +22,7 @@ import { projectDefaults } from "../../../../configuration/callidescope.config.j
 export default {
   ...projectDefaults,
   limits: {
-    maximumBreadth: 4,
-    maximumDepth: 6,
+    maximumBreadth: 1,
+    maximumDepth: 1,
   },
 };

@@ -1,7 +1,13 @@
 // 🏷️ Types
 
+import type { FORMAT_NAMES } from "./configuration-flags.constants";
 import type { WriteMarkdownOutput } from "./output.types";
-import type { CodometerStatisticGroup } from "./statistics.types";
+import type {
+  CodometerSeverity,
+  CodometerStatisticGroup,
+  CodometerSymbolKind,
+  CodometerSymbolModifier,
+} from "@codometer/core";
 
 /**
  * An analysis codometer can run over an input.
@@ -333,35 +339,6 @@ export interface CodometerPythonConfiguration {
 }
 
 /**
- * What a breach costs.
- *
- * `fail` is a gate and `warn` is a report — the difference between a limit
- * that stops a change and one that only says the metric passed it. Both are
- * reported identically; only the consequence differs.
- */
-export type CodometerSeverity = "fail" | "warn";
-
-/**
- * A kind of declaration a symbol counter can ask for.
- *
- * `function` covers every callable written outside a class body — function
- * declarations, function expressions, and arrow functions alike — while a
- * callable written as a class member is a `method`, a `getter`, or a
- * `setter`. A class field holding an arrow function is a `property`: the
- * arrow carries none of the field's modifiers, so a static one is found by
- * asking for static properties rather than static methods.
- */
-export type CodometerSymbolKind =
-  | "class"
-  | "enum"
-  | "function"
-  | "getter"
-  | "interface"
-  | "method"
-  | "property"
-  | "setter";
-
-/**
  * Which TypeScript and JavaScript declarations a counter claims.
  *
  * A declaration counts when its kind is one of `kinds` and it carries every
@@ -373,26 +350,79 @@ export interface CodometerSymbolMatcher {
   modifiers?: CodometerSymbolModifier[] | undefined;
 }
 
-/**
- * A modifier a counted declaration must carry.
- *
- * Read literally, from the syntax: `public` matches members annotated
- * `public` and not members that are public by omission, and `private`
- * likewise does not match a `#name` field, which carries no modifier.
- */
-export type CodometerSymbolModifier =
-  | "abstract"
-  | "async"
-  | "export"
-  | "override"
-  | "private"
-  | "protected"
-  | "public"
-  | "readonly"
-  | "static";
-
 /** Arguments accepted when loading a configuration file. */
 export interface LoadConfigurationArguments {
   configurationPath?: string | undefined;
   searchDirectory?: string | undefined;
+}
+
+/**
+ * Options accepted by the measure command.
+ *
+ * `--output-json` and `--output-markdown` are each independent: passing one
+ * never implicitly writes the other, and neither implies `--check reports`.
+ * There is no `--write` — passing an `--output-*` flag at all is what makes
+ * this run produce that destination.
+ */
+export interface MeasureCommandOptions {
+  /** The comma-separated set of things to fail on, as it was written. */
+  check?: string | true | undefined;
+  config?: string | undefined;
+  /** What to print to standard output, as it was written. */
+  format?: string | undefined;
+  /**
+   * The glob array that replaces every configured input for this run, as
+   * written. `undefined` when the flag was never passed at all.
+   */
+  inputs?: string[] | undefined;
+  /**
+   * The report's destination, as it was written.
+   *
+   * `true` for a bare flag naming no path, a string for an explicit one, and
+   * `undefined` when the flag was never passed.
+   */
+  outputJson?: string | true | undefined;
+  /**
+   * The markdown destination, as it was written.
+   *
+   * `true` for a bare flag naming no path, a string for an explicit one, and
+   * `undefined` when the flag was never passed.
+   */
+  outputMarkdown?: string | true | undefined;
+}
+
+/**
+ * What a run prints to standard output, when it prints anything.
+ *
+ * Derived from the list `--format` is validated against, so a format added
+ * there is one this accepts rather than two lists to keep in step.
+ */
+export type MeasureFormat = (typeof FORMAT_NAMES)[number];
+
+/**
+ * What the command line asked the run to do, and what it could not make sense
+ * of.
+ *
+ * Every complaint is collected before any of them is reported, so a command
+ * line with two mistakes in it is two mistakes to fix rather than two runs.
+ */
+export interface ModeSelection {
+  errors: string[];
+  mode: RunMode;
+}
+
+/**
+ * What the run does with what it measures.
+ *
+ * Checking staleness gates on `checksReports` alone and a breach on
+ * `checksLimits` alone. Writing is answered per output: `writesJson` and
+ * `writesMarkdown` are each true only when that output's own `--output-*`
+ * flag was passed, so no flag ever quietly writes a destination the command
+ * line never named.
+ */
+export interface RunMode {
+  checksLimits: boolean;
+  checksReports: boolean;
+  writesJson: boolean;
+  writesMarkdown: boolean;
 }

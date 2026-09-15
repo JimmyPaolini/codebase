@@ -1,4 +1,4 @@
-import { ConfigurationModule, InputModule } from "@callidescope/configuration";
+import { ConfigurationModule } from "@callidescope/configuration";
 import {
   CallablesModule,
   ClassesModule,
@@ -12,15 +12,13 @@ import {
   OutputJsonModule,
   OutputMarkdownModule,
   ProjectReportsModule,
+  ReportFindingsModule,
   ReportModule,
+  WriteDestinationsModule,
 } from "@callidescope/output";
 import { Module } from "@nestjs/common";
 
 import { LoggerModule } from "@codebase/logger";
-
-import { ReportFindingsModule } from "../report-findings/report-findings.module";
-import { RunPlanModule } from "../run-plan/run-plan.module";
-import { WriteDestinationsModule } from "../write-destinations/write-destinations.module";
 
 import { CallidescopeCommand } from "./callidescope.command";
 import { CallidescopeService } from "./callidescope.service";
@@ -38,7 +36,6 @@ import { CallidescopeService } from "./callidescope.service";
     EntriesModule,
     GraphModule,
     ClassesModule,
-    InputModule,
     LoggerModule,
     OutputJsonModule,
     OutputMarkdownModule,
@@ -46,7 +43,6 @@ import { CallidescopeService } from "./callidescope.service";
     ProjectReportsModule,
     ReportFindingsModule,
     ReportModule,
-    RunPlanModule,
     WorkspaceModule,
     WriteDestinationsModule,
   ],

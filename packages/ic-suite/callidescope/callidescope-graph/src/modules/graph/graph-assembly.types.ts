@@ -7,7 +7,7 @@ import type {
   CondensedGraph,
   DepthMeasurement,
 } from "./graph.types";
-import type { CallableId } from "@callidescope/configuration";
+import type { CallableId } from "@callidescope/core";
 
 /** The call graph, its cycle condensation, and its depth and breadth measurements. */
 export interface AssembledGraph {

@@ -11,11 +11,10 @@ import { ProjectReportsService } from "./project-reports.service";
 
 import type { BuildProjectReportsArguments } from "./project-reports.types";
 import type {
-  CallableId,
   ProjectLimits,
   ProjectLimitsLookup,
-  ProjectReport,
 } from "@callidescope/configuration";
+import type { CallableId, ProjectReport } from "@callidescope/core";
 import type { DiscoveredCallable } from "@callidescope/graph";
 
 /**

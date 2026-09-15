@@ -1,12 +1,12 @@
 import { InstanceDiscoveryModule } from "@conformetry/configuration";
 import {
-  ReportingModule,
-  RunnerModule,
+  FilesModule,
+  LanguagesModule,
   ScoringModule,
-} from "@conformetry/core";
-import { FilesModule } from "@conformetry/files";
-import { LanguagesModule } from "@conformetry/languages";
+} from "@conformetry/languages";
 import { Module } from "@nestjs/common";
+
+import { RunnerModule } from "../runner/runner.module";
 
 import { ValidationDeduplicationService } from "./validation-deduplication.service";
 import { ValidationFindingsService } from "./validation-findings.service";
@@ -27,7 +27,6 @@ import { ValidationService } from "./validation.service";
     FilesModule,
     LanguagesModule,
     RunnerModule,
-    ReportingModule,
     ScoringModule,
     ValidationDeduplicationService,
     ValidationFindingsService,
@@ -39,7 +38,6 @@ import { ValidationService } from "./validation.service";
     FilesModule,
     LanguagesModule,
     RunnerModule,
-    ReportingModule,
     ScoringModule,
   ],
   providers: [

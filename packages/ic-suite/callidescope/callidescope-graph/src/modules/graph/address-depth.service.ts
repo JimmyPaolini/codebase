@@ -11,7 +11,7 @@ import type {
   CallAddressStack,
   CallAddressTreeResult,
 } from "./address-depth.types";
-import type { CallableId, StackFrame } from "@callidescope/configuration";
+import type { CallableId, StackFrame } from "@callidescope/core";
 
 /**
  * Enumerates every simple path above or below one callable.

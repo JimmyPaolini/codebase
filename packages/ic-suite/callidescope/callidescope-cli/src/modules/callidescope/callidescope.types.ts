@@ -1,8 +1,6 @@
 // 🏷️ Types
 
 import type {
-  CallableId,
-  CallGraphResult,
   CallidescopeLimitOverrides,
   CallidescopeLimits,
   ProjectLimitsLookup,
@@ -10,6 +8,7 @@ import type {
   ResolvedCallidescopeEntryPoints,
   ResolvedCallidescopeWriteConfiguration,
 } from "@callidescope/configuration";
+import type { CallableId, CallGraphResult } from "@callidescope/core";
 import type {
   CallableCollection,
   CallGraph,
@@ -37,55 +36,6 @@ export interface AnalyzeOutcome {
    * is a fact about the configuration rather than about the code it traced.
    */
   readonly unresolvedAddresses: readonly UnresolvedEntryPointAddress[];
-}
-
-/** Options the CLI accepts. */
-export interface CallidescopeCommandOptions {
-  /**
-   * The written `--check` set, or `true` for the flag passed without one.
-   *
-   * Kept as written rather than read into booleans here, so the one place that
-   * knows which names exist is the only place that decides what they mean.
-   */
-  readonly check?: string | true | undefined;
-  readonly config?: string | undefined;
-  /** Project directories to trace. Every project in the workspace when omitted. */
-  readonly directories?: string[] | undefined;
-  /** Overrides `entryPoints.addresses` for this run. */
-  readonly entryPointAddresses?: string[] | undefined;
-  /** Overrides `entryPoints.decorators` for this run. */
-  readonly entryPointDecorators?: string[] | undefined;
-  /** Overrides `exclude` for this run. */
-  readonly exclude?: string[] | undefined;
-  /** Overrides `excludeCallees` for this run. */
-  readonly excludeCallees?: string[] | undefined;
-  /**
-   * `--format`, exactly as it was typed.
-   *
-   * Left wide on purpose: a value nobody recognizes is refused by the one
-   * resolver that knows which formats exist, rather than rewritten to
-   * markdown before it ever gets there.
-   */
-  readonly format?: string | undefined;
-  /**
-   * Overrides `entryPoints.includeExportedFunctions`, exactly as it was typed.
-   *
-   * `true` is the flag written with no value at all, which is how commander
-   * reports its presence — not a value anybody typed.
-   */
-  readonly includeExportedFunctions?: string | true | undefined;
-  /** Overrides `entryPoints.includeOrphans`, exactly as it was typed. */
-  readonly includeOrphans?: string | true | undefined;
-  /** Overrides `entryPoints.includeTests`, exactly as it was typed. */
-  readonly includeTests?: string | true | undefined;
-  readonly json?: string | undefined;
-  readonly markdown?: string | undefined;
-  /** Overrides `limits.maximumBreadth`, exactly as it was typed. */
-  readonly maximumBreadth?: string | undefined;
-  /** Overrides `limits.maximumDepth`, exactly as it was typed. */
-  readonly maximumDepth?: string | undefined;
-  readonly mermaid?: string | undefined;
-  readonly write?: boolean | undefined;
 }
 
 /** Everything one walk of the workspace produced, before any analysis. */

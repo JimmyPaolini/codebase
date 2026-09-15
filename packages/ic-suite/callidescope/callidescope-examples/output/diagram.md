@@ -4,35 +4,38 @@
 
 | Measure | Value |
 | --- | --- |
-| Callables | 303 |
-| Files | 115 |
-| Calls traced | 264 |
-| Call stacks | 94 |
-| Deepest stack | 8 |
+| Callables | 365 |
+| Files | 143 |
+| Calls traced | 322 |
+| Call stacks | 107 |
+| Deepest stack | 9 |
 | Stacks through recursion | 1 |
-| Unfollowable calls | 17 |
+| Unfollowable calls | 21 |
 
 ## Projects
 
 | Project | Deepest | Limit | Headroom | Widest |
 | --- | --- | --- | --- | --- |
-| `packages/callidescope-examples` | 8 | 5 | -3 | 2 |
-| `packages/callidescope-examples/examples/gated-leaf` | 4 | 3 | -1 | 3 |
+| `packages/ic-suite/callidescope/callidescope-examples` | 8 | 5 | -3 | 2 |
+| `packages/ic-suite/callidescope/callidescope-examples/examples/gated-leaf` | 4 | 3 | -1 | 3 |
 | `packages/logger` | 5 | 4 | -1 | 2 |
-| `packages/callidescope-configuration` | 6 | 6 | 0 | 7 |
-| `packages/codependix-configuration` | 6 | 6 | 0 | 4 |
-| `packages/codometer-configuration` | 8 | 8 | 0 | 4 |
+| `packages/ic-suite/codependix/codependix-configuration` | 7 | 7 | 0 | 4 |
+| `packages/ic-suite/codometer/codometer-configuration` | 9 | 9 | 0 | 4 |
+| `packages/ic-suite/callidescope/callidescope-configuration` | 7 | 8 | 1 | 7 |
+| `packages/ic-suite/codependix/codependix-core` | 0 | 1 | 1 | 0 |
+| `packages/ic-suite/codometer/codometer-core` | 0 | 1 | 1 | 0 |
+| `packages/ic-suite/callidescope/callidescope-core` | 0 | 17 | 17 | 0 |
 
 ## Depth headroom
 
 | Headroom | Projects |
 | --- | --- |
 | over limit | 3 |
-| 0 — at limit | 3 |
-| 1 | 0 |
+| 0 — at limit | 2 |
+| 1 | 1 |
 | 2–3 | 0 |
 | 4+ | 0 |
-| no stacks | 0 |
+| no stacks | 3 |
 
 ## Call stacks over the depth limit (7)
 
@@ -128,6 +131,6 @@ flowchart LR
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `GatedLeafService.read` | 3 | `GatedLeafService.parse`, `GatedLeafService.normalize`, `GatedLeafService.finish` | `packages/callidescope-examples/examples/gated-leaf/gated-leaf.ts:40` |
+| `GatedLeafService.read` | 3 | `GatedLeafService.parse`, `GatedLeafService.normalize`, `GatedLeafService.finish` | `packages/ic-suite/callidescope/callidescope-examples/examples/gated-leaf/gated-leaf.ts:40` |
 
 <!-- CALL_STACKS_END -->

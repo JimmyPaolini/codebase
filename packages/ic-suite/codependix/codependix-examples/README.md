@@ -195,21 +195,27 @@ graph LR
   codependix_boundaries["codependix-boundaries"]
   codependix_cli["codependix-cli"]
   codependix_configuration["codependix-configuration"]
+  codependix_core["codependix-core"]
   codependix_examples["codependix-examples"]
   codependix_file_imports["codependix-file-imports"]
   codependix_nestjs_modules["codependix-nestjs-modules"]
   codependix_nx_projects["codependix-nx-projects"]
+  codependix_output["codependix-output"]
   logger["logger"]
   codependix_examples --> codependix_boundaries
-  codependix_examples --> codependix_cli
+  codependix_examples -.-> codependix_cli
   codependix_examples --> codependix_configuration
+  codependix_examples --> codependix_core
   codependix_examples --> codependix_file_imports
   codependix_examples --> codependix_nestjs_modules
   codependix_examples --> codependix_nx_projects
+  codependix_examples --> codependix_output
   codependix_examples --> logger
   classDef subject fill:#7c3aed,color:#fff,stroke:#4c1d95,stroke-width:2px
   class codependix_examples subject
 ```
+
+_Dashed edges are dependencies Nx inferred from configuration rather than from code._
 <!-- codependix:end name="codependix-nx-projects" -->
 
 ### File Imports
@@ -303,6 +309,7 @@ graph LR
   file_testing_render_python_imports_ts --> file_testing_render_document_ts
   file_testing_render_python_imports_ts --> file_testing_render_paths_ts
   file_testing_render_python_imports_ts --> file_testing_render_types_ts
+  file_testing_render_run_ts --> file_testing_render_builders_ts
   file_testing_render_run_ts --> file_testing_render_catalog_ts
   file_testing_render_run_ts --> file_testing_render_document_ts
   file_testing_render_run_ts --> file_testing_render_paths_ts
