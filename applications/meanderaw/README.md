@@ -2655,7 +2655,7 @@ Dependency graphs exported by [codependix](https://github.com/JimmyPaolini/codeb
 
 ### Nx Neighborhood
 
-<!-- codependix:start name="codependix-nx" -->
+<!-- codependix:start name="codependix-nx-projects" -->
 ```mermaid
 graph LR
   logger["logger"]
@@ -2664,11 +2664,11 @@ graph LR
   classDef subject fill:#7c3aed,color:#fff,stroke:#4c1d95,stroke-width:2px
   class meanderaw subject
 ```
-<!-- codependix:end name="codependix-nx" -->
+<!-- codependix:end name="codependix-nx-projects" -->
 
 ### NestJS Module Graph
 
-<!-- codependix:start name="codependix-nestjs" -->
+<!-- codependix:start name="codependix-nestjs-modules" -->
 ```mermaid
 flowchart LR
   ConfigModule([ConfigModule])
@@ -2691,6 +2691,7 @@ flowchart LR
   MosaicTileModule
   SvgRenderingModule
   TypeOrmModule
+  DrawModule --> GridGeometryModule
   DrawModule --> HardcodedMeandersModule
   DrawModule --> MeanderCharacteristicsModule
   DrawModule --> MeanderClassificationModule
@@ -2724,11 +2725,11 @@ flowchart LR
 ```
 
 _Rounded modules are global: every module can inject them, so their edges are left out._
-<!-- codependix:end name="codependix-nestjs" -->
+<!-- codependix:end name="codependix-nestjs-modules" -->
 
 ### File Imports
 
-<!-- codependix:start name="codependix-imports" -->
+<!-- codependix:start name="codependix-file-imports" -->
 ```mermaid
 graph LR
   file_callidescope_config_ts["callidescope.config.ts"]
@@ -2878,6 +2879,7 @@ graph LR
   file_src_main_module_ts --> file_src_modules_meander_topology_meander_topology_module_ts
   file_src_main_ts --> file_src_main_module_ts
   file_src_main_unit_test_ts --> file_src_main_module_ts
+  file_src_modules_draw_draw_check_sweep_module_ts --> file_src_modules_draw_draw_check_constants_ts
   file_src_modules_draw_draw_check_sweep_module_ts --> file_src_modules_draw_draw_enumeration_service_ts
   file_src_modules_draw_draw_check_sweep_module_ts --> file_src_modules_draw_draw_record_service_ts
   file_src_modules_draw_draw_check_sweep_module_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_service_ts
@@ -2946,16 +2948,19 @@ graph LR
   file_src_modules_draw_draw_enumeration_service_unit_test_ts --> file_src_modules_meander_database_meander_database_types_ts
   file_src_modules_draw_draw_enumeration_service_unit_test_ts --> file_src_modules_meander_enumeration_meander_enumeration_service_ts
   file_src_modules_draw_draw_index_service_integration_test_ts --> file_src_modules_draw_draw_index_service_ts
+  file_src_modules_draw_draw_index_service_integration_test_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
   file_src_modules_draw_draw_index_service_integration_test_ts --> file_src_modules_meander_database_entities_Meander_entity_ts
   file_src_modules_draw_draw_index_service_integration_test_ts --> file_src_modules_meander_database_meander_database_service_ts
   file_src_modules_draw_draw_index_service_integration_test_ts --> file_src_modules_meander_database_meander_database_types_ts
   file_src_modules_draw_draw_index_service_ts --> file_src_modules_draw_draw_index_constants_ts
   file_src_modules_draw_draw_index_service_ts --> file_src_modules_draw_draw_index_types_ts
+  file_src_modules_draw_draw_index_service_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
   file_src_modules_draw_draw_index_service_ts --> file_src_modules_meander_classification_meander_classification_constants_ts
   file_src_modules_draw_draw_index_service_ts --> file_src_modules_meander_classification_meander_classification_types_ts
   file_src_modules_draw_draw_index_service_ts --> file_src_modules_meander_database_entities_Meander_entity_ts
   file_src_modules_draw_draw_index_service_ts --> file_src_modules_meander_database_meander_database_service_ts
   file_src_modules_draw_draw_index_service_unit_test_ts --> file_src_modules_draw_draw_index_service_ts
+  file_src_modules_draw_draw_index_service_unit_test_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
   file_src_modules_draw_draw_index_service_unit_test_ts --> file_src_modules_meander_database_entities_Meander_entity_ts
   file_src_modules_draw_draw_index_service_unit_test_ts --> file_src_modules_meander_database_meander_database_service_ts
   file_src_modules_draw_draw_index_types_ts --> file_src_modules_meander_classification_meander_classification_types_ts
@@ -2985,6 +2990,7 @@ graph LR
   file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_draw_draw_record_service_ts
   file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_draw_draw_command_ts
   file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_draw_draw_constants_ts
+  file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_grid_geometry_grid_geometry_module_ts
   file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_constants_ts
   file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_service_ts
   file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_meander_characteristics_meander_characteristics_module_ts
@@ -3038,6 +3044,7 @@ graph LR
   file_src_modules_draw_draw_module_ts --> file_src_modules_draw_draw_index_service_ts
   file_src_modules_draw_draw_module_ts --> file_src_modules_draw_draw_record_service_ts
   file_src_modules_draw_draw_module_ts --> file_src_modules_draw_draw_command_ts
+  file_src_modules_draw_draw_module_ts --> file_src_modules_grid_geometry_grid_geometry_module_ts
   file_src_modules_draw_draw_module_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_module_ts
   file_src_modules_draw_draw_module_ts --> file_src_modules_meander_characteristics_meander_characteristics_module_ts
   file_src_modules_draw_draw_module_ts --> file_src_modules_meander_classification_meander_classification_module_ts
@@ -3346,7 +3353,7 @@ graph LR
   file_testing_mosaic_tiles_ts --> file_src_modules_mosaic_tile_mosaic_tile_service_ts
   file_testing_mosaic_tiles_ts --> file_src_modules_mosaic_tile_mosaic_tile_types_ts
 ```
-<!-- codependix:end name="codependix-imports" -->
+<!-- codependix:end name="codependix-file-imports" -->
 
 <!-- CODE_STATISTICS_START -->
 
