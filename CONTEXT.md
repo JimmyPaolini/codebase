@@ -288,6 +288,35 @@ configured destination no longer holds what a fresh run would write. Each
 tool's other `--check` name is its own gating word — `depth`, `limits`,
 `boundaries` — because those are the magnitudes only it measures.
 
+## IC-Suite Layers
+
+The four ic-suite toolchains — conformetry, codometer, callidescope, and
+codependix — share one five-layer spine, each layer depending only downward,
+plus an optional `nx` plugin layer above `cli` where one exists (callidescope
+and conformetry only). See
+[ADR 0013](docs/adr/0013-name-the-ic-suite-layers.md) for the sharp test that
+decides layer membership, the rejected alternative, and the no-shared-package
+constraint.
+
+| Layer | Tag | Holds | Never holds |
+| --- | --- | --- | --- |
+| **core** | `layer:core` | Domain vocabulary only: result and finding types, error classes, shared enums and unions, analyzer and validator contracts | Services, modules, anything executable |
+| **configuration** | `layer:configuration` | The config file's schema, loading, defaults, and override resolution, plus CLI flag resolution, producing one resolved configuration object | Domain result types |
+| **analysis** | `layer:analysis` | What the tool actually does. Per-suite names and per-suite shape | Rendering, command wiring |
+| **output** | `layer:output` | Every render target: JSON, markdown, mermaid, anchor blocks, destination routing, delivery | Analysis |
+| **cli** | `layer:cli` | `*.command.ts` modules and nothing else | Any logic |
+
+**Core-versus-configuration test**:
+Whether a type belongs in `core` or `configuration`: if it describes what the
+tool produced, it is `core`; if it describes what the user wrote in
+`<tool>.config.ts`, it is `configuration`.
+_Avoid_: Contracts package, shared types, common interface
+
+The analysis layer is the one layer that deliberately does not converge on a
+shared name — it is governed by a rule instead: one package per independently
+usable analyzer, named for what it analyzes. `agents` and `examples` carry no
+layer tag; neither is in the runtime chain.
+
 ## Publishing
 
 **Suite**:
