@@ -5,26 +5,26 @@ import { beforeAll, describe, expect, it, vi } from "vitest";
 import { missingInputError } from "../input/input.constants";
 import { InputService } from "../input/input.service";
 
-import { RUN_MODE_CHOICES, RUN_MODE_SUBJECT } from "./run-plan.constants";
-import { RunPlanService } from "./run-plan.service";
+import { RUN_MODE_CHOICES, RUN_MODE_SUBJECT } from "./configuration.constants";
+import { FlagResolutionService } from "./flag-resolution.service";
 
 import type { RunMode } from "@codependix/core";
 
-describe(RunPlanService, () => {
+describe(FlagResolutionService, () => {
   let inputService: InputService;
-  let service: RunPlanService;
+  let service: FlagResolutionService;
 
   beforeAll(async () => {
     inputService = createMock<InputService>();
 
     const module = await Test.createTestingModule({
       providers: [
-        RunPlanService,
+        FlagResolutionService,
         { provide: InputService, useValue: inputService },
       ],
     }).compile();
 
-    service = await module.resolve(RunPlanService);
+    service = await module.resolve(FlagResolutionService);
   });
 
   it("is defined", () => {

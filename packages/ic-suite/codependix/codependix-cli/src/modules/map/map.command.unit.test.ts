@@ -7,11 +7,10 @@ import {
   RunContextService,
 } from "@codependix/boundaries";
 import {
+  ConfigurationService,
   InputError,
-  InputService,
   missingInputError,
   RUN_MODE_SUBJECT,
-  RunPlanService,
 } from "@codependix/configuration";
 import {
   CombinedOutputService,
@@ -66,11 +65,10 @@ describe(MapCommand, () => {
   let boundaryCheckService: BoundaryCheckService;
   let codependixService: GraphRunService;
   let combinedOutputService: CombinedOutputService;
-  let inputService: InputService;
+  let configurationService: ConfigurationService;
   let loggerService: LoggerService;
   let reportingService: ReportingService;
   let runContextService: RunContextService;
-  let runPlanService: RunPlanService;
 
   /**
    * Builds a command whose collaborators are freshly mocked.
@@ -86,11 +84,10 @@ describe(MapCommand, () => {
       codependixService,
       boundaryCheckService,
       combinedOutputService,
-      inputService,
+      configurationService,
       loggerService,
       reportingService,
       runContextService,
-      runPlanService,
     );
   }
 
@@ -132,11 +129,11 @@ describe(MapCommand, () => {
   function selectMode(overrides: Partial<RunMode> = {}): RunMode {
     const mode = buildMode(overrides);
 
-    vi.mocked(runPlanService.selectMode).mockResolvedValue({
+    vi.mocked(configurationService.selectMode).mockResolvedValue({
       errors: [],
       mode,
     });
-    vi.mocked(runPlanService.touchesFiles).mockReturnValue(
+    vi.mocked(configurationService.touchesFiles).mockReturnValue(
       mode.checksReports || mode.writes,
     );
 
@@ -156,7 +153,10 @@ describe(MapCommand, () => {
           provide: CombinedOutputService,
           useValue: createMock<CombinedOutputService>(),
         },
-        { provide: InputService, useValue: createMock<InputService>() },
+        {
+          provide: ConfigurationService,
+          useValue: createMock<ConfigurationService>(),
+        },
         { provide: LoggerService, useValue: createMock<LoggerService>() },
         {
           provide: ReportingService,
@@ -166,7 +166,6 @@ describe(MapCommand, () => {
           provide: RunContextService,
           useValue: createMock<RunContextService>(),
         },
-        { provide: RunPlanService, useValue: createMock<RunPlanService>() },
       ],
     }).compile();
 
@@ -178,14 +177,13 @@ describe(MapCommand, () => {
     boundaryCheckService = createMock<BoundaryCheckService>();
     codependixService = createMock<GraphRunService>();
     combinedOutputService = createMock<CombinedOutputService>();
-    inputService = createMock<InputService>();
+    configurationService = createMock<ConfigurationService>();
     loggerService = createMock<LoggerService>();
     reportingService = new ReportingService(
       new BoundaryReportService(),
       loggerService,
     );
     runContextService = createMock<RunContextService>();
-    runPlanService = createMock<RunPlanService>();
     vi.mocked(runContextService.build).mockResolvedValue(
       buildContextWithInclude(["**"]),
     );
@@ -200,13 +198,13 @@ describe(MapCommand, () => {
       failures: [],
       violations: [],
     });
-    vi.mocked(inputService.parseOptionalOption).mockImplementation(
+    vi.mocked(configurationService.parseOptionalOption).mockImplementation(
       (value) => value,
     );
-    vi.mocked(inputService.parsePathOption).mockImplementation(
+    vi.mocked(configurationService.parsePathOption).mockImplementation(
       (value) => value ?? process.cwd(),
     );
-    vi.mocked(inputService.parseFlagOption).mockImplementation(
+    vi.mocked(configurationService.parseFlagOption).mockImplementation(
       (value) => value ?? true,
     );
     selectMode();
@@ -269,7 +267,10 @@ describe(MapCommand, () => {
           provide: CombinedOutputService,
           useValue: createMock<CombinedOutputService>(),
         },
-        { provide: InputService, useValue: createMock<InputService>() },
+        {
+          provide: ConfigurationService,
+          useValue: createMock<ConfigurationService>(),
+        },
         { provide: LoggerService, useValue: createMock<LoggerService>() },
         {
           provide: ReportingService,
@@ -279,7 +280,6 @@ describe(MapCommand, () => {
           provide: RunContextService,
           useValue: createMock<RunContextService>(),
         },
-        { provide: RunPlanService, useValue: createMock<RunPlanService>() },
       ],
     }).compile();
 
@@ -289,7 +289,7 @@ describe(MapCommand, () => {
   });
 
   it("reports a rejected command line without attempting anything", async () => {
-    vi.mocked(runPlanService.selectMode).mockResolvedValue({
+    vi.mocked(configurationService.selectMode).mockResolvedValue({
       errors: ["--check needs a value."],
       mode: buildMode({ writes: false }),
     });
@@ -307,7 +307,7 @@ describe(MapCommand, () => {
   });
 
   it("reports an unanswerable prompt as a rejected command line", async () => {
-    vi.mocked(runPlanService.selectMode).mockRejectedValue(
+    vi.mocked(configurationService.selectMode).mockRejectedValue(
       missingInputError(RUN_MODE_SUBJECT),
     );
 
@@ -326,7 +326,9 @@ describe(MapCommand, () => {
   });
 
   it("reports anything else the resolution threw as a failed run", async () => {
-    vi.mocked(runPlanService.selectMode).mockRejectedValue(new Error("boom"));
+    vi.mocked(configurationService.selectMode).mockRejectedValue(
+      new Error("boom"),
+    );
 
     await run({});
 
@@ -574,52 +576,62 @@ describe(MapCommand, () => {
   });
 
   it("delegates --write to the shared input service", () => {
-    vi.mocked(inputService.parseFlagOption).mockReturnValue(false);
+    vi.mocked(configurationService.parseFlagOption).mockReturnValue(false);
 
     expect(buildCommand().parseWrite(undefined)).toBe(false);
-    expect(inputService.parseFlagOption).toHaveBeenCalledWith(undefined);
+    expect(configurationService.parseFlagOption).toHaveBeenCalledWith(
+      undefined,
+    );
   });
 
   it("delegates --config to the shared input service", () => {
-    vi.mocked(inputService.parseOptionalOption).mockReturnValue("parsed");
+    vi.mocked(configurationService.parseOptionalOption).mockReturnValue(
+      "parsed",
+    );
 
     expect(buildCommand().parseConfig("  codependix.config.ts  ")).toBe(
       "parsed",
     );
-    expect(inputService.parseOptionalOption).toHaveBeenCalledWith(
+    expect(configurationService.parseOptionalOption).toHaveBeenCalledWith(
       "  codependix.config.ts  ",
     );
   });
 
   it("delegates --projects to the shared input service", () => {
-    vi.mocked(inputService.parseOptionalOption).mockReturnValue("parsed");
+    vi.mocked(configurationService.parseOptionalOption).mockReturnValue(
+      "parsed",
+    );
 
     expect(buildCommand().parseProjects("  lexico,caelundas  ")).toBe("parsed");
-    expect(inputService.parseOptionalOption).toHaveBeenCalledWith(
+    expect(configurationService.parseOptionalOption).toHaveBeenCalledWith(
       "  lexico,caelundas  ",
     );
   });
 
   it("delegates --tags to the shared input service", () => {
-    vi.mocked(inputService.parseOptionalOption).mockReturnValue("parsed");
+    vi.mocked(configurationService.parseOptionalOption).mockReturnValue(
+      "parsed",
+    );
 
     expect(buildCommand().parseTags("  type:package  ")).toBe("parsed");
-    expect(inputService.parseOptionalOption).toHaveBeenCalledWith(
+    expect(configurationService.parseOptionalOption).toHaveBeenCalledWith(
       "  type:package  ",
     );
   });
 
   it("delegates --directory to the shared input service", () => {
-    vi.mocked(inputService.parsePathOption).mockReturnValue("parsed");
+    vi.mocked(configurationService.parsePathOption).mockReturnValue("parsed");
 
     expect(buildCommand().parseDirectory(undefined)).toBe("parsed");
-    expect(inputService.parsePathOption).toHaveBeenCalledWith(undefined);
+    expect(configurationService.parsePathOption).toHaveBeenCalledWith(
+      undefined,
+    );
   });
 
   it("delegates mode resolution to the run plan", async () => {
     await run({ directory: "packages/logger" });
 
-    expect(runPlanService.selectMode).toHaveBeenCalledWith({
+    expect(configurationService.selectMode).toHaveBeenCalledWith({
       directory: "packages/logger",
     });
   });
@@ -627,27 +639,27 @@ describe(MapCommand, () => {
   // 🚫 Strict override flags
 
   it("delegates --include to the shared comma-delimited parser", () => {
-    vi.mocked(inputService.parseCommaDelimitedOption).mockReturnValue([
+    vi.mocked(configurationService.parseCommaDelimitedOption).mockReturnValue([
       "applications/**",
     ]);
 
     expect(buildCommand().parseInclude("applications/**")).toStrictEqual([
       "applications/**",
     ]);
-    expect(inputService.parseCommaDelimitedOption).toHaveBeenCalledWith(
+    expect(configurationService.parseCommaDelimitedOption).toHaveBeenCalledWith(
       "applications/**",
     );
   });
 
   it("delegates --exclude to the shared comma-delimited parser", () => {
-    vi.mocked(inputService.parseCommaDelimitedOption).mockReturnValue([
+    vi.mocked(configurationService.parseCommaDelimitedOption).mockReturnValue([
       "fixtures-*",
     ]);
 
     expect(buildCommand().parseExclude("fixtures-*")).toStrictEqual([
       "fixtures-*",
     ]);
-    expect(inputService.parseCommaDelimitedOption).toHaveBeenCalledWith(
+    expect(configurationService.parseCommaDelimitedOption).toHaveBeenCalledWith(
       "fixtures-*",
     );
   });
@@ -715,24 +727,34 @@ describe(MapCommand, () => {
   // 🧾 Combined output and format flags
 
   it("delegates --json-output to the shared input service", () => {
-    vi.mocked(inputService.parseOptionalOption).mockReturnValue("out.json");
+    vi.mocked(configurationService.parseOptionalOption).mockReturnValue(
+      "out.json",
+    );
 
     expect(buildCommand().parseJsonOutput("out.json")).toBe("out.json");
-    expect(inputService.parseOptionalOption).toHaveBeenCalledWith("out.json");
+    expect(configurationService.parseOptionalOption).toHaveBeenCalledWith(
+      "out.json",
+    );
   });
 
   it("delegates --markdown-output to the shared input service", () => {
-    vi.mocked(inputService.parseOptionalOption).mockReturnValue("out.md");
+    vi.mocked(configurationService.parseOptionalOption).mockReturnValue(
+      "out.md",
+    );
 
     expect(buildCommand().parseMarkdownOutput("out.md")).toBe("out.md");
-    expect(inputService.parseOptionalOption).toHaveBeenCalledWith("out.md");
+    expect(configurationService.parseOptionalOption).toHaveBeenCalledWith(
+      "out.md",
+    );
   });
 
   it("delegates --format to the shared input service", () => {
-    vi.mocked(inputService.parseOptionalOption).mockReturnValue("json");
+    vi.mocked(configurationService.parseOptionalOption).mockReturnValue("json");
 
     expect(buildCommand().parseFormat("json")).toBe("json");
-    expect(inputService.parseOptionalOption).toHaveBeenCalledWith("json");
+    expect(configurationService.parseOptionalOption).toHaveBeenCalledWith(
+      "json",
+    );
   });
 
   it("rejects the command line when --format names something CombinedOutputService refuses", async () => {
@@ -753,7 +775,7 @@ describe(MapCommand, () => {
   });
 
   it("combines a --format rejection with a --check rejection in the same report", async () => {
-    vi.mocked(runPlanService.selectMode).mockResolvedValue({
+    vi.mocked(configurationService.selectMode).mockResolvedValue({
       errors: ["--check needs a value."],
       mode: buildMode({ writes: false }),
     });

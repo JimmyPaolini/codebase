@@ -31,7 +31,7 @@ export interface GraphRunOutcome {
  * Carried as its own field on `DeliverGraphOutputArguments` rather than
  * folded into `ResolvedCodependixGraphOutput`: the section heading and intro
  * line are fixed per graph type, not something a workspace's configuration
- * file resolves, so they are supplied by `MapService` at the call site
+ * file resolves, so they are supplied by `GraphRunService` at the call site
  * instead of flowing through configuration resolution.
  */
 export interface MarkdownSectionArguments {

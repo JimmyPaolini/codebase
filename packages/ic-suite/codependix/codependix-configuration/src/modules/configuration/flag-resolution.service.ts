@@ -9,23 +9,24 @@ import {
   CHECK_SEPARATOR,
   RUN_MODE_CHOICES,
   RUN_MODE_SUBJECT,
-} from "./run-plan.constants";
+} from "./configuration.constants";
 
-import type { MapCommandOptions } from "./run-plan.types";
+import type { MapCommandOptions } from "./configuration.types";
 import type { RunMode, RunModeSelection } from "@codependix/core";
 
 /**
  * Reads the command line into what the run will do.
  *
- * Kept away from `MapCommand` so the flag semantics can be stated once and
- * tested without the command's own reporting concerns. Mirrors
- * `codometer-cli` and `callidescope-cli`, which each carry a `run-plan`
- * module of exactly this shape — and, deliberately, the same `--check
+ * Internal to the `configuration` module rather than a module of its own:
+ * resolving the command line is half of answering "what is this run actually
+ * configured to do", and `ConfigurationService` is the one public way to ask.
+ * `codometer-cli` and `callidescope-cli` still carry a `run-plan` module of
+ * this shape inside their hosts — and, deliberately, the same `--check
  * reports` spelling, since a stale configured destination is one finding
  * across all three.
  */
 @Injectable()
-export class RunPlanService {
+export class FlagResolutionService {
   // 🏗 Dependency Injection
 
   constructor(private readonly inputService: InputService) {}

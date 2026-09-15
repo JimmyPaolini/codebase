@@ -5,9 +5,8 @@ import {
   BoundarySelectorService,
 } from "@codependix/boundaries";
 import {
-  ConfigurationLoaderService,
+  ConfigurationModule,
   ConfigurationService,
-  OverrideResolutionService,
 } from "@codependix/configuration";
 import {
   PythonImportGraphService,
@@ -27,6 +26,7 @@ import {
   WorkspaceGraphService,
 } from "@codependix/nx-projects";
 import { AnchorsService, DeliveryService } from "@codependix/output";
+import { NestFactory } from "@nestjs/core";
 
 import { LoggerService } from "@codebase/logger";
 
@@ -76,11 +76,23 @@ export const pythonService = new PythonService(
   pythonProjectService,
 );
 
-/** Resolves what a configuration file says about where an export goes. */
-export const configurationService = new ConfigurationService(
-  new ConfigurationLoaderService(),
-  new OverrideResolutionService(),
+/**
+ * Resolves what a configuration file says about where an export goes, and
+ * what the command line says over it.
+ *
+ * Resolved from `ConfigurationModule` rather than constructed by hand, unlike
+ * every builder above: `@codependix/configuration` makes exactly one service
+ * public, so its loader, override resolver, option parser, and flag resolver
+ * are providers nothing outside the package can name. Booting the module here
+ * is also the only builder in this file that proves its own wiring.
+ */
+const configurationContext = await NestFactory.createApplicationContext(
+  ConfigurationModule,
+  { logger: false },
 );
+
+export const configurationService =
+  configurationContext.get(ConfigurationService);
 
 /** Reads and rewrites codependix's own named anchor blocks. */
 export const anchorsService = new AnchorsService();

@@ -1,9 +1,5 @@
 import { BoundaryCheckModule, RunContextModule } from "@codependix/boundaries";
-import {
-  ConfigurationModule,
-  InputModule,
-  RunPlanModule,
-} from "@codependix/configuration";
+import { ConfigurationModule } from "@codependix/configuration";
 import {
   CombinedOutputModule,
   GraphRunModule,
@@ -22,10 +18,8 @@ import { MapCommand } from "./map.command";
     CombinedOutputModule,
     ConfigurationModule,
     GraphRunModule,
-    InputModule,
     ReportingModule,
     RunContextModule,
-    RunPlanModule,
   ],
   providers: [MapCommand],
 })

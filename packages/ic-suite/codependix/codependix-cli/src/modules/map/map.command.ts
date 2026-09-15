@@ -4,11 +4,7 @@ import {
   BoundaryCheckService,
   RunContextService,
 } from "@codependix/boundaries";
-import {
-  CHECK_NAMES,
-  InputService,
-  RunPlanService,
-} from "@codependix/configuration";
+import { CHECK_NAMES, ConfigurationService } from "@codependix/configuration";
 import {
   CombinedOutputService,
   FORMAT_MARKDOWN,
@@ -59,11 +55,10 @@ export class MapCommand extends CommandRunner {
     private readonly graphRunService: GraphRunService,
     private readonly boundaryCheckService: BoundaryCheckService,
     private readonly combinedOutputService: CombinedOutputService,
-    private readonly inputService: InputService,
+    private readonly configurationService: ConfigurationService,
     private readonly logger: LoggerService,
     private readonly reportingService: ReportingService,
     private readonly runContextService: RunContextService,
-    private readonly runPlanService: RunPlanService,
   ) {
     super();
     this.logger.setContext(MapCommand.name);
@@ -134,7 +129,7 @@ export class MapCommand extends CommandRunner {
       options,
       workingDirectory: path.resolve(options.directory ?? process.cwd()),
     });
-    const exportRun = this.runPlanService.touchesFiles(mode)
+    const exportRun = this.configurationService.touchesFiles(mode)
       ? await this.runExports(context)
       : undefined;
     const boundaryOutcome = mode.checksBoundaries
@@ -185,7 +180,7 @@ export class MapCommand extends CommandRunner {
     flags: "--config [config]",
   })
   public parseConfig(value: string | undefined): string | undefined {
-    return this.inputService.parseOptionalOption(value);
+    return this.configurationService.parseOptionalOption(value);
   }
 
   /** Parses the directory whose Nx workspace this run reads. */
@@ -194,7 +189,7 @@ export class MapCommand extends CommandRunner {
     flags: "-d, --directory [directory]",
   })
   public parseDirectory(value: string | undefined): string {
-    return this.inputService.parsePathOption(value);
+    return this.configurationService.parsePathOption(value);
   }
 
   /**
@@ -211,7 +206,7 @@ export class MapCommand extends CommandRunner {
     flags: "--exclude [exclude]",
   })
   public parseExclude(value: string | undefined): string[] {
-    return this.inputService.parseCommaDelimitedOption(value);
+    return this.configurationService.parseCommaDelimitedOption(value);
   }
 
   /** Enables the `fileImports` graph type for this run. */
@@ -234,7 +229,7 @@ export class MapCommand extends CommandRunner {
     flags: "-f, --format [format]",
   })
   public parseFormat(value: string | undefined): string | undefined {
-    return this.inputService.parseOptionalOption(value);
+    return this.configurationService.parseOptionalOption(value);
   }
 
   /**
@@ -250,7 +245,7 @@ export class MapCommand extends CommandRunner {
     flags: "--include [include]",
   })
   public parseInclude(value: string | undefined): string[] {
-    return this.inputService.parseCommaDelimitedOption(value);
+    return this.configurationService.parseCommaDelimitedOption(value);
   }
 
   /**
@@ -263,7 +258,7 @@ export class MapCommand extends CommandRunner {
     flags: "--json-output [jsonOutput]",
   })
   public parseJsonOutput(value: string | undefined): string | undefined {
-    return this.inputService.parseOptionalOption(value);
+    return this.configurationService.parseOptionalOption(value);
   }
 
   /**
@@ -276,7 +271,7 @@ export class MapCommand extends CommandRunner {
     flags: "--markdown-output [markdownOutput]",
   })
   public parseMarkdownOutput(value: string | undefined): string | undefined {
-    return this.inputService.parseOptionalOption(value);
+    return this.configurationService.parseOptionalOption(value);
   }
 
   /** Enables the `nestjsModules` graph type for this run. */
@@ -340,7 +335,7 @@ export class MapCommand extends CommandRunner {
     flags: "--projects [projects]",
   })
   public parseProjects(value: string | undefined): string | undefined {
-    return this.inputService.parseOptionalOption(value);
+    return this.configurationService.parseOptionalOption(value);
   }
 
   /**
@@ -353,7 +348,7 @@ export class MapCommand extends CommandRunner {
     flags: "--tags [tags]",
   })
   public parseTags(value: string | undefined): string | undefined {
-    return this.inputService.parseOptionalOption(value);
+    return this.configurationService.parseOptionalOption(value);
   }
 
   /** Parses the `--write` flag from command-line input. */
@@ -362,7 +357,7 @@ export class MapCommand extends CommandRunner {
     flags: "--write",
   })
   public parseWrite(value: boolean | undefined): boolean {
-    return this.inputService.parseFlagOption(value);
+    return this.configurationService.parseFlagOption(value);
   }
 
   /**
@@ -380,7 +375,8 @@ export class MapCommand extends CommandRunner {
     options: MapCommandOptions = {},
   ): Promise<void> {
     try {
-      const { errors, mode } = await this.runPlanService.selectMode(options);
+      const { errors, mode } =
+        await this.configurationService.selectMode(options);
       const { errors: formatErrors, format } =
         this.combinedOutputService.resolveFormat(options.format);
       const rejections = [...errors, ...formatErrors];

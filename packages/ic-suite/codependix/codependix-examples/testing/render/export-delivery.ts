@@ -2,15 +2,14 @@ import { mkdtempSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
-import {
-  InputService,
-  missingInputError,
-  RUN_MODE_SUBJECT,
-  RunPlanService,
-} from "@codependix/configuration";
+import { missingInputError, RUN_MODE_SUBJECT } from "@codependix/configuration";
 import { MARKDOWN_SECTION_INTRO_LINE } from "@codependix/output";
 
-import { anchorsService, deliveryService } from "./builders";
+import {
+  anchorsService,
+  configurationService,
+  deliveryService,
+} from "./builders";
 import { fence, fenceJson, table } from "./document";
 import { buildJsonExports } from "./graph-levels";
 import { buildExampleAnchor } from "./paths";
@@ -250,7 +249,7 @@ async function buildModesDocument(): Promise<ExampleDocument> {
         note: "Refused, because an export cannot be stale in the run that just wrote it. `--write --check boundaries` is legal for the mirror-image reason: a boundary has no destination to be stale, so writing every export and judging every graph in one run is two independent things rather than a contradiction.",
       },
       {
-        body: "`MapService.run` attempts every project regardless of whether an earlier one failed, collecting each failure as a `ProjectRunFailure` rather than aborting the loop. `MapCommand.reportOutcome` then reports the failures and the stale exports together, and fails the run if either list is non-empty. That is the whole of the guarantee: `--write` either fully succeeds, or names exactly which projects failed while still completing every other one.",
+        body: "`GraphRunService.run` attempts every project regardless of whether an earlier one failed, collecting each failure as a `ProjectRunFailure` rather than aborting the loop. `MapCommand.reportOutcome` then reports the failures and the stale exports together, and fails the run if either list is non-empty. That is the whole of the guarantee: `--write` either fully succeeds, or names exactly which projects failed while still completing every other one.",
         heading: "One project failing names itself and stops nothing",
         note: "[container-rooting](../container-rooting) shows the same guarantee acting on three real containers, one of which refuses to load.",
       },
@@ -342,9 +341,7 @@ function listChangedPaths(
 
 /** Runs the real run plan and renders whatever it refused the command line with. */
 async function refuse(options: MapCommandOptions): Promise<string> {
-  const { errors } = await new RunPlanService(new InputService()).selectMode(
-    options,
-  );
+  const { errors } = await configurationService.selectMode(options);
 
   return fence(errors.join("\n"));
 }
