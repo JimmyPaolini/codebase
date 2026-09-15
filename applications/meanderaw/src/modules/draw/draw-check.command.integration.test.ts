@@ -6,8 +6,8 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { LoggerService } from "@codebase/logger";
 
-import { CORPUS_BY_FAMILY } from "../corpus/corpus.constants";
 import { CorpusService } from "../corpus/corpus.service";
+import { HISTORICAL_CORPUS } from "../corpus/historical-corpus.constants";
 import { Meander } from "../database/entities/Meander.entity";
 
 import { DrawCheckService } from "./draw-check.service";
@@ -160,11 +160,12 @@ describe("drawCommand --check mode", () => {
   it(
     "throws naming the changed column when a committed row disagrees with the same address's real hardcoded entry",
     async () => {
-      const [, entries] =
-        Object.entries(CORPUS_BY_FAMILY).find(
-          ([, familyEntries]) => familyEntries.length > 0,
-        ) ?? [];
-      const entry = entries?.[0];
+      // 🎯 The deepest, widest entry the corpus holds, which is beyond the
+      // edge budget by a wide margin and so is certainly one the regenerated
+      // sweep ingests rather than enumerates.
+      const [entry] = HISTORICAL_CORPUS.toSorted(
+        (left, right) => right.rows * right.columns - left.rows * left.columns,
+      );
 
       if (entry === undefined) {
         throw new Error(
