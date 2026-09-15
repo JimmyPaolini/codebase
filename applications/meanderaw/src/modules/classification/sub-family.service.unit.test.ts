@@ -1,13 +1,16 @@
+import { ConfigService } from "@nestjs/config";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import { buildTile } from "../../../testing/tiles";
+import { environmentSchema } from "../../constants";
 import { TileEnumerationService } from "../enumeration/tile-enumeration.service";
 import { SymmetryService } from "../symmetry/symmetry.service";
 import { TileService } from "../tile/tile.service";
 
 import { SubFamilyService } from "./sub-family.service";
 
+import type { Environment } from "../enumeration/enumeration.types";
 import type { Tile, TileShape } from "../tile/tile.types";
 import type { SubFamily } from "./sub-family.types";
 
@@ -66,12 +69,19 @@ describe(SubFamilyService, () => {
   let tileEnumerationService: TileEnumerationService;
 
   beforeAll(async () => {
+    const environment = environmentSchema.parse({});
     const module = await Test.createTestingModule({
       providers: [
         SubFamilyService,
         SymmetryService,
         TileService,
         TileEnumerationService,
+        {
+          provide: ConfigService,
+          useValue: {
+            get: (key: keyof Environment) => environment[key],
+          },
+        },
       ],
     }).compile();
 

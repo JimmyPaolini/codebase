@@ -1,6 +1,8 @@
 import { Module } from "@nestjs/common";
+import { ConfigModule } from "@nestjs/config";
 import { getRepositoryToken, TypeOrmModule } from "@nestjs/typeorm";
 
+import { environmentSchema } from "../../constants";
 import { CharacteristicsModule } from "../characteristics/characteristics.module";
 import { ClassificationModule } from "../classification/classification.module";
 import { CodeModule } from "../code/code.module";
@@ -41,10 +43,22 @@ import { DrawRecordService } from "./draw-record.service";
  * registered — the class needs no connection-awareness of its own, and the
  * alias is scoped to this module's own container rather than the process
  * wide default TypeORM otherwise reaches for.
+ *
+ * `ConfigModule` is registered here too, even though `MainModule` already
+ * mounts it globally: this module boots as its own standalone application
+ * context via `NestFactory.createApplicationContext`, a separate container
+ * that `isGlobal` never reaches, so `EnumerationModule`'s
+ * `ConfigService` dependency — the sweep's bounds — needs its own copy of
+ * the same validated schema.
  */
 @Module({
   controllers: [],
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      validate: (config: Record<string, unknown>) =>
+        environmentSchema.parse(config),
+    }),
     CharacteristicsModule,
     ClassificationModule,
     CodeModule,
