@@ -2,8 +2,10 @@ import { spawnSync } from "node:child_process";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { DifferencesService, ScoringService } from "@conformetry/core";
 import { Injectable } from "@nestjs/common";
+
+import { DifferencesService } from "../differences/differences.service";
+import { ScoringService } from "../scoring/scoring.service";
 
 import {
   DEFAULT_BRIDGE_WEIGHT,

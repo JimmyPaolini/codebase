@@ -1,6 +1,5 @@
+import { RenderingModule } from "@conformetry/configuration";
 import { Module } from "@nestjs/common";
-
-import { RenderingModule } from "../rendering/rendering.module";
 
 import { GenerationService } from "./generation.service";
 

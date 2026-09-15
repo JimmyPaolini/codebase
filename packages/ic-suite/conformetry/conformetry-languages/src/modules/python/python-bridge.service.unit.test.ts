@@ -1,8 +1,10 @@
 import { spawnSync } from "node:child_process";
 
-import { DifferencesModule, ScoringModule } from "@conformetry/core";
 import { Test } from "@nestjs/testing";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
+
+import { DifferencesModule } from "../differences/differences.module";
+import { ScoringModule } from "../scoring/scoring.module";
 
 import { PythonBridgeService } from "./python-bridge.service";
 

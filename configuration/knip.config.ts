@@ -334,7 +334,7 @@ const config: KnipConfig = {
       ignore: ["src/**/*.test.ts", "testing/**"],
       project: "src/**/*.ts",
     },
-    "packages/ic-suite/conformetry/conformetry-files": {
+    "packages/ic-suite/conformetry/conformetry-output": {
       entry: ["src/index.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],
       project: "src/**/*.ts",

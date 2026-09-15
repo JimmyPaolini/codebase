@@ -32,7 +32,8 @@ generic package depend on one repository's layout.
 1. **Files exist.** Every file the matched template declares is checked first,
    whatever its extension. A missing file cannot be compared, and reporting it
    once is clearer than every language reporting it in turn. See
-   [`@conformetry/files`](../conformetry-files/README.md).
+   [`@conformetry/languages`](../conformetry-languages/README.md), whose
+   `FilesService` owns that pass.
 2. **Documents compare.** Each validator sees only the documents whose
    extensions it claims.
 
@@ -100,13 +101,13 @@ Call stacks traced through `packages/ic-suite/conformetry/conformetry-validation
 
 | Measure | Value |
 | --- | --- |
-| Callables | 35 |
-| Files | 13 |
-| Calls traced | 37 |
+| Callables | 43 |
+| Files | 17 |
+| Calls traced | 43 |
 | Call stacks | 0 |
 | Deepest stack | 0 |
 | Stacks through recursion | 0 |
-| Unfollowable calls | 0 |
+| Unfollowable calls | 1 |
 
 ### Limits
 
@@ -127,16 +128,19 @@ None.
 | --- | --- | --- | --- |
 | `ValidationService.validate` | 10 | `InstanceDiscoveryService.matchInstances`, `ValidationService.selectValidators`, `LanguagesService.resolveValidators`, `ValidationService.readTemplateExtensions`, `ValidationService.map(…)`, `ValidationScoringService.scoreInstances`, `ValidationDeduplicationService.deduplicate`, `ValidationFindingsService.buildUnmatchedResults`, `ValidationService.map(…)`, `ValidationService.every(…)` | `packages/ic-suite/conformetry/conformetry-validation/src/modules/validation/validation.service.ts:136` |
 | `ValidationService.validateInstance` | 6 | `InstanceDiscoveryService.prepareDocuments`, `ValidationService.flatMap(…)`, `FilesService.checkInstanceFiles`, `ValidationService.map(…)`, `ValidationService.flatMap(…)`, `ValidationService.reduce(…)` | `packages/ic-suite/conformetry/conformetry-validation/src/modules/validation/validation.service.ts:87` |
-| `ValidationScoringService.scoreInstance` | 4 | `ValidationScoringService.reduce(…)`, `ScoringService.calculateScore`, `ValidationScoringService.resolveThreshold`, `ValidationScoringService.resolveInstancePath` | `packages/ic-suite/conformetry/conformetry-validation/src/modules/validation/validation-scoring.service.ts:74` |
+| `RunnerService.runValidator` | 4 | `RunnerService.map(…)`, `RunnerService.filter(…)`, `RunnerService.filter(…)`, `RunnerService.reduce(…)` | `packages/ic-suite/conformetry/conformetry-validation/src/modules/runner/runner.service.ts:81` |
 
 <details>
-<summary>14 more callables</summary>
+<summary>17 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
+| `ValidationScoringService.scoreInstance` | 4 | `ValidationScoringService.reduce(…)`, `ScoringService.calculateScore`, `ValidationScoringService.resolveThreshold`, `ValidationScoringService.resolveInstancePath` | `packages/ic-suite/conformetry/conformetry-validation/src/modules/validation/validation-scoring.service.ts:74` |
 | `ValidationDeduplicationService.deduplicate` | 2 | `ValidationDeduplicationService.selectOwners`, `ValidationDeduplicationService.flatMap(…)` | `packages/ic-suite/conformetry/conformetry-validation/src/modules/validation/validation-deduplication.service.ts:90` |
 | `ValidationFindingsService.buildUnmatchedResults` | 2 | `ValidationFindingsService.resolveTemplatesRootPath`, `ValidationFindingsService.map(…)` | `packages/ic-suite/conformetry/conformetry-validation/src/modules/validation/validation-findings.service.ts:68` |
 | `ValidationScoringService.scoreInstances` | 2 | `ValidationScoringService.scoreInstance`, `ValidationScoringService.resolveScoreKey` | `packages/ic-suite/conformetry/conformetry-validation/src/modules/validation/validation-scoring.service.ts:111` |
+| `RunnerService.filter(…)` | 1 | `RunnerService.claimsDocument` | `packages/ic-suite/conformetry/conformetry-validation/src/modules/runner/runner.service.ts:85` |
+| `RunnerService.map(…)` | 1 | `RunnerService.validateDocument` | `packages/ic-suite/conformetry/conformetry-validation/src/modules/runner/runner.service.ts:88` |
 | `ValidationDeduplicationService.selectOwners` | 1 | `ValidationDeduplicationService.compareInstances` | `packages/ic-suite/conformetry/conformetry-validation/src/modules/validation/validation-deduplication.service.ts:57` |
 | `ValidationDeduplicationService.flatMap(…)` | 1 | `ValidationDeduplicationService.filter(…)` | `packages/ic-suite/conformetry/conformetry-validation/src/modules/validation/validation-deduplication.service.ts:94` |
 | `ValidationDeduplicationService.filter(…)` | 1 | `ValidationDeduplicationService.resolveFindingKey` | `packages/ic-suite/conformetry/conformetry-validation/src/modules/validation/validation-deduplication.service.ts:95` |
@@ -165,7 +169,6 @@ graph LR
   conformetry_configuration["conformetry-configuration"]
   conformetry_core["conformetry-core"]
   conformetry_examples["conformetry-examples"]
-  conformetry_files["conformetry-files"]
   conformetry_languages["conformetry-languages"]
   conformetry_nx["conformetry-nx"]
   conformetry_validation["conformetry-validation"]
@@ -174,7 +177,6 @@ graph LR
   conformetry_nx --> conformetry_validation
   conformetry_validation --> conformetry_configuration
   conformetry_validation --> conformetry_core
-  conformetry_validation --> conformetry_files
   conformetry_validation --> conformetry_languages
   classDef subject fill:#7c3aed,color:#fff,stroke:#4c1d95,stroke-width:2px
   class conformetry_validation subject
@@ -196,7 +198,6 @@ flowchart LR
   MarkdownModule
   PythonModule
   RenderingModule
-  ReportingModule
   RunnerModule
   ScoringModule
   TemplateDiscoveryModule
@@ -221,13 +222,11 @@ flowchart LR
   MarkdownModule --> ScoringModule
   PythonModule --> DifferencesModule
   PythonModule --> ScoringModule
-  ReportingModule --> ScoringModule
   TemplateDiscoveryModule --> RenderingModule
   TypescriptModule --> ScoringModule
   ValidationModule --> FilesModule
   ValidationModule --> InstanceDiscoveryModule
   ValidationModule --> LanguagesModule
-  ValidationModule --> ReportingModule
   ValidationModule --> RunnerModule
   ValidationModule --> ScoringModule
 ```
@@ -243,6 +242,12 @@ graph LR
   file_codometer_config_ts["codometer.config.ts"]
   file_eslint_config_ts["eslint.config.ts"]
   file_src_index_ts["src/index.ts"]
+  file_src_modules_runner_runner_constants_ts["src/modules/runner/runner.constants.ts"]
+  file_src_modules_runner_runner_module_ts["src/modules/runner/runner.module.ts"]
+  file_src_modules_runner_runner_module_unit_test_ts["src/modules/runner/runner.module.unit.test.ts"]
+  file_src_modules_runner_runner_service_ts["src/modules/runner/runner.service.ts"]
+  file_src_modules_runner_runner_service_unit_test_ts["src/modules/runner/runner.service.unit.test.ts"]
+  file_src_modules_runner_runner_types_ts["src/modules/runner/runner.types.ts"]
   file_src_modules_validation_validation_deduplication_service_ts["src/modules/validation/validation-deduplication.service.ts"]
   file_src_modules_validation_validation_deduplication_service_unit_test_ts["src/modules/validation/validation-deduplication.service.unit.test.ts"]
   file_src_modules_validation_validation_findings_service_ts["src/modules/validation/validation-findings.service.ts"]
@@ -257,6 +262,11 @@ graph LR
   file_testing_mocks_ts["testing/mocks.ts"]
   file_testing_setup_ts["testing/setup.ts"]
   file_vitest_config_ts["vitest.config.ts"]
+  file_src_modules_runner_runner_module_ts --> file_src_modules_runner_runner_service_ts
+  file_src_modules_runner_runner_module_unit_test_ts --> file_src_modules_runner_runner_module_ts
+  file_src_modules_runner_runner_module_unit_test_ts --> file_src_modules_runner_runner_service_ts
+  file_src_modules_runner_runner_service_ts --> file_src_modules_runner_runner_types_ts
+  file_src_modules_runner_runner_service_unit_test_ts --> file_src_modules_runner_runner_service_ts
   file_src_modules_validation_validation_deduplication_service_ts --> file_src_modules_validation_validation_constants_ts
   file_src_modules_validation_validation_deduplication_service_ts --> file_src_modules_validation_validation_types_ts
   file_src_modules_validation_validation_deduplication_service_unit_test_ts --> file_src_modules_validation_validation_deduplication_service_ts
@@ -265,10 +275,12 @@ graph LR
   file_src_modules_validation_validation_scoring_service_ts --> file_src_modules_validation_validation_constants_ts
   file_src_modules_validation_validation_scoring_service_ts --> file_src_modules_validation_validation_types_ts
   file_src_modules_validation_validation_scoring_service_unit_test_ts --> file_src_modules_validation_validation_scoring_service_ts
+  file_src_modules_validation_validation_module_ts --> file_src_modules_runner_runner_module_ts
   file_src_modules_validation_validation_module_ts --> file_src_modules_validation_validation_deduplication_service_ts
   file_src_modules_validation_validation_module_ts --> file_src_modules_validation_validation_findings_service_ts
   file_src_modules_validation_validation_module_ts --> file_src_modules_validation_validation_scoring_service_ts
   file_src_modules_validation_validation_module_ts --> file_src_modules_validation_validation_service_ts
+  file_src_modules_validation_validation_service_ts --> file_src_modules_runner_runner_service_ts
   file_src_modules_validation_validation_service_ts --> file_src_modules_validation_validation_deduplication_service_ts
   file_src_modules_validation_validation_service_ts --> file_src_modules_validation_validation_findings_service_ts
   file_src_modules_validation_validation_service_ts --> file_src_modules_validation_validation_scoring_service_ts

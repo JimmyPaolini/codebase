@@ -1,6 +1,8 @@
-import { DifferencesService, ScoringService } from "@conformetry/core";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
+
+import { DifferencesService } from "../differences/differences.service";
+import { ScoringService } from "../scoring/scoring.service";
 
 import { PythonBridgeService } from "./python-bridge.service";
 import { PythonService } from "./python.service";

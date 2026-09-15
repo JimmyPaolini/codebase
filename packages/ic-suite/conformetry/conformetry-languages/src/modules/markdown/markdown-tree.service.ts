@@ -1,5 +1,6 @@
-import { ScoringService } from "@conformetry/core";
 import { Injectable } from "@nestjs/common";
+
+import { ScoringService } from "../scoring/scoring.service";
 
 import { MarkdownNodesService } from "./markdown-nodes.service";
 import { CONTAINER_TYPES, SKIPPED_TYPES } from "./markdown.constants";

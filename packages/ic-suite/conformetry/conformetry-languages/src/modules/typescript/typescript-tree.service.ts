@@ -1,5 +1,6 @@
-import { ScoringService } from "@conformetry/core";
 import { Injectable } from "@nestjs/common";
+
+import { ScoringService } from "../scoring/scoring.service";
 
 import { TypescriptNodesService } from "./typescript-nodes.service";
 

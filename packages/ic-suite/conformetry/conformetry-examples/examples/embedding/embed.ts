@@ -10,8 +10,8 @@ import {
   TemplateDiscoveryModule,
   TemplateDiscoveryService,
 } from "@conformetry/configuration";
-import { ReportingService } from "@conformetry/core";
 import { GenerationModule, GenerationService } from "@conformetry/generation";
+import { ReportingModule, ReportingService } from "@conformetry/output";
 import { ValidationModule, ValidationService } from "@conformetry/validation";
 import { Module } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
@@ -21,14 +21,16 @@ import { NestFactory } from "@nestjs/core";
 /**
  * The whole of conformetry a host needs, with no command-line layer above it.
  *
- * `ValidationModule` re-exports the discovery and reporting modules it already
- * depends on, so a host that validates gets instance matching and report
- * rendering without naming them.
+ * `ValidationModule` re-exports the discovery modules it already depends on,
+ * so a host that validates gets instance matching without naming it.
+ * `ReportingModule` is named separately because rendering sits in the output
+ * layer above validation, which cannot reach up to it.
  */
 @Module({
   imports: [
     ConfigurationModule,
     GenerationModule,
+    ReportingModule,
     TemplateDiscoveryModule,
     ValidationModule,
   ],

@@ -1,7 +1,7 @@
-import { RenderingModule } from "@conformetry/generation";
 import { Module } from "@nestjs/common";
 
 import { ConfigurationModule } from "../configuration/configuration.module";
+import { RenderingModule } from "../rendering/rendering.module";
 import { TemplateDiscoveryModule } from "../template-discovery/template-discovery.module";
 
 import { InstanceDiscoveryLocatingService } from "./instance-discovery-locating.service";

@@ -42,6 +42,10 @@ export type {
   UnmatchedInstance,
   UnmatchedReason,
 } from "./modules/instance-discovery/instance-discovery.types";
+export { MissingSubstitutionError } from "./modules/rendering/rendering.constants";
+export { RenderingModule } from "./modules/rendering/rendering.module";
+export { RenderingService } from "./modules/rendering/rendering.service";
+export type { Substitutions } from "./modules/rendering/rendering.types";
 export { TemplateDiscoveryModule } from "./modules/template-discovery/template-discovery.module";
 export { TemplateDiscoveryService } from "./modules/template-discovery/template-discovery.service";
 export type { TemplateDefinition } from "./modules/template-discovery/template-discovery.types";

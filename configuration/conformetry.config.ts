@@ -157,7 +157,15 @@ const conformetryConfiguration: ConformetryNxConfiguration = [
       },
       {
         patterns: [
-          "packages/ic-suite/conformetry/conformetry-{configuration,core,files,generation,languages,validation,nx}",
+          // `conformetry-core` is deliberately absent: it is the contracts
+          // leaf of the ic-suite five-layer spine, so it declares types and
+          // holds no NestJS at all. Listing it here would demand
+          // `@nestjs/common` and `@nestjs/testing` in a manifest that imports
+          // neither, which `@nx/dependency-checks` then strips right back
+          // out. The two gates disagreeing is the signal that it is not an
+          // instance of this template — a contracts-project template of its
+          // own is the fix, once all four toolchains have a `*-core`.
+          "packages/ic-suite/conformetry/conformetry-{configuration,generation,languages,output,validation,nx}",
         ],
         substitutions: {
           type: "packages/ic-suite/conformetry",

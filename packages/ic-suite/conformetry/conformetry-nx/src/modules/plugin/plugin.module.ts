@@ -3,8 +3,8 @@ import {
   InstanceDiscoveryModule,
   TemplateDiscoveryModule,
 } from "@conformetry/configuration";
-import { ReportingModule } from "@conformetry/core";
 import { GenerationModule } from "@conformetry/generation";
+import { ReportingModule } from "@conformetry/output";
 import { ValidationModule } from "@conformetry/validation";
 import { Module } from "@nestjs/common";
 
