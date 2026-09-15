@@ -5,8 +5,8 @@
   "dependencies": {
     "@codebase/logger": "workspace:*",
     "@conformetry/configuration": "workspace:*",
-    "@conformetry/core": "workspace:*",
     "@conformetry/generation": "workspace:*",
+    "@conformetry/output": "workspace:*",
     "@conformetry/validation": "workspace:*",
     "@nestjs/common": "catalog:",
     "@nestjs/core": "catalog:",

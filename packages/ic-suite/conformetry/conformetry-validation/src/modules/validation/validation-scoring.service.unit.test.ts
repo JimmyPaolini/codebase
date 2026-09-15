@@ -1,4 +1,4 @@
-import { ScoringService } from "@conformetry/core";
+import { ScoringService } from "@conformetry/languages";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 

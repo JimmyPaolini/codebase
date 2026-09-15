@@ -1,5 +1,7 @@
-import { DifferencesModule, ScoringModule } from "@conformetry/core";
 import { Module } from "@nestjs/common";
+
+import { DifferencesModule } from "../differences/differences.module";
+import { ScoringModule } from "../scoring/scoring.module";
 
 import { PythonBridgeService } from "./python-bridge.service";
 import { PythonService } from "./python.service";

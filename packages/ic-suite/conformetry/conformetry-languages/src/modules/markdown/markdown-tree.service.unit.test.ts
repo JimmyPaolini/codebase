@@ -1,6 +1,7 @@
-import { ScoringService } from "@conformetry/core";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
+
+import { ScoringService } from "../scoring/scoring.service";
 
 import { MarkdownNodesService } from "./markdown-nodes.service";
 import { MarkdownTreeService } from "./markdown-tree.service";

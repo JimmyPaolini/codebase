@@ -262,13 +262,13 @@ Call stacks traced through `packages/ic-suite/conformetry/conformetry-configurat
 
 | Measure | Value |
 | --- | --- |
-| Callables | 137 |
-| Files | 29 |
-| Calls traced | 123 |
+| Callables | 147 |
+| Files | 33 |
+| Calls traced | 131 |
 | Call stacks | 5 |
 | Deepest stack | 10 |
 | Stacks through recursion | 0 |
-| Unfollowable calls | 6 |
+| Unfollowable calls | 7 |
 
 ### Limits
 
@@ -289,18 +289,18 @@ What this project is judged against, as declared in its own `callidescope.config
   └─> InstanceDiscoveryMatchingService.matchTemplates(…): TemplateMatch[] [packages/ic-suite/conformetry/conformetry-configuration/src/modules/instance-discovery/instance-discovery-matching.service.ts:154]
      ↳ Weighs every template that shares at least one file with the instance, best-first.
     └─> InstanceDiscoveryMatchingService.map(…)(…): { matchedFileCount: number; matchRatio: number; template: TemplateDefinition; } [packages/ic-suite/conformetry/conformetry-configuration/src/modules/instance-discovery/instance-discovery-matching.service.ts:160]
-      └─> TemplateDiscoveryService.countMatchingFiles(…): number [packages/ic-suite/conformetry/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:120]
+      └─> TemplateDiscoveryService.countMatchingFiles(…): number [packages/ic-suite/conformetry/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:121]
          ↳ Counts how many of a template's files the instance path already has.
-        └─> TemplateDiscoveryService.filter(…)(templateFilePath: string): boolean [packages/ic-suite/conformetry/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:129]
-          └─> TemplateDiscoveryService.resolveInstanceFilePath(…): string [packages/ic-suite/conformetry/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:178]
+        └─> TemplateDiscoveryService.filter(…)(templateFilePath: string): boolean [packages/ic-suite/conformetry/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:130]
+          └─> TemplateDiscoveryService.resolveInstanceFilePath(…): string [packages/ic-suite/conformetry/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:179]
              ↳ Maps a template file path to the instance file path it governs.
-            └─> RenderingService.renderPath(…): string [packages/ic-suite/conformetry/conformetry-generation/src/modules/rendering/rendering.service.ts:142]
+            └─> RenderingService.renderPath(…): string [packages/ic-suite/conformetry/conformetry-configuration/src/modules/rendering/rendering.service.ts:142]
                ↳ Renders a template path with mustache, the same way contents are rendered.
-              └─> RenderingService.assertEverySubstitutionSupplied(…): void [packages/ic-suite/conformetry/conformetry-generation/src/modules/rendering/rendering.service.ts:35]
+              └─> RenderingService.assertEverySubstitutionSupplied(…): void [packages/ic-suite/conformetry/conformetry-configuration/src/modules/rendering/rendering.service.ts:35]
                  ↳ Refuses to render a template asking for a value nobody supplied.
-                └─> RenderingService.collectInterpolatedNames(template: string): string[] [packages/ic-suite/conformetry/conformetry-generation/src/modules/rendering/rendering.service.ts:61]
+                └─> RenderingService.collectInterpolatedNames(template: string): string[] [packages/ic-suite/conformetry/conformetry-configuration/src/modules/rendering/rendering.service.ts:61]
                    ↳ Every placeholder a template interpolates, deduplicated.
-                  └─> RenderingService.walk(spans: TemplateSpans): void [packages/ic-suite/conformetry/conformetry-generation/src/modules/rendering/rendering.service.ts:63]
+                  └─> RenderingService.walk(spans: TemplateSpans): void [packages/ic-suite/conformetry/conformetry-configuration/src/modules/rendering/rendering.service.ts:63]
 ```
 
 **2. `InputService.resolveInputsFromValues`** — depth ≥ 8 · orphan-root
@@ -358,7 +358,7 @@ What this project is judged against, as declared in its own `callidescope.config
    ↳ Builds the substitutions an instance's template is rendered with.
   └─> InstanceDiscoveryMatchingService.buildSubstitutions(instance: Instance): Substitutions [packages/ic-suite/conformetry/conformetry-configuration/src/modules/instance-discovery/instance-discovery-matching.service.ts:72]
      ↳ Builds the substitutions an instance's template is rendered with.
-    └─> RenderingService.buildNameSubstitutions(name: string): Substitutions [packages/ic-suite/conformetry/conformetry-generation/src/modules/rendering/rendering.service.ts:94]
+    └─> RenderingService.buildNameSubstitutions(name: string): Substitutions [packages/ic-suite/conformetry/conformetry-configuration/src/modules/rendering/rendering.service.ts:94]
        ↳ Derives the case variants every template can reference from one name.
 ```
 
@@ -373,7 +373,7 @@ What this project is judged against, as declared in its own `callidescope.config
 | `InputPromptingService.promptForInput` | 4 | `InputPromptingService.assertCanPrompt`, `InputSchemaService.readEnumValues`, `InputPromptingService.map(…)`, `InputSchemaService.readPromptMessage` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/input/input-prompting.service.ts:90` |
 
 <details>
-<summary>66 more callables</summary>
+<summary>71 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
@@ -388,6 +388,7 @@ What this project is judged against, as declared in its own `callidescope.config
 | `findUnusableNames` | 3 | `map(…)`, `filter(…)`, `map(…)` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/configuration/configuration.utilities.ts:112` |
 | `InputOptionsService.collectOneInput` | 3 | `InputOptionsService.readOptionName`, `InputOptionsService.resolvePropertyName`, `InputOptionsService.readOptionValue` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/input/input-options.service.ts:38` |
 | `InputSchemaService.validateValue` | 3 | `InputSchemaService.validateEnum`, `InputSchemaService.validateLength`, `InputSchemaService.validatePattern` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/input/input-schema.service.ts:158` |
+| `RenderingService.assertEverySubstitutionSupplied` | 3 | `RenderingService.filter(…)`, `RenderingService.collectInterpolatedNames`, `MissingSubstitutionError.constructor` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/rendering/rendering.service.ts:35` |
 | `InstanceDiscoveryMatchingService.matchTemplates` | 3 | `InstanceDiscoveryMatchingService.toSorted(…)`, `InstanceDiscoveryMatchingService.filter(…)`, `InstanceDiscoveryMatchingService.map(…)` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/instance-discovery/instance-discovery-matching.service.ts:154` |
 | `InstanceDiscoveryService.weighInstance` | 3 | `InstanceDiscoveryService.map(…)`, `InstanceDiscoveryMatchingService.matchTemplates`, `InstanceDiscoveryMatchingService.buildSubstitutions` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:56` |
 | `InstanceDiscoveryService.map(…)` | 3 | `InstanceDiscoveryService.filter(…)`, `InstanceDiscoveryService.map(…)`, `InstanceDiscoveryService.filter(…)` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:118` |
@@ -397,7 +398,7 @@ What this project is judged against, as declared in its own `callidescope.config
 | `InputPromptingService.promptForTemplates` | 2 | `InputPromptingService.map(…)`, `InputPromptingService.filter(…)` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/input/input-prompting.service.ts:144` |
 | `InputService.parseCommaDelimitedOption` | 2 | `InputService.filter(…)`, `InputService.map(…)` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/input/input.service.ts:118` |
 | `InputService.resolveGeneratorInputs` | 2 | `InputOptionsService.collectGeneratorInputs`, `InputService.resolveInputs` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/input/input.service.ts:180` |
-| `TemplateDiscoveryService.prepareDocument` | 2 | `TemplateDiscoveryService.resolveInstanceFilePath`, `RenderingService.renderContent` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:152` |
+| `TemplateDiscoveryService.prepareDocument` | 2 | `TemplateDiscoveryService.resolveInstanceFilePath`, `RenderingService.renderContent` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:153` |
 | `InstanceDiscoveryService.flatMap(…)` | 2 | `InstanceDiscoveryService.flatMap(…)`, `InstanceDiscoveryService.readWorkspaceGroups` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:265` |
 | `missingInputError` | 1 | `InputError.constructor` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/input/input.constants.ts:65` |
 | `ConfigurationService.loadConfigurationModule` | 1 | `ConfigurationService.loadJsonConfiguration` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/configuration/configuration.service.ts:96` |
@@ -419,12 +420,16 @@ What this project is judged against, as declared in its own `callidescope.config
 | `InputService.resolveInputsFromValues` | 1 | `InputService.resolveInputs` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/input/input.service.ts:195` |
 | `InstanceDiscoveryLocatingService.resolveGlobSuffix` | 1 | `InstanceDiscoveryLocatingService.map(…)` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/instance-discovery/instance-discovery-locating.service.ts:73` |
 | `InstanceDiscoveryLocatingService.map(…)` | 1 | `InstanceDiscoveryLocatingService.deriveLocationSubstitutions` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/instance-discovery/instance-discovery-locating.service.ts:162` |
-| `TemplateDiscoveryService.collectTemplate` | 1 | `TemplateDiscoveryService.collectFilePaths` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:77` |
-| `TemplateDiscoveryService.collectTemplates` | 1 | `TemplateDiscoveryService.map(…)` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:97` |
-| `TemplateDiscoveryService.map(…)` | 1 | `TemplateDiscoveryService.collectTemplate` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:101` |
-| `TemplateDiscoveryService.countMatchingFiles` | 1 | `TemplateDiscoveryService.filter(…)` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:120` |
-| `TemplateDiscoveryService.filter(…)` | 1 | `TemplateDiscoveryService.resolveInstanceFilePath` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:129` |
-| `TemplateDiscoveryService.resolveInstanceFilePath` | 1 | `RenderingService.renderPath` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:178` |
+| `MissingSubstitutionError.constructor` | 1 | `MissingSubstitutionError.map(…)` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/rendering/rendering.constants.ts:31` |
+| `RenderingService.collectInterpolatedNames` | 1 | `RenderingService.walk` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/rendering/rendering.service.ts:61` |
+| `RenderingService.renderContent` | 1 | `RenderingService.assertEverySubstitutionSupplied` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/rendering/rendering.service.ts:115` |
+| `RenderingService.renderPath` | 1 | `RenderingService.assertEverySubstitutionSupplied` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/rendering/rendering.service.ts:142` |
+| `TemplateDiscoveryService.collectTemplate` | 1 | `TemplateDiscoveryService.collectFilePaths` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:78` |
+| `TemplateDiscoveryService.collectTemplates` | 1 | `TemplateDiscoveryService.map(…)` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:98` |
+| `TemplateDiscoveryService.map(…)` | 1 | `TemplateDiscoveryService.collectTemplate` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:102` |
+| `TemplateDiscoveryService.countMatchingFiles` | 1 | `TemplateDiscoveryService.filter(…)` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:121` |
+| `TemplateDiscoveryService.filter(…)` | 1 | `TemplateDiscoveryService.resolveInstanceFilePath` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:130` |
+| `TemplateDiscoveryService.resolveInstanceFilePath` | 1 | `RenderingService.renderPath` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:179` |
 | `InstanceDiscoveryMatchingService.buildSubstitutions` | 1 | `RenderingService.buildNameSubstitutions` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/instance-discovery/instance-discovery-matching.service.ts:72` |
 | `InstanceDiscoveryMatchingService.map(…)` | 1 | `TemplateDiscoveryService.countMatchingFiles` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/instance-discovery/instance-discovery-matching.service.ts:160` |
 | `InstanceDiscoveryMatchingService.toSorted(…)` | 1 | `InstanceDiscoveryMatchingService.compareMatches` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/instance-discovery/instance-discovery-matching.service.ts:180` |
@@ -460,16 +465,16 @@ graph LR
   conformetry_configuration["conformetry-configuration"]
   conformetry_core["conformetry-core"]
   conformetry_examples["conformetry-examples"]
-  conformetry_files["conformetry-files"]
   conformetry_generation["conformetry-generation"]
+  conformetry_languages["conformetry-languages"]
   conformetry_nx["conformetry-nx"]
   conformetry_validation["conformetry-validation"]
   synchronization["synchronization"]
   conformetry_cli --> conformetry_configuration
   conformetry_configuration --> conformetry_core
-  conformetry_configuration --> conformetry_generation
   conformetry_examples --> conformetry_configuration
-  conformetry_files --> conformetry_configuration
+  conformetry_generation --> conformetry_configuration
+  conformetry_languages --> conformetry_configuration
   conformetry_nx --> conformetry_configuration
   conformetry_validation --> conformetry_configuration
   synchronization --> conformetry_configuration
@@ -535,6 +540,11 @@ graph LR
   file_src_modules_instance_discovery_instance_discovery_service_ts["src/modules/instance-discovery/instance-discovery.service.ts"]
   file_src_modules_instance_discovery_instance_discovery_service_unit_test_ts["src/modules/instance-discovery/instance-discovery.service.unit.test.ts"]
   file_src_modules_instance_discovery_instance_discovery_types_ts["src/modules/instance-discovery/instance-discovery.types.ts"]
+  file_src_modules_rendering_rendering_constants_ts["src/modules/rendering/rendering.constants.ts"]
+  file_src_modules_rendering_rendering_module_ts["src/modules/rendering/rendering.module.ts"]
+  file_src_modules_rendering_rendering_service_ts["src/modules/rendering/rendering.service.ts"]
+  file_src_modules_rendering_rendering_service_unit_test_ts["src/modules/rendering/rendering.service.unit.test.ts"]
+  file_src_modules_rendering_rendering_types_ts["src/modules/rendering/rendering.types.ts"]
   file_src_modules_template_discovery_template_discovery_constants_ts["src/modules/template-discovery/template-discovery.constants.ts"]
   file_src_modules_template_discovery_template_discovery_module_ts["src/modules/template-discovery/template-discovery.module.ts"]
   file_src_modules_template_discovery_template_discovery_service_ts["src/modules/template-discovery/template-discovery.service.ts"]
@@ -587,15 +597,19 @@ graph LR
   file_src_modules_instance_discovery_instance_discovery_locating_service_unit_test_ts --> file_src_modules_instance_discovery_instance_discovery_locating_service_ts
   file_src_modules_instance_discovery_instance_discovery_matching_service_ts --> file_src_modules_instance_discovery_instance_discovery_constants_ts
   file_src_modules_instance_discovery_instance_discovery_matching_service_ts --> file_src_modules_instance_discovery_instance_discovery_types_ts
+  file_src_modules_instance_discovery_instance_discovery_matching_service_ts --> file_src_modules_rendering_rendering_service_ts
+  file_src_modules_instance_discovery_instance_discovery_matching_service_ts --> file_src_modules_rendering_rendering_types_ts
   file_src_modules_instance_discovery_instance_discovery_matching_service_ts --> file_src_modules_template_discovery_template_discovery_service_ts
   file_src_modules_instance_discovery_instance_discovery_matching_service_ts --> file_src_modules_template_discovery_template_discovery_types_ts
   file_src_modules_instance_discovery_instance_discovery_matching_service_unit_test_ts --> file_src_modules_instance_discovery_instance_discovery_matching_service_ts
+  file_src_modules_instance_discovery_instance_discovery_matching_service_unit_test_ts --> file_src_modules_rendering_rendering_service_ts
   file_src_modules_instance_discovery_instance_discovery_matching_service_unit_test_ts --> file_src_modules_template_discovery_template_discovery_service_ts
   file_src_modules_instance_discovery_instance_discovery_matching_service_unit_test_ts --> file_src_modules_template_discovery_template_discovery_types_ts
   file_src_modules_instance_discovery_instance_discovery_module_ts --> file_src_modules_configuration_configuration_module_ts
   file_src_modules_instance_discovery_instance_discovery_module_ts --> file_src_modules_instance_discovery_instance_discovery_locating_service_ts
   file_src_modules_instance_discovery_instance_discovery_module_ts --> file_src_modules_instance_discovery_instance_discovery_matching_service_ts
   file_src_modules_instance_discovery_instance_discovery_module_ts --> file_src_modules_instance_discovery_instance_discovery_service_ts
+  file_src_modules_instance_discovery_instance_discovery_module_ts --> file_src_modules_rendering_rendering_module_ts
   file_src_modules_instance_discovery_instance_discovery_module_ts --> file_src_modules_template_discovery_template_discovery_module_ts
   file_src_modules_instance_discovery_instance_discovery_service_ts --> file_src_modules_configuration_configuration_types_ts
   file_src_modules_instance_discovery_instance_discovery_service_ts --> file_src_modules_configuration_instance_group_service_ts
@@ -609,10 +623,20 @@ graph LR
   file_src_modules_instance_discovery_instance_discovery_service_unit_test_ts --> file_src_modules_instance_discovery_instance_discovery_module_ts
   file_src_modules_instance_discovery_instance_discovery_service_unit_test_ts --> file_src_modules_instance_discovery_instance_discovery_service_ts
   file_src_modules_instance_discovery_instance_discovery_types_ts --> file_src_modules_configuration_configuration_types_ts
+  file_src_modules_instance_discovery_instance_discovery_types_ts --> file_src_modules_rendering_rendering_types_ts
   file_src_modules_instance_discovery_instance_discovery_types_ts --> file_src_modules_template_discovery_template_discovery_types_ts
+  file_src_modules_rendering_rendering_module_ts --> file_src_modules_rendering_rendering_service_ts
+  file_src_modules_rendering_rendering_service_ts --> file_src_modules_rendering_rendering_constants_ts
+  file_src_modules_rendering_rendering_service_ts --> file_src_modules_rendering_rendering_types_ts
+  file_src_modules_rendering_rendering_service_unit_test_ts --> file_src_modules_rendering_rendering_constants_ts
+  file_src_modules_rendering_rendering_service_unit_test_ts --> file_src_modules_rendering_rendering_service_ts
+  file_src_modules_template_discovery_template_discovery_module_ts --> file_src_modules_rendering_rendering_module_ts
   file_src_modules_template_discovery_template_discovery_module_ts --> file_src_modules_template_discovery_template_discovery_service_ts
   file_src_modules_template_discovery_template_discovery_service_ts --> file_src_modules_configuration_configuration_types_ts
+  file_src_modules_template_discovery_template_discovery_service_ts --> file_src_modules_rendering_rendering_service_ts
+  file_src_modules_template_discovery_template_discovery_service_ts --> file_src_modules_rendering_rendering_types_ts
   file_src_modules_template_discovery_template_discovery_service_ts --> file_src_modules_template_discovery_template_discovery_types_ts
+  file_src_modules_template_discovery_template_discovery_service_unit_test_ts --> file_src_modules_rendering_rendering_service_ts
   file_src_modules_template_discovery_template_discovery_service_unit_test_ts --> file_src_modules_template_discovery_template_discovery_service_ts
   file_src_modules_template_discovery_template_discovery_service_unit_test_ts --> file_src_modules_template_discovery_template_discovery_types_ts
 ```

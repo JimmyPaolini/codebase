@@ -3,7 +3,7 @@ import {
   InputModule,
   InstanceDiscoveryModule,
 } from "@conformetry/configuration";
-import { InventoryModule } from "@conformetry/core";
+import { InventoryModule } from "@conformetry/output";
 import { Module } from "@nestjs/common";
 
 import { LoggerModule } from "@codebase/logger";

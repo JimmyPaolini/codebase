@@ -1,13 +1,14 @@
 import fs from "node:fs";
 import path from "node:path";
 
-import { RenderingService } from "@conformetry/generation";
 import { Injectable } from "@nestjs/common";
 
+import { RenderingService } from "../rendering/rendering.service";
+
 import type { ConformetryConfiguration } from "../configuration/configuration.types";
+import type { Substitutions } from "../rendering/rendering.types";
 import type { TemplateDefinition } from "./template-discovery.types";
 import type { PreparedValidationDocument } from "@conformetry/core";
-import type { Substitutions } from "@conformetry/generation";
 
 /**
  * Reads template folders and maps their files onto instance files.
@@ -146,7 +147,7 @@ export class TemplateDiscoveryService {
    * Pairs one template file with its instance, rendering the template.
    *
    * Returns `undefined` when the instance does not exist — that is a missing
-   * file, which `conformetry-files` reports; a language validator has nothing
+   * file, which the file-existence pass reports; a language validator has nothing
    * to compare and should not see the pair at all.
    */
   public prepareDocument(args: {

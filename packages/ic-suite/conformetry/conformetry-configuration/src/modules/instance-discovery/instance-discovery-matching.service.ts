@@ -1,6 +1,6 @@
-import { RenderingService } from "@conformetry/generation";
 import { Injectable } from "@nestjs/common";
 
+import { RenderingService } from "../rendering/rendering.service";
 import { TemplateDiscoveryService } from "../template-discovery/template-discovery.service";
 
 import {
@@ -8,6 +8,7 @@ import {
   MINIMUM_MATCH_RATIO,
 } from "./instance-discovery.constants";
 
+import type { Substitutions } from "../rendering/rendering.types";
 import type { TemplateDefinition } from "../template-discovery/template-discovery.types";
 import type {
   Instance,
@@ -15,7 +16,6 @@ import type {
   ResolvedInstances,
   TemplateMatch,
 } from "./instance-discovery.types";
-import type { Substitutions } from "@conformetry/generation";
 
 /**
  * Decides which template an instance directory was generated from.

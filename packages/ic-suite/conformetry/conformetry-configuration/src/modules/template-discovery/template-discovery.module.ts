@@ -1,5 +1,6 @@
-import { RenderingModule } from "@conformetry/generation";
 import { Module } from "@nestjs/common";
+
+import { RenderingModule } from "../rendering/rendering.module";
 
 import { TemplateDiscoveryService } from "./template-discovery.service";
 

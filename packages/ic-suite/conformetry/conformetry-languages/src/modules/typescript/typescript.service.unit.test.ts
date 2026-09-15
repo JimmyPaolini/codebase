@@ -1,7 +1,8 @@
-import { ScoringService } from "@conformetry/core";
 import { createMock, type DeepMocked } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
+
+import { ScoringService } from "../scoring/scoring.service";
 
 import { TypescriptCommentsService } from "./typescript-comments.service";
 import { TypescriptNodesService } from "./typescript-nodes.service";

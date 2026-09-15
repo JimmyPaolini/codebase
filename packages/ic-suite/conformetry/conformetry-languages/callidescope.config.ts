@@ -3,18 +3,23 @@ import { projectDefaults } from "../../../../configuration/callidescope.config.j
 /**
  * What conformetry-languages is held to, measured rather than assumed.
  *
- * Four frames and eleven direct callees, both measured by a run scoped to
+ * Thirteen frames and eleven direct callees, both measured by a run scoped to
  * this project and its dependency closure, and both set **at** what they
  * measured rather than above it: a stack or a callable at either limit
  * passes, so this gate is green the day it arrives and each number is a
  * starting point to ratchet down from rather than a target to grow into.
  *
- * That scoped depth is the one this file is for. The whole-workspace report
- * shows thirteen for the same package, and that is a different question: it
- * traces the Jupyter Language descending into a notebook's markdown cells from
- * an entry point above this package, where a scoped run enters at this
- * package's own surface. Declaring the workspace figure would leave nine
- * frames of headroom and gate nothing.
+ * Thirteen is not new depth; it is the same Jupyter descent into a notebook's
+ * markdown cells the whole-workspace report has always shown, now visible to a
+ * scoped run too. This file used to declare four and explain the gap: the
+ * runner envelope that called `validateDocument` lived in the leaf every
+ * Language depended on, so a scoped trace entered above these walks and
+ * attributed them elsewhere. That envelope now sits in
+ * `conformetry-validation`, an analysis package *above* this one, so each
+ * Language's `validateDocument` is an orphan root here and the descent below
+ * it is counted where it happens. Nothing about the code got deeper — the
+ * measurement stopped being able to hide it, which is the better of the two
+ * states to gate from.
  *
  * Eleven direct callees at the widest, among the comparison walks — fan-out
  * shaped by the syntax tree they descend rather than a budget anybody chose.
@@ -28,6 +33,6 @@ export default {
   ...projectDefaults,
   limits: {
     maximumBreadth: 11,
-    maximumDepth: 4,
+    maximumDepth: 13,
   },
 };
