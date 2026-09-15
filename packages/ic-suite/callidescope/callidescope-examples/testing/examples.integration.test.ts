@@ -612,8 +612,10 @@ describe("callidescope examples (integration)", () => {
       // rule this run exercises: the package's program really reads five
       // files under `configuration/` — its own `codependix.config.ts`
       // scaffold added a fifth, spreading `configuration/codependix.config.ts`
-      // and so reaching `packages/codependix-configuration` alongside the
-      // four it already read — a project root holding a `tsconfig.json` and
+      // and so reaching `packages/codependix-configuration` — and, through
+      // it, the `packages/codependix-core` contracts leaf it reads its run
+      // modes from — alongside the four it already read: a project root
+      // holding a `tsconfig.json` and
       // no `package.json`, and admitting it would reach every toolchain the
       // repository configures. The other refusal — the workspace root — is
       // only reachable through that one here, so this list stands for the
@@ -625,6 +627,7 @@ describe("callidescope examples (integration)", () => {
         EXAMPLES_DIRECTORY,
         GATED_LEAF_DIRECTORY,
         "packages/ic-suite/codependix/codependix-configuration",
+        "packages/ic-suite/codependix/codependix-core",
         "packages/ic-suite/codometer/codometer-configuration",
         "packages/logger",
       ]);
