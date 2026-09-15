@@ -2629,17 +2629,16 @@ flowchart LR
   ClassificationModule --> TileModule
   CodeModule --> SymmetryModule
   CorpusModule --> CharacteristicsModule
+  CorpusModule --> ClassificationModule
   CorpusModule --> CodeModule
   CorpusModule --> DatabaseModule
   CorpusModule --> DrawingModule
+  CorpusModule --> EnumerationModule
   DatabaseModule --> TypeOrmModule
   DatabaseModule --> TypeOrmModule
-  DrawingModule --> ClassificationModule
   DrawingModule --> CodeModule
   DrawingModule --> GeometryModule
-  DrawingModule --> GraphModule
   DrawingModule --> SvgModule
-  DrawingModule --> TileModule
   DrawModule --> CharacteristicsModule
   DrawModule --> ClassificationModule
   DrawModule --> CodeModule
@@ -2695,25 +2694,22 @@ graph LR
   file_src_modules_code_code_service_ts["src/modules/code/code.service.ts"]
   file_src_modules_code_code_service_unit_test_ts["src/modules/code/code.service.unit.test.ts"]
   file_src_modules_code_code_types_ts["src/modules/code/code.types.ts"]
-  file_src_modules_corpus_boxes_constants_ts["src/modules/corpus/boxes.constants.ts"]
-  file_src_modules_corpus_branch_constants_ts["src/modules/corpus/branch.constants.ts"]
-  file_src_modules_corpus_chain_constants_ts["src/modules/corpus/chain.constants.ts"]
   file_src_modules_corpus_corpus_constants_ts["src/modules/corpus/corpus.constants.ts"]
   file_src_modules_corpus_corpus_module_ts["src/modules/corpus/corpus.module.ts"]
   file_src_modules_corpus_corpus_service_ts["src/modules/corpus/corpus.service.ts"]
   file_src_modules_corpus_corpus_service_unit_test_ts["src/modules/corpus/corpus.service.unit.test.ts"]
   file_src_modules_corpus_corpus_types_ts["src/modules/corpus/corpus.types.ts"]
-  file_src_modules_corpus_cross_constants_ts["src/modules/corpus/cross.constants.ts"]
-  file_src_modules_corpus_negative_constants_ts["src/modules/corpus/negative.constants.ts"]
-  file_src_modules_corpus_parallel_1_constants_ts["src/modules/corpus/parallel-1.constants.ts"]
-  file_src_modules_corpus_parallel_2_constants_ts["src/modules/corpus/parallel-2.constants.ts"]
-  file_src_modules_corpus_parallel_3_constants_ts["src/modules/corpus/parallel-3.constants.ts"]
-  file_src_modules_corpus_parallel_4_constants_ts["src/modules/corpus/parallel-4.constants.ts"]
-  file_src_modules_corpus_parallel_5_constants_ts["src/modules/corpus/parallel-5.constants.ts"]
-  file_src_modules_corpus_parallel_constants_ts["src/modules/corpus/parallel.constants.ts"]
-  file_src_modules_corpus_snake_constants_ts["src/modules/corpus/snake.constants.ts"]
-  file_src_modules_corpus_swirl_constants_ts["src/modules/corpus/swirl.constants.ts"]
-  file_src_modules_corpus_whirl_constants_ts["src/modules/corpus/whirl.constants.ts"]
+  file_src_modules_corpus_historical_corpus_1_constants_ts["src/modules/corpus/historical-corpus-1.constants.ts"]
+  file_src_modules_corpus_historical_corpus_10_constants_ts["src/modules/corpus/historical-corpus-10.constants.ts"]
+  file_src_modules_corpus_historical_corpus_2_constants_ts["src/modules/corpus/historical-corpus-2.constants.ts"]
+  file_src_modules_corpus_historical_corpus_3_constants_ts["src/modules/corpus/historical-corpus-3.constants.ts"]
+  file_src_modules_corpus_historical_corpus_4_constants_ts["src/modules/corpus/historical-corpus-4.constants.ts"]
+  file_src_modules_corpus_historical_corpus_5_constants_ts["src/modules/corpus/historical-corpus-5.constants.ts"]
+  file_src_modules_corpus_historical_corpus_6_constants_ts["src/modules/corpus/historical-corpus-6.constants.ts"]
+  file_src_modules_corpus_historical_corpus_7_constants_ts["src/modules/corpus/historical-corpus-7.constants.ts"]
+  file_src_modules_corpus_historical_corpus_8_constants_ts["src/modules/corpus/historical-corpus-8.constants.ts"]
+  file_src_modules_corpus_historical_corpus_9_constants_ts["src/modules/corpus/historical-corpus-9.constants.ts"]
+  file_src_modules_corpus_historical_corpus_constants_ts["src/modules/corpus/historical-corpus.constants.ts"]
   file_src_modules_database_database_constants_ts["src/modules/database/database.constants.ts"]
   file_src_modules_database_database_module_ts["src/modules/database/database.module.ts"]
   file_src_modules_database_database_service_integration_test_ts["src/modules/database/database.service.integration.test.ts"]
@@ -2746,23 +2742,11 @@ graph LR
   file_src_modules_draw_draw_constants_ts["src/modules/draw/draw.constants.ts"]
   file_src_modules_draw_draw_module_ts["src/modules/draw/draw.module.ts"]
   file_src_modules_draw_draw_types_ts["src/modules/draw/draw.types.ts"]
-  file_src_modules_drawing_address_constants_ts["src/modules/drawing/address.constants.ts"]
-  file_src_modules_drawing_address_service_ts["src/modules/drawing/address.service.ts"]
-  file_src_modules_drawing_address_service_unit_test_ts["src/modules/drawing/address.service.unit.test.ts"]
-  file_src_modules_drawing_address_types_ts["src/modules/drawing/address.types.ts"]
   file_src_modules_drawing_drawing_constants_ts["src/modules/drawing/drawing.constants.ts"]
   file_src_modules_drawing_drawing_module_ts["src/modules/drawing/drawing.module.ts"]
   file_src_modules_drawing_drawing_service_ts["src/modules/drawing/drawing.service.ts"]
   file_src_modules_drawing_drawing_service_unit_test_ts["src/modules/drawing/drawing.service.unit.test.ts"]
   file_src_modules_drawing_drawing_types_ts["src/modules/drawing/drawing.types.ts"]
-  file_src_modules_drawing_lattice_constants_ts["src/modules/drawing/lattice.constants.ts"]
-  file_src_modules_drawing_lattice_service_ts["src/modules/drawing/lattice.service.ts"]
-  file_src_modules_drawing_lattice_service_unit_test_ts["src/modules/drawing/lattice.service.unit.test.ts"]
-  file_src_modules_drawing_lattice_types_ts["src/modules/drawing/lattice.types.ts"]
-  file_src_modules_drawing_measurement_constants_ts["src/modules/drawing/measurement.constants.ts"]
-  file_src_modules_drawing_measurement_service_ts["src/modules/drawing/measurement.service.ts"]
-  file_src_modules_drawing_measurement_service_unit_test_ts["src/modules/drawing/measurement.service.unit.test.ts"]
-  file_src_modules_drawing_measurement_types_ts["src/modules/drawing/measurement.types.ts"]
   file_src_modules_enumeration_enumeration_constants_ts["src/modules/enumeration/enumeration.constants.ts"]
   file_src_modules_enumeration_enumeration_module_ts["src/modules/enumeration/enumeration.module.ts"]
   file_src_modules_enumeration_enumeration_service_ts["src/modules/enumeration/enumeration.service.ts"]
@@ -2852,7 +2836,6 @@ graph LR
   file_src_modules_classification_classification_service_unit_test_ts --> file_src_modules_classification_classification_types_ts
   file_src_modules_classification_classification_service_unit_test_ts --> file_src_modules_classification_sub_family_service_ts
   file_src_modules_classification_classification_service_unit_test_ts --> file_src_modules_code_code_service_ts
-  file_src_modules_classification_classification_service_unit_test_ts --> file_src_modules_drawing_lattice_service_ts
   file_src_modules_classification_classification_service_unit_test_ts --> file_src_modules_graph_graph_service_ts
   file_src_modules_classification_classification_service_unit_test_ts --> file_src_modules_symmetry_symmetry_service_ts
   file_src_modules_classification_classification_service_unit_test_ts --> file_src_modules_tile_tile_service_ts
@@ -2881,33 +2864,27 @@ graph LR
   file_src_modules_code_code_service_unit_test_ts --> file_src_modules_symmetry_symmetry_service_ts
   file_src_modules_code_code_service_unit_test_ts --> file_src_modules_tile_tile_service_ts
   file_src_modules_code_code_service_unit_test_ts --> file_testing_tiles_ts
-  file_src_modules_corpus_boxes_constants_ts --> file_src_modules_corpus_corpus_types_ts
-  file_src_modules_corpus_branch_constants_ts --> file_src_modules_corpus_corpus_types_ts
-  file_src_modules_corpus_chain_constants_ts --> file_src_modules_corpus_corpus_types_ts
-  file_src_modules_corpus_corpus_constants_ts --> file_src_modules_corpus_boxes_constants_ts
-  file_src_modules_corpus_corpus_constants_ts --> file_src_modules_corpus_branch_constants_ts
-  file_src_modules_corpus_corpus_constants_ts --> file_src_modules_corpus_chain_constants_ts
   file_src_modules_corpus_corpus_constants_ts --> file_src_modules_corpus_corpus_types_ts
-  file_src_modules_corpus_corpus_constants_ts --> file_src_modules_corpus_cross_constants_ts
-  file_src_modules_corpus_corpus_constants_ts --> file_src_modules_corpus_negative_constants_ts
-  file_src_modules_corpus_corpus_constants_ts --> file_src_modules_corpus_parallel_constants_ts
-  file_src_modules_corpus_corpus_constants_ts --> file_src_modules_corpus_snake_constants_ts
-  file_src_modules_corpus_corpus_constants_ts --> file_src_modules_corpus_swirl_constants_ts
-  file_src_modules_corpus_corpus_constants_ts --> file_src_modules_corpus_whirl_constants_ts
   file_src_modules_corpus_corpus_module_ts --> file_src_modules_characteristics_characteristics_module_ts
+  file_src_modules_corpus_corpus_module_ts --> file_src_modules_classification_classification_module_ts
   file_src_modules_corpus_corpus_module_ts --> file_src_modules_code_code_module_ts
   file_src_modules_corpus_corpus_module_ts --> file_src_modules_corpus_corpus_service_ts
   file_src_modules_corpus_corpus_module_ts --> file_src_modules_database_database_module_ts
   file_src_modules_corpus_corpus_module_ts --> file_src_modules_drawing_drawing_module_ts
+  file_src_modules_corpus_corpus_module_ts --> file_src_modules_enumeration_enumeration_module_ts
   file_src_modules_corpus_corpus_service_ts --> file_src_modules_characteristics_characteristics_service_ts
+  file_src_modules_corpus_corpus_service_ts --> file_src_modules_classification_sub_family_service_ts
   file_src_modules_corpus_corpus_service_ts --> file_src_modules_code_code_service_ts
   file_src_modules_corpus_corpus_service_ts --> file_src_modules_corpus_corpus_constants_ts
   file_src_modules_corpus_corpus_service_ts --> file_src_modules_corpus_corpus_types_ts
   file_src_modules_corpus_corpus_service_ts --> file_src_modules_database_database_service_ts
   file_src_modules_corpus_corpus_service_ts --> file_src_modules_database_entities_Meander_entity_ts
   file_src_modules_corpus_corpus_service_ts --> file_src_modules_drawing_drawing_service_ts
+  file_src_modules_corpus_corpus_service_ts --> file_src_modules_enumeration_enumeration_constants_ts
+  file_src_modules_corpus_corpus_service_ts --> file_src_modules_enumeration_enumeration_service_ts
   file_src_modules_corpus_corpus_service_unit_test_ts --> file_src_modules_characteristics_characteristics_service_ts
   file_src_modules_corpus_corpus_service_unit_test_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_corpus_corpus_service_unit_test_ts --> file_src_modules_classification_sub_family_service_ts
   file_src_modules_corpus_corpus_service_unit_test_ts --> file_src_modules_code_code_service_ts
   file_src_modules_corpus_corpus_service_unit_test_ts --> file_src_modules_code_code_types_ts
   file_src_modules_corpus_corpus_service_unit_test_ts --> file_src_modules_corpus_corpus_constants_ts
@@ -2916,23 +2893,29 @@ graph LR
   file_src_modules_corpus_corpus_service_unit_test_ts --> file_src_modules_database_database_service_ts
   file_src_modules_corpus_corpus_service_unit_test_ts --> file_src_modules_database_entities_Meander_entity_ts
   file_src_modules_corpus_corpus_service_unit_test_ts --> file_src_modules_drawing_drawing_service_ts
-  file_src_modules_corpus_corpus_types_ts --> file_src_modules_classification_sub_family_types_ts
-  file_src_modules_corpus_cross_constants_ts --> file_src_modules_corpus_corpus_types_ts
-  file_src_modules_corpus_negative_constants_ts --> file_src_modules_corpus_corpus_types_ts
-  file_src_modules_corpus_parallel_1_constants_ts --> file_src_modules_corpus_corpus_types_ts
-  file_src_modules_corpus_parallel_2_constants_ts --> file_src_modules_corpus_corpus_types_ts
-  file_src_modules_corpus_parallel_3_constants_ts --> file_src_modules_corpus_corpus_types_ts
-  file_src_modules_corpus_parallel_4_constants_ts --> file_src_modules_corpus_corpus_types_ts
-  file_src_modules_corpus_parallel_5_constants_ts --> file_src_modules_corpus_corpus_types_ts
-  file_src_modules_corpus_parallel_constants_ts --> file_src_modules_corpus_corpus_types_ts
-  file_src_modules_corpus_parallel_constants_ts --> file_src_modules_corpus_parallel_1_constants_ts
-  file_src_modules_corpus_parallel_constants_ts --> file_src_modules_corpus_parallel_2_constants_ts
-  file_src_modules_corpus_parallel_constants_ts --> file_src_modules_corpus_parallel_3_constants_ts
-  file_src_modules_corpus_parallel_constants_ts --> file_src_modules_corpus_parallel_4_constants_ts
-  file_src_modules_corpus_parallel_constants_ts --> file_src_modules_corpus_parallel_5_constants_ts
-  file_src_modules_corpus_snake_constants_ts --> file_src_modules_corpus_corpus_types_ts
-  file_src_modules_corpus_swirl_constants_ts --> file_src_modules_corpus_corpus_types_ts
-  file_src_modules_corpus_whirl_constants_ts --> file_src_modules_corpus_corpus_types_ts
+  file_src_modules_corpus_corpus_service_unit_test_ts --> file_src_modules_enumeration_enumeration_service_ts
+  file_src_modules_corpus_corpus_service_unit_test_ts --> file_src_modules_tile_tile_types_ts
+  file_src_modules_corpus_historical_corpus_1_constants_ts --> file_src_modules_corpus_corpus_types_ts
+  file_src_modules_corpus_historical_corpus_10_constants_ts --> file_src_modules_corpus_corpus_types_ts
+  file_src_modules_corpus_historical_corpus_2_constants_ts --> file_src_modules_corpus_corpus_types_ts
+  file_src_modules_corpus_historical_corpus_3_constants_ts --> file_src_modules_corpus_corpus_types_ts
+  file_src_modules_corpus_historical_corpus_4_constants_ts --> file_src_modules_corpus_corpus_types_ts
+  file_src_modules_corpus_historical_corpus_5_constants_ts --> file_src_modules_corpus_corpus_types_ts
+  file_src_modules_corpus_historical_corpus_6_constants_ts --> file_src_modules_corpus_corpus_types_ts
+  file_src_modules_corpus_historical_corpus_7_constants_ts --> file_src_modules_corpus_corpus_types_ts
+  file_src_modules_corpus_historical_corpus_8_constants_ts --> file_src_modules_corpus_corpus_types_ts
+  file_src_modules_corpus_historical_corpus_9_constants_ts --> file_src_modules_corpus_corpus_types_ts
+  file_src_modules_corpus_historical_corpus_constants_ts --> file_src_modules_corpus_corpus_types_ts
+  file_src_modules_corpus_historical_corpus_constants_ts --> file_src_modules_corpus_historical_corpus_1_constants_ts
+  file_src_modules_corpus_historical_corpus_constants_ts --> file_src_modules_corpus_historical_corpus_10_constants_ts
+  file_src_modules_corpus_historical_corpus_constants_ts --> file_src_modules_corpus_historical_corpus_2_constants_ts
+  file_src_modules_corpus_historical_corpus_constants_ts --> file_src_modules_corpus_historical_corpus_3_constants_ts
+  file_src_modules_corpus_historical_corpus_constants_ts --> file_src_modules_corpus_historical_corpus_4_constants_ts
+  file_src_modules_corpus_historical_corpus_constants_ts --> file_src_modules_corpus_historical_corpus_5_constants_ts
+  file_src_modules_corpus_historical_corpus_constants_ts --> file_src_modules_corpus_historical_corpus_6_constants_ts
+  file_src_modules_corpus_historical_corpus_constants_ts --> file_src_modules_corpus_historical_corpus_7_constants_ts
+  file_src_modules_corpus_historical_corpus_constants_ts --> file_src_modules_corpus_historical_corpus_8_constants_ts
+  file_src_modules_corpus_historical_corpus_constants_ts --> file_src_modules_corpus_historical_corpus_9_constants_ts
   file_src_modules_database_database_module_ts --> file_src_modules_database_database_constants_ts
   file_src_modules_database_database_module_ts --> file_src_modules_database_database_service_ts
   file_src_modules_database_database_module_ts --> file_src_modules_database_entities_Meander_entity_ts
@@ -2965,8 +2948,8 @@ graph LR
   file_src_modules_draw_draw_check_sweep_module_ts --> file_src_modules_draw_draw_record_service_ts
   file_src_modules_draw_draw_check_sweep_module_ts --> file_src_modules_drawing_drawing_module_ts
   file_src_modules_draw_draw_check_sweep_module_ts --> file_src_modules_enumeration_enumeration_module_ts
-  file_src_modules_draw_draw_check_command_integration_test_ts --> file_src_modules_corpus_corpus_constants_ts
   file_src_modules_draw_draw_check_command_integration_test_ts --> file_src_modules_corpus_corpus_service_ts
+  file_src_modules_draw_draw_check_command_integration_test_ts --> file_src_modules_corpus_historical_corpus_constants_ts
   file_src_modules_draw_draw_check_command_integration_test_ts --> file_src_modules_database_entities_Meander_entity_ts
   file_src_modules_draw_draw_check_command_integration_test_ts --> file_src_modules_draw_draw_check_service_ts
   file_src_modules_draw_draw_check_command_integration_test_ts --> file_src_modules_draw_draw_code_service_ts
@@ -2975,8 +2958,8 @@ graph LR
   file_src_modules_draw_draw_check_command_integration_test_ts --> file_src_modules_draw_draw_command_ts
   file_src_modules_draw_draw_check_constants_ts --> file_src_modules_database_database_types_ts
   file_src_modules_draw_draw_check_constants_ts --> file_src_modules_draw_draw_check_types_ts
-  file_src_modules_draw_draw_check_service_ts --> file_src_modules_corpus_corpus_constants_ts
   file_src_modules_draw_draw_check_service_ts --> file_src_modules_corpus_corpus_service_ts
+  file_src_modules_draw_draw_check_service_ts --> file_src_modules_corpus_historical_corpus_constants_ts
   file_src_modules_draw_draw_check_service_ts --> file_src_modules_database_entities_Meander_entity_ts
   file_src_modules_draw_draw_check_service_ts --> file_src_modules_draw_draw_check_sweep_module_ts
   file_src_modules_draw_draw_check_service_ts --> file_src_modules_draw_draw_check_constants_ts
@@ -3003,7 +2986,6 @@ graph LR
   file_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_src_modules_draw_draw_enumeration_service_ts
   file_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_src_modules_draw_draw_record_service_ts
   file_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_src_modules_drawing_drawing_service_ts
-  file_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_src_modules_drawing_lattice_service_ts
   file_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_src_modules_enumeration_enumeration_service_ts
   file_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_src_modules_enumeration_tile_enumeration_service_ts
   file_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_src_modules_geometry_geometry_service_ts
@@ -3052,7 +3034,6 @@ graph LR
   file_src_modules_draw_draw_record_service_unit_test_ts --> file_src_modules_code_code_service_ts
   file_src_modules_draw_draw_record_service_unit_test_ts --> file_src_modules_draw_draw_record_service_ts
   file_src_modules_draw_draw_record_service_unit_test_ts --> file_src_modules_drawing_drawing_service_ts
-  file_src_modules_draw_draw_record_service_unit_test_ts --> file_src_modules_drawing_lattice_service_ts
   file_src_modules_draw_draw_record_service_unit_test_ts --> file_src_modules_geometry_geometry_service_ts
   file_src_modules_draw_draw_record_service_unit_test_ts --> file_src_modules_graph_graph_service_ts
   file_src_modules_draw_draw_record_service_unit_test_ts --> file_src_modules_svg_svg_service_ts
@@ -3063,6 +3044,7 @@ graph LR
   file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_corpus_corpus_constants_ts
   file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_corpus_corpus_service_ts
+  file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_corpus_historical_corpus_constants_ts
   file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_database_database_service_ts
   file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_database_entities_Meander_entity_ts
   file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_draw_draw_check_service_ts
@@ -3091,13 +3073,12 @@ graph LR
   file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_draw_draw_record_service_ts
   file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_draw_draw_command_ts
   file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_drawing_drawing_module_ts
-  file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_drawing_lattice_service_ts
   file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_geometry_geometry_service_ts
   file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_graph_graph_service_ts
   file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_svg_svg_service_ts
   file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_tile_tile_service_ts
-  file_src_modules_draw_draw_command_ts --> file_src_modules_corpus_corpus_constants_ts
   file_src_modules_draw_draw_command_ts --> file_src_modules_corpus_corpus_service_ts
+  file_src_modules_draw_draw_command_ts --> file_src_modules_corpus_historical_corpus_constants_ts
   file_src_modules_draw_draw_command_ts --> file_src_modules_draw_draw_check_service_ts
   file_src_modules_draw_draw_command_ts --> file_src_modules_draw_draw_code_service_ts
   file_src_modules_draw_draw_command_ts --> file_src_modules_draw_draw_enumeration_service_ts
@@ -3127,34 +3108,10 @@ graph LR
   file_src_modules_draw_draw_module_ts --> file_src_modules_drawing_drawing_module_ts
   file_src_modules_draw_draw_module_ts --> file_src_modules_enumeration_enumeration_module_ts
   file_src_modules_draw_draw_module_ts --> file_src_modules_geometry_geometry_module_ts
-  file_src_modules_drawing_address_service_ts --> file_src_modules_classification_sub_family_service_ts
-  file_src_modules_drawing_address_service_ts --> file_src_modules_code_code_service_ts
-  file_src_modules_drawing_address_service_ts --> file_src_modules_drawing_address_constants_ts
-  file_src_modules_drawing_address_service_ts --> file_src_modules_drawing_address_types_ts
-  file_src_modules_drawing_address_service_ts --> file_src_modules_drawing_lattice_service_ts
-  file_src_modules_drawing_address_service_ts --> file_src_modules_drawing_lattice_types_ts
-  file_src_modules_drawing_address_service_ts --> file_src_modules_tile_tile_service_ts
-  file_src_modules_drawing_address_service_ts --> file_src_modules_tile_tile_types_ts
-  file_src_modules_drawing_address_service_unit_test_ts --> file_src_modules_classification_sub_family_service_ts
-  file_src_modules_drawing_address_service_unit_test_ts --> file_src_modules_code_code_service_ts
-  file_src_modules_drawing_address_service_unit_test_ts --> file_src_modules_drawing_address_constants_ts
-  file_src_modules_drawing_address_service_unit_test_ts --> file_src_modules_drawing_address_service_ts
-  file_src_modules_drawing_address_service_unit_test_ts --> file_src_modules_drawing_address_types_ts
-  file_src_modules_drawing_address_service_unit_test_ts --> file_src_modules_drawing_lattice_constants_ts
-  file_src_modules_drawing_address_service_unit_test_ts --> file_src_modules_drawing_lattice_service_ts
-  file_src_modules_drawing_address_service_unit_test_ts --> file_src_modules_symmetry_symmetry_service_ts
-  file_src_modules_drawing_address_service_unit_test_ts --> file_src_modules_tile_tile_service_ts
-  file_src_modules_drawing_address_types_ts --> file_src_modules_classification_sub_family_types_ts
-  file_src_modules_drawing_drawing_module_ts --> file_src_modules_classification_classification_module_ts
   file_src_modules_drawing_drawing_module_ts --> file_src_modules_code_code_module_ts
-  file_src_modules_drawing_drawing_module_ts --> file_src_modules_drawing_address_service_ts
   file_src_modules_drawing_drawing_module_ts --> file_src_modules_drawing_drawing_service_ts
-  file_src_modules_drawing_drawing_module_ts --> file_src_modules_drawing_lattice_service_ts
-  file_src_modules_drawing_drawing_module_ts --> file_src_modules_drawing_measurement_service_ts
   file_src_modules_drawing_drawing_module_ts --> file_src_modules_geometry_geometry_module_ts
-  file_src_modules_drawing_drawing_module_ts --> file_src_modules_graph_graph_module_ts
   file_src_modules_drawing_drawing_module_ts --> file_src_modules_svg_svg_module_ts
-  file_src_modules_drawing_drawing_module_ts --> file_src_modules_tile_tile_module_ts
   file_src_modules_drawing_drawing_service_ts --> file_src_modules_code_code_service_ts
   file_src_modules_drawing_drawing_service_ts --> file_src_modules_code_code_types_ts
   file_src_modules_drawing_drawing_service_ts --> file_src_modules_drawing_drawing_types_ts
@@ -3169,19 +3126,6 @@ graph LR
   file_src_modules_drawing_drawing_service_unit_test_ts --> file_src_modules_svg_svg_service_ts
   file_src_modules_drawing_drawing_service_unit_test_ts --> file_src_modules_symmetry_symmetry_service_ts
   file_src_modules_drawing_drawing_service_unit_test_ts --> file_src_modules_tile_tile_service_ts
-  file_src_modules_drawing_lattice_service_ts --> file_src_modules_drawing_lattice_constants_ts
-  file_src_modules_drawing_lattice_service_ts --> file_src_modules_drawing_lattice_types_ts
-  file_src_modules_drawing_lattice_service_unit_test_ts --> file_src_modules_drawing_lattice_constants_ts
-  file_src_modules_drawing_lattice_service_unit_test_ts --> file_src_modules_drawing_lattice_service_ts
-  file_src_modules_drawing_measurement_service_ts --> file_src_modules_drawing_lattice_service_ts
-  file_src_modules_drawing_measurement_service_ts --> file_src_modules_drawing_lattice_types_ts
-  file_src_modules_drawing_measurement_service_ts --> file_src_modules_drawing_measurement_types_ts
-  file_src_modules_drawing_measurement_service_ts --> file_src_modules_graph_graph_service_ts
-  file_src_modules_drawing_measurement_service_ts --> file_src_modules_graph_graph_types_ts
-  file_src_modules_drawing_measurement_service_unit_test_ts --> file_src_modules_drawing_lattice_service_ts
-  file_src_modules_drawing_measurement_service_unit_test_ts --> file_src_modules_drawing_measurement_service_ts
-  file_src_modules_drawing_measurement_service_unit_test_ts --> file_src_modules_drawing_measurement_types_ts
-  file_src_modules_drawing_measurement_service_unit_test_ts --> file_src_modules_graph_graph_service_ts
   file_src_modules_enumeration_enumeration_module_ts --> file_src_modules_code_code_module_ts
   file_src_modules_enumeration_enumeration_module_ts --> file_src_modules_enumeration_enumeration_service_ts
   file_src_modules_enumeration_enumeration_module_ts --> file_src_modules_enumeration_tile_enumeration_service_ts
@@ -3194,7 +3138,6 @@ graph LR
   file_src_modules_enumeration_enumeration_service_ts --> file_src_modules_enumeration_tile_enumeration_service_ts
   file_src_modules_enumeration_enumeration_service_unit_test_ts --> file_src_modules_classification_sub_family_service_ts
   file_src_modules_enumeration_enumeration_service_unit_test_ts --> file_src_modules_code_code_service_ts
-  file_src_modules_enumeration_enumeration_service_unit_test_ts --> file_src_modules_drawing_lattice_service_ts
   file_src_modules_enumeration_enumeration_service_unit_test_ts --> file_src_modules_enumeration_enumeration_service_ts
   file_src_modules_enumeration_enumeration_service_unit_test_ts --> file_src_modules_enumeration_tile_enumeration_service_ts
   file_src_modules_enumeration_enumeration_service_unit_test_ts --> file_src_modules_symmetry_symmetry_service_ts
