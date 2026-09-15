@@ -87,6 +87,17 @@ const codependixConfiguration: CodependixConfiguration = {
    * that arrives red is a backlog rather than a gate, and a red pipeline
    * nobody can act on teaches people to ignore it.
    *
+   * The ic-suite rules are stated twice on purpose, and the two statements
+   * catch different mistakes. Five generic rules keyed on `layer:*` say the
+   * spine once for all four toolchains — a layer reaches its own layer and
+   * every layer beneath it — and catch a package nobody wrote a rule for. The
+   * per-package `name:*` rules below them stay, and catch a package that is
+   * tagged into the wrong layer, which a generic rule waves through. Five
+   * rather than four only because the contracts leaf reaches nothing, and an
+   * allow-to-nothing is that same rule written backwards; no generic rule
+   * carries an exception for any one toolchain, which is what the convergence
+   * had to be able to say.
+   *
    * The `nxProjects` block restates all 32 `depConstraints` from
    * `configuration/eslint.config.ts`, translated mechanically:
    * `onlyDependOnLibsWithTags` is an `allow` rule, `notDependOnLibsWithTags`
@@ -172,6 +183,71 @@ const codependixConfiguration: CodependixConfiguration = {
           "An application composes packages; it never composes another application. Two applications that depend on each other cannot be deployed or versioned apart.",
         name: "applications-depend-only-on-packages",
         to: { tags: ["type:package"] },
+      },
+      // 🧬 The ic-suite spine
+      {
+        from: { tags: ["layer:core"] },
+        kind: "forbid",
+        message:
+          "A contracts leaf declares types and reaches nothing at all. This is the ic-suite spine stated once for every toolchain rather than four times: core, then configuration, then analysis, then output, then cli, each layer reaching its own layer and every layer beneath it. Written as a forbid because the allow that would say the same thing — allow to nothing — is this rule with the direction inverted.",
+        name: "core-is-a-leaf",
+        to: { id: ["*"] },
+      },
+      {
+        from: { tags: ["layer:configuration"] },
+        kind: "allow",
+        message:
+          "The configuration layer resolves the config file and the command line into one object, and the only thing beneath it is the contracts leaf whose vocabulary that object is written in.",
+        name: "configuration-layer-reaches-core",
+        to: { tags: ["layer:configuration", "layer:core", "name:logger"] },
+      },
+      {
+        from: { tags: ["layer:analysis"] },
+        kind: "allow",
+        message:
+          "The analysis layer is what a toolchain actually does. It reads the contracts and the resolved configuration, and composes its sibling analyzers — the one layer named for what it analyzes rather than for its place in the spine — but never renders and never wires a command.",
+        name: "analysis-layer-reaches-configuration",
+        to: {
+          tags: [
+            "layer:analysis",
+            "layer:configuration",
+            "layer:core",
+            "name:logger",
+          ],
+        },
+      },
+      {
+        from: { tags: ["layer:output"] },
+        kind: "allow",
+        message:
+          "The output layer owns every render target — JSON, markdown, mermaid, anchor blocks, destination routing, delivery — so it reads what analysis produced and renders it without running any analysis of its own.",
+        name: "output-layer-reaches-analysis",
+        to: {
+          tags: [
+            "layer:analysis",
+            "layer:configuration",
+            "layer:core",
+            "layer:output",
+            "name:logger",
+          ],
+        },
+      },
+      {
+        from: { tags: ["layer:cli"] },
+        kind: "allow",
+        message:
+          "The cli layer is entrypoints: command modules and Nx plugins, which is why an Nx plugin carries `layer:cli` rather than a sixth tag of its own. It composes every layer beneath it and implements none of them, and reaches its own layer because a plugin delegates to the command-line host beside it.",
+        name: "cli-layer-reaches-output",
+        to: {
+          tags: [
+            "layer:analysis",
+            "layer:cli",
+            "layer:configuration",
+            "layer:core",
+            "layer:output",
+            "name:logger",
+          ],
+        },
       },
       // 🔭 Callidescope
       {
