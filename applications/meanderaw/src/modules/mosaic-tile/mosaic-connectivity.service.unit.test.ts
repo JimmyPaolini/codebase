@@ -38,6 +38,21 @@ const ADMITTED_SHAPES: readonly {
   { columns: 1, rows: 6 },
 ];
 
+/**
+ * Five minutes for the four cases that walk the space, where this project
+ * declares a minute for everything else.
+ *
+ * Whichever of them runs first pays for the whole walk — the other three
+ * filter the list it memoized — and on a CI runner this file measures 42–56
+ * seconds in total. That put the paying case within ordinary variance of the
+ * minute, and 🧑‍🔬 Test Coverage timed out on it once. The walk is
+ * `2 ** edges` wide at eleven shapes and takes seconds locally, so the
+ * figure is a saturated runner rather than a hang;
+ * `draw-check.command.integration.test.ts` carries the same number and the
+ * measurements behind it.
+ */
+const WALK_TIMEOUT_MILLISECONDS = 300_000;
+
 // 🧪 Tests
 
 describe(MosaicConnectivityService, () => {
@@ -68,10 +83,12 @@ describe(MosaicConnectivityService, () => {
    * Every tile the budget admits, walked once and kept.
    *
    * Enumerated on first use rather than in `beforeAll`, because the walk is
-   * `2 ** edges` wide at eleven shapes and a hook has a timeout of its own
-   * that this project's `vitest.config.ts` does not raise — the minute it
-   * declares is a test's. Under a loaded runner the hook version of this
-   * timed out where the tests themselves had thirty seconds to spare.
+   * `2 ** edges` wide at eleven shapes and a hook has a timeout of its own.
+   * Under a loaded runner the hook version of this timed out where the tests
+   * themselves had thirty seconds to spare. `vitest.config.ts` has raised
+   * `hookTimeout` to match `testTimeout` since #745, so the hook is no longer
+   * the shorter of the two — but a test can declare its own timeout where a
+   * hook cannot, which is what {@link WALK_TIMEOUT_MILLISECONDS} does.
    */
   const enumerateEverything = (): MosaicTile[] => {
     everyTile ??= ADMITTED_SHAPES.flatMap(({ columns, rows }) =>
@@ -104,29 +121,45 @@ describe(MosaicConnectivityService, () => {
   });
 
   describe("the whole space the budget admits", () => {
-    it("holds 8,551 tiles, which this sweep neither filters nor changes", () => {
-      expect(enumerateEverything()).toHaveLength(8551);
-    });
+    it(
+      "holds 8,551 tiles, which this sweep neither filters nor changes",
+      () => {
+        expect(enumerateEverything()).toHaveLength(8551);
+      },
+      WALK_TIMEOUT_MILLISECONDS,
+    );
 
-    it("finds 3,352 tiles whose ink carries no loop", () => {
-      expect(
-        enumerateEverything().filter((tile) => service.isAcyclic(tile)),
-      ).toHaveLength(3352);
-    });
+    it(
+      "finds 3,352 tiles whose ink carries no loop",
+      () => {
+        expect(
+          enumerateEverything().filter((tile) => service.isAcyclic(tile)),
+        ).toHaveLength(3352);
+      },
+      WALK_TIMEOUT_MILLISECONDS,
+    );
 
-    it("finds 1,947 tiles whose ink is a single connected figure", () => {
-      expect(
-        enumerateEverything().filter((tile) => service.isOneComponent(tile)),
-      ).toHaveLength(1947);
-    });
+    it(
+      "finds 1,947 tiles whose ink is a single connected figure",
+      () => {
+        expect(
+          enumerateEverything().filter((tile) => service.isOneComponent(tile)),
+        ).toHaveLength(1947);
+      },
+      WALK_TIMEOUT_MILLISECONDS,
+    );
 
-    it("finds 370 tiles that are both at once, which is a tree", () => {
-      expect(
-        enumerateEverything().filter(
-          (tile) => service.isAcyclic(tile) && service.isOneComponent(tile),
-        ),
-      ).toHaveLength(370);
-    });
+    it(
+      "finds 370 tiles that are both at once, which is a tree",
+      () => {
+        expect(
+          enumerateEverything().filter(
+            (tile) => service.isAcyclic(tile) && service.isOneComponent(tile),
+          ),
+        ).toHaveLength(370);
+      },
+      WALK_TIMEOUT_MILLISECONDS,
+    );
   });
 
   describe("connectivity", () => {
