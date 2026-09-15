@@ -53,7 +53,7 @@
     ]
   },
   "neverConnectToCloud": true,
-  "parallel": 3,
+  "parallel": 2,
   "plugins": [
     {
       "options": {
