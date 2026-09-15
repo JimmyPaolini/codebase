@@ -21,6 +21,11 @@ export default mergeConfig(
       // rather than waiting on an idle core — and on a loaded machine it is
       // what turns a slow run into a failing one.
       fileParallelism: false,
+      // The `beforeAll` hooks measure an example the same way a test does, by
+      // spawning that same command line, so they need the same budget. Left at
+      // the 10s default they were the one part of this file still sized for
+      // work it does not do, and a loaded runner is where that showed.
+      hookTimeout: 180_000,
       // Every test here spawns the codometer CLI over the corpus, which
       // bootstraps Nest and reaches an interpreter for the Python samples.
       hookTimeout: 180_000,
