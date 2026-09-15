@@ -141,7 +141,7 @@ closed and what it cost.
 the whole of it. Its unit space is every assignment of direction bits over a lattice, and
 most of that space branches and crosses; the four named modes it once had, `plain`,
 `split`, `alternated`, and `dot`, did neither, and they are gone. This is still recorded in
-a charter integration suite since retired, with a `permutations` flag, measured from
+`meander-topology.service.integration.test.ts` with a `permutations` flag, measured from
 committed output rather than from a generated drawing.
 
 | # | Invariant | Status |
