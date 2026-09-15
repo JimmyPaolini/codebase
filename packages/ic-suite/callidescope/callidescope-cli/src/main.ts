@@ -16,13 +16,11 @@ import { MainModule } from "./main.module";
 /**
  * Bootstraps the callidescope CLI command application.
  *
- * Standard output belongs to the result: `callidescope --format json` writes a
- * document meant to be piped into something that parses it, and the markdown
- * and mermaid formats ones meant to be redirected into a file. Every diagnostic
- * therefore goes to standard error, chosen here — before anything logs —
- * because the pino instance is built on first use. Without it a log line lands
- * mid-document and every reader of that stream reads it as data, so the format
- * flags print something no parser accepts.
+ * Standard output belongs to the result, so every diagnostic goes to standard
+ * error. It is chosen here, before anything logs, because the pino instance is
+ * built on first use — see
+ * [Where the report goes](../README.md#where-the-report-goes) for the contract
+ * it settles and who relies on it.
  *
  * The error handler is not optional decoration. nest-commander's own default
  * writes the error to stderr and returns, leaving the exit code at zero — so

@@ -152,6 +152,27 @@ function readTargetDirectories(configuration: "check" | "write"): string {
 const STARTING_DIRECTORIES = readTargetDirectories("check");
 
 /**
+ * Reads a printed report, saying what went wrong when it cannot.
+ *
+ * The parse is the one place the stream contract `callidescope-cli/README.md`
+ * states is relied on, so a failure here is reported as the contract being
+ * broken rather than as bare malformed JSON. Both ways it breaks look identical
+ * to `JSON.parse` and neither is guessable from its message: a diagnostic
+ * printed onto standard output lands mid-document, and a document outgrowing
+ * its `maxBuffer` is truncated. Whichever it was, the fix is not in this file.
+ */
+function parseReport(report: string): CallGraphResult {
+  try {
+    return JSON.parse(report) as CallGraphResult;
+  } catch (error) {
+    throw new Error(
+      `callidescope --format json did not print parseable JSON (${report.length} bytes). Standard output must carry the report alone, and the whole of it: check that the CLI still sends its log lines to standard error, and that the document still fits the maxBuffer the trace sets.`,
+      { cause: error },
+    );
+  }
+}
+
+/**
  * The `dependency-closure` fixture's stack, frame by frame, with the project
  * each frame was declared in.
  *
@@ -480,6 +501,12 @@ function traceFixtures(
     {
       cwd: WORKSPACE_ROOT,
       encoding: "utf8",
+      // Generous rather than merely sufficient. The default is a megabyte and
+      // this document is already past half of one, in a suite whose closure
+      // reaches nine real packages that only grow. Crossing it would truncate
+      // the buffer and surface as a parse failure indistinguishable from a
+      // corrupted stream, which is the one thing this helper must not confuse.
+      maxBuffer: 16 * 1024 * 1024,
       // Standard output is the report; standard error carries the log lines
       // this inherits so a failing trace still says why on the suite's own
       // output.
@@ -487,7 +514,7 @@ function traceFixtures(
     },
   );
 
-  return JSON.parse(report) as CallGraphResult;
+  return parseReport(report);
 }
 
 describe("callidescope examples (integration)", () => {
