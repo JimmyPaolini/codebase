@@ -1,4 +1,5 @@
 import { Inject, Injectable } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 
 import { SymmetryService } from "../symmetry/symmetry.service";
 import { TileService } from "../tile/tile.service";
@@ -6,7 +7,11 @@ import { TileService } from "../tile/tile.service";
 import { EDGE_BUDGET, OversizedTileError } from "./enumeration.constants";
 
 import type { EdgesDraft, Tile, TileShape } from "../tile/tile.types";
-import type { EdgeAddress, TileEnumerationState } from "./enumeration.types";
+import type {
+  EdgeAddress,
+  Environment,
+  TileEnumerationState,
+} from "./enumeration.types";
 
 /**
  * Enumerates every distinct `mosaic` tile at a given size.
@@ -19,11 +24,12 @@ import type { EdgeAddress, TileEnumerationState } from "./enumeration.types";
  * arrangement, which is what makes the walk indifferent to what the tiles
  * mean.
  *
- * One number bounds it. {@link EDGE_BUDGET} is a ceiling on the whole
- * *tile* — how many edges it may hold, which is what keeps the space small
- * enough to look through, since the count is `2 ** edges` before folding.
- * There was once a second, a ceiling on how many direction bits one *point*
- * could carry, and it is gone: a point may carry any of the sixteen
+ * One number bounds it. `SWEEP_EDGE_BUDGET` — read through
+ * {@link ConfigService}, defaulting to `EDGE_BUDGET` — is a ceiling on the
+ * whole *tile*: how many edges it may hold, which is what keeps the space
+ * small enough to look through, since the count is `2 ** edges` before
+ * folding. There was once a second, a ceiling on how many direction bits one
+ * *point* could carry, and it is gone: a point may carry any of the sixteen
  * patterns, junctions and crossings included, so the budget is the only
  * thing bounding the space and it has to be.
  *
@@ -42,13 +48,25 @@ export class TileEnumerationService {
   // 🏗 Dependency Injection
 
   constructor(
+    @Inject(ConfigService)
+    configService: ConfigService<Environment>,
     @Inject(SymmetryService)
     private readonly symmetryService: SymmetryService,
     @Inject(TileService)
     private readonly tileService: TileService,
-  ) {}
+  ) {
+    this.edgeBudget =
+      configService.get<number>("SWEEP_EDGE_BUDGET") ?? EDGE_BUDGET;
+  }
 
   // 🔐 Private Fields
+
+  /**
+   * How many edges one tile may hold, read once from `SWEEP_EDGE_BUDGET` at
+   * construction — startup validates the schema, so a malformed or
+   * out-of-range budget never reaches a running sweep.
+   */
+  private readonly edgeBudget: number;
 
   /**
    * Every shape already enumerated, keyed by `rows x columns`.
@@ -149,7 +167,7 @@ export class TileEnumerationService {
 
   /**
    * How many edges a tile of this shape holds, which is both how many binary
-   * decisions one tile is and what {@link EDGE_BUDGET} bounds.
+   * decisions one tile is and what the configured edge budget bounds.
    */
   edges(shape: TileShape): number {
     return shape.columns * (2 * shape.rows - 3);
@@ -167,7 +185,7 @@ export class TileEnumerationService {
     const shape: TileShape = { columns, rows };
 
     if (!this.isAdmitted(shape)) {
-      throw new OversizedTileError(shape, this.edges(shape));
+      throw new OversizedTileError(shape, this.edges(shape), this.edgeBudget);
     }
 
     const cached = this.tilesByShape.get(`${rows}x${columns}`);
@@ -195,7 +213,7 @@ export class TileEnumerationService {
 
   /** Whether a shape is small enough to enumerate, which is the only thing that decides it. */
   isAdmitted(shape: TileShape): boolean {
-    return this.edges(shape) <= EDGE_BUDGET;
+    return this.edges(shape) <= this.edgeBudget;
   }
 
   /**
@@ -235,6 +253,6 @@ export class TileEnumerationService {
    * six, and the arithmetic between them says so rather than a table.
    */
   maximumColumns(rows: number): number {
-    return Math.max(Math.floor(EDGE_BUDGET / (2 * rows - 3)), 1);
+    return Math.max(Math.floor(this.edgeBudget / (2 * rows - 3)), 1);
   }
 }

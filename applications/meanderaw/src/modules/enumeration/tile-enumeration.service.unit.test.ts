@@ -1,12 +1,39 @@
+import { ConfigService } from "@nestjs/config";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
+import { environmentSchema } from "../../constants";
 import { CodeService } from "../code/code.service";
 import { SymmetryService } from "../symmetry/symmetry.service";
 import { TileService } from "../tile/tile.service";
 
 import { OversizedTileError } from "./enumeration.constants";
 import { TileEnumerationService } from "./tile-enumeration.service";
+
+import type { Environment } from "./enumeration.types";
+
+/** Builds a fresh {@link TileEnumerationService} against a configured environment, defaulting to today's unconfigured values. */
+async function createService(
+  overrides: Partial<Environment> = {},
+): Promise<TileEnumerationService> {
+  const environment = environmentSchema.parse(overrides);
+  const module = await Test.createTestingModule({
+    providers: [
+      CodeService,
+      SymmetryService,
+      TileService,
+      TileEnumerationService,
+      {
+        provide: ConfigService,
+        useValue: {
+          get: (key: keyof Environment) => environment[key],
+        },
+      },
+    ],
+  }).compile();
+
+  return module.resolve(TileEnumerationService);
+}
 
 // 🔧 Configuration
 
@@ -47,12 +74,19 @@ describe(TileEnumerationService, () => {
   let tileService: TileService;
 
   beforeAll(async () => {
+    const environment = environmentSchema.parse({});
     const module = await Test.createTestingModule({
       providers: [
         CodeService,
         SymmetryService,
         TileService,
         TileEnumerationService,
+        {
+          provide: ConfigService,
+          useValue: {
+            get: (key: keyof Environment) => environment[key],
+          },
+        },
       ],
     }).compile();
 
@@ -110,6 +144,43 @@ describe(TileEnumerationService, () => {
     it("refuses a shape past the budget rather than enumerating it slowly", () => {
       expect(service.isAdmitted({ columns: 2, rows: 8 })).toBe(false);
       expect(() => service.enumerate(8, 2)).toThrow(OversizedTileError);
+    });
+  });
+
+  describe("the configured edge budget", () => {
+    it("reads a smaller budget than today's default from the environment", async () => {
+      const configured = await createService({ SWEEP_EDGE_BUDGET: 10 });
+
+      expect(configured.isAdmitted({ columns: 3, rows: 3 })).toBe(true);
+      expect(configured.isAdmitted({ columns: 4, rows: 3 })).toBe(false);
+      expect(configured.maximumColumns(3)).toBe(3);
+    });
+
+    it("names the configured budget rather than today's default in a refusal", async () => {
+      const configured = await createService({ SWEEP_EDGE_BUDGET: 10 });
+
+      expect(() => configured.enumerate(3, 4)).toThrow(
+        /past the budget of 10/u,
+      );
+    });
+
+    it("falls back to today's default when the environment leaves the budget unset", async () => {
+      const module = await Test.createTestingModule({
+        providers: [
+          CodeService,
+          SymmetryService,
+          TileService,
+          TileEnumerationService,
+          {
+            provide: ConfigService,
+            useValue: { get: () => undefined },
+          },
+        ],
+      }).compile();
+      const unset = await module.resolve(TileEnumerationService);
+
+      expect(unset.isAdmitted({ columns: 5, rows: 3 })).toBe(true);
+      expect(unset.isAdmitted({ columns: 6, rows: 3 })).toBe(false);
     });
   });
 

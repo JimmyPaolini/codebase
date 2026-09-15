@@ -1,4 +1,5 @@
 import { Inject, Injectable } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 
 import { CodeService } from "../code/code.service";
 
@@ -6,7 +7,7 @@ import { SWEEP_MINIMUM_ROWS } from "./enumeration.constants";
 import { TileEnumerationService } from "./tile-enumeration.service";
 
 import type { MeanderShape } from "../classification/classification.types";
-import type { EnumeratedMeander } from "./enumeration.types";
+import type { EnumeratedMeander, Environment } from "./enumeration.types";
 
 /**
  * Enumerates the whole lattice's unit space — every structurally distinct
@@ -55,9 +56,32 @@ export class EnumerationService {
     private readonly codeService: CodeService,
     @Inject(TileEnumerationService)
     private readonly tileEnumerationService: TileEnumerationService,
-  ) {}
+    @Inject(ConfigService)
+    configService: ConfigService<Environment>,
+  ) {
+    this.maximumColumns =
+      configService.get<number>("SWEEP_MAXIMUM_COLUMNS") ??
+      Number.MAX_SAFE_INTEGER;
+    this.maximumRows =
+      configService.get<number>("SWEEP_MAXIMUM_ROWS") ??
+      Number.MAX_SAFE_INTEGER;
+  }
 
   // 🔐 Private Fields
+
+  /**
+   * The widest column count the sweep sweeps, read once from
+   * `SWEEP_MAXIMUM_COLUMNS` at construction and layered on top of the edge
+   * budget as a review filter rather than replacing it.
+   */
+  private readonly maximumColumns: number;
+
+  /**
+   * The deepest row count the sweep sweeps, read once from
+   * `SWEEP_MAXIMUM_ROWS` at construction and layered on top of the edge
+   * budget as a review filter rather than replacing it.
+   */
+  private readonly maximumRows: number;
 
   // 🔑 Public Fields
 
@@ -93,24 +117,30 @@ export class EnumerationService {
    * Every shape the sweep covers, shallowest first and narrowest first
    * within a row count.
    *
-   * Both ends are the budget's rather than a table's. The sweep starts at
-   * {@link SWEEP_MINIMUM_ROWS} and climbs while a
-   * single-column repeat is still admitted, which stops it at nine rows; the
+   * Both ends are the budget's rather than a table's, by default. The sweep
+   * starts at {@link SWEEP_MINIMUM_ROWS} and climbs while a single-column
+   * repeat is still admitted, which stops it at nine rows unconfigured; the
    * column span at each row count is however many the budget leaves, which
-   * is five at three rows and one from six rows down. A family's own row
-   * range is not consulted here and could not be: enumeration applies no
-   * per-family filter, and a repeat is swept because it fits, not because
-   * some family was expecting it.
+   * is five at three rows and one from six rows down. `SWEEP_MAXIMUM_ROWS`
+   * and `SWEEP_MAXIMUM_COLUMNS` layer a further review filter on top of
+   * those two ends — never past them, since a shape past the budget is
+   * still refused — and default to unbounded, so an unconfigured sweep is
+   * exactly this. A family's own row range is not consulted here and could
+   * not be: enumeration applies no per-family filter, and a repeat is swept
+   * because it fits, not because some family was expecting it.
    */
   shapes(): MeanderShape[] {
     const shapes: MeanderShape[] = [];
 
     for (
       let rows = SWEEP_MINIMUM_ROWS;
-      this.isAdmitted({ columns: 1, rows });
+      rows <= this.maximumRows && this.isAdmitted({ columns: 1, rows });
       rows += 1
     ) {
-      const widest = this.tileEnumerationService.maximumColumns(rows);
+      const widest = Math.min(
+        this.tileEnumerationService.maximumColumns(rows),
+        this.maximumColumns,
+      );
 
       for (let columns = 1; columns <= widest; columns += 1) {
         shapes.push({ columns, rows });
