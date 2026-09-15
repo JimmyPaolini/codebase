@@ -62,16 +62,24 @@ export const IRREGULAR_PAST_VERBS = new Set([
 /**
  * Contexts whose messages the convention does not govern.
  *
- * NestJS and `nest-commander` log through the very `LoggerService` an
- * application hands them, and their messages are not ours to rephrase —
- * `CommanderError: (outputHelp)` arrives on the error path, which is the last
- * place a logger should throw.
+ * NestJS, `nest-commander`, and `@nestjs/typeorm` log through the very
+ * `LoggerService` an application hands them, and their messages are not ours
+ * to rephrase — `CommanderError: (outputHelp)` arrives on the error path,
+ * which is the last place a logger should throw. `ExceptionHandler` is the
+ * sharpest case: it is `@nestjs/core`'s catch-all for an unhandled exception
+ * during dependency initialization, so *any* uncaught error in *any*
+ * application here — a native module ABI mismatch, a first-attempt database
+ * connection failure `TypeOrmModule` logs while retrying, anything — is
+ * logged through it. A logging call must not be the thing that turns
+ * reporting a failure into a fatal `process.abort()`.
  */
 export const UNVALIDATED_LOG_CONTEXTS = new Set([
   "CommandFactory",
+  "ExceptionHandler",
   "InstanceLoader",
   "NestApplication",
   "NestFactory",
   "RouterExplorer",
   "RoutesResolver",
+  "TypeOrmModule",
 ]);
