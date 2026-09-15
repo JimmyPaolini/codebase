@@ -7,7 +7,6 @@ import { ClassificationService } from "../classification/classification.service"
 import { SubFamilyService } from "../classification/sub-family.service";
 import { CodeService } from "../code/code.service";
 import { DrawingService } from "../drawing/drawing.service";
-import { LatticeService } from "../drawing/lattice.service";
 import { GeometryService } from "../geometry/geometry.service";
 import { GraphService } from "../graph/graph.service";
 import { SvgService } from "../svg/svg.service";
@@ -36,7 +35,6 @@ describe(DrawRecordService, () => {
         ConnectivityService,
         CodeService,
         SymmetryService,
-        LatticeService,
         DrawingService,
         GraphService,
         SubFamilyService,

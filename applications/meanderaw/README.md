@@ -89,10 +89,11 @@ sweep draw through — so the column can be regenerated rather than trusted.
   by `ClassificationService`, and is null where the structure satisfies no
   family's defining combination.
 - **Hardcoded** — the 965 meanders of the historical corpus that lie _beyond_ that
-  budget, preserved as Codes extracted once from the retired file tree. Their family and
-  sub-family are carried over as trusted metadata rather than re-derived. See
-  `CORPUS_BY_FAMILY` for exactly where the boundary sits and why the filter
-  is by shape rather than by Code.
+  budget, read back once off the retired file tree's own drawings and committed as
+  `HISTORICAL_CORPUS`. A row's `family` is the directory that tree filed the drawing
+  under — provenance rather than a verdict, and known to be wrong in places. Which
+  entries lie beyond the budget is computed by `CorpusService.isBeyondEnumeration`
+  rather than hand-listed.
 
 A duplicate lattice address across the two is a build failure rather than a convention
 nobody checks: the unique index over `(code, rows, columns)` refuses the second insert,
@@ -344,7 +345,7 @@ the east–west wrap at the last column **is** what makes a tile join up with it
 repeat, stated once rather than handled wherever a mark used to reach past the tile's edge.
 
 The alternative reading — each bit draws a half-unit arm, so disagreeing neighbors leave a
-stub ending between lattice lines — is rejected. `LatticeService` refuses a
+stub ending between lattice lines — is rejected. Nothing on the lattice admits a
 coordinate that is not on a lattice line, so half-arms would break the whole measurement
 stack, and a stub ending in mid-air is not obviously legal under invariant 2 either.
 
@@ -449,10 +450,11 @@ itself rather than close by coincidence within a narrow drawing — 1,631 tiles 
 one repeat and 1,039 at two, against 1,033 from three repeats on, which is where the set
 settles into a property of the tile rather than of how much of it was drawn.
 
-The walk that counts the pieces is `MeasurementService.components` and the arithmetic
-is its `isAcyclic` and `isOneComponent`, shared with the document-level reading through an
+The walk that counts the pieces is `GraphService.components` and the arithmetic
+is its `isAcyclic` and `isOneComponent`, reached through an
 `InkAdjacency` — nodes, neighbors, and an identity for a node. That is the whole of what a
-component count needs, and it is the only thing the two readings can share: one lives on a
+component count needs, and it is the only thing a document-level reading could ever have
+shared with it: one lives on a
 bounded lattice of `"column,row"` points and the other on a wrapping repeat of
 `[level][column]` points, so neither coordinate system is a special case of the other. The
 dependency runs mosaic onto topology, which leaves the topology service free of any
@@ -718,8 +720,8 @@ at a corner.
 
 Every `output/mosaic/<rows>-rows/<columns>-columns/*.svg` file was read from disk — no generation, no motif
 service, the same approach the charter test already uses to gate the corpus — and passed
-to the existing
-[`MeasurementService.measure`](src/modules/drawing/measurement.service.ts).
+to the drawing reader that then existed, `MeasurementService.measure`, which has
+since been deleted along with the rest of the reading direction.
 A tile is classified from its own `negativeTJunctions`/`negativeXJunctions`:
 
 - **Crosses**: `negativeXJunctions > 0`.
@@ -731,9 +733,9 @@ charter integration suite, and both are gone. It is nothing but a loop calling `
 result against the two thresholds above — reproducible in a few lines against the
 already-committed service.
 
-One further tally needed a small extension beyond what `measure` reports (see
+One further tally needed a small extension beyond what `measure` reported (see
 "Is the negative itself space-filling?" below): for each cell of the same lattice graph
-`LatticeService.build` already produces, how many of its corridor-eligible sides
+that reader already produced, how many of its corridor-eligible sides
 carry no corridor — the same four-arm check `measure` uses to find negative T- and
 X-junctions, just also recording degree 0.
 
@@ -1108,7 +1110,7 @@ then could the contract phase delete the per-family path emission.
 > only the fourth. Every drawing in every family now carries a **lattice address** —
 > `<rows>r<span>c-` and one hexadecimal character per interior lattice point — with its
 > canonical symmetry class beside it, spelled and folded by
-> `AddressService` in `src/modules/drawing/` and recorded
+> `CodeService` in `src/modules/code/` and recorded
 > for every committed drawing in the committed `output/meanders.sqlite` database. The
 > other three bullets are untouched: there is no family-agnostic lattice enumerator, the
 > motif services still emit their own path data rather than producing a lattice tile for
@@ -1245,8 +1247,8 @@ drawing one; this family draws them.
 
 Nothing here is invented. A `mosaic` drawing divides its band into cells, and the white
 between two neighboring cells is a **corridor** wherever the ink wall that would separate
-them is missing — which is exactly what `MeasurementService` counts when it reports a
-document's negative junctions. `negative` puts one lattice point on every cell and one
+them is missing — which is exactly what `CharacteristicsService` counts when it reports a
+meander's negative junctions. `negative` puts one lattice point on every cell and one
 stroke along every corridor. The shapes were already produced, already orthogonal, and
 already on this grid; what is new is treating white as black.
 
