@@ -90,13 +90,30 @@ const codependixConfiguration: CodependixConfiguration = {
    * The ic-suite rules are stated twice on purpose, and the two statements
    * catch different mistakes. Five generic rules keyed on `layer:*` say the
    * spine once for all four toolchains — a layer reaches its own layer and
-   * every layer beneath it — and catch a package nobody wrote a rule for. The
-   * per-package `name:*` rules below them stay, and catch a package that is
-   * tagged into the wrong layer, which a generic rule waves through. Five
-   * rather than four only because the contracts leaf reaches nothing, and an
-   * allow-to-nothing is that same rule written backwards; no generic rule
-   * carries an exception for any one toolchain, which is what the convergence
-   * had to be able to say.
+   * every layer beneath it — and gate a package nobody wrote a name rule for.
+   * The per-package `name:*` rules below them stay, and catch what a generic
+   * rule waves through: a package tagged into the wrong layer, and a
+   * cross-toolchain edge, which `layer:*` cannot express at all because there
+   * is no `suite:*` tag. Rules are ANDed, so a name rule only ever tightens a
+   * generic one. No generic rule carries an exception for any one toolchain,
+   * which is what the convergence had to be able to say.
+   *
+   * Five rather than four because the contracts leaf reaches nothing, and the
+   * schema compels that one to be a forbid: `boundarySelectorSchema` in
+   * `codependix-configuration` refuses a selector with no `id`, `path`,
+   * `project` or `tags`, so an allow reaching nothing cannot be written down.
+   * The four `*-core-is-a-leaf` rules below already set the idiom.
+   *
+   * What the generic rules do not reach, stated here rather than left to be
+   * discovered: every one selects `from` by `layer:*`, so an untagged package
+   * is gated only as a target — a tagged consumer reaching it fails, which is
+   * the common case. A new untagged package that merely consumes ic-suite
+   * packages is selected by nothing, since no generic rule matches its `from`
+   * and nobody wrote it a name rule. That hole is inherent: `*-agents` and
+   * `*-examples` deliberately carry no layer tag, so a rule forbidding
+   * untagged consumers would fire on them. The `layer:*` tag being part of a
+   * new ic-suite package's definition of done is what closes it, and that is
+   * a review question rather than a gate.
    *
    * The `nxProjects` block restates all 32 `depConstraints` from
    * `configuration/eslint.config.ts`, translated mechanically:
@@ -189,7 +206,7 @@ const codependixConfiguration: CodependixConfiguration = {
         from: { tags: ["layer:core"] },
         kind: "forbid",
         message:
-          "A contracts leaf declares types and reaches nothing at all. This is the ic-suite spine stated once for every toolchain rather than four times: core, then configuration, then analysis, then output, then cli, each layer reaching its own layer and every layer beneath it. Written as a forbid because the allow that would say the same thing — allow to nothing — is this rule with the direction inverted.",
+          "A contracts leaf declares types and reaches nothing at all. This is the ic-suite spine stated once for every toolchain rather than four times: core, then configuration, then analysis, then output, then cli, each layer reaching its own layer and every layer beneath it. A forbid because the configuration schema refuses a selector naming no nodes, so the allow that would say the same thing cannot be written.",
         name: "core-is-a-leaf",
         to: { id: ["*"] },
       },
