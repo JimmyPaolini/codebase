@@ -1,14 +1,14 @@
 // 🏷️ Types
 
 import type { OwnedFindings } from "../project-reports/project-reports.types";
+import type { ProjectLimitsLookup } from "@callidescope/configuration";
 import type {
   CallableId,
   CallGraphResult,
   CallStack,
-  ProjectLimitsLookup,
   ProjectReport,
   StackFrame,
-} from "@callidescope/configuration";
+} from "@callidescope/core";
 
 /**
  * Anything holding a frame list, whether or not it is a full `CallStack`.

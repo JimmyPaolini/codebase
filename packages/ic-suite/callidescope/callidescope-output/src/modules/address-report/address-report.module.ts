@@ -1,5 +1,6 @@
-import { ReportModule } from "@callidescope/output";
 import { Module } from "@nestjs/common";
+
+import { ReportModule } from "../report/report.module";
 
 import { AddressReportService } from "./address-report.service";
 

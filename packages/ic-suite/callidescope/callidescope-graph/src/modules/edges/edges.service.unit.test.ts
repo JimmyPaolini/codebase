@@ -15,7 +15,7 @@ import { CallSitesService } from "./call-sites.service";
 import { EdgesService } from "./edges.service";
 import { SymbolResolutionService } from "./symbol-resolution.service";
 
-import type { CallEdge, UnresolvedCall } from "@callidescope/configuration";
+import type { CallEdge, UnresolvedCall } from "@callidescope/core";
 import type { LoggerService } from "@codebase/logger";
 import type { DeepMocked } from "@golevelup/ts-vitest";
 

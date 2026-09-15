@@ -4,7 +4,7 @@ import { INITIAL_LOW_LINK } from "./components.constants";
 
 import type { TarjanState, TraversalFrame } from "./components.types";
 import type { CallGraph, CondensedGraph } from "./graph.types";
-import type { CallableId } from "@callidescope/configuration";
+import type { CallableId } from "@callidescope/core";
 
 /**
  * Collapses every cycle in the call graph into a single node.

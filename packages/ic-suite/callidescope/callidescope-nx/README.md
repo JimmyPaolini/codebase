@@ -308,12 +308,14 @@ Dependency graphs exported by [codependix](https://github.com/JimmyPaolini/codeb
 graph LR
   callidescope_cli["callidescope-cli"]
   callidescope_configuration["callidescope-configuration"]
+  callidescope_core["callidescope-core"]
   callidescope_graph["callidescope-graph"]
   callidescope_nx["callidescope-nx"]
   callidescope_output["callidescope-output"]
   logger["logger"]
   callidescope_nx --> callidescope_cli
   callidescope_nx --> callidescope_configuration
+  callidescope_nx --> callidescope_core
   callidescope_nx --> callidescope_graph
   callidescope_nx --> callidescope_output
   callidescope_nx --> logger
@@ -333,6 +335,7 @@ flowchart LR
   CallablesModule
   CallidescopeModule
   ClassesModule
+  ConfigurationFileModule
   ConfigurationModule
   DocumentationModule
   EdgesModule
@@ -352,13 +355,12 @@ flowchart LR
   ReportFindingsModule
   ReportModule
   RunConfigurationModule
-  RunPlanModule
   SignaturesModule
   WorkspaceModule
   WriteDestinationsModule
   AddressLookupModule --> CallablesModule
   AddressLookupModule --> CallidescopeModule
-  AddressLookupModule --> RunPlanModule
+  AddressLookupModule --> ConfigurationModule
   AddressModule --> AddressLookupModule
   AddressModule --> AddressReportModule
   AddressModule --> GraphModule
@@ -371,16 +373,17 @@ flowchart LR
   CallidescopeModule --> EdgesModule
   CallidescopeModule --> EntriesModule
   CallidescopeModule --> GraphModule
-  CallidescopeModule --> InputModule
   CallidescopeModule --> OutputJsonModule
   CallidescopeModule --> OutputMarkdownModule
   CallidescopeModule --> ProgramModule
   CallidescopeModule --> ProjectReportsModule
   CallidescopeModule --> ReportFindingsModule
   CallidescopeModule --> ReportModule
-  CallidescopeModule --> RunPlanModule
   CallidescopeModule --> WorkspaceModule
   CallidescopeModule --> WriteDestinationsModule
+  ConfigurationModule --> ConfigurationFileModule
+  ConfigurationModule --> FlagResolutionModule
+  ConfigurationModule --> InputModule
   EdgesModule --> CallablesModule
   EdgesModule --> ClassesModule
   EdgesModule --> ProgramModule
@@ -404,8 +407,6 @@ flowchart LR
   ProjectReportsModule --> SignaturesModule
   RunConfigurationModule --> ConfigurationModule
   RunConfigurationModule --> OptionsModule
-  RunPlanModule --> ConfigurationModule
-  RunPlanModule --> FlagResolutionModule
   WriteDestinationsModule --> OutputJsonModule
   WriteDestinationsModule --> OutputMarkdownModule
   WriteDestinationsModule --> ReportModule

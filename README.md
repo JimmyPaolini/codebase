@@ -58,6 +58,7 @@ A modern TypeScript codebase with Nx, featuring automated releases, comprehensiv
 &nbsp;&nbsp;&nbsp;&nbsp;**[callidescope-agents](packages/ic-suite/callidescope/callidescope-agents)** - Agent skills for the callidescope toolchain, published and installed back from the lockfile like any other vendored skill\
 &nbsp;&nbsp;&nbsp;&nbsp;**[callidescope-cli](packages/ic-suite/callidescope/callidescope-cli)** - Command-line host that builds the call graph with the TypeScript compiler API, resolves NestJS injected dependencies, and reports the deepest stack below every entry point\
 &nbsp;&nbsp;&nbsp;&nbsp;**[callidescope-configuration](packages/ic-suite/callidescope/callidescope-configuration)** - Reads `callidescope.config.ts` for entry-point rules, depth and breadth limits, exclusion globs, and output destinations\
+&nbsp;&nbsp;&nbsp;&nbsp;**[callidescope-core](packages/ic-suite/callidescope/callidescope-core)** - The contracts leaf: the call graph, stack, frame, and finding vocabulary every other callidescope package speaks, holding no service and no NestJS module\
 &nbsp;&nbsp;&nbsp;&nbsp;**[callidescope-examples](packages/ic-suite/callidescope/callidescope-examples)** - A small codebase built to be traced, carrying one worked example per rule, finding, and output the toolchain has\
 &nbsp;&nbsp;&nbsp;&nbsp;**[callidescope-graph](packages/ic-suite/callidescope/callidescope-graph)** - Builds the call graph from traced TypeScript source and measures its depth and breadth\
 &nbsp;&nbsp;&nbsp;&nbsp;**[callidescope-nx](packages/ic-suite/callidescope/callidescope-nx)** - Nx plugin inferring per-project `trace`, `depth`, and `breadth` targets that follow the Nx dependency graph, keeping every Nx dependency out of the packages that trace\
@@ -192,6 +193,7 @@ graph LR
   callidescope_agents["callidescope-agents"]
   callidescope_cli["callidescope-cli"]
   callidescope_configuration["callidescope-configuration"]
+  callidescope_core["callidescope-core"]
   callidescope_examples["callidescope-examples"]
   callidescope_graph["callidescope-graph"]
   callidescope_nx["callidescope-nx"]
@@ -234,19 +236,25 @@ graph LR
   validation["validation"]
   caelundas --> logger
   callidescope_cli --> callidescope_configuration
+  callidescope_cli --> callidescope_core
   callidescope_cli --> callidescope_graph
   callidescope_cli --> callidescope_output
   callidescope_cli --> logger
+  callidescope_configuration --> callidescope_core
   callidescope_examples -.-> callidescope_cli
   callidescope_examples --> callidescope_configuration
+  callidescope_examples --> callidescope_core
   callidescope_graph --> callidescope_configuration
+  callidescope_graph --> callidescope_core
   callidescope_graph --> logger
   callidescope_nx --> callidescope_cli
   callidescope_nx --> callidescope_configuration
+  callidescope_nx --> callidescope_core
   callidescope_nx --> callidescope_graph
   callidescope_nx --> callidescope_output
   callidescope_nx --> logger
   callidescope_output --> callidescope_configuration
+  callidescope_output --> callidescope_core
   callidescope_output --> callidescope_graph
   callidescope_output --> logger
   codependix_boundaries --> codependix_configuration

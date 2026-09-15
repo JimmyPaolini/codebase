@@ -8,7 +8,7 @@ import {
 } from "./report.constants";
 
 import type { FramedStack, MermaidDiagram } from "./report.types";
-import type { StackFrame } from "@callidescope/configuration";
+import type { StackFrame } from "@callidescope/core";
 
 /**
  * Draws a set of call stacks as one mermaid flowchart.

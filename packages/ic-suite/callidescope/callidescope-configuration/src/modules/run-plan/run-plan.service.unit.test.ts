@@ -1,16 +1,13 @@
-import {
-  ConfigurationService,
-  FlagResolutionService,
-} from "@callidescope/configuration";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
-import { LoggerService } from "@codebase/logger";
+import { ConfigurationFileService } from "../configuration/configuration-file.service";
+import { FlagResolutionService } from "../flag-resolution/flag-resolution.service";
 
 import { RunPlanService } from "./run-plan.service";
 
-import type { ResolvedCallidescopeConfiguration } from "@callidescope/configuration";
+import type { ResolvedCallidescopeConfiguration } from "../configuration/configuration.types";
 
 // A deliberate misspelling: the example of a `--format` value nobody
 // recognizes, which is exactly what the refusal below is about.
@@ -58,10 +55,9 @@ describe(RunPlanService, () => {
         RunPlanService,
         FlagResolutionService,
         {
-          provide: ConfigurationService,
-          useValue: createMock<ConfigurationService>(),
+          provide: ConfigurationFileService,
+          useValue: createMock<ConfigurationFileService>(),
         },
-        { provide: LoggerService, useValue: createMock<LoggerService>() },
       ],
     }).compile();
 
@@ -267,41 +263,6 @@ describe(RunPlanService, () => {
     expect(errors).toStrictEqual([]);
   });
 
-  // 📄 Touching files
-
-  it("touches files when it writes", () => {
-    expect(
-      service.touchesFiles({
-        checksBreadth: false,
-        checksDepth: false,
-        checksReports: false,
-        writes: true,
-      }),
-    ).toBe(true);
-  });
-
-  it("touches files when it compares them", () => {
-    expect(
-      service.touchesFiles({
-        checksBreadth: false,
-        checksDepth: false,
-        checksReports: true,
-        writes: false,
-      }),
-    ).toBe(true);
-  });
-
-  it("leaves files alone when it only gates depth", () => {
-    expect(
-      service.touchesFiles({
-        checksBreadth: false,
-        checksDepth: true,
-        checksReports: false,
-        writes: false,
-      }),
-    ).toBe(false);
-  });
-
   // 🔍 Lookup preparation
 
   describe("prepareRun", () => {
@@ -309,9 +270,9 @@ describe(RunPlanService, () => {
     // the rule that `--check` and `--write` change nothing it resolves is only
     // a rule if the resolver is actually given them.
     it("hands the mode flags to the resolver and resolves the same configuration", async () => {
-      const configurationService = createMock<ConfigurationService>();
+      const configurationFileService = createMock<ConfigurationFileService>();
 
-      configurationService.loadConfigurationFile.mockResolvedValue({
+      configurationFileService.loadConfigurationFile.mockResolvedValue({
         authored: {},
         configuration: buildConfiguration({ directories: ["packages/one"] }),
         path: undefined,
@@ -322,16 +283,15 @@ describe(RunPlanService, () => {
         flagResolutionService,
         "resolveRunFlags",
       );
-      const subject = new RunPlanService(
-        configurationService,
-        flagResolutionService,
-        createMock<LoggerService>(),
-      );
+      const subject = new RunPlanService(flagResolutionService);
 
-      const prepared = await subject.prepareRun({
-        check: "depth,reports",
-        write: false,
-      });
+      const prepared = await subject.prepareRun(
+        {
+          check: "depth,reports",
+          write: false,
+        },
+        configurationFileService,
+      );
 
       // Read off the call rather than matched with `objectContaining`, which
       // returns `any` and would cost the project its type coverage.
@@ -356,7 +316,7 @@ describe(RunPlanService, () => {
         mermaid: undefined,
         write: false,
       });
-      expect(prepared?.configuration).toStrictEqual(
+      expect(prepared.run?.configuration).toStrictEqual(
         buildConfiguration({ directories: ["packages/one"] }),
       );
     });
@@ -367,46 +327,43 @@ describe(RunPlanService, () => {
     // half-prepared state to hand back, so an unusable flag is thrown rather
     // than logged and returned the way a run's is.
     it("refuses a format nobody recognizes rather than tracing anyway", async () => {
-      const configurationService = createMock<ConfigurationService>();
+      const configurationFileService = createMock<ConfigurationFileService>();
 
-      configurationService.loadConfigurationFile.mockResolvedValue({
+      configurationFileService.loadConfigurationFile.mockResolvedValue({
         authored: {},
         configuration: buildConfiguration(),
         path: undefined,
       });
 
-      const subject = new RunPlanService(
-        configurationService,
-        new FlagResolutionService(),
-        createMock<LoggerService>(),
-      );
+      const subject = new RunPlanService(new FlagResolutionService());
 
       await expect(
-        subject.prepareLookup({ format: "markdwon" }),
+        subject.prepareLookup({ format: "markdwon" }, configurationFileService),
       ).rejects.toThrow(
         '--format does not accept "markdwon". It takes one of "markdown", "mermaid", "json".',
       );
     });
 
     it("resolves the workspace root to the working directory", async () => {
-      const configurationService = createMock<ConfigurationService>();
+      const configurationFileService = createMock<ConfigurationFileService>();
 
-      configurationService.loadConfigurationFile.mockResolvedValue({
+      configurationFileService.loadConfigurationFile.mockResolvedValue({
         authored: {},
         configuration: buildConfiguration(),
         path: undefined,
       });
 
-      const subject = new RunPlanService(
-        configurationService,
-        new FlagResolutionService(),
-        createMock<LoggerService>(),
+      const subject = new RunPlanService(new FlagResolutionService());
+
+      const prepared = await subject.prepareLookup(
+        {},
+        configurationFileService,
       );
 
-      const prepared = await subject.prepareLookup({});
-
       expect(prepared.workspaceRoot).toBe(process.cwd());
-      expect(configurationService.loadConfigurationFile).toHaveBeenCalledWith({
+      expect(
+        configurationFileService.loadConfigurationFile,
+      ).toHaveBeenCalledWith({
         configurationPath: undefined,
         searchDirectory: process.cwd(),
       });
@@ -416,25 +373,48 @@ describe(RunPlanService, () => {
     // project's root reads that same file again as that project's own, and
     // refuses it for the workspace-only fields it legitimately sets.
     it("reports the file the configuration was read from", async () => {
-      const configurationService = createMock<ConfigurationService>();
+      const configurationFileService = createMock<ConfigurationFileService>();
 
-      configurationService.loadConfigurationFile.mockResolvedValue({
+      configurationFileService.loadConfigurationFile.mockResolvedValue({
         authored: {},
         configuration: buildConfiguration(),
         path: "/workspace/configuration/callidescope.config.ts",
       });
 
-      const subject = new RunPlanService(
-        configurationService,
-        new FlagResolutionService(),
-        createMock<LoggerService>(),
-      );
+      const subject = new RunPlanService(new FlagResolutionService());
 
-      const prepared = await subject.prepareLookup({});
+      const prepared = await subject.prepareLookup(
+        {},
+        configurationFileService,
+      );
 
       expect(prepared.configurationPath).toBe(
         "/workspace/configuration/callidescope.config.ts",
       );
     });
   });
+
+  // 📄 Touching files
+
+  // The depth row is the one that says what this method is for: a run gating
+  // depth alone reads and writes nothing, which is what makes a bare run safe
+  // to type inside somebody's checkout.
+  it.each([
+    { checksDepth: false, checksReports: true, touched: true, writes: false },
+    { checksDepth: false, checksReports: false, touched: true, writes: true },
+    { checksDepth: true, checksReports: false, touched: false, writes: false },
+    { checksDepth: false, checksReports: false, touched: false, writes: false },
+  ])(
+    "reads checksDepth=$checksDepth checksReports=$checksReports writes=$writes as touching files: $touched",
+    ({ checksDepth, checksReports, touched, writes }) => {
+      expect(
+        service.touchesFiles({
+          checksBreadth: false,
+          checksDepth,
+          checksReports,
+          writes,
+        }),
+      ).toBe(touched);
+    },
+  );
 });

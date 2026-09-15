@@ -1,22 +1,28 @@
 import path from "node:path";
 
 import {
-  type CallidescopeConfiguration,
-  type CallidescopeLimits,
+  ConfigurationModule,
   ConfigurationService,
   DEFAULT_MAXIMUM_DEPTH,
   ProjectConfigurationMissingError,
-  ProjectConfigurationService,
-  type ResolvedCallidescopeConfiguration,
 } from "@callidescope/configuration";
 import { FileFilterService, WorkspaceService } from "@callidescope/graph";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
-import { beforeAll, beforeEach, describe, expect, it } from "vitest";
+import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { LoggerService } from "@codebase/logger";
 
 import { LimitsService } from "./limits.service";
+
+import type {
+  CallidescopeConfiguration,
+  CallidescopeLimits,
+  LoadConfigurationArguments,
+  LoadedCallidescopeConfiguration,
+  ResolvedCallidescopeConfiguration,
+} from "@callidescope/configuration";
+import type { MockInstance } from "vitest";
 
 /** The workspace configuration file this suite's runs are pointed at. */
 const WORKSPACE_CONFIGURATION_PATH = path.join(
@@ -131,7 +137,15 @@ function buildLoadedFile(args: {
 }
 
 describe(LimitsService, () => {
-  let configurationService: ReturnType<typeof createMock<ConfigurationService>>;
+  let configurationService: ConfigurationService;
+  let findConfigurationFileAt: MockInstance<
+    ConfigurationService["findConfigurationFileAt"]
+  >;
+  let loadConfigurationFile: MockInstance<
+    (
+      args?: LoadConfigurationArguments,
+    ) => Promise<LoadedCallidescopeConfiguration>
+  >;
   let logger: ReturnType<typeof createMock<LoggerService>>;
   let service: LimitsService;
   let fileFilterService: ReturnType<typeof createMock<FileFilterService>>;
@@ -153,16 +167,14 @@ describe(LimitsService, () => {
   // listing that resolved inheritance its own way could disagree with the gate
   // about the same number, so the suite asserts the one resolver's answer.
   beforeAll(async () => {
-    configurationService = createMock<ConfigurationService>();
     logger = createMock<LoggerService>();
     fileFilterService = createMock<FileFilterService>();
     workspaceService = createMock<WorkspaceService>();
 
     const module = await Test.createTestingModule({
+      imports: [ConfigurationModule],
       providers: [
         LimitsService,
-        ProjectConfigurationService,
-        { provide: ConfigurationService, useValue: configurationService },
         { provide: LoggerService, useValue: logger },
         { provide: FileFilterService, useValue: fileFilterService },
         { provide: WorkspaceService, useValue: workspaceService },
@@ -170,13 +182,26 @@ describe(LimitsService, () => {
     }).compile();
 
     service = await module.resolve(LimitsService);
+    // The real facade, with only its two file reads stubbed. The project
+    // loader behind it reads through the facade it was handed, so stubbing
+    // this one object is stubbing the whole layer's view of the disk — and
+    // the resolver that decides the numbers stays the tool's own.
+    configurationService = await module.resolve(ConfigurationService);
+    findConfigurationFileAt = vi.spyOn(
+      configurationService,
+      "findConfigurationFileAt",
+    );
+    loadConfigurationFile = vi.spyOn(
+      configurationService,
+      "loadConfigurationFile",
+    );
   });
 
   // The service holds no state, so one instance serves the suite; what each
   // test needs fresh is what the filesystem answers with.
   beforeEach(() => {
-    configurationService.findConfigurationFileAt.mockReset();
-    configurationService.loadConfigurationFile.mockReset();
+    findConfigurationFileAt.mockReset();
+    loadConfigurationFile.mockReset();
     logger.info.mockClear();
     fileFilterService.buildFileFilter.mockReset();
     workspaceService.discoverProjects.mockReset();
@@ -186,8 +211,8 @@ describe(LimitsService, () => {
     });
     discover([DECLARING_PROJECT, QUIET_PROJECT]);
 
-    configurationService.findConfigurationFileAt.mockImplementation(
-      (directory: string) => CONFIGURATION_PATH_BY_PROJECT_ROOT.get(directory),
+    findConfigurationFileAt.mockImplementation((directory: string) =>
+      CONFIGURATION_PATH_BY_PROJECT_ROOT.get(directory),
     );
     declareProjectLimits({ maximumDepth: 17 });
   });
@@ -206,7 +231,7 @@ describe(LimitsService, () => {
       [QUIET_PROJECT_CONFIGURATION_PATH, { maximumDepth: 17 }],
     ]);
 
-    configurationService.loadConfigurationFile.mockImplementation(
+    loadConfigurationFile.mockImplementation(
       // eslint-disable-next-line @typescript-eslint/require-await
       async (args?: { configurationPath?: string | undefined }) => {
         const requested = args?.configurationPath;
@@ -253,7 +278,7 @@ describe(LimitsService, () => {
 
   it("claims no file for a workspace that has no configuration at all", async () => {
     discover([]);
-    configurationService.loadConfigurationFile.mockResolvedValue(
+    loadConfigurationFile.mockResolvedValue(
       buildLoadedFile({ authored: {}, path: undefined }),
     );
 
@@ -280,7 +305,7 @@ describe(LimitsService, () => {
   // a file for a number that file never wrote.
   it("claims no file for a limit the workspace file never wrote itself", async () => {
     discover([]);
-    configurationService.loadConfigurationFile.mockResolvedValue(
+    loadConfigurationFile.mockResolvedValue(
       buildLoadedFile({
         authored: { excludeFrom: ["configuration/.callidescopeignore"] },
         path: WORKSPACE_CONFIGURATION_PATH,
@@ -328,7 +353,7 @@ describe(LimitsService, () => {
     // The listing is at its least trustworthy exactly when a project's
     // configuration is missing, so it ends the run rather than printing a
     // number that project never wrote.
-    configurationService.findConfigurationFileAt.mockReturnValue(undefined);
+    findConfigurationFileAt.mockReturnValue(undefined);
 
     await expect(service.list({})).rejects.toThrow(
       ProjectConfigurationMissingError,
@@ -376,7 +401,7 @@ describe(LimitsService, () => {
 
     await service.list({ config: "configuration/callidescope.config.ts" });
 
-    expect(configurationService.loadConfigurationFile).toHaveBeenCalledWith({
+    expect(loadConfigurationFile).toHaveBeenCalledWith({
       configurationPath: "configuration/callidescope.config.ts",
       searchDirectory: process.cwd(),
     });
@@ -384,8 +409,8 @@ describe(LimitsService, () => {
 
   it("walks with the exclusions the configuration declares", async () => {
     discover([]);
-    configurationService.loadConfigurationFile.mockReset();
-    configurationService.loadConfigurationFile.mockResolvedValue({
+    loadConfigurationFile.mockReset();
+    loadConfigurationFile.mockResolvedValue({
       authored: {},
       configuration: buildConfiguration({
         exclude: ["packages/ignored/**"],

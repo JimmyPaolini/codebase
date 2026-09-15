@@ -11,8 +11,8 @@ import {
   ProjectConfigurationIncompleteError,
   ProjectConfigurationMissingError,
 } from "./configuration.constants";
-import { ConfigurationService } from "./configuration.service";
 
+import type { ConfigurationFileReader } from "./configuration-file.types";
 import type {
   CallidescopeConfiguration,
   CallidescopeLimitOverrides,
@@ -26,7 +26,7 @@ import type {
 /**
  * Resolves the configuration file sitting beside each traced project.
  *
- * Its own service rather than more of `ConfigurationService`, because the two
+ * Its own service rather than more of `ConfigurationFileService`, because the two
  * answer different questions: one loads the file a run was pointed at, and this
  * one asks which of a run's projects configure themselves. Every refusal a
  * project configuration can earn belongs here, where the project it names is
@@ -36,7 +36,7 @@ import type {
 export class ProjectConfigurationService {
   // 🏗 Dependency Injection
 
-  constructor(private readonly configurationService: ConfigurationService) {}
+  constructor() {}
 
   // 🔐 Private Fields
 
@@ -281,9 +281,10 @@ export class ProjectConfigurationService {
   private async loadProjectConfiguration(args: {
     configurationPath: string;
     project: string;
+    reader: ConfigurationFileReader;
   }): Promise<LoadedProjectConfiguration> {
     try {
-      const loaded = await this.configurationService.loadConfigurationFile({
+      const loaded = await args.reader.loadConfigurationFile({
         configurationPath: args.configurationPath,
       });
 
@@ -360,6 +361,7 @@ export class ProjectConfigurationService {
    */
   public async loadProjectConfigurations(
     args: LoadProjectConfigurationsArguments,
+    reader: ConfigurationFileReader,
   ): Promise<LoadedProjectConfiguration[]> {
     const workspaceConfigurationPath =
       args.workspaceConfigurationPath === undefined
@@ -369,10 +371,9 @@ export class ProjectConfigurationService {
     const loaded: LoadedProjectConfiguration[] = [];
 
     for (const project of args.projects) {
-      const configurationPath =
-        this.configurationService.findConfigurationFileAt(
-          path.resolve(args.workspaceRoot, project),
-        );
+      const configurationPath = reader.findConfigurationFileAt(
+        path.resolve(args.workspaceRoot, project),
+      );
 
       if (configurationPath === undefined) {
         throw new ProjectConfigurationMissingError(project);
@@ -385,6 +386,7 @@ export class ProjectConfigurationService {
       const projectConfiguration = await this.loadProjectConfiguration({
         configurationPath,
         project,
+        reader,
       });
       this.assertNoForbiddenFields(projectConfiguration);
       this.assertComplete(projectConfiguration);

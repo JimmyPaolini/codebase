@@ -5,6 +5,7 @@ import path from "node:path";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
+import { ConfigurationFileService } from "./configuration-file.service";
 import {
   CONFIGURATION_FILE_NAMES,
   DEFAULT_EXCLUDE_GLOBS,
@@ -14,7 +15,6 @@ import {
   ProjectConfigurationIncompleteError,
   ProjectConfigurationMissingError,
 } from "./configuration.constants";
-import { ConfigurationService } from "./configuration.service";
 import { ProjectConfigurationService } from "./project-configuration.service";
 
 import type {
@@ -57,7 +57,7 @@ function completeConfiguration(
  * takes: load the workspace file, load whatever the projects declared, resolve.
  */
 async function resolveWrittenLimits(args: {
-  configurationService: ConfigurationService;
+  configurationService: ConfigurationFileService;
   limitOverrides?: CallidescopeLimitOverrides | undefined;
   projects: readonly string[];
   service: ProjectConfigurationService;
@@ -70,11 +70,14 @@ async function resolveWrittenLimits(args: {
   const workspace = await args.configurationService.loadConfigurationFile({
     configurationPath: workspaceConfigurationPath,
   });
-  const projectConfigurations = await args.service.loadProjectConfigurations({
-    projects: args.projects,
-    workspaceConfigurationPath,
-    workspaceRoot: args.workspaceRoot,
-  });
+  const projectConfigurations = await args.service.loadProjectConfigurations(
+    {
+      projects: args.projects,
+      workspaceConfigurationPath,
+      workspaceRoot: args.workspaceRoot,
+    },
+    args.configurationService,
+  );
 
   return args.service.resolveLimits({
     limitOverrides: args.limitOverrides,
@@ -160,15 +163,15 @@ async function writeWorkspace(
 }
 
 describe(ProjectConfigurationService, () => {
-  let configurationService: ConfigurationService;
+  let configurationService: ConfigurationFileService;
   let service: ProjectConfigurationService;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [ConfigurationService, ProjectConfigurationService],
+      providers: [ConfigurationFileService, ProjectConfigurationService],
     }).compile();
 
-    configurationService = await module.resolve(ConfigurationService);
+    configurationService = await module.resolve(ConfigurationFileService);
     service = await module.resolve(ProjectConfigurationService);
   });
 
@@ -185,10 +188,13 @@ describe(ProjectConfigurationService, () => {
       }),
     });
 
-    const loaded = await service.loadProjectConfigurations({
-      projects: ["packages/gated"],
-      workspaceRoot,
-    });
+    const loaded = await service.loadProjectConfigurations(
+      {
+        projects: ["packages/gated"],
+        workspaceRoot,
+      },
+      configurationService,
+    );
 
     expect(loaded).toHaveLength(1);
     expect(loaded[0]?.project).toBe("packages/gated");
@@ -210,10 +216,13 @@ describe(ProjectConfigurationService, () => {
     // one above it: walking up would give every project a copy of the
     // workspace's, which is the resolution this arrangement exists to end.
     await expect(
-      service.loadProjectConfigurations({
-        projects: ["packages/plain"],
-        workspaceRoot,
-      }),
+      service.loadProjectConfigurations(
+        {
+          projects: ["packages/plain"],
+          workspaceRoot,
+        },
+        configurationService,
+      ),
     ).rejects.toThrow(ProjectConfigurationMissingError);
   });
 
@@ -226,14 +235,17 @@ describe(ProjectConfigurationService, () => {
       }),
     });
 
-    const [loaded] = await service.loadProjectConfigurations({
-      projects: ["packages/gated"],
-      workspaceConfigurationPath: path.join(
+    const [loaded] = await service.loadProjectConfigurations(
+      {
+        projects: ["packages/gated"],
+        workspaceConfigurationPath: path.join(
+          workspaceRoot,
+          CONFIGURATION_FILE_NAME,
+        ),
         workspaceRoot,
-        CONFIGURATION_FILE_NAME,
-      ),
-      workspaceRoot,
-    });
+      },
+      configurationService,
+    );
 
     // What a project takes from the workspace it takes by spreading
     // `projectDefaults` into its own file, before the loader ever sees it.
@@ -253,10 +265,13 @@ describe(ProjectConfigurationService, () => {
       }),
     });
 
-    const [loaded] = await service.loadProjectConfigurations({
-      projects: ["packages/gated"],
-      workspaceRoot,
-    });
+    const [loaded] = await service.loadProjectConfigurations(
+      {
+        projects: ["packages/gated"],
+        workspaceRoot,
+      },
+      configurationService,
+    );
 
     expect(loaded?.configuration.limits.maximumBreadth).toBe(9);
   });
@@ -283,11 +298,14 @@ describe(ProjectConfigurationService, () => {
         ),
       });
 
-    const loaded = await service.loadProjectConfigurations({
-      projects: ["packages/examples"],
-      workspaceConfigurationPath,
-      workspaceRoot,
-    });
+    const loaded = await service.loadProjectConfigurations(
+      {
+        projects: ["packages/examples"],
+        workspaceConfigurationPath,
+        workspaceRoot,
+      },
+      configurationService,
+    );
 
     expect(loaded).toStrictEqual([]);
   });
@@ -302,15 +320,18 @@ describe(ProjectConfigurationService, () => {
     // A command line names its configuration relative to the workspace root, so
     // the skip has to resolve it against that root — the same root every project
     // path here is resolved against, and not the process cwd.
-    const loaded = await service.loadProjectConfigurations({
-      projects: ["packages/examples"],
-      workspaceConfigurationPath: path.join(
-        "packages",
-        "examples",
-        CONFIGURATION_FILE_NAME,
-      ),
-      workspaceRoot,
-    });
+    const loaded = await service.loadProjectConfigurations(
+      {
+        projects: ["packages/examples"],
+        workspaceConfigurationPath: path.join(
+          "packages",
+          "examples",
+          CONFIGURATION_FILE_NAME,
+        ),
+        workspaceRoot,
+      },
+      configurationService,
+    );
 
     expect(loaded).toStrictEqual([]);
   });
@@ -323,16 +344,19 @@ describe(ProjectConfigurationService, () => {
       "packages/gated": completeConfiguration(),
     });
 
-    const loaded = await service.loadProjectConfigurations({
-      projects: ["packages/examples", "packages/gated"],
-      workspaceConfigurationPath: path.join(
+    const loaded = await service.loadProjectConfigurations(
+      {
+        projects: ["packages/examples", "packages/gated"],
+        workspaceConfigurationPath: path.join(
+          workspaceRoot,
+          "packages",
+          "examples",
+          CONFIGURATION_FILE_NAME,
+        ),
         workspaceRoot,
-        "packages",
-        "examples",
-        CONFIGURATION_FILE_NAME,
-      ),
-      workspaceRoot,
-    });
+      },
+      configurationService,
+    );
 
     expect(loaded.map((entry) => entry.project)).toStrictEqual([
       "packages/gated",
@@ -347,10 +371,13 @@ describe(ProjectConfigurationService, () => {
     });
 
     await expect(
-      service.loadProjectConfigurations({
-        projects: ["packages/broken"],
-        workspaceRoot,
-      }),
+      service.loadProjectConfigurations(
+        {
+          projects: ["packages/broken"],
+          workspaceRoot,
+        },
+        configurationService,
+      ),
     ).rejects.toThrow(ProjectConfigurationError);
   });
 
@@ -367,10 +394,13 @@ describe(ProjectConfigurationService, () => {
     );
 
     await expect(
-      service.loadProjectConfigurations({
-        projects: ["packages/broken"],
-        workspaceRoot,
-      }),
+      service.loadProjectConfigurations(
+        {
+          projects: ["packages/broken"],
+          workspaceRoot,
+        },
+        configurationService,
+      ),
     ).rejects.toThrow("It could not be read");
   });
 
@@ -388,10 +418,13 @@ describe(ProjectConfigurationService, () => {
     );
 
     await expect(
-      service.loadProjectConfigurations({
-        projects: ["packages/broken"],
-        workspaceRoot,
-      }),
+      service.loadProjectConfigurations(
+        {
+          projects: ["packages/broken"],
+          workspaceRoot,
+        },
+        configurationService,
+      ),
     ).rejects.toThrow(`packages/broken at ${configurationPath}`);
   });
 
@@ -406,10 +439,13 @@ describe(ProjectConfigurationService, () => {
     });
 
     await expect(
-      service.loadProjectConfigurations({
-        projects: ["packages/gated", "packages/plain"],
-        workspaceRoot,
-      }),
+      service.loadProjectConfigurations(
+        {
+          projects: ["packages/gated", "packages/plain"],
+          workspaceRoot,
+        },
+        configurationService,
+      ),
     ).rejects.toThrow(
       "packages/plain is traced but has no callidescope.config.ts",
     );
@@ -423,10 +459,13 @@ describe(ProjectConfigurationService, () => {
       const workspaceRoot = await writeWorkspace({
         "packages/partial": partial,
       });
-      const loading = service.loadProjectConfigurations({
-        projects: ["packages/partial"],
-        workspaceRoot,
-      });
+      const loading = service.loadProjectConfigurations(
+        {
+          projects: ["packages/partial"],
+          workspaceRoot,
+        },
+        configurationService,
+      );
 
       await expect(loading).rejects.toThrow(
         ProjectConfigurationIncompleteError,
@@ -456,10 +495,13 @@ describe(ProjectConfigurationService, () => {
       });
 
       await expect(
-        service.loadProjectConfigurations({
-          projects: ["packages/partial"],
-          workspaceRoot,
-        }),
+        service.loadProjectConfigurations(
+          {
+            projects: ["packages/partial"],
+            workspaceRoot,
+          },
+          configurationService,
+        ),
       ).rejects.toThrow(`leaves ${name} out`);
     },
   );
@@ -483,10 +525,13 @@ describe(ProjectConfigurationService, () => {
         write: { markdown: undefined, mermaid: undefined },
       };\n`,
     });
-    const loading = service.loadProjectConfigurations({
-      projects: ["packages/hollow"],
-      workspaceRoot,
-    });
+    const loading = service.loadProjectConfigurations(
+      {
+        projects: ["packages/hollow"],
+        workspaceRoot,
+      },
+      configurationService,
+    );
 
     await expect(loading).rejects.toThrow(ProjectConfigurationIncompleteError);
     await expect(loading).rejects.toThrow("leaves limits out");
@@ -519,10 +564,13 @@ describe(ProjectConfigurationService, () => {
       "utf8",
     );
 
-    const loaded = await service.loadProjectConfigurations({
-      projects: ["packages/quiet"],
-      workspaceRoot,
-    });
+    const loaded = await service.loadProjectConfigurations(
+      {
+        projects: ["packages/quiet"],
+        workspaceRoot,
+      },
+      configurationService,
+    );
 
     expect(loaded).toHaveLength(1);
     expect(loaded[0]?.configuration.limits.maximumBreadth).toBeUndefined();
@@ -541,10 +589,13 @@ describe(ProjectConfigurationService, () => {
       const workspaceRoot = await writeWorkspace({
         "packages/broken": configuration,
       });
-      const loading = service.loadProjectConfigurations({
-        projects: ["packages/broken"],
-        workspaceRoot,
-      });
+      const loading = service.loadProjectConfigurations(
+        {
+          projects: ["packages/broken"],
+          workspaceRoot,
+        },
+        configurationService,
+      );
 
       await expect(loading).rejects.toThrow(
         ProjectConfigurationFieldNotPermittedError,
@@ -564,10 +615,13 @@ describe(ProjectConfigurationService, () => {
     });
 
     await expect(
-      service.loadProjectConfigurations({
-        projects: ["packages/broken"],
-        workspaceRoot,
-      }),
+      service.loadProjectConfigurations(
+        {
+          projects: ["packages/broken"],
+          workspaceRoot,
+        },
+        configurationService,
+      ),
     ).rejects.toThrow(
       "packages/broken sets write.json, which only the workspace " +
         "configuration may set. A project configuration may set entryPoints, " +
@@ -585,10 +639,13 @@ describe(ProjectConfigurationService, () => {
       }),
     });
 
-    const [loaded] = await service.loadProjectConfigurations({
-      projects: ["packages/published"],
-      workspaceRoot,
-    });
+    const [loaded] = await service.loadProjectConfigurations(
+      {
+        projects: ["packages/published"],
+        workspaceRoot,
+      },
+      configurationService,
+    );
 
     expect(loaded?.configuration.write.markdown).toMatchObject({
       heading: "## 🔭 Callidescope",
@@ -610,10 +667,13 @@ describe(ProjectConfigurationService, () => {
       }),
     });
 
-    const [loaded] = await service.loadProjectConfigurations({
-      projects: ["packages/allowed"],
-      workspaceRoot,
-    });
+    const [loaded] = await service.loadProjectConfigurations(
+      {
+        projects: ["packages/allowed"],
+        workspaceRoot,
+      },
+      configurationService,
+    );
 
     expect(loaded?.configuration.entryPoints.addresses).toStrictEqual([
       "packages/allowed/src/index.ts#publicApi",
@@ -639,11 +699,14 @@ describe(ProjectConfigurationService, () => {
         ),
       });
 
-    const loaded = await service.loadProjectConfigurations({
-      projects: ["packages/examples"],
-      workspaceConfigurationPath,
-      workspaceRoot,
-    });
+    const loaded = await service.loadProjectConfigurations(
+      {
+        projects: ["packages/examples"],
+        workspaceConfigurationPath,
+        workspaceRoot,
+      },
+      configurationService,
+    );
 
     expect(loaded).toStrictEqual([]);
   });

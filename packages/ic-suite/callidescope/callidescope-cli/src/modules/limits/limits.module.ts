@@ -1,4 +1,4 @@
-import { ConfigurationModule, InputModule } from "@callidescope/configuration";
+import { ConfigurationModule } from "@callidescope/configuration";
 import { WorkspaceModule } from "@callidescope/graph";
 import { Module } from "@nestjs/common";
 
@@ -20,7 +20,7 @@ import { RenderLimitsService } from "./render-limits.service";
 @Module({
   controllers: [],
   exports: [LimitsCommand, LimitsService],
-  imports: [ConfigurationModule, InputModule, LoggerModule, WorkspaceModule],
+  imports: [ConfigurationModule, LoggerModule, WorkspaceModule],
   providers: [LimitsCommand, LimitsService, RenderLimitsService],
 })
 export class LimitsModule {}

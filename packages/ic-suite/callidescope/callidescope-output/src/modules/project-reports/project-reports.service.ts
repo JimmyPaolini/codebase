@@ -9,15 +9,17 @@ import type {
   OwnedFindings,
 } from "./project-reports.types";
 import type {
+  ProjectLimits,
+  ProjectLimitsLookup,
+} from "@callidescope/configuration";
+import type {
   CallableBreadthReport,
   CallGraphSummary,
   CallStack,
   DeepStackFinding,
-  ProjectLimits,
-  ProjectLimitsLookup,
   ProjectReport,
   WideCallableFinding,
-} from "@callidescope/configuration";
+} from "@callidescope/core";
 
 /**
  * Scopes a run's findings to the project each one came from.

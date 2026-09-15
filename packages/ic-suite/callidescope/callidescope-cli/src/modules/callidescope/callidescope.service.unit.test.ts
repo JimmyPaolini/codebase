@@ -1,11 +1,6 @@
 import {
-  type CallGraphResult,
-  type CallidescopeLimits,
-  type ConfigurationService,
-  type LoadedProjectConfiguration,
-  ProjectConfigurationService,
-  type ProjectLimitsLookup,
-  type ResolvedCallidescopeConfiguration,
+  ConfigurationModule,
+  ConfigurationService,
 } from "@callidescope/configuration";
 import {
   AddressService,
@@ -37,7 +32,17 @@ import {
 import { CallidescopeService } from "./callidescope.service";
 
 import type { FixtureServices } from "../../../testing/programs";
+import type {
+  CallidescopeLimits,
+  LoadedProjectConfiguration,
+  ProjectLimitsLookup,
+  ResolvedCallidescopeConfiguration,
+} from "@callidescope/configuration";
+import type { CallGraphResult } from "@callidescope/core";
 import type { DeepMocked } from "@golevelup/ts-vitest";
+
+/** The real configuration facade, resolved once by `beforeAll` below. */
+let configurationService: ConfigurationService;
 
 /** Analyzes in-memory files end to end, short of reading the disk. */
 function analyze(args: {
@@ -115,7 +120,7 @@ function buildSubject(args: {
       new GraphService(),
     ),
     args.fixture.programService,
-    createMock<ProjectConfigurationService>(),
+    createMock<ConfigurationService>(),
     new ProjectReportsService(
       new PathsService(new DocumentationService(), new SignaturesService()),
       new SignaturesService(),
@@ -136,9 +141,7 @@ function resolveLimits(args: {
   workspaceAuthoredLimits?: CallidescopeLimits | undefined;
   workspaceConfiguration?: ResolvedCallidescopeConfiguration;
 }): ProjectLimitsLookup {
-  return new ProjectConfigurationService(
-    createMock<ConfigurationService>(),
-  ).resolveLimits({
+  return configurationService.resolveLimits({
     projectConfigurations: args.projectConfigurations ?? [],
     projects: ["example"],
     workspaceAuthoredLimits: args.workspaceAuthoredLimits,
@@ -152,7 +155,7 @@ describe(CallidescopeService, () => {
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      imports: [...ANALYSIS_MODULES],
+      imports: [...ANALYSIS_MODULES, ConfigurationModule],
       providers: [
         CallidescopeService,
         GraphAssemblyService,
@@ -161,6 +164,9 @@ describe(CallidescopeService, () => {
     }).compile();
 
     service = await module.resolve(CallidescopeService);
+    // The real facade, wired by its own module, so `resolveLimits` below runs
+    // the tool's own resolver rather than a second copy of its rules.
+    configurationService = await module.resolve(ConfigurationService);
   });
 
   it("is defined", () => {

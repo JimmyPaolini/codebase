@@ -1,7 +1,10 @@
 import { DEFAULT_JSON_INDENTATION } from "@callidescope/configuration";
-import { MermaidReportService, ReportService } from "@callidescope/output";
 import { Injectable } from "@nestjs/common";
 
+import { MermaidReportService } from "../report/mermaid-report.service";
+import { ReportService } from "../report/report.service";
+
+import type { FramedStack } from "../report/report.types";
 import type {
   BreadthReport,
   DepthReport,
@@ -10,9 +13,8 @@ import type {
   RenderDepthArguments,
   RenderDepthReportsArguments,
 } from "./address-report.types";
-import type { StackFrame } from "@callidescope/configuration";
+import type { StackFrame } from "@callidescope/core";
 import type { CallableReference, CallAddressStack } from "@callidescope/graph";
-import type { FramedStack } from "@callidescope/output";
 
 /**
  * Renders `depth` and `breadth`'s findings for a terminal.

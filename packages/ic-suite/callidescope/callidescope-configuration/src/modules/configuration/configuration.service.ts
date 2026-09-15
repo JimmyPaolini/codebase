@@ -1,58 +1,65 @@
-import { existsSync } from "node:fs";
-import { readFile } from "node:fs/promises";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
-
 import { Injectable } from "@nestjs/common";
-import { createJiti } from "jiti";
-import { parse as parseJsonc } from "jsonc-parser";
 
-import {
-  callidescopeConfigurationSchema,
-  CONFIGURATION_FILE_NAMES,
-  ConfigurationFileNotFoundError,
-  DEFAULT_ENTRY_POINT_DECORATORS,
-  DEFAULT_EXCLUDE_GLOBS,
-  DEFAULT_JSON_INDENTATION,
-  DEFAULT_MARKDOWN_END_MARKER,
-  DEFAULT_MARKDOWN_START_MARKER,
-  DEFAULT_MAXIMUM_DEPTH,
-  DEFAULT_PREVIEW_COUNT,
-  DEFAULT_RUN_HEADING,
-  REPOSITORY_ROOT_MARKERS,
-  SUPPORTED_CONFIGURATION_EXTENSIONS,
-  UnknownConfigurationFileTypeError,
-} from "./configuration.constants";
+import { InputService } from "../input/input.service";
+import { RunPlanService } from "../run-plan/run-plan.service";
 
+import { ConfigurationFileService } from "./configuration-file.service";
+import { CALLIDESCOPE_OUTPUT_FORMATS } from "./configuration.constants";
+import { ProjectConfigurationService } from "./project-configuration.service";
+
+import type { CallidescopeFormatOptions } from "../input/input.types";
+import type {
+  AddressCommandOptions,
+  CallidescopeCommandOptions,
+  PreparedLookup,
+  RunMode,
+  RunPreparation,
+} from "../run-plan/run-plan.types";
+import type { ConfigurationFileReader } from "./configuration-file.types";
 import type {
   CallidescopeConfiguration,
-  CallidescopeEntryPoints,
-  CallidescopeLimits,
-  CallidescopeMarkdownOutputConfiguration,
-  CallidescopeWriteConfiguration,
   LoadConfigurationArguments,
   LoadedCallidescopeConfiguration,
   LoadedCallidescopeConfigurationFile,
+  LoadedProjectConfiguration,
+  LoadProjectConfigurationsArguments,
+  ProjectLimitsLookup,
   ResolvedCallidescopeConfiguration,
-  ResolvedCallidescopeEntryPoints,
-  ResolvedCallidescopeJsonOutputConfiguration,
-  ResolvedCallidescopeLimits,
-  ResolvedCallidescopeMarkdownOutputConfiguration,
+  ResolveProjectLimitsArguments,
 } from "./configuration.types";
 
 /**
- * Loads, validates, and normalizes callidescope configuration files.
+ * The one answer to "what is this run actually configured to do".
  *
- * This service owns loading only. What the configuration means — which files an
- * exclusion glob removes, which decorator marks a stack root — belongs to the
- * analyzers that read it, so that reading a configuration file stays free of any
- * knowledge of the repository being traced.
+ * Every question a caller outside this package can ask about configuration is
+ * asked here: what a file declares, what a project is gated by, what a command
+ * line resolved to, and what to ask a person for when a flag was left off. A
+ * consumer therefore injects this and nothing else from this package, which is
+ * what makes the configuration layer one layer rather than a bag of
+ * collaborators a caller has to know the names of.
+ *
+ * Nearly every method here forwards and nothing more. Loading a file, judging
+ * a project's own file, planning a run from flags, and prompting are four
+ * different jobs and stay four classes in four files behind this one; what
+ * they stop being is four public entry points. A facade that implemented any
+ * of them would be a facade in name only, and the one-per-job split is what
+ * keeps each of them readable.
+ *
+ * `resolveFormatOption` is the exception, and a small one: deciding whether to
+ * offer a prompt at all is a policy over two collaborators rather than work
+ * either of them does, and it reads a constant the prompting service must not
+ * import. Its whole body is that decision.
  */
 @Injectable()
-export class ConfigurationService {
+export class ConfigurationService implements ConfigurationFileReader {
   // 🏗 Dependency Injection
 
-  constructor() {}
+  constructor(
+    private readonly configurationFileService: ConfigurationFileService,
+    private readonly inputService: InputService,
+    private readonly projectConfigurationService: ProjectConfigurationService,
+    private readonly runPlanService: RunPlanService,
+  ) {}
 
   // 🔐 Private Fields
 
@@ -60,262 +67,16 @@ export class ConfigurationService {
 
   // 🔏 Private Methods
 
-  /**
-   * Walks upward from a directory looking for a configuration file.
-   *
-   * Returns `undefined` when the search reaches the filesystem root without
-   * finding one: a repository that never wrote a configuration file is traced
-   * with the defaults rather than told to write one.
-   */
-  private findConfigurationFile(searchDirectory: string): string | undefined {
-    let candidateDirectory = path.resolve(searchDirectory);
-
-    for (;;) {
-      const found = this.findConfigurationFileAt(candidateDirectory);
-
-      if (found !== undefined) {
-        return found;
-      }
-
-      const parentDirectory = path.dirname(candidateDirectory);
-
-      if (parentDirectory === candidateDirectory) {
-        return undefined;
-      }
-
-      candidateDirectory = parentDirectory;
-    }
-  }
-
-  /**
-   * Walks upward from the process cwd looking for the repository root.
-   *
-   * Used to resolve a configuration path given relative to that root even when
-   * the command was invoked from a nested directory, which is what a task runner
-   * does whenever it sets the cwd to the project rather than the workspace.
-   */
-  private findRepositoryRoot(): string | undefined {
-    let candidateDirectory = path.resolve(process.cwd());
-
-    for (;;) {
-      const directory = candidateDirectory;
-      const isRoot = REPOSITORY_ROOT_MARKERS.some((marker) =>
-        existsSync(path.join(directory, marker)),
-      );
-
-      if (isRoot) {
-        return candidateDirectory;
-      }
-
-      const parentDirectory = path.dirname(candidateDirectory);
-
-      if (parentDirectory === candidateDirectory) {
-        return undefined;
-      }
-
-      candidateDirectory = parentDirectory;
-    }
-  }
-
-  /** Loads a configuration module, choosing the reader by extension. */
-  private async loadConfigurationModule(args: {
-    configurationPath: string;
-    extension: string;
-  }): Promise<unknown> {
-    if (args.extension === ".json" || args.extension === ".jsonc") {
-      return this.loadJsonConfiguration(args);
-    }
-
-    const jiti = createJiti(fileURLToPath(import.meta.url));
-    const importedModule: unknown = await jiti.import(args.configurationPath, {
-      default: true,
-    });
-
-    if (typeof importedModule !== "object" || importedModule === null) {
-      return {};
-    }
-
-    const defaultExport = (importedModule as { default?: unknown }).default;
-
-    return typeof defaultExport === "object" && defaultExport !== null
-      ? defaultExport
-      : importedModule;
-  }
-
-  /** Reads a JSON or JSONC configuration file. */
-  private async loadJsonConfiguration(args: {
-    configurationPath: string;
-    extension: string;
-  }): Promise<unknown> {
-    const configurationContent = await readFile(args.configurationPath, "utf8");
-
-    return args.extension === ".jsonc"
-      ? parseJsonc(configurationContent)
-      : JSON.parse(configurationContent);
-  }
-
-  /** Resolves a configuration path against the cwd, then the repository root. */
-  private resolveConfigurationPath(configurationPath: string): string {
-    const absolutePath = path.resolve(configurationPath);
-
-    if (existsSync(absolutePath)) {
-      return absolutePath;
-    }
-
-    const repositoryRoot = this.findRepositoryRoot();
-
-    if (repositoryRoot === undefined) {
-      throw new ConfigurationFileNotFoundError(absolutePath);
-    }
-
-    const repositoryRelativePath = path.resolve(
-      repositoryRoot,
-      configurationPath,
-    );
-
-    if (!existsSync(repositoryRelativePath)) {
-      throw new ConfigurationFileNotFoundError(absolutePath);
-    }
-
-    return repositoryRelativePath;
-  }
-
-  /**
-   * Applies defaults to the entry-point rules.
-   *
-   * The authored object is defaulted to an empty one up front rather than
-   * optional-chained per field, which keeps this to one branch per option
-   * instead of two.
-   */
-  private resolveEntryPoints(
-    entryPoints: CallidescopeEntryPoints | undefined,
-  ): ResolvedCallidescopeEntryPoints {
-    const authored = entryPoints ?? {};
-
-    return {
-      addresses: authored.addresses ?? [],
-      decorators: authored.decorators ?? [...DEFAULT_ENTRY_POINT_DECORATORS],
-      includeExportedFunctions: authored.includeExportedFunctions ?? true,
-      includeOrphans: authored.includeOrphans ?? true,
-      includeTests: authored.includeTests ?? false,
-    };
-  }
-
-  /**
-   * Applies the directories no repository wants traced, on top of a
-   * configuration's own.
-   *
-   * Additive rather than a replacement: the defaults are directories no
-   * repository wants traced, so a configuration naming its own noise should
-   * not have to restate them to keep them out.
-   */
-  private resolveExclude(exclude: string[] | undefined): string[] {
-    return [...new Set([...DEFAULT_EXCLUDE_GLOBS, ...(exclude ?? [])])];
-  }
-
-  /** Applies defaults to the JSON output destination, if one was named. */
-  private resolveJsonOutput(
-    write: CallidescopeWriteConfiguration | undefined,
-  ): ResolvedCallidescopeJsonOutputConfiguration | undefined {
-    if (write?.json === undefined) {
-      return undefined;
-    }
-
-    return {
-      indentation: write.json.indentation ?? DEFAULT_JSON_INDENTATION,
-      path: write.json.path,
-    };
-  }
-
-  /** Applies defaults to every threshold. */
-  private resolveLimits(
-    limits: CallidescopeLimits | undefined,
-  ): ResolvedCallidescopeLimits {
-    const authored = limits ?? {};
-
-    return {
-      maximumBreadth: authored.maximumBreadth,
-      maximumDepth: authored.maximumDepth ?? DEFAULT_MAXIMUM_DEPTH,
-    };
-  }
-
-  /**
-   * Applies defaults to one anchored markdown destination, if it was named.
-   *
-   * Shared by `markdown` and `mermaid`: the two differ in what is written
-   * between the anchors, and in nothing this resolves.
-   */
-  private resolveMarkdownDestination(
-    destination: CallidescopeMarkdownOutputConfiguration | undefined,
-  ): ResolvedCallidescopeMarkdownOutputConfiguration | undefined {
-    if (destination === undefined) {
-      return undefined;
-    }
-
-    return {
-      description: destination.description,
-      endMarker: destination.endMarker ?? DEFAULT_MARKDOWN_END_MARKER,
-      heading: destination.heading ?? DEFAULT_RUN_HEADING,
-      path: destination.path,
-      previewCount: destination.previewCount ?? DEFAULT_PREVIEW_COUNT,
-      // Left unset rather than defaulted: the built-in rendering and writing
-      // live in the CLI that calls them, so "unset" is what selects them.
-      render: destination.render,
-      startMarker: destination.startMarker ?? DEFAULT_MARKDOWN_START_MARKER,
-      writeBlock: destination.writeBlock,
-    };
-  }
-
   // 🌎 Public Methods
 
-  /**
-   * Finds a configuration file sitting directly at one directory.
-   *
-   * No upward walk, which is what makes this the search a project root needs:
-   * walking up from one would find the workspace file and hand every project a
-   * copy of it.
-   */
+  /** Finds a configuration file sitting directly at one directory. */
   public findConfigurationFileAt(directory: string): string | undefined {
-    for (const fileName of CONFIGURATION_FILE_NAMES) {
-      const candidatePath = path.join(directory, fileName);
-
-      if (existsSync(candidatePath)) {
-        return candidatePath;
-      }
-    }
-
-    return undefined;
-  }
-
-  /**
-   * Loads and validates a callidescope configuration file.
-   *
-   * A path that was named explicitly must exist — a typo in a task runner's
-   * arguments should fail rather than quietly trace the repository with defaults
-   * it never asked for. A path that was not named is searched for, and its
-   * absence is legal.
-   */
-  public async loadConfiguration(
-    args: LoadConfigurationArguments = {},
-  ): Promise<ResolvedCallidescopeConfiguration> {
-    const { configuration } = await this.loadConfigurationFile(args);
-
-    return configuration;
+    return this.configurationFileService.findConfigurationFileAt(directory);
   }
 
   /**
    * Loads a configuration, and says what the file itself declared and which
    * file answered.
-   *
-   * The same work as `loadConfiguration`, keeping two facts it throws away. The
-   * path is what tells a caller resolving a configuration beside every project
-   * which file it has already read as the run's own, so that one file is never
-   * given two roles. The authored object is what a refusal has to name fields
-   * from, since resolution manufactures the rest.
-   *
-   * Naming a path guarantees one back, which is why that case has an overload
-   * of its own: the alternative is every caller of the narrow case carrying a
-   * fallback that can never fire, and picking its own path when it does.
    */
   public loadConfigurationFile(
     args: LoadConfigurationArguments & { configurationPath: string },
@@ -326,63 +87,106 @@ export class ConfigurationService {
   public async loadConfigurationFile(
     args: LoadConfigurationArguments = {},
   ): Promise<LoadedCallidescopeConfiguration> {
-    const resolvedPath =
-      args.configurationPath === undefined
-        ? this.findConfigurationFile(args.searchDirectory ?? process.cwd())
-        : this.resolveConfigurationPath(args.configurationPath);
-
-    if (resolvedPath === undefined) {
-      return {
-        authored: {},
-        configuration: this.resolveConfiguration({}),
-        path: undefined,
-      };
-    }
-
-    const extension = path.extname(resolvedPath).toLowerCase();
-
-    if (!SUPPORTED_CONFIGURATION_EXTENSIONS.has(extension)) {
-      throw new UnknownConfigurationFileTypeError(resolvedPath);
-    }
-
-    const authored = callidescopeConfigurationSchema.parse(
-      await this.loadConfigurationModule({
-        configurationPath: resolvedPath,
-        extension,
-      }),
-    );
-
-    return {
-      authored,
-      configuration: this.resolveConfiguration(authored),
-      path: resolvedPath,
-    };
+    return await this.configurationFileService.loadConfigurationFile(args);
   }
 
-  /**
-   * Fills in every field a configuration file may leave out.
-   *
-   * Exposed so a host embedding callidescope can hand over a configuration
-   * object it assembled itself and get the same shape a configuration file
-   * produces.
-   */
+  /** Loads and validates every traced project's own configuration file. */
+  public async loadProjectConfigurations(
+    args: LoadProjectConfigurationsArguments,
+  ): Promise<LoadedProjectConfiguration[]> {
+    return await this.projectConfigurationService.loadProjectConfigurations(
+      args,
+      this,
+    );
+  }
+
+  /** Splits a comma-separated flag value into its parts. */
+  public parseCommaDelimitedOption(value: string | undefined): string[] {
+    return this.inputService.parseCommaDelimitedOption(value);
+  }
+
+  /** Reads a flag that may have been written without a value. */
+  public parseOptionalOption(value: string | undefined): string | undefined {
+    return this.inputService.parseOptionalOption(value);
+  }
+
+  /** Reads a lookup's scoping flags into a workspace root and a configuration. */
+  public async prepareLookup(
+    options: AddressCommandOptions,
+  ): Promise<PreparedLookup> {
+    return await this.runPlanService.prepareLookup(options, this);
+  }
+
+  /** Reads a command line and its configuration into what the run will do. */
+  public async prepareRun(
+    options: CallidescopeCommandOptions,
+  ): Promise<RunPreparation> {
+    return await this.runPlanService.prepareRun(options, this);
+  }
+
+  /** Prompts for several values at once, completing the list as it is typed. */
+  public async promptForAutocompleteMultiselect(args: {
+    message: string;
+    subject: string;
+    suggestions: readonly string[];
+  }): Promise<string[]> {
+    return await this.inputService.promptForAutocompleteMultiselect(args);
+  }
+
+  /** Prompts for one value out of a fixed set of choices. */
+  public async promptForSelect<Choice extends string>(args: {
+    choices: readonly Choice[];
+    message: string;
+    subject: string;
+  }): Promise<Choice> {
+    return await this.inputService.promptForSelect(args);
+  }
+
+  /** Fills in every field a configuration file may leave out. */
   public resolveConfiguration(
     configuration: CallidescopeConfiguration,
   ): ResolvedCallidescopeConfiguration {
-    return {
-      directories: configuration.directories ?? [],
-      entryPoints: this.resolveEntryPoints(configuration.entryPoints),
-      exclude: this.resolveExclude(configuration.exclude),
-      excludeCallees: configuration.excludeCallees ?? [],
-      excludeFrom: configuration.excludeFrom ?? [],
-      limits: this.resolveLimits(configuration.limits),
-      write: {
-        json: this.resolveJsonOutput(configuration.write),
-        markdown: this.resolveMarkdownDestination(
-          configuration.write?.markdown,
-        ),
-        mermaid: this.resolveMarkdownDestination(configuration.write?.mermaid),
-      },
-    };
+    return this.configurationFileService.resolveConfiguration(configuration);
+  }
+
+  /**
+   * Returns the given options with `--format` filled in where one is wanted.
+   *
+   * Offered rather than required, which is the one place this differs from
+   * every other missing value: the caller applies its own default when
+   * nobody is at a terminal to ask, so a run proceeds with nothing typed.
+   * Demanding it would fail every scripted run — this repository's own
+   * per-project `gate` among them — over a flag those runs have never needed
+   * to pass.
+   *
+   * Generic over the caller's options type, so a command carries its own
+   * other flags through unchanged.
+   */
+  public async resolveFormatOption<Options extends CallidescopeFormatOptions>(
+    options: Options,
+  ): Promise<Options> {
+    if (options.format !== undefined || !this.inputService.isAtTerminal()) {
+      return options;
+    }
+
+    const format = await this.promptForSelect({
+      choices: CALLIDESCOPE_OUTPUT_FORMATS,
+      message: "Which output format?",
+      subject: "An output format (--format)",
+    });
+
+    return { ...options, format };
+  }
+
+  /** Resolves the limits every traced project is judged against. */
+  public resolveLimits(
+    args: ResolveProjectLimitsArguments,
+  ): ProjectLimitsLookup {
+    return this.projectConfigurationService.resolveLimits(args);
+  }
+
+  /** Whether a run reads or rewrites the files its reports live in. */
+  public touchesFiles(mode: RunMode): boolean {
+    return this.runPlanService.touchesFiles(mode);
   }
 }

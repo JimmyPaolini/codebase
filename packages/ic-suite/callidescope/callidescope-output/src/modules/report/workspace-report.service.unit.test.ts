@@ -15,7 +15,7 @@ import {
 } from "./report.constants";
 import { WorkspaceReportService } from "./workspace-report.service";
 
-import type { ProjectReport } from "@callidescope/configuration";
+import type { ProjectReport } from "@callidescope/core";
 
 /** A project report carrying only the numbers the index and scoreboard read. */
 function report(args: {

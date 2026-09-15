@@ -1,11 +1,10 @@
 import path from "node:path";
 
-import {
-  MarkdownReportService,
-  OutputJsonService,
-  OutputMarkdownService,
-} from "@callidescope/output";
 import { Injectable } from "@nestjs/common";
+
+import { OutputJsonService } from "../output-json/output-json.service";
+import { OutputMarkdownService } from "../output-markdown/output-markdown.service";
+import { MarkdownReportService } from "../report/markdown-report.service";
 
 import { MARKDOWN_DESTINATION_RENDERINGS } from "./write-destinations.constants";
 

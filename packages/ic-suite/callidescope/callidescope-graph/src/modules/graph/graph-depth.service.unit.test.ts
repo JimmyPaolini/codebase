@@ -8,7 +8,7 @@ import { GraphDepthService } from "./graph-depth.service";
 import { GraphService } from "./graph.service";
 
 import type { DepthMeasurement } from "./graph.types";
-import type { CallableId, CallEdge } from "@callidescope/configuration";
+import type { CallableId, CallEdge } from "@callidescope/core";
 
 /** Builds an edge between two identifiers. */
 function edge(from: string, to: string): CallEdge {

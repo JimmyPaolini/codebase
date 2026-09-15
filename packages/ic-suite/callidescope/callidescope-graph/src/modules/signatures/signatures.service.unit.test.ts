@@ -12,7 +12,7 @@ import {
 import { SignaturesService } from "./signatures.service";
 
 import type { ReadSignatureArguments } from "./signatures.types";
-import type { CallableSignature } from "@callidescope/configuration";
+import type { CallableSignature } from "@callidescope/core";
 
 /** Builds the arguments for one named callable in an in-memory file. */
 function readArguments(args: {
