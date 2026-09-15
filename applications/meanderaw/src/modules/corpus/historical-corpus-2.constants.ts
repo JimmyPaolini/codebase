@@ -4,11 +4,14 @@ import type { CorpusEntry } from "./corpus.types";
 
 /**
  * Part 2 of the historical corpus, extracted once by
- * `scripts/extract-historical-corpus.ts` from the `output/` drawing tree
- * this repository used to commit — see `HISTORICAL_CORPUS` for what the
- * whole set is and how `filedUnder` is to be read. Split at a fixed entry
- * line budget so no chunk crosses the 512-line cap once oxfmt has broken
- * every long Code's entry across several lines.
+ * a one-shot script from the `output/` drawing tree this repository used to
+ * commit, and deleted in the same pull request that added this file — see
+ * `HISTORICAL_CORPUS` for what the whole set is and how `filedUnder` is to
+ * be read, and
+ * `docs/adr/0013-hold-the-historical-corpus-as-a-test-set.md` for why the
+ * extraction ran once. The split is by printed line count rather than by
+ * entry count, because an entry costs one line or six depending on how long
+ * its Code is, and no chunk may cross the 512-line cap.
  */
 // 🎯 Hexadecimal lattice Codes rather than words, so the dictionaries are
 // turned off across them — a run of hexadecimal digits occasionally spells one.

@@ -91,7 +91,9 @@ export class CorpusService {
     const parsed = this.codeService.parse(code, rows, columns);
     const svg = this.drawingService.render(parsed);
     const characteristics = this.characteristicsService.compute(parsed);
-    const earned = this.subFamilyService.name(this.codeService.tile(parsed));
+    const earnedSubFamily = this.subFamilyService.name(
+      this.codeService.tile(parsed),
+    );
 
     try {
       return await this.databaseService.save({
@@ -110,7 +112,7 @@ export class CorpusService {
         pitch: columns,
         provenance: "hardcoded",
         rows,
-        subFamily: earned ?? null,
+        subFamily: earnedSubFamily ?? null,
         svg,
       });
     } catch (error) {

@@ -11,14 +11,20 @@
  * this Code's drawings sat in, in the order the retired file tree gave them
  * up. It is where the drawing was filed, never a claim about what the ink
  * does — a Code the tree filed under two names keeps both, and nothing here
- * decides between them. See `HISTORICAL_CORPUS` for the whole set and
+ * decides between them.
+ *
+ * It is a **non-empty** tuple rather than a plain array, because every entry
+ * here came out of some `output/<family>/` directory and
+ * `CorpusService.ingest` walks the families rather than the entries. An
+ * entry filed under nothing would match no family and vanish from the sweep
+ * with no row and no error, so the type refuses to describe one. See `HISTORICAL_CORPUS` for the whole set and
  * `docs/adr/0013-hold-the-historical-corpus-as-a-test-set.md` for why the
  * labels are not to be trusted back into place.
  */
 export interface CorpusEntry {
   readonly code: string;
   readonly columns: number;
-  readonly filedUnder: readonly CorpusFamily[];
+  readonly filedUnder: readonly [CorpusFamily, ...CorpusFamily[]];
   readonly rows: number;
 }
 

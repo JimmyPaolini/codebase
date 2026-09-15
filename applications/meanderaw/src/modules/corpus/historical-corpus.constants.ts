@@ -33,9 +33,10 @@ import type { CorpusEntry } from "./corpus.types";
  * entries beyond that reach — see its own doc comment for the two bounds
  * that decide it.
  *
- * Reassembled from the chunk files
- * `scripts/extract-historical-corpus.ts` split it across; see
- * `MAXIMUM_LINES_PER_CHUNK` there for why it needed more than one.
+ * Reassembled from the chunk files the extraction split it across, at a
+ * printed line count rather than an entry count: an entry costs one line or
+ * six depending on how long its Code is, and no chunk may cross the
+ * 512-line cap.
  */
 export const HISTORICAL_CORPUS: readonly CorpusEntry[] = [
   ...HISTORICAL_CORPUS_1,

@@ -9,6 +9,7 @@ import { LoggerService } from "@codebase/logger";
 import { CorpusService } from "../corpus/corpus.service";
 import { HISTORICAL_CORPUS } from "../corpus/historical-corpus.constants";
 import { Meander } from "../database/entities/Meander.entity";
+import { EDGE_BUDGET } from "../enumeration/enumeration.constants";
 
 import { DrawCheckService } from "./draw-check.service";
 import { DrawCodeService } from "./draw-code.service";
@@ -160,9 +161,9 @@ describe("drawCommand --check mode", () => {
   it(
     "throws naming the changed column when a committed row disagrees with the same address's real hardcoded entry",
     async () => {
-      // 🎯 The deepest, widest entry the corpus holds, which is beyond the
-      // edge budget by a wide margin and so is certainly one the regenerated
-      // sweep ingests rather than enumerates.
+      // 🎯 The widest, deepest entry the corpus holds — asserted rather than
+      // assumed to be past the edge budget, so this fixture is certainly a
+      // row the regenerated sweep ingests rather than one it enumerates.
       const [entry] = HISTORICAL_CORPUS.toSorted(
         (left, right) => right.rows * right.columns - left.rows * left.columns,
       );
@@ -172,6 +173,8 @@ describe("drawCommand --check mode", () => {
           "no hardcoded entry is committed to reclassify for this fixture",
         );
       }
+
+      expect(entry.columns * (2 * entry.rows - 3)).toBeGreaterThan(EDGE_BUDGET);
 
       await repository.save({
         code: entry.code,

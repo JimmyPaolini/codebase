@@ -88,8 +88,12 @@ failures**, and two independent checks say the readings are right:
   aspect-ratio rules reproduce it exactly and are still wrong. The enumerated
   space has to be reviewed as well.
 - `filedUnder` is an array, so a Code filed under two names keeps both, and a
-  contradiction stays visible in the data instead of being resolved by
-  whichever name happened to sort first.
+  contradiction stays visible **in `HISTORICAL_CORPUS`** instead of being
+  resolved by whichever name happened to sort first. The database's own
+  `family` column still holds one name — `filedUnder[0]`, which is tree
+  order — because that column is a single enum-checked value until it becomes
+  an open array of earned families. Until then the fixture set is where a
+  contradiction can be seen, and the column is not.
 - The twenty-one contradictions are open questions, not defects fixed here.
 - The nine mis-filed whirls are one meander stored once, not twice, because
   they are literally one drawing filed twice. A second, larger kind of

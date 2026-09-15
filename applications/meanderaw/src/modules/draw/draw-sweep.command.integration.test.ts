@@ -221,7 +221,7 @@ describe("drawCommand sweep mode", () => {
   );
 
   it(
-    "carries a trusted family and a hardcoded provenance on every ingested corpus entry",
+    "carries the family it was filed under, and a hardcoded provenance, on every ingested corpus entry",
     async () => {
       await command.run([], {});
 
