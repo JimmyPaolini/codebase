@@ -435,6 +435,7 @@
       },
       "defaultConfiguration": "check",
       "dependsOn": [
+        "check",
         "check-catalog-manifests",
         "check-lockfile",
         "check-readme-projects",
@@ -455,7 +456,6 @@
         "sqlfluff-lint",
         "squawk",
         "stylelint",
-        "sweep-check",
         "sync-vscode-extensions",
         "syncpack",
         "type-coverage",
@@ -463,7 +463,7 @@
         "vulture",
         "yaml-lint"
       ],
-      "description": "Static code analysis: every check that judges what the repository commits rather than what a build produces. Nearly all of them read the source without executing it; `meanderaw:sweep-check` is the one exception, booting that project's own container to regenerate the whole corpus and diff it against what is committed, because catching drift in a generic renderer or an enumerator needs the real pipeline run rather than a static read of its output. An nx:noop aggregator \u2014 the work is the dependsOn targets, which Nx schedules in one graph rather than spawning a process per tool. `codebase:codometer`, `codebase:callidescope`, and every synchronization command on the `synchronization` project are deliberately not among them: `codometer` and `callidescope` each publish a report on the default branch, and Nx forwards an explicit configuration down `dependsOn`, so listing one here would make `--configuration=write` publish that report from a branch. Each synchronization command is its own Nx target rather than a shared aggregate, for the same reason. What each one gates is named directly by whatever gates it instead: the inferred per-project `gate` target \u2014 which carries no configuration of its own, so there is nothing here for `dependsOn` to forward \u2014 and each derivation synchronization's own `:check` join this target in one `nx affected` invocation, in the Lint Codebase workflow and in `configuration/lint-staged.config.ts` alike, and the per-project `codometer` limits belong to Make Projects, which builds first. A pull request and a commit therefore still trace depth and check derivation drift \u2014 what this target alone no longer covers, the invocation around it does.",
+      "description": "Static code analysis: every check that judges what the repository commits rather than what a build produces. Nearly all of them read the source without executing it; `meanderaw:check` is the one exception, booting that project's own container to regenerate the whole corpus and diff it against what is committed, because catching drift in a generic renderer or an enumerator needs the real pipeline run rather than a static read of its output. An nx:noop aggregator \u2014 the work is the dependsOn targets, which Nx schedules in one graph rather than spawning a process per tool. `codebase:codometer`, `codebase:callidescope`, and every synchronization command on the `synchronization` project are deliberately not among them: `codometer` and `callidescope` each publish a report on the default branch, and Nx forwards an explicit configuration down `dependsOn`, so listing one here would make `--configuration=write` publish that report from a branch. Each synchronization command is its own Nx target rather than a shared aggregate, for the same reason. What each one gates is named directly by whatever gates it instead: the inferred per-project `gate` target \u2014 which carries no configuration of its own, so there is nothing here for `dependsOn` to forward \u2014 and each derivation synchronization's own `:check` join this target in one `nx affected` invocation, in the Lint Codebase workflow and in `configuration/lint-staged.config.ts` alike, and the per-project `codometer` limits belong to Make Projects, which builds first. A pull request and a commit therefore still trace depth and check derivation drift \u2014 what this target alone no longer covers, the invocation around it does.",
       "executor": "nx:noop"
     },
     "make-projects": {
