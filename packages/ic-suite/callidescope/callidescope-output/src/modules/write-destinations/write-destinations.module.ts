@@ -1,9 +1,8 @@
-import {
-  OutputJsonModule,
-  OutputMarkdownModule,
-  ReportModule,
-} from "@callidescope/output";
 import { Module } from "@nestjs/common";
+
+import { OutputJsonModule } from "../output-json/output-json.module";
+import { OutputMarkdownModule } from "../output-markdown/output-markdown.module";
+import { ReportModule } from "../report/report.module";
 
 import { WriteDestinationsService } from "./write-destinations.service";
 

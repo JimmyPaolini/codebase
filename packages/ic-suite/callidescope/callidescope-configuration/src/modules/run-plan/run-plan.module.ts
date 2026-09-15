@@ -1,10 +1,9 @@
-import {
-  ConfigurationModule,
-  FlagResolutionModule,
-} from "@callidescope/configuration";
 import { Module } from "@nestjs/common";
 
 import { LoggerModule } from "@codebase/logger";
+
+import { ConfigurationModule } from "../configuration/configuration.module";
+import { FlagResolutionModule } from "../flag-resolution/flag-resolution.module";
 
 import { RunPlanService } from "./run-plan.service";
 

@@ -168,35 +168,6 @@ const conformetryConfiguration: ConformetryNxConfiguration = [
     name: "nestjs-service-project",
     templatePath: "configuration/conformetry-templates/nestjs-service-project",
   },
-  {
-    description:
-      "A contracts-only TypeScript package template — declarations, no services and no NestJS module — for the leaf layer a toolchain's other packages import their vocabulary from",
-    inputs: defineInputs({
-      name: z.string().describe("Project name (kebab-case)"),
-      type: z
-        .string()
-        .describe(
-          "Project type directory (applications, packages, or tools), or a deeper packages/ nesting such as packages/ic-suite/callidescope",
-        ),
-      workspaceRelativePrefix: z
-        .string()
-        .describe(
-          "Relative climb from the project root back to the workspace root, e.g. ../.. two directories down or ../../../../ four directories down",
-        ),
-    }),
-    instances: [
-      {
-        patterns: ["packages/ic-suite/callidescope/callidescope-core"],
-        substitutions: {
-          type: "packages/ic-suite/callidescope",
-          workspaceRelativePrefix: "../../../../",
-        },
-      },
-    ],
-    name: "typescript-types-project",
-    templatePath:
-      "configuration/conformetry-templates/typescript-types-project",
-  },
 
   // Groups with tags pick the projects the template suits — which is what
   // `nx g` prompts with — and read their globs inside each one, so where a

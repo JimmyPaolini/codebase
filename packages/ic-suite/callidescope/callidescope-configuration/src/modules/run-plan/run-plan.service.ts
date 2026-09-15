@@ -1,11 +1,10 @@
-import {
-  ConfigurationService,
-  flagResolutionError,
-  FlagResolutionService,
-} from "@callidescope/configuration";
 import { Injectable } from "@nestjs/common";
 
 import { LoggerService } from "@codebase/logger";
+
+import { ConfigurationService } from "../configuration/configuration.service";
+import { flagResolutionError } from "../flag-resolution/flag-resolution.constants";
+import { FlagResolutionService } from "../flag-resolution/flag-resolution.service";
 
 import {
   CHECK_BREADTH,
@@ -16,9 +15,9 @@ import {
   DESTINATION_FLAG_NAMES,
 } from "./run-plan.constants";
 
-import type { AddressCommandOptions } from "../address-lookup/address-lookup.types";
-import type { CallidescopeCommandOptions } from "../callidescope/callidescope.types";
 import type {
+  AddressCommandOptions,
+  CallidescopeCommandOptions,
   PreparedLookup,
   PreparedRun,
   RunMode,

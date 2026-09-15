@@ -60,7 +60,6 @@ export type {
 } from "./modules/configuration/configuration.types";
 export { ProjectConfigurationService } from "./modules/configuration/project-configuration.service";
 export { flagResolutionError } from "./modules/flag-resolution/flag-resolution.constants";
-export { FlagResolutionModule } from "./modules/flag-resolution/flag-resolution.module";
 export { FlagResolutionService } from "./modules/flag-resolution/flag-resolution.service";
 export type {
   CallidescopeRunFlags,
@@ -74,3 +73,21 @@ export {
 export { InputModule } from "./modules/input/input.module";
 export { InputService } from "./modules/input/input.service";
 export type { CallidescopeFormatOptions } from "./modules/input/input.types";
+export {
+  CHECK_BREADTH,
+  CHECK_DEPTH,
+  CHECK_NAMES,
+  CHECK_REPORTS,
+  CHECK_SEPARATOR,
+  DESTINATION_FLAG_NAMES,
+} from "./modules/run-plan/run-plan.constants";
+export { RunPlanModule } from "./modules/run-plan/run-plan.module";
+export { RunPlanService } from "./modules/run-plan/run-plan.service";
+export type {
+  AddressCommandOptions,
+  CallidescopeCommandOptions,
+  PreparedLookup,
+  PreparedRun,
+  RunMode,
+  RunModeSelection,
+} from "./modules/run-plan/run-plan.types";

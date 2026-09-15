@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "@callidescope/core": "workspace:*",
+    "@codebase/logger": "workspace:*",
     "@nestjs/common": "catalog:",
     "jiti": "catalog:",
     "jsonc-parser": "catalog:",

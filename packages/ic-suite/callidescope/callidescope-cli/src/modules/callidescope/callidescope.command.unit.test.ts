@@ -7,6 +7,7 @@ import {
   InputService,
   ProjectConfigurationError,
   ProjectConfigurationFieldNotPermittedError,
+  RunPlanService,
 } from "@callidescope/configuration";
 import { AddressService, ProgramConfigurationError } from "@callidescope/graph";
 import {
@@ -14,8 +15,10 @@ import {
   MermaidReportService,
   OutputJsonService,
   OutputMarkdownService,
+  ReportFindingsService,
   ReportService,
   WorkspaceReportService,
+  WriteDestinationsService,
 } from "@callidescope/output";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
@@ -32,9 +35,6 @@ import {
 import { LoggerService } from "@codebase/logger";
 
 import { buildCallGraphResult, buildStackFrame } from "../../../testing/mocks";
-import { ReportFindingsService } from "../report-findings/report-findings.service";
-import { RunPlanService } from "../run-plan/run-plan.service";
-import { WriteDestinationsService } from "../write-destinations/write-destinations.service";
 
 import { CallidescopeCommand } from "./callidescope.command";
 import { buildUnknownCommandMessage } from "./callidescope.constants";

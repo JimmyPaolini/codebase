@@ -161,6 +161,33 @@ export function buildStackFrame(
 }
 
 /**
+ * Builds a result whose summary says a run really traced something.
+ *
+ * A result with nothing in it is not the neutral value it looks like: a run
+ * that traced nothing is itself a finding, so an all-zero summary would make
+ * every test that only passes a result through assert the wrong exit code for
+ * the wrong reason. One callable in one file in one project is the smallest
+ * summary that says the trace happened.
+ */
+export function buildTracedCallGraphResult(
+  overrides: Partial<CallGraphResult> = {},
+): CallGraphResult {
+  return buildCallGraphResult({
+    summary: {
+      callableCount: 1,
+      cyclicComponentCount: 0,
+      edgeCount: 0,
+      entryPointCount: 0,
+      fileCount: 1,
+      maximumDepth: 0,
+      projectCount: 1,
+      unresolvedCallCount: 0,
+    },
+    ...overrides,
+  });
+}
+
+/**
  * Sets up fake timers with a fixed system time before each test
  * and restores real timers after each test.
  *

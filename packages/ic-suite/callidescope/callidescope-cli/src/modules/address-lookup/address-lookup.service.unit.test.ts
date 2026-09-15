@@ -1,10 +1,10 @@
+import { RunPlanService } from "@callidescope/configuration";
 import { AddressService } from "@callidescope/graph";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import { CallidescopeService } from "../callidescope/callidescope.service";
-import { RunPlanService } from "../run-plan/run-plan.service";
 
 import { AddressLookupService } from "./address-lookup.service";
 

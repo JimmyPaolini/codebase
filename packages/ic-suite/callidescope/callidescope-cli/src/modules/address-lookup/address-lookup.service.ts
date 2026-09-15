@@ -1,16 +1,16 @@
+import { RunPlanService } from "@callidescope/configuration";
 import { AddressService } from "@callidescope/graph";
 import { Injectable } from "@nestjs/common";
 
 import { CallidescopeService } from "../callidescope/callidescope.service";
-import { RunPlanService } from "../run-plan/run-plan.service";
 
 import { ADDRESS_NOT_FOUND_ADVICE } from "./address-lookup.constants";
 
 import type {
-  AddressCommandOptions,
   LocatedWorkspace,
   ResolveAddressArguments,
 } from "./address-lookup.types";
+import type { AddressCommandOptions } from "@callidescope/configuration";
 import type { CallableAddressResolution } from "@callidescope/graph";
 
 /**

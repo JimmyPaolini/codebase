@@ -4,8 +4,8 @@
   "projectType": "library",
   "sourceRoot": "packages/ic-suite/callidescope/callidescope-core",
   "tags": [
-    "generator:typescript-types-project",
     "language:typescript",
+    "layer:core",
     "name:callidescope-core",
     "type:package"
   ],

@@ -1,16 +1,15 @@
-import {
-  ConfigurationService,
-  FlagResolutionService,
-} from "@callidescope/configuration";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
 import { LoggerService } from "@codebase/logger";
 
+import { ConfigurationService } from "../configuration/configuration.service";
+import { FlagResolutionService } from "../flag-resolution/flag-resolution.service";
+
 import { RunPlanService } from "./run-plan.service";
 
-import type { ResolvedCallidescopeConfiguration } from "@callidescope/configuration";
+import type { ResolvedCallidescopeConfiguration } from "../configuration/configuration.types";
 
 // A deliberate misspelling: the example of a `--format` value nobody
 // recognizes, which is exactly what the refusal below is about.

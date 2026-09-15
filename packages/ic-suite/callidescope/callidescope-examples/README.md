@@ -850,9 +850,11 @@ Dependency graphs exported by [codependix](https://github.com/JimmyPaolini/codeb
 graph LR
   callidescope_cli["callidescope-cli"]
   callidescope_configuration["callidescope-configuration"]
+  callidescope_core["callidescope-core"]
   callidescope_examples["callidescope-examples"]
   callidescope_examples -.-> callidescope_cli
   callidescope_examples --> callidescope_configuration
+  callidescope_examples --> callidescope_core
   classDef subject fill:#7c3aed,color:#fff,stroke:#4c1d95,stroke-width:2px
   class callidescope_examples subject
 ```

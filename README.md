@@ -171,7 +171,6 @@ Template-driven code generation and conformance validation, templates synced fro
 | `nestjs-command-project` | A standalone NestJS CLI application template built on nest-commander, for a new command-line tool in applications/, packages/, or tools/ |
 | `nestjs-graphql-application` | A standalone NestJS GraphQL API application template, for a new backend service exposing a GraphQL schema over HTTP |
 | `nestjs-service-project` | A standalone NestJS library package template for internal workspace code shared across projects, with no CLI entry point or HTTP server |
-| `typescript-types-project` | A contracts-only TypeScript package template — declarations, no services and no NestJS module — for the leaf layer a toolchain's other packages import their vocabulary from |
 | `nestjs-command-module` | A nest-commander command module template — command, module, constants, types, and unit test — for an existing NestJS command-line project |
 | `nestjs-dataloader-module` | A GraphQL dataloader module template — dataloader, module, types, and unit test — for batching lookups inside an existing NestJS project |
 | `nestjs-graphql-module` | A GraphQL module template — resolver, entities, args/input types, factories, constants, and unit test — for an existing NestJS project |
@@ -192,6 +191,7 @@ graph LR
   callidescope_agents["callidescope-agents"]
   callidescope_cli["callidescope-cli"]
   callidescope_configuration["callidescope-configuration"]
+  callidescope_core["callidescope-core"]
   callidescope_examples["callidescope-examples"]
   callidescope_graph["callidescope-graph"]
   callidescope_nx["callidescope-nx"]
@@ -234,19 +234,26 @@ graph LR
   validation["validation"]
   caelundas --> logger
   callidescope_cli --> callidescope_configuration
+  callidescope_cli --> callidescope_core
   callidescope_cli --> callidescope_graph
   callidescope_cli --> callidescope_output
   callidescope_cli --> logger
+  callidescope_configuration --> callidescope_core
+  callidescope_configuration --> logger
   callidescope_examples -.-> callidescope_cli
   callidescope_examples --> callidescope_configuration
+  callidescope_examples --> callidescope_core
   callidescope_graph --> callidescope_configuration
+  callidescope_graph --> callidescope_core
   callidescope_graph --> logger
   callidescope_nx --> callidescope_cli
   callidescope_nx --> callidescope_configuration
+  callidescope_nx --> callidescope_core
   callidescope_nx --> callidescope_graph
   callidescope_nx --> callidescope_output
   callidescope_nx --> logger
   callidescope_output --> callidescope_configuration
+  callidescope_output --> callidescope_core
   callidescope_output --> callidescope_graph
   callidescope_output --> logger
   codependix_boundaries --> codependix_configuration

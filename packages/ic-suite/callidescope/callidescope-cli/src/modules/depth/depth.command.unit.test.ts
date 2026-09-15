@@ -7,6 +7,7 @@ import {
   AddressDepthService,
   ProgramConfigurationError,
 } from "@callidescope/graph";
+import { AddressReportService } from "@callidescope/output";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import {
@@ -22,7 +23,6 @@ import {
 import { LoggerService } from "@codebase/logger";
 
 import { AddressLookupService } from "../address-lookup/address-lookup.service";
-import { AddressReportService } from "../address-report/address-report.service";
 
 import { DepthCommand } from "./depth.command";
 

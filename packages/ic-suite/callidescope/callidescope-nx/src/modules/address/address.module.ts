@@ -1,5 +1,6 @@
-import { AddressLookupModule, AddressReportModule } from "@callidescope/cli";
+import { AddressLookupModule } from "@callidescope/cli";
 import { GraphModule } from "@callidescope/graph";
+import { AddressReportModule } from "@callidescope/output";
 import { Module } from "@nestjs/common";
 
 import { AddressService } from "./address.service";

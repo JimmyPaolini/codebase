@@ -1244,12 +1244,14 @@ Dependency graphs exported by [codependix](https://github.com/JimmyPaolini/codeb
 graph LR
   callidescope_cli["callidescope-cli"]
   callidescope_configuration["callidescope-configuration"]
+  callidescope_core["callidescope-core"]
   callidescope_examples["callidescope-examples"]
   callidescope_graph["callidescope-graph"]
   callidescope_nx["callidescope-nx"]
   callidescope_output["callidescope-output"]
   logger["logger"]
   callidescope_cli --> callidescope_configuration
+  callidescope_cli --> callidescope_core
   callidescope_cli --> callidescope_graph
   callidescope_cli --> callidescope_output
   callidescope_cli --> logger
@@ -1376,11 +1378,6 @@ graph LR
   file_src_modules_address_lookup_address_lookup_service_ts["src/modules/address-lookup/address-lookup.service.ts"]
   file_src_modules_address_lookup_address_lookup_service_unit_test_ts["src/modules/address-lookup/address-lookup.service.unit.test.ts"]
   file_src_modules_address_lookup_address_lookup_types_ts["src/modules/address-lookup/address-lookup.types.ts"]
-  file_src_modules_address_report_address_report_constants_ts["src/modules/address-report/address-report.constants.ts"]
-  file_src_modules_address_report_address_report_module_ts["src/modules/address-report/address-report.module.ts"]
-  file_src_modules_address_report_address_report_service_ts["src/modules/address-report/address-report.service.ts"]
-  file_src_modules_address_report_address_report_service_unit_test_ts["src/modules/address-report/address-report.service.unit.test.ts"]
-  file_src_modules_address_report_address_report_types_ts["src/modules/address-report/address-report.types.ts"]
   file_src_modules_breadth_breadth_command_ts["src/modules/breadth/breadth.command.ts"]
   file_src_modules_breadth_breadth_command_unit_test_ts["src/modules/breadth/breadth.command.unit.test.ts"]
   file_src_modules_breadth_breadth_constants_ts["src/modules/breadth/breadth.constants.ts"]
@@ -1408,21 +1405,6 @@ graph LR
   file_src_modules_limits_limits_types_ts["src/modules/limits/limits.types.ts"]
   file_src_modules_limits_render_limits_service_ts["src/modules/limits/render-limits.service.ts"]
   file_src_modules_limits_render_limits_service_unit_test_ts["src/modules/limits/render-limits.service.unit.test.ts"]
-  file_src_modules_report_findings_report_findings_constants_ts["src/modules/report-findings/report-findings.constants.ts"]
-  file_src_modules_report_findings_report_findings_module_ts["src/modules/report-findings/report-findings.module.ts"]
-  file_src_modules_report_findings_report_findings_service_ts["src/modules/report-findings/report-findings.service.ts"]
-  file_src_modules_report_findings_report_findings_service_unit_test_ts["src/modules/report-findings/report-findings.service.unit.test.ts"]
-  file_src_modules_report_findings_report_findings_types_ts["src/modules/report-findings/report-findings.types.ts"]
-  file_src_modules_run_plan_run_plan_constants_ts["src/modules/run-plan/run-plan.constants.ts"]
-  file_src_modules_run_plan_run_plan_module_ts["src/modules/run-plan/run-plan.module.ts"]
-  file_src_modules_run_plan_run_plan_service_ts["src/modules/run-plan/run-plan.service.ts"]
-  file_src_modules_run_plan_run_plan_service_unit_test_ts["src/modules/run-plan/run-plan.service.unit.test.ts"]
-  file_src_modules_run_plan_run_plan_types_ts["src/modules/run-plan/run-plan.types.ts"]
-  file_src_modules_write_destinations_write_destinations_constants_ts["src/modules/write-destinations/write-destinations.constants.ts"]
-  file_src_modules_write_destinations_write_destinations_module_ts["src/modules/write-destinations/write-destinations.module.ts"]
-  file_src_modules_write_destinations_write_destinations_service_ts["src/modules/write-destinations/write-destinations.service.ts"]
-  file_src_modules_write_destinations_write_destinations_service_unit_test_ts["src/modules/write-destinations/write-destinations.service.unit.test.ts"]
-  file_src_modules_write_destinations_write_destinations_types_ts["src/modules/write-destinations/write-destinations.types.ts"]
   file_src_repl_ts["src/repl.ts"]
   file_src_repl_unit_test_ts["src/repl.unit.test.ts"]
   file_testing_mocks_ts["testing/mocks.ts"]
@@ -1440,55 +1422,33 @@ graph LR
   file_src_modules_address_lookup_address_lookup_constants_unit_test_ts --> file_src_modules_address_lookup_address_lookup_constants_ts
   file_src_modules_address_lookup_address_lookup_module_ts --> file_src_modules_address_lookup_address_lookup_service_ts
   file_src_modules_address_lookup_address_lookup_module_ts --> file_src_modules_callidescope_callidescope_module_ts
-  file_src_modules_address_lookup_address_lookup_module_ts --> file_src_modules_run_plan_run_plan_module_ts
   file_src_modules_address_lookup_address_lookup_service_ts --> file_src_modules_address_lookup_address_lookup_constants_ts
   file_src_modules_address_lookup_address_lookup_service_ts --> file_src_modules_address_lookup_address_lookup_types_ts
   file_src_modules_address_lookup_address_lookup_service_ts --> file_src_modules_callidescope_callidescope_service_ts
-  file_src_modules_address_lookup_address_lookup_service_ts --> file_src_modules_run_plan_run_plan_service_ts
   file_src_modules_address_lookup_address_lookup_service_unit_test_ts --> file_src_modules_address_lookup_address_lookup_service_ts
   file_src_modules_address_lookup_address_lookup_service_unit_test_ts --> file_src_modules_callidescope_callidescope_service_ts
   file_src_modules_address_lookup_address_lookup_service_unit_test_ts --> file_src_modules_callidescope_callidescope_types_ts
-  file_src_modules_address_lookup_address_lookup_service_unit_test_ts --> file_src_modules_run_plan_run_plan_service_ts
   file_src_modules_address_lookup_address_lookup_types_ts --> file_src_modules_callidescope_callidescope_types_ts
-  file_src_modules_address_report_address_report_module_ts --> file_src_modules_address_report_address_report_service_ts
-  file_src_modules_address_report_address_report_service_ts --> file_src_modules_address_report_address_report_types_ts
-  file_src_modules_address_report_address_report_service_unit_test_ts --> file_src_modules_address_report_address_report_service_ts
-  file_src_modules_address_report_address_report_service_unit_test_ts --> file_testing_mocks_ts
   file_src_modules_breadth_breadth_command_ts --> file_src_modules_address_lookup_address_lookup_constants_ts
   file_src_modules_breadth_breadth_command_ts --> file_src_modules_address_lookup_address_lookup_service_ts
   file_src_modules_breadth_breadth_command_ts --> file_src_modules_address_lookup_address_lookup_types_ts
-  file_src_modules_breadth_breadth_command_ts --> file_src_modules_address_report_address_report_service_ts
-  file_src_modules_breadth_breadth_command_ts --> file_src_modules_address_report_address_report_types_ts
   file_src_modules_breadth_breadth_command_ts --> file_src_modules_callidescope_callidescope_constants_ts
   file_src_modules_breadth_breadth_command_unit_test_ts --> file_src_modules_address_lookup_address_lookup_service_ts
   file_src_modules_breadth_breadth_command_unit_test_ts --> file_src_modules_address_lookup_address_lookup_types_ts
-  file_src_modules_breadth_breadth_command_unit_test_ts --> file_src_modules_address_report_address_report_service_ts
   file_src_modules_breadth_breadth_command_unit_test_ts --> file_src_modules_breadth_breadth_command_ts
   file_src_modules_breadth_breadth_command_unit_test_ts --> file_testing_mocks_ts
   file_src_modules_breadth_breadth_module_ts --> file_src_modules_address_lookup_address_lookup_module_ts
-  file_src_modules_breadth_breadth_module_ts --> file_src_modules_address_report_address_report_module_ts
   file_src_modules_breadth_breadth_module_ts --> file_src_modules_breadth_breadth_command_ts
   file_src_modules_callidescope_callidescope_command_ts --> file_src_modules_address_lookup_address_lookup_constants_ts
   file_src_modules_callidescope_callidescope_command_ts --> file_src_modules_callidescope_callidescope_constants_ts
   file_src_modules_callidescope_callidescope_command_ts --> file_src_modules_callidescope_callidescope_service_ts
-  file_src_modules_callidescope_callidescope_command_ts --> file_src_modules_callidescope_callidescope_types_ts
-  file_src_modules_callidescope_callidescope_command_ts --> file_src_modules_report_findings_report_findings_service_ts
-  file_src_modules_callidescope_callidescope_command_ts --> file_src_modules_run_plan_run_plan_constants_ts
-  file_src_modules_callidescope_callidescope_command_ts --> file_src_modules_run_plan_run_plan_service_ts
-  file_src_modules_callidescope_callidescope_command_ts --> file_src_modules_write_destinations_write_destinations_service_ts
   file_src_modules_callidescope_callidescope_command_unit_test_ts --> file_src_modules_callidescope_callidescope_command_ts
   file_src_modules_callidescope_callidescope_command_unit_test_ts --> file_src_modules_callidescope_callidescope_constants_ts
   file_src_modules_callidescope_callidescope_command_unit_test_ts --> file_src_modules_callidescope_callidescope_service_ts
-  file_src_modules_callidescope_callidescope_command_unit_test_ts --> file_src_modules_report_findings_report_findings_service_ts
-  file_src_modules_callidescope_callidescope_command_unit_test_ts --> file_src_modules_run_plan_run_plan_service_ts
-  file_src_modules_callidescope_callidescope_command_unit_test_ts --> file_src_modules_write_destinations_write_destinations_service_ts
   file_src_modules_callidescope_callidescope_command_unit_test_ts --> file_testing_mocks_ts
   file_src_modules_callidescope_callidescope_constants_ts --> file_src_modules_address_lookup_address_lookup_constants_ts
   file_src_modules_callidescope_callidescope_module_ts --> file_src_modules_callidescope_callidescope_command_ts
   file_src_modules_callidescope_callidescope_module_ts --> file_src_modules_callidescope_callidescope_service_ts
-  file_src_modules_callidescope_callidescope_module_ts --> file_src_modules_report_findings_report_findings_module_ts
-  file_src_modules_callidescope_callidescope_module_ts --> file_src_modules_run_plan_run_plan_module_ts
-  file_src_modules_callidescope_callidescope_module_ts --> file_src_modules_write_destinations_write_destinations_module_ts
   file_src_modules_callidescope_callidescope_service_integration_test_ts --> file_src_modules_callidescope_callidescope_service_ts
   file_src_modules_callidescope_callidescope_service_integration_test_ts --> file_testing_modules_ts
   file_src_modules_callidescope_callidescope_service_ts --> file_src_modules_callidescope_callidescope_constants_ts
@@ -1499,15 +1459,12 @@ graph LR
   file_src_modules_depth_depth_command_ts --> file_src_modules_address_lookup_address_lookup_constants_ts
   file_src_modules_depth_depth_command_ts --> file_src_modules_address_lookup_address_lookup_service_ts
   file_src_modules_depth_depth_command_ts --> file_src_modules_address_lookup_address_lookup_types_ts
-  file_src_modules_depth_depth_command_ts --> file_src_modules_address_report_address_report_service_ts
   file_src_modules_depth_depth_command_ts --> file_src_modules_callidescope_callidescope_constants_ts
   file_src_modules_depth_depth_command_unit_test_ts --> file_src_modules_address_lookup_address_lookup_service_ts
   file_src_modules_depth_depth_command_unit_test_ts --> file_src_modules_address_lookup_address_lookup_types_ts
-  file_src_modules_depth_depth_command_unit_test_ts --> file_src_modules_address_report_address_report_service_ts
   file_src_modules_depth_depth_command_unit_test_ts --> file_src_modules_callidescope_callidescope_types_ts
   file_src_modules_depth_depth_command_unit_test_ts --> file_src_modules_depth_depth_command_ts
   file_src_modules_depth_depth_module_ts --> file_src_modules_address_lookup_address_lookup_module_ts
-  file_src_modules_depth_depth_module_ts --> file_src_modules_address_report_address_report_module_ts
   file_src_modules_depth_depth_module_ts --> file_src_modules_depth_depth_command_ts
   file_src_modules_limits_limits_command_ts --> file_src_modules_callidescope_callidescope_constants_ts
   file_src_modules_limits_limits_command_ts --> file_src_modules_limits_limits_service_ts
@@ -1525,24 +1482,6 @@ graph LR
   file_src_modules_limits_render_limits_service_ts --> file_src_modules_limits_limits_types_ts
   file_src_modules_limits_render_limits_service_unit_test_ts --> file_src_modules_limits_limits_types_ts
   file_src_modules_limits_render_limits_service_unit_test_ts --> file_src_modules_limits_render_limits_service_ts
-  file_src_modules_report_findings_report_findings_module_ts --> file_src_modules_report_findings_report_findings_service_ts
-  file_src_modules_report_findings_report_findings_service_ts --> file_src_modules_report_findings_report_findings_types_ts
-  file_src_modules_report_findings_report_findings_service_unit_test_ts --> file_src_modules_report_findings_report_findings_service_ts
-  file_src_modules_report_findings_report_findings_service_unit_test_ts --> file_src_modules_report_findings_report_findings_types_ts
-  file_src_modules_report_findings_report_findings_service_unit_test_ts --> file_testing_mocks_ts
-  file_src_modules_report_findings_report_findings_types_ts --> file_src_modules_run_plan_run_plan_types_ts
-  file_src_modules_run_plan_run_plan_module_ts --> file_src_modules_run_plan_run_plan_service_ts
-  file_src_modules_run_plan_run_plan_service_ts --> file_src_modules_address_lookup_address_lookup_types_ts
-  file_src_modules_run_plan_run_plan_service_ts --> file_src_modules_callidescope_callidescope_types_ts
-  file_src_modules_run_plan_run_plan_service_ts --> file_src_modules_run_plan_run_plan_constants_ts
-  file_src_modules_run_plan_run_plan_service_ts --> file_src_modules_run_plan_run_plan_types_ts
-  file_src_modules_run_plan_run_plan_service_unit_test_ts --> file_src_modules_run_plan_run_plan_service_ts
-  file_src_modules_write_destinations_write_destinations_module_ts --> file_src_modules_write_destinations_write_destinations_service_ts
-  file_src_modules_write_destinations_write_destinations_service_ts --> file_src_modules_write_destinations_write_destinations_constants_ts
-  file_src_modules_write_destinations_write_destinations_service_ts --> file_src_modules_write_destinations_write_destinations_types_ts
-  file_src_modules_write_destinations_write_destinations_service_unit_test_ts --> file_src_modules_write_destinations_write_destinations_service_ts
-  file_src_modules_write_destinations_write_destinations_service_unit_test_ts --> file_src_modules_write_destinations_write_destinations_types_ts
-  file_src_modules_write_destinations_write_destinations_service_unit_test_ts --> file_testing_mocks_ts
   file_src_repl_ts --> file_src_main_module_ts
 ```
 <!-- codependix:end name="codependix-file-imports" -->

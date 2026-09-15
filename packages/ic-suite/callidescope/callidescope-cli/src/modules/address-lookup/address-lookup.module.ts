@@ -1,8 +1,8 @@
+import { RunPlanModule } from "@callidescope/configuration";
 import { CallablesModule } from "@callidescope/graph";
 import { Module } from "@nestjs/common";
 
 import { CallidescopeModule } from "../callidescope/callidescope.module";
-import { RunPlanModule } from "../run-plan/run-plan.module";
 
 import { AddressLookupService } from "./address-lookup.service";
 

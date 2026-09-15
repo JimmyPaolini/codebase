@@ -1,21 +1,24 @@
 import {
+  CHECK_NAMES,
   DEFAULT_JSON_INDENTATION,
   DEFAULT_PREVIEW_COUNT,
   DEFAULT_RUN_HEADING,
   InputService,
+  RunPlanService,
 } from "@callidescope/configuration";
 import { AddressService } from "@callidescope/graph";
-import { MarkdownReportService, OutputJsonService } from "@callidescope/output";
+import {
+  MarkdownReportService,
+  OutputJsonService,
+  ReportFindingsService,
+  WriteDestinationsService,
+} from "@callidescope/output";
 import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
 
 import { LoggerService } from "@codebase/logger";
 
 import { ADDRESS_NOT_FOUND_ADVICE } from "../address-lookup/address-lookup.constants";
-import { ReportFindingsService } from "../report-findings/report-findings.service";
-import { CHECK_NAMES } from "../run-plan/run-plan.constants";
-import { RunPlanService } from "../run-plan/run-plan.service";
-import { WriteDestinationsService } from "../write-destinations/write-destinations.service";
 
 import {
   buildUnknownCommandMessage,
@@ -25,8 +28,8 @@ import {
 } from "./callidescope.constants";
 import { CallidescopeService } from "./callidescope.service";
 
-import type { CallidescopeCommandOptions } from "./callidescope.types";
 import type {
+  CallidescopeCommandOptions,
   CallidescopeOutputFormat,
   ProjectLimitsLookup,
   ResolvedCallidescopeConfiguration,

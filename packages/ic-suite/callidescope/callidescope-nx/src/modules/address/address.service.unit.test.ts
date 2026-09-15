@@ -1,5 +1,6 @@
-import { AddressLookupService, AddressReportService } from "@callidescope/cli";
+import { AddressLookupService } from "@callidescope/cli";
 import { AddressDepthService, BreadthService } from "@callidescope/graph";
+import { AddressReportService } from "@callidescope/output";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it } from "vitest";

@@ -1,6 +1,6 @@
 // 🏷️ Types
 
-import type { RunMode } from "../run-plan/run-plan.types";
+import type { RunMode } from "@callidescope/configuration";
 import type { CallGraphResult } from "@callidescope/core";
 
 /** Arguments accepted when weighing what a run found. */

@@ -1,5 +1,6 @@
 import { InputService } from "@callidescope/configuration";
 import { AddressDepthService } from "@callidescope/graph";
+import { AddressReportService } from "@callidescope/output";
 import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
 
@@ -7,13 +8,10 @@ import { LoggerService } from "@codebase/logger";
 
 import { REJECTED_ADDRESS } from "../address-lookup/address-lookup.constants";
 import { AddressLookupService } from "../address-lookup/address-lookup.service";
-import { AddressReportService } from "../address-report/address-report.service";
 import { readRefusalHeadline } from "../callidescope/callidescope.constants";
 
-import type {
-  AddressCommandOptions,
-  LocatedWorkspace,
-} from "../address-lookup/address-lookup.types";
+import type { LocatedWorkspace } from "../address-lookup/address-lookup.types";
+import type { AddressCommandOptions } from "@callidescope/configuration";
 import type { CallableId } from "@callidescope/core";
 import type { LogData } from "@codebase/logger";
 
