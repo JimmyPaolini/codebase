@@ -1,5 +1,4 @@
-export { ConfigurationLoaderModule } from "./modules/configuration-loader/configuration-loader.module";
-export { ConfigurationLoaderService } from "./modules/configuration-loader/configuration-loader.service";
+export { ConfigurationLoaderService } from "./modules/configuration/configuration-loader.service";
 // 📤 Exports
 export {
   CODEPENDIX_EXPORT_TARGETS,
@@ -56,3 +55,14 @@ export { InputService } from "./modules/input/input.service";
 export { OverrideResolutionModule } from "./modules/override-resolution/override-resolution.module";
 export { OverrideResolutionService } from "./modules/override-resolution/override-resolution.service";
 export type { ApplyOverridesArguments } from "./modules/override-resolution/override-resolution.types";
+export {
+  CHECK_BOUNDARIES,
+  CHECK_NAMES,
+  CHECK_REPORTS,
+  CHECK_SEPARATOR,
+  RUN_MODE_CHOICES,
+  RUN_MODE_SUBJECT,
+} from "./modules/run-plan/run-plan.constants";
+export { RunPlanModule } from "./modules/run-plan/run-plan.module";
+export { RunPlanService } from "./modules/run-plan/run-plan.service";
+export type { MapCommandOptions } from "./modules/run-plan/run-plan.types";

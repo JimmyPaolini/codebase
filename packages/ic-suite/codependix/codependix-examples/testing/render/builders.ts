@@ -4,7 +4,6 @@ import {
   BoundaryReportService,
   BoundarySelectorService,
 } from "@codependix/boundaries";
-import { AnchorsService, DeliveryService } from "@codependix/cli";
 import {
   ConfigurationLoaderService,
   ConfigurationService,
@@ -27,6 +26,7 @@ import {
   NeighborhoodService,
   WorkspaceGraphService,
 } from "@codependix/nx-projects";
+import { AnchorsService, DeliveryService } from "@codependix/output";
 
 import { LoggerService } from "@codebase/logger";
 

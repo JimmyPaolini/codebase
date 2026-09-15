@@ -1,32 +1,34 @@
 import path from "node:path";
 
-import { BoundaryCheckService } from "@codependix/boundaries";
-import { InputService } from "@codependix/configuration";
+import {
+  BoundaryCheckService,
+  RunContextService,
+} from "@codependix/boundaries";
+import {
+  CHECK_NAMES,
+  InputService,
+  RunPlanService,
+} from "@codependix/configuration";
+import {
+  CombinedOutputService,
+  FORMAT_MARKDOWN,
+  FORMAT_NAMES,
+  GraphRunService,
+  ReportingService,
+} from "@codependix/output";
 import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
 
 import { LoggerService } from "@codebase/logger";
 
-import {
-  FORMAT_MARKDOWN,
-  FORMAT_NAMES,
-} from "../combined-output/combined-output.constants";
-import { CombinedOutputService } from "../combined-output/combined-output.service";
-import { ReportingService } from "../reporting/reporting.service";
-import { RunContextService } from "../run-context/run-context.service";
-import { CHECK_NAMES } from "../run-plan/run-plan.constants";
-import { RunPlanService } from "../run-plan/run-plan.service";
-
-import { MapService } from "./map.service";
-
-import type { CombinedOutputFormat } from "../combined-output/combined-output.types";
-import type { RunMode } from "../run-plan/run-plan.types";
+import type { GraphRunContext } from "@codependix/boundaries";
+import type { MapCommandOptions } from "@codependix/configuration";
+import type { RunMode } from "@codependix/core";
 import type {
   CombinedGraphExports,
-  GraphRunContext,
-  MapCommandOptions,
+  CombinedOutputFormat,
   MapRunResult,
-} from "./map.types";
+} from "@codependix/output";
 
 /**
  * CLI entry point for the codependix dependency graph workflow.
@@ -54,7 +56,7 @@ export class MapCommand extends CommandRunner {
   // 🏗 Dependency Injection
 
   constructor(
-    private readonly mapService: MapService,
+    private readonly graphRunService: GraphRunService,
     private readonly boundaryCheckService: BoundaryCheckService,
     private readonly combinedOutputService: CombinedOutputService,
     private readonly inputService: InputService,
@@ -109,7 +111,7 @@ export class MapCommand extends CommandRunner {
   private async runExports(context: GraphRunContext): Promise<MapRunResult> {
     this.reportingService.reportEmptySelection(context.configuration.include);
 
-    return this.mapService.run(context);
+    return this.graphRunService.run(context);
   }
 
   /**

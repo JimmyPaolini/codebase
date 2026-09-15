@@ -3,11 +3,12 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 
 import {
-  MARKDOWN_SECTION_INTRO_LINE,
+  InputService,
+  missingInputError,
   RUN_MODE_SUBJECT,
   RunPlanService,
-} from "@codependix/cli";
-import { InputService, missingInputError } from "@codependix/configuration";
+} from "@codependix/configuration";
+import { MARKDOWN_SECTION_INTRO_LINE } from "@codependix/output";
 
 import { anchorsService, deliveryService } from "./builders";
 import { fence, fenceJson, table } from "./document";
@@ -16,11 +17,10 @@ import { buildExampleAnchor } from "./paths";
 
 import type { ExampleDocument, ExampleSection } from "./types";
 import type {
-  CodependixRunMode,
+  CodependixExportTarget,
   MapCommandOptions,
-  ProjectRunResult,
-} from "@codependix/cli";
-import type { CodependixExportTarget } from "@codependix/configuration";
+} from "@codependix/configuration";
+import type { CodependixRunMode, ProjectRunResult } from "@codependix/core";
 
 // 🏷️ Types
 

@@ -2,9 +2,9 @@ import path from "node:path";
 
 import { Injectable } from "@nestjs/common";
 
-import { ConfigurationLoaderService } from "../configuration-loader/configuration-loader.service";
 import { OverrideResolutionService } from "../override-resolution/override-resolution.service";
 
+import { ConfigurationLoaderService } from "./configuration-loader.service";
 import {
   codependixProjectConfigurationSchema,
   DEFAULT_EXPORT_TARGET,

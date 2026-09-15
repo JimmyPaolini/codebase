@@ -1,8 +1,8 @@
 import { Module } from "@nestjs/common";
 
-import { ConfigurationLoaderModule } from "../configuration-loader/configuration-loader.module";
 import { OverrideResolutionModule } from "../override-resolution/override-resolution.module";
 
+import { ConfigurationLoaderService } from "./configuration-loader.service";
 import { ConfigurationService } from "./configuration.service";
 
 /**
@@ -12,7 +12,7 @@ import { ConfigurationService } from "./configuration.service";
 @Module({
   controllers: [],
   exports: [ConfigurationService],
-  imports: [ConfigurationLoaderModule, OverrideResolutionModule],
-  providers: [ConfigurationService],
+  imports: [OverrideResolutionModule],
+  providers: [ConfigurationLoaderService, ConfigurationService],
 })
 export class ConfigurationModule {}

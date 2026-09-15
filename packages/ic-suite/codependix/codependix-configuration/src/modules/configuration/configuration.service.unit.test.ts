@@ -6,9 +6,9 @@ import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 import { ZodError } from "zod";
 
-import { ConfigurationLoaderService } from "../configuration-loader/configuration-loader.service";
 import { OverrideResolutionService } from "../override-resolution/override-resolution.service";
 
+import { ConfigurationLoaderService } from "./configuration-loader.service";
 import {
   codependixConfigurationSchema,
   ConfigurationFileNotFoundError,

@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "@codependix/configuration": "workspace:*",
+    "@codependix/core": "workspace:*",
     "@codependix/file-imports": "workspace:*",
     "@codependix/nestjs-modules": "workspace:*",
     "@codependix/nx-projects": "workspace:*",

@@ -3,37 +3,35 @@ import {
   BoundaryCheckService,
   BoundaryReportService,
   type BoundaryViolation,
+  type GraphRunContext,
+  RunContextService,
 } from "@codependix/boundaries";
 import {
   InputError,
   InputService,
   missingInputError,
+  RUN_MODE_SUBJECT,
+  RunPlanService,
 } from "@codependix/configuration";
+import {
+  CombinedOutputService,
+  GraphRunService,
+  ReportingService,
+} from "@codependix/output";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { LoggerService } from "@codebase/logger";
 
-import { CombinedOutputService } from "../combined-output/combined-output.service";
-import { ReportingService } from "../reporting/reporting.service";
-import { RunContextService } from "../run-context/run-context.service";
-import { RUN_MODE_SUBJECT } from "../run-plan/run-plan.constants";
-import { RunPlanService } from "../run-plan/run-plan.service";
-
 import { MapCommand } from "./map.command";
-import { MapService } from "./map.service";
 
-import type { GraphRunOutcome } from "../delivery/delivery.types";
-import type { RunMode } from "../run-plan/run-plan.types";
-import type {
-  CombinedGraphExports,
-  GraphRunContext,
-  MapCommandOptions,
-} from "./map.types";
+import type { MapCommandOptions } from "@codependix/configuration";
+import type { GraphRunOutcome, RunMode } from "@codependix/core";
+import type { CombinedGraphExports } from "@codependix/output";
 
 /**
- * Builds the shape `MapService.run` resolves — a `GraphRunOutcome` and every
+ * Builds the shape `GraphRunService.run` resolves — a `GraphRunOutcome` and every
  * active graph type's combined-output data, empty unless a test names one.
  */
 function buildMapRun(
@@ -66,7 +64,7 @@ const VIOLATION: BoundaryViolation = {
 describe(MapCommand, () => {
   let command: MapCommand;
   let boundaryCheckService: BoundaryCheckService;
-  let codependixService: MapService;
+  let codependixService: GraphRunService;
   let combinedOutputService: CombinedOutputService;
   let inputService: InputService;
   let loggerService: LoggerService;
@@ -153,7 +151,7 @@ describe(MapCommand, () => {
           provide: BoundaryCheckService,
           useValue: createMock<BoundaryCheckService>(),
         },
-        { provide: MapService, useValue: createMock<MapService>() },
+        { provide: GraphRunService, useValue: createMock<GraphRunService>() },
         {
           provide: CombinedOutputService,
           useValue: createMock<CombinedOutputService>(),
@@ -178,7 +176,7 @@ describe(MapCommand, () => {
   beforeEach(() => {
     process.exitCode = 0;
     boundaryCheckService = createMock<BoundaryCheckService>();
-    codependixService = createMock<MapService>();
+    codependixService = createMock<GraphRunService>();
     combinedOutputService = createMock<CombinedOutputService>();
     inputService = createMock<InputService>();
     loggerService = createMock<LoggerService>();
@@ -266,7 +264,7 @@ describe(MapCommand, () => {
           provide: BoundaryCheckService,
           useValue: createMock<BoundaryCheckService>(),
         },
-        { provide: MapService, useValue: createMock<MapService>() },
+        { provide: GraphRunService, useValue: createMock<GraphRunService>() },
         {
           provide: CombinedOutputService,
           useValue: createMock<CombinedOutputService>(),
@@ -590,6 +588,24 @@ describe(MapCommand, () => {
     );
     expect(inputService.parseOptionalOption).toHaveBeenCalledWith(
       "  codependix.config.ts  ",
+    );
+  });
+
+  it("delegates --projects to the shared input service", () => {
+    vi.mocked(inputService.parseOptionalOption).mockReturnValue("parsed");
+
+    expect(buildCommand().parseProjects("  lexico,caelundas  ")).toBe("parsed");
+    expect(inputService.parseOptionalOption).toHaveBeenCalledWith(
+      "  lexico,caelundas  ",
+    );
+  });
+
+  it("delegates --tags to the shared input service", () => {
+    vi.mocked(inputService.parseOptionalOption).mockReturnValue("parsed");
+
+    expect(buildCommand().parseTags("  type:package  ")).toBe("parsed");
+    expect(inputService.parseOptionalOption).toHaveBeenCalledWith(
+      "  type:package  ",
     );
   });
 

@@ -32,3 +32,6 @@ export type {
   LevelCheckArguments,
 } from "./modules/boundary-check/boundary-check.types";
 export { BoundaryGraphService } from "./modules/boundary-check/boundary-graph.service";
+export { RunContextModule } from "./modules/run-context/run-context.module";
+export { RunContextService } from "./modules/run-context/run-context.service";
+export type { GraphRunContext } from "./modules/run-context/run-context.types";
