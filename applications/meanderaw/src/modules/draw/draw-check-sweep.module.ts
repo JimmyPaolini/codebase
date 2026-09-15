@@ -1,12 +1,12 @@
 import { Module } from "@nestjs/common";
 import { getRepositoryToken, TypeOrmModule } from "@nestjs/typeorm";
 
+import { CodeModule } from "../code/code.module";
 import { HardcodedMeandersService } from "../hardcoded-meanders/hardcoded-meanders.service";
 import { MeanderCharacteristicsModule } from "../meander-characteristics/meander-characteristics.module";
 import { MeanderClassificationModule } from "../meander-classification/meander-classification.module";
 import { Meander } from "../meander-database/entities/Meander.entity";
 import { MeanderDatabaseService } from "../meander-database/meander-database.service";
-import { MeanderDecodingModule } from "../meander-decoding/meander-decoding.module";
 import { MeanderEnumerationModule } from "../meander-enumeration/meander-enumeration.module";
 import { MeanderRenderingModule } from "../meander-rendering/meander-rendering.module";
 
@@ -47,7 +47,7 @@ import { DrawRecordService } from "./draw-record.service";
   imports: [
     MeanderCharacteristicsModule,
     MeanderClassificationModule,
-    MeanderDecodingModule,
+    CodeModule,
     MeanderEnumerationModule,
     MeanderRenderingModule,
     TypeOrmModule.forRoot({

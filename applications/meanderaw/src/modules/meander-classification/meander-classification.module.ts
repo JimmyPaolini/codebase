@@ -1,5 +1,6 @@
 import { Module } from "@nestjs/common";
 
+import { CodeModule } from "../code/code.module";
 import { MosaicNamingModule } from "../mosaic-naming/mosaic-naming.module";
 
 import { MeanderClassificationService } from "./meander-classification.service";
@@ -19,7 +20,7 @@ import { MeanderClassificationService } from "./meander-classification.service";
 @Module({
   controllers: [],
   exports: [MeanderClassificationService],
-  imports: [MosaicNamingModule],
+  imports: [CodeModule, MosaicNamingModule],
   providers: [MeanderClassificationService],
 })
 export class MeanderClassificationModule {}

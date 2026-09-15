@@ -1,9 +1,10 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
+import { CodeService } from "../code/code.service";
 import { GraphService } from "../graph/graph.service";
-import { MeanderDecodingService } from "../meander-decoding/meander-decoding.service";
-import { MeanderLatticeService } from "../meander-lattice/meander-lattice.service";
+import { MosaicSymmetryService } from "../mosaic-tile/mosaic-symmetry.service";
+import { MosaicTileService } from "../mosaic-tile/mosaic-tile.service";
 
 import { MeanderConnectivityService } from "./meander-connectivity.service";
 
@@ -11,25 +12,26 @@ import { MeanderConnectivityService } from "./meander-connectivity.service";
 
 /**
  * Drives `MeanderConnectivityService` through the decoder, so a case names
- * the Code it is about rather than a grid literal: these counts are read off
+ * the Code it is about rather than a Code literal: these counts are read off
  * a Code in production, and a fixture written any other way would be
  * asserting something the pipeline never computes.
  */
 describe(MeanderConnectivityService, () => {
-  let decodingService: MeanderDecodingService;
+  let codeService: CodeService;
   let service: MeanderConnectivityService;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
       providers: [
         MeanderConnectivityService,
-        MeanderDecodingService,
-        MeanderLatticeService,
+        CodeService,
+        MosaicSymmetryService,
+        MosaicTileService,
         GraphService,
       ],
     }).compile();
 
-    decodingService = await module.resolve(MeanderDecodingService);
+    codeService = await module.resolve(CodeService);
     service = await module.resolve(MeanderConnectivityService);
   });
 
@@ -78,24 +80,19 @@ describe(MeanderConnectivityService, () => {
           "the `bars` tile `branch`'s comb and `parallel`'s one-strand bundle both address to: two separate bars, each terminating at both ends",
       },
     ])("reads $shape as $expected", ({ code, columns, expected, rows }) => {
-      const grid = decodingService.decode(code, rows, columns);
-
-      expect(service.connectivity(grid)).toStrictEqual(expected);
+      expect(
+        service.connectivity(codeService.parse(code, rows, columns)),
+      ).toStrictEqual(expected);
     });
 
-    it("reads an edge claimed by only one of its two ends, which no well-formed Code spells but the decoder still admits", () => {
-      const grid = [
-        [
-          { east: true, north: false, south: false, west: false },
-          { east: false, north: false, south: false, west: false },
-        ],
-      ];
-
-      expect(service.connectivity(grid)).toStrictEqual({
-        components: 1,
-        cycles: 0,
-        freeEnds: 2,
-      });
+    it("reads an edge claimed by only one of its two ends, which no well-formed Code spells but the reader still admits", () => {
+      expect(service.connectivity(codeService.parse("20", 2, 2))).toStrictEqual(
+        {
+          components: 1,
+          cycles: 0,
+          freeEnds: 2,
+        },
+      );
     });
   });
 });

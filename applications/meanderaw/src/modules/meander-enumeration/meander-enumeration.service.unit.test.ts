@@ -1,7 +1,7 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { LatticeIdentificationService } from "../lattice-identification/lattice-identification.service";
+import { CodeService } from "../code/code.service";
 import { MeanderLatticeService } from "../meander-lattice/meander-lattice.service";
 import { MosaicNamingService } from "../mosaic-naming/mosaic-naming.service";
 import { MosaicSymmetryService } from "../mosaic-tile/mosaic-symmetry.service";
@@ -18,7 +18,7 @@ describe(MeanderEnumerationService, () => {
   beforeAll(async () => {
     const module = await Test.createTestingModule({
       providers: [
-        LatticeIdentificationService,
+        CodeService,
         MeanderEnumerationService,
         MeanderLatticeService,
         MosaicNamingService,

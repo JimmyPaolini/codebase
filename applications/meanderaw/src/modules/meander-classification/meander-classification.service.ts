@@ -1,11 +1,12 @@
 import { Inject, Injectable } from "@nestjs/common";
 
+import { CodeService } from "../code/code.service";
 import { MosaicNamingService } from "../mosaic-naming/mosaic-naming.service";
 
 import { STRUCTURAL_MINIMUM_ROWS } from "./meander-classification.constants";
 
+import type { ParsedCode } from "../code/code.types";
 import type { MeanderCharacteristics } from "../meander-characteristics/meander-characteristics.types";
-import type { MeanderPointGrid } from "../meander-decoding/meander-decoding.types";
 import type { MosaicSubFamily } from "../mosaic-tile/mosaic-tile.types";
 import type {
   MeanderClassification,
@@ -87,6 +88,8 @@ export class MeanderClassificationService {
   // 🏗 Dependency Injection
 
   constructor(
+    @Inject(CodeService)
+    private readonly codeService: CodeService,
     @Inject(MosaicNamingService)
     private readonly mosaicNamingService: MosaicNamingService,
   ) {}
@@ -167,19 +170,18 @@ export class MeanderClassificationService {
    * The family and the named region one tile's structure earns, each
    * `undefined` where it earns none.
    *
-   * The grid is read as a `mosaic` tile for the naming pass alone — that
-   * service reads a tile's points and its edges and nothing else, and a
-   * decoded Code's grid is exactly those points. It is not validated against
-   * the tile agreement invariant here, because a Code the enumerator spelled
-   * already satisfies it and a Code a person typed is the caller's own
-   * business.
+   * The Code is read back as a tile for the naming pass alone — that service
+   * reads a tile's points and its edges and nothing else. It is not validated
+   * against the tile agreement invariant here, because a Code the enumerator
+   * spelled already satisfies it and a Code a person typed is the caller's
+   * own business.
    */
   classify(
-    grid: MeanderPointGrid,
+    code: ParsedCode,
     characteristics: MeanderCharacteristics,
     shape: MeanderShape,
   ): MeanderClassification {
-    const subFamily = this.subFamily(grid, shape);
+    const subFamily = this.subFamily(code);
     const structure: MeanderStructure = {
       ...shape,
       characteristics,
@@ -289,10 +291,7 @@ export class MeanderClassificationService {
   }
 
   /** The named region of the `mosaic` unit space a tile sits in, which a tile of any family may earn — see this service's own doc comment. */
-  subFamily(
-    grid: MeanderPointGrid,
-    shape: MeanderShape,
-  ): MosaicSubFamily | undefined {
-    return this.mosaicNamingService.name({ ...shape, points: grid });
+  subFamily(code: ParsedCode): MosaicSubFamily | undefined {
+    return this.mosaicNamingService.name(this.codeService.tile(code));
   }
 }

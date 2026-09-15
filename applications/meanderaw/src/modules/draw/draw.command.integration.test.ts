@@ -6,6 +6,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { LoggerService } from "@codebase/logger";
 
+import { CodeModule } from "../code/code.module";
 import { GraphService } from "../graph/graph.service";
 import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
 import { HardcodedMeandersService } from "../hardcoded-meanders/hardcoded-meanders.service";
@@ -14,7 +15,6 @@ import { MeanderConnectivityService } from "../meander-characteristics/meander-c
 import { MeanderClassificationService } from "../meander-classification/meander-classification.service";
 import { Meander } from "../meander-database/entities/Meander.entity";
 import { MeanderDatabaseService } from "../meander-database/meander-database.service";
-import { MeanderDecodingModule } from "../meander-decoding/meander-decoding.module";
 import { MeanderLatticeService } from "../meander-lattice/meander-lattice.service";
 import { MeanderRenderingModule } from "../meander-rendering/meander-rendering.module";
 import { MosaicNamingService } from "../mosaic-naming/mosaic-naming.service";
@@ -55,7 +55,7 @@ describe("drawCommand --code mode", () => {
           type: "better-sqlite3",
         }),
         TypeOrmModule.forFeature([Meander]),
-        MeanderDecodingModule,
+        CodeModule,
         MeanderRenderingModule,
       ],
       providers: [

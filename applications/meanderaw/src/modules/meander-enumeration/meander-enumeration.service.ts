@@ -1,6 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
 
-import { LatticeIdentificationService } from "../lattice-identification/lattice-identification.service";
+import { CodeService } from "../code/code.service";
 import { MosaicTilesService } from "../mosaic-tile/mosaic-tiles.service";
 
 import { MEANDER_ENUMERATION_MINIMUM_ROWS } from "./meander-enumeration.constants";
@@ -51,8 +51,8 @@ export class MeanderEnumerationService {
   // 🏗 Dependency Injection
 
   constructor(
-    @Inject(LatticeIdentificationService)
-    private readonly latticeIdentificationService: LatticeIdentificationService,
+    @Inject(CodeService)
+    private readonly codeService: CodeService,
     @Inject(MosaicTilesService)
     private readonly mosaicTilesService: MosaicTilesService,
   ) {}
@@ -78,7 +78,7 @@ export class MeanderEnumerationService {
     const { columns, rows } = shape;
 
     return this.mosaicTilesService.enumerate(rows, columns).map((tile) => ({
-      code: this.latticeIdentificationService.identify(tile),
+      code: this.codeService.spell(tile),
       columns,
       rows,
     }));

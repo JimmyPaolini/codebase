@@ -1,11 +1,11 @@
 import { Inject, Injectable } from "@nestjs/common";
 
+import { CodeService } from "../code/code.service";
+
 import { MeanderConnectivityService } from "./meander-connectivity.service";
 
-import type {
-  MeanderPointDirections,
-  MeanderPointGrid,
-} from "../meander-decoding/meander-decoding.types";
+import type { ParsedCode } from "../code/code.types";
+import type { MosaicDirections } from "../mosaic-tile/mosaic-tile.types";
 import type {
   MeanderCharacteristics,
   MeanderJunctionCounts,
@@ -60,6 +60,8 @@ export class MeanderCharacteristicsService {
   // 🏗 Dependency Injection
 
   constructor(
+    @Inject(CodeService)
+    private readonly codeService: CodeService,
     @Inject(MeanderConnectivityService)
     private readonly meanderConnectivityService: MeanderConnectivityService,
   ) {}
@@ -72,48 +74,56 @@ export class MeanderCharacteristicsService {
 
   /** Whether the cell at `(level, column)` has an open corridor east, into `(level, column + 1)`. */
   private hasEastCorridor(
-    grid: MeanderPointGrid,
+    code: ParsedCode,
     level: number,
     column: number,
   ): boolean {
-    const cellColumns = (grid[0]?.length ?? 0) - 1;
+    const cellColumns = code.columns - 1;
 
     return (
-      column < cellColumns - 1 && !this.pointAt(grid, level, column + 1)?.south
+      column < cellColumns - 1 &&
+      !this.codeService.directionsAt(code, level, column + 1).south
     );
   }
 
   /** Whether the cell at `(level, column)` has an open corridor north, into `(level - 1, column)`. */
   private hasNorthCorridor(
-    grid: MeanderPointGrid,
+    code: ParsedCode,
     level: number,
     column: number,
   ): boolean {
-    return level > 0 && !this.pointAt(grid, level, column)?.east;
+    return (
+      level > 0 && !this.codeService.directionsAt(code, level, column).east
+    );
   }
 
   /** Whether the cell at `(level, column)` has an open corridor south, into `(level + 1, column)`. */
   private hasSouthCorridor(
-    grid: MeanderPointGrid,
+    code: ParsedCode,
     level: number,
     column: number,
   ): boolean {
-    const cellRows = grid.length - 1;
+    const cellRows = code.levels - 1;
 
-    return level < cellRows - 1 && !this.pointAt(grid, level + 1, column)?.east;
+    return (
+      level < cellRows - 1 &&
+      !this.codeService.directionsAt(code, level + 1, column).east
+    );
   }
 
   /** Whether the cell at `(level, column)` has an open corridor west, into `(level, column - 1)`. */
   private hasWestCorridor(
-    grid: MeanderPointGrid,
+    code: ParsedCode,
     level: number,
     column: number,
   ): boolean {
-    return column > 0 && !this.pointAt(grid, level, column)?.south;
+    return (
+      column > 0 && !this.codeService.directionsAt(code, level, column).south
+    );
   }
 
   /** How many of a point's four direction bits are set, read directly off the digit rather than derived from a neighbor's edge. */
-  private inkDegree(point: MeanderPointDirections): number {
+  private inkDegree(point: MosaicDirections): number {
     return [point.east, point.north, point.south, point.west].filter(Boolean)
       .length;
   }
@@ -127,25 +137,16 @@ export class MeanderCharacteristicsService {
    * `MeanderTopologyService.negativeDegree`'s own canvas-edge cropping.
    */
   private negativeDegree(
-    grid: MeanderPointGrid,
+    code: ParsedCode,
     level: number,
     column: number,
   ): number {
     return [
-      this.hasEastCorridor(grid, level, column),
-      this.hasNorthCorridor(grid, level, column),
-      this.hasSouthCorridor(grid, level, column),
-      this.hasWestCorridor(grid, level, column),
+      this.hasEastCorridor(code, level, column),
+      this.hasNorthCorridor(code, level, column),
+      this.hasSouthCorridor(code, level, column),
+      this.hasWestCorridor(code, level, column),
     ].filter(Boolean).length;
-  }
-
-  /** One grid point, or `undefined` off the grid's own extent. */
-  private pointAt(
-    grid: MeanderPointGrid,
-    level: number,
-    column: number,
-  ): MeanderPointDirections | undefined {
-    return grid[level]?.[column];
   }
 
   /** Records one degree as a three-armed junction, a four-armed one, or neither. */
@@ -159,28 +160,31 @@ export class MeanderCharacteristicsService {
     }
   }
 
-  /** The ink T-junction and X-junction counts over every point of the decoded grid. */
-  private tallyInk(grid: MeanderPointGrid): MeanderJunctionCounts {
+  /** The ink T-junction and X-junction counts over every point the Code spells. */
+  private tallyInk(code: ParsedCode): MeanderJunctionCounts {
     const counts: MeanderJunctionCounts = { tJunctions: 0, xJunctions: 0 };
 
-    for (const row of grid) {
-      for (const point of row) {
-        this.tally(counts, this.inkDegree(point));
+    for (let level = 0; level < code.levels; level += 1) {
+      for (let column = 0; column < code.columns; column += 1) {
+        this.tally(
+          counts,
+          this.inkDegree(this.codeService.directionsAt(code, level, column)),
+        );
       }
     }
 
     return counts;
   }
 
-  /** The negative T-junction and X-junction counts over every cell of the grid's dual. */
-  private tallyNegative(grid: MeanderPointGrid): MeanderJunctionCounts {
-    const cellRows = grid.length - 1;
-    const cellColumns = (grid[0]?.length ?? 0) - 1;
+  /** The negative T-junction and X-junction counts over every cell of the lattice's dual. */
+  private tallyNegative(code: ParsedCode): MeanderJunctionCounts {
+    const cellRows = code.levels - 1;
+    const cellColumns = code.columns - 1;
     const counts: MeanderJunctionCounts = { tJunctions: 0, xJunctions: 0 };
 
     for (let level = 0; level < cellRows; level += 1) {
       for (let column = 0; column < cellColumns; column += 1) {
-        this.tally(counts, this.negativeDegree(grid, level, column));
+        this.tally(counts, this.negativeDegree(code, level, column));
       }
     }
 
@@ -189,16 +193,13 @@ export class MeanderCharacteristicsService {
 
   // 🌎 Public Methods
 
-  /**
-   * Computes every raw junction count and boolean Characteristic a decoded
-   * Code's grid carries.
-   */
-  compute(grid: MeanderPointGrid): MeanderCharacteristics {
-    const ink = this.tallyInk(grid);
-    const negative = this.tallyNegative(grid);
+  /** Computes every raw junction count and boolean Characteristic a Code carries. */
+  compute(code: ParsedCode): MeanderCharacteristics {
+    const ink = this.tallyInk(code);
+    const negative = this.tallyNegative(code);
 
     return {
-      ...this.meanderConnectivityService.connectivity(grid),
+      ...this.meanderConnectivityService.connectivity(code),
       hasBranching: ink.tJunctions > 0 || negative.tJunctions > 0,
       hasCrossing: ink.xJunctions > 0 || negative.xJunctions > 0,
       inkTJunctions: ink.tJunctions,

@@ -1,17 +1,16 @@
 import { Inject, Injectable } from "@nestjs/common";
 
+import { CodeService } from "../code/code.service";
 import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
 import { SvgRenderingService } from "../svg-rendering/svg-rendering.service";
 
+import type { ParsedCode } from "../code/code.types";
 import type { GridGeometry } from "../grid-geometry/grid-geometry.types";
-import type {
-  MeanderPointDirections,
-  MeanderPointGrid,
-} from "../meander-decoding/meander-decoding.types";
+import type { MosaicDirections } from "../mosaic-tile/mosaic-tile.types";
 import type { MeanderCanvasPoint } from "./meander-rendering.types";
 
 /**
- * Draws a decoded Code's point grid to SVG: the family-agnostic mechanical
+ * Draws a Code to SVG: the family-agnostic mechanical
  * rule generalized from the retired per-tile motif, so it applies to every
  * family's Code rather than only one family's tiles.
  *
@@ -37,6 +36,8 @@ export class MeanderRenderingService {
   // 🏗 Dependency Injection
 
   constructor(
+    @Inject(CodeService)
+    private readonly codeService: CodeService,
     @Inject(GridGeometryService)
     private readonly gridGeometryService: GridGeometryService,
     @Inject(SvgRenderingService)
@@ -49,34 +50,42 @@ export class MeanderRenderingService {
 
   // 🔏 Private Methods
 
+  /** The path data every point of the Code draws, in reading order. */
+  private codeSegments(geometry: GridGeometry, code: ParsedCode): string {
+    const segments: string[] = [];
+
+    for (let level = 0; level < code.levels; level += 1) {
+      for (let column = 0; column < code.columns; column += 1) {
+        segments.push(
+          this.pointSegments(
+            geometry,
+            this.codeService.directionsAt(code, level, column),
+            {
+              x: geometry.offset + column * geometry.unit,
+              y: geometry.offset + (level + 1) * geometry.unit,
+            },
+          ),
+        );
+      }
+    }
+
+    return segments.join("");
+  }
+
   /** Rounds and trims one pixel coordinate for interpolation into path data. */
   private format(value: number): string {
     return this.gridGeometryService.formatCoordinate(value);
   }
 
-  /** The path data every point of the grid draws, in reading order. */
-  private gridSegments(geometry: GridGeometry, grid: MeanderPointGrid): string {
-    return grid
-      .flatMap((row, level) =>
-        row.map((point, column) =>
-          this.pointSegments(geometry, point, {
-            x: geometry.offset + column * geometry.unit,
-            y: geometry.offset + (level + 1) * geometry.unit,
-          }),
-        ),
-      )
-      .join("");
-  }
-
   /** Whether a point carries no direction bit at all, own or neighbor's. */
-  private isBare(point: MeanderPointDirections): boolean {
+  private isBare(point: MosaicDirections): boolean {
     return !point.east && !point.north && !point.south && !point.west;
   }
 
   /** The path data one point draws: the edges it owns, or a dot where it owns none. */
   private pointSegments(
     geometry: GridGeometry,
-    point: MeanderPointDirections,
+    point: MosaicDirections,
     origin: MeanderCanvasPoint,
   ): string {
     const startX = this.format(origin.x);
@@ -99,16 +108,17 @@ export class MeanderRenderingService {
   // 🌎 Public Methods
 
   /**
-   * Renders a decoded grid to a complete SVG document: `rows` grid units
-   * tall — the same fixed canvas height every family draws against — and
-   * `columns` grid units wide, with no repeat and no addressed window,
-   * since a Code names one whole meander directly.
+   * Renders a Code to a complete SVG document: `rows` grid units tall — the
+   * same fixed canvas height every family draws against — and `columns` grid
+   * units wide, with no repeat and no addressed window, since a Code names
+   * one whole meander directly.
    */
-  render(grid: MeanderPointGrid, rows: number, columns: number): string {
+  render(code: ParsedCode): string {
+    const { columns, rows } = code;
     const geometry = this.gridGeometryService.compute(rows);
     const rightEdge = geometry.offset + columns * geometry.unit;
     const paths = [
-      this.gridSegments(geometry, grid),
+      this.codeSegments(geometry, code),
       this.gridGeometryService.borderPath(geometry, rightEdge),
     ];
 

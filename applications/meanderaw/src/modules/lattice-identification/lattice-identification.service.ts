@@ -1,8 +1,8 @@
 import { Inject, Injectable } from "@nestjs/common";
 
+import { CodeService } from "../code/code.service";
 import { MeanderLatticeService } from "../meander-lattice/meander-lattice.service";
 import { MosaicNamingService } from "../mosaic-naming/mosaic-naming.service";
-import { MosaicSymmetryService } from "../mosaic-tile/mosaic-symmetry.service";
 import { MosaicTileService } from "../mosaic-tile/mosaic-tile.service";
 
 import {
@@ -22,36 +22,35 @@ import type {
 
 /**
  * Names a reading of the lattice: which repeat unit of a rendered document
- * holds which edges, and the hexadecimal string that spells them out.
+ * holds which edges, and the Code that spells them out.
  *
- * The lattice is the substrate every family is drawn on, so the encoding
- * belongs to it rather than to any one region of it — `mosaic` is the region
- * whose filenames happen to have needed a name first. Reading a unit back
- * out of a finished document and writing that unit down are the same act
- * seen from either end, which is why they sit together here.
+ * The spelling itself is `CodeService`'s — a Code and the tile it names are
+ * two ends of one conversion, and both ends belong to the module that owns
+ * the string. What is left here is the reading that comes before it: which
+ * window of a finished document to address, and which of its lattice edges
+ * fall inside that window.
  *
  * {@link identifyDocument} reads the **rendered document** rather than
  * asking whatever produced it, so a renderer that draws the wrong thing
  * cannot be handed a name it did not earn. Everything `MeanderLatticeService`
  * refuses is refused here too, unaltered.
  *
- * The folding is a `mosaic` concern and stays one: `MosaicSymmetryService`
- * owns the symmetry group and every tile-shaped operation over it, and
- * {@link canonicalIdentifier} is this service asking it which member of a
- * class to name before naming it. The dependency runs one way — a name
- * needs the group, and the group needs no name.
+ * Where a canonical name is wanted, `CodeService.spellCanonical` is asked
+ * for it, and that service asks the symmetry group which member of a class
+ * to spell. The dependency runs one way at every link — a name needs the
+ * group, and the group needs no name.
  */
 @Injectable()
 export class LatticeIdentificationService {
   // 🏗 Dependency Injection
 
   constructor(
+    @Inject(CodeService)
+    private readonly codeService: CodeService,
     @Inject(MeanderLatticeService)
     private readonly meanderLatticeService: MeanderLatticeService,
     @Inject(MosaicNamingService)
     private readonly mosaicNamingService: MosaicNamingService,
-    @Inject(MosaicSymmetryService)
-    private readonly mosaicSymmetryService: MosaicSymmetryService,
     @Inject(MosaicTileService)
     private readonly mosaicTileService: MosaicTileService,
   ) {}
@@ -116,62 +115,6 @@ export class LatticeIdentificationService {
   // 🌎 Public Methods
 
   /**
-   * The identifier every tile in a symmetry class shares: {@link identify}
-   * of the one member `MosaicSymmetryService.canonicalTile` picks. Two tiles
-   * draw the same pattern exactly when their canonical identifiers match, so
-   * a committed drawing's filename is a complete description of the tile
-   * that drew it.
-   *
-   * It is not the deduplication key the enumeration folds on. That key has
-   * to be readable by `MosaicTilesService`, which sits upstream of this
-   * service, and `MosaicSymmetryService.edgeKey` separates two classes of
-   * one shape exactly as this does — so how a filename is spelled stays a
-   * question this module answers alone.
-   */
-  canonicalIdentifier(tile: MosaicTile): string {
-    return this.identify(this.mosaicSymmetryService.canonicalTile(tile));
-  }
-
-  /**
-   * Names a tile by its own points: one hexadecimal character each, in
-   * reading order, worth `8` for `north`, `4` for `south`, `2` for `east`
-   * and `1` for `west`.
-   *
-   * So `0` is a dot, `3` a point on a horizontal run, `c` one on a vertical
-   * run, `6` a corner turning south and east, `e` a T-junction, and `f` a
-   * crossing. A reader can decode a filename point by point without a table,
-   * which is the whole reason the identifier exists.
-   *
-   * It names a tile completely — the points determine every edge, since each
-   * one owns its `east` and its `south` — so two tiles of one shape share a
-   * string only when they are the same tile. It does *not* name the shape:
-   * the directory a drawing is filed under carries the row count and the
-   * column span, so two tiles of different shapes may share a string.
-   *
-   * The string is deliberately redundant. Four bits per point describes
-   * `4 * columns * (rows - 1)` bits where the tile has only
-   * `columns * (2 * rows - 3)` degrees of freedom, because every edge is
-   * written twice — once at each end. That is the same redundancy
-   * `MosaicTileService.assertWellFormed` checks, and paying it here buys a
-   * filename whose characters are the tile's own points rather than a packed
-   * edge list nobody can read.
-   */
-  identify(tile: MosaicTile): string {
-    return tile.points
-      .flatMap((row) =>
-        row.map((point) =>
-          (
-            (point.north ? 8 : 0) +
-            (point.south ? 4 : 0) +
-            (point.east ? 2 : 0) +
-            (point.west ? 1 : 0)
-          ).toString(16),
-        ),
-      )
-      .join("");
-  }
-
-  /**
    * What a rendered document is, on the lattice: its band's row count, the
    * column span its true repeat was read at, the literal address, the
    * canonical symmetry class beside it, and the sub-family name the ink
@@ -206,12 +149,12 @@ export class LatticeIdentificationService {
       shape,
       TERMINATION_MARGIN_PITCHES * unit.pitch,
     );
-    const identifier = this.identify(tile);
+    const identifier = this.codeService.spell(tile);
     const earned = this.mosaicNamingService.name(tile);
 
     return {
       address: `${graph.rows}r${span}c-${identifier}`,
-      canonicalIdentifier: this.canonicalIdentifier(tile),
+      canonicalIdentifier: this.codeService.spellCanonical(tile),
       identifier,
       rows: graph.rows,
       span,

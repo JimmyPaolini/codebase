@@ -2,17 +2,17 @@ import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
+import { CodeService } from "../code/code.service";
 import { MeanderCharacteristicsService } from "../meander-characteristics/meander-characteristics.service";
 import { MeanderDatabaseService } from "../meander-database/meander-database.service";
-import { MeanderDecodingService } from "../meander-decoding/meander-decoding.service";
 import { MeanderRenderingService } from "../meander-rendering/meander-rendering.service";
 
 import { DuplicateHardcodedCodeError } from "./hardcoded-meanders.constants";
 import { HardcodedMeandersService } from "./hardcoded-meanders.service";
 
+import type { ParsedCode } from "../code/code.types";
 import type { MeanderCharacteristics } from "../meander-characteristics/meander-characteristics.types";
 import type { Meander } from "../meander-database/entities/Meander.entity";
-import type { MeanderPointGrid } from "../meander-decoding/meander-decoding.types";
 import type { HardcodedMeanderEntry } from "./hardcoded-meanders.types";
 
 // 🧪 Tests
@@ -21,12 +21,15 @@ describe(HardcodedMeandersService, () => {
   let service: HardcodedMeandersService;
   let meanderCharacteristicsService: MeanderCharacteristicsService;
   let meanderDatabaseService: MeanderDatabaseService;
-  let meanderDecodingService: MeanderDecodingService;
+  let codeService: CodeService;
   let meanderRenderingService: MeanderRenderingService;
 
-  const grid: MeanderPointGrid = [
-    [{ east: true, north: false, south: false, west: false }],
-  ];
+  const parsed: ParsedCode = {
+    columns: 1,
+    digits: "2",
+    levels: 1,
+    rows: 2,
+  };
   const characteristics: MeanderCharacteristics = {
     components: 1,
     cycles: 0,
@@ -53,8 +56,8 @@ describe(HardcodedMeandersService, () => {
           useValue: createMock<MeanderDatabaseService>(),
         },
         {
-          provide: MeanderDecodingService,
-          useValue: createMock<MeanderDecodingService>(),
+          provide: CodeService,
+          useValue: createMock<CodeService>(),
         },
         {
           provide: MeanderRenderingService,
@@ -68,10 +71,10 @@ describe(HardcodedMeandersService, () => {
       MeanderCharacteristicsService,
     );
     meanderDatabaseService = await module.resolve(MeanderDatabaseService);
-    meanderDecodingService = await module.resolve(MeanderDecodingService);
+    codeService = await module.resolve(CodeService);
     meanderRenderingService = await module.resolve(MeanderRenderingService);
 
-    vi.mocked(meanderDecodingService.decode).mockReturnValue(grid);
+    vi.mocked(codeService.parse).mockReturnValue(parsed);
     vi.mocked(meanderRenderingService.render).mockReturnValue(
       "<svg>fixture</svg>\n",
     );
@@ -87,28 +90,30 @@ describe(HardcodedMeandersService, () => {
   describe("ingest", () => {
     const entry: HardcodedMeanderEntry = { code: "2", columns: 1, rows: 2 };
 
-    it("decodes each entry's code at its own rows and columns", async () => {
+    it("reads each entry's code at its own rows and columns", async () => {
       vi.mocked(meanderDatabaseService.save).mockResolvedValue(savedMeander);
 
       await service.ingest({ boxes: [entry] });
 
-      expect(meanderDecodingService.decode).toHaveBeenCalledWith("2", 2, 1);
+      expect(codeService.parse).toHaveBeenCalledWith("2", 2, 1);
     });
 
-    it("renders the decoded grid at the entry's rows and columns", async () => {
+    it("renders the Code it read, which already carries the entry's rows and columns", async () => {
       vi.mocked(meanderDatabaseService.save).mockResolvedValue(savedMeander);
 
       await service.ingest({ boxes: [entry] });
 
-      expect(meanderRenderingService.render).toHaveBeenCalledWith(grid, 2, 1);
+      expect(meanderRenderingService.render).toHaveBeenCalledWith(parsed);
     });
 
-    it("computes the decoded grid's Characteristics", async () => {
+    it("computes the Characteristics of the Code it read", async () => {
       vi.mocked(meanderDatabaseService.save).mockResolvedValue(savedMeander);
 
       await service.ingest({ boxes: [entry] });
 
-      expect(meanderCharacteristicsService.compute).toHaveBeenCalledWith(grid);
+      expect(meanderCharacteristicsService.compute).toHaveBeenCalledWith(
+        parsed,
+      );
     });
 
     it("persists each entry with pitch equal to columns, hardcoded provenance, and its family trusted", async () => {

@@ -1,8 +1,8 @@
 import { Inject, Injectable } from "@nestjs/common";
 
+import { CodeService } from "../code/code.service";
 import { MeanderCharacteristicsService } from "../meander-characteristics/meander-characteristics.service";
 import { MeanderDatabaseService } from "../meander-database/meander-database.service";
-import { MeanderDecodingService } from "../meander-decoding/meander-decoding.service";
 import { MeanderRenderingService } from "../meander-rendering/meander-rendering.service";
 
 import {
@@ -18,7 +18,7 @@ import type {
 
 /**
  * Ingests the historical corpus's hardcoded Code constants into the
- * committed sqlite database, through the same generic decoder, renderer, and
+ * committed sqlite database, through the same generic reader, renderer, and
  * Characteristic computation `DrawCodeService` draws a `--code` meander
  * through — so an Enumerated row and a Hardcoded row are produced by the
  * exact same pipeline, and only ever differ in where their Code came from.
@@ -50,8 +50,8 @@ export class HardcodedMeandersService {
     private readonly meanderCharacteristicsService: MeanderCharacteristicsService,
     @Inject(MeanderDatabaseService)
     private readonly meanderDatabaseService: MeanderDatabaseService,
-    @Inject(MeanderDecodingService)
-    private readonly meanderDecodingService: MeanderDecodingService,
+    @Inject(CodeService)
+    private readonly codeService: CodeService,
     @Inject(MeanderRenderingService)
     private readonly meanderRenderingService: MeanderRenderingService,
   ) {}
@@ -62,15 +62,15 @@ export class HardcodedMeandersService {
 
   // 🔏 Private Methods
 
-  /** Decodes, renders, measures, and persists one hardcoded entry, trusting `family` and `entry.subFamily`. */
+  /** Reads, renders, measures, and persists one hardcoded entry, trusting `family` and `entry.subFamily`. */
   private async ingestOne(
     family: HardcodedMeanderFamily,
     entry: HardcodedMeanderEntry,
   ): Promise<Meander> {
     const { code, columns, rows, subFamily } = entry;
-    const grid = this.meanderDecodingService.decode(code, rows, columns);
-    const svg = this.meanderRenderingService.render(grid, rows, columns);
-    const characteristics = this.meanderCharacteristicsService.compute(grid);
+    const parsed = this.codeService.parse(code, rows, columns);
+    const svg = this.meanderRenderingService.render(parsed);
+    const characteristics = this.meanderCharacteristicsService.compute(parsed);
 
     try {
       return await this.meanderDatabaseService.save({

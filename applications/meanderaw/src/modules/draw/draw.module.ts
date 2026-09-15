@@ -1,11 +1,11 @@
 import { Module } from "@nestjs/common";
 
+import { CodeModule } from "../code/code.module";
 import { GridGeometryModule } from "../grid-geometry/grid-geometry.module";
 import { HardcodedMeandersModule } from "../hardcoded-meanders/hardcoded-meanders.module";
 import { MeanderCharacteristicsModule } from "../meander-characteristics/meander-characteristics.module";
 import { MeanderClassificationModule } from "../meander-classification/meander-classification.module";
 import { MeanderDatabaseModule } from "../meander-database/meander-database.module";
-import { MeanderDecodingModule } from "../meander-decoding/meander-decoding.module";
 import { MeanderEnumerationModule } from "../meander-enumeration/meander-enumeration.module";
 import { MeanderRenderingModule } from "../meander-rendering/meander-rendering.module";
 
@@ -24,7 +24,7 @@ import { DrawCommand } from "./draw.command";
  * any of them builds a database row.
  *
  * Every import here serves the one lattice-first pipeline both paths share:
- * `MeanderDecodingModule` and `MeanderRenderingModule` are the generic
+ * `CodeModule` and `MeanderRenderingModule` are the generic
  * decoder and renderer every family's Code is drawn through,
  * `MeanderCharacteristicsModule` measures that same decoded grid,
  * `MeanderClassificationModule` reads a family off those Characteristics,
@@ -60,7 +60,7 @@ import { DrawCommand } from "./draw.command";
     MeanderCharacteristicsModule,
     MeanderClassificationModule,
     MeanderDatabaseModule,
-    MeanderDecodingModule,
+    CodeModule,
     MeanderEnumerationModule,
     MeanderRenderingModule,
   ],

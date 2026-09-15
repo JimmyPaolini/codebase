@@ -3,15 +3,14 @@ import { getRepositoryToken, TypeOrmModule } from "@nestjs/typeorm";
 import { DataSource, type Repository } from "typeorm";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
+import { CodeService } from "../code/code.service";
 import { GraphService } from "../graph/graph.service";
 import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
-import { LatticeIdentificationService } from "../lattice-identification/lattice-identification.service";
 import { MeanderCharacteristicsService } from "../meander-characteristics/meander-characteristics.service";
 import { MeanderConnectivityService } from "../meander-characteristics/meander-connectivity.service";
 import { MeanderClassificationService } from "../meander-classification/meander-classification.service";
 import { Meander } from "../meander-database/entities/Meander.entity";
 import { MeanderDatabaseService } from "../meander-database/meander-database.service";
-import { MeanderDecodingService } from "../meander-decoding/meander-decoding.service";
 import { MeanderEnumerationService } from "../meander-enumeration/meander-enumeration.service";
 import { MeanderLatticeService } from "../meander-lattice/meander-lattice.service";
 import { MeanderRenderingService } from "../meander-rendering/meander-rendering.service";
@@ -68,12 +67,12 @@ describe(DrawEnumerationService, () => {
         DrawEnumerationService,
         DrawRecordService,
         GridGeometryService,
-        LatticeIdentificationService,
+        CodeService,
         MeanderCharacteristicsService,
         MeanderClassificationService,
         MeanderConnectivityService,
         MeanderDatabaseService,
-        MeanderDecodingService,
+        CodeService,
         MeanderEnumerationService,
         MeanderLatticeService,
         MeanderRenderingService,

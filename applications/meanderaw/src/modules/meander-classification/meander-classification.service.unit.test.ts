@@ -1,12 +1,13 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
+import { CodeService } from "../code/code.service";
 import { GraphService } from "../graph/graph.service";
 import { MeanderCharacteristicsService } from "../meander-characteristics/meander-characteristics.service";
 import { MeanderConnectivityService } from "../meander-characteristics/meander-connectivity.service";
-import { MeanderDecodingService } from "../meander-decoding/meander-decoding.service";
 import { MeanderLatticeService } from "../meander-lattice/meander-lattice.service";
 import { MosaicNamingService } from "../mosaic-naming/mosaic-naming.service";
+import { MosaicSymmetryService } from "../mosaic-tile/mosaic-symmetry.service";
 import { MosaicTileService } from "../mosaic-tile/mosaic-tile.service";
 
 import { MeanderClassificationService } from "./meander-classification.service";
@@ -21,7 +22,7 @@ import type { MeanderStructure } from "./meander-classification.types";
  * families its structure earns.
  *
  * Every Code below is a real reading of a committed drawing rather than a
- * grid invented to satisfy a predicate — taken from
+ * Code invented to satisfy a predicate — taken from
  * `output/<family>/<rows>-rows/`, either off the filename's own lattice
  * address or by reading the document back through
  * `LatticeIdentificationService.readTile`. That is what makes these
@@ -40,7 +41,7 @@ interface ClassificationCase {
 
 describe(MeanderClassificationService, () => {
   let characteristicsService: MeanderCharacteristicsService;
-  let decodingService: MeanderDecodingService;
+  let codeService: CodeService;
   let service: MeanderClassificationService;
 
   beforeAll(async () => {
@@ -49,7 +50,8 @@ describe(MeanderClassificationService, () => {
         MeanderCharacteristicsService,
         MeanderClassificationService,
         MeanderConnectivityService,
-        MeanderDecodingService,
+        CodeService,
+        MosaicSymmetryService,
         MeanderLatticeService,
         GraphService,
         MosaicNamingService,
@@ -60,7 +62,7 @@ describe(MeanderClassificationService, () => {
     characteristicsService = await module.resolve(
       MeanderCharacteristicsService,
     );
-    decodingService = await module.resolve(MeanderDecodingService);
+    codeService = await module.resolve(CodeService);
     service = await module.resolve(MeanderClassificationService);
   });
 
@@ -69,7 +71,7 @@ describe(MeanderClassificationService, () => {
     subject: Pick<ClassificationCase, "code" | "columns" | "rows">,
   ): MeanderStructure => {
     const shape = { columns: subject.columns, rows: subject.rows };
-    const grid = decodingService.decode(
+    const parsed = codeService.parse(
       subject.code,
       subject.rows,
       subject.columns,
@@ -77,8 +79,8 @@ describe(MeanderClassificationService, () => {
 
     return {
       ...shape,
-      characteristics: characteristicsService.compute(grid),
-      subFamily: service.subFamily(grid, shape),
+      characteristics: characteristicsService.compute(parsed),
+      subFamily: service.subFamily(parsed),
     };
   };
 
@@ -211,7 +213,7 @@ describe(MeanderClassificationService, () => {
 
   describe("classify", () => {
     it("records the first family a tile's structure earns, beside the sub-family its structure earns independently", () => {
-      const grid = decodingService.decode("4488", 3, 2);
+      const grid = codeService.parse("4488", 3, 2);
 
       expect(
         service.classify(grid, characteristicsService.compute(grid), {
@@ -222,7 +224,7 @@ describe(MeanderClassificationService, () => {
     });
 
     it("leaves family and sub-family undefined for a tile whose structure earns neither", () => {
-      const grid = decodingService.decode("2569a1", 4, 2);
+      const grid = codeService.parse("2569a1", 4, 2);
 
       expect(
         service.classify(grid, characteristicsService.compute(grid), {
@@ -233,7 +235,7 @@ describe(MeanderClassificationService, () => {
     });
 
     it("records a sub-family a tile earns outside `mosaic`, beside the family rather than in place of it", () => {
-      const grid = decodingService.decode("56a9", 3, 2);
+      const grid = codeService.parse("56a9", 3, 2);
 
       expect(
         service.classify(grid, characteristicsService.compute(grid), {

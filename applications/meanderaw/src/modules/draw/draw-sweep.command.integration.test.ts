@@ -6,6 +6,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { LoggerService } from "@codebase/logger";
 
+import { CodeModule } from "../code/code.module";
 import { GridGeometryModule } from "../grid-geometry/grid-geometry.module";
 import { HARDCODED_MEANDERS_BY_FAMILY } from "../hardcoded-meanders/hardcoded-meanders.constants";
 import { HardcodedMeandersService } from "../hardcoded-meanders/hardcoded-meanders.service";
@@ -13,7 +14,6 @@ import { MeanderCharacteristicsModule } from "../meander-characteristics/meander
 import { MeanderClassificationModule } from "../meander-classification/meander-classification.module";
 import { Meander } from "../meander-database/entities/Meander.entity";
 import { MeanderDatabaseService } from "../meander-database/meander-database.service";
-import { MeanderDecodingModule } from "../meander-decoding/meander-decoding.module";
 import { MeanderEnumerationModule } from "../meander-enumeration/meander-enumeration.module";
 import { MeanderEnumerationService } from "../meander-enumeration/meander-enumeration.service";
 import { MeanderRenderingModule } from "../meander-rendering/meander-rendering.module";
@@ -85,7 +85,7 @@ describe("drawCommand sweep mode", () => {
         GridGeometryModule,
         MeanderCharacteristicsModule,
         MeanderClassificationModule,
-        MeanderDecodingModule,
+        CodeModule,
         MeanderEnumerationModule,
         MeanderRenderingModule,
       ],

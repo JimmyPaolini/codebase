@@ -1,23 +1,17 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
+import { CodeService } from "../code/code.service";
 import { GraphService } from "../graph/graph.service";
-import { MeanderLatticeService } from "../meander-lattice/meander-lattice.service";
+import { MosaicSymmetryService } from "../mosaic-tile/mosaic-symmetry.service";
+import { MosaicTileService } from "../mosaic-tile/mosaic-tile.service";
 
 import { MeanderCharacteristicsService } from "./meander-characteristics.service";
 import { MeanderConnectivityService } from "./meander-connectivity.service";
 
-import type { MeanderPointDirections } from "../meander-decoding/meander-decoding.types";
 import type { MeanderCharacteristics } from "./meander-characteristics.types";
 
 // 🔧 Configuration
-
-const bare: MeanderPointDirections = {
-  east: false,
-  north: false,
-  south: false,
-  west: false,
-};
 
 /** Every field `compute` returns, defaulted so a case reads as a whole result rather than a list of expectations. */
 const characteristics = (
@@ -35,7 +29,7 @@ const characteristics = (
 });
 
 /**
- * A four-by-four grid of points, three-by-three cells wide — the smallest
+ * A four-by-four Code of points, three-by-three cells wide — the smallest
  * square that gives one cell (the center) all four neighboring cells, and
  * so a chance to reach negative degree 4. Every point is bare except the
  * center, whose `east` bit `closeCenterEastCorridor` can set — closing the
@@ -43,35 +37,35 @@ const characteristics = (
  *
  * With every point bare, every corridor is open by construction: a corner
  * cell has two neighboring cells, an edge cell three, and the center cell
- * all four, which is exactly what a plain count of grid position predicts
+ * all four, which is exactly what a plain count of lattice position predicts
  * with no ink drawn anywhere to close one.
  */
-const squareGrid = (
+const squareCode = (
   options: { readonly closeCenterEastCorridor?: boolean } = {},
-): MeanderPointDirections[][] =>
-  Array.from({ length: 4 }, (_unused, level) =>
-    Array.from({ length: 4 }, (_unused, column) =>
-      level === 1 && column === 1
-        ? { ...bare, east: options.closeCenterEastCorridor ?? false }
-        : { ...bare },
-    ),
-  );
+): string =>
+  Array.from({ length: 16 }, (_unused, index) =>
+    index === 5 && options.closeCenterEastCorridor === true ? "2" : "0",
+  ).join("");
 
 // 🧪 Tests
 
 describe(MeanderCharacteristicsService, () => {
+  let codeService: CodeService;
   let service: MeanderCharacteristicsService;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
       providers: [
+        CodeService,
+        GraphService,
         MeanderCharacteristicsService,
         MeanderConnectivityService,
-        MeanderLatticeService,
-        GraphService,
+        MosaicSymmetryService,
+        MosaicTileService,
       ],
     }).compile();
 
+    codeService = await module.resolve(CodeService);
     service = await module.resolve(MeanderCharacteristicsService);
   });
 
@@ -80,33 +74,26 @@ describe(MeanderCharacteristicsService, () => {
   });
 
   describe("compute", () => {
-    it("reports every count and characteristic as zero or false for an empty grid", () => {
-      expect(service.compute([])).toStrictEqual(characteristics({}));
+    it("reports every count and characteristic as zero or false for a Code with no level at all", () => {
+      expect(service.compute(codeService.parse("", 1, 1))).toStrictEqual(
+        characteristics({}),
+      );
     });
 
     it("reports no branching or crossing for a single bare point, which is one component of its own", () => {
-      expect(service.compute([[bare]])).toStrictEqual(
+      expect(service.compute(codeService.parse("0", 2, 1))).toStrictEqual(
         characteristics({ components: 1 }),
       );
     });
 
     it("reports no branching or crossing for a chain-like code with no junction", () => {
-      const grid = [
-        [
-          { east: true, north: false, south: false, west: false },
-          { east: false, north: false, south: false, west: true },
-        ],
-      ];
-
-      expect(service.compute(grid)).toStrictEqual(
+      expect(service.compute(codeService.parse("21", 2, 2))).toStrictEqual(
         characteristics({ components: 1, freeEnds: 2 }),
       );
     });
 
     it("counts a three-armed ink junction as a T-junction and reports hasBranching", () => {
-      const grid = [[{ east: true, north: false, south: true, west: true }]];
-
-      expect(service.compute(grid)).toStrictEqual(
+      expect(service.compute(codeService.parse("7", 2, 1))).toStrictEqual(
         characteristics({
           components: 1,
           cycles: 1,
@@ -117,9 +104,7 @@ describe(MeanderCharacteristicsService, () => {
     });
 
     it("counts a four-armed ink junction as an X-junction and reports hasCrossing", () => {
-      const grid = [[{ east: true, north: true, south: true, west: true }]];
-
-      expect(service.compute(grid)).toStrictEqual(
+      expect(service.compute(codeService.parse("f", 2, 1))).toStrictEqual(
         characteristics({
           components: 1,
           cycles: 1,
@@ -129,8 +114,10 @@ describe(MeanderCharacteristicsService, () => {
       );
     });
 
-    it("counts a corner cell's two corridors, an edge cell's three, and the center cell's four, over a fully bare grid", () => {
-      expect(service.compute(squareGrid())).toStrictEqual(
+    it("counts a corner cell's two corridors, an edge cell's three, and the center cell's four, over a fully bare Code", () => {
+      expect(
+        service.compute(codeService.parse(squareCode(), 5, 4)),
+      ).toStrictEqual(
         characteristics({
           components: 16,
           hasBranching: true,
@@ -142,9 +129,9 @@ describe(MeanderCharacteristicsService, () => {
     });
 
     it("closing one corridor turns the center cell's negative crossing into a negative branch, without touching the ink", () => {
-      const grid = squareGrid({ closeCenterEastCorridor: true });
+      const code = squareCode({ closeCenterEastCorridor: true });
 
-      expect(service.compute(grid)).toStrictEqual(
+      expect(service.compute(codeService.parse(code, 5, 4))).toStrictEqual(
         characteristics({
           components: 15,
           freeEnds: 2,

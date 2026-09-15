@@ -1,8 +1,8 @@
 import { Module } from "@nestjs/common";
 
+import { CodeModule } from "../code/code.module";
 import { MeanderCharacteristicsModule } from "../meander-characteristics/meander-characteristics.module";
 import { MeanderDatabaseModule } from "../meander-database/meander-database.module";
-import { MeanderDecodingModule } from "../meander-decoding/meander-decoding.module";
 import { MeanderRenderingModule } from "../meander-rendering/meander-rendering.module";
 
 import { HardcodedMeandersService } from "./hardcoded-meanders.service";
@@ -21,7 +21,7 @@ import { HardcodedMeandersService } from "./hardcoded-meanders.service";
   imports: [
     MeanderCharacteristicsModule,
     MeanderDatabaseModule,
-    MeanderDecodingModule,
+    CodeModule,
     MeanderRenderingModule,
   ],
   providers: [HardcodedMeandersService],
