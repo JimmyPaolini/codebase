@@ -1276,6 +1276,7 @@ flowchart LR
   CallidescopeModule
   ClassesModule
   ConfigModule([ConfigModule])
+  ConfigurationFileModule
   ConfigurationModule
   DepthModule
   DiscoveryModule
@@ -1294,18 +1295,17 @@ flowchart LR
   ProjectReportsModule
   ReportFindingsModule
   ReportModule
-  RunPlanModule
   SignaturesModule
   WorkspaceModule
   WriteDestinationsModule
   AddressLookupModule --> CallablesModule
   AddressLookupModule --> CallidescopeModule
-  AddressLookupModule --> RunPlanModule
+  AddressLookupModule --> ConfigurationModule
   AddressReportModule --> ReportModule
   BreadthModule --> AddressLookupModule
   BreadthModule --> AddressReportModule
+  BreadthModule --> ConfigurationModule
   BreadthModule --> GraphModule
-  BreadthModule --> InputModule
   CallablesModule --> ProgramModule
   CallablesModule --> WorkspaceModule
   CallidescopeModule --> CallablesModule
@@ -1314,20 +1314,21 @@ flowchart LR
   CallidescopeModule --> EdgesModule
   CallidescopeModule --> EntriesModule
   CallidescopeModule --> GraphModule
-  CallidescopeModule --> InputModule
   CallidescopeModule --> OutputJsonModule
   CallidescopeModule --> OutputMarkdownModule
   CallidescopeModule --> ProgramModule
   CallidescopeModule --> ProjectReportsModule
   CallidescopeModule --> ReportFindingsModule
   CallidescopeModule --> ReportModule
-  CallidescopeModule --> RunPlanModule
   CallidescopeModule --> WorkspaceModule
   CallidescopeModule --> WriteDestinationsModule
+  ConfigurationModule --> ConfigurationFileModule
+  ConfigurationModule --> FlagResolutionModule
+  ConfigurationModule --> InputModule
   DepthModule --> AddressLookupModule
   DepthModule --> AddressReportModule
+  DepthModule --> ConfigurationModule
   DepthModule --> GraphModule
-  DepthModule --> InputModule
   EdgesModule --> CallablesModule
   EdgesModule --> ClassesModule
   EdgesModule --> ProgramModule
@@ -1337,7 +1338,6 @@ flowchart LR
   GraphModule --> EdgesModule
   GraphModule --> SignaturesModule
   LimitsModule --> ConfigurationModule
-  LimitsModule --> InputModule
   LimitsModule --> WorkspaceModule
   MainModule --> BreadthModule
   MainModule --> CallidescopeModule
@@ -1348,8 +1348,6 @@ flowchart LR
   ProgramModule --> WorkspaceModule
   ProjectReportsModule --> GraphModule
   ProjectReportsModule --> SignaturesModule
-  RunPlanModule --> ConfigurationModule
-  RunPlanModule --> FlagResolutionModule
   WriteDestinationsModule --> OutputJsonModule
   WriteDestinationsModule --> OutputMarkdownModule
   WriteDestinationsModule --> ReportModule

@@ -1,10 +1,9 @@
 import {
   CHECK_NAMES,
+  ConfigurationService,
   DEFAULT_JSON_INDENTATION,
   DEFAULT_PREVIEW_COUNT,
   DEFAULT_RUN_HEADING,
-  InputService,
-  RunPlanService,
 } from "@callidescope/configuration";
 import { AddressService } from "@callidescope/graph";
 import {
@@ -60,11 +59,10 @@ export class CallidescopeCommand extends CommandRunner {
   constructor(
     private readonly addressService: AddressService,
     private readonly callidescopeService: CallidescopeService,
-    private readonly inputService: InputService,
+    private readonly configurationService: ConfigurationService,
     private readonly outputJsonService: OutputJsonService,
     private readonly markdownReportService: MarkdownReportService,
     private readonly reportFindingsService: ReportFindingsService,
-    private readonly runPlanService: RunPlanService,
     private readonly writeDestinationsService: WriteDestinationsService,
     private readonly logger: LoggerService,
   ) {
@@ -177,12 +175,23 @@ export class CallidescopeCommand extends CommandRunner {
     options: CallidescopeCommandOptions,
   ): Promise<void> {
     const resolvedOptions =
-      await this.inputService.resolveFormatOption(options);
-    const prepared = await this.runPlanService.prepareRun(resolvedOptions);
+      await this.configurationService.resolveFormatOption(options);
+    const { errors, run } =
+      await this.configurationService.prepareRun(resolvedOptions);
 
-    if (prepared === undefined) {
+    if (run === undefined) {
+      // The one headline every refused command line is reported under,
+      // whichever of the two gates in the configuration layer refused it.
+      this.reject("🔭 Rejected the command line", { reasons: errors });
       return;
     }
+
+    // The format as it was typed rather than as it resolved: this line says
+    // what the run was asked for, and an absent flag is part of that.
+    this.logger.debug("🔭 Starting a call-stack trace", undefined, {
+      format: resolvedOptions.format,
+      workspaceRoot: run.workspaceRoot,
+    });
 
     const {
       authoredLimits,
@@ -192,7 +201,7 @@ export class CallidescopeCommand extends CommandRunner {
       limitOverrides,
       mode,
       workspaceRoot,
-    } = prepared;
+    } = run;
 
     const outcome = await this.callidescopeService.trace({
       authoredLimits,
@@ -228,7 +237,7 @@ export class CallidescopeCommand extends CommandRunner {
 
     // Reports are produced before either finding is weighed, so a run that
     // writes and gates leaves its reports behind even when the gate trips.
-    const stalePaths = this.runPlanService.touchesFiles(mode)
+    const stalePaths = this.configurationService.touchesFiles(mode)
       ? this.writeDestinationsService.syncDestinations({
           check: mode.checksReports,
           configuration,
@@ -276,7 +285,7 @@ export class CallidescopeCommand extends CommandRunner {
     flags: "--config [config]",
   })
   public parseConfig(value: string | undefined): string | undefined {
-    return this.inputService.parseOptionalOption(value);
+    return this.configurationService.parseOptionalOption(value);
   }
 
   /** Parses `--directories`, a comma-separated list of project directories. */
@@ -285,7 +294,7 @@ export class CallidescopeCommand extends CommandRunner {
     flags: "-d, --directories [directories]",
   })
   public parseDirectories(value: string | undefined): string[] {
-    return this.inputService.parseCommaDelimitedOption(value);
+    return this.configurationService.parseCommaDelimitedOption(value);
   }
 
   /** Parses `--entry-point-addresses`, overriding `entryPoints.addresses`. */
@@ -294,7 +303,7 @@ export class CallidescopeCommand extends CommandRunner {
     flags: "--entry-point-addresses [entryPointAddresses]",
   })
   public parseEntryPointAddresses(value: string | undefined): string[] {
-    return this.inputService.parseCommaDelimitedOption(value);
+    return this.configurationService.parseCommaDelimitedOption(value);
   }
 
   /** Parses `--entry-point-decorators`, overriding `entryPoints.decorators`. */
@@ -303,7 +312,7 @@ export class CallidescopeCommand extends CommandRunner {
     flags: "--entry-point-decorators [entryPointDecorators]",
   })
   public parseEntryPointDecorators(value: string | undefined): string[] {
-    return this.inputService.parseCommaDelimitedOption(value);
+    return this.configurationService.parseCommaDelimitedOption(value);
   }
 
   /** Parses `--exclude`, overriding `exclude`. */
@@ -312,7 +321,7 @@ export class CallidescopeCommand extends CommandRunner {
     flags: "--exclude [exclude]",
   })
   public parseExclude(value: string | undefined): string[] {
-    return this.inputService.parseCommaDelimitedOption(value);
+    return this.configurationService.parseCommaDelimitedOption(value);
   }
 
   /** Parses `--exclude-callees`, overriding `excludeCallees`. */
@@ -321,7 +330,7 @@ export class CallidescopeCommand extends CommandRunner {
     flags: "--exclude-callees [excludeCallees]",
   })
   public parseExcludeCallees(value: string | undefined): string[] {
-    return this.inputService.parseCommaDelimitedOption(value);
+    return this.configurationService.parseCommaDelimitedOption(value);
   }
 
   /**
@@ -336,7 +345,7 @@ export class CallidescopeCommand extends CommandRunner {
     flags: "-f, --format [format]",
   })
   public parseFormat(value: string | undefined): string | undefined {
-    return this.inputService.parseOptionalOption(value);
+    return this.configurationService.parseOptionalOption(value);
   }
 
   /**
@@ -352,7 +361,7 @@ export class CallidescopeCommand extends CommandRunner {
   public parseIncludeExportedFunctions(
     value: string | undefined,
   ): string | undefined {
-    return this.inputService.parseOptionalOption(value);
+    return this.configurationService.parseOptionalOption(value);
   }
 
   /** Parses `--include-orphans`, overriding the entry-point rule. */
@@ -361,7 +370,7 @@ export class CallidescopeCommand extends CommandRunner {
     flags: "--include-orphans [includeOrphans]",
   })
   public parseIncludeOrphans(value: string | undefined): string | undefined {
-    return this.inputService.parseOptionalOption(value);
+    return this.configurationService.parseOptionalOption(value);
   }
 
   /** Parses `--include-tests`, overriding the entry-point rule. */
@@ -370,7 +379,7 @@ export class CallidescopeCommand extends CommandRunner {
     flags: "--include-tests [includeTests]",
   })
   public parseIncludeTests(value: string | undefined): string | undefined {
-    return this.inputService.parseOptionalOption(value);
+    return this.configurationService.parseOptionalOption(value);
   }
 
   /** Parses `--json`. */
@@ -380,7 +389,7 @@ export class CallidescopeCommand extends CommandRunner {
     flags: "--json [json]",
   })
   public parseJson(value: string | undefined): string | undefined {
-    return this.inputService.parseOptionalOption(value);
+    return this.configurationService.parseOptionalOption(value);
   }
 
   /** Parses `--markdown`. */
@@ -390,7 +399,7 @@ export class CallidescopeCommand extends CommandRunner {
     flags: "-m, --markdown [markdown]",
   })
   public parseMarkdown(value: string | undefined): string | undefined {
-    return this.inputService.parseOptionalOption(value);
+    return this.configurationService.parseOptionalOption(value);
   }
 
   /**
@@ -405,7 +414,7 @@ export class CallidescopeCommand extends CommandRunner {
     flags: "--maximum-breadth <maximumBreadth>",
   })
   public parseMaximumBreadth(value: string | undefined): string | undefined {
-    return this.inputService.parseOptionalOption(value);
+    return this.configurationService.parseOptionalOption(value);
   }
 
   /** Parses `--maximum-depth`, overriding `limits.maximumDepth`. */
@@ -414,7 +423,7 @@ export class CallidescopeCommand extends CommandRunner {
     flags: "--maximum-depth <maximumDepth>",
   })
   public parseMaximumDepth(value: string | undefined): string | undefined {
-    return this.inputService.parseOptionalOption(value);
+    return this.configurationService.parseOptionalOption(value);
   }
 
   /** Parses `--mermaid`. */
@@ -424,7 +433,7 @@ export class CallidescopeCommand extends CommandRunner {
     flags: "--mermaid [mermaid]",
   })
   public parseMermaid(value: string | undefined): string | undefined {
-    return this.inputService.parseOptionalOption(value);
+    return this.configurationService.parseOptionalOption(value);
   }
 
   /**

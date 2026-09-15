@@ -1,6 +1,7 @@
 import {
+  ConfigurationModule,
+  ConfigurationService,
   flagResolutionError,
-  InputService,
   ProjectConfigurationFieldNotPermittedError,
 } from "@callidescope/configuration";
 import {
@@ -75,11 +76,12 @@ describe(DepthCommand, () => {
   let addressReportService: ReturnType<typeof createMock<AddressReportService>>;
   let addressDepthService: ReturnType<typeof createMock<AddressDepthService>>;
   let command: DepthCommand;
-  let inputService: InputService;
+  let configurationService: ConfigurationService;
   let logger: ReturnType<typeof createMock<LoggerService>>;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
+      imports: [ConfigurationModule],
       providers: [
         DepthCommand,
         {
@@ -94,12 +96,12 @@ describe(DepthCommand, () => {
           provide: AddressDepthService,
           useValue: createMock<AddressDepthService>(),
         },
-        InputService,
         { provide: LoggerService, useValue: createMock<LoggerService>() },
       ],
     }).compile();
 
     command = await module.resolve(DepthCommand);
+    configurationService = await module.resolve(ConfigurationService);
   });
 
   const originalIsTty = process.stdin.isTTY;
@@ -109,7 +111,6 @@ describe(DepthCommand, () => {
     addressReportService = createMock<AddressReportService>();
     addressDepthService = createMock<AddressDepthService>();
     logger = createMock<LoggerService>();
-    inputService = new InputService();
     // Not a terminal by default, so a test that does not opt into prompting
     // exercises the refusal a scripted run gets.
     process.stdin.isTTY = false;
@@ -118,7 +119,7 @@ describe(DepthCommand, () => {
       addressLookupService,
       addressReportService,
       addressDepthService,
-      inputService,
+      configurationService,
       logger,
     );
 
@@ -137,6 +138,7 @@ describe(DepthCommand, () => {
 
   it("sets logger context", async () => {
     const module = await Test.createTestingModule({
+      imports: [ConfigurationModule],
       providers: [
         DepthCommand,
         {
@@ -151,10 +153,11 @@ describe(DepthCommand, () => {
           provide: AddressDepthService,
           useValue: createMock<AddressDepthService>(),
         },
-        InputService,
         { provide: LoggerService, useValue: createMock<LoggerService>() },
       ],
     }).compile();
+
+    await module.resolve(DepthCommand);
 
     const logger = await module.resolve(LoggerService);
 
@@ -276,7 +279,7 @@ describe(DepthCommand, () => {
   it("prompts for the addresses when the flag is missing", async () => {
     process.stdin.isTTY = true;
     vi.spyOn(
-      inputService,
+      configurationService,
       "promptForAutocompleteMultiselect",
     ).mockResolvedValue(["a.ts#Foo.bar"]);
     addressLookupService.listAddresses.mockReturnValue([
@@ -300,7 +303,9 @@ describe(DepthCommand, () => {
 
     // The list it completes against is what the one trace found, so the
     // caller picks a callable that provably exists.
-    expect(inputService.promptForAutocompleteMultiselect).toHaveBeenCalledWith({
+    expect(
+      configurationService.promptForAutocompleteMultiselect,
+    ).toHaveBeenCalledWith({
       message: "Which callables? (file#qualified-name)",
       subject:
         'At least one callable address, as in "depth --addresses src/foo.service.ts#FooService.bar"',
@@ -316,7 +321,7 @@ describe(DepthCommand, () => {
 
   it("does not prompt for the addresses when the flag was given", async () => {
     process.stdin.isTTY = true;
-    vi.spyOn(inputService, "promptForAutocompleteMultiselect");
+    vi.spyOn(configurationService, "promptForAutocompleteMultiselect");
     addressLookupService.locate.mockResolvedValue({
       configuration: buildConfiguration(),
       format: "markdown",
@@ -334,13 +339,13 @@ describe(DepthCommand, () => {
     });
 
     expect(
-      inputService.promptForAutocompleteMultiselect,
+      configurationService.promptForAutocompleteMultiselect,
     ).not.toHaveBeenCalled();
   });
 
   it("prompts for a format when it was left off, at a terminal", async () => {
     process.stdin.isTTY = true;
-    vi.spyOn(inputService, "promptForSelect").mockResolvedValue("json");
+    vi.spyOn(configurationService, "promptForSelect").mockResolvedValue("json");
     addressLookupService.locate.mockResolvedValue({
       configuration: buildConfiguration(),
       format: "markdown",
@@ -354,7 +359,7 @@ describe(DepthCommand, () => {
 
     await command.run([], { addresses: ["a.ts#Foo.bar"] });
 
-    expect(inputService.promptForSelect).toHaveBeenCalledWith({
+    expect(configurationService.promptForSelect).toHaveBeenCalledWith({
       choices: ["markdown", "mermaid", "json"],
       message: "Which output format?",
       subject: "An output format (--format)",
@@ -369,7 +374,7 @@ describe(DepthCommand, () => {
 
   it("does not prompt for a format that was already given", async () => {
     process.stdin.isTTY = true;
-    vi.spyOn(inputService, "promptForSelect");
+    vi.spyOn(configurationService, "promptForSelect");
     addressLookupService.locate.mockResolvedValue({
       configuration: buildConfiguration(),
       format: "markdown",
@@ -386,7 +391,7 @@ describe(DepthCommand, () => {
       format: "mermaid",
     });
 
-    expect(inputService.promptForSelect).not.toHaveBeenCalled();
+    expect(configurationService.promptForSelect).not.toHaveBeenCalled();
   });
 
   // A genuine failure keeps its stack rather than being reported to the

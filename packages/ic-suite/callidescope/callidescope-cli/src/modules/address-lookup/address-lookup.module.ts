@@ -1,4 +1,4 @@
-import { RunPlanModule } from "@callidescope/configuration";
+import { ConfigurationModule } from "@callidescope/configuration";
 import { CallablesModule } from "@callidescope/graph";
 import { Module } from "@nestjs/common";
 
@@ -12,7 +12,7 @@ import { AddressLookupService } from "./address-lookup.service";
 @Module({
   controllers: [],
   exports: [AddressLookupService],
-  imports: [CallablesModule, CallidescopeModule, RunPlanModule],
+  imports: [CallablesModule, CallidescopeModule, ConfigurationModule],
   providers: [AddressLookupService],
 })
 export class AddressLookupModule {}

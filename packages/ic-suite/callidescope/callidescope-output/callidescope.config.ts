@@ -3,18 +3,14 @@ import { projectDefaults } from "../../../../configuration/callidescope.config.j
 /**
  * What callidescope-output is held to, measured rather than assumed.
  *
- * Thirteen frames from a destination to the last word written into it:
- * `WriteDestinationsService.syncDestinations` down through the project
- * section, the stacks, each stack, each frame, and the summary each frame
- * shortens. Ten was this package's shape before it took the write
- * destinations and the finding report over from the command-line host, and
- * the chain those two root is longer than anything the renderers root on
- * their own. The stack did not get deeper; this package acquired it whole.
+ * Thirteen frames from a destination to the last word written into it, rooted
+ * at `WriteDestinationsService.syncDestinations`. Ten was the shape before
+ * this package took the write destinations over from the command-line host,
+ * which gated them at fifteen: the stack did not get deeper, this package
+ * acquired it whole.
  *
  * Seven direct callees at the widest, `MarkdownReportService.renderRun`,
- * roughly one callee per section of the report it assembles. The next
- * section this report gains is what moves the number now — exactly the
- * addition the ratchet exists to surface.
+ * roughly one callee per section of the report it assembles.
  *
  * Measured by a run scoped to this project and its dependency closure, and set
  * **at** what it measured rather than above it: a stack or a callable at either

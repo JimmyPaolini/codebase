@@ -4,7 +4,7 @@ import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { buildCallGraphResult } from "../../../testing/mocks";
+import { buildEmptyCallGraphResult } from "../../../testing/mocks";
 import { OutputJsonService } from "../output-json/output-json.service";
 import { OutputMarkdownService } from "../output-markdown/output-markdown.service";
 import { MarkdownReportService } from "../report/markdown-report.service";
@@ -125,7 +125,7 @@ describe(WriteDestinationsService, () => {
       check: false,
       configuration: buildConfiguration(write),
       projectLimits: buildProjectLimitsLookup(),
-      result: buildCallGraphResult({
+      result: buildEmptyCallGraphResult({
         projects: [buildProjectReport("packages/example")],
       }),
       startingProjectRoots: new Map([["packages/example", "packages/example"]]),
@@ -221,7 +221,7 @@ describe(WriteDestinationsService, () => {
           ],
         ]),
       ),
-      result: buildCallGraphResult({
+      result: buildEmptyCallGraphResult({
         projects: [buildProjectReport("packages/elsewhere")],
       }),
       startingProjectRoots: new Map(),

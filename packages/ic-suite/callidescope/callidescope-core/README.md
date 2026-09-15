@@ -68,5 +68,17 @@ graph LR
 ### File Imports
 
 <!-- codependix:start name="codependix-file-imports" -->
-_This project has no internal file imports._
+```mermaid
+graph LR
+  file_callidescope_config_ts["callidescope.config.ts"]
+  file_codependix_config_ts["codependix.config.ts"]
+  file_codometer_config_ts["codometer.config.ts"]
+  file_eslint_config_ts["eslint.config.ts"]
+  file_src_index_ts["src/index.ts"]
+  file_src_index_unit_test_ts["src/index.unit.test.ts"]
+  file_src_modules_call_graph_call_graph_types_ts["src/modules/call-graph/call-graph.types.ts"]
+  file_testing_setup_ts["testing/setup.ts"]
+  file_vitest_config_ts["vitest.config.ts"]
+  file_src_index_unit_test_ts --> file_src_index_ts
+```
 <!-- codependix:end name="codependix-file-imports" -->

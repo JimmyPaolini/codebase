@@ -1,8 +1,4 @@
-import {
-  ConfigurationModule,
-  InputModule,
-  RunPlanModule,
-} from "@callidescope/configuration";
+import { ConfigurationModule } from "@callidescope/configuration";
 import {
   CallablesModule,
   ClassesModule,
@@ -40,7 +36,6 @@ import { CallidescopeService } from "./callidescope.service";
     EntriesModule,
     GraphModule,
     ClassesModule,
-    InputModule,
     LoggerModule,
     OutputJsonModule,
     OutputMarkdownModule,
@@ -48,7 +43,6 @@ import { CallidescopeService } from "./callidescope.service";
     ProjectReportsModule,
     ReportFindingsModule,
     ReportModule,
-    RunPlanModule,
     WorkspaceModule,
     WriteDestinationsModule,
   ],

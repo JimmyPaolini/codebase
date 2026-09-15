@@ -1,13 +1,11 @@
 import path from "node:path";
 
 import {
+  ConfigurationModule,
   ConfigurationService,
-  FlagResolutionService,
   InputError,
-  InputService,
   ProjectConfigurationError,
   ProjectConfigurationFieldNotPermittedError,
-  RunPlanService,
 } from "@callidescope/configuration";
 import { AddressService, ProgramConfigurationError } from "@callidescope/graph";
 import {
@@ -41,6 +39,8 @@ import { buildUnknownCommandMessage } from "./callidescope.constants";
 import { CallidescopeService } from "./callidescope.service";
 
 import type {
+  LoadConfigurationArguments,
+  LoadedCallidescopeConfiguration,
   ProjectLimits,
   ProjectLimitsLookup,
   ResolvedCallidescopeConfiguration,
@@ -49,6 +49,7 @@ import type {
 } from "@callidescope/configuration";
 import type { CallGraphResult, ProjectReport } from "@callidescope/core";
 import type { UnresolvedEntryPointAddress } from "@callidescope/graph";
+import type { MockInstance } from "vitest";
 
 /** Builds a resolved configuration with no destinations configured. */
 function buildConfiguration(
@@ -169,9 +170,13 @@ function buildProjectWrite(
 
 describe(CallidescopeCommand, () => {
   let command: CallidescopeCommand;
-  let configurationService: ReturnType<typeof createMock<ConfigurationService>>;
   let callidescopeService: ReturnType<typeof createMock<CallidescopeService>>;
-  let inputService: InputService;
+  let configurationService: ConfigurationService;
+  let loadConfigurationFile: MockInstance<
+    (
+      args?: LoadConfigurationArguments,
+    ) => Promise<LoadedCallidescopeConfiguration>
+  >;
   let logger: ReturnType<typeof createMock<LoggerService>>;
   let outputJsonService: ReturnType<typeof createMock<OutputJsonService>>;
   let outputMarkdownService: ReturnType<
@@ -201,11 +206,16 @@ describe(CallidescopeCommand, () => {
   function stubConfiguration(
     configuration: ResolvedCallidescopeConfiguration,
   ): void {
-    configurationService.loadConfigurationFile.mockResolvedValue({
-      authored: {},
-      configuration,
-      path: undefined,
-    });
+    // The facade rather than a collaborator behind it: every configuration
+    // read a run makes goes through this one object, so stubbing it here is
+    // stubbing the layer.
+    loadConfigurationFile = vi
+      .spyOn(configurationService, "loadConfigurationFile")
+      .mockResolvedValue({
+        authored: {},
+        configuration,
+        path: undefined,
+      });
   }
 
   /** Points the trace at a result holding one stack past the limit. */
@@ -297,12 +307,9 @@ describe(CallidescopeCommand, () => {
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
+      imports: [ConfigurationModule],
       providers: [
         CallidescopeCommand,
-        {
-          provide: ConfigurationService,
-          useValue: createMock<ConfigurationService>(),
-        },
         {
           provide: CallidescopeService,
           useValue: createMock<CallidescopeService>(),
@@ -323,13 +330,10 @@ describe(CallidescopeCommand, () => {
             new WorkspaceReportService(),
           ),
         },
-        { provide: LoggerService, useValue: createMock<LoggerService>() },
         AddressService,
-        InputService,
         ReportFindingsService,
-        FlagResolutionService,
-        RunPlanService,
         WriteDestinationsService,
+        { provide: LoggerService, useValue: createMock<LoggerService>() },
       ],
     }).compile();
 
@@ -343,9 +347,7 @@ describe(CallidescopeCommand, () => {
   const originalIsTty = process.stdin.isTTY;
 
   beforeEach(async () => {
-    configurationService = createMock<ConfigurationService>();
     callidescopeService = createMock<CallidescopeService>();
-    inputService = new InputService();
     logger = createMock<LoggerService>();
     outputJsonService = createMock<OutputJsonService>();
     outputMarkdownService = createMock<OutputMarkdownService>();
@@ -354,9 +356,9 @@ describe(CallidescopeCommand, () => {
     process.stdin.isTTY = false;
 
     const module = await Test.createTestingModule({
+      imports: [ConfigurationModule],
       providers: [
         CallidescopeCommand,
-        { provide: ConfigurationService, useValue: configurationService },
         { provide: CallidescopeService, useValue: callidescopeService },
         { provide: OutputJsonService, useValue: outputJsonService },
         { provide: OutputMarkdownService, useValue: outputMarkdownService },
@@ -368,17 +370,15 @@ describe(CallidescopeCommand, () => {
             new WorkspaceReportService(),
           ),
         },
-        { provide: LoggerService, useValue: logger },
-        { provide: InputService, useValue: inputService },
         AddressService,
         ReportFindingsService,
-        FlagResolutionService,
-        RunPlanService,
         WriteDestinationsService,
+        { provide: LoggerService, useValue: logger },
       ],
     }).compile();
 
     command = await module.resolve(CallidescopeCommand);
+    configurationService = await module.resolve(ConfigurationService);
     stubConfiguration(buildConfiguration());
     stubTrace();
     vi.spyOn(process.stdout, "write").mockReturnValue(true);
@@ -396,9 +396,9 @@ describe(CallidescopeCommand, () => {
 
   it("sets logger context", async () => {
     const module = await Test.createTestingModule({
+      imports: [ConfigurationModule],
       providers: [
         CallidescopeCommand,
-        { provide: ConfigurationService, useValue: configurationService },
         { provide: CallidescopeService, useValue: callidescopeService },
         { provide: OutputJsonService, useValue: outputJsonService },
         { provide: OutputMarkdownService, useValue: outputMarkdownService },
@@ -410,13 +410,10 @@ describe(CallidescopeCommand, () => {
             new WorkspaceReportService(),
           ),
         },
-        { provide: LoggerService, useValue: createMock<LoggerService>() },
         AddressService,
-        InputService,
         ReportFindingsService,
-        FlagResolutionService,
-        RunPlanService,
         WriteDestinationsService,
+        { provide: LoggerService, useValue: createMock<LoggerService>() },
       ],
     }).compile();
 
@@ -1518,21 +1515,20 @@ describe(CallidescopeCommand, () => {
   it("loads the configuration file a flag named", async () => {
     await command.run([], { config: "custom.config.ts" });
 
-    expect(
-      configurationService.loadConfigurationFile.mock.calls[0]?.[0]
-        ?.configurationPath,
-    ).toBe("custom.config.ts");
+    expect(loadConfigurationFile.mock.calls[0]?.[0]?.configurationPath).toBe(
+      "custom.config.ts",
+    );
   });
 
   // 🗣️ Prompting
 
   it("prompts for a format when it was left off, at a terminal", async () => {
     process.stdin.isTTY = true;
-    vi.spyOn(inputService, "promptForSelect").mockResolvedValue("json");
+    vi.spyOn(configurationService, "promptForSelect").mockResolvedValue("json");
 
     await command.run([], {});
 
-    expect(inputService.promptForSelect).toHaveBeenCalledWith({
+    expect(configurationService.promptForSelect).toHaveBeenCalledWith({
       choices: ["markdown", "mermaid", "json"],
       message: "Which output format?",
       subject: "An output format (--format)",
@@ -1544,21 +1540,21 @@ describe(CallidescopeCommand, () => {
 
   it("does not prompt for a format that was already given", async () => {
     process.stdin.isTTY = true;
-    vi.spyOn(inputService, "promptForSelect");
+    vi.spyOn(configurationService, "promptForSelect");
 
     await command.run([], { format: "mermaid" });
 
-    expect(inputService.promptForSelect).not.toHaveBeenCalled();
+    expect(configurationService.promptForSelect).not.toHaveBeenCalled();
   });
 
   // The configuration declares a format, so a scripted run keeps working
   // rather than being refused over a flag it has never had to pass.
   it("traces without prompting for a format when stdin is not a terminal", async () => {
-    vi.spyOn(inputService, "promptForSelect");
+    vi.spyOn(configurationService, "promptForSelect");
 
     await command.run([], {});
 
-    expect(inputService.promptForSelect).not.toHaveBeenCalled();
+    expect(configurationService.promptForSelect).not.toHaveBeenCalled();
     expect(callidescopeService.trace).toHaveBeenCalledTimes(1);
     expect(process.exitCode).toBeUndefined();
   });
@@ -1567,7 +1563,7 @@ describe(CallidescopeCommand, () => {
   // reports as a refused command line rather than a crash.
   it("reports a cancelled format prompt as a refused command line", async () => {
     process.stdin.isTTY = true;
-    vi.spyOn(inputService, "promptForSelect").mockRejectedValue(
+    vi.spyOn(configurationService, "promptForSelect").mockRejectedValue(
       new InputError("An output format (--format) was not answered."),
     );
 

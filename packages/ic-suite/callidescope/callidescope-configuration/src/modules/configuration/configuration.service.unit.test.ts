@@ -1,44 +1,70 @@
-import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
-import { tmpdir } from "node:os";
-import path from "node:path";
-
+import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
-import { beforeAll, describe, expect, it, vi } from "vitest";
-import { ZodError } from "zod";
-
+import prompts from "prompts";
 import {
-  ConfigurationFileNotFoundError,
-  DEFAULT_ENTRY_POINT_DECORATORS,
-  DEFAULT_EXCLUDE_GLOBS,
-  DEFAULT_JSON_INDENTATION,
-  DEFAULT_MARKDOWN_END_MARKER,
-  DEFAULT_MARKDOWN_START_MARKER,
-  DEFAULT_MAXIMUM_DEPTH,
-  DEFAULT_PREVIEW_COUNT,
-  DEFAULT_RUN_HEADING,
-  UnknownConfigurationFileTypeError,
-} from "./configuration.constants";
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
+
+import { LoggerService } from "@codebase/logger";
+
+import { FlagResolutionService } from "../flag-resolution/flag-resolution.service";
+import { InputService } from "../input/input.service";
+
+import { ConfigurationFileService } from "./configuration-file.service";
 import { ConfigurationService } from "./configuration.service";
+import { ProjectConfigurationService } from "./project-configuration.service";
 
-/** Writes a JSON configuration holding whatever the caller passes. */
-async function writeConfiguration(configuration: unknown): Promise<string> {
-  return writeConfigurationFile(
-    "callidescope.config.json",
-    JSON.stringify(configuration),
-  );
-}
+import type { CallidescopeFormatOptions } from "../input/input.types";
+import type { ResolvedCallidescopeConfiguration } from "./configuration.types";
+import type { DeepMocked } from "@golevelup/ts-vitest";
 
-/** Writes a configuration file of the given name into a fresh temp directory. */
-async function writeConfigurationFile(
-  fileName: string,
-  contents: string,
-): Promise<string> {
-  const directory = await mkdtemp(path.join(tmpdir(), "callidescope-config-"));
-  const configurationPath = path.join(directory, fileName);
+// Mocked at the module boundary so the prompt wiring behind the facade is
+// exercised and no test ever reaches for a terminal.
+vi.mock("prompts", () => ({ default: vi.fn() }));
 
-  await writeFile(configurationPath, contents, "utf8");
+const promptRunner = vi.mocked(prompts);
 
-  return configurationPath;
+// A deliberate misspelling: the example of a `--format` value nobody
+// recognizes, which is exactly what the refusal below is about.
+// cspell:ignore markdwon
+
+/** What `--check` says it accepts, quoted the way every message quotes it. */
+const ACCEPTED =
+  `It takes a comma-separated set drawn from "breadth" and "depth" and "reports", ` +
+  `as in "--check breadth,depth,reports".`;
+
+/** A resolved configuration with the defaults this suite assumes. */
+function buildConfiguration(
+  overrides: Partial<ResolvedCallidescopeConfiguration> = {},
+): ResolvedCallidescopeConfiguration {
+  return {
+    directories: [],
+    entryPoints: {
+      addresses: [],
+      decorators: [],
+      includeExportedFunctions: true,
+      includeOrphans: true,
+      includeTests: false,
+    },
+    exclude: [],
+    excludeCallees: [],
+    excludeFrom: [],
+    limits: {
+      maximumDepth: 6,
+    },
+    write: {
+      json: undefined,
+      markdown: undefined,
+      mermaid: undefined,
+    },
+    ...overrides,
+  };
 }
 
 describe(ConfigurationService, () => {
@@ -46,619 +72,608 @@ describe(ConfigurationService, () => {
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [ConfigurationService],
+      providers: [
+        ConfigurationService,
+        FlagResolutionService,
+        InputService,
+        ProjectConfigurationService,
+        {
+          provide: ConfigurationFileService,
+          useValue: createMock<ConfigurationFileService>(),
+        },
+        { provide: LoggerService, useValue: createMock<LoggerService>() },
+      ],
     }).compile();
 
     service = await module.resolve(ConfigurationService);
+  });
+
+  const originalIsTty = process.stdin.isTTY;
+
+  beforeEach(() => {
+    // A terminal by default, so a prompt test exercises the prompt rather
+    // than the refusal standing in front of it.
+    process.stdin.isTTY = true;
+  });
+
+  afterEach(() => {
+    promptRunner.mockReset();
+    process.stdin.isTTY = originalIsTty;
   });
 
   it("is defined", () => {
     expect(service).toBeDefined();
   });
 
-  // 🌱 Defaults
+  // 🎛️ Reading the check set
 
-  it("falls back to defaults when no configuration file exists", async () => {
-    const searchDirectory = await mkdtemp(
-      path.join(tmpdir(), "callidescope-empty-"),
-    );
+  it("gates nothing when the flag is absent", () => {
+    const { errors, mode } = service.selectMode({});
 
-    const configuration = await service.loadConfiguration({ searchDirectory });
-
-    expect(configuration.exclude).toStrictEqual([...DEFAULT_EXCLUDE_GLOBS]);
-    expect(configuration.excludeFrom).toStrictEqual([]);
-    expect(configuration.excludeCallees).toStrictEqual([]);
-    expect(configuration.directories).toStrictEqual([]);
-    expect(configuration.write.json).toBeUndefined();
-    expect(configuration.write.markdown).toBeUndefined();
-  });
-
-  it("applies every limit default", () => {
-    const configuration = service.resolveConfiguration({});
-
-    expect(configuration.limits).toStrictEqual({
-      maximumBreadth: undefined,
-      maximumDepth: DEFAULT_MAXIMUM_DEPTH,
+    expect(errors).toStrictEqual([]);
+    expect(mode).toStrictEqual({
+      checksBreadth: false,
+      checksDepth: false,
+      checksReports: false,
+      writes: false,
     });
   });
 
-  it("leaves the breadth limit unset when no default exists for it", () => {
-    const configuration = service.resolveConfiguration({});
+  it("gates breadth alone when breadth alone was named", () => {
+    const { errors, mode } = service.selectMode({ check: "breadth" });
 
-    expect(configuration.limits.maximumBreadth).toBeUndefined();
+    expect(errors).toStrictEqual([]);
+    expect(mode.checksBreadth).toBe(true);
+    expect(mode.checksDepth).toBe(false);
+    expect(mode.checksReports).toBe(false);
   });
 
-  it("keeps an authored breadth limit", () => {
-    const configuration = service.resolveConfiguration({
-      limits: { maximumBreadth: 5 },
-    });
+  it("gates depth alone when depth alone was named", () => {
+    const { errors, mode } = service.selectMode({ check: "depth" });
 
-    expect(configuration.limits.maximumBreadth).toBe(5);
+    expect(errors).toStrictEqual([]);
+    expect(mode.checksBreadth).toBe(false);
+    expect(mode.checksDepth).toBe(true);
+    expect(mode.checksReports).toBe(false);
   });
 
-  it("rejects a breadth limit that is not a positive integer", async () => {
-    const configurationPath = await writeConfiguration({
-      limits: { maximumBreadth: 0 },
-    });
+  it("gates staleness alone when reports alone was named", () => {
+    const { mode } = service.selectMode({ check: "reports" });
 
-    await expect(
-      service.loadConfiguration({ configurationPath }),
-    ).rejects.toThrow(ZodError);
+    expect(mode.checksBreadth).toBe(false);
+    expect(mode.checksDepth).toBe(false);
+    expect(mode.checksReports).toBe(true);
   });
 
-  it("applies every entry-point default", () => {
-    const configuration = service.resolveConfiguration({});
-
-    expect(configuration.entryPoints).toStrictEqual({
-      addresses: [],
-      decorators: [...DEFAULT_ENTRY_POINT_DECORATORS],
-      includeExportedFunctions: true,
-      includeOrphans: true,
-      includeTests: false,
+  it("gates all three when all three were named", () => {
+    const { errors, mode } = service.selectMode({
+      check: "breadth,depth,reports",
     });
+
+    expect(errors).toStrictEqual([]);
+    expect(mode.checksBreadth).toBe(true);
+    expect(mode.checksDepth).toBe(true);
+    expect(mode.checksReports).toBe(true);
   });
 
-  // 🎛️ Overrides
+  it("gates depth and breadth independently of one another", () => {
+    const { mode } = service.selectMode({ check: "breadth" });
 
-  it("keeps an authored limit and defaults the rest", () => {
-    const configuration = service.resolveConfiguration({
-      limits: { maximumDepth: 12 },
-    });
-
-    expect(configuration.limits.maximumDepth).toBe(12);
-    expect(configuration.limits.maximumBreadth).toBeUndefined();
+    expect(mode.checksBreadth).toBe(true);
+    expect(mode.checksDepth).toBe(false);
   });
 
-  it("keeps authored callee-exclusion globs", () => {
-    const configuration = service.resolveConfiguration({
-      excludeCallees: ["LoggerService.*"],
-    });
+  it("ignores the spaces somebody wrote around a name", () => {
+    const { errors, mode } = service.selectMode({ check: " depth , reports " });
 
-    expect(configuration.excludeCallees).toStrictEqual(["LoggerService.*"]);
+    expect(errors).toStrictEqual([]);
+    expect(mode.checksDepth).toBe(true);
+    expect(mode.checksReports).toBe(true);
   });
 
-  it("keeps authored entry-point rules, including disabling them", () => {
-    const configuration = service.resolveConfiguration({
-      entryPoints: {
-        addresses: ["packages/example/src/index.ts#publicApi"],
-        decorators: ["Get"],
-        includeExportedFunctions: false,
-        includeOrphans: false,
-        includeTests: true,
-      },
-    });
+  it("refuses a flag carrying no value", () => {
+    // Read as "gate everything" this used to be one flag over two findings,
+    // which is the conflation the set exists to undo.
+    const { errors, mode } = service.selectMode({ check: true });
 
-    expect(configuration.entryPoints).toStrictEqual({
-      addresses: ["packages/example/src/index.ts#publicApi"],
-      decorators: ["Get"],
-      includeExportedFunctions: false,
-      includeOrphans: false,
-      includeTests: true,
-    });
+    expect(errors).toStrictEqual([`--check needs a value. ${ACCEPTED}`]);
+    expect(mode.checksDepth).toBe(false);
+    expect(mode.checksReports).toBe(false);
   });
 
-  it("adds authored exclusions to the defaults rather than replacing them", () => {
-    const configuration = service.resolveConfiguration({
-      exclude: ["**/fixtures/**"],
-    });
+  it("refuses an empty value", () => {
+    const { errors } = service.selectMode({ check: "" });
 
-    expect(configuration.exclude).toContain("**/fixtures/**");
-    expect(configuration.exclude).toContain("**/node_modules/**");
+    expect(errors).toStrictEqual([`--check needs a value. ${ACCEPTED}`]);
   });
 
-  it("does not duplicate an exclusion the defaults already hold", () => {
-    const configuration = service.resolveConfiguration({
-      exclude: ["**/dist/**"],
-    });
+  it("refuses a value that is nothing but separators", () => {
+    const { errors } = service.selectMode({ check: " , " });
 
-    const occurrences = configuration.exclude.filter(
-      (glob) => glob === "**/dist/**",
-    );
-
-    expect(occurrences).toHaveLength(1);
+    expect(errors).toStrictEqual([`--check needs a value. ${ACCEPTED}`]);
   });
 
-  // 📤 Write destinations
+  it("refuses a name it does not know, and names what it takes", () => {
+    const { errors, mode } = service.selectMode({ check: "limits" });
 
-  it("defaults the JSON indentation when a path is named", () => {
-    const configuration = service.resolveConfiguration({
-      write: { json: { path: "output/callidescope.json" } },
-    });
-
-    expect(configuration.write.json).toStrictEqual({
-      indentation: DEFAULT_JSON_INDENTATION,
-      path: "output/callidescope.json",
-    });
+    expect(errors).toStrictEqual([
+      `--check does not accept "limits". ${ACCEPTED}`,
+    ]);
+    expect(mode.checksDepth).toBe(false);
   });
 
-  it("keeps an authored JSON indentation, zero included", () => {
-    const configuration = service.resolveConfiguration({
-      write: { json: { indentation: 0, path: "output/callidescope.json" } },
-    });
+  it("reports every unknown name in one run", () => {
+    const { errors } = service.selectMode({ check: "limits,stacks" });
 
-    expect(configuration.write.json?.indentation).toBe(0);
+    expect(errors).toHaveLength(2);
   });
 
-  it("defaults the markdown markers when a path is named", () => {
-    const configuration = service.resolveConfiguration({
-      write: { markdown: { path: "REPORT.md" } },
+  it("keeps the names it knows from a set that also holds one it does not", () => {
+    const { errors, mode } = service.selectMode({ check: "depth,limits" });
+
+    expect(errors).toHaveLength(1);
+    expect(mode.checksDepth).toBe(true);
+  });
+
+  // ✍️ Writing
+
+  it("writes when the write flag was given", () => {
+    const { errors, mode } = service.selectMode({ write: true });
+
+    expect(errors).toStrictEqual([]);
+    expect(mode.writes).toBe(true);
+  });
+
+  it("does not write for a flag that was explicitly turned off", () => {
+    const { mode } = service.selectMode({ write: false });
+
+    expect(mode.writes).toBe(false);
+  });
+
+  it("writes and gates depth in one run", () => {
+    const { errors, mode } = service.selectMode({
+      check: "depth",
+      write: true,
     });
 
-    expect(configuration.write.markdown).toStrictEqual({
-      description: undefined,
-      endMarker: DEFAULT_MARKDOWN_END_MARKER,
-      heading: DEFAULT_RUN_HEADING,
-      path: "REPORT.md",
-      previewCount: DEFAULT_PREVIEW_COUNT,
-      render: undefined,
-      startMarker: DEFAULT_MARKDOWN_START_MARKER,
-      writeBlock: undefined,
+    expect(errors).toStrictEqual([]);
+    expect(mode).toStrictEqual({
+      checksBreadth: false,
+      checksDepth: true,
+      checksReports: false,
+      writes: true,
     });
   });
 
-  it("keeps authored markdown markers, description, and callbacks", () => {
-    const render = (): string => "rendered";
-    const writeBlock = (): boolean => true;
+  it("refuses writing and checking reports at once", () => {
+    const { errors } = service.selectMode({ check: "reports", write: true });
 
-    const configuration = service.resolveConfiguration({
-      write: {
-        markdown: {
-          description: "Call stacks",
-          endMarker: "<!-- END -->",
-          path: "REPORT.md",
-          render,
-          startMarker: "<!-- START -->",
-          writeBlock,
-        },
-      },
-    });
-
-    expect(configuration.write.markdown?.description).toBe("Call stacks");
-    expect(configuration.write.markdown?.startMarker).toBe("<!-- START -->");
-    expect(configuration.write.markdown?.endMarker).toBe("<!-- END -->");
-    expect(configuration.write.markdown?.render).toBe(render);
-    expect(configuration.write.markdown?.writeBlock).toBe(writeBlock);
+    expect(errors).toStrictEqual([
+      `--write cannot be combined with --check reports: a report cannot be stale in the run that just wrote it. Drop one of them, or run --write and --check reports separately.`,
+    ]);
   });
 
-  it("keeps an authored markdown heading", () => {
-    const configuration = service.resolveConfiguration({
-      write: {
-        markdown: { heading: "## 🔭 Callidescope", path: "README.md" },
-      },
-    });
+  it("refuses a destination flag that nothing writes or compares", () => {
+    // This used to exit 0, log a finished trace, and write no file and no
+    // warning — a flag naming a destination taught people the tool had run.
+    const { errors } = service.selectMode({ json: "report.json" });
 
-    expect(configuration.write.markdown?.heading).toBe("## 🔭 Callidescope");
+    expect(errors).toStrictEqual([
+      "--json names a destination but nothing writes or compares it. Add --write to write it, or --check reports to fail on it being out of date.",
+    ]);
   });
 
-  it("carries an authored heading through the file schema, not only the resolver", async () => {
-    // Resolution is not the whole path a configured value travels: a loaded
-    // file is parsed by the schema first, and a field the schema does not name
-    // is stripped there — silently, with the default appearing in its place
-    // and nothing to say the file asked for anything else. That is how the
-    // heading configured for this repository's own README came out at `#`
-    // while the file said `##`, so the schema is asserted through
-    // `loadConfiguration` rather than only through `resolveConfiguration`.
-    const configurationPath = await writeConfiguration({
-      write: { markdown: { heading: "### Deep", path: "README.md" } },
+  it("names every destination flag the command line supplied", () => {
+    const { errors } = service.selectMode({
+      json: "report.json",
+      markdown: "report.md",
     });
 
-    const configuration = await service.loadConfiguration({
-      configurationPath,
-    });
-
-    expect(configuration.write.markdown?.heading).toBe("### Deep");
+    expect(errors).toStrictEqual([
+      "--json and --markdown name destinations but nothing writes or compares them. Add --write to write them, or --check reports to fail on them being out of date.",
+    ]);
   });
 
-  it("leaves the diagram destination alone until it is asked for", () => {
+  it("accepts a destination flag alongside --write", () => {
+    const { errors } = service.selectMode({ json: "report.json", write: true });
+
+    expect(errors).toStrictEqual([]);
+  });
+
+  it("accepts a destination flag alongside --check reports", () => {
+    // `--check reports` compares a destination, so an override is meaningful
+    // there too. Refusing on a missing `--write` alone would be wrong.
+    const { errors } = service.selectMode({
+      check: "reports",
+      json: "report.json",
+    });
+
+    expect(errors).toStrictEqual([]);
+  });
+
+  it("leaves a run naming no destination flag alone", () => {
+    // The safety property the refusal must not disturb: a bare run with
+    // destinations in the configuration still writes nothing and complains
+    // about nothing, which is what makes it safe to type in a checkout.
+    const { errors } = service.selectMode({});
+
+    expect(errors).toStrictEqual([]);
+  });
+
+  // 📄 Touching files
+
+  it("touches files when it writes", () => {
     expect(
-      service.resolveConfiguration({ write: {} }).write.mermaid,
-    ).toBeUndefined();
-  });
-
-  it("defaults the diagram destination's markers when a path is named", () => {
-    expect(
-      service.resolveConfiguration({
-        write: { mermaid: { path: "GRAPH.md" } },
-      }).write.mermaid,
-    ).toStrictEqual({
-      description: undefined,
-      endMarker: DEFAULT_MARKDOWN_END_MARKER,
-      heading: DEFAULT_RUN_HEADING,
-      path: "GRAPH.md",
-      previewCount: DEFAULT_PREVIEW_COUNT,
-      render: undefined,
-      startMarker: DEFAULT_MARKDOWN_START_MARKER,
-      writeBlock: undefined,
-    });
-  });
-
-  it("resolves the diagram and markdown destinations independently", () => {
-    // Two destinations rather than one with a mode, so a repository can
-    // publish the tree and the diagram from the same run.
-    const configuration = service.resolveConfiguration({
-      write: {
-        markdown: { path: "REPORT.md" },
-        mermaid: { endMarker: "<!-- END -->", path: "GRAPH.md" },
-      },
-    });
-
-    expect(configuration.write.markdown?.path).toBe("REPORT.md");
-    expect(configuration.write.markdown?.endMarker).toBe(
-      DEFAULT_MARKDOWN_END_MARKER,
-    );
-    expect(configuration.write.mermaid?.path).toBe("GRAPH.md");
-    expect(configuration.write.mermaid?.endMarker).toBe("<!-- END -->");
-  });
-
-  // 📂 File discovery
-
-  it("discovers a configuration file in the search directory", async () => {
-    const configurationPath = await writeConfiguration({
-      limits: { maximumDepth: 9 },
-    });
-
-    const configuration = await service.loadConfiguration({
-      searchDirectory: path.dirname(configurationPath),
-    });
-
-    expect(configuration.limits.maximumDepth).toBe(9);
-  });
-
-  it("loads a configuration file named explicitly", async () => {
-    const configurationPath = await writeConfiguration({
-      directories: ["packages/caelundas"],
-    });
-
-    const configuration = await service.loadConfiguration({
-      configurationPath,
-    });
-
-    expect(configuration.directories).toStrictEqual(["packages/caelundas"]);
-  });
-
-  it("loads a JSONC configuration, comments included", async () => {
-    const configurationPath = await writeConfigurationFile(
-      "callidescope.config.jsonc",
-      '{\n  // the limit\n  "limits": { "maximumDepth": 4 }\n}',
-    );
-
-    const configuration = await service.loadConfiguration({
-      configurationPath,
-    });
-
-    expect(configuration.limits.maximumDepth).toBe(4);
-  });
-
-  it("loads a TypeScript configuration through its default export", async () => {
-    const configurationPath = await writeConfigurationFile(
-      "callidescope.config.ts",
-      "export default { limits: { maximumDepth: 3 } };\n",
-    );
-
-    const configuration = await service.loadConfiguration({
-      configurationPath,
-    });
-
-    expect(configuration.limits.maximumDepth).toBe(3);
-  });
-
-  it("treats a module exporting no object as an empty configuration", async () => {
-    const configurationPath = await writeConfigurationFile(
-      "callidescope.config.ts",
-      "export default 42;\n",
-    );
-
-    const configuration = await service.loadConfiguration({
-      configurationPath,
-    });
-
-    expect(configuration.limits.maximumDepth).toBe(DEFAULT_MAXIMUM_DEPTH);
-  });
-
-  // 🚨 Failures
-
-  it("throws when an explicitly named configuration file is missing", async () => {
-    const directory = await mkdtemp(path.join(tmpdir(), "callidescope-gone-"));
-
-    await expect(
-      service.loadConfiguration({
-        configurationPath: path.join(directory, "callidescope.config.ts"),
+      service.touchesFiles({
+        checksBreadth: false,
+        checksDepth: false,
+        checksReports: false,
+        writes: true,
       }),
-    ).rejects.toThrow(ConfigurationFileNotFoundError);
+    ).toBe(true);
   });
 
-  // 🌳 Repository-root resolution
-  //
-  // A task runner sets the cwd to the project rather than the workspace, so a
-  // path given relative to the repository root has to survive being resolved
-  // from somewhere below it.
+  it("touches files when it compares them", () => {
+    expect(
+      service.touchesFiles({
+        checksBreadth: false,
+        checksDepth: false,
+        checksReports: true,
+        writes: false,
+      }),
+    ).toBe(true);
+  });
 
-  it("resolves a path relative to the repository root", async () => {
-    const repositoryRoot = await mkdtemp(
-      path.join(tmpdir(), "callidescope-repository-"),
-    );
-    await writeFile(
-      path.join(repositoryRoot, "pnpm-workspace.yaml"),
-      "packages: []\n",
-      "utf8",
-    );
-    const nestedDirectory = path.join(repositoryRoot, "packages", "nested");
-    await mkdir(nestedDirectory, { recursive: true });
-    await writeFile(
-      path.join(repositoryRoot, "callidescope.config.json"),
-      JSON.stringify({ limits: { maximumDepth: 11 } }),
-      "utf8",
-    );
+  it("leaves files alone when it only gates depth", () => {
+    expect(
+      service.touchesFiles({
+        checksBreadth: false,
+        checksDepth: true,
+        checksReports: false,
+        writes: false,
+      }),
+    ).toBe(false);
+  });
 
-    const cwdSpy = vi.spyOn(process, "cwd").mockReturnValue(nestedDirectory);
+  // 🔍 Lookup preparation
 
-    try {
-      const configuration = await service.loadConfiguration({
-        configurationPath: "callidescope.config.json",
+  describe("prepareRun", () => {
+    // The whole command line reaches the one resolver, mode flags included:
+    // the rule that `--check` and `--write` change nothing it resolves is only
+    // a rule if the resolver is actually given them.
+    it("hands the mode flags to the resolver and resolves the same configuration", async () => {
+      const configurationFileService = createMock<ConfigurationFileService>();
+
+      configurationFileService.loadConfigurationFile.mockResolvedValue({
+        authored: {},
+        configuration: buildConfiguration({ directories: ["packages/one"] }),
+        path: undefined,
       });
 
-      expect(configuration.limits.maximumDepth).toBe(11);
-    } finally {
-      cwdSpy.mockRestore();
-    }
+      const flagResolutionService = new FlagResolutionService();
+      const resolveRunFlags = vi.spyOn(
+        flagResolutionService,
+        "resolveRunFlags",
+      );
+      const subject = new ConfigurationService(
+        configurationFileService,
+        flagResolutionService,
+        new InputService(),
+        createMock<ProjectConfigurationService>(),
+      );
+
+      const prepared = await subject.prepareRun({
+        check: "depth,reports",
+        write: false,
+      });
+
+      // Read off the call rather than matched with `objectContaining`, which
+      // returns `any` and would cost the project its type coverage.
+      // Every flag the command accepts is handed over, absent ones included:
+      // the resolver is the one place a flag meets the field it overrides, so
+      // a flag withheld here is a flag that silently does nothing.
+      expect(resolveRunFlags.mock.calls[0]?.[0].flags).toStrictEqual({
+        check: "depth,reports",
+        directories: undefined,
+        entryPointAddresses: undefined,
+        entryPointDecorators: undefined,
+        exclude: undefined,
+        excludeCallees: undefined,
+        format: undefined,
+        includeExportedFunctions: undefined,
+        includeOrphans: undefined,
+        includeTests: undefined,
+        json: undefined,
+        markdown: undefined,
+        maximumBreadth: undefined,
+        maximumDepth: undefined,
+        mermaid: undefined,
+        write: false,
+      });
+      expect(prepared.run?.configuration).toStrictEqual(
+        buildConfiguration({ directories: ["packages/one"] }),
+      );
+    });
   });
 
-  it("throws when the path is missing at the repository root too", async () => {
-    const repositoryRoot = await mkdtemp(
-      path.join(tmpdir(), "callidescope-repository-"),
-    );
-    await writeFile(
-      path.join(repositoryRoot, "pnpm-workspace.yaml"),
-      "packages: []\n",
-      "utf8",
-    );
+  describe("prepareLookup", () => {
+    // The refusal path `depth` and `breadth` reach: a lookup has no
+    // half-prepared state to hand back, so an unusable flag is thrown rather
+    // than logged and returned the way a run's is.
+    it("refuses a format nobody recognizes rather than tracing anyway", async () => {
+      const configurationFileService = createMock<ConfigurationFileService>();
 
-    const cwdSpy = vi.spyOn(process, "cwd").mockReturnValue(repositoryRoot);
+      configurationFileService.loadConfigurationFile.mockResolvedValue({
+        authored: {},
+        configuration: buildConfiguration(),
+        path: undefined,
+      });
 
-    try {
+      const subject = new ConfigurationService(
+        configurationFileService,
+        new FlagResolutionService(),
+        new InputService(),
+        createMock<ProjectConfigurationService>(),
+      );
+
       await expect(
-        service.loadConfiguration({
-          configurationPath: "callidescope.config.json",
-        }),
-      ).rejects.toThrow(ConfigurationFileNotFoundError);
-    } finally {
-      cwdSpy.mockRestore();
+        subject.prepareLookup({ format: "markdwon" }),
+      ).rejects.toThrow(
+        '--format does not accept "markdwon". It takes one of "markdown", "mermaid", "json".',
+      );
+    });
+
+    it("resolves the workspace root to the working directory", async () => {
+      const configurationFileService = createMock<ConfigurationFileService>();
+
+      configurationFileService.loadConfigurationFile.mockResolvedValue({
+        authored: {},
+        configuration: buildConfiguration(),
+        path: undefined,
+      });
+
+      const subject = new ConfigurationService(
+        configurationFileService,
+        new FlagResolutionService(),
+        new InputService(),
+        createMock<ProjectConfigurationService>(),
+      );
+
+      const prepared = await subject.prepareLookup({});
+
+      expect(prepared.workspaceRoot).toBe(process.cwd());
+      expect(
+        configurationFileService.loadConfigurationFile,
+      ).toHaveBeenCalledWith({
+        configurationPath: undefined,
+        searchDirectory: process.cwd(),
+      });
+    });
+
+    // Without the path a lookup pointed at a configuration sitting at some
+    // project's root reads that same file again as that project's own, and
+    // refuses it for the workspace-only fields it legitimately sets.
+    it("reports the file the configuration was read from", async () => {
+      const configurationFileService = createMock<ConfigurationFileService>();
+
+      configurationFileService.loadConfigurationFile.mockResolvedValue({
+        authored: {},
+        configuration: buildConfiguration(),
+        path: "/workspace/configuration/callidescope.config.ts",
+      });
+
+      const subject = new ConfigurationService(
+        configurationFileService,
+        new FlagResolutionService(),
+        new InputService(),
+        createMock<ProjectConfigurationService>(),
+      );
+
+      const prepared = await subject.prepareLookup({});
+
+      expect(prepared.configurationPath).toBe(
+        "/workspace/configuration/callidescope.config.ts",
+      );
+    });
+  });
+
+  // 🖨️ Format resolution
+
+  // Declared rather than passed inline so the other flag is inferred as part
+  // of the options type, the way a command's own options object is.
+  const optionsWithoutFormat: CallidescopeFormatOptions & { config: string } = {
+    config: "a.ts",
+  };
+
+  it("passes a format that was given on the command line through untouched", async () => {
+    await expect(
+      service.resolveFormatOption({ ...optionsWithoutFormat, format: "json" }),
+    ).resolves.toStrictEqual({ config: "a.ts", format: "json" });
+    expect(promptRunner).not.toHaveBeenCalled();
+  });
+
+  it("prompts for a missing format at a terminal, keeping the other options", async () => {
+    promptRunner.mockResolvedValue({ value: "mermaid" });
+
+    await expect(
+      service.resolveFormatOption(optionsWithoutFormat),
+    ).resolves.toStrictEqual({ config: "a.ts", format: "mermaid" });
+  });
+
+  // The configuration already declares a format, so this one value is offered
+  // rather than demanded: a scripted `--check depth` has never passed it.
+  it("leaves a missing format alone when stdin is not a terminal", async () => {
+    process.stdin.isTTY = false;
+
+    await expect(
+      service.resolveFormatOption(optionsWithoutFormat),
+    ).resolves.toStrictEqual({ config: "a.ts" });
+    expect(promptRunner).not.toHaveBeenCalled();
+  });
+
+  // 🎚️ The facade's own surface
+
+  describe("forwarding", () => {
+    /** The four doubles a forwarding case reads its answer back from. */
+    interface Collaborators {
+      configurationFileService: DeepMocked<ConfigurationFileService>;
+      inputService: DeepMocked<InputService>;
+      projectConfigurationService: DeepMocked<ProjectConfigurationService>;
     }
-  });
 
-  it("throws when no repository root is found above the working directory", async () => {
-    // A temp directory has no `.git` or `pnpm-workspace.yaml` anywhere above
-    // it, so the upward walk reaches the filesystem root and gives up.
-    const directory = await mkdtemp(
-      path.join(tmpdir(), "callidescope-rootless-"),
-    );
-
-    const cwdSpy = vi.spyOn(process, "cwd").mockReturnValue(directory);
-
-    try {
-      await expect(
-        service.loadConfiguration({
-          configurationPath: "callidescope.config.json",
-        }),
-      ).rejects.toThrow(ConfigurationFileNotFoundError);
-    } finally {
-      cwdSpy.mockRestore();
+    /** One question the facade answers, and who it is supposed to ask. */
+    interface ForwardingCase {
+      ask: (subject: ConfigurationService) => unknown;
+      name: string;
+      read: (collaborators: Collaborators) => unknown;
     }
-  });
 
-  it("throws when a configuration file has an unreadable extension", async () => {
-    const configurationPath = await writeConfigurationFile(
-      "callidescope.config.yaml",
-      "limits:\n  maximumDepth: 6\n",
+    const promptArguments = {
+      message: "Which callables?",
+      subject: "At least one callable address",
+      suggestions: ["a.ts#A.b"],
+    };
+    const selectArguments = {
+      choices: ["json"],
+      message: "Which output format?",
+      subject: "An output format",
+    };
+    const limitsArguments = {
+      projectConfigurations: [],
+      projects: ["packages/example"],
+      workspaceAuthoredLimits: undefined,
+      workspaceConfiguration: buildConfiguration(),
+      workspaceConfigurationPath: undefined,
+    };
+
+    // Every question a consumer can ask reaches exactly one collaborator, with
+    // the arguments it was given. Stated as a table rather than a test apiece:
+    // what is asserted is that nothing is quietly reinterpreted on the way
+    // through, and a table is where a method added without a forwarding line
+    // shows up as a gap.
+    const cases: readonly ForwardingCase[] = [
+      {
+        ask: (subject) => subject.findConfigurationFileAt("/workspace"),
+        name: "findConfigurationFileAt",
+        read: ({ configurationFileService }) =>
+          configurationFileService.findConfigurationFileAt.mock.calls[0]?.[0],
+      },
+      {
+        ask: async (subject) => await subject.loadConfiguration({}),
+        name: "loadConfiguration",
+        read: ({ configurationFileService }) =>
+          configurationFileService.loadConfiguration.mock.calls[0]?.[0],
+      },
+      {
+        ask: async (subject) => await subject.loadConfigurationFile({}),
+        name: "loadConfigurationFile",
+        read: ({ configurationFileService }) =>
+          configurationFileService.loadConfigurationFile.mock.calls[0]?.[0],
+      },
+      {
+        ask: (subject) => subject.resolveConfiguration({}),
+        name: "resolveConfiguration",
+        read: ({ configurationFileService }) =>
+          configurationFileService.resolveConfiguration.mock.calls[0]?.[0],
+      },
+      {
+        ask: (subject) => subject.parseCommaDelimitedOption("a,b"),
+        name: "parseCommaDelimitedOption",
+        read: ({ inputService }) =>
+          inputService.parseCommaDelimitedOption.mock.calls[0]?.[0],
+      },
+      {
+        ask: (subject) => subject.parseOptionalOption("a"),
+        name: "parseOptionalOption",
+        read: ({ inputService }) =>
+          inputService.parseOptionalOption.mock.calls[0]?.[0],
+      },
+      {
+        ask: async (subject) =>
+          await subject.promptForAutocompleteMultiselect(promptArguments),
+        name: "promptForAutocompleteMultiselect",
+        read: ({ inputService }) =>
+          inputService.promptForAutocompleteMultiselect.mock.calls[0]?.[0],
+      },
+      {
+        ask: async (subject) => await subject.promptForSelect(selectArguments),
+        name: "promptForSelect",
+        read: ({ inputService }) =>
+          inputService.promptForSelect.mock.calls[0]?.[0],
+      },
+      {
+        ask: (subject) => subject.resolveLimits(limitsArguments),
+        name: "resolveLimits",
+        read: ({ projectConfigurationService }) =>
+          projectConfigurationService.resolveLimits.mock.calls[0]?.[0],
+      },
+    ];
+
+    /** The facade over four doubles, so a forwarded call is observable. */
+    function buildForwardingSubject(): {
+      collaborators: Collaborators;
+      subject: ConfigurationService;
+    } {
+      const collaborators: Collaborators = {
+        configurationFileService: createMock<ConfigurationFileService>(),
+        inputService: createMock<InputService>(),
+        projectConfigurationService: createMock<ProjectConfigurationService>(),
+      };
+
+      return {
+        collaborators,
+        subject: new ConfigurationService(
+          collaborators.configurationFileService,
+          new FlagResolutionService(),
+          collaborators.inputService,
+          collaborators.projectConfigurationService,
+        ),
+      };
+    }
+
+    it.each(cases)(
+      "asks the collaborator that owns $name, with what it was given",
+      async ({ ask, read }) => {
+        const { collaborators, subject } = buildForwardingSubject();
+
+        await ask(subject);
+
+        expect(read(collaborators)).toBeDefined();
+      },
     );
 
-    await expect(
-      service.loadConfiguration({ configurationPath }),
-    ).rejects.toThrow(UnknownConfigurationFileTypeError);
-  });
+    it("hands the project loader the reader it should read through", async () => {
+      // The facade itself, so a caller stubbing this one object stubs every
+      // file read the project loader makes on its behalf.
+      const { collaborators, subject } = buildForwardingSubject();
 
-  it("rejects a limit that is not a positive integer", async () => {
-    const configurationPath = await writeConfiguration({
-      limits: { maximumDepth: 0 },
+      await subject.loadProjectConfigurations({
+        projects: ["packages/example"],
+        workspaceRoot: "/workspace",
+      });
+
+      expect(
+        collaborators.projectConfigurationService.loadProjectConfigurations.mock
+          .calls[0]?.[1],
+      ).toBe(subject);
     });
 
-    await expect(
-      service.loadConfiguration({ configurationPath }),
-    ).rejects.toThrow(ZodError);
-  });
-
-  it.each([
-    ["callerMajorityRatio", 0.8],
-    ["directSpreadThreshold", 3],
-    ["maximumImplementationCandidates", 8],
-    ["minimumCallers", 2],
-    ["spreadThreshold", 4],
-  ])("refuses the retired limit %s", async (limit, value) => {
-    const configurationPath = await writeConfiguration({
-      limits: { [limit]: value },
-    });
-
-    await expect(
-      service.loadConfiguration({ configurationPath }),
-    ).rejects.toThrow(ZodError);
-  });
-
-  it("refuses a limit nothing in the tool reads", async () => {
-    const configurationPath = await writeConfiguration({
-      limits: { maximumDepth: 6, maximumWidth: 3 },
-    });
-
-    await expect(
-      service.loadConfiguration({ configurationPath }),
-    ).rejects.toThrow(ZodError);
-  });
-
-  it("rejects a JSON output destination with no path", async () => {
-    const configurationPath = await writeConfiguration({
-      write: { json: { indentation: 2 } },
-    });
-
-    await expect(
-      service.loadConfiguration({ configurationPath }),
-    ).rejects.toThrow(ZodError);
-  });
-
-  it("rejects a markdown output destination with no path", async () => {
-    const configurationPath = await writeConfiguration({
-      write: { markdown: { description: "no path" } },
-    });
-
-    await expect(
-      service.loadConfiguration({ configurationPath }),
-    ).rejects.toThrow(ZodError);
-  });
-
-  it("rejects a non-function render callback", async () => {
-    const configurationPath = await writeConfiguration({
-      write: { markdown: { path: "REPORT.md", render: "not a function" } },
-    });
-
-    await expect(
-      service.loadConfiguration({ configurationPath }),
-    ).rejects.toThrow(ZodError);
-  });
-
-  it("rejects an exclusion list holding a non-string", async () => {
-    const configurationPath = await writeConfiguration({ exclude: [7] });
-
-    await expect(
-      service.loadConfiguration({ configurationPath }),
-    ).rejects.toThrow(ZodError);
-  });
-
-  it("refuses the retired ignoreCallees field rather than aliasing it", async () => {
-    const configurationPath = await writeConfiguration({
-      ignoreCallees: ["LoggerService.*"],
-    });
-
-    await expect(
-      service.loadConfiguration({ configurationPath }),
-    ).rejects.toThrow(ZodError);
-  });
-
-  it("refuses the retired output field rather than aliasing it", async () => {
-    const configurationPath = await writeConfiguration({
-      output: { markdown: { path: "REPORT.md" } },
-    });
-
-    await expect(
-      service.loadConfiguration({ configurationPath }),
-    ).rejects.toThrow(ZodError);
-  });
-
-  it("refuses a top-level field it has no opinion about", async () => {
-    // A field nothing here names used to be stripped in silence, which reads
-    // to whoever wrote it exactly like a field that took effect. Every field
-    // this tool has ever retired — and every one somebody misspells — arrives
-    // through this door, so the door is closed.
-    const configurationPath = await writeConfiguration({
-      limits: { maximumDepth: 5 },
-      unknownFutureOption: true,
-    });
-
-    await expect(
-      service.loadConfiguration({ configurationPath }),
-    ).rejects.toThrow(ZodError);
-  });
-
-  it.each([
-    ["entryPoints", { entryPoints: { includeGenerated: true } }],
-    ["write", { write: { projectReadmes: {} } }],
-    ["write.json", { write: { json: { path: "r.json", spaces: 2 } } }],
-    ["write.markdown", { write: { markdown: { footer: "x", path: "R.md" } } }],
-  ])("refuses an unknown member of %s", async (_field, configuration) => {
-    const configurationPath = await writeConfiguration(configuration);
-
-    await expect(
-      service.loadConfiguration({ configurationPath }),
-    ).rejects.toThrow(ZodError);
-  });
-
-  // 👀 Preview Count
-
-  it("defaults the stacks a markdown destination previews", () => {
-    const configuration = service.resolveConfiguration({
-      write: { markdown: { path: "README.md" } },
-    });
-
-    expect(configuration.write.markdown?.previewCount).toBe(
-      DEFAULT_PREVIEW_COUNT,
+    it.each([
+      { checksReports: true, touched: true, writes: false },
+      { checksReports: false, touched: true, writes: true },
+      { checksReports: false, touched: false, writes: false },
+    ])(
+      "reads checksReports=$checksReports writes=$writes as touching files: $touched",
+      ({ checksReports, touched, writes }) => {
+        expect(
+          service.touchesFiles({
+            checksBreadth: false,
+            checksDepth: false,
+            checksReports,
+            writes,
+          }),
+        ).toBe(touched);
+      },
     );
-  });
-
-  it("keeps the preview count a markdown destination declared", () => {
-    const configuration = service.resolveConfiguration({
-      write: { markdown: { path: "README.md", previewCount: 7 } },
-    });
-
-    expect(configuration.write.markdown?.previewCount).toBe(7);
-  });
-
-  // 🗂️ Loaded Files
-
-  it("reports the file a configuration came from, and what it authored", async () => {
-    const configurationPath = await writeConfiguration({
-      limits: { maximumDepth: 9 },
-    });
-
-    const loaded = await service.loadConfigurationFile({ configurationPath });
-
-    expect(loaded.path).toBe(configurationPath);
-    expect(loaded.authored.limits?.maximumDepth).toBe(9);
-    expect(loaded.authored.exclude).toBeUndefined();
-    expect(loaded.configuration.limits.maximumDepth).toBe(9);
-  });
-
-  it("reports no file when the search found none", async () => {
-    const searchDirectory = await mkdtemp(
-      path.join(tmpdir(), "callidescope-empty-"),
-    );
-
-    const loaded = await service.loadConfigurationFile({ searchDirectory });
-
-    expect(loaded.path).toBeUndefined();
-    expect(loaded.authored).toStrictEqual({});
-    expect(loaded.configuration.limits.maximumDepth).toBe(
-      DEFAULT_MAXIMUM_DEPTH,
-    );
-  });
-
-  it("finds a configuration file sitting directly in a directory", async () => {
-    const configurationPath = await writeConfiguration({});
-
-    expect(
-      service.findConfigurationFileAt(path.dirname(configurationPath)),
-    ).toBe(configurationPath);
-  });
-
-  it("finds nothing in a directory holding no configuration file", async () => {
-    const directory = await mkdtemp(path.join(tmpdir(), "callidescope-empty-"));
-
-    expect(service.findConfigurationFileAt(directory)).toBeUndefined();
   });
 });

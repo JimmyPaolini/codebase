@@ -1,4 +1,4 @@
-import { InputModule } from "@callidescope/configuration";
+import { ConfigurationModule } from "@callidescope/configuration";
 import { GraphModule } from "@callidescope/graph";
 import { AddressReportModule } from "@callidescope/output";
 import { Module } from "@nestjs/common";
@@ -19,7 +19,7 @@ import { DepthCommand } from "./depth.command";
     AddressLookupModule,
     AddressReportModule,
     GraphModule,
-    InputModule,
+    ConfigurationModule,
     LoggerModule,
   ],
   providers: [DepthCommand],

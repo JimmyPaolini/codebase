@@ -44,12 +44,35 @@ export function buildCallableNode(
 }
 
 /**
- * Builds an empty result, for tests that only pass one through.
+ * Builds a discovered callable for tests that only read its described node.
+ *
+ * The declaration and program come from `createMock` rather than a cast: the
+ * graph services never touch either, but a bare `{}` would have to be lied
+ * about to the type system to say so.
+ */
+export function buildDiscoveredCallable(
+  overrides: Partial<CallableNode> = {},
+): DiscoveredCallable {
+  return {
+    declaration: createMock<DiscoveredCallable["declaration"]>(),
+    node: buildCallableNode(overrides),
+    projectProgram: createMock<DiscoveredCallable["projectProgram"]>(),
+  };
+}
+
+/**
+ * Builds a result whose every collection and count is empty.
  *
  * Every collection the pipeline produces is present, so a test asserting on the
  * whole result keeps working when a new finding kind is added.
+ *
+ * Named for the emptiness rather than for the type, because the emptiness is
+ * not neutral: an all-zero summary is itself a finding to anything that judges
+ * a run, so a test about what a run reports wants
+ * {@link buildTracedCallGraphResult} instead. This one is for the renderers,
+ * which only pass a result through.
  */
-export function buildCallGraphResult(
+export function buildEmptyCallGraphResult(
   overrides: Partial<CallGraphResult> = {},
 ): CallGraphResult {
   return {
@@ -67,23 +90,6 @@ export function buildCallGraphResult(
     },
     wideCallables: [],
     ...overrides,
-  };
-}
-
-/**
- * Builds a discovered callable for tests that only read its described node.
- *
- * The declaration and program come from `createMock` rather than a cast: the
- * graph services never touch either, but a bare `{}` would have to be lied
- * about to the type system to say so.
- */
-export function buildDiscoveredCallable(
-  overrides: Partial<CallableNode> = {},
-): DiscoveredCallable {
-  return {
-    declaration: createMock<DiscoveredCallable["declaration"]>(),
-    node: buildCallableNode(overrides),
-    projectProgram: createMock<DiscoveredCallable["projectProgram"]>(),
   };
 }
 
@@ -172,7 +178,7 @@ export function buildStackFrame(
 export function buildTracedCallGraphResult(
   overrides: Partial<CallGraphResult> = {},
 ): CallGraphResult {
-  return buildCallGraphResult({
+  return buildEmptyCallGraphResult({
     summary: {
       callableCount: 1,
       cyclicComponentCount: 0,

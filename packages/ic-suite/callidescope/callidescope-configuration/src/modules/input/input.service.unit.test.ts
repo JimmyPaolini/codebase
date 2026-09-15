@@ -12,8 +12,6 @@ import {
 
 import { InputService } from "./input.service";
 
-import type { CallidescopeFormatOptions } from "./input.types";
-
 // Mocked at the module boundary so the service's own wiring is exercised and
 // no test ever reaches for a terminal.
 vi.mock("prompts", () => ({ default: vi.fn() }));
@@ -303,39 +301,5 @@ describe(InputService, () => {
         subject: "An output format",
       }),
     ).rejects.toThrow("An output format was not answered.");
-  });
-
-  // 🖨️ Format resolution
-
-  // Declared rather than passed inline so the other flag is inferred as part
-  // of the options type, the way a command's own options object is.
-  const optionsWithoutFormat: CallidescopeFormatOptions & { config: string } = {
-    config: "a.ts",
-  };
-
-  it("passes a format that was given on the command line through untouched", async () => {
-    await expect(
-      service.resolveFormatOption({ ...optionsWithoutFormat, format: "json" }),
-    ).resolves.toStrictEqual({ config: "a.ts", format: "json" });
-    expect(promptRunner).not.toHaveBeenCalled();
-  });
-
-  it("prompts for a missing format at a terminal, keeping the other options", async () => {
-    promptRunner.mockResolvedValue({ value: "mermaid" });
-
-    await expect(
-      service.resolveFormatOption(optionsWithoutFormat),
-    ).resolves.toStrictEqual({ config: "a.ts", format: "mermaid" });
-  });
-
-  // The configuration already declares a format, so this one value is offered
-  // rather than demanded: a scripted `--check depth` has never passed it.
-  it("leaves a missing format alone when stdin is not a terminal", async () => {
-    process.stdin.isTTY = false;
-
-    await expect(
-      service.resolveFormatOption(optionsWithoutFormat),
-    ).resolves.toStrictEqual({ config: "a.ts" });
-    expect(promptRunner).not.toHaveBeenCalled();
   });
 });

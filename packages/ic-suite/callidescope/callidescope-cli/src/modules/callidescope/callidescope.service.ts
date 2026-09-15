@@ -1,4 +1,4 @@
-import { ProjectConfigurationService } from "@callidescope/configuration";
+import { ConfigurationService } from "@callidescope/configuration";
 import {
   CallablesService,
   ClassesService,
@@ -55,7 +55,7 @@ export class CallidescopeService {
     private readonly fileFilterService: FileFilterService,
     private readonly graphAssemblyService: GraphAssemblyService,
     private readonly programService: ProgramService,
-    private readonly projectConfigurationService: ProjectConfigurationService,
+    private readonly configurationService: ConfigurationService,
     private readonly projectReportsService: ProjectReportsService,
     private readonly workspaceService: WorkspaceService,
     private readonly logger: LoggerService,
@@ -229,12 +229,11 @@ export class CallidescopeService {
     projectNames: readonly string[];
     workspaceRoot: string;
   }): Promise<ProjectDeclarations> {
-    const loaded =
-      await this.projectConfigurationService.loadProjectConfigurations({
-        projects: args.projectNames,
-        workspaceConfigurationPath: args.configurationPath,
-        workspaceRoot: args.workspaceRoot,
-      });
+    const loaded = await this.configurationService.loadProjectConfigurations({
+      projects: args.projectNames,
+      workspaceConfigurationPath: args.configurationPath,
+      workspaceRoot: args.workspaceRoot,
+    });
 
     return {
       entryPointsByProject: new Map(
@@ -254,7 +253,7 @@ export class CallidescopeService {
             projectConfiguration.authored.exclude ?? [],
           ]),
       ),
-      projectLimits: this.projectConfigurationService.resolveLimits({
+      projectLimits: this.configurationService.resolveLimits({
         limitOverrides: args.limitOverrides,
         projectConfigurations: loaded,
         projects: args.projectNames,

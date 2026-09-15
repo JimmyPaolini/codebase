@@ -6,7 +6,7 @@ import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { buildCallGraphResult } from "../../../testing/mocks";
+import { buildEmptyCallGraphResult } from "../../../testing/mocks";
 import { ANALYSIS_MODULES } from "../../../testing/modules";
 
 import { OutputJsonService } from "./output-json.service";
@@ -33,7 +33,7 @@ describe(OutputJsonService, () => {
   const subjectLogger: DeepMocked<LoggerService> = createMock<LoggerService>();
   const subject = new OutputJsonService(subjectLogger);
   const destination = { indentation: 2, path: "" };
-  const result = buildCallGraphResult();
+  const result = buildEmptyCallGraphResult();
 
   /** Returns a path inside a fresh temporary directory. */
   async function temporaryPath(): Promise<string> {

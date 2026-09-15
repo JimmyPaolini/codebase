@@ -6,7 +6,7 @@ import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
-import { buildCallGraphResult } from "../../../testing/mocks";
+import { buildEmptyCallGraphResult } from "../../../testing/mocks";
 import { ANALYSIS_MODULES } from "../../../testing/modules";
 
 import { MissingMarkdownPathError } from "./output-markdown.constants";
@@ -55,7 +55,7 @@ describe(OutputMarkdownService, () => {
 
   const subjectLogger: DeepMocked<LoggerService> = createMock<LoggerService>();
   const subject = new OutputMarkdownService(subjectLogger);
-  const result = buildCallGraphResult();
+  const result = buildEmptyCallGraphResult();
 
   /** Returns a path inside a fresh temporary directory. */
   async function temporaryPath(): Promise<string> {

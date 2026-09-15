@@ -1,4 +1,4 @@
-import { InputService } from "@callidescope/configuration";
+import { ConfigurationService } from "@callidescope/configuration";
 import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
 
@@ -38,7 +38,7 @@ export class LimitsCommand extends CommandRunner {
   constructor(
     private readonly limitsService: LimitsService,
     private readonly renderLimitsService: RenderLimitsService,
-    private readonly inputService: InputService,
+    private readonly configurationService: ConfigurationService,
     private readonly logger: LoggerService,
   ) {
     super();
@@ -72,7 +72,7 @@ export class LimitsCommand extends CommandRunner {
     flags: "--config [config]",
   })
   public parseConfig(value: string | undefined): string | undefined {
-    return this.inputService.parseOptionalOption(value);
+    return this.configurationService.parseOptionalOption(value);
   }
 
   /**

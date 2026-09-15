@@ -1,11 +1,9 @@
 import { Injectable } from "@nestjs/common";
 import prompts from "prompts";
 
-import { CALLIDESCOPE_OUTPUT_FORMATS } from "../configuration/configuration.constants";
-
 import { missingInputError, promptCancelledError } from "./input.constants";
 
-import type { CallidescopeFormatOptions, PromptRunner } from "./input.types";
+import type { PromptRunner } from "./input.types";
 
 /**
  * Parses CLI option values and asks for the ones a command still needs.
@@ -44,21 +42,6 @@ export class InputService {
   }
 
   /**
-   * Whether anybody is there to answer a question.
-   *
-   * The one place this is decided, so the value that refuses to be asked for
-   * and the value that is merely offered cannot drift apart on what counts as
-   * a terminal. `isTTY` is read as falsy rather than coerced: `@types/node`
-   * calls it a `boolean` while it is `undefined` off a terminal, so lint
-   * rejects the coercion that would say so.
-   */
-  private isAtTerminal(): boolean {
-    return process.stdin.isTTY;
-  }
-
-  // 🌎 Public Methods
-
-  /**
    * Narrows a suggestion list to what has been typed so far.
    *
    * A method of its own rather than a closure inside the prompt, because this
@@ -82,6 +65,21 @@ export class InputService {
     // Alongside real matches it would put a half-typed query at the top of
     // every list, ahead of the completions that were the point of asking.
     return matches.length === 0 && written.length > 0 ? [written] : matches;
+  }
+
+  // 🌎 Public Methods
+
+  /**
+   * Whether anybody is there to answer a question.
+   *
+   * The one place this is decided, so the value that refuses to be asked for
+   * and the value that is merely offered cannot drift apart on what counts as
+   * a terminal. `isTTY` is read as falsy rather than coerced: `@types/node`
+   * calls it a `boolean` while it is `undefined` off a terminal, so lint
+   * rejects the coercion that would say so.
+   */
+  public isAtTerminal(): boolean {
+    return process.stdin.isTTY;
   }
 
   /**
@@ -197,34 +195,5 @@ export class InputService {
     }
 
     return matched;
-  }
-
-  /**
-   * Returns the given options with `--format` filled in where one is wanted.
-   *
-   * Offered rather than required, which is the one place this differs from
-   * every other missing value: the caller applies its own default when
-   * nobody is at a terminal to ask, so a run proceeds with nothing typed.
-   * Demanding it would fail every scripted run — this repository's own
-   * per-project `gate` among them — over a flag those runs have never needed
-   * to pass.
-   *
-   * Generic over the caller's options type, so a command carries its own
-   * other flags through unchanged.
-   */
-  public async resolveFormatOption<Options extends CallidescopeFormatOptions>(
-    options: Options,
-  ): Promise<Options> {
-    if (options.format !== undefined || !this.isAtTerminal()) {
-      return options;
-    }
-
-    const format = await this.promptForSelect({
-      choices: CALLIDESCOPE_OUTPUT_FORMATS,
-      message: "Which output format?",
-      subject: "An output format (--format)",
-    });
-
-    return { ...options, format };
   }
 }

@@ -687,16 +687,14 @@ graph LR
 <!-- codependix:start name="codependix-nestjs-modules" -->
 ```mermaid
 flowchart LR
+  ConfigurationFileModule
   ConfigurationModule
   FlagResolutionModule
   InputModule
-  LoggerModule([LoggerModule])
-  RunPlanModule
-  RunPlanModule --> ConfigurationModule
-  RunPlanModule --> FlagResolutionModule
+  ConfigurationModule --> ConfigurationFileModule
+  ConfigurationModule --> FlagResolutionModule
+  ConfigurationModule --> InputModule
 ```
-
-_Rounded modules are global: every module can inject them, so their edges are left out._
 <!-- codependix:end name="codependix-nestjs-modules" -->
 
 ### File Imports
@@ -710,6 +708,9 @@ graph LR
   file_eslint_config_ts["eslint.config.ts"]
   file_src_index_ts["src/index.ts"]
   file_src_index_unit_test_ts["src/index.unit.test.ts"]
+  file_src_modules_configuration_configuration_file_module_ts["src/modules/configuration/configuration-file.module.ts"]
+  file_src_modules_configuration_configuration_file_service_ts["src/modules/configuration/configuration-file.service.ts"]
+  file_src_modules_configuration_configuration_file_service_unit_test_ts["src/modules/configuration/configuration-file.service.unit.test.ts"]
   file_src_modules_configuration_configuration_constants_ts["src/modules/configuration/configuration.constants.ts"]
   file_src_modules_configuration_configuration_module_ts["src/modules/configuration/configuration.module.ts"]
   file_src_modules_configuration_configuration_module_unit_test_ts["src/modules/configuration/configuration.module.unit.test.ts"]
@@ -718,6 +719,8 @@ graph LR
   file_src_modules_configuration_configuration_types_ts["src/modules/configuration/configuration.types.ts"]
   file_src_modules_configuration_project_configuration_service_ts["src/modules/configuration/project-configuration.service.ts"]
   file_src_modules_configuration_project_configuration_service_unit_test_ts["src/modules/configuration/project-configuration.service.unit.test.ts"]
+  file_src_modules_configuration_run_plan_constants_ts["src/modules/configuration/run-plan.constants.ts"]
+  file_src_modules_configuration_run_plan_types_ts["src/modules/configuration/run-plan.types.ts"]
   file_src_modules_flag_resolution_flag_resolution_constants_ts["src/modules/flag-resolution/flag-resolution.constants.ts"]
   file_src_modules_flag_resolution_flag_resolution_module_ts["src/modules/flag-resolution/flag-resolution.module.ts"]
   file_src_modules_flag_resolution_flag_resolution_service_ts["src/modules/flag-resolution/flag-resolution.service.ts"]
@@ -728,32 +731,48 @@ graph LR
   file_src_modules_input_input_service_ts["src/modules/input/input.service.ts"]
   file_src_modules_input_input_service_unit_test_ts["src/modules/input/input.service.unit.test.ts"]
   file_src_modules_input_input_types_ts["src/modules/input/input.types.ts"]
-  file_src_modules_run_plan_run_plan_constants_ts["src/modules/run-plan/run-plan.constants.ts"]
-  file_src_modules_run_plan_run_plan_module_ts["src/modules/run-plan/run-plan.module.ts"]
-  file_src_modules_run_plan_run_plan_service_ts["src/modules/run-plan/run-plan.service.ts"]
-  file_src_modules_run_plan_run_plan_service_unit_test_ts["src/modules/run-plan/run-plan.service.unit.test.ts"]
-  file_src_modules_run_plan_run_plan_types_ts["src/modules/run-plan/run-plan.types.ts"]
   file_testing_mocks_ts["testing/mocks.ts"]
   file_testing_setup_ts["testing/setup.ts"]
   file_vitest_config_ts["vitest.config.ts"]
   file_src_index_unit_test_ts --> file_src_index_ts
+  file_src_modules_configuration_configuration_file_module_ts --> file_src_modules_configuration_configuration_file_service_ts
+  file_src_modules_configuration_configuration_file_service_ts --> file_src_modules_configuration_configuration_constants_ts
+  file_src_modules_configuration_configuration_file_service_ts --> file_src_modules_configuration_configuration_types_ts
+  file_src_modules_configuration_configuration_file_service_unit_test_ts --> file_src_modules_configuration_configuration_file_service_ts
+  file_src_modules_configuration_configuration_file_service_unit_test_ts --> file_src_modules_configuration_configuration_constants_ts
   file_src_modules_configuration_configuration_constants_ts --> file_src_modules_configuration_configuration_types_ts
+  file_src_modules_configuration_configuration_module_ts --> file_src_modules_configuration_configuration_file_module_ts
   file_src_modules_configuration_configuration_module_ts --> file_src_modules_configuration_configuration_service_ts
   file_src_modules_configuration_configuration_module_ts --> file_src_modules_configuration_project_configuration_service_ts
+  file_src_modules_configuration_configuration_module_ts --> file_src_modules_flag_resolution_flag_resolution_module_ts
+  file_src_modules_configuration_configuration_module_ts --> file_src_modules_input_input_module_ts
   file_src_modules_configuration_configuration_module_unit_test_ts --> file_src_modules_configuration_configuration_module_ts
   file_src_modules_configuration_configuration_module_unit_test_ts --> file_src_modules_configuration_configuration_service_ts
   file_src_modules_configuration_configuration_module_unit_test_ts --> file_src_modules_configuration_project_configuration_service_ts
+  file_src_modules_configuration_configuration_service_ts --> file_src_modules_configuration_configuration_file_service_ts
   file_src_modules_configuration_configuration_service_ts --> file_src_modules_configuration_configuration_constants_ts
   file_src_modules_configuration_configuration_service_ts --> file_src_modules_configuration_configuration_types_ts
-  file_src_modules_configuration_configuration_service_unit_test_ts --> file_src_modules_configuration_configuration_constants_ts
+  file_src_modules_configuration_configuration_service_ts --> file_src_modules_configuration_project_configuration_service_ts
+  file_src_modules_configuration_configuration_service_ts --> file_src_modules_configuration_run_plan_constants_ts
+  file_src_modules_configuration_configuration_service_ts --> file_src_modules_configuration_run_plan_types_ts
+  file_src_modules_configuration_configuration_service_ts --> file_src_modules_flag_resolution_flag_resolution_constants_ts
+  file_src_modules_configuration_configuration_service_ts --> file_src_modules_flag_resolution_flag_resolution_service_ts
+  file_src_modules_configuration_configuration_service_ts --> file_src_modules_input_input_service_ts
+  file_src_modules_configuration_configuration_service_ts --> file_src_modules_input_input_types_ts
+  file_src_modules_configuration_configuration_service_unit_test_ts --> file_src_modules_configuration_configuration_file_service_ts
   file_src_modules_configuration_configuration_service_unit_test_ts --> file_src_modules_configuration_configuration_service_ts
+  file_src_modules_configuration_configuration_service_unit_test_ts --> file_src_modules_configuration_configuration_types_ts
+  file_src_modules_configuration_configuration_service_unit_test_ts --> file_src_modules_configuration_project_configuration_service_ts
+  file_src_modules_configuration_configuration_service_unit_test_ts --> file_src_modules_flag_resolution_flag_resolution_service_ts
+  file_src_modules_configuration_configuration_service_unit_test_ts --> file_src_modules_input_input_service_ts
+  file_src_modules_configuration_configuration_service_unit_test_ts --> file_src_modules_input_input_types_ts
   file_src_modules_configuration_project_configuration_service_ts --> file_src_modules_configuration_configuration_constants_ts
-  file_src_modules_configuration_project_configuration_service_ts --> file_src_modules_configuration_configuration_service_ts
   file_src_modules_configuration_project_configuration_service_ts --> file_src_modules_configuration_configuration_types_ts
+  file_src_modules_configuration_project_configuration_service_unit_test_ts --> file_src_modules_configuration_configuration_file_service_ts
   file_src_modules_configuration_project_configuration_service_unit_test_ts --> file_src_modules_configuration_configuration_constants_ts
-  file_src_modules_configuration_project_configuration_service_unit_test_ts --> file_src_modules_configuration_configuration_service_ts
   file_src_modules_configuration_project_configuration_service_unit_test_ts --> file_src_modules_configuration_configuration_types_ts
   file_src_modules_configuration_project_configuration_service_unit_test_ts --> file_src_modules_configuration_project_configuration_service_ts
+  file_src_modules_configuration_run_plan_types_ts --> file_src_modules_configuration_configuration_types_ts
   file_src_modules_flag_resolution_flag_resolution_constants_ts --> file_src_modules_configuration_configuration_constants_ts
   file_src_modules_flag_resolution_flag_resolution_constants_ts --> file_src_modules_input_input_constants_ts
   file_src_modules_flag_resolution_flag_resolution_module_ts --> file_src_modules_flag_resolution_flag_resolution_service_ts
@@ -761,31 +780,16 @@ graph LR
   file_src_modules_flag_resolution_flag_resolution_service_ts --> file_src_modules_configuration_configuration_types_ts
   file_src_modules_flag_resolution_flag_resolution_service_ts --> file_src_modules_flag_resolution_flag_resolution_constants_ts
   file_src_modules_flag_resolution_flag_resolution_service_ts --> file_src_modules_flag_resolution_flag_resolution_types_ts
+  file_src_modules_flag_resolution_flag_resolution_service_unit_test_ts --> file_src_modules_configuration_configuration_file_service_ts
   file_src_modules_flag_resolution_flag_resolution_service_unit_test_ts --> file_src_modules_configuration_configuration_constants_ts
-  file_src_modules_flag_resolution_flag_resolution_service_unit_test_ts --> file_src_modules_configuration_configuration_service_ts
   file_src_modules_flag_resolution_flag_resolution_service_unit_test_ts --> file_src_modules_configuration_configuration_types_ts
   file_src_modules_flag_resolution_flag_resolution_service_unit_test_ts --> file_src_modules_flag_resolution_flag_resolution_service_ts
   file_src_modules_flag_resolution_flag_resolution_service_unit_test_ts --> file_src_modules_flag_resolution_flag_resolution_types_ts
   file_src_modules_flag_resolution_flag_resolution_types_ts --> file_src_modules_configuration_configuration_types_ts
   file_src_modules_input_input_module_ts --> file_src_modules_input_input_service_ts
-  file_src_modules_input_input_service_ts --> file_src_modules_configuration_configuration_constants_ts
   file_src_modules_input_input_service_ts --> file_src_modules_input_input_constants_ts
   file_src_modules_input_input_service_ts --> file_src_modules_input_input_types_ts
   file_src_modules_input_input_service_unit_test_ts --> file_src_modules_input_input_service_ts
-  file_src_modules_input_input_service_unit_test_ts --> file_src_modules_input_input_types_ts
-  file_src_modules_run_plan_run_plan_module_ts --> file_src_modules_configuration_configuration_module_ts
-  file_src_modules_run_plan_run_plan_module_ts --> file_src_modules_flag_resolution_flag_resolution_module_ts
-  file_src_modules_run_plan_run_plan_module_ts --> file_src_modules_run_plan_run_plan_service_ts
-  file_src_modules_run_plan_run_plan_service_ts --> file_src_modules_configuration_configuration_service_ts
-  file_src_modules_run_plan_run_plan_service_ts --> file_src_modules_flag_resolution_flag_resolution_constants_ts
-  file_src_modules_run_plan_run_plan_service_ts --> file_src_modules_flag_resolution_flag_resolution_service_ts
-  file_src_modules_run_plan_run_plan_service_ts --> file_src_modules_run_plan_run_plan_constants_ts
-  file_src_modules_run_plan_run_plan_service_ts --> file_src_modules_run_plan_run_plan_types_ts
-  file_src_modules_run_plan_run_plan_service_unit_test_ts --> file_src_modules_configuration_configuration_service_ts
-  file_src_modules_run_plan_run_plan_service_unit_test_ts --> file_src_modules_configuration_configuration_types_ts
-  file_src_modules_run_plan_run_plan_service_unit_test_ts --> file_src_modules_flag_resolution_flag_resolution_service_ts
-  file_src_modules_run_plan_run_plan_service_unit_test_ts --> file_src_modules_run_plan_run_plan_service_ts
-  file_src_modules_run_plan_run_plan_types_ts --> file_src_modules_configuration_configuration_types_ts
 ```
 <!-- codependix:end name="codependix-file-imports" -->
 

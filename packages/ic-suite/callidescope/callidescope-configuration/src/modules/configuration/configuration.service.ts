@@ -1,58 +1,71 @@
-import { existsSync } from "node:fs";
-import { readFile } from "node:fs/promises";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
-
 import { Injectable } from "@nestjs/common";
-import { createJiti } from "jiti";
-import { parse as parseJsonc } from "jsonc-parser";
 
+import { flagResolutionError } from "../flag-resolution/flag-resolution.constants";
+import { FlagResolutionService } from "../flag-resolution/flag-resolution.service";
+import { InputService } from "../input/input.service";
+
+import { ConfigurationFileService } from "./configuration-file.service";
+import { CALLIDESCOPE_OUTPUT_FORMATS } from "./configuration.constants";
+import { ProjectConfigurationService } from "./project-configuration.service";
 import {
-  callidescopeConfigurationSchema,
-  CONFIGURATION_FILE_NAMES,
-  ConfigurationFileNotFoundError,
-  DEFAULT_ENTRY_POINT_DECORATORS,
-  DEFAULT_EXCLUDE_GLOBS,
-  DEFAULT_JSON_INDENTATION,
-  DEFAULT_MARKDOWN_END_MARKER,
-  DEFAULT_MARKDOWN_START_MARKER,
-  DEFAULT_MAXIMUM_DEPTH,
-  DEFAULT_PREVIEW_COUNT,
-  DEFAULT_RUN_HEADING,
-  REPOSITORY_ROOT_MARKERS,
-  SUPPORTED_CONFIGURATION_EXTENSIONS,
-  UnknownConfigurationFileTypeError,
-} from "./configuration.constants";
+  CHECK_BREADTH,
+  CHECK_DEPTH,
+  CHECK_NAMES,
+  CHECK_REPORTS,
+  CHECK_SEPARATOR,
+  DESTINATION_FLAG_NAMES,
+} from "./run-plan.constants";
 
+import type { CallidescopeFormatOptions } from "../input/input.types";
 import type {
   CallidescopeConfiguration,
-  CallidescopeEntryPoints,
-  CallidescopeLimits,
-  CallidescopeMarkdownOutputConfiguration,
-  CallidescopeWriteConfiguration,
   LoadConfigurationArguments,
   LoadedCallidescopeConfiguration,
   LoadedCallidescopeConfigurationFile,
+  LoadedProjectConfiguration,
+  LoadProjectConfigurationsArguments,
+  ProjectLimitsLookup,
   ResolvedCallidescopeConfiguration,
-  ResolvedCallidescopeEntryPoints,
-  ResolvedCallidescopeJsonOutputConfiguration,
-  ResolvedCallidescopeLimits,
-  ResolvedCallidescopeMarkdownOutputConfiguration,
+  ResolveProjectLimitsArguments,
 } from "./configuration.types";
+import type {
+  AddressCommandOptions,
+  CallidescopeCommandOptions,
+  PreparedLookup,
+  RunMode,
+  RunModeSelection,
+  RunPreparation,
+} from "./run-plan.types";
 
 /**
- * Loads, validates, and normalizes callidescope configuration files.
+ * The one answer to "what is this run actually configured to do".
  *
- * This service owns loading only. What the configuration means — which files an
- * exclusion glob removes, which decorator marks a stack root — belongs to the
- * analyzers that read it, so that reading a configuration file stays free of any
- * knowledge of the repository being traced.
+ * Every question a caller outside this package can ask about configuration is
+ * asked here: what a file declares, what a project is gated by, what a command
+ * line resolved to, and what to ask a person for when a flag was left off. A
+ * consumer therefore injects this and nothing else from this package, which is
+ * what makes the configuration layer one layer rather than a bag of
+ * collaborators a caller has to know the names of.
+ *
+ * Run planning is the one job held here rather than delegated. Reading a
+ * command line into what a run will do is resolving that run's configuration
+ * — it loads the file, merges every flag over it, and refuses a combination
+ * that cannot mean anything — so a separate service for it would have been
+ * this layer answering the same question under a second name. Loading a file,
+ * judging a project's own file, merging flags, and prompting stay four
+ * classes in four files behind this one, because they are four different jobs;
+ * what they stop being is four public entry points.
  */
 @Injectable()
 export class ConfigurationService {
   // 🏗 Dependency Injection
 
-  constructor() {}
+  constructor(
+    private readonly configurationFileService: ConfigurationFileService,
+    private readonly flagResolutionService: FlagResolutionService,
+    private readonly inputService: InputService,
+    private readonly projectConfigurationService: ProjectConfigurationService,
+  ) {}
 
   // 🔐 Private Fields
 
@@ -60,262 +73,85 @@ export class ConfigurationService {
 
   // 🔏 Private Methods
 
-  /**
-   * Walks upward from a directory looking for a configuration file.
-   *
-   * Returns `undefined` when the search reaches the filesystem root without
-   * finding one: a repository that never wrote a configuration file is traced
-   * with the defaults rather than told to write one.
-   */
-  private findConfigurationFile(searchDirectory: string): string | undefined {
-    let candidateDirectory = path.resolve(searchDirectory);
-
-    for (;;) {
-      const found = this.findConfigurationFileAt(candidateDirectory);
-
-      if (found !== undefined) {
-        return found;
-      }
-
-      const parentDirectory = path.dirname(candidateDirectory);
-
-      if (parentDirectory === candidateDirectory) {
-        return undefined;
-      }
-
-      candidateDirectory = parentDirectory;
-    }
+  /** States what `--check` accepts, in front of whatever went wrong. */
+  private describeAcceptedCheckNames(problem: string): string {
+    return `${problem}. It takes a comma-separated set drawn from ${CHECK_NAMES.map((name) => `"${name}"`).join(" and ")}, as in "--check ${CHECK_NAMES.join(CHECK_SEPARATOR)}".`;
   }
 
   /**
-   * Walks upward from the process cwd looking for the repository root.
+   * Reads the `--check` value into the set of things the run fails on.
    *
-   * Used to resolve a configuration path given relative to that root even when
-   * the command was invoked from a nested directory, which is what a task runner
-   * does whenever it sets the cwd to the project rather than the workspace.
+   * A flag passed without a value arrives as `true` and is a mistake rather
+   * than a shorthand: it used to mean "fail on a deep stack and on a stale
+   * report at once", and a set with nothing in it looks exactly like the flag
+   * having been left off.
    */
-  private findRepositoryRoot(): string | undefined {
-    let candidateDirectory = path.resolve(process.cwd());
+  private readCheckNames(
+    value: string | true | undefined,
+    errors: string[],
+  ): Set<string> {
+    if (value === undefined) {
+      return new Set();
+    }
 
-    for (;;) {
-      const directory = candidateDirectory;
-      const isRoot = REPOSITORY_ROOT_MARKERS.some((marker) =>
-        existsSync(path.join(directory, marker)),
+    if (value === true) {
+      errors.push(this.describeAcceptedCheckNames("--check needs a value"));
+      return new Set();
+    }
+
+    const names = value
+      .split(CHECK_SEPARATOR)
+      .map((name) => name.trim())
+      .filter((name) => name !== "");
+
+    // An empty or comma-only value is the same mistake as a valueless flag and
+    // is refused the same way. Read as "gate nothing" it would be a gate that
+    // cannot fail — `--check "$GATES"` with the variable unset would pass
+    // forever over a stack twice as deep as anything allowed, which is worse
+    // than no gate at all because it looks like protection.
+    if (names.length === 0) {
+      errors.push(this.describeAcceptedCheckNames("--check needs a value"));
+      return new Set();
+    }
+
+    return this.validateCheckNames(names, errors);
+  }
+
+  /** Keeps the names `--check` knows and complains about the rest. */
+  private validateCheckNames(names: string[], errors: string[]): Set<string> {
+    const accepted = new Set<string>();
+
+    for (const name of names) {
+      if (CHECK_NAMES.includes(name)) {
+        accepted.add(name);
+        continue;
+      }
+
+      errors.push(
+        this.describeAcceptedCheckNames(`--check does not accept "${name}"`),
       );
-
-      if (isRoot) {
-        return candidateDirectory;
-      }
-
-      const parentDirectory = path.dirname(candidateDirectory);
-
-      if (parentDirectory === candidateDirectory) {
-        return undefined;
-      }
-
-      candidateDirectory = parentDirectory;
-    }
-  }
-
-  /** Loads a configuration module, choosing the reader by extension. */
-  private async loadConfigurationModule(args: {
-    configurationPath: string;
-    extension: string;
-  }): Promise<unknown> {
-    if (args.extension === ".json" || args.extension === ".jsonc") {
-      return this.loadJsonConfiguration(args);
     }
 
-    const jiti = createJiti(fileURLToPath(import.meta.url));
-    const importedModule: unknown = await jiti.import(args.configurationPath, {
-      default: true,
-    });
-
-    if (typeof importedModule !== "object" || importedModule === null) {
-      return {};
-    }
-
-    const defaultExport = (importedModule as { default?: unknown }).default;
-
-    return typeof defaultExport === "object" && defaultExport !== null
-      ? defaultExport
-      : importedModule;
-  }
-
-  /** Reads a JSON or JSONC configuration file. */
-  private async loadJsonConfiguration(args: {
-    configurationPath: string;
-    extension: string;
-  }): Promise<unknown> {
-    const configurationContent = await readFile(args.configurationPath, "utf8");
-
-    return args.extension === ".jsonc"
-      ? parseJsonc(configurationContent)
-      : JSON.parse(configurationContent);
-  }
-
-  /** Resolves a configuration path against the cwd, then the repository root. */
-  private resolveConfigurationPath(configurationPath: string): string {
-    const absolutePath = path.resolve(configurationPath);
-
-    if (existsSync(absolutePath)) {
-      return absolutePath;
-    }
-
-    const repositoryRoot = this.findRepositoryRoot();
-
-    if (repositoryRoot === undefined) {
-      throw new ConfigurationFileNotFoundError(absolutePath);
-    }
-
-    const repositoryRelativePath = path.resolve(
-      repositoryRoot,
-      configurationPath,
-    );
-
-    if (!existsSync(repositoryRelativePath)) {
-      throw new ConfigurationFileNotFoundError(absolutePath);
-    }
-
-    return repositoryRelativePath;
-  }
-
-  /**
-   * Applies defaults to the entry-point rules.
-   *
-   * The authored object is defaulted to an empty one up front rather than
-   * optional-chained per field, which keeps this to one branch per option
-   * instead of two.
-   */
-  private resolveEntryPoints(
-    entryPoints: CallidescopeEntryPoints | undefined,
-  ): ResolvedCallidescopeEntryPoints {
-    const authored = entryPoints ?? {};
-
-    return {
-      addresses: authored.addresses ?? [],
-      decorators: authored.decorators ?? [...DEFAULT_ENTRY_POINT_DECORATORS],
-      includeExportedFunctions: authored.includeExportedFunctions ?? true,
-      includeOrphans: authored.includeOrphans ?? true,
-      includeTests: authored.includeTests ?? false,
-    };
-  }
-
-  /**
-   * Applies the directories no repository wants traced, on top of a
-   * configuration's own.
-   *
-   * Additive rather than a replacement: the defaults are directories no
-   * repository wants traced, so a configuration naming its own noise should
-   * not have to restate them to keep them out.
-   */
-  private resolveExclude(exclude: string[] | undefined): string[] {
-    return [...new Set([...DEFAULT_EXCLUDE_GLOBS, ...(exclude ?? [])])];
-  }
-
-  /** Applies defaults to the JSON output destination, if one was named. */
-  private resolveJsonOutput(
-    write: CallidescopeWriteConfiguration | undefined,
-  ): ResolvedCallidescopeJsonOutputConfiguration | undefined {
-    if (write?.json === undefined) {
-      return undefined;
-    }
-
-    return {
-      indentation: write.json.indentation ?? DEFAULT_JSON_INDENTATION,
-      path: write.json.path,
-    };
-  }
-
-  /** Applies defaults to every threshold. */
-  private resolveLimits(
-    limits: CallidescopeLimits | undefined,
-  ): ResolvedCallidescopeLimits {
-    const authored = limits ?? {};
-
-    return {
-      maximumBreadth: authored.maximumBreadth,
-      maximumDepth: authored.maximumDepth ?? DEFAULT_MAXIMUM_DEPTH,
-    };
-  }
-
-  /**
-   * Applies defaults to one anchored markdown destination, if it was named.
-   *
-   * Shared by `markdown` and `mermaid`: the two differ in what is written
-   * between the anchors, and in nothing this resolves.
-   */
-  private resolveMarkdownDestination(
-    destination: CallidescopeMarkdownOutputConfiguration | undefined,
-  ): ResolvedCallidescopeMarkdownOutputConfiguration | undefined {
-    if (destination === undefined) {
-      return undefined;
-    }
-
-    return {
-      description: destination.description,
-      endMarker: destination.endMarker ?? DEFAULT_MARKDOWN_END_MARKER,
-      heading: destination.heading ?? DEFAULT_RUN_HEADING,
-      path: destination.path,
-      previewCount: destination.previewCount ?? DEFAULT_PREVIEW_COUNT,
-      // Left unset rather than defaulted: the built-in rendering and writing
-      // live in the CLI that calls them, so "unset" is what selects them.
-      render: destination.render,
-      startMarker: destination.startMarker ?? DEFAULT_MARKDOWN_START_MARKER,
-      writeBlock: destination.writeBlock,
-    };
+    return accepted;
   }
 
   // 🌎 Public Methods
 
-  /**
-   * Finds a configuration file sitting directly at one directory.
-   *
-   * No upward walk, which is what makes this the search a project root needs:
-   * walking up from one would find the workspace file and hand every project a
-   * copy of it.
-   */
+  /** Finds a configuration file sitting directly at one directory. */
   public findConfigurationFileAt(directory: string): string | undefined {
-    for (const fileName of CONFIGURATION_FILE_NAMES) {
-      const candidatePath = path.join(directory, fileName);
-
-      if (existsSync(candidatePath)) {
-        return candidatePath;
-      }
-    }
-
-    return undefined;
+    return this.configurationFileService.findConfigurationFileAt(directory);
   }
 
-  /**
-   * Loads and validates a callidescope configuration file.
-   *
-   * A path that was named explicitly must exist — a typo in a task runner's
-   * arguments should fail rather than quietly trace the repository with defaults
-   * it never asked for. A path that was not named is searched for, and its
-   * absence is legal.
-   */
+  /** Loads and validates a callidescope configuration file. */
   public async loadConfiguration(
     args: LoadConfigurationArguments = {},
   ): Promise<ResolvedCallidescopeConfiguration> {
-    const { configuration } = await this.loadConfigurationFile(args);
-
-    return configuration;
+    return await this.configurationFileService.loadConfiguration(args);
   }
 
   /**
    * Loads a configuration, and says what the file itself declared and which
    * file answered.
-   *
-   * The same work as `loadConfiguration`, keeping two facts it throws away. The
-   * path is what tells a caller resolving a configuration beside every project
-   * which file it has already read as the run's own, so that one file is never
-   * given two roles. The authored object is what a refusal has to name fields
-   * from, since resolution manufactures the rest.
-   *
-   * Naming a path guarantees one back, which is why that case has an overload
-   * of its own: the alternative is every caller of the narrow case carrying a
-   * fallback that can never fire, and picking its own path when it does.
    */
   public loadConfigurationFile(
     args: LoadConfigurationArguments & { configurationPath: string },
@@ -326,63 +162,289 @@ export class ConfigurationService {
   public async loadConfigurationFile(
     args: LoadConfigurationArguments = {},
   ): Promise<LoadedCallidescopeConfiguration> {
-    const resolvedPath =
-      args.configurationPath === undefined
-        ? this.findConfigurationFile(args.searchDirectory ?? process.cwd())
-        : this.resolveConfigurationPath(args.configurationPath);
+    return await this.configurationFileService.loadConfigurationFile(args);
+  }
 
-    if (resolvedPath === undefined) {
-      return {
-        authored: {},
-        configuration: this.resolveConfiguration({}),
-        path: undefined,
-      };
-    }
-
-    const extension = path.extname(resolvedPath).toLowerCase();
-
-    if (!SUPPORTED_CONFIGURATION_EXTENSIONS.has(extension)) {
-      throw new UnknownConfigurationFileTypeError(resolvedPath);
-    }
-
-    const authored = callidescopeConfigurationSchema.parse(
-      await this.loadConfigurationModule({
-        configurationPath: resolvedPath,
-        extension,
-      }),
+  /** Loads and validates every traced project's own configuration file. */
+  public async loadProjectConfigurations(
+    args: LoadProjectConfigurationsArguments,
+  ): Promise<LoadedProjectConfiguration[]> {
+    return await this.projectConfigurationService.loadProjectConfigurations(
+      args,
+      this,
     );
+  }
+
+  /** Splits a comma-separated flag value into its parts. */
+  public parseCommaDelimitedOption(value: string | undefined): string[] {
+    return this.inputService.parseCommaDelimitedOption(value);
+  }
+
+  /** Reads a flag that may have been written without a value. */
+  public parseOptionalOption(value: string | undefined): string | undefined {
+    return this.inputService.parseOptionalOption(value);
+  }
+
+  /**
+   * Reads `depth` and `breadth`'s scoping flags into a workspace root and a
+   * resolved configuration, with no `--check`/`--write` mode to select.
+   *
+   * A lookup command never writes or compares a destination, so it has no
+   * mode to reject in the first place — only the workspace to trace and the
+   * format to print in, both of which every run already resolves the same
+   * way `prepareRun` does.
+   *
+   * A refused command line is thrown rather than returned: unlike a run,
+   * every caller here needs the resolved workspace to do anything at all, so
+   * there is no half-prepared lookup to hand back. `InputError` is the class
+   * every command already reports as a rejected command line.
+   */
+  public async prepareLookup(
+    options: AddressCommandOptions,
+  ): Promise<PreparedLookup> {
+    const workspaceRoot = process.cwd();
+    // The file-aware load rather than the plain one, for the same reason
+    // `prepareRun` uses it: a lookup resolves a configuration beside every
+    // project it reaches, so it has to know which file it has already read as
+    // this run's own. Without the path, a run pointed at a configuration
+    // sitting at some project's root has that file read a second time as that
+    // project's — and refused for the workspace-only fields it legitimately
+    // sets.
+    const {
+      authored,
+      configuration: loaded,
+      path: configurationPath,
+    } = await this.loadConfigurationFile({
+      configurationPath: options.config,
+      searchDirectory: workspaceRoot,
+    });
+    const { configuration, errors, format } =
+      this.flagResolutionService.resolveRunFlags({
+        configuration: loaded,
+        // Every graph-shaping override a lookup accepts, and nothing else:
+        // `depth` and `breadth` gate nothing and write nothing, so a limit or
+        // a destination has no value here to override.
+        flags: {
+          directories: options.directories,
+          entryPointAddresses: options.entryPointAddresses,
+          entryPointDecorators: options.entryPointDecorators,
+          exclude: options.exclude,
+          excludeCallees: options.excludeCallees,
+          format: options.format,
+          includeExportedFunctions: options.includeExportedFunctions,
+          includeOrphans: options.includeOrphans,
+          includeTests: options.includeTests,
+        },
+      });
+
+    if (errors.length > 0) {
+      throw flagResolutionError(errors);
+    }
 
     return {
-      authored,
-      configuration: this.resolveConfiguration(authored),
-      path: resolvedPath,
+      authoredLimits: authored.limits,
+      configuration,
+      configurationPath,
+      format,
+      workspaceRoot,
     };
   }
 
   /**
-   * Fills in every field a configuration file may leave out.
+   * Reads the command line and configuration into what the run will do.
    *
-   * Exposed so a host embedding callidescope can hand over a configuration
-   * object it assembled itself and get the same shape a configuration file
-   * produces.
+   * Hands back whatever could not be made sense of rather than reporting it:
+   * two gates can refuse — what `--check` and `--write` mean together, decided
+   * from the command line alone, and whether a destination flag has anything
+   * to override, which needs the configuration loaded first — and both belong
+   * to the host to say out loud, under one headline.
    */
+  public async prepareRun(
+    options: CallidescopeCommandOptions,
+  ): Promise<RunPreparation> {
+    const { errors: modeErrors, mode } = this.selectMode(options);
+
+    if (modeErrors.length > 0) {
+      return { errors: modeErrors, run: undefined };
+    }
+
+    const workspaceRoot = process.cwd();
+
+    // The file-aware load rather than the plain one: the trace resolves a
+    // configuration beside every project it reaches, and needs to know which
+    // file it has already read as this run's own so it is not read twice.
+    const {
+      authored,
+      configuration: loaded,
+      path: configurationPath,
+    } = await this.loadConfigurationFile({
+      configurationPath: options.config,
+      searchDirectory: workspaceRoot,
+    });
+    // Every combination of a flag with a configured value happens here and
+    // nowhere else, under one precedence rule this service does not restate.
+    const { configuration, errors, format, limitOverrides } =
+      this.flagResolutionService.resolveRunFlags({
+        configuration: loaded,
+        flags: {
+          // The mode flags are handed over with the rest rather than held
+          // back, so the resolver is given the whole command line and the
+          // rule that it changes nothing for them is exercised rather than
+          // merely written down. `selectMode` above is what reads them.
+          check: options.check,
+          directories: options.directories,
+          entryPointAddresses: options.entryPointAddresses,
+          entryPointDecorators: options.entryPointDecorators,
+          exclude: options.exclude,
+          excludeCallees: options.excludeCallees,
+          format: options.format,
+          includeExportedFunctions: options.includeExportedFunctions,
+          includeOrphans: options.includeOrphans,
+          includeTests: options.includeTests,
+          json: options.json,
+          markdown: options.markdown,
+          maximumBreadth: options.maximumBreadth,
+          maximumDepth: options.maximumDepth,
+          mermaid: options.mermaid,
+          write: options.write,
+        },
+      });
+
+    if (errors.length > 0) {
+      return { errors, run: undefined };
+    }
+
+    return {
+      errors,
+      run: {
+        authoredLimits: authored.limits,
+        configuration,
+        configurationPath,
+        format,
+        limitOverrides,
+        mode,
+        workspaceRoot,
+      },
+    };
+  }
+
+  /** Prompts for several values at once, completing the list as it is typed. */
+  public async promptForAutocompleteMultiselect(args: {
+    message: string;
+    subject: string;
+    suggestions: readonly string[];
+  }): Promise<string[]> {
+    return await this.inputService.promptForAutocompleteMultiselect(args);
+  }
+
+  /** Prompts for one value out of a fixed set of choices. */
+  public async promptForSelect<Choice extends string>(args: {
+    choices: readonly Choice[];
+    message: string;
+    subject: string;
+  }): Promise<Choice> {
+    return await this.inputService.promptForSelect(args);
+  }
+
+  /** Fills in every field a configuration file may leave out. */
   public resolveConfiguration(
     configuration: CallidescopeConfiguration,
   ): ResolvedCallidescopeConfiguration {
+    return this.configurationFileService.resolveConfiguration(configuration);
+  }
+
+  /**
+   * Returns the given options with `--format` filled in where one is wanted.
+   *
+   * Offered rather than required, which is the one place this differs from
+   * every other missing value: the caller applies its own default when
+   * nobody is at a terminal to ask, so a run proceeds with nothing typed.
+   * Demanding it would fail every scripted run — this repository's own
+   * per-project `gate` among them — over a flag those runs have never needed
+   * to pass.
+   *
+   * Generic over the caller's options type, so a command carries its own
+   * other flags through unchanged.
+   */
+  public async resolveFormatOption<Options extends CallidescopeFormatOptions>(
+    options: Options,
+  ): Promise<Options> {
+    if (options.format !== undefined || !this.inputService.isAtTerminal()) {
+      return options;
+    }
+
+    const format = await this.promptForSelect({
+      choices: CALLIDESCOPE_OUTPUT_FORMATS,
+      message: "Which output format?",
+      subject: "An output format (--format)",
+    });
+
+    return { ...options, format };
+  }
+
+  /** Resolves the limits every traced project is judged against. */
+  public resolveLimits(
+    args: ResolveProjectLimitsArguments,
+  ): ProjectLimitsLookup {
+    return this.projectConfigurationService.resolveLimits(args);
+  }
+
+  /**
+   * Reads the flags into what the run writes and what it fails on.
+   *
+   * `--write --check reports` is refused rather than obeyed: nothing can be
+   * stale immediately after being written, so a run asking for both has
+   * misunderstood one of them and would pass whatever it was meant to catch.
+   */
+  public selectMode(options: CallidescopeCommandOptions): RunModeSelection {
+    const errors: string[] = [];
+    const names = this.readCheckNames(options.check, errors);
+    const writes = options.write === true;
+
+    if (writes && names.has(CHECK_REPORTS)) {
+      errors.push(
+        `--write cannot be combined with --check ${CHECK_REPORTS}: a report cannot be stale in the run that just wrote it. Drop one of them, or run --write and --check ${CHECK_REPORTS} separately.`,
+      );
+    }
+
+    // A destination with no verb is the one mistake this command used to make
+    // silently: it exited 0, logged a finished trace, and wrote nothing. These
+    // flags are destinations rather than actions — `--write` and
+    // `--check reports` are the verbs — and a run given neither deliberately
+    // leaves every file alone, which is what makes a bare run safe to type
+    // inside somebody's checkout. So the answer is to refuse and name the
+    // missing verb, never to let a destination imply one.
+    const namedDestinations = DESTINATION_FLAG_NAMES.filter(
+      (flag) => options[flag] !== undefined,
+    );
+
+    if (namedDestinations.length > 0 && !writes && !names.has(CHECK_REPORTS)) {
+      const single = namedDestinations.length === 1;
+
+      errors.push(
+        `${namedDestinations.map((flag) => `--${flag}`).join(" and ")} ${single ? "names a destination" : "name destinations"} but nothing writes or compares ${single ? "it" : "them"}. Add --write to write ${single ? "it" : "them"}, or --check ${CHECK_REPORTS} to fail on ${single ? "it" : "them"} being out of date.`,
+      );
+    }
+
     return {
-      directories: configuration.directories ?? [],
-      entryPoints: this.resolveEntryPoints(configuration.entryPoints),
-      exclude: this.resolveExclude(configuration.exclude),
-      excludeCallees: configuration.excludeCallees ?? [],
-      excludeFrom: configuration.excludeFrom ?? [],
-      limits: this.resolveLimits(configuration.limits),
-      write: {
-        json: this.resolveJsonOutput(configuration.write),
-        markdown: this.resolveMarkdownDestination(
-          configuration.write?.markdown,
-        ),
-        mermaid: this.resolveMarkdownDestination(configuration.write?.mermaid),
+      errors,
+      mode: {
+        checksBreadth: names.has(CHECK_BREADTH),
+        checksDepth: names.has(CHECK_DEPTH),
+        checksReports: names.has(CHECK_REPORTS),
+        writes,
       },
     };
+  }
+
+  /**
+   * Whether a run reads or rewrites the files its reports live in.
+   *
+   * A run that neither writes nor compares leaves every destination alone: it
+   * prints what it traced and nothing else. That is what makes a bare run safe
+   * to use at a prompt inside somebody's checkout.
+   */
+  public touchesFiles(mode: RunMode): boolean {
+    return mode.checksReports || mode.writes;
   }
 }

@@ -239,7 +239,6 @@ graph LR
   callidescope_cli --> callidescope_output
   callidescope_cli --> logger
   callidescope_configuration --> callidescope_core
-  callidescope_configuration --> logger
   callidescope_examples -.-> callidescope_cli
   callidescope_examples --> callidescope_configuration
   callidescope_examples --> callidescope_core

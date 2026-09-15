@@ -5,7 +5,7 @@ import type {
   CallidescopeLimits,
   CallidescopeOutputFormat,
   ResolvedCallidescopeConfiguration,
-} from "../configuration/configuration.types";
+} from "./configuration.types";
 
 /**
  * Options `depth` and `breadth` accept, scoping a lookup to one workspace.
@@ -181,4 +181,19 @@ export interface RunMode {
 export interface RunModeSelection {
   readonly errors: readonly string[];
   readonly mode: RunMode;
+}
+
+/**
+ * What one command line resolved to, and what could not be made sense of.
+ *
+ * Both together rather than one or the other, because refusing is the host's
+ * act rather than this layer's: resolving a run is deciding what it would do,
+ * and saying so on a terminal is what the command-line host is for. Every
+ * complaint is collected before any of them is reported, so a command line
+ * with two mistakes in it is two mistakes to fix rather than two runs.
+ */
+export interface RunPreparation {
+  readonly errors: readonly string[];
+  /** Absent exactly when `errors` is not empty. */
+  readonly run: PreparedRun | undefined;
 }
