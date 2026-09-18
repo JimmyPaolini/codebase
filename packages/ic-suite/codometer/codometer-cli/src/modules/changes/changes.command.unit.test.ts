@@ -2,9 +2,12 @@ import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
-import { ChangesService } from "@codometer/changes";
-import { InputService } from "@codometer/configuration";
-import { DocumentsService, RenderService } from "@codometer/output";
+import { ConfigurationModule as CodometerConfigurationModule } from "@codometer/configuration";
+import {
+  ChangesService,
+  DocumentsService,
+  RenderService,
+} from "@codometer/output";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import {
@@ -21,7 +24,7 @@ import { LoggerService } from "@codebase/logger";
 
 import { ChangesCommand } from "./changes.command";
 
-import type { MetricCollection, MetricRow } from "@codometer/changes";
+import type { MetricCollection, MetricRow } from "@codometer/output";
 
 const row: MetricRow = {
   baseValue: undefined,
@@ -55,9 +58,9 @@ describe(ChangesCommand, () => {
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
+      imports: [CodometerConfigurationModule],
       providers: [
         ChangesCommand,
-        InputService,
         DocumentsService,
         RenderService,
         { provide: ChangesService, useValue: { collect } },
@@ -85,9 +88,9 @@ describe(ChangesCommand, () => {
 
   it("sets logger context", async () => {
     const module = await Test.createTestingModule({
+      imports: [CodometerConfigurationModule],
       providers: [
         ChangesCommand,
-        InputService,
         DocumentsService,
         RenderService,
         { provide: ChangesService, useValue: { collect } },

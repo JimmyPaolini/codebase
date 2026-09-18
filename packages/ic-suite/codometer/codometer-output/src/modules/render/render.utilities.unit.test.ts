@@ -8,7 +8,7 @@ import {
   hasChanged,
 } from "./render.utilities";
 
-import type { MetricRow } from "@codometer/changes";
+import type { MetricRow } from "../changes/changes.types";
 
 /** Builds a row with only the fields a case cares about. */
 function buildRow(overrides: Partial<MetricRow> = {}): MetricRow {

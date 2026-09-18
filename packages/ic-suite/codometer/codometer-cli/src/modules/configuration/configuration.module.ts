@@ -1,30 +1,20 @@
-import {
-  ConfigurationModule as CodometerConfigurationModule,
-  InputModule,
-} from "@codometer/configuration";
-import { DiscoveryModule } from "@codometer/discovery";
+import { ConfigurationModule as CodometerConfigurationModule } from "@codometer/configuration";
+import { ConfigurationListingModule } from "@codometer/output";
 import { Module } from "@nestjs/common";
 
 import { ConfigurationCommand } from "./configuration.command";
-import { ConfigurationService } from "./configuration.service";
-import { RenderConfigurationService } from "./render-configuration.service";
 
 /**
  * Wires the command that lists what a repository configures.
  *
- * Imports codometer's own configuration and discovery modules rather than
- * reimplementing either: the listing must resolve a file exactly as a
- * measurement would, and must skip the same ignored directories, or it would
- * describe a repository nobody runs.
+ * Nothing but wiring. Reading the tree and rendering what it found belong to
+ * `@codometer/output`, which is where every other render target already
+ * lives; this module hands the command the two it needs.
  */
 @Module({
   controllers: [],
-  exports: [ConfigurationCommand, ConfigurationService],
-  imports: [CodometerConfigurationModule, DiscoveryModule, InputModule],
-  providers: [
-    ConfigurationCommand,
-    ConfigurationService,
-    RenderConfigurationService,
-  ],
+  exports: [ConfigurationCommand],
+  imports: [CodometerConfigurationModule, ConfigurationListingModule],
+  providers: [ConfigurationCommand],
 })
 export class ConfigurationModule {}

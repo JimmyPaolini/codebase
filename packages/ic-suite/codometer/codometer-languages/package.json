@@ -2,6 +2,7 @@
   "dependencies": {
     "@codebase/logger": "workspace:*",
     "@codometer/configuration": "workspace:*",
+    "@codometer/core": "workspace:*",
     "@nestjs/common": "catalog:",
     "mdast": "catalog:",
     "postcss": "catalog:",

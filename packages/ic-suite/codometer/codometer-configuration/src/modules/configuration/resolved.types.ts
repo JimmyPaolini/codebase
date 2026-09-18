@@ -10,12 +10,14 @@ import type {
   CodometerCommentLanguage,
   CodometerCompression,
   CodometerFormat,
-  CodometerSeverity,
-  CodometerSymbolKind,
   CodometerSymbolMatcher,
 } from "./configuration.types";
 import type { WriteMarkdownOutput } from "./output.types";
-import type { CodometerStatisticGroup } from "./statistics.types";
+import type {
+  CodometerSeverity,
+  CodometerStatisticGroup,
+  CodometerSymbolKind,
+} from "@codometer/core";
 
 /**
  * A resolved configuration and the file it was resolved from.

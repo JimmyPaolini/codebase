@@ -1,7 +1,6 @@
 import { afterEach, beforeEach, vi } from "vitest";
 
-import type { CodometerReport } from "../src/modules/report/report.types";
-import type { CodeStatisticsResult } from "@codometer/configuration";
+import type { CodeStatisticsResult, CodometerReport } from "@codometer/core";
 
 /**
  * Default test date used across time-sensitive tests.

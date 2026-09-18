@@ -355,6 +355,7 @@ flowchart LR
   ReportFindingsModule
   ReportModule
   RunConfigurationModule
+  RunPlanModule
   SignaturesModule
   WorkspaceModule
   WriteDestinationsModule
@@ -382,8 +383,8 @@ flowchart LR
   CallidescopeModule --> WorkspaceModule
   CallidescopeModule --> WriteDestinationsModule
   ConfigurationModule --> ConfigurationFileModule
-  ConfigurationModule --> FlagResolutionModule
   ConfigurationModule --> InputModule
+  ConfigurationModule --> RunPlanModule
   EdgesModule --> CallablesModule
   EdgesModule --> ClassesModule
   EdgesModule --> ProgramModule
@@ -407,6 +408,7 @@ flowchart LR
   ProjectReportsModule --> SignaturesModule
   RunConfigurationModule --> ConfigurationModule
   RunConfigurationModule --> OptionsModule
+  RunPlanModule --> FlagResolutionModule
   WriteDestinationsModule --> OutputJsonModule
   WriteDestinationsModule --> OutputMarkdownModule
   WriteDestinationsModule --> ReportModule
