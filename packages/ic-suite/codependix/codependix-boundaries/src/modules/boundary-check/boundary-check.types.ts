@@ -14,11 +14,11 @@ import type { NxProject, NxProjectGraph } from "@codependix/nx-projects";
 /**
  * Everything a boundary check reads about the workspace it is judging.
  *
- * Stated here rather than imported from the command-line host, so this package
- * does not depend on the thing that calls it. A host's own wider run context —
- * `codependix-cli`'s `GraphRunContext`, which also carries an export mode — is
- * structurally assignable to this, so nothing has to be repacked at the call
- * site.
+ * Stated apart from `GraphRunContext` — the wider run context this package
+ * also owns, which carries an export mode the gate never reads — so a caller
+ * that only judges boundaries never has to name an export mode it has none
+ * of. `GraphRunContext` is structurally assignable to this, so nothing has to
+ * be repacked at the call site.
  */
 export interface BoundaryCheckContext {
   readonly configuration: ResolvedCodependixConfiguration;
@@ -27,9 +27,9 @@ export interface BoundaryCheckContext {
    *
    * Read by `BoundaryCheckService.run` to skip every level under a disabled
    * graph type before a single graph is built — see
-   * `codependix-cli`'s `RunContextService.resolveEnabledGraphTypes`, which is
-   * where a host resolves this from `--no-file-imports`,
-   * `--no-nestjs-modules`, and `--no-nx-projects`.
+   * `RunContextService.resolveEnabledGraphTypes`, which is where a run
+   * resolves this from `--no-file-imports`, `--no-nestjs-modules`, and
+   * `--no-nx-projects`.
    */
   readonly enabledGraphTypes: ReadonlySet<CodependixGraphType>;
   readonly graph: NxProjectGraph;

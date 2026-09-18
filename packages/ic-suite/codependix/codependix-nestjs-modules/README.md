@@ -14,14 +14,14 @@ Dependency graphs exported by [codependix](https://github.com/JimmyPaolini/codeb
 ```mermaid
 graph LR
   codependix_boundaries["codependix-boundaries"]
-  codependix_cli["codependix-cli"]
   codependix_examples["codependix-examples"]
   codependix_nestjs_modules["codependix-nestjs-modules"]
+  codependix_output["codependix-output"]
   logger["logger"]
   codependix_boundaries --> codependix_nestjs_modules
-  codependix_cli --> codependix_nestjs_modules
   codependix_examples --> codependix_nestjs_modules
   codependix_nestjs_modules --> logger
+  codependix_output --> codependix_nestjs_modules
   classDef subject fill:#7c3aed,color:#fff,stroke:#4c1d95,stroke-width:2px
   class codependix_nestjs_modules subject
 ```

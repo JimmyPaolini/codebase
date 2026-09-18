@@ -14,12 +14,12 @@ Dependency graphs exported by [codependix](https://github.com/JimmyPaolini/codeb
 ```mermaid
 graph LR
   codependix_boundaries["codependix-boundaries"]
-  codependix_cli["codependix-cli"]
   codependix_examples["codependix-examples"]
   codependix_file_imports["codependix-file-imports"]
+  codependix_output["codependix-output"]
   codependix_boundaries --> codependix_file_imports
-  codependix_cli --> codependix_file_imports
   codependix_examples --> codependix_file_imports
+  codependix_output --> codependix_file_imports
   classDef subject fill:#7c3aed,color:#fff,stroke:#4c1d95,stroke-width:2px
   class codependix_file_imports subject
 ```
