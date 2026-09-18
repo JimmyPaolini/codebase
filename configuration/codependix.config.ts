@@ -411,32 +411,24 @@ const codependixConfiguration: CodependixConfiguration = {
         from: { tags: ["name:conformetry-core"] },
         kind: "forbid",
         message:
-          "The conformetry chain points one way, with `conformetry-core` as the leaf every other package may reach and `conformetry-generation` owning template rendering.",
+          "The conformetry spine points one way — core, configuration, analysis, output, cli — and `conformetry-core` is the contracts leaf, so it declares types and reaches nothing at all.",
         name: "conformetry-core-is-a-leaf",
         to: { id: ["*"] },
-      },
-      {
-        from: { tags: ["name:conformetry-generation"] },
-        kind: "allow",
-        message:
-          "The conformetry chain points one way, with `conformetry-core` as the leaf every other package may reach and `conformetry-generation` owning template rendering.",
-        name: "conformetry-generation-layer",
-        to: { tags: ["name:conformetry-core"] },
       },
       {
         from: { tags: ["name:conformetry-configuration"] },
         kind: "allow",
         message:
-          "The conformetry chain points one way, with `conformetry-core` as the leaf every other package may reach and `conformetry-generation` owning template rendering.",
+          "The conformetry spine points one way — core, configuration, analysis, output, cli — and the configuration layer resolves the config file, the CLI flags, and the placeholder substitution every template path needs, so it reaches only the contracts leaf.",
         name: "conformetry-configuration-layer",
-        to: { tags: ["name:conformetry-core", "name:conformetry-generation"] },
+        to: { tags: ["name:conformetry-core"] },
       },
       {
-        from: { tags: ["name:conformetry-files"] },
+        from: { tags: ["name:conformetry-generation"] },
         kind: "allow",
         message:
-          "The conformetry chain points one way, with `conformetry-core` as the leaf every other package may reach and `conformetry-generation` owning template rendering.",
-        name: "conformetry-files-layer",
+          "The conformetry spine points one way — core, configuration, analysis, output, cli — and generation is an analysis package, so it consumes rendering upward from the configuration layer rather than owning it.",
+        name: "conformetry-generation-layer",
         to: {
           tags: ["name:conformetry-configuration", "name:conformetry-core"],
         },
@@ -445,22 +437,37 @@ const codependixConfiguration: CodependixConfiguration = {
         from: { tags: ["name:conformetry-languages"] },
         kind: "allow",
         message:
-          "The conformetry chain points one way, with `conformetry-core` as the leaf every other package may reach and `conformetry-generation` owning template rendering.",
+          "The conformetry spine points one way — core, configuration, analysis, output, cli — and the languages package is the analysis package that owns every per-format validator, the extension-agnostic existence pass, and the difference and scoring primitives they all share.",
         name: "conformetry-languages-layer",
-        to: { tags: ["name:conformetry-core"] },
+        to: {
+          tags: ["name:conformetry-configuration", "name:conformetry-core"],
+        },
       },
       {
         from: { tags: ["name:conformetry-validation"] },
         kind: "allow",
         message:
-          "The conformetry chain points one way, with `conformetry-core` as the leaf every other package may reach and `conformetry-generation` owning template rendering.",
+          "The conformetry spine points one way — core, configuration, analysis, output, cli — and validation is the analysis package that drives the language validators, so it reaches its sibling analysis package and the two layers beneath.",
         name: "conformetry-validation-layer",
         to: {
           tags: [
             "name:conformetry-configuration",
             "name:conformetry-core",
-            "name:conformetry-files",
             "name:conformetry-languages",
+          ],
+        },
+      },
+      {
+        from: { tags: ["name:conformetry-output"] },
+        kind: "allow",
+        message:
+          "The conformetry spine points one way — core, configuration, analysis, output, cli — and the output package owns every render target, so it reads what analysis produced and renders it without running any analysis of its own.",
+        name: "conformetry-output-layer",
+        to: {
+          tags: [
+            "name:conformetry-core",
+            "name:conformetry-languages",
+            "name:conformetry-validation",
           ],
         },
       },
@@ -468,13 +475,14 @@ const codependixConfiguration: CodependixConfiguration = {
         from: { tags: ["name:conformetry"] },
         kind: "allow",
         message:
-          "The conformetry chain points one way, with `conformetry-core` as the leaf every other package may reach and `conformetry-generation` owning template rendering.",
+          "The conformetry spine points one way — core, configuration, analysis, output, cli — and the command-line host holds command modules only, so it composes every layer beneath it and implements none of them.",
         name: "conformetry-layer",
         to: {
           tags: [
             "name:conformetry-configuration",
             "name:conformetry-core",
             "name:conformetry-generation",
+            "name:conformetry-output",
             "name:conformetry-validation",
             "name:logger",
           ],
@@ -484,13 +492,14 @@ const codependixConfiguration: CodependixConfiguration = {
         from: { tags: ["name:conformetry-nx"] },
         kind: "allow",
         message:
-          "The conformetry chain points one way, with `conformetry-core` as the leaf every other package may reach and `conformetry-generation` owning template rendering.",
+          "The conformetry spine points one way — core, configuration, analysis, output, cli — and the Nx plugin is a second entrypoint at the same layer as the command-line host rather than a layer of its own.",
         name: "conformetry-nx-layer",
         to: {
           tags: [
             "name:conformetry-configuration",
             "name:conformetry-core",
             "name:conformetry-generation",
+            "name:conformetry-output",
             "name:conformetry-validation",
             "name:logger",
           ],
@@ -509,6 +518,7 @@ const codependixConfiguration: CodependixConfiguration = {
             "name:conformetry-core",
             "name:conformetry-generation",
             "name:conformetry-nx",
+            "name:conformetry-output",
             "name:conformetry-validation",
           ],
         },

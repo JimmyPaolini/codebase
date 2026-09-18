@@ -1,10 +1,10 @@
 import path from "node:path";
 
 import { InstanceDiscoveryService } from "@conformetry/configuration";
-import { RunnerService } from "@conformetry/core";
-import { FilesService } from "@conformetry/files";
-import { LanguagesService } from "@conformetry/languages";
+import { FilesService, LanguagesService } from "@conformetry/languages";
 import { Injectable } from "@nestjs/common";
+
+import { RunnerService } from "../runner/runner.service";
 
 import { ValidationDeduplicationService } from "./validation-deduplication.service";
 import { ValidationFindingsService } from "./validation-findings.service";

@@ -1,4 +1,7 @@
 // 📤 Exports
+export { RunnerModule } from "./modules/runner/runner.module";
+export { RunnerService } from "./modules/runner/runner.service";
+export type { RunLanguageValidatorArguments } from "./modules/runner/runner.types";
 export { ValidationDeduplicationService } from "./modules/validation/validation-deduplication.service";
 export { ValidationFindingsService } from "./modules/validation/validation-findings.service";
 export { ValidationScoringService } from "./modules/validation/validation-scoring.service";

@@ -211,10 +211,10 @@
             "conformetry-configuration",
             "conformetry-core",
             "conformetry-examples",
-            "conformetry-files",
             "conformetry-generation",
             "conformetry-languages",
             "conformetry-nx",
+            "conformetry-output",
             "conformetry-validation"
           ]
         },
@@ -940,10 +940,10 @@
             "conformetry-configuration",
             "conformetry-core",
             "conformetry-examples",
-            "conformetry-files",
             "conformetry-generation",
             "conformetry-languages",
             "conformetry-nx",
+            "conformetry-output",
             "conformetry-validation"
           ]
         },

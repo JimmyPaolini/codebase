@@ -1,5 +1,6 @@
-import { ScoringModule } from "@conformetry/core";
 import { Module } from "@nestjs/common";
+
+import { ScoringModule } from "../scoring/scoring.module";
 
 import { TypescriptCommentsService } from "./typescript-comments.service";
 import { TypescriptNodesService } from "./typescript-nodes.service";

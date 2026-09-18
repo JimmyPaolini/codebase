@@ -96,13 +96,13 @@ Call stacks traced through `packages/ic-suite/conformetry/conformetry-generation
 
 | Measure | Value |
 | --- | --- |
-| Callables | 23 |
-| Files | 14 |
-| Calls traced | 18 |
+| Callables | 13 |
+| Files | 10 |
+| Calls traced | 10 |
 | Call stacks | 1 |
 | Deepest stack | 2 |
 | Stacks through recursion | 0 |
-| Unfollowable calls | 3 |
+| Unfollowable calls | 2 |
 
 ### Limits
 
@@ -118,30 +118,25 @@ What this project is judged against, as declared in its own `callidescope.config
 **1. `GenerationService.listDirectory`** — depth 2 · orphan-root
 
 ```text
-🚀 GenerationService.listDirectory(directoryPath: string): Promise<DirectoryEntry[]> [packages/ic-suite/conformetry/conformetry-generation/src/modules/generation/generation.service.ts:39]
-  └─> GenerationService.map(…)(entry: Dirent<string>): { isDirectory: boolean; name: string; } [packages/ic-suite/conformetry/conformetry-generation/src/modules/generation/generation.service.ts:42]
+🚀 GenerationService.listDirectory(directoryPath: string): Promise<DirectoryEntry[]> [packages/ic-suite/conformetry/conformetry-generation/src/modules/generation/generation.service.ts:38]
+  └─> GenerationService.map(…)(entry: Dirent<string>): { isDirectory: boolean; name: string; } [packages/ic-suite/conformetry/conformetry-generation/src/modules/generation/generation.service.ts:41]
 ```
 
 ### Breadth
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `GenerationService.runGenerator` | 4 | `GenerationService.resolveAdapters`, `GenerationService.normalizeInputs`, `GenerationService.buildSubstitutions`, `GenerationService.renderDirectory` | `packages/ic-suite/conformetry/conformetry-generation/src/modules/generation/generation.service.ts:191` |
-| `RenderingService.assertEverySubstitutionSupplied` | 3 | `RenderingService.filter(…)`, `RenderingService.collectInterpolatedNames`, `MissingSubstitutionError.constructor` | `packages/ic-suite/conformetry/conformetry-generation/src/modules/rendering/rendering.service.ts:35` |
-| `GenerationService.renderDirectory` | 2 | `RenderingService.renderPath`, `GenerationService.renderFile` | `packages/ic-suite/conformetry/conformetry-generation/src/modules/generation/generation.service.ts:105` |
+| `GenerationService.runGenerator` | 4 | `GenerationService.resolveAdapters`, `GenerationService.normalizeInputs`, `GenerationService.buildSubstitutions`, `GenerationService.renderDirectory` | `packages/ic-suite/conformetry/conformetry-generation/src/modules/generation/generation.service.ts:190` |
+| `GenerationService.renderDirectory` | 2 | `RenderingService.renderPath`, `GenerationService.renderFile` | `packages/ic-suite/conformetry/conformetry-generation/src/modules/generation/generation.service.ts:104` |
+| `GenerationService.listDirectory` | 1 | `GenerationService.map(…)` | `packages/ic-suite/conformetry/conformetry-generation/src/modules/generation/generation.service.ts:38` |
 
 <details>
-<summary>7 more callables</summary>
+<summary>2 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `MissingSubstitutionError.constructor` | 1 | `MissingSubstitutionError.map(…)` | `packages/ic-suite/conformetry/conformetry-generation/src/modules/rendering/rendering.constants.ts:31` |
-| `RenderingService.collectInterpolatedNames` | 1 | `RenderingService.walk` | `packages/ic-suite/conformetry/conformetry-generation/src/modules/rendering/rendering.service.ts:61` |
-| `RenderingService.renderContent` | 1 | `RenderingService.assertEverySubstitutionSupplied` | `packages/ic-suite/conformetry/conformetry-generation/src/modules/rendering/rendering.service.ts:115` |
-| `RenderingService.renderPath` | 1 | `RenderingService.assertEverySubstitutionSupplied` | `packages/ic-suite/conformetry/conformetry-generation/src/modules/rendering/rendering.service.ts:142` |
-| `GenerationService.listDirectory` | 1 | `GenerationService.map(…)` | `packages/ic-suite/conformetry/conformetry-generation/src/modules/generation/generation.service.ts:39` |
-| `GenerationService.buildSubstitutions` | 1 | `RenderingService.buildNameSubstitutions` | `packages/ic-suite/conformetry/conformetry-generation/src/modules/generation/generation.service.ts:75` |
-| `GenerationService.renderFile` | 1 | `RenderingService.renderContent` | `packages/ic-suite/conformetry/conformetry-generation/src/modules/generation/generation.service.ts:154` |
+| `GenerationService.buildSubstitutions` | 1 | `RenderingService.buildNameSubstitutions` | `packages/ic-suite/conformetry/conformetry-generation/src/modules/generation/generation.service.ts:74` |
+| `GenerationService.renderFile` | 1 | `RenderingService.renderContent` | `packages/ic-suite/conformetry/conformetry-generation/src/modules/generation/generation.service.ts:153` |
 
 </details>
 <!-- CALL_STACKS_END -->
@@ -161,8 +156,8 @@ graph LR
   conformetry_generation["conformetry-generation"]
   conformetry_nx["conformetry-nx"]
   conformetry_cli --> conformetry_generation
-  conformetry_configuration --> conformetry_generation
   conformetry_examples --> conformetry_generation
+  conformetry_generation --> conformetry_configuration
   conformetry_nx --> conformetry_generation
   classDef subject fill:#7c3aed,color:#fff,stroke:#4c1d95,stroke-width:2px
   class conformetry_generation subject
@@ -196,28 +191,14 @@ graph LR
   file_src_modules_generation_generation_service_ts["src/modules/generation/generation.service.ts"]
   file_src_modules_generation_generation_service_unit_test_ts["src/modules/generation/generation.service.unit.test.ts"]
   file_src_modules_generation_generation_types_ts["src/modules/generation/generation.types.ts"]
-  file_src_modules_rendering_rendering_constants_ts["src/modules/rendering/rendering.constants.ts"]
-  file_src_modules_rendering_rendering_module_ts["src/modules/rendering/rendering.module.ts"]
-  file_src_modules_rendering_rendering_service_ts["src/modules/rendering/rendering.service.ts"]
-  file_src_modules_rendering_rendering_service_unit_test_ts["src/modules/rendering/rendering.service.unit.test.ts"]
-  file_src_modules_rendering_rendering_types_ts["src/modules/rendering/rendering.types.ts"]
   file_testing_mocks_ts["testing/mocks.ts"]
   file_testing_setup_ts["testing/setup.ts"]
   file_vitest_config_ts["vitest.config.ts"]
   file_src_modules_generation_generation_module_ts --> file_src_modules_generation_generation_service_ts
-  file_src_modules_generation_generation_module_ts --> file_src_modules_rendering_rendering_module_ts
   file_src_modules_generation_generation_module_unit_test_ts --> file_src_modules_generation_generation_module_ts
   file_src_modules_generation_generation_service_ts --> file_src_modules_generation_generation_types_ts
-  file_src_modules_generation_generation_service_ts --> file_src_modules_rendering_rendering_service_ts
-  file_src_modules_generation_generation_service_ts --> file_src_modules_rendering_rendering_types_ts
   file_src_modules_generation_generation_service_unit_test_ts --> file_src_modules_generation_generation_service_ts
   file_src_modules_generation_generation_service_unit_test_ts --> file_src_modules_generation_generation_types_ts
-  file_src_modules_generation_generation_service_unit_test_ts --> file_src_modules_rendering_rendering_service_ts
-  file_src_modules_rendering_rendering_module_ts --> file_src_modules_rendering_rendering_service_ts
-  file_src_modules_rendering_rendering_service_ts --> file_src_modules_rendering_rendering_constants_ts
-  file_src_modules_rendering_rendering_service_ts --> file_src_modules_rendering_rendering_types_ts
-  file_src_modules_rendering_rendering_service_unit_test_ts --> file_src_modules_rendering_rendering_constants_ts
-  file_src_modules_rendering_rendering_service_unit_test_ts --> file_src_modules_rendering_rendering_service_ts
 ```
 <!-- codependix:end name="codependix-file-imports" -->
 

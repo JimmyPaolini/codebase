@@ -3,10 +3,10 @@ import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
-import { RenderingService } from "@conformetry/generation";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
+import { RenderingService } from "../rendering/rendering.service";
 import { TemplateDiscoveryService } from "../template-discovery/template-discovery.service";
 
 import { InstanceDiscoveryMatchingService } from "./instance-discovery-matching.service";

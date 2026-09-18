@@ -175,18 +175,18 @@ What this project is judged against, as declared in its own `callidescope.config
           └─> InstanceDiscoveryMatchingService.matchTemplates(…): TemplateMatch[] [packages/ic-suite/conformetry/conformetry-configuration/src/modules/instance-discovery/instance-discovery-matching.service.ts:154]
              ↳ Weighs every template that shares at least one file with the instance, best-first.
             └─> InstanceDiscoveryMatchingService.map(…)(…): { matchedFileCount: number; matchRatio: number; template: TemplateDefinition; } [packages/ic-suite/conformetry/conformetry-configuration/src/modules/instance-discovery/instance-discovery-matching.service.ts:160]
-              └─> TemplateDiscoveryService.countMatchingFiles(…): number [packages/ic-suite/conformetry/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:120]
+              └─> TemplateDiscoveryService.countMatchingFiles(…): number [packages/ic-suite/conformetry/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:121]
                  ↳ Counts how many of a template's files the instance path already has.
-                └─> TemplateDiscoveryService.filter(…)(templateFilePath: string): boolean [packages/ic-suite/conformetry/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:129]
-                  └─> TemplateDiscoveryService.resolveInstanceFilePath(…): string [packages/ic-suite/conformetry/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:178]
+                └─> TemplateDiscoveryService.filter(…)(templateFilePath: string): boolean [packages/ic-suite/conformetry/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:130]
+                  └─> TemplateDiscoveryService.resolveInstanceFilePath(…): string [packages/ic-suite/conformetry/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:179]
                      ↳ Maps a template file path to the instance file path it governs.
-                    └─> RenderingService.renderPath(…): string [packages/ic-suite/conformetry/conformetry-generation/src/modules/rendering/rendering.service.ts:142]
+                    └─> RenderingService.renderPath(…): string [packages/ic-suite/conformetry/conformetry-configuration/src/modules/rendering/rendering.service.ts:142]
                        ↳ Renders a template path with mustache, the same way contents are rendered.
-                      └─> RenderingService.assertEverySubstitutionSupplied(…): void [packages/ic-suite/conformetry/conformetry-generation/src/modules/rendering/rendering.service.ts:35]
+                      └─> RenderingService.assertEverySubstitutionSupplied(…): void [packages/ic-suite/conformetry/conformetry-configuration/src/modules/rendering/rendering.service.ts:35]
                          ↳ Refuses to render a template asking for a value nobody supplied.
-                        └─> RenderingService.collectInterpolatedNames(template: string): string[] [packages/ic-suite/conformetry/conformetry-generation/src/modules/rendering/rendering.service.ts:61]
+                        └─> RenderingService.collectInterpolatedNames(template: string): string[] [packages/ic-suite/conformetry/conformetry-configuration/src/modules/rendering/rendering.service.ts:61]
                            ↳ Every placeholder a template interpolates, deduplicated.
-                          └─> RenderingService.walk(spans: TemplateSpans): void [packages/ic-suite/conformetry/conformetry-generation/src/modules/rendering/rendering.service.ts:63]
+                          └─> RenderingService.walk(spans: TemplateSpans): void [packages/ic-suite/conformetry/conformetry-configuration/src/modules/rendering/rendering.service.ts:63]
 ```
 
 **2. `runConformetryGenerator`** — depth ≥ 13 · exported-function
@@ -396,16 +396,16 @@ Dependency graphs exported by [codependix](https://github.com/JimmyPaolini/codeb
 ```mermaid
 graph LR
   conformetry_configuration["conformetry-configuration"]
-  conformetry_core["conformetry-core"]
   conformetry_examples["conformetry-examples"]
   conformetry_generation["conformetry-generation"]
   conformetry_nx["conformetry-nx"]
+  conformetry_output["conformetry-output"]
   conformetry_validation["conformetry-validation"]
   logger["logger"]
   conformetry_examples --> conformetry_nx
   conformetry_nx --> conformetry_configuration
-  conformetry_nx --> conformetry_core
   conformetry_nx --> conformetry_generation
+  conformetry_nx --> conformetry_output
   conformetry_nx --> conformetry_validation
   conformetry_nx --> logger
   classDef subject fill:#7c3aed,color:#fff,stroke:#4c1d95,stroke-width:2px
@@ -495,7 +495,6 @@ flowchart LR
   ValidationModule --> FilesModule
   ValidationModule --> InstanceDiscoveryModule
   ValidationModule --> LanguagesModule
-  ValidationModule --> ReportingModule
   ValidationModule --> RunnerModule
   ValidationModule --> ScoringModule
 ```

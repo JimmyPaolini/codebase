@@ -1,8 +1,11 @@
 # 👔 Conformetry Core
 
 The shared contract every other [Conformetry](../conformetry-cli/README.md)
-package builds on. It is a leaf by design — it depends on nothing else in the
-conformetry graph, so every other package can depend on it without a cycle.
+package builds on. It is the contracts leaf of the five-layer spine — `core <-
+configuration <- analysis <- output <- cli` — so it declares types and holds
+nothing executable: no service, no NestJS module, no dependency on anything
+else in the conformetry graph. Importing a result type from here therefore
+drags nothing behind it.
 
 ```bash
 npm install --save-dev @conformetry/core
@@ -10,12 +13,18 @@ npm install --save-dev @conformetry/core
 
 ## What it owns
 
-| Module | Responsibility |
-| ------ | -------------- |
-| `errors` | The structured `ConformetryError` shape, plus builders and guards for it |
-| `reporting` | Rendering conformance errors as readable, actionable text |
-| `runner` | Runs a language validator over a prepared document set |
-| `scoring` | The conformance arithmetic: what a finding weighs, what a weight pair scores |
+| File | Responsibility |
+| ---- | -------------- |
+| `lib/differences.types.ts` | The structured `ConformetryDifference` shape, and the language and category unions that discriminate it |
+| `lib/inventory.types.ts` | What discovery found, as the output layer renders it: templates, instances, and the pairings between them |
+| `lib/runner.types.ts` | The `ConformetryLanguageValidator` contract and the document, payload, and result shapes it is spoken in |
+| `lib/scoring.types.ts` | `InstanceScore`: how well one matched instance honours the template it matched |
+
+The behavior these types describe lives above them. The difference and scoring
+primitives, the file-existence pass, and every per-format validator are in
+[`@conformetry/languages`](../conformetry-languages/README.md); the validator
+envelope is in [`@conformetry/validation`](../conformetry-validation/README.md);
+rendering is in [`@conformetry/output`](../conformetry-output/README.md).
 
 "Language" here means a validator for one file format — TypeScript, JSON,
 markdown, Python. The word "plugin" is reserved for the Nx plugin in
@@ -25,9 +34,9 @@ for these.
 ## Writing a language validator
 
 A validator supplies a descriptor and a single-document comparison. Extension
-filtering, grouping errors under their file, and assembling the result are
-handled once by `RunnerService`, so a language package contains only its
-comparison logic:
+filtering, grouping differences under their file, and assembling the result are
+handled once by `RunnerService` in `@conformetry/validation`, so a language
+package contains only its comparison logic:
 
 ```ts
 @Injectable()
@@ -38,7 +47,7 @@ export class ExampleValidatorService implements ConformetryLanguageValidator {
     document: PreparedValidationDocument,
   ): DocumentValidationResult {
     // compare document.renderedTemplate against document.instance
-    return { errors, totalWeight };
+    return { differences, totalWeight };
   }
 }
 ```
@@ -50,45 +59,53 @@ A validator reports how much the template asked for alongside what it found.
 included, because leaving them out would score an instance only against the
 parts of itself that are already wrong.
 
-Each error may carry a `weight`, defaulting to 1. It says how many requirements
-that one finding stands in for: a validator reports a missing class once,
-however many members it held, so weighing the finding by its subtree is what
-keeps deleting a class from costing the same as deleting an import. No per-kind
-weight table is needed — a class is worth more because it contains more.
+Each difference may carry a `weight`, defaulting to 1. It says how many
+requirements that one finding stands in for: a validator reports a missing
+class once, however many members it held, so weighing the finding by its
+subtree is what keeps deleting a class from costing the same as deleting an
+import. No per-kind weight table is needed — a class is worth more because it
+contains more.
 
 ```text
-score = (totalWeight - sum(error.weight ?? 1)) / totalWeight
+score = (totalWeight - sum(difference.weight ?? 1)) / totalWeight
 ```
 
-`ScoringService` owns that arithmetic, including the two cases worth getting
-right once: the default weight of a finding that declares none, and an empty
-template whose denominator is zero and which therefore conforms perfectly.
+`ScoringService`, in `@conformetry/languages`, owns that arithmetic, including
+the two cases worth getting right once: the default weight of a finding that
+declares none, and an empty template whose denominator is zero and which
+therefore conforms perfectly.
 
 [`@conformetry/validation`](../conformetry-validation/README.md) drives the
 registered validators; they are never responsible for discovering files or
 loading configuration.
 
-## Structured errors
+## Structured differences
 
-Errors carry the location on both sides — instance and template — along with
-the expected value and a concrete `fix`. That last field is the point: reports
-are meant to be actionable by whoever, or whatever, has to make the file
-conform. Prefer populating `instanceLine`/`templateLine` (or `instancePath` for
-document formats) over folding a location into the message.
+Differences carry the location on both sides — instance and template — along
+with the expected value and a concrete `fix`. That last field is the point:
+reports are meant to be actionable by whoever, or whatever, has to make the
+file conform. Prefer populating `instanceLine`/`templateLine` (or
+`instancePath` for document formats) over folding a location into the message.
 
 ## Exports
 
-`ErrorsService`, `ReportingService`, `RunnerService`, `ScoringService` and
-their modules, plus the `ConformetryError`, `ConformetryLanguageValidator`,
-`DocumentValidationResult`, `InstanceScore`, `LanguageValidatorDescriptor`,
-`PreparedValidationDocument`, `ValidationFileResult`, and `WeightedFinding`
-types.
+Types only: `ConformetryDifference`, `ConformetryDifferenceLanguage`,
+`ConformetryDifferenceType`, `ConformetryLanguageValidator`,
+`DocumentValidationResult`, `InstanceScore`, `InventoriedInstance`,
+`InventoriedPairing`, `InventoriedTemplate`, `LanguageValidatorDescriptor`,
+`LanguageValidatorResult`, `PreparedValidationDocument`,
+`PreparedValidationPayload`, and `ValidationFileResult`.
 
 ## Test
 
 ```bash
 nx run conformetry-core:vitest
 ```
+
+One test, and it asserts the property that makes this package a leaf: the
+module contributes nothing at runtime, so importing a result type from here
+cannot drag a service or a NestJS module behind it. Exporting one value fails
+it.
 
 ## License
 
@@ -106,13 +123,13 @@ Call stacks traced through `packages/ic-suite/conformetry/conformetry-core`, dee
 
 | Measure | Value |
 | --- | --- |
-| Callables | 51 |
-| Files | 26 |
-| Calls traced | 43 |
+| Callables | 0 |
+| Files | 10 |
+| Calls traced | 0 |
 | Call stacks | 0 |
 | Deepest stack | 0 |
 | Stacks through recursion | 0 |
-| Unfollowable calls | 1 |
+| Unfollowable calls | 0 |
 
 ### Limits
 
@@ -120,8 +137,8 @@ What this project is judged against, as declared in its own `callidescope.config
 
 | Limit | Value |
 | --- | --- |
-| `maximumDepth` | 6 |
-| `maximumBreadth` | 4 |
+| `maximumDepth` | 1 |
+| `maximumBreadth` | 1 |
 
 ### Call stacks (depth)
 
@@ -129,44 +146,7 @@ None.
 
 ### Breadth
 
-| Callable | Breadth | Calls directly | Location |
-| --- | --- | --- | --- |
-| `ReportingService.formatTotal` | 4 | `ReportingService.reduce(…)`, `ReportingService.reduce(…)`, `ReportingService.filter(…)`, `ReportingService.formatFraction` | `packages/ic-suite/conformetry/conformetry-core/src/modules/reporting/reporting.service.ts:233` |
-| `RunnerService.runValidator` | 4 | `RunnerService.map(…)`, `RunnerService.filter(…)`, `RunnerService.filter(…)`, `RunnerService.reduce(…)` | `packages/ic-suite/conformetry/conformetry-core/src/modules/runner/runner.service.ts:81` |
-| `ReportingService.formatFileResult` | 3 | `ReportingService.formatFraction`, `ScoringService.sumWeights`, `ReportingService.flatMap(…)` | `packages/ic-suite/conformetry/conformetry-core/src/modules/reporting/reporting.service.ts:97` |
-
-<details>
-<summary>25 more callables</summary>
-
-| Callable | Breadth | Calls directly | Location |
-| --- | --- | --- | --- |
-| `ReportingService.formatScores` | 3 | `ReportingService.filter(…)`, `ReportingService.map(…)`, `ReportingService.formatTotal` | `packages/ic-suite/conformetry/conformetry-core/src/modules/reporting/reporting.service.ts:196` |
-| `ReportingService.formatFraction` | 2 | `ScoringService.calculateScore`, `ReportingService.formatPercentage` | `packages/ic-suite/conformetry/conformetry-core/src/modules/reporting/reporting.service.ts:130` |
-| `ReportingService.formatScore` | 2 | `ReportingService.formatPercentage`, `ReportingService.formatFraction` | `packages/ic-suite/conformetry/conformetry-core/src/modules/reporting/reporting.service.ts:165` |
-| `ReportingService.formatReport` | 2 | `ReportingService.formatScores`, `ReportingService.flatMap(…)` | `packages/ic-suite/conformetry/conformetry-core/src/modules/reporting/reporting.service.ts:261` |
-| `DifferencesService.resolveDifferenceType` | 1 | `DifferencesService.find(…)` | `packages/ic-suite/conformetry/conformetry-core/src/modules/differences/differences.service.ts:76` |
-| `DifferencesService.resolveErrorLanguage` | 1 | `DifferencesService.find(…)` | `packages/ic-suite/conformetry/conformetry-core/src/modules/differences/differences.service.ts:89` |
-| `InventoryService.describePairing` | 1 | `InventoryService.formatRatio` | `packages/ic-suite/conformetry/conformetry-core/src/modules/inventory/inventory.service.ts:48` |
-| `InventoryService.describeInstances` | 1 | `InventoryService.flatMap(…)` | `packages/ic-suite/conformetry/conformetry-core/src/modules/inventory/inventory.service.ts:77` |
-| `InventoryService.flatMap(…)` | 1 | `InventoryService.map(…)` | `packages/ic-suite/conformetry/conformetry-core/src/modules/inventory/inventory.service.ts:78` |
-| `InventoryService.map(…)` | 1 | `InventoryService.describePairing` | `packages/ic-suite/conformetry/conformetry-core/src/modules/inventory/inventory.service.ts:82` |
-| `InventoryService.describeTemplates` | 1 | `InventoryService.flatMap(…)` | `packages/ic-suite/conformetry/conformetry-core/src/modules/inventory/inventory.service.ts:94` |
-| `InventoryService.flatMap(…)` | 1 | `InventoryService.map(…)` | `packages/ic-suite/conformetry/conformetry-core/src/modules/inventory/inventory.service.ts:98` |
-| `InventoryService.map(…)` | 1 | `InventoryService.describePairing` | `packages/ic-suite/conformetry/conformetry-core/src/modules/inventory/inventory.service.ts:109` |
-| `InventoryService.shortenInstancePaths` | 1 | `InventoryService.map(…)` | `packages/ic-suite/conformetry/conformetry-core/src/modules/inventory/inventory.service.ts:120` |
-| `InventoryService.map(…)` | 1 | `InventoryService.shortenPath` | `packages/ic-suite/conformetry/conformetry-core/src/modules/inventory/inventory.service.ts:124` |
-| `InventoryService.shortenTemplatePairings` | 1 | `InventoryService.map(…)` | `packages/ic-suite/conformetry/conformetry-core/src/modules/inventory/inventory.service.ts:136` |
-| `InventoryService.map(…)` | 1 | `InventoryService.map(…)` | `packages/ic-suite/conformetry/conformetry-core/src/modules/inventory/inventory.service.ts:140` |
-| `InventoryService.map(…)` | 1 | `InventoryService.shortenPath` | `packages/ic-suite/conformetry/conformetry-core/src/modules/inventory/inventory.service.ts:143` |
-| `ScoringService.sumWeights` | 1 | `ScoringService.reduce(…)` | `packages/ic-suite/conformetry/conformetry-core/src/modules/scoring/scoring.service.ts:53` |
-| `ReportingService.formatError` | 1 | `ReportingService.formatLocation` | `packages/ic-suite/conformetry/conformetry-core/src/modules/reporting/reporting.service.ts:53` |
-| `ReportingService.flatMap(…)` | 1 | `ReportingService.formatError` | `packages/ic-suite/conformetry/conformetry-core/src/modules/reporting/reporting.service.ts:114` |
-| `ReportingService.map(…)` | 1 | `ReportingService.formatScore` | `packages/ic-suite/conformetry/conformetry-core/src/modules/reporting/reporting.service.ts:210` |
-| `ReportingService.flatMap(…)` | 1 | `ReportingService.formatFileResult` | `packages/ic-suite/conformetry/conformetry-core/src/modules/reporting/reporting.service.ts:273` |
-| `RunnerService.filter(…)` | 1 | `RunnerService.claimsDocument` | `packages/ic-suite/conformetry/conformetry-core/src/modules/runner/runner.service.ts:85` |
-| `RunnerService.map(…)` | 1 | `RunnerService.validateDocument` | `packages/ic-suite/conformetry/conformetry-core/src/modules/runner/runner.service.ts:88` |
-
-</details>
+None.
 <!-- CALL_STACKS_END -->
 
 ## 🕸️ Codependix
@@ -181,17 +161,13 @@ graph LR
   conformetry_cli["conformetry-cli"]
   conformetry_configuration["conformetry-configuration"]
   conformetry_core["conformetry-core"]
-  conformetry_examples["conformetry-examples"]
-  conformetry_files["conformetry-files"]
   conformetry_languages["conformetry-languages"]
-  conformetry_nx["conformetry-nx"]
+  conformetry_output["conformetry-output"]
   conformetry_validation["conformetry-validation"]
   conformetry_cli --> conformetry_core
   conformetry_configuration --> conformetry_core
-  conformetry_examples --> conformetry_core
-  conformetry_files --> conformetry_core
   conformetry_languages --> conformetry_core
-  conformetry_nx --> conformetry_core
+  conformetry_output --> conformetry_core
   conformetry_validation --> conformetry_core
   classDef subject fill:#7c3aed,color:#fff,stroke:#4c1d95,stroke-width:2px
   class conformetry_core subject
@@ -222,83 +198,16 @@ graph LR
   file_codometer_config_ts["codometer.config.ts"]
   file_eslint_config_ts["eslint.config.ts"]
   file_src_index_ts["src/index.ts"]
-  file_src_modules_differences_differences_constants_ts["src/modules/differences/differences.constants.ts"]
-  file_src_modules_differences_differences_module_ts["src/modules/differences/differences.module.ts"]
-  file_src_modules_differences_differences_module_unit_test_ts["src/modules/differences/differences.module.unit.test.ts"]
-  file_src_modules_differences_differences_service_ts["src/modules/differences/differences.service.ts"]
-  file_src_modules_differences_differences_service_unit_test_ts["src/modules/differences/differences.service.unit.test.ts"]
-  file_src_modules_differences_differences_types_ts["src/modules/differences/differences.types.ts"]
-  file_src_modules_inventory_inventory_constants_ts["src/modules/inventory/inventory.constants.ts"]
-  file_src_modules_inventory_inventory_module_ts["src/modules/inventory/inventory.module.ts"]
-  file_src_modules_inventory_inventory_module_unit_test_ts["src/modules/inventory/inventory.module.unit.test.ts"]
-  file_src_modules_inventory_inventory_service_ts["src/modules/inventory/inventory.service.ts"]
-  file_src_modules_inventory_inventory_service_unit_test_ts["src/modules/inventory/inventory.service.unit.test.ts"]
-  file_src_modules_inventory_inventory_types_ts["src/modules/inventory/inventory.types.ts"]
-  file_src_modules_reporting_reporting_constants_ts["src/modules/reporting/reporting.constants.ts"]
-  file_src_modules_reporting_reporting_module_ts["src/modules/reporting/reporting.module.ts"]
-  file_src_modules_reporting_reporting_module_unit_test_ts["src/modules/reporting/reporting.module.unit.test.ts"]
-  file_src_modules_reporting_reporting_service_ts["src/modules/reporting/reporting.service.ts"]
-  file_src_modules_reporting_reporting_service_unit_test_ts["src/modules/reporting/reporting.service.unit.test.ts"]
-  file_src_modules_reporting_reporting_types_ts["src/modules/reporting/reporting.types.ts"]
-  file_src_modules_runner_runner_constants_ts["src/modules/runner/runner.constants.ts"]
-  file_src_modules_runner_runner_module_ts["src/modules/runner/runner.module.ts"]
-  file_src_modules_runner_runner_module_unit_test_ts["src/modules/runner/runner.module.unit.test.ts"]
-  file_src_modules_runner_runner_service_ts["src/modules/runner/runner.service.ts"]
-  file_src_modules_runner_runner_service_unit_test_ts["src/modules/runner/runner.service.unit.test.ts"]
-  file_src_modules_runner_runner_types_ts["src/modules/runner/runner.types.ts"]
-  file_src_modules_scoring_scoring_constants_ts["src/modules/scoring/scoring.constants.ts"]
-  file_src_modules_scoring_scoring_module_ts["src/modules/scoring/scoring.module.ts"]
-  file_src_modules_scoring_scoring_module_unit_test_ts["src/modules/scoring/scoring.module.unit.test.ts"]
-  file_src_modules_scoring_scoring_service_ts["src/modules/scoring/scoring.service.ts"]
-  file_src_modules_scoring_scoring_service_unit_test_ts["src/modules/scoring/scoring.service.unit.test.ts"]
-  file_src_modules_scoring_scoring_types_ts["src/modules/scoring/scoring.types.ts"]
+  file_src_index_unit_test_ts["src/index.unit.test.ts"]
+  file_src_lib_differences_types_ts["src/lib/differences.types.ts"]
+  file_src_lib_inventory_types_ts["src/lib/inventory.types.ts"]
+  file_src_lib_runner_types_ts["src/lib/runner.types.ts"]
+  file_src_lib_scoring_types_ts["src/lib/scoring.types.ts"]
   file_testing_mocks_ts["testing/mocks.ts"]
   file_testing_setup_ts["testing/setup.ts"]
   file_vitest_config_ts["vitest.config.ts"]
-  file_src_modules_differences_differences_constants_ts --> file_src_modules_differences_differences_types_ts
-  file_src_modules_differences_differences_module_ts --> file_src_modules_differences_differences_service_ts
-  file_src_modules_differences_differences_module_unit_test_ts --> file_src_modules_differences_differences_module_ts
-  file_src_modules_differences_differences_module_unit_test_ts --> file_src_modules_differences_differences_service_ts
-  file_src_modules_differences_differences_service_ts --> file_src_modules_differences_differences_constants_ts
-  file_src_modules_differences_differences_service_ts --> file_src_modules_differences_differences_types_ts
-  file_src_modules_differences_differences_service_unit_test_ts --> file_src_modules_differences_differences_service_ts
-  file_src_modules_inventory_inventory_module_ts --> file_src_modules_inventory_inventory_service_ts
-  file_src_modules_inventory_inventory_module_unit_test_ts --> file_src_modules_inventory_inventory_module_ts
-  file_src_modules_inventory_inventory_module_unit_test_ts --> file_src_modules_inventory_inventory_service_ts
-  file_src_modules_inventory_inventory_service_ts --> file_src_modules_inventory_inventory_constants_ts
-  file_src_modules_inventory_inventory_service_ts --> file_src_modules_inventory_inventory_types_ts
-  file_src_modules_inventory_inventory_service_unit_test_ts --> file_src_modules_inventory_inventory_service_ts
-  file_src_modules_inventory_inventory_service_unit_test_ts --> file_src_modules_inventory_inventory_types_ts
-  file_src_modules_reporting_reporting_module_ts --> file_src_modules_reporting_reporting_service_ts
-  file_src_modules_reporting_reporting_module_ts --> file_src_modules_scoring_scoring_module_ts
-  file_src_modules_reporting_reporting_module_unit_test_ts --> file_src_modules_reporting_reporting_module_ts
-  file_src_modules_reporting_reporting_module_unit_test_ts --> file_src_modules_reporting_reporting_service_ts
-  file_src_modules_reporting_reporting_service_ts --> file_src_modules_differences_differences_types_ts
-  file_src_modules_reporting_reporting_service_ts --> file_src_modules_reporting_reporting_constants_ts
-  file_src_modules_reporting_reporting_service_ts --> file_src_modules_reporting_reporting_types_ts
-  file_src_modules_reporting_reporting_service_ts --> file_src_modules_runner_runner_types_ts
-  file_src_modules_reporting_reporting_service_ts --> file_src_modules_scoring_scoring_constants_ts
-  file_src_modules_reporting_reporting_service_ts --> file_src_modules_scoring_scoring_service_ts
-  file_src_modules_reporting_reporting_service_ts --> file_src_modules_scoring_scoring_types_ts
-  file_src_modules_reporting_reporting_service_unit_test_ts --> file_src_modules_reporting_reporting_service_ts
-  file_src_modules_reporting_reporting_service_unit_test_ts --> file_src_modules_runner_runner_types_ts
-  file_src_modules_reporting_reporting_service_unit_test_ts --> file_src_modules_scoring_scoring_service_ts
-  file_src_modules_reporting_reporting_service_unit_test_ts --> file_src_modules_scoring_scoring_types_ts
-  file_src_modules_reporting_reporting_types_ts --> file_src_modules_runner_runner_types_ts
-  file_src_modules_reporting_reporting_types_ts --> file_src_modules_scoring_scoring_types_ts
-  file_src_modules_runner_runner_module_ts --> file_src_modules_runner_runner_service_ts
-  file_src_modules_runner_runner_module_unit_test_ts --> file_src_modules_runner_runner_module_ts
-  file_src_modules_runner_runner_module_unit_test_ts --> file_src_modules_runner_runner_service_ts
-  file_src_modules_runner_runner_service_ts --> file_src_modules_runner_runner_types_ts
-  file_src_modules_runner_runner_service_unit_test_ts --> file_src_modules_runner_runner_service_ts
-  file_src_modules_runner_runner_service_unit_test_ts --> file_src_modules_runner_runner_types_ts
-  file_src_modules_runner_runner_types_ts --> file_src_modules_differences_differences_types_ts
-  file_src_modules_scoring_scoring_module_ts --> file_src_modules_scoring_scoring_service_ts
-  file_src_modules_scoring_scoring_module_unit_test_ts --> file_src_modules_scoring_scoring_module_ts
-  file_src_modules_scoring_scoring_module_unit_test_ts --> file_src_modules_scoring_scoring_service_ts
-  file_src_modules_scoring_scoring_service_ts --> file_src_modules_scoring_scoring_constants_ts
-  file_src_modules_scoring_scoring_service_ts --> file_src_modules_scoring_scoring_types_ts
-  file_src_modules_scoring_scoring_service_unit_test_ts --> file_src_modules_scoring_scoring_service_ts
+  file_src_index_unit_test_ts --> file_src_index_ts
+  file_src_lib_runner_types_ts --> file_src_lib_differences_types_ts
 ```
 <!-- codependix:end name="codependix-file-imports" -->
 

@@ -522,23 +522,19 @@ export default [
               ],
               sourceTag: "name:codometer-cli",
             },
-            // Conformetry package graph. `conformetry-core` is the leaf every
-            // other package may depend on; `conformetry-generation` owns
-            // template rendering, so configuration depends on it rather than
-            // the reverse.
+            // Conformetry package graph, on the ic-suite five-layer spine:
+            // core, configuration, analysis, output, cli. `conformetry-core`
+            // is the contracts leaf and holds no service, so nothing above it
+            // has to be dragged in to import a type; placeholder rendering
+            // lives in the configuration layer, because substituting a
+            // template or instance path is part of resolving it, and
+            // `conformetry-generation` consumes it upward.
             {
               onlyDependOnLibsWithTags: [],
               sourceTag: "name:conformetry-core",
             },
             {
               onlyDependOnLibsWithTags: ["name:conformetry-core"],
-              sourceTag: "name:conformetry-generation",
-            },
-            {
-              onlyDependOnLibsWithTags: [
-                "name:conformetry-core",
-                "name:conformetry-generation",
-              ],
               sourceTag: "name:conformetry-configuration",
             },
             {
@@ -546,31 +542,44 @@ export default [
                 "name:conformetry-configuration",
                 "name:conformetry-core",
               ],
-              sourceTag: "name:conformetry-files",
+              sourceTag: "name:conformetry-generation",
             },
             // One rule for every Language, because they are one package: the
-            // Languages sit in `conformetry-languages` and reach only the
-            // leaf. Jupyter's delegation to JSON, markdown, and Python is an
-            // intra-package import, which neither this rule nor codependix
-            // polices — accepted, and recorded as such.
+            // Languages sit in `conformetry-languages`, alongside the
+            // extension-agnostic existence pass and the difference and
+            // scoring primitives every validator shares. Jupyter's delegation
+            // to JSON, markdown, and Python is an intra-package import, which
+            // neither this rule nor codependix polices — accepted, and
+            // recorded as such.
             {
-              onlyDependOnLibsWithTags: ["name:conformetry-core"],
+              onlyDependOnLibsWithTags: [
+                "name:conformetry-configuration",
+                "name:conformetry-core",
+              ],
               sourceTag: "name:conformetry-languages",
             },
             {
               onlyDependOnLibsWithTags: [
                 "name:conformetry-configuration",
                 "name:conformetry-core",
-                "name:conformetry-files",
                 "name:conformetry-languages",
               ],
               sourceTag: "name:conformetry-validation",
             },
             {
               onlyDependOnLibsWithTags: [
+                "name:conformetry-core",
+                "name:conformetry-languages",
+                "name:conformetry-validation",
+              ],
+              sourceTag: "name:conformetry-output",
+            },
+            {
+              onlyDependOnLibsWithTags: [
                 "name:conformetry-configuration",
                 "name:conformetry-core",
                 "name:conformetry-generation",
+                "name:conformetry-output",
                 "name:conformetry-validation",
                 "name:logger",
               ],
@@ -581,6 +590,7 @@ export default [
                 "name:conformetry-configuration",
                 "name:conformetry-core",
                 "name:conformetry-generation",
+                "name:conformetry-output",
                 "name:conformetry-validation",
                 "name:logger",
               ],
@@ -597,6 +607,7 @@ export default [
                 "name:conformetry-core",
                 "name:conformetry-generation",
                 "name:conformetry-nx",
+                "name:conformetry-output",
                 "name:conformetry-validation",
               ],
               sourceTag: "name:conformetry-examples",

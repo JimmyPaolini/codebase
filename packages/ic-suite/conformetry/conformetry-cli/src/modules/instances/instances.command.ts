@@ -3,7 +3,7 @@ import {
   InputService,
   InstanceDiscoveryService,
 } from "@conformetry/configuration";
-import { InventoryService } from "@conformetry/core";
+import { InventoryService } from "@conformetry/output";
 import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
 

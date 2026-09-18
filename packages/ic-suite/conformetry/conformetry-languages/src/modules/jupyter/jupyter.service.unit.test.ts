@@ -1,12 +1,13 @@
-import { DifferencesService, ScoringService } from "@conformetry/core";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
+import { DifferencesService } from "../differences/differences.service";
 import { JsonComparisonService } from "../json/json-comparison.service";
 import { MarkdownNodesService } from "../markdown/markdown-nodes.service";
 import { MarkdownTreeService } from "../markdown/markdown-tree.service";
 import { MarkdownService } from "../markdown/markdown.service";
 import { PythonBridgeService } from "../python/python-bridge.service";
+import { ScoringService } from "../scoring/scoring.service";
 
 import { JupyterNotebookService } from "./jupyter-notebook.service";
 import { JupyterService } from "./jupyter.service";

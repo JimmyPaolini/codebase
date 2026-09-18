@@ -167,6 +167,22 @@ runs:
           'pnpm-lock.yaml') }}-
           nx-cache-${{ github.job }}-${{ runner.os }}-
 
+    # Restored databases can be left structurally valid but page-corrupt by a
+    # cancelled save. Nx fails hard on those, so discard them before the first
+    # task reads the cache.
+    - name: 🩺 Verify Nx Cache Database
+      if: inputs.nx-cache == 'true'
+      shell: bash
+      run: |
+        shopt -s nullglob
+        for datastore in .nx/workspace-data/*.db; do
+          result="$(sqlite3 "${datastore}" 'PRAGMA integrity_check;' 2>&1 || true)"
+          if [[ "${result}" != "ok" ]]; then
+            echo "::warning::Discarding a corrupt Nx cache store (${datastore}): ${result}"
+            rm -f "${datastore}" "${datastore}-wal" "${datastore}-shm" "${datastore}-journal"
+          fi
+        done
+
     # Exact match only, and no restore-keys: a partially stale project graph
     # is worse than rebuilding one. `nx reset` clears it if it ever misbehaves.
     #
