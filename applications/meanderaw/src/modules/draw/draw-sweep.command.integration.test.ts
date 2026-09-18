@@ -6,17 +6,17 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { LoggerService } from "@codebase/logger";
 
-import { GridGeometryModule } from "../grid-geometry/grid-geometry.module";
-import { HARDCODED_MEANDERS_BY_FAMILY } from "../hardcoded-meanders/hardcoded-meanders.constants";
-import { HardcodedMeandersService } from "../hardcoded-meanders/hardcoded-meanders.service";
-import { MeanderCharacteristicsModule } from "../meander-characteristics/meander-characteristics.module";
-import { MeanderClassificationModule } from "../meander-classification/meander-classification.module";
-import { Meander } from "../meander-database/entities/Meander.entity";
-import { MeanderDatabaseService } from "../meander-database/meander-database.service";
-import { MeanderDecodingModule } from "../meander-decoding/meander-decoding.module";
-import { MeanderEnumerationModule } from "../meander-enumeration/meander-enumeration.module";
-import { MeanderEnumerationService } from "../meander-enumeration/meander-enumeration.service";
-import { MeanderRenderingModule } from "../meander-rendering/meander-rendering.module";
+import { CharacteristicsModule } from "../characteristics/characteristics.module";
+import { ClassificationModule } from "../classification/classification.module";
+import { CodeModule } from "../code/code.module";
+import { CORPUS_BY_FAMILY } from "../corpus/corpus.constants";
+import { CorpusService } from "../corpus/corpus.service";
+import { DatabaseService } from "../database/database.service";
+import { Meander } from "../database/entities/Meander.entity";
+import { DrawingModule } from "../drawing/drawing.module";
+import { EnumerationModule } from "../enumeration/enumeration.module";
+import { EnumerationService } from "../enumeration/enumeration.service";
+import { GeometryModule } from "../geometry/geometry.module";
 
 import { DrawCheckService } from "./draw-check.service";
 import { DrawCodeService } from "./draw-code.service";
@@ -51,7 +51,7 @@ vi.mock("node:fs/promises", () => ({
  * quietly overwriting the first. Nothing short of running both halves for
  * real catches that: each half passes its own suite alone.
  *
- * `HARDCODED_MEANDERS_BY_FAMILY` is the real, committed corpus rather than a
+ * `CORPUS_BY_FAMILY` is the real, committed corpus rather than a
  * fixture — `DrawCommand.run` reads it directly rather than through an
  * overridable dependency — and the enumeration is the real budgeted walk, so
  * this drives tens of thousands of rows through the decoder, renderer, and
@@ -66,7 +66,7 @@ describe("drawCommand sweep mode", () => {
 
   let command: DrawCommand;
   let dataSource: DataSource;
-  let enumeration: MeanderEnumerationService;
+  let enumeration: EnumerationService;
   let repository: Repository<Meander>;
 
   beforeEach(async () => {
@@ -82,20 +82,20 @@ describe("drawCommand sweep mode", () => {
           type: "better-sqlite3",
         }),
         TypeOrmModule.forFeature([Meander]),
-        GridGeometryModule,
-        MeanderCharacteristicsModule,
-        MeanderClassificationModule,
-        MeanderDecodingModule,
-        MeanderEnumerationModule,
-        MeanderRenderingModule,
+        GeometryModule,
+        CharacteristicsModule,
+        ClassificationModule,
+        CodeModule,
+        EnumerationModule,
+        DrawingModule,
       ],
       providers: [
         DrawCommand,
         DrawEnumerationService,
         DrawIndexService,
         DrawRecordService,
-        HardcodedMeandersService,
-        MeanderDatabaseService,
+        CorpusService,
+        DatabaseService,
         {
           provide: DrawCheckService,
           useValue: createMock<DrawCheckService>(),
@@ -113,7 +113,7 @@ describe("drawCommand sweep mode", () => {
 
     command = await module.resolve(DrawCommand);
     dataSource = module.get(DataSource);
-    enumeration = module.get(MeanderEnumerationService);
+    enumeration = module.get(EnumerationService);
     repository = module.get(getRepositoryToken(Meander));
   });
 
@@ -130,9 +130,10 @@ describe("drawCommand sweep mode", () => {
           (total, shape) => total + enumeration.enumerate(shape).length,
           0,
         );
-      const expectedHardcoded = Object.values(
-        HARDCODED_MEANDERS_BY_FAMILY,
-      ).reduce((total, entries) => total + entries.length, 0);
+      const expectedHardcoded = Object.values(CORPUS_BY_FAMILY).reduce(
+        (total, entries) => total + entries.length,
+        0,
+      );
 
       await command.run([], {});
 
@@ -176,7 +177,7 @@ describe("drawCommand sweep mode", () => {
       const swept = new Set(
         enumeration.shapes().map((shape) => `${shape.rows}x${shape.columns}`),
       );
-      const covered = Object.entries(HARDCODED_MEANDERS_BY_FAMILY).flatMap(
+      const covered = Object.entries(CORPUS_BY_FAMILY).flatMap(
         ([family, entries]) =>
           entries
             .map((entry) => `${family} ${entry.rows}x${entry.columns}`)
@@ -198,7 +199,7 @@ describe("drawCommand sweep mode", () => {
       expect(rows.length).toBeGreaterThan(0);
       expect(
         rows.every((row) =>
-          Object.keys(HARDCODED_MEANDERS_BY_FAMILY).includes(row.family ?? ""),
+          Object.keys(CORPUS_BY_FAMILY).includes(row.family ?? ""),
         ),
       ).toBe(true);
     },
@@ -208,7 +209,7 @@ describe("drawCommand sweep mode", () => {
   it(
     "fails the sweep loudly when a hardcoded entry's lattice address is already committed",
     async () => {
-      const [duplicated] = Object.values(HARDCODED_MEANDERS_BY_FAMILY).find(
+      const [duplicated] = Object.values(CORPUS_BY_FAMILY).find(
         (entries) => entries.length > 0,
       ) ?? [undefined];
 

@@ -79,7 +79,7 @@ figcaption { font-family: ui-monospace, monospace; font-size: 11px; margin-top: 
  * has to render as markup, not as literal text — so an unescaped field is
  * exactly where a malformed or crafted string could break the surrounding
  * page structure. Every real row's `svg` comes from
- * `MeanderRenderingService`, which always emits a well-formed
+ * `DrawingService`, which always emits a well-formed
  * `<svg>...</svg>` document, so this is a fail-loud guard against a corrupt
  * row rather than a sanitizer: refusing the whole build is safer than
  * emitting a page whose markup a bad row could have torn open.

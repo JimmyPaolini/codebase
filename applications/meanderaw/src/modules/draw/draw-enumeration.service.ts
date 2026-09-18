@@ -1,12 +1,12 @@
 import { Inject, Injectable } from "@nestjs/common";
 
-import { MeanderDatabaseService } from "../meander-database/meander-database.service";
-import { MeanderEnumerationService } from "../meander-enumeration/meander-enumeration.service";
+import { DatabaseService } from "../database/database.service";
+import { EnumerationService } from "../enumeration/enumeration.service";
 
 import { DrawRecordService } from "./draw-record.service";
 
-import type { MeanderShape } from "../meander-classification/meander-classification.types";
-import type { MeanderRecord } from "../meander-database/meander-database.types";
+import type { MeanderShape } from "../classification/classification.types";
+import type { MeanderRecord } from "../database/database.types";
 
 /**
  * The sweep's lattice-first half: it enumerates the whole unit space, builds
@@ -25,7 +25,7 @@ import type { MeanderRecord } from "../meander-database/meander-database.types";
  * defining combination is written with a null family, exactly as spec #813
  * asks — enumeration produces every structurally distinct repeat within
  * budget, and membership is decided afterwards by
- * `MeanderClassificationService` rather than before by a generator.
+ * `ClassificationService` rather than before by a generator.
  */
 @Injectable()
 export class DrawEnumerationService {
@@ -34,10 +34,10 @@ export class DrawEnumerationService {
   constructor(
     @Inject(DrawRecordService)
     private readonly drawRecordService: DrawRecordService,
-    @Inject(MeanderDatabaseService)
-    private readonly meanderDatabaseService: MeanderDatabaseService,
-    @Inject(MeanderEnumerationService)
-    private readonly meanderEnumerationService: MeanderEnumerationService,
+    @Inject(DatabaseService)
+    private readonly databaseService: DatabaseService,
+    @Inject(EnumerationService)
+    private readonly enumerationService: EnumerationService,
   ) {}
 
   // 🔐 Private Fields
@@ -62,7 +62,7 @@ export class DrawEnumerationService {
     let written = 0;
 
     for (const shape of shapes) {
-      written += await this.meanderDatabaseService.saveAll(this.records(shape));
+      written += await this.databaseService.saveAll(this.records(shape));
     }
 
     return written;
@@ -70,7 +70,7 @@ export class DrawEnumerationService {
 
   /** Every meander of one shape, as the rows the database holds for them. */
   records(shape: MeanderShape): MeanderRecord[] {
-    return this.meanderEnumerationService
+    return this.enumerationService
       .enumerate(shape)
       .map(({ code }) =>
         this.drawRecordService.record(code, shape, "enumerated"),
@@ -79,6 +79,6 @@ export class DrawEnumerationService {
 
   /** Every shape the budget admits, swept and written — which is what `draw` with no drawing named now does. */
   async sweep(): Promise<number> {
-    return this.persist(this.meanderEnumerationService.shapes());
+    return this.persist(this.enumerationService.shapes());
   }
 }
