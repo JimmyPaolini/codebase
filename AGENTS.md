@@ -328,14 +328,6 @@ For naming conventions, abbreviations, formatting, and language-specific rules, 
 
 **Agent-Specific Rules:**
 
-<<<<<<< HEAD
-- **Worktrees & Branches**: Use [using-git-worktrees](.agents/skills/using-git-worktrees/SKILL.md) and [checkout-branch](.agents/skills/checkout-branch/SKILL.md).
-- **Commits**: Use [commit-code](.agents/skills/commit-code/SKILL.md) to generate Conventional Commits with Gitmoji.
-- **Pull Requests**: Use [create-pull-request](.agents/skills/create-pull-request/SKILL.md) and [submit-changes](.agents/skills/submit-changes/SKILL.md).
-- **Stacking/Splitting Work**: Use [gh-stack](.agents/skills/gh-stack/SKILL.md).
-
-**Agent-Specific Rules:**
-
 - **Never bypass git hooks** with `--no-verify` — fix the underlying issue instead.
 - **Do not run signing-check scripts manually**; Husky already runs these.
 - **Never run `git submodule update --init` for `applications/JimmyPaolini`.** That submodule is deliberately uninitialized everywhere. If `pnpm install` rewrites its `pnpm-lock.yaml` entry, **revert the lockfile** rather than reconciling it.
