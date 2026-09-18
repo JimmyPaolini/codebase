@@ -22,17 +22,6 @@ REPOSITORY_ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
 
 # ✅ Validation
 
-# Auto-correct GitHub Copilot's default agent branch names
-if [[ "$BRANCH" == agents/* ]]; then
-  # Replace 'agents/' with 'chore/JimmyPaolini-' to make it a valid branch name
-  NEW_BRANCH="chore/JimmyPaolini-${BRANCH#agents/}"
-  git branch -m "$NEW_BRANCH"
-  
-  CONTEXT="🚨 Branch auto-renamed from $BRANCH to $NEW_BRANCH to comply with repository conventions."
-  printf '%s' "$CONTEXT" | bash "$SCRIPT_DIRECTORY/emit-session-hook-context.sh"
-  exit 0
-fi
-
 # Extract just the errorMsg block from validate-branch-name output, stripping
 # ANSI codes. Empty output means the branch is compliant — exit silently.
 ERROR=$(pnpm exec validate-branch-name 2>&1 | awk '/^Error Msg:/{found=1; next} found && /^Branch Name:/{exit} found{print}' | sed 's/\x1b\[[0-9;]*m//g')
