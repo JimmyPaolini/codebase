@@ -143,6 +143,7 @@ graph LR
   codependix_cli["codependix-cli"]
   codependix_examples["codependix-examples"]
   codependix_nestjs_modules["codependix-nestjs-modules"]
+  codependix_output["codependix-output"]
   codometer_changes["codometer-changes"]
   codometer_cli["codometer-cli"]
   codometer_discovery["codometer-discovery"]
@@ -164,6 +165,7 @@ graph LR
   codependix_cli --> logger
   codependix_examples --> logger
   codependix_nestjs_modules --> logger
+  codependix_output --> logger
   codometer_changes --> logger
   codometer_cli --> logger
   codometer_discovery --> logger
