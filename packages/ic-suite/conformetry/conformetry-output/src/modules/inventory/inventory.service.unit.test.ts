@@ -9,7 +9,7 @@ import type {
   InventoriedInstance,
   InventoriedPairing,
   InventoriedTemplate,
-} from "./inventory.types";
+} from "@conformetry/core";
 
 /** A complete pairing: every file the template declares is present. */
 const COMPLETE: InventoriedPairing = {

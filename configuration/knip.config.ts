@@ -334,11 +334,6 @@ const config: KnipConfig = {
       ignore: ["src/**/*.test.ts", "testing/**"],
       project: "src/**/*.ts",
     },
-    "packages/ic-suite/conformetry/conformetry-output": {
-      entry: ["src/index.ts"],
-      ignore: ["src/**/*.test.ts", "testing/**"],
-      project: "src/**/*.ts",
-    },
     "packages/ic-suite/conformetry/conformetry-configuration": {
       entry: ["src/index.ts"],
       ignore: ["src/**/*.test.ts", "testing/**"],
@@ -367,6 +362,11 @@ const config: KnipConfig = {
     "packages/ic-suite/conformetry/conformetry-nx": {
       entry: ["src/index.ts"],
       ignore: ["src/**/*.test.ts", "src/**/templates/**", "testing/**"],
+      project: "src/**/*.ts",
+    },
+    "packages/ic-suite/conformetry/conformetry-output": {
+      entry: ["src/index.ts"],
+      ignore: ["src/**/*.test.ts", "testing/**"],
       project: "src/**/*.ts",
     },
     "packages/ic-suite/conformetry/conformetry-validation": {

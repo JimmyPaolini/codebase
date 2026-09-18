@@ -852,12 +852,14 @@ Dependency graphs exported by [codependix](https://github.com/JimmyPaolini/codeb
 graph LR
   conformetry_cli["conformetry-cli"]
   conformetry_configuration["conformetry-configuration"]
+  conformetry_core["conformetry-core"]
   conformetry_examples["conformetry-examples"]
   conformetry_generation["conformetry-generation"]
   conformetry_output["conformetry-output"]
   conformetry_validation["conformetry-validation"]
   logger["logger"]
   conformetry_cli --> conformetry_configuration
+  conformetry_cli --> conformetry_core
   conformetry_cli --> conformetry_generation
   conformetry_cli --> conformetry_output
   conformetry_cli --> conformetry_validation

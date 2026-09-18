@@ -14,7 +14,7 @@ import { LoggerService } from "@codebase/logger";
 
 import { TemplatesCommand } from "./templates.command";
 
-import type { InventoriedTemplate } from "@conformetry/output";
+import type { InventoriedTemplate } from "@conformetry/core";
 import type { DeepMocked } from "@golevelup/ts-vitest";
 
 /** Discovery reports absolute paths, so the fixtures do too. */
