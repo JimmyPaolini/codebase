@@ -1,4 +1,5 @@
 import { createMock } from "@golevelup/ts-vitest";
+import { ConfigModule } from "@nestjs/config";
 import { Test } from "@nestjs/testing";
 import { getRepositoryToken, TypeOrmModule } from "@nestjs/typeorm";
 import { DataSource, type Repository } from "typeorm";
@@ -6,6 +7,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { LoggerService } from "@codebase/logger";
 
+import { environmentSchema } from "../../constants";
 import { CharacteristicsModule } from "../characteristics/characteristics.module";
 import { ClassificationModule } from "../classification/classification.module";
 import { CodeModule } from "../code/code.module";
@@ -74,6 +76,11 @@ describe("drawCommand sweep mode", () => {
 
     const module = await Test.createTestingModule({
       imports: [
+        ConfigModule.forRoot({
+          isGlobal: true,
+          validate: (config: Record<string, unknown>) =>
+            environmentSchema.parse(config),
+        }),
         TypeOrmModule.forRoot({
           database: ":memory:",
           entities: [Meander],

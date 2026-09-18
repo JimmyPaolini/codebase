@@ -1,6 +1,8 @@
 // 🏷️ Types
 
+import type { environmentSchema } from "../../constants";
 import type { EdgesDraft, Tile, TileShape } from "../tile/tile.types";
+import type { z } from "zod";
 
 /** Where one edge sits in an {@link EdgesDraft}: the grid that holds it, and its level and column within that grid. */
 export interface EdgeAddress {
@@ -24,6 +26,12 @@ export interface EnumeratedMeander {
   readonly columns: number;
   readonly rows: number;
 }
+
+/**
+ * Inferred type of the validated environment variables, read to bound a
+ * sweep by edge budget, rows, and columns.
+ */
+export type Environment = z.infer<typeof environmentSchema>;
 
 /**
  * The bookkeeping `TileEnumerationService.enumerate` carries through its walk:
