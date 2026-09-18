@@ -691,7 +691,6 @@
       }
     },
     "scan-security": {},
-    "scrub-codebase": {},
     "sherif": {
       "cache": true,
       "configurations": {
@@ -872,6 +871,7 @@
         "cwd": "infrastructure/terraform"
       }
     },
+    "tidy-codebase": {},
     "trivy-config": {
       "cache": true,
       "description": "Scan Terraform infrastructure code for misconfigurations using Trivy. Identical to what the Scan Security workflow runs, so a local run reproduces CI exactly. Requires trivy on PATH (the devcontainer installs it; otherwise `brew install trivy`).",

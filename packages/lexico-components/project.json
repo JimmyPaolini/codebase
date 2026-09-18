@@ -29,9 +29,9 @@
     "oxfmt": {},
     "oxlint": {},
     "prettier": {},
-    "scrub-codebase": {},
     "spell-check": {},
     "stylelint": {},
+    "tidy-codebase": {},
     "type-codebase": {},
     "type-coverage": {
       "options": {

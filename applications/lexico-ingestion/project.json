@@ -40,7 +40,6 @@
     "oxfmt": {},
     "oxlint": {},
     "prettier": {},
-    "scrub-codebase": {},
     "spell-check": {},
     "start": {
       "cache": false,
@@ -85,6 +84,7 @@
       }
     },
     "test-coverage": {},
+    "tidy-codebase": {},
     "type-codebase": {},
     "type-coverage": {},
     "typecheck": {},

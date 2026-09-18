@@ -146,7 +146,6 @@
       }
     },
     "repl": {},
-    "scrub-codebase": {},
     "skill-exclusions": {
       "cache": true,
       "configurations": {
@@ -189,6 +188,7 @@
       }
     },
     "test-coverage": {},
+    "tidy-codebase": {},
     "type-codebase": {},
     "type-coverage": {},
     "typecheck": {},

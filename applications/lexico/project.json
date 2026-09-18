@@ -48,7 +48,6 @@
         "cwd": "{projectRoot}"
       }
     },
-    "scrub-codebase": {},
     "spell-check": {},
     "start": {
       "description": "Start the production server",
@@ -60,6 +59,7 @@
     },
     "stylelint": {},
     "test-coverage": {},
+    "tidy-codebase": {},
     "type-codebase": {},
     "type-coverage": {},
     "typecheck": {},

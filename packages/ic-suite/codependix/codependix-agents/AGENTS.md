@@ -74,8 +74,8 @@ match neither well.
 ## Validating
 
 ```bash
-pnpm exec nx run codependix-agents:type-codebase,lint-codebase,form-codebase,scrub-codebase,gate-codebase --configuration=write
-pnpm exec nx run codependix-agents:type-codebase,lint-codebase,form-codebase,scrub-codebase,gate-codebase --configuration=check
+pnpm exec nx run codependix-agents:type-codebase,lint-codebase,tidy-codebase,form-codebase,gate-codebase --configuration=write
+pnpm exec nx run codependix-agents:type-codebase,lint-codebase,tidy-codebase,form-codebase,gate-codebase --configuration=check
 pnpm exec nx run codependix-agents:test-coverage
 ```
 

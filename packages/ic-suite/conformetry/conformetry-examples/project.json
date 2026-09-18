@@ -157,7 +157,6 @@
         "parallel": false
       }
     },
-    "scrub-codebase": {},
     "spell-check": {},
     "structural-not-textual": {
       "cache": false,
@@ -172,6 +171,7 @@
       }
     },
     "test-coverage": {},
+    "tidy-codebase": {},
     "two-directions": {
       "cache": false,
       "description": "Ask which templates explain a path, then which instances a template explains, against the same fixtures",

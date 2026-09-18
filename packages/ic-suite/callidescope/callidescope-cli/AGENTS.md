@@ -82,7 +82,7 @@ Always prefer running tasks through Nx rather than calling the underlying tools 
 
 ```bash
 nx run callidescope-cli:start           # Run the command-line application
-nx run callidescope-cli:type-codebase,lint-codebase,form-codebase,scrub-codebase,gate-codebase   # Every static check, in one graph
+nx run callidescope-cli:type-codebase,lint-codebase,tidy-codebase,form-codebase,gate-codebase   # Every static check, in one graph
 nx run callidescope-cli:typecheck       # tsc --noEmit
 nx run callidescope-cli:oxfmt           # Formatting
 ```

@@ -1,4 +1,4 @@
-name: 🧹 Scrub Codebase
+name: 🎨 Form Codebase
 
 # Static code analysis: every check that reads the source without executing it.
 # One `nx affected` invocation builds one task graph and one scheduler runs it.
@@ -40,8 +40,8 @@ concurrency:
   cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
-  scrub-codebase:
-    name: 🧹 Scrub Codebase
+  form-codebase:
+    name: 🎨 Form Codebase
     runs-on: ubuntu-latest
     timeout-minutes: 12
 
@@ -83,11 +83,11 @@ jobs:
       # There is no aggregate `synchronize` target: each is its own Nx target,
       # joining the same `nx affected` invocation, so one task graph owns the
       # run.
-      - name: 🧹 Scrub Codebase
+      - name: 🎨 Form Codebase
         env:
           NX_VERBOSE_LOGGING: ${{ inputs.verbose || false }}
         run: |
-          pnpm exec nx affected --target=scrub-codebase --configuration=check
+          pnpm exec nx affected --target=form-codebase --configuration=check
 
       # Last, unconditionally: a cold run of this task graph runs close
       # enough to this job's timeout that whether one commit's first attempt

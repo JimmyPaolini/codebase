@@ -407,12 +407,14 @@
       },
       "defaultConfiguration": "check",
       "dependsOn": [
-        "markdown-lint",
-        "oxfmt",
-        "ruff-format",
-        "spell-check",
-        "sqlfluff-format",
-        "yaml-lint"
+        "dependency-cruiser",
+        "fallow-dead-code",
+        "knip",
+        "nbstripout",
+        "sherif",
+        "squawk",
+        "syncpack",
+        "vulture"
       ],
       "description": "Aggregator for form-codebase",
       "executor": "nx:noop"
@@ -761,26 +763,6 @@
       "description": "Security scanning: secrets, Python AST, dependency vulnerabilities, licenses, and infrastructure misconfiguration. An nx:noop aggregator.",
       "executor": "nx:noop"
     },
-    "scrub-codebase": {
-      "cache": false,
-      "configurations": {
-        "check": {},
-        "write": {}
-      },
-      "defaultConfiguration": "check",
-      "dependsOn": [
-        "dependency-cruiser",
-        "fallow-dead-code",
-        "knip",
-        "nbstripout",
-        "sherif",
-        "squawk",
-        "syncpack",
-        "vulture"
-      ],
-      "description": "Aggregator for scrub-codebase",
-      "executor": "nx:noop"
-    },
     "spell-check": [
       {
         "cache": true,
@@ -1007,6 +989,24 @@
       "defaultConfiguration": "coverage",
       "dependsOn": ["pytest", "vitest"],
       "description": "Dynamic code analysis: the tests, which execute the source. An nx:noop aggregator. The configuration propagates down dependsOn, so test-coverage:coverage reaches test:coverage.",
+      "executor": "nx:noop"
+    },
+    "tidy-codebase": {
+      "cache": false,
+      "configurations": {
+        "check": {},
+        "write": {}
+      },
+      "defaultConfiguration": "check",
+      "dependsOn": [
+        "markdown-lint",
+        "oxfmt",
+        "ruff-format",
+        "spell-check",
+        "sqlfluff-format",
+        "yaml-lint"
+      ],
+      "description": "Aggregator for tidy-codebase",
       "executor": "nx:noop"
     },
     "ty": [

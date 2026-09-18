@@ -40,13 +40,13 @@ The `lint-codebase` Nx target hangs every quality tool off `dependsOn`, so one i
 Run `lint-codebase` in `write` mode to automatically fix all auto-fixable issues (formatting, linting, unused-code whitelist entries, sync checks):
 
 ```bash
-pnpm exec nx affected --target=type-codebase,lint-codebase,form-codebase,scrub-codebase,gate-codebase --configuration=write --base=main
+pnpm exec nx affected --target=type-codebase,lint-codebase,tidy-codebase,form-codebase,gate-codebase --configuration=write --base=main
 ```
 
 > For new/untracked files that `nx affected` won't detect, target the relevant project(s) directly:
 >
 > ```bash
-> pnpm exec nx run <project>:type-codebase,lint-codebase,form-codebase,scrub-codebase,gate-codebase --configuration=write
+> pnpm exec nx run <project>:type-codebase,lint-codebase,tidy-codebase,form-codebase,gate-codebase --configuration=write
 > ```
 
 Review the changes made. If any files were modified, inspect them to ensure the auto-fixes are correct.
@@ -56,7 +56,7 @@ Review the changes made. If any files were modified, inspect them to ensure the 
 Run `lint-codebase` in `check` mode to confirm no issues remain:
 
 ```bash
-pnpm exec nx affected --target=type-codebase,lint-codebase,form-codebase,scrub-codebase,gate-codebase --configuration=check --base=main
+pnpm exec nx affected --target=type-codebase,lint-codebase,tidy-codebase,form-codebase,gate-codebase --configuration=check --base=main
 ```
 
 **All checks must pass before proceeding.** If any fail, triage each failure:
@@ -102,16 +102,16 @@ pnpm exec nx run <project>:type-coverage
 
 ```bash
 # Target the specific project since affected may not pick up new files
-pnpm exec nx run <project>:type-codebase,lint-codebase,form-codebase,scrub-codebase,gate-codebase --configuration=write
-pnpm exec nx run <project>:type-codebase,lint-codebase,form-codebase,scrub-codebase,gate-codebase --configuration=check
+pnpm exec nx run <project>:type-codebase,lint-codebase,tidy-codebase,form-codebase,gate-codebase --configuration=write
+pnpm exec nx run <project>:type-codebase,lint-codebase,tidy-codebase,form-codebase,gate-codebase --configuration=check
 ```
 
 ### Refactor-heavy test changes
 
 ```bash
 # 1) Auto-fix + quality checks
-pnpm exec nx run <project>:type-codebase,lint-codebase,form-codebase,scrub-codebase,gate-codebase --configuration=write
-pnpm exec nx run <project>:type-codebase,lint-codebase,form-codebase,scrub-codebase,gate-codebase --configuration=check
+pnpm exec nx run <project>:type-codebase,lint-codebase,tidy-codebase,form-codebase,gate-codebase --configuration=write
+pnpm exec nx run <project>:type-codebase,lint-codebase,tidy-codebase,form-codebase,gate-codebase --configuration=check
 
 # 2) Re-verify coverage gates explicitly
 pnpm exec nx run <project>:vitest --configuration=coverage

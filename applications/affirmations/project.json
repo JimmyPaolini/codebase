@@ -89,8 +89,8 @@
     "vulture": {},
     "yaml-lint": {},
     "type-codebase": {},
+    "tidy-codebase": {},
     "form-codebase": {},
-    "scrub-codebase": {},
     "gate-codebase": {}
   }
 }

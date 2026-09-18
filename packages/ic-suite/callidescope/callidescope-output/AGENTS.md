@@ -68,7 +68,7 @@ Outputs structured JSON in production (`NODE_ENV=production`) and pretty-printed
 Always prefer running tasks through Nx rather than calling the underlying tools directly.
 
 ```bash
-nx run callidescope-output:type-codebase,lint-codebase,form-codebase,scrub-codebase,gate-codebase   # Every static check, in one graph
+nx run callidescope-output:type-codebase,lint-codebase,tidy-codebase,form-codebase,gate-codebase   # Every static check, in one graph
 nx run callidescope-output:typecheck       # tsc --noEmit
 nx run callidescope-output:oxfmt           # Formatting
 nx run callidescope-output:build           # Compile for publication

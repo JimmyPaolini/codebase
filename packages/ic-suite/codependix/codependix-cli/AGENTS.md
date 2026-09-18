@@ -78,7 +78,7 @@ Always prefer running tasks through Nx rather than calling the underlying tools 
 
 ```bash
 nx run codependix-cli:start           # Run the command-line application
-nx run codependix-cli:type-codebase,lint-codebase,form-codebase,scrub-codebase,gate-codebase   # Every static check, in one graph
+nx run codependix-cli:type-codebase,lint-codebase,tidy-codebase,form-codebase,gate-codebase   # Every static check, in one graph
 nx run codependix-cli:typecheck       # tsc --noEmit
 nx run codependix-cli:oxfmt           # Formatting
 ```

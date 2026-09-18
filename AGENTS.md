@@ -5,7 +5,7 @@
 ```bash
 # Run tasks via Nx (always prefer this)
 nx run <project>:<target>:<configuration>
-nx run-many --target=type-codebase,lint-codebase,form-codebase,scrub-codebase,gate-codebase --all
+nx run-many --target=type-codebase,lint-codebase,tidy-codebase,tidy-codebase,gate-codebase --all
 nx affected --target=vitest --base=main
 
 # Install dependencies
@@ -272,17 +272,17 @@ invented scope fails validation.
 
 ```bash
 # Auto-fix all format, lint, and unused-code issues
-pnpm exec nx affected --target=type-codebase,lint-codebase,form-codebase,scrub-codebase,gate-codebase --configuration=write --base=main
+pnpm exec nx affected --target=type-codebase,lint-codebase,tidy-codebase,tidy-codebase,gate-codebase --configuration=write --base=main
 
 # Verify no issues remain — all checks must pass
-pnpm exec nx affected --target=type-codebase,lint-codebase,form-codebase,scrub-codebase,gate-codebase --configuration=check --base=main
+pnpm exec nx affected --target=type-codebase,lint-codebase,tidy-codebase,tidy-codebase,gate-codebase --configuration=check --base=main
 ```
 
 For new/untracked files not yet picked up by `nx affected`:
 
 ```bash
-pnpm exec nx run <project>:type-codebase,lint-codebase,form-codebase,scrub-codebase,gate-codebase --configuration=write
-pnpm exec nx run <project>:type-codebase,lint-codebase,form-codebase,scrub-codebase,gate-codebase --configuration=check
+pnpm exec nx run <project>:type-codebase,lint-codebase,tidy-codebase,tidy-codebase,gate-codebase --configuration=write
+pnpm exec nx run <project>:type-codebase,lint-codebase,tidy-codebase,tidy-codebase,gate-codebase --configuration=check
 ```
 
 **Do not commit until both commands pass cleanly.** If they fail, use the [triage-submission skill](.agents/skills/triage-submission/SKILL.md) to diagnose and fix the errors.
