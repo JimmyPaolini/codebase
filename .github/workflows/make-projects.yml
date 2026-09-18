@@ -101,7 +101,7 @@ jobs:
           fi
           gh run download "${run_id}" --name codometer-reports-main \
             --dir codometer-baseline
-          
+
           url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}"
           url="${url}/actions/runs/${run_id}"
           echo "run-url=${url}" >>"${GITHUB_OUTPUT}"
