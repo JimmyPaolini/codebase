@@ -26,9 +26,6 @@ export default mergeConfig(
       // the 10s default they were the one part of this file still sized for
       // work it does not do, and a loaded runner is where that showed.
       hookTimeout: 180_000,
-      // Every test here spawns the codometer CLI over the corpus, which
-      // bootstraps Nest and reaches an interpreter for the Python samples.
-      hookTimeout: 180_000,
       testTimeout: 180_000,
     },
   }),

@@ -86,15 +86,13 @@ A modern TypeScript codebase with Nx, featuring automated releases, comprehensiv
 <summary><strong>⏲️ codometer</strong> - Repository measurement toolchain that counts a codebase and reports what it found</summary>
 
 &nbsp;&nbsp;&nbsp;&nbsp;**[codometer-agents](packages/ic-suite/codometer/codometer-agents)** - Agent skills for the codometer toolchain, published and installed back from the lockfile like any other vendored skill\
-&nbsp;&nbsp;&nbsp;&nbsp;**[codometer-changes](packages/ic-suite/codometer/codometer-changes)** - Diffs codometer reports against a baseline snapshot\
 &nbsp;&nbsp;&nbsp;&nbsp;**[codometer-cli](packages/ic-suite/codometer/codometer-cli)** - Command-line host that measures TypeScript, JavaScript, Python, JSON, markdown, and Jupyter notebooks, then writes the badge block in this README, a JSON report, or both\
 &nbsp;&nbsp;&nbsp;&nbsp;**[codometer-configuration](packages/ic-suite/codometer/codometer-configuration)** - Reads `codometer.config.ts` for exclusion globs, output destinations and their render/write callbacks, and the Python interpreter\
-&nbsp;&nbsp;&nbsp;&nbsp;**[codometer-customization](packages/ic-suite/codometer/codometer-customization)** - Evaluates codometer's configured custom counters\
-&nbsp;&nbsp;&nbsp;&nbsp;**[codometer-discovery](packages/ic-suite/codometer/codometer-discovery)** - Glob matching and gitignore-aware file walking, plus resolving configured measurement targets to file sets\
+&nbsp;&nbsp;&nbsp;&nbsp;**[codometer-core](packages/ic-suite/codometer/codometer-core)** - Contracts and types for codometer\
 &nbsp;&nbsp;&nbsp;&nbsp;**[codometer-examples](packages/ic-suite/codometer/codometer-examples)** - A sample corpus with known contents and one runnable example per thing codometer does, with tests that assert every number the guides quote\
 &nbsp;&nbsp;&nbsp;&nbsp;**[codometer-languages](packages/ic-suite/codometer/codometer-languages)** - Every input language analyzer codometer measures, behind one `analyze()` call\
-&nbsp;&nbsp;&nbsp;&nbsp;**[codometer-output](packages/ic-suite/codometer/codometer-output)** - Every codometer output format - JSON reports, README badges, and the pull request change report\
-&nbsp;&nbsp;&nbsp;&nbsp;**[codometer-size](packages/ic-suite/codometer/codometer-size)** - Compresses a target's matched files and measures their size
+&nbsp;&nbsp;&nbsp;&nbsp;**[codometer-measurement](packages/ic-suite/codometer/codometer-measurement)** - Discovers target files, measures source and compiled size, runs custom counters, and diffs metrics against a baseline\
+&nbsp;&nbsp;&nbsp;&nbsp;**[codometer-output](packages/ic-suite/codometer/codometer-output)** - Every codometer output format - JSON reports, README badges, and the pull request change report
 
 </details>
 
