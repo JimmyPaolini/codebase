@@ -222,7 +222,7 @@ implementation run legitimate. Five repository rules override
   this session's job.** One ticket per pull request, and name each branch or at
   least the type and scope every branch must take — a squashed title is all
   semantic-release ever sees, so the ticket split decides
-  [Release Significance](#release-significance). Then give the dependency order:
+  [Release Significance](CONTRIBUTING.md#release-significance). Then give the dependency order:
   which tickets are independent and run in parallel off `main`, and which stack
   with [gh-stack](.agents/skills/gh-stack/SKILL.md) because one needs another's
   branch underneath it. "This session's job" means dispatching and
@@ -251,7 +251,7 @@ nx show projects
 `nx run codebase:check-readme-projects` fails when it misses one.
 
 **A commit scope is not a project.** The scope vocabulary is the closed set in
-[Conventional Naming](#conventional-naming), and it collapses each toolchain to
+[Conventional Naming](CONTRIBUTING.md#commit-guidelines), and it collapses each toolchain to
 a single name: every `callidescope-*`, `codependix-*`, `codometer-*`, and
 `conformetry-*` package commits under `callidescope`, `codependix`, `codometer`,
 and `conformetry` respectively. Deriving a scope from a directory name is how an
@@ -263,7 +263,7 @@ invented scope fails validation.
 - If a request spans multiple projects or scopes, complete the first project end-to-end before starting the next one.
 - If the work is truly independent across projects, split it into separate subagents or separate passes so each agent stays project-scoped.
 - Avoid mixing unrelated project changes in one context unless the task is explicitly orchestrating them.
-- This also keeps a pull request's commits at one release significance: see [Release Significance](#release-significance) for why a branch that stays within one project or module rarely accumulates a commit more significant than the type its title was going to use.
+- This also keeps a pull request's commits at one release significance: see [Release Significance](CONTRIBUTING.md#release-significance) for why a branch that stays within one project or module rarely accumulates a commit more significant than the type its title was going to use.
 
 ## Code Quality
 
@@ -413,194 +413,20 @@ only what is true of this workspace in particular.
 
 ## Git Workflow
 
-[`CONTRIBUTING.md`](CONTRIBUTING.md) is the full narrative — worktrees, hooks,
-branch naming, commits, releases, and the pull request process. What follows is
-what an agent needs at the moment of acting, plus the rules that fail a pull
-request.
+[`CONTRIBUTING.md`](CONTRIBUTING.md) contains the full narrative for worktrees, hooks, branch naming, commits, releases, and the pull request process. **Do not execute raw Git commands for these workflows.** Instead, rely entirely on the provided skills which inherently enforce this repository's conventions:
 
-**Never bypass git hooks** with `--no-verify` — fix the underlying issue instead.
-**Do not run signing-check scripts manually**; Husky already runs
-`check-commit-signing-configuration.sh` in pre-commit and
-`check-push-commit-signatures.sh` in pre-push.
+- **Worktrees & Branches**: Use [using-git-worktrees](.agents/skills/using-git-worktrees/SKILL.md) and [checkout-branch](.agents/skills/checkout-branch/SKILL.md).
+- **Commits**: Use [commit-code](.agents/skills/commit-code/SKILL.md) to generate Conventional Commits with Gitmoji.
+- **Pull Requests**: Use [create-pull-request](.agents/skills/create-pull-request/SKILL.md) and [submit-changes](.agents/skills/submit-changes/SKILL.md).
+- **Stacking/Splitting Work**: Use [gh-stack](.agents/skills/gh-stack/SKILL.md).
 
-### Git Worktrees
+**Agent-Specific Rules:**
 
-Use [using-git-worktrees](.agents/skills/using-git-worktrees/SKILL.md), which
-prefers this harness's native worktree tool over raw `git worktree add`. Three
-repository rules override its defaults:
-
-- **The branch name is not free-form** — derive one from the tables below and
-  validate it with `pnpm exec validate-branch-name -t "<branch-name>"` **before
-  creating anything**, or the pre-push hook wastes the work.
-  [checkout-branch](.agents/skills/checkout-branch/SKILL.md) derives one.
-- **If the branch already exists locally, attach a worktree to it** rather than
-  creating a second branch.
-- **Never run `git submodule update --init` for `applications/JimmyPaolini`.**
-  That submodule is deliberately uninitialized everywhere — locally and in CI —
-  so a `-` prefix from `git submodule status` is expected, not broken. If
-  `pnpm install` or `lint-codebase --write` rewrites its `pnpm-lock.yaml` entry,
-  **revert the lockfile** rather than reconciling it: it is the known
-  worktree-only spurious diff.
-
-### Branch Names
-
-`<type>/<scope>-<description>` — all three required, type and scope exact values
-from [Conventional Naming](#conventional-naming), description kebab-case
-(`[a-z0-9-]+`). An invented scope fails validation even when the name reads well.
-
-```bash
-pnpm exec validate-branch-name -t "feat/lexico-user-auth"
-```
-
-Only `main` is exempt. Automated prefixes are accepted: `copilot/*`,
-`dependabot/*`, `jimmypaolini/copilot/*`, `renovate/*`.
-
-### Commit Messages
-
-`<type>(<scope>): <gitmoji> <subject>` — **single line, max 128 chars.** Type and
-scope lowercase and from the tables below, gitmoji as the subject's first token,
-subject lowercase and present-imperative (`add`, not `added`), no trailing
-period.
-
-**Body and footer are forbidden**, with one exception: lines that are exactly
-`Co-authored-by: ...` trailers, in any casing. Everything else goes in the
-subject or the pull request description. Never list multiple changes — summarize
-higher or split the commit.
-
-Common gitmojis: ✨ `feat` · 🐛 `fix` · 📝 `docs` · 🧪 `test` · ♻️ `refactor` ·
-🎨 `style` · ⚡️ `perf` · 🔧 `chore` · 👷 `ci` · 📦 `build` · ⏪ `revert`
-
-```text
-feat(lexico): ✨ add user profile page
-fix(caelundas): 🐛 correct aspect angle calculation
-```
-
-### Release Significance
-
-This repository squash-merges with `PR_TITLE`, so **the pull request title is the
-only thing semantic-release ever sees** — every commit on the branch is discarded
-when it squashes. `release.config.cjs` maps type to bump: `feat` → minor;
-`fix`, `perf`, `refactor`, `build`, `revert` → patch; `docs`, `style`, `test`,
-`ci`, `chore` → none; a breaking change (`!` after the scope, or a
-`BREAKING CHANGE:` footer) → major regardless of type.
-
-[pull-request-release-significance](tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.command.ts)
-fails the pull request when the title's type is **less** significant than the most
-significant commit on the branch, or when a commit uses a scope the title does
-not name. Nothing else catches a title that understates its branch — 📝 Validate
-Pull Request Title only checks that the title is well-formed.
-
-**So pick the type and scope for the branch as a whole before committing**, and
-keep every commit at or below it:
-
-- A `feat` commit on a branch titled `chore` fails the check — retitle the pull
-  request, or move that commit to its own branch.
-- Mixing `feat` and `fix` is fine: title it `feat`, which outranks `fix`. Only a
-  commit _more_ significant than the chosen type is a problem.
-- A commit's scope must be named by the title. A multi-scope title is allowed —
-  `feat(documentation,synchronization): …`.
-- This is why [Work Scope](#work-scope) asks for one project per pull request.
-
-### Pull Requests
-
-The title follows the commit format and is checked by the same commitlint
-configuration, so every rule above applies. **The description must contain all
-four headings verbatim** — Validate Conventions greps for each one:
-
-```markdown
-
-## 🌰 Summary
-
-<!-- Brief description of what this PR does (1-2 sentences) -->
-
-## 📝 Details
-
-- <!-- List of specific changes made -->
-
-## 🧪 Testing
-
-1. <!-- How to manually verify these changes work correctly -->
-
-## 🔗 Related
-
-- <!-- Link any relevant documentation or related resources like internal documentation, GitHub issues/pull requests -->
-```
-
-**Labels and assignees must agree with the title:** exactly one `type:*` matching
-its type, exactly the `scope:*` labels its scopes name and no extras, at least
-one assignee, and exactly one `source:*` (`source:agent` or `source:human`) —
-that last one is not derived from the title. `do-not-merge` blocks the pull
-request while present. 🧑‍⚖️ Validate Conventions creates any missing label on
-`opened`/`reopened`, so a fresh pull request already has the vocabulary
-available. [create-pull-request](.agents/skills/create-pull-request/SKILL.md)
-and [submit-changes](.agents/skills/submit-changes/SKILL.md) automate all of it.
-
-### Conventional Naming
-
-`configuration/conventional.config.cjs` is the only source of this vocabulary,
-and **both tables below are generated from it** — as are the copies in
-[`CONTRIBUTING.md`](CONTRIBUTING.md), `.vscode/settings.json`, the issue
-template, and the five naming skills. Do not hand-edit a table between its
-`types-` or `scopes-` markers; add the type or scope to the configuration and
-run the synchronizer, which `nx affected` gates:
-
-```bash
-pnpm exec nx run synchronization:conventional-config:write
-```
-
-#### Types
-
-<!-- types-start -->
-
-| Type | Description |
-| ---- | ----------- |
-| `feat` | A new feature or capability that adds value for users |
-| `fix` | A bug fix that addresses a specific issue or problem |
-| `docs` | Documentation, AGENTS.md, SKILL.md, README, and planning files |
-| `test` | Adding or correcting unit, integration, or end-to-end tests |
-| `refactor` | Code restructuring that neither fixes a bug nor adds a feature |
-| `style` | Formatting, whitespace, or code structure changes with no semantic effect |
-| `perf` | A code change that improves performance (caching, query optimization, etc.) |
-| `chore` | Housekeeping that doesn't modify src or test files (gitignore, editor config, etc.) |
-| `ci` | GitHub Actions workflows, composite actions, and CI/CD scripts |
-| `build` | Build system, Vite/Docker/Helm config, or external dependency integration |
-| `revert` | Reverts a previous commit |
-
-<!-- types-end -->
-
-#### Scopes
-
-<!-- scopes-start -->
-
-| Scope | Description |
-| ----- | ----------- |
-| `affirmations` | Python Jupyter notebook application for LangGraph affirmation generation |
-| `caelundas` | Node.js CLI for astronomical calendar generation (NASA JPL ephemeris) |
-| `configuration` | Workspace root config files (tsconfig, eslint, vitest, nx.json, etc.) |
-| `conformetry` | Code generator templates and validation tests for generated instances |
-| `dependencies` | Dependency version changes (upgrades, additions, removals via pnpm) |
-| `deployments` | GitHub Actions workflows and CI/CD pipeline configuration |
-| `documentation` | Markdown docs, skills, planning files, and AGENTS.md files |
-| `infrastructure` | Helm charts, Terraform configs, and Kubernetes resources |
-| `JimmyPaolini` | Static GitHub profile README project (markdown and assets) |
-| `lexico` | TanStack Start SSR Latin dictionary web app with Supabase backend |
-| `lexico-components` | Shared React/shadcn component library |
-| `lexico-entities` | Shared TypeORM entities and GraphQL types |
-| `lexico-ingestion` | Data ingestion scripts for Lexico |
-| `meanderaw` | Greek meander (key/fret) SVG generator CLI and the composable motif/modifier library it reads |
-| `sempientor` | Lexical gap discovery CLI that surveys English for morphological, phonotactic, and semantic gaps and coins words to fill them |
-| `callidescope` | Call stack tracing and linting CLI, the configuration package it reads, and the packages that build and render its call graph |
-| `codependix` | Dependency graph export CLI, the configuration package it reads, and the package that judges the graphs against declared rules |
-| `codometer` | Code statistics measurement CLI, the configuration package it reads, and the packages that diff and render its pull request change report |
-| `no-release` | Escape hatch: suppress semantic-release for any commit type |
-| `release` | Version bumps and release commits generated by semantic-release |
-| `reporting` | Pull request change report generation and the packages that diff and render it |
-| `scripts` | Shell and TypeScript scripts in scripts/ (sync, setup, utilities) |
-| `testing` | Vitest configuration, shared test utilities, and coverage setup |
-| `synchronization` | Synchronization application and commands for automating workflows |
-| `validation` | Validation CLI and the checks it runs, such as pull request metadata |
-
-<!-- scopes-end -->
+- **Never bypass git hooks** with `--no-verify` — fix the underlying issue instead.
+- **Do not run signing-check scripts manually**; Husky already runs these.
+- **Never run `git submodule update --init` for `applications/JimmyPaolini`.** That submodule is deliberately uninitialized everywhere. If `pnpm install` rewrites its `pnpm-lock.yaml` entry, **revert the lockfile** rather than reconciling it.
+- **Release Significance:** The PR title determines the semantic-release bump. Ensure the PR title's type is at least as significant as the highest commit on the branch.
+- **Conventional Naming:** If you need to view the current valid Types and Scopes without using a skill, read `configuration/conventional.config.cjs`.
 
 ## Key Conventions
 
