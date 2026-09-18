@@ -1,8 +1,10 @@
+import { ConfigService } from "@nestjs/config";
 import { Test } from "@nestjs/testing";
 import { getRepositoryToken, TypeOrmModule } from "@nestjs/typeorm";
 import { DataSource, type Repository } from "typeorm";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
+import { environmentSchema } from "../../constants";
 import { CharacteristicsService } from "../characteristics/characteristics.service";
 import { ConnectivityService } from "../characteristics/connectivity.service";
 import { ClassificationService } from "../classification/classification.service";
@@ -22,6 +24,8 @@ import { TileService } from "../tile/tile.service";
 
 import { DrawEnumerationService } from "./draw-enumeration.service";
 import { DrawRecordService } from "./draw-record.service";
+
+import type { Environment } from "../enumeration/enumeration.types";
 
 // 🔧 Configuration
 
@@ -52,6 +56,7 @@ describe(DrawEnumerationService, () => {
   let service: DrawEnumerationService;
 
   beforeAll(async () => {
+    const environment = environmentSchema.parse({});
     const module = await Test.createTestingModule({
       imports: [
         TypeOrmModule.forRoot({
@@ -82,6 +87,12 @@ describe(DrawEnumerationService, () => {
         TileService,
         TileEnumerationService,
         SvgService,
+        {
+          provide: ConfigService,
+          useValue: {
+            get: (key: keyof Environment) => environment[key],
+          },
+        },
       ],
     }).compile();
 

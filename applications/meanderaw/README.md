@@ -141,7 +141,7 @@ closed and what it cost.
 the whole of it. Its unit space is every assignment of direction bits over a lattice, and
 most of that space branches and crosses; the four named modes it once had, `plain`,
 `split`, `alternated`, and `dot`, did neither, and they are gone. This is still recorded in
-a charter integration suite since retired, with a `permutations` flag, measured from
+`meander-topology.service.integration.test.ts` with a `permutations` flag, measured from
 committed output rather than from a generated drawing.
 
 | # | Invariant | Status |
@@ -2032,7 +2032,7 @@ Call stacks traced through `applications/meanderaw`, deepest first. Each frame s
 
 | Measure | Value |
 | --- | --- |
-| Callables | 283 |
+| Callables | 284 |
 | Files | 100 |
 | Calls traced | 367 |
 | Call stacks | 28 |
@@ -2064,13 +2064,13 @@ What this project is judged against, as declared in its own `callidescope.config
          ↳ Enumerates the shapes named and writes every meander they hold, one shape's rows at a time, answering with how many…
         └─> DrawEnumerationService.records(shape: MeanderShape): MeanderRecord[] [applications/meanderaw/src/modules/draw/draw-enumeration.service.ts:72]
            ↳ Every meander of one shape, as the rows the database holds for them.
-          └─> EnumerationService.enumerate(shape: MeanderShape): EnumeratedMeander[] [applications/meanderaw/src/modules/enumeration/enumeration.service.ts:77]
+          └─> EnumerationService.enumerate(shape: MeanderShape): EnumeratedMeander[] [applications/meanderaw/src/modules/enumeration/enumeration.service.ts:101]
              ↳ Every structurally distinct meander of one shape, one per symmetry class, each spelled by the Code of the class's own…
-            └─> TileEnumerationService.enumerate(rows: number, columns: number): Tile[] [applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:166]
+            └─> TileEnumerationService.enumerate(rows: number, columns: number): Tile[] [applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:184]
                ↳ Every distinct tile of the given size, one per symmetry class, ordered by canonical edge key so the sweep is stable…
-              └─> TileEnumerationService.assign(ordinal: number, enumeration: TileEnumerationState): void [applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:95]
+              └─> TileEnumerationService.assign(ordinal: number, enumeration: TileEnumerationState): void [applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:113]
                  ↳ Decides the `ordinal`-th edge both ways, recording a tile once every edge is decided.
-                └─> TileEnumerationService.record(enumeration: TileEnumerationState): void [applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:130]
+                └─> TileEnumerationService.record(enumeration: TileEnumerationState): void [applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:148]
                    ↳ Keeps the tile the current assignment describes, unless a tile already found draws the same pattern.
                   └─> SymmetryService.canonicalTile(tile: Tile): Tile [applications/meanderaw/src/modules/symmetry/symmetry.service.ts:174]
                      ↳ The one tile of a symmetry class the corpus draws.
@@ -2331,7 +2331,7 @@ What this project is judged against, as declared in its own `callidescope.config
 **22. `TileEnumerationService.isMatching`** — depth 3 · orphan-root
 
 ```text
-🚀 TileEnumerationService.isMatching(tile: Tile): boolean [applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:217]
+🚀 TileEnumerationService.isMatching(tile: Tile): boolean [applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:235]
    ↳ Whether every point of a tile is touched by at most one edge — the family's original exact-cover rule, restated over…
   └─> TileService.incidentEdges(tile: Tile, level: number, column: number): number [applications/meanderaw/src/modules/tile/tile.service.ts:218]
      ↳ How many distinct edges touch a point, which differs from {@link degree} at one column and nowhere else: there a set…
@@ -2393,7 +2393,7 @@ What this project is judged against, as declared in its own `callidescope.config
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `TileEnumerationService.enumerate` | 7 | `TileEnumerationService.isAdmitted`, `OversizedTileError.constructor`, `TileEnumerationService.edges`, `TileService.blankEdges`, `TileEnumerationService.assign`, `TileEnumerationService.map(…)`, `TileEnumerationService.toSorted(…)` | `applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:166` |
+| `TileEnumerationService.enumerate` | 7 | `TileEnumerationService.isAdmitted`, `OversizedTileError.constructor`, `TileEnumerationService.edges`, `TileService.blankEdges`, `TileEnumerationService.assign`, `TileEnumerationService.map(…)`, `TileEnumerationService.toSorted(…)` | `applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:184` |
 | `LatticeService.build` | 6 | `LatticeService.strokeWidth`, `LatticeService.pathData`, `LatticeService.trace`, `LatticeService.commands`, `LatticeService.snap`, `LatticeService.dimension` | `applications/meanderaw/src/modules/drawing/lattice.service.ts:233` |
 | `AddressService.identifyDocument` | 6 | `LatticeService.build`, `AddressService.assertAddressable`, `AddressService.readTile`, `CodeService.spell`, `SubFamilyService.name`, `CodeService.spellCanonical` | `applications/meanderaw/src/modules/drawing/address.service.ts:134` |
 
@@ -2410,7 +2410,7 @@ What this project is judged against, as declared in its own `callidescope.config
 | `ConnectivityService.connectivity` | 4 | `ConnectivityService.edges`, `ConnectivityService.adjacency`, `GraphService.components`, `ConnectivityService.freeEnds` | `applications/meanderaw/src/modules/characteristics/connectivity.service.ts:176` |
 | `CharacteristicsService.negativeDegree` | 4 | `CharacteristicsService.hasEastCorridor`, `CharacteristicsService.hasNorthCorridor`, `CharacteristicsService.hasSouthCorridor`, `CharacteristicsService.hasWestCorridor` | `applications/meanderaw/src/modules/characteristics/characteristics.service.ts:136` |
 | `MeasurementService.connectivity` | 4 | `LatticeService.build`, `GraphService.components`, `MeasurementService.adjacency`, `MeasurementService.freeEnds` | `applications/meanderaw/src/modules/drawing/measurement.service.ts:229` |
-| `TileEnumerationService.assign` | 4 | `TileEnumerationService.edges`, `TileEnumerationService.record`, `TileEnumerationService.set`, `TileEnumerationService.clear` | `applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:95` |
+| `TileEnumerationService.assign` | 4 | `TileEnumerationService.edges`, `TileEnumerationService.record`, `TileEnumerationService.set`, `TileEnumerationService.clear` | `applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:113` |
 | `DrawRecordService.record` | 4 | `CodeService.parse`, `CharacteristicsService.compute`, `ClassificationService.classify`, `DrawingService.render` | `applications/meanderaw/src/modules/draw/draw-record.service.ts:56` |
 | `ConnectivityService.edges` | 3 | `ConnectivityService.key`, `ConnectivityService.joinsEast`, `ConnectivityService.joinsSouth` | `applications/meanderaw/src/modules/characteristics/connectivity.service.ts:91` |
 | `CharacteristicsService.tallyInk` | 3 | `CharacteristicsService.tally`, `CharacteristicsService.inkDegree`, `CodeService.directionsAt` | `applications/meanderaw/src/modules/characteristics/characteristics.service.ts:161` |
@@ -2420,7 +2420,7 @@ What this project is judged against, as declared in its own `callidescope.config
 | `LatticeService.trace` | 3 | `LatticeService.snap`, `LatticeService.addHorizontal`, `LatticeService.addVertical` | `applications/meanderaw/src/modules/drawing/lattice.service.ts:204` |
 | `AddressService.readTile` | 3 | `TileService.blankEdges`, `TileService.mark`, `TileService.build` | `applications/meanderaw/src/modules/drawing/address.service.ts:174` |
 | `MeasurementService.neighbors` | 3 | `MeasurementService.key`, `MeasurementService.map(…)`, `MeasurementService.filter(…)` | `applications/meanderaw/src/modules/drawing/measurement.service.ts:166` |
-| `TileEnumerationService.record` | 3 | `TileService.build`, `SymmetryService.canonicalTile`, `SymmetryService.edgeKey` | `applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:130` |
+| `TileEnumerationService.record` | 3 | `TileService.build`, `SymmetryService.canonicalTile`, `SymmetryService.edgeKey` | `applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:148` |
 | `MeanderDriftDetectedError.describe` | 3 | `MeanderDriftDetectedError.map(…)`, `MeanderDriftDetectedError.map(…)`, `MeanderDriftDetectedError.map(…)` | `applications/meanderaw/src/modules/draw/draw-check.constants.ts:76` |
 | `DrawCheckService.diff` | 3 | `DrawCheckService.index`, `DrawCheckService.findNewAndChanged`, `DrawCheckService.findMissing` | `applications/meanderaw/src/modules/draw/draw-check.service.ts:196` |
 | `DrawIndexService.renderBand` | 3 | `GeometryService.compute`, `DrawIndexService.format`, `DrawIndexService.renderRepeats` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:161` |
@@ -2467,9 +2467,9 @@ What this project is judged against, as declared in its own `callidescope.config
 | `LatticeService.strokeWidth` | 2 | `LatticeService.map(…)`, `UnmeasurableDocumentError.constructor` | `applications/meanderaw/src/modules/drawing/lattice.service.ts:186` |
 | `DrawingService.codeSegments` | 2 | `DrawingService.pointSegments`, `CodeService.directionsAt` | `applications/meanderaw/src/modules/drawing/drawing.service.ts:54` |
 | `DrawingService.pointSegments` | 2 | `DrawingService.format`, `DrawingService.isBare` | `applications/meanderaw/src/modules/drawing/drawing.service.ts:86` |
-| `TileEnumerationService.set` | 2 | `TileEnumerationService.address`, `TileService.mark` | `applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:142` |
-| `EnumerationService.enumerate` | 2 | `EnumerationService.map(…)`, `TileEnumerationService.enumerate` | `applications/meanderaw/src/modules/enumeration/enumeration.service.ts:77` |
-| `EnumerationService.shapes` | 2 | `EnumerationService.isAdmitted`, `TileEnumerationService.maximumColumns` | `applications/meanderaw/src/modules/enumeration/enumeration.service.ts:105` |
+| `TileEnumerationService.set` | 2 | `TileEnumerationService.address`, `TileService.mark` | `applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:160` |
+| `EnumerationService.enumerate` | 2 | `EnumerationService.map(…)`, `TileEnumerationService.enumerate` | `applications/meanderaw/src/modules/enumeration/enumeration.service.ts:101` |
+| `EnumerationService.shapes` | 2 | `EnumerationService.isAdmitted`, `TileEnumerationService.maximumColumns` | `applications/meanderaw/src/modules/enumeration/enumeration.service.ts:132` |
 | `DrawEnumerationService.persist` | 2 | `DatabaseService.saveAll`, `DrawEnumerationService.records` | `applications/meanderaw/src/modules/draw/draw-enumeration.service.ts:61` |
 | `DrawEnumerationService.records` | 2 | `DrawEnumerationService.map(…)`, `EnumerationService.enumerate` | `applications/meanderaw/src/modules/draw/draw-enumeration.service.ts:72` |
 | `DrawEnumerationService.sweep` | 2 | `DrawEnumerationService.persist`, `EnumerationService.shapes` | `applications/meanderaw/src/modules/draw/draw-enumeration.service.ts:81` |
@@ -2550,11 +2550,11 @@ What this project is judged against, as declared in its own `callidescope.config
 | `MeasurementService.isChannelWidthCompliant` | 1 | `MeasurementService.key` | `applications/meanderaw/src/modules/drawing/measurement.service.ts:123` |
 | `MeasurementService.negativeDegree` | 1 | `MeasurementService.key` | `applications/meanderaw/src/modules/drawing/measurement.service.ts:148` |
 | `CorpusService.ingest` | 1 | `CorpusService.ingestOne` | `applications/meanderaw/src/modules/corpus/corpus.service.ts:105` |
-| `TileEnumerationService.clear` | 1 | `TileEnumerationService.address` | `applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:111` |
-| `TileEnumerationService.isAdmitted` | 1 | `TileEnumerationService.edges` | `applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:197` |
-| `TileEnumerationService.isMatching` | 1 | `TileService.incidentEdges` | `applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:217` |
-| `EnumerationService.map(…)` | 1 | `CodeService.spell` | `applications/meanderaw/src/modules/enumeration/enumeration.service.ts:80` |
-| `EnumerationService.isAdmitted` | 1 | `TileEnumerationService.isAdmitted` | `applications/meanderaw/src/modules/enumeration/enumeration.service.ts:88` |
+| `TileEnumerationService.clear` | 1 | `TileEnumerationService.address` | `applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:129` |
+| `TileEnumerationService.isAdmitted` | 1 | `TileEnumerationService.edges` | `applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:215` |
+| `TileEnumerationService.isMatching` | 1 | `TileService.incidentEdges` | `applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:235` |
+| `EnumerationService.map(…)` | 1 | `CodeService.spell` | `applications/meanderaw/src/modules/enumeration/enumeration.service.ts:104` |
+| `EnumerationService.isAdmitted` | 1 | `TileEnumerationService.isAdmitted` | `applications/meanderaw/src/modules/enumeration/enumeration.service.ts:112` |
 | `MeanderDriftDetectedError.constructor` | 1 | `MeanderDriftDetectedError.describe` | `applications/meanderaw/src/modules/draw/draw-check.constants.ts:70` |
 | `MeanderDriftDetectedError.map(…)` | 1 | `MeanderDriftDetectedError.describeNew` | `applications/meanderaw/src/modules/draw/draw-check.constants.ts:82` |
 | `MeanderDriftDetectedError.map(…)` | 1 | `MeanderDriftDetectedError.describeMissing` | `applications/meanderaw/src/modules/draw/draw-check.constants.ts:85` |
@@ -2799,6 +2799,7 @@ graph LR
   file_testing_setup_ts["testing/setup.ts"]
   file_testing_tiles_ts["testing/tiles.ts"]
   file_vitest_config_ts["vitest.config.ts"]
+  file_src_constants_ts --> file_src_modules_enumeration_enumeration_constants_ts
   file_src_main_end_to_end_test_ts --> file_src_constants_ts
   file_src_main_module_ts --> file_src_constants_ts
   file_src_main_module_ts --> file_src_modules_draw_draw_module_ts
@@ -2860,8 +2861,10 @@ graph LR
   file_src_modules_classification_sub_family_service_ts --> file_src_modules_classification_sub_family_types_ts
   file_src_modules_classification_sub_family_service_ts --> file_src_modules_tile_tile_service_ts
   file_src_modules_classification_sub_family_service_ts --> file_src_modules_tile_tile_types_ts
+  file_src_modules_classification_sub_family_service_unit_test_ts --> file_src_constants_ts
   file_src_modules_classification_sub_family_service_unit_test_ts --> file_src_modules_classification_sub_family_service_ts
   file_src_modules_classification_sub_family_service_unit_test_ts --> file_src_modules_classification_sub_family_types_ts
+  file_src_modules_classification_sub_family_service_unit_test_ts --> file_src_modules_enumeration_enumeration_types_ts
   file_src_modules_classification_sub_family_service_unit_test_ts --> file_src_modules_enumeration_tile_enumeration_service_ts
   file_src_modules_classification_sub_family_service_unit_test_ts --> file_src_modules_symmetry_symmetry_service_ts
   file_src_modules_classification_sub_family_service_unit_test_ts --> file_src_modules_tile_tile_service_ts
@@ -2952,6 +2955,7 @@ graph LR
   file_src_modules_database_entities_Meander_entity_ts --> file_src_modules_classification_sub_family_types_ts
   file_src_modules_database_entities_Meander_entity_ts --> file_src_modules_database_database_constants_ts
   file_src_modules_database_entities_Meander_entity_ts --> file_src_modules_database_database_types_ts
+  file_src_modules_draw_draw_check_sweep_module_ts --> file_src_constants_ts
   file_src_modules_draw_draw_check_sweep_module_ts --> file_src_modules_characteristics_characteristics_module_ts
   file_src_modules_draw_draw_check_sweep_module_ts --> file_src_modules_classification_classification_module_ts
   file_src_modules_draw_draw_check_sweep_module_ts --> file_src_modules_code_code_module_ts
@@ -2991,6 +2995,7 @@ graph LR
   file_src_modules_draw_draw_code_service_unit_test_ts --> file_src_modules_database_entities_Meander_entity_ts
   file_src_modules_draw_draw_code_service_unit_test_ts --> file_src_modules_draw_draw_code_service_ts
   file_src_modules_draw_draw_code_service_unit_test_ts --> file_src_modules_draw_draw_record_service_ts
+  file_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_src_constants_ts
   file_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_src_modules_characteristics_characteristics_service_ts
   file_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_src_modules_characteristics_connectivity_service_ts
   file_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_src_modules_classification_classification_service_ts
@@ -3003,6 +3008,7 @@ graph LR
   file_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_src_modules_drawing_drawing_service_ts
   file_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_src_modules_drawing_lattice_service_ts
   file_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_src_modules_enumeration_enumeration_service_ts
+  file_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_src_modules_enumeration_enumeration_types_ts
   file_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_src_modules_enumeration_tile_enumeration_service_ts
   file_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_src_modules_geometry_geometry_service_ts
   file_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_src_modules_graph_graph_service_ts
@@ -3056,6 +3062,7 @@ graph LR
   file_src_modules_draw_draw_record_service_unit_test_ts --> file_src_modules_svg_svg_service_ts
   file_src_modules_draw_draw_record_service_unit_test_ts --> file_src_modules_symmetry_symmetry_service_ts
   file_src_modules_draw_draw_record_service_unit_test_ts --> file_src_modules_tile_tile_service_ts
+  file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_constants_ts
   file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_characteristics_characteristics_module_ts
   file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_classification_classification_module_ts
   file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_code_code_module_ts
@@ -3190,21 +3197,26 @@ graph LR
   file_src_modules_enumeration_enumeration_service_ts --> file_src_modules_enumeration_enumeration_constants_ts
   file_src_modules_enumeration_enumeration_service_ts --> file_src_modules_enumeration_enumeration_types_ts
   file_src_modules_enumeration_enumeration_service_ts --> file_src_modules_enumeration_tile_enumeration_service_ts
+  file_src_modules_enumeration_enumeration_service_unit_test_ts --> file_src_constants_ts
   file_src_modules_enumeration_enumeration_service_unit_test_ts --> file_src_modules_classification_sub_family_service_ts
   file_src_modules_enumeration_enumeration_service_unit_test_ts --> file_src_modules_code_code_service_ts
   file_src_modules_enumeration_enumeration_service_unit_test_ts --> file_src_modules_drawing_lattice_service_ts
   file_src_modules_enumeration_enumeration_service_unit_test_ts --> file_src_modules_enumeration_enumeration_service_ts
+  file_src_modules_enumeration_enumeration_service_unit_test_ts --> file_src_modules_enumeration_enumeration_types_ts
   file_src_modules_enumeration_enumeration_service_unit_test_ts --> file_src_modules_enumeration_tile_enumeration_service_ts
   file_src_modules_enumeration_enumeration_service_unit_test_ts --> file_src_modules_symmetry_symmetry_service_ts
   file_src_modules_enumeration_enumeration_service_unit_test_ts --> file_src_modules_tile_tile_service_ts
+  file_src_modules_enumeration_enumeration_types_ts --> file_src_constants_ts
   file_src_modules_enumeration_enumeration_types_ts --> file_src_modules_tile_tile_types_ts
   file_src_modules_enumeration_tile_enumeration_service_ts --> file_src_modules_enumeration_enumeration_constants_ts
   file_src_modules_enumeration_tile_enumeration_service_ts --> file_src_modules_enumeration_enumeration_types_ts
   file_src_modules_enumeration_tile_enumeration_service_ts --> file_src_modules_symmetry_symmetry_service_ts
   file_src_modules_enumeration_tile_enumeration_service_ts --> file_src_modules_tile_tile_service_ts
   file_src_modules_enumeration_tile_enumeration_service_ts --> file_src_modules_tile_tile_types_ts
+  file_src_modules_enumeration_tile_enumeration_service_unit_test_ts --> file_src_constants_ts
   file_src_modules_enumeration_tile_enumeration_service_unit_test_ts --> file_src_modules_code_code_service_ts
   file_src_modules_enumeration_tile_enumeration_service_unit_test_ts --> file_src_modules_enumeration_enumeration_constants_ts
+  file_src_modules_enumeration_tile_enumeration_service_unit_test_ts --> file_src_modules_enumeration_enumeration_types_ts
   file_src_modules_enumeration_tile_enumeration_service_unit_test_ts --> file_src_modules_enumeration_tile_enumeration_service_ts
   file_src_modules_enumeration_tile_enumeration_service_unit_test_ts --> file_src_modules_symmetry_symmetry_service_ts
   file_src_modules_enumeration_tile_enumeration_service_unit_test_ts --> file_src_modules_tile_tile_service_ts
@@ -3247,40 +3259,40 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-15659-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-37.06_MB-6b7280?style=flat-square)
-![Folders](https://img.shields.io/badge/Folders-20-4a4a4a?style=flat-square)
-![Source Files](https://img.shields.io/badge/Source_Files-140-3178c6?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-14435-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-48.82_MB-6b7280?style=flat-square)
+![Folders](https://img.shields.io/badge/Folders-18-4a4a4a?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-136-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-113.06_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-106.89_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
-![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-140-3178c6?style=flat-square)
-![Interfaces](https://img.shields.io/badge/Interfaces-53-0ea5e9?style=flat-square)
+![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-136-3178c6?style=flat-square)
+![Interfaces](https://img.shields.io/badge/Interfaces-49-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-1-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
-![Decorators](https://img.shields.io/badge/Decorators-114-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-328-6366f1?style=flat-square)
+![Decorators](https://img.shields.io/badge/Decorators-110-db2777?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-318-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-5-166534?style=flat-square)
 
 ### JavaScript
 
 ![JavaScript Files](https://img.shields.io/badge/JavaScript_Files-0-f7df1e?style=flat-square)
-![Test Files](https://img.shields.io/badge/Test_Files-36-10b981?style=flat-square)
+![Test Files](https://img.shields.io/badge/Test_Files-32-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-13-8b5cf6?style=flat-square)
-![Classes](https://img.shields.io/badge/Classes-59-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-566-16a34a?style=flat-square)
-![Methods](https://img.shields.io/badge/Methods-282-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-739-4ade80?style=flat-square)
-![Async Functions](https://img.shields.io/badge/Async_Functions-109-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-586-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-648-0284c7?style=flat-square)
-![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-172-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-697-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-3075-475569?style=flat-square)
+![Classes](https://img.shields.io/badge/Classes-52-7c3aed?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-518-16a34a?style=flat-square)
+![Methods](https://img.shields.io/badge/Methods-246-15803d?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-650-4ade80?style=flat-square)
+![Async Functions](https://img.shields.io/badge/Async_Functions-114-059669?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-512-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-623-0284c7?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-159-ea580c?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-663-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-2986-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python
@@ -3301,16 +3313,16 @@ graph LR
 ### JSON
 
 ![JSON Files](https://img.shields.io/badge/JSON_Files-4-a16207?style=flat-square)
-![JSON Lines](https://img.shields.io/badge/JSON_Lines-163-ca8a04?style=flat-square)
+![JSON Lines](https://img.shields.io/badge/JSON_Lines-164-ca8a04?style=flat-square)
 ![JSON Objects](https://img.shields.io/badge/JSON_Objects-35-7c3aed?style=flat-square)
 ![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-14-8b5cf6?style=flat-square)
 ![JSON Properties](https://img.shields.io/badge/JSON_Properties-104-0284c7?style=flat-square)
-![JSON Strings](https://img.shields.io/badge/JSON_Strings-86-16a34a?style=flat-square)
+![JSON Strings](https://img.shields.io/badge/JSON_Strings-87-16a34a?style=flat-square)
 ![JSON Numbers](https://img.shields.io/badge/JSON_Numbers-1-059669?style=flat-square)
 ![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-10-0ea5e9?style=flat-square)
 ![JSON Nulls](https://img.shields.io/badge/JSON_Nulls-0-64748b?style=flat-square)
-![JSON Items](https://img.shields.io/badge/JSON_Items-38-475569?style=flat-square)
-![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-146-dc2626?style=flat-square)
+![JSON Items](https://img.shields.io/badge/JSON_Items-39-475569?style=flat-square)
+![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-147-dc2626?style=flat-square)
 ![JSON Max Depth](https://img.shields.io/badge/JSON_Max_Depth-7-ea580c?style=flat-square)
 
 ### YAML
@@ -3391,15 +3403,15 @@ graph LR
 
 ### Conventions
 
-![Module Files](https://img.shields.io/badge/Module_Files-17-7c3aed?style=flat-square)
-![Service Files](https://img.shields.io/badge/Service_Files-26-0284c7?style=flat-square)
+![Module Files](https://img.shields.io/badge/Module_Files-15-7c3aed?style=flat-square)
+![Service Files](https://img.shields.io/badge/Service_Files-23-0284c7?style=flat-square)
 ![Command Files](https://img.shields.io/badge/Command_Files-1-16a34a?style=flat-square)
-![Constants Files](https://img.shields.io/badge/Constants_Files-31-ea580c?style=flat-square)
-![Types Files](https://img.shields.io/badge/Types_Files-17-db2777?style=flat-square)
+![Constants Files](https://img.shields.io/badge/Constants_Files-33-ea580c?style=flat-square)
+![Types Files](https://img.shields.io/badge/Types_Files-19-db2777?style=flat-square)
 ![Utilities Files](https://img.shields.io/badge/Utilities_Files-0-0ea5e9?style=flat-square)
 ![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-1-059669?style=flat-square)
-![Unit Tests](https://img.shields.io/badge/Unit_Tests-28-ca8a04?style=flat-square)
-![Integration Tests](https://img.shields.io/badge/Integration_Tests-7-7c3aed?style=flat-square)
+![Unit Tests](https://img.shields.io/badge/Unit_Tests-25-ca8a04?style=flat-square)
+![Integration Tests](https://img.shields.io/badge/Integration_Tests-6-7c3aed?style=flat-square)
 ![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-1-0284c7?style=flat-square)
 ![CSS Comment Budget](https://img.shields.io/badge/CSS_Comment_Budget-0-16a34a?style=flat-square)
 ![HCL Comment Budget](https://img.shields.io/badge/HCL_Comment_Budget-0-ea580c?style=flat-square)
@@ -3436,23 +3448,23 @@ graph LR
 ### Markdown
 
 ![Markdown Files](https://img.shields.io/badge/Markdown_Files-1-083fa1?style=flat-square)
-![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-358-1f6feb?style=flat-square)
+![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-366-1f6feb?style=flat-square)
 ![H1](https://img.shields.io/badge/H1-1-7c3aed?style=flat-square)
 ![H2](https://img.shields.io/badge/H2-8-8b5cf6?style=flat-square)
 ![H3](https://img.shields.io/badge/H3-16-a78bfa?style=flat-square)
 ![H4](https://img.shields.io/badge/H4-0-c4b5fd?style=flat-square)
 ![H5](https://img.shields.io/badge/H5-0-ddd6fe?style=flat-square)
 ![H6](https://img.shields.io/badge/H6-0-ede9fe?style=flat-square)
-![Paragraphs](https://img.shields.io/badge/Paragraphs-68-64748b?style=flat-square)
+![Paragraphs](https://img.shields.io/badge/Paragraphs-69-64748b?style=flat-square)
 ![Lists](https://img.shields.io/badge/Lists-8-16a34a?style=flat-square)
 ![List Items](https://img.shields.io/badge/List_Items-33-22c55e?style=flat-square)
 ![Task List Items](https://img.shields.io/badge/Task_List_Items-0-4ade80?style=flat-square)
 ![Tables](https://img.shields.io/badge/Tables-2-0284c7?style=flat-square)
 ![Table Rows](https://img.shields.io/badge/Table_Rows-10-0ea5e9?style=flat-square)
-![Links](https://img.shields.io/badge/Links-15-059669?style=flat-square)
+![Links](https://img.shields.io/badge/Links-16-059669?style=flat-square)
 ![Images](https://img.shields.io/badge/Images-0-10b981?style=flat-square)
 ![Code Blocks](https://img.shields.io/badge/Code_Blocks-15-dc2626?style=flat-square)
-![Inline Code](https://img.shields.io/badge/Inline_Code-118-ef4444?style=flat-square)
+![Inline Code](https://img.shields.io/badge/Inline_Code-121-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-0-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-0-a16207?style=flat-square)
 <!-- CODE_STATISTICS_END -->
