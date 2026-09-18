@@ -1,4 +1,4 @@
-name: 🎨 Form Codebase
+name: 🧑‍🎨 Form Codebase
 
 # Static code analysis: every check that reads the source without executing it.
 # One `nx affected` invocation builds one task graph and one scheduler runs it.
@@ -41,7 +41,7 @@ concurrency:
 
 jobs:
   form-codebase:
-    name: 🎨 Form Codebase
+    name: 🧑‍🎨 Form Codebase
     runs-on: ubuntu-latest
     timeout-minutes: 12
 
@@ -83,7 +83,7 @@ jobs:
       # There is no aggregate `synchronize` target: each is its own Nx target,
       # joining the same `nx affected` invocation, so one task graph owns the
       # run.
-      - name: 🎨 Form Codebase
+      - name: 🧑‍🎨 Form Codebase
         env:
           NX_VERBOSE_LOGGING: ${{ inputs.verbose || false }}
         run: |
