@@ -22,7 +22,6 @@ async function createService(
     providers: [
       CodeService,
       EnumerationService,
-      LatticeService,
       SubFamilyService,
       SymmetryService,
       TileService,
@@ -156,7 +155,6 @@ describe(EnumerationService, () => {
         providers: [
           CodeService,
           EnumerationService,
-          LatticeService,
           SubFamilyService,
           SymmetryService,
           TileService,
