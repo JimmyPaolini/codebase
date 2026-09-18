@@ -3,9 +3,8 @@
 import type {
   CodometerCommentLanguage,
   CodometerCommentMeasurement,
-  CodometerSeverity,
-  CodometerSymbolKind,
 } from "@codometer/configuration";
+import type { CodometerSeverity, CodometerSymbolKind } from "@codometer/core";
 import type { CommentRange } from "typescript";
 import type { LineCounter } from "yaml";
 

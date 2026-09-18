@@ -1,4 +1,8 @@
-import { InputService } from "@codometer/configuration";
+import { ConfigurationModule as CodometerConfigurationModule } from "@codometer/configuration";
+import {
+  ConfigurationListingService,
+  RenderConfigurationService,
+} from "@codometer/output";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import {
@@ -14,24 +18,22 @@ import {
 import { LoggerService } from "@codebase/logger";
 
 import { ConfigurationCommand } from "./configuration.command";
-import { ConfigurationService } from "./configuration.service";
-import { RenderConfigurationService } from "./render-configuration.service";
 
 describe(ConfigurationCommand, () => {
   let command: ConfigurationCommand;
-  let configurationService: ConfigurationService;
+  let configurationService: ConfigurationListingService;
   let renderConfigurationService: RenderConfigurationService;
   let logger: LoggerService;
   let write: MockInstance<typeof process.stdout.write>;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
+      imports: [CodometerConfigurationModule],
       providers: [
         ConfigurationCommand,
-        InputService,
         {
-          provide: ConfigurationService,
-          useValue: createMock<ConfigurationService>(),
+          provide: ConfigurationListingService,
+          useValue: createMock<ConfigurationListingService>(),
         },
         {
           provide: RenderConfigurationService,
@@ -45,7 +47,7 @@ describe(ConfigurationCommand, () => {
     }).compile();
 
     command = await module.resolve(ConfigurationCommand);
-    configurationService = module.get(ConfigurationService);
+    configurationService = module.get(ConfigurationListingService);
     renderConfigurationService = module.get(RenderConfigurationService);
     logger = module.get(LoggerService);
   });
@@ -66,12 +68,12 @@ describe(ConfigurationCommand, () => {
 
   it("sets logger context", async () => {
     const module = await Test.createTestingModule({
+      imports: [CodometerConfigurationModule],
       providers: [
         ConfigurationCommand,
-        InputService,
         {
-          provide: ConfigurationService,
-          useValue: createMock<ConfigurationService>(),
+          provide: ConfigurationListingService,
+          useValue: createMock<ConfigurationListingService>(),
         },
         {
           provide: RenderConfigurationService,

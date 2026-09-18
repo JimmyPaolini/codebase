@@ -1,10 +1,10 @@
 // 🏷️ Types
 
 import type {
-  CodeStatisticsResult,
   CodometerCompression,
   ResolvedCodometerMarkdownOutput,
 } from "@codometer/configuration";
+import type { CodeStatisticsResult } from "@codometer/core";
 
 /** Arguments accepted when building the anchor helpers a writer is handed. */
 export interface BuildAnchorHelpersArguments {

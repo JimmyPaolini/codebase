@@ -3,8 +3,8 @@ import { Injectable } from "@nestjs/common";
 import { HEADING, TABLE_HEADER } from "./render.constants";
 import { formatDelta, formatValue, hasChanged } from "./render.utilities";
 
+import type { MetricRow, ProjectFailure } from "../changes/changes.types";
 import type { RenderSectionArguments } from "./render.types";
-import type { MetricRow, ProjectFailure } from "@codometer/changes";
 
 /** Renders codometer's measured changes as the body of the report. */
 @Injectable()

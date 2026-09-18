@@ -1295,6 +1295,7 @@ flowchart LR
   ProjectReportsModule
   ReportFindingsModule
   ReportModule
+  RunPlanModule
   SignaturesModule
   WorkspaceModule
   WriteDestinationsModule
@@ -1323,8 +1324,8 @@ flowchart LR
   CallidescopeModule --> WorkspaceModule
   CallidescopeModule --> WriteDestinationsModule
   ConfigurationModule --> ConfigurationFileModule
-  ConfigurationModule --> FlagResolutionModule
   ConfigurationModule --> InputModule
+  ConfigurationModule --> RunPlanModule
   DepthModule --> AddressLookupModule
   DepthModule --> AddressReportModule
   DepthModule --> ConfigurationModule
@@ -1348,6 +1349,7 @@ flowchart LR
   ProgramModule --> WorkspaceModule
   ProjectReportsModule --> GraphModule
   ProjectReportsModule --> SignaturesModule
+  RunPlanModule --> FlagResolutionModule
   WriteDestinationsModule --> OutputJsonModule
   WriteDestinationsModule --> OutputMarkdownModule
   WriteDestinationsModule --> ReportModule

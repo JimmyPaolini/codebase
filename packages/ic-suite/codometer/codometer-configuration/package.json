@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@codometer/core": "workspace:*",
     "@nestjs/common": "catalog:",
     "jiti": "catalog:",
     "jsonc-parser": "catalog:",

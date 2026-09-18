@@ -6,7 +6,7 @@ import type { MeasurementScope, TargetSize } from "./markdown.types";
 import type {
   CodeStatisticsResult,
   CodometerStatisticGroup,
-} from "@codometer/configuration";
+} from "@codometer/core";
 
 /**
  * Build a single shields.io badge markdown image.

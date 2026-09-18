@@ -1,6 +1,6 @@
 // 🏷️ Types
 
-import type { MetricRow, ProjectFailure } from "@codometer/changes";
+import type { MetricRow, ProjectFailure } from "../changes/changes.types";
 
 /** Arguments for rendering the whole section. */
 export interface RenderSectionArguments {

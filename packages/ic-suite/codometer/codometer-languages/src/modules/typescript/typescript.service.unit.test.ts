@@ -15,7 +15,7 @@ import type {
   CommentMeasurement,
 } from "../comments/comments.types";
 import type { TypescriptSymbolCounter } from "./typescript.types";
-import type { CodometerSymbolKind } from "@codometer/configuration";
+import type { CodometerSymbolKind } from "@codometer/core";
 
 const { readFileSyncMock } = vi.hoisted(() => ({
   readFileSyncMock: vi.fn<(filePath: string, encoding: string) => string>(),
