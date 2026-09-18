@@ -47,8 +47,8 @@ jobs:
           base: main
           branch: docs/codebase-refresh-documentation
           delete-branch: true
-          commit-message: "docs(documentation): 📝 refresh documentation with openwiki"
-          title: "docs(documentation): 📝 refresh documentation with OpenWiki"
+          commit-message: "docs(documentation): 📝 refresh docs with openwiki"
+          title: "docs(documentation): 📝 refresh docs with OpenWiki"
           body: |
             ## 🌰 Summary
 

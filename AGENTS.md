@@ -91,7 +91,7 @@ fix.
    they disagree, `test-driven-development` owns the loop's strictness and
    `tdd` owns refactoring: it belongs to step 5's review rather than to the
    cycle. Its `npm test` invocations are `nx run <project>:vitest:<kind>` here
-   — see [Testing](#testing). If the one ticket in front of you — this
+   — see [Testing & Coverage](#testing--coverage). If the one ticket in front of you — this
    session's own, or the one a dispatched subagent owns — still splits into
    several independent tasks, orchestrate those with
    [subagent-driven-development](.agents/skills/subagent-driven-development/SKILL.md)
@@ -426,7 +426,7 @@ lands, rather than scaffolding ahead of the work.
   [nrwl/nx](https://github.com/nrwl/nx) and their examples use the conventional
   `nx run-many -t test`, which fails here. Read `test` as `vitest` — or
   `pytest` for a `language:python` project — and see
-  [Testing](#testing) for the real target names.
+  [Testing & Coverage](#testing--coverage) for the real target names.
 
 <!-- OPENWIKI:START -->
 

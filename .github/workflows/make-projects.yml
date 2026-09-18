@@ -85,8 +85,7 @@ jobs:
       - name: 📥 Download Codometer Baseline
         id: baseline
         if: >-
-          (github.ref == 'refs/heads/main' && steps.make-projects.outcome == 'success')
-          || github.event_name == 'pull_request'
+          (github.ref == 'refs/heads/main' && steps.make-projects.outcome == 'success') || github.event_name == 'pull_request'
         continue-on-error: true
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -98,8 +97,7 @@ jobs:
             exit 0
           fi
           gh run download "${run_id}" --name codometer-reports-main --dir codometer-baseline
-          echo "run-url=${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${run_id}" \
-            >>"${GITHUB_OUTPUT}"
+          echo "run-url=${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${run_id}" >>"${GITHUB_OUTPUT}"
 
       # On main this snapshot becomes the baseline every later pull request
       # compares against, which is what removes the second checkout, install,
