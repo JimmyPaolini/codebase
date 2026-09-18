@@ -3,7 +3,15 @@ import { projectDefaults } from "../../../../configuration/callidescope.config.j
 /**
  * What codependix-configuration is held to, measured rather than assumed.
  *
- * Six frames to read a configuration and resolve a destination.
+ * Seven frames to read a configuration, resolve a destination, and resolve
+ * the command line over both.
+ *
+ * Six of them were here before; the seventh is the facade. This package now
+ * exposes exactly one service, so a host asking what mode a run is in enters
+ * through `ConfigurationService.selectMode` and the flag resolver it forwards
+ * to sits one frame lower than it used to. The deepest stack is the one that
+ * prompts — mode selection, the prompt, its terminal guard, and the error it
+ * raises — and nothing inside it grew.
  *
  * Measured by a run scoped to this project and its dependency closure, and set
  * **at** what it measured rather than above it: a stack or a callable at either
@@ -21,6 +29,6 @@ export default {
   ...projectDefaults,
   limits: {
     maximumBreadth: 5,
-    maximumDepth: 6,
+    maximumDepth: 7,
   },
 };

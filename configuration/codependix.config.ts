@@ -254,27 +254,90 @@ const codependixConfiguration: CodependixConfiguration = {
       },
       // 🕸️ Codependix
       {
+        from: { tags: ["name:codependix-core"] },
+        kind: "forbid",
+        message:
+          "The codependix chain points one way: core is the contracts leaf, configuration resolves the config file and the command line over it, the four analyzers read both, the output renderer reads all of them, and the command-line host composes the lot.",
+        name: "codependix-core-is-a-leaf",
+        to: { id: ["*"] },
+      },
+      {
+        from: { tags: ["name:codependix-configuration"] },
+        kind: "allow",
+        message:
+          "The codependix chain points one way: core is the contracts leaf, configuration resolves the config file and the command line over it, the four analyzers read both, the output renderer reads all of them, and the command-line host composes the lot.",
+        name: "codependix-configuration-layer",
+        to: { tags: ["name:codependix-core"] },
+      },
+      {
         from: {
           id: [
-            "codependix-configuration",
             "codependix-file-imports",
             "codependix-nestjs-modules",
             "codependix-nx-projects",
           ],
         },
-        kind: "forbid",
+        kind: "allow",
         message:
-          "The four graph builders and the configuration package are leaves: none of them may depend on another codependix package. Only codependix-cli composes them, which is what lets a host take one graph builder without dragging the others behind it.",
+          "The three graph builders are analysis leaves: each reads the contracts and the resolved configuration and nothing else, which is what lets a host take one graph builder without dragging the others behind it. Narrowed from the rule that let them reach no codependix package at all, now that core and configuration sit beneath them.",
         name: "codependix-graph-builders-are-leaves",
-        to: { id: ["codependix-*"] },
+        to: {
+          tags: [
+            "name:codependix-configuration",
+            "name:codependix-core",
+            "name:logger",
+          ],
+        },
       },
       {
-        from: { id: ["codependix-boundaries"] },
-        kind: "forbid",
+        from: { tags: ["name:codependix-boundaries"] },
+        kind: "allow",
         message:
-          "codependix-boundaries builds each level's graph and judges it, and is called by a host rather than calling one. Depending back on codependix-cli would close a cycle between the host and the logic it hosts, which is the one direction this package may never point.",
-        name: "codependix-boundaries-does-not-reach-the-host",
-        to: { id: ["codependix-cli"] },
+          "codependix-boundaries builds each level's graph and judges it, and is called by a host rather than calling one. It sits at the top of the analysis layer — the one analyzer that reads the other three — and may never reach the renderer or the host above it.",
+        name: "codependix-boundaries-layer",
+        to: {
+          tags: [
+            "name:codependix-configuration",
+            "name:codependix-core",
+            "name:codependix-file-imports",
+            "name:codependix-nestjs-modules",
+            "name:codependix-nx-projects",
+          ],
+        },
+      },
+      {
+        from: { tags: ["name:codependix-output"] },
+        kind: "allow",
+        message:
+          "The codependix chain points one way: core is the contracts leaf, configuration resolves the config file and the command line over it, the four analyzers read both, the output renderer reads all of them, and the command-line host composes the lot.",
+        name: "codependix-output-layer",
+        to: {
+          tags: [
+            "name:codependix-boundaries",
+            "name:codependix-configuration",
+            "name:codependix-core",
+            "name:codependix-file-imports",
+            "name:codependix-nestjs-modules",
+            "name:codependix-nx-projects",
+            "name:logger",
+          ],
+        },
+      },
+      {
+        from: { tags: ["name:codependix-cli"] },
+        kind: "allow",
+        message:
+          "The codependix chain points one way: core is the contracts leaf, configuration resolves the config file and the command line over it, the four analyzers read both, the output renderer reads all of them, and the command-line host composes the lot.",
+        name: "codependix-cli-layer",
+        to: {
+          tags: [
+            "name:codependix-boundaries",
+            "name:codependix-configuration",
+            "name:codependix-core",
+            "name:codependix-output",
+            "name:logger",
+          ],
+        },
       },
       // ⏲️ Codometer
       {

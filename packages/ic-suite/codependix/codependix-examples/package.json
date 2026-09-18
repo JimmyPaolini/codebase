@@ -2,12 +2,14 @@
   "dependencies": {
     "@codebase/logger": "workspace:*",
     "@codependix/boundaries": "workspace:*",
-    "@codependix/cli": "workspace:*",
     "@codependix/configuration": "workspace:*",
+    "@codependix/core": "workspace:*",
     "@codependix/file-imports": "workspace:*",
     "@codependix/nestjs-modules": "workspace:*",
     "@codependix/nx-projects": "workspace:*",
+    "@codependix/output": "workspace:*",
     "@nestjs/common": "catalog:",
+    "@nestjs/core": "catalog:",
     "reflect-metadata": "catalog:",
     "zod": "catalog:"
   },

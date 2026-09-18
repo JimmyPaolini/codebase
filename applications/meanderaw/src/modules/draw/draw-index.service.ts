@@ -4,9 +4,9 @@
 
 import { Inject, Injectable } from "@nestjs/common";
 
-import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
-import { SUPPORTED_TYPES } from "../meander-classification/meander-classification.constants";
-import { MeanderDatabaseService } from "../meander-database/meander-database.service";
+import { SUPPORTED_TYPES } from "../classification/classification.constants";
+import { DatabaseService } from "../database/database.service";
+import { GeometryService } from "../geometry/geometry.service";
 
 import {
   BAND_REPEAT_COUNT,
@@ -16,8 +16,8 @@ import {
   UNCLASSIFIED_FAMILY_LABEL,
 } from "./draw-index.constants";
 
-import type { MeanderType } from "../meander-classification/meander-classification.types";
-import type { Meander } from "../meander-database/entities/Meander.entity";
+import type { MeanderType } from "../classification/classification.types";
+import type { Meander } from "../database/entities/Meander.entity";
 import type { MeanderIndexGroup } from "./draw-index.types";
 
 /**
@@ -35,7 +35,7 @@ import type { MeanderIndexGroup } from "./draw-index.types";
  * very little about the pattern it repeats into, so the page lays that tile
  * out `BAND_REPEAT_COUNT` times along a band rather than showing it once.
  * The stored tile is embedded verbatim in each position — the page states
- * where the repeats sit, and `MeanderRenderingService` stays the only thing
+ * where the repeats sit, and `DrawingService` stays the only thing
  * that decides what one of them draws.
  *
  * The page is written at the root of the output directory, beside the
@@ -46,10 +46,10 @@ export class DrawIndexService {
   // 🏗 Dependency Injection
 
   constructor(
-    @Inject(GridGeometryService)
-    private readonly gridGeometryService: GridGeometryService,
-    @Inject(MeanderDatabaseService)
-    private readonly meanderDatabaseService: MeanderDatabaseService,
+    @Inject(GeometryService)
+    private readonly geometryService: GeometryService,
+    @Inject(DatabaseService)
+    private readonly databaseService: DatabaseService,
   ) {}
 
   // 🔐 Private Fields
@@ -108,7 +108,7 @@ export class DrawIndexService {
 
   /** Rounds and trims one band coordinate the same way every drawn coordinate is. */
   private format(value: number): string {
-    return this.gridGeometryService.formatCoordinate(value);
+    return this.geometryService.formatCoordinate(value);
   }
 
   /** Collects the rows into their family groups, the groups in family order and the rows within each in reading order. */
@@ -159,7 +159,7 @@ export class DrawIndexService {
    * the same square cap there, so the seam paints over itself.
    */
   private renderBand(meander: Meander): string {
-    const geometry = this.gridGeometryService.compute(meander.rows);
+    const geometry = this.geometryService.compute(meander.rows);
     const pitch = meander.pitch * geometry.unit;
     const height = this.format(geometry.height + geometry.strokeWidth);
     const width = this.format(
@@ -219,7 +219,7 @@ ${figures}
 
   /** Reads every committed meander and renders the page they make, together. */
   async build(): Promise<string> {
-    return this.render(await this.meanderDatabaseService.findAll());
+    return this.render(await this.databaseService.findAll());
   }
 
   /**

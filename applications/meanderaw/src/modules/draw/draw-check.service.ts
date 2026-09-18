@@ -3,9 +3,9 @@ import { NestFactory } from "@nestjs/core";
 import { getRepositoryToken, InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
-import { HARDCODED_MEANDERS_BY_FAMILY } from "../hardcoded-meanders/hardcoded-meanders.constants";
-import { HardcodedMeandersService } from "../hardcoded-meanders/hardcoded-meanders.service";
-import { Meander } from "../meander-database/entities/Meander.entity";
+import { CORPUS_BY_FAMILY } from "../corpus/corpus.constants";
+import { CorpusService } from "../corpus/corpus.service";
+import { Meander } from "../database/entities/Meander.entity";
 
 import { DrawCheckSweepModule } from "./draw-check-sweep.module";
 import {
@@ -26,8 +26,8 @@ import type {
  * disagree.
  *
  * The committed side is read through the same `@InjectRepository(Meander)`
- * token `MeanderDatabaseService` itself resolves — `DrawModule` already
- * imports `MeanderDatabaseModule`, so this needs no wiring of its own to
+ * token `DatabaseService` itself resolves — `DrawModule` already
+ * imports `DatabaseModule`, so this needs no wiring of its own to
  * reach the one real file.
  *
  * `check` bootstraps its own throwaway application context and calls
@@ -144,7 +144,7 @@ export class DrawCheckService {
    * The throwaway half boots `DrawCheckSweepModule` as its own standalone
    * application context rather than reaching for services already injected
    * into this one: those are wired to whichever committed connection
-   * `MeanderDatabaseModule` opened for the running application, and
+   * `DatabaseModule` opened for the running application, and
    * `--check` mode's whole point is regenerating into a connection that is
    * never that one. The context is closed in a `finally` so a regeneration
    * that fails midway — a duplicate hardcoded Code colliding with an
@@ -160,13 +160,13 @@ export class DrawCheckService {
 
     try {
       const drawEnumerationService = context.get(DrawEnumerationService);
-      const hardcodedMeandersService = context.get(HardcodedMeandersService);
+      const corpusService = context.get(CorpusService);
       const throwawayMeanderRepository = context.get<Repository<Meander>>(
         getRepositoryToken(Meander),
       );
 
       await drawEnumerationService.sweep();
-      await hardcodedMeandersService.ingest(HARDCODED_MEANDERS_BY_FAMILY);
+      await corpusService.ingest(CORPUS_BY_FAMILY);
 
       regenerated = await throwawayMeanderRepository.find();
     } finally {

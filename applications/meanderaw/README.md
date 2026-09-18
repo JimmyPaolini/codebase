@@ -30,6 +30,37 @@ Code, its rows, and its columns — and by nothing else.
 nx run meanderaw:vitest
 ```
 
+## 🧩 Modules
+
+Each module is named for the one job it does, with no shared prefix. In an
+application where everything concerns meanders on a lattice, a `meander-` or
+`lattice-` prefix distinguishes nothing, and the split between those two put
+the reading of a rendered drawing on the wrong side of a line it straddled.
+
+| Job | Module |
+| --- | --- |
+| Own the Code: read one, read a point's bits, spell a tile, rotate its phase | `code` |
+| Draw a Code, read a drawing back, address a repeat in one, measure it | `drawing` |
+| Edges and points vocabulary | `tile` |
+| The symmetry group and its fold | `symmetry` |
+| Walk the space | `enumeration` |
+| Measure a meander | `characteristics` |
+| Decide its families, and the sub-family region its ink earns | `classification` |
+| Generic graph primitives | `graph` |
+| Pixel arithmetic, drawing document wrapper, persistence | `geometry`, `svg`, `database` |
+| The historical corpus | `corpus` |
+| The command line | `draw` |
+
+**A meander is its Code**, and there is no grid between the two. A Code is one
+hexadecimal character per interior lattice point in reading order, so the point
+at `(level, column)` is the character at `level × columns + column` and reading
+its four direction bits is indexing a string. The array of arrays that used to
+stand between them gave nothing the string does not.
+
+`mosaic` survives as the name of a **family** — 131 rows of the committed
+database carry it — and nowhere else. No module, service or type is named for
+it.
+
 ## 🗂️ Output Layout
 
 ```text
@@ -55,12 +86,12 @@ sweep draw through — so the column can be regenerated rather than trusted.
 - **Enumerated** — every structurally distinct repeat the lattice's edge budget admits,
   at each of the fourteen shapes it admits one at: 30,279 meanders, found by walking the
   space rather than by drawing a family. A row's `family` is read off its own structure
-  by `MeanderClassificationService`, and is null where the structure satisfies no
+  by `ClassificationService`, and is null where the structure satisfies no
   family's defining combination.
 - **Hardcoded** — the 965 meanders of the historical corpus that lie _beyond_ that
   budget, preserved as Codes extracted once from the retired file tree. Their family and
   sub-family are carried over as trusted metadata rather than re-derived. See
-  `HARDCODED_MEANDERS_BY_FAMILY` for exactly where the boundary sits and why the filter
+  `CORPUS_BY_FAMILY` for exactly where the boundary sits and why the filter
   is by shape rather than by Code.
 
 A duplicate lattice address across the two is a build failure rather than a convention
@@ -77,45 +108,49 @@ toward this repository's language bar, and `.codometerignore`, `.prettierignore`
 
 ## 🏛️ Meander Charter
 
-Ten families of meander are implemented, and they share a set of properties that are
-load-bearing to how a meander looks. The invariants were extracted from the six families
-that predate them, by measuring every committed SVG rather than by reading the code, and
-each is marked fixed or negotiable. A new family that breaks a fixed invariant is not a
-new family — it is a different kind of drawing. All four of the families that came after
-break a negotiable one: `cross` crosses, and `negative`, `branch`, and `parallel` all
-branch — in different shapes, which "The Branching Family" and "The Parallel Family" below
-are about. `negative` breaks the other one too, in three of its ten modes, and that is not
-a second family creeping in: the survey below found that 3,070 of the 3,179 `mosaic` tiles
-it measured have a crossing negative, so a `negative` family that crossed nowhere was
-drawing the 3.3% minority of its own source space.
+Ten families of meander are implemented, and they share a set of properties that describe
+how a meander looks. Three of them — orthogonality, space-filling channels, and the band
+model — are **guaranteed by construction**: no assignment of direction bits to a lattice
+can violate them, so no family gates them and none ever could. The other two — branching
+and crossing — are **demoted to measured characteristics**, `hasTJunctions` and
+`hasXJunctions`, rather than kept as invariants with declared exceptions: whether a
+family's ink branches or crosses is measured, never gated, and a family is free to do
+either as much as its own structure earns.
 
-`parallel` was the exception until this corpus was drawn, and its row of
-`RELAXED_INVARIANTS` was empty on purpose. **That is reversed.** Ruling both borders of
-its band — the same closing `branch` takes, though there the rules stand a lattice row
-clear of the ink — meets each strand's
-rising end with west, east, and south ink at one lattice point, so 642 of its 786 drawings
-fork. The row is not blanket: the other 144 are the `serpentine` drawings whose first and
-last strips are each one lattice row deep, where the flat ribbon on such a strip _is_ the
-rule and nothing rises to meet it. So the relaxation carries a **structural condition**
-rather than a list of modifier names, which is the only such row in the declaration. See
+The counts below were extracted from the ten families as they stand, by measuring every
+committed SVG rather than by reading the code — the method a declared-invariant framework
+once formalized and that this section keeps as the record of why each family's ink looks
+the way it does. `cross` crosses, and `negative`, `branch`, and `parallel` all branch — in
+different shapes, which "The Branching Family" and "The Parallel Family" below are about.
+`negative` crosses too, in three of its ten modes, and that is not a second family creeping
+in: the survey below found that 3,070 of the 3,179 `mosaic` tiles it measured have a
+crossing negative, so a `negative` family that crossed nowhere was drawing the 3.3%
+minority of its own source space.
+
+`parallel` was the exception until this corpus was drawn: it branched nowhere. **That
+changed.** Ruling both borders of its band — the same closing `branch` takes, though there
+the rules stand a lattice row clear of the ink — meets each strand's rising end with west,
+east, and south ink at one lattice point, so 642 of its 786 drawings fork. Not every
+drawing forks: the other 144 are the `serpentine` drawings whose first and last strips are
+each one lattice row deep, where the flat ribbon on such a strip _is_ the rule and nothing
+rises to meet it — a **structural condition** rather than a blanket count. See
 `docs/adr/0006-close-both-band-borders-in-branch-and-parallel.md` for why both borders were
 closed and what it cost.
 
-`mosaic` breaks both, and it is the only family that breaks them in its **enumerated half
-alone** — which is now the whole of it. Its unit space is every assignment of direction
-bits over a lattice, and most of that space branches and crosses; the four named modes it
-once had, `plain`, `split`, `alternated`, and `dot`, did neither, and they are gone. The
-declaration in `meander-topology.service.integration.test.ts` says so
-with a `permutations` flag, and the assertion that a declared relaxation is really
-_present_ is taken from committed output rather than from a generated drawing.
+`mosaic` branches and crosses too, and only in its **enumerated half alone** — which is now
+the whole of it. Its unit space is every assignment of direction bits over a lattice, and
+most of that space branches and crosses; the four named modes it once had, `plain`,
+`split`, `alternated`, and `dot`, did neither, and they are gone. This is still recorded in
+a charter integration suite since retired, with a `permutations` flag, measured from
+committed output rather than from a generated drawing.
 
 | # | Invariant | Status |
 | --- | --- | --- |
-| 1 | **Orthogonal only** — horizontal and vertical movement, no diagonals | Fixed |
-| 2 | **Space-filling** — every interior white channel is exactly one stroke width | Fixed |
-| 3 | **No branching** — ink contains no T-junctions | Relaxed by `branch` in every mode, by `negative` in every mode but `ruled-closed`, by `parallel` wherever a border strip has depth, by `mosaic` across its enumerated half, and by `chain` and `snake` under `edge` and `edge-flip` |
-| 4 | **No crossing** — ink contains no X-junctions | Relaxed by `cross` except under `interrupted`, by `mosaic` across its enumerated half, and by `negative` under `brick-straight`, `brick-upright`, and `grid` |
-| 5 | **Band, not field** — fixed canvas height, `rows` is density, tiling is horizontal | Fixed |
+| 1 | **Orthogonal only** — horizontal and vertical movement, no diagonals | Guaranteed by construction |
+| 2 | **Space-filling** — every interior white channel is exactly one stroke width | Guaranteed by construction |
+| 3 | **No branching** — ink contains no T-junctions | Demoted to characteristic `hasTJunctions` — present in `branch` in every mode, in `negative` in every mode but `ruled-closed`, in `parallel` wherever a border strip has depth, in `mosaic` across its enumerated half, and in `chain` and `snake` under `edge` and `edge-flip` |
+| 4 | **No crossing** — ink contains no X-junctions | Demoted to characteristic `hasXJunctions` — present in `cross` except under `interrupted`, in `mosaic` across its enumerated half, and in `negative` under `brick-straight`, `brick-upright`, and `grid` |
+| 5 | **Band, not field** — fixed canvas height, `rows` is density, tiling is horizontal | Guaranteed by construction |
 | 6 | **Flat path model** — unordered paths, no z-order, one stroke width per document | May be relaxed by ADR only |
 | 7 | Invariants hold within a band, not at its termination | See [#338](https://github.com/JimmyPaolini/codebase/issues/338) |
 
@@ -272,7 +307,7 @@ a name that says nothing about what it draws. `split` is `diamond`. At 3 rows al
 varying a parameter that changes nothing.
 
 The five that were not in the enumeration were not in it for one reason: their column
-span is past `MOSAIC_TILE_EDGE_BUDGET`. Two columns at six rows is 18 edges against a
+span is past `EDGE_BUDGET`. Two columns at six rows is 18 edges against a
 budget of 16, and six columns is 54. Raising the budget to reach them is not an option —
 it would admit `2 ** 54` tiles at that shape — so those five drawings are the cost of the
 removal, stated rather than glossed: a staircase at 5 and 6 rows and two dot ladders at 6
@@ -302,14 +337,14 @@ and needs no predicate.
 
 **The bits are twice-redundant, and the redundancy is a checked invariant.** `east` at one
 point is `west` at the point to its right, wrapping from the last column into the next
-repeat, and `south` is `north` at the point below. `MosaicTileService.assertWellFormed`
+repeat, and `south` is `north` at the point below. `TileService.assertWellFormed`
 refuses a grid that disagrees. That agreement is what makes a tile's bits denote exactly
 one drawing — no two assignments draw the same pattern, and no assignment draws none — and
 the east–west wrap at the last column **is** what makes a tile join up with its own next
 repeat, stated once rather than handled wherever a mark used to reach past the tile's edge.
 
 The alternative reading — each bit draws a half-unit arm, so disagreeing neighbors leave a
-stub ending between lattice lines — is rejected. `MeanderLatticeService` refuses a
+stub ending between lattice lines — is rejected. `LatticeService` refuses a
 coordinate that is not on a lattice line, so half-arms would break the whole measurement
 stack, and a stub ending in mid-air is not obviously legal under invariant 2 either.
 
@@ -317,7 +352,7 @@ stack, and a stub ending in mid-air is not obviously legal under invariant 2 eit
 eastward and one southward per point, minus the last level's southward ones, which have
 nowhere to reach — so a shape holds exactly `2 ** (columns * (2 * rows - 3))` tiles and
 rows and columns are not independent knobs. Capping each alone caps neither: six rows is
-fine, six columns is fine, and a six-by-six tile is `2 ** 54` of them. `MOSAIC_TILE_EDGE_BUDGET`
+fine, six columns is fine, and a six-by-six tile is `2 ** 54` of them. `EDGE_BUDGET`
 caps the edge count at **16**, which admits eleven shapes and 8,551 distinct tiles after
 symmetry folding — a corpus a person can look through. Twenty would admit about 116,000.
 
@@ -356,8 +391,8 @@ change and is not worth making for a vocabulary correction.
 The charter reports a **rendered document**'s ink as a graph — nodes, edges, components,
 free ends — and two predicates follow from those counts by arithmetic and nothing else: a
 **forest** is exactly `edges = nodes − components`, and a **tree** is exactly
-`components = 1 && edges = nodes − 1`. `MosaicConnectivityService` asks the same two
-questions of a **tile**, and answers them without drawing it.
+`components = 1 && edges = nodes − 1`. The same two questions were asked of a **tile**,
+and answered without drawing it — the counts below are what that reading found.
 
 | Question | Over the 8,551 tiles |
 | --- | --- |
@@ -405,16 +440,16 @@ repeat the ink really does close on itself, and the distinction it draws — ink
 terminates inside the repeat against ink that runs on through the repeats forever — is one
 the drawing cannot state.
 
-Both halves are asserted rather than argued.
-`mosaic-connectivity.service.integration.test.ts` renders every tile of three shapes at two
-repeat counts, measures each document the way any committed document is measured, and
-checks that the implication has no exception and that the set of tiles the two readings
+Both halves were asserted rather than argued, by a suite that rendered every tile of
+three shapes at two
+repeat counts, measured each document the way any committed document is measured, and
+checked that the implication had no exception and that the set of tiles the two readings
 disagree about is the same set once enough repeats are drawn for a wrapping run to show
 itself rather than close by coincidence within a narrow drawing — 1,631 tiles disagree at
 one repeat and 1,039 at two, against 1,033 from three repeats on, which is where the set
 settles into a property of the tile rather than of how much of it was drawn.
 
-The walk that counts the pieces is `MeanderTopologyService.components` and the arithmetic
+The walk that counts the pieces is `MeasurementService.components` and the arithmetic
 is its `isAcyclic` and `isOneComponent`, shared with the document-level reading through an
 `InkAdjacency` — nodes, neighbors, and an identity for a node. That is the whole of what a
 component count needs, and it is the only thing the two readings can share: one lives on a
@@ -469,12 +504,12 @@ decoded point by point without a table.
 
 It names a tile completely, because the points determine every edge: each one owns its
 `east` and its `south`. It is deliberately redundant, writing every edge twice — once at
-each end — which is the same redundancy `MosaicTileService.assertWellFormed` checks, and
+each end — which is the same redundancy `TileService.assertWellFormed` checks, and
 paying it buys a filename whose characters are the tile's own points rather than a packed
 edge list nobody can read. The directory a drawing is filed under carries the shape, so
 two tiles of different shapes may share a string.
 
-Recognition lives in the `mosaic-naming` module, which is a list of **rules**: a name,
+Recognition lives in `classification`, as `SubFamilyService` — a list of **rules**: a name,
 and a predicate over the tile's own direction bits that a tile must satisfy to be called
 it. Adding a name to the family is adding one of these, not writing a motif service.
 
@@ -488,7 +523,7 @@ Three consequences, and each is asserted rather than assumed:
   says nothing.
 - **A tile matching two rules is a defect in the rule set**, not a tie to break. The rules
   are exclusive by construction — each requires the _absence_ of the directions the others
-  are about — and `mosaic-naming.service.unit.test.ts` asserts it over the whole
+  are about — and `sub-family.service.unit.test.ts` asserts it over the whole
   enumerated space. `zigzag` and `square` are the one pair that cannot separate that way,
   since every point turns a corner in both; they split on a reading whose two halves are
   false together rather than true together whenever a tile is neither.
@@ -569,8 +604,7 @@ rows is asked of the rows instead, and it is exact.
 ### Every name is a constructor as well as a predicate
 
 A name is a rule, so recognizing a region costs nothing; building its aligned
-representative is the separate job `MosaicSubFamilyService` does, and for a while only
-five of the names had one. `mesh` and `zigzag` did not, because the shape table
+representative was a separate job, and for a while only five of the names had one. `mesh` and `zigzag` did not, because the shape table
 could say one thing — one direction's edges, anchored in the first column, every
 `levelStep` levels — and neither of those two is that. `mesh` uses both directions at
 once. `zigzag` needs its eastward edges to start a column further along at every level,
@@ -615,7 +649,7 @@ smallest `mesh` is `7b`, a single column with every edge it has.
 **Advancing the phase keeps every lane stepping, at every row count**, which is what makes
 one boolean enough rather than a rule that only reads right at the shallowest tile. The
 phase is the level index, so consecutive levels always disagree by one, so every lane is
-offset — and `mosaic-naming.service.unit.test.ts` names both constructors' tiles back at
+offset — and `sub-family.service.unit.test.ts` names both constructors' tiles back at
 every row count each exists at, from 5 through 11, rather than only at the smallest.
 
 Ask for a sub-family by name:
@@ -685,22 +719,21 @@ at a corner.
 Every `output/mosaic/<rows>-rows/<columns>-columns/*.svg` file was read from disk — no generation, no motif
 service, the same approach the charter test already uses to gate the corpus — and passed
 to the existing
-[`MeanderTopologyService.measure`](src/modules/meander-topology/meander-topology.service.ts).
+[`MeasurementService.measure`](src/modules/drawing/measurement.service.ts).
 A tile is classified from its own `negativeTJunctions`/`negativeXJunctions`:
 
 - **Crosses**: `negativeXJunctions > 0`.
 - **Branches only**: `negativeTJunctions > 0` and `negativeXJunctions === 0`.
 - **Neither**: both zero.
 
-This measurement adds no committed source: it ran as a temporary test beside
-`meander-topology.service.integration.test.ts`, deleted before this section was
-committed. It is nothing but a loop calling `measure` on each file and tallying the
+This measurement adds no committed source: it ran as a temporary test beside the
+charter integration suite, and both are gone. It is nothing but a loop calling `measure` on each file and tallying the
 result against the two thresholds above — reproducible in a few lines against the
 already-committed service.
 
 One further tally needed a small extension beyond what `measure` reports (see
 "Is the negative itself space-filling?" below): for each cell of the same lattice graph
-`MeanderLatticeService.build` already produces, how many of its corridor-eligible sides
+`LatticeService.build` already produces, how many of its corridor-eligible sides
 carry no corridor — the same four-arm check `measure` uses to find negative T- and
 X-junctions, just also recording degree 0.
 
@@ -918,8 +951,8 @@ count and column span, 3,179 in all — so the two descriptions were the same de
 
 Recognizing that is what made the matching rule droppable. `mosaic` is now the _whole_
 lattice under an edge budget rather than one region of it, and the matching region is still
-recoverable exactly: `MosaicTilesService.isMatching` filters the enumeration back down to
-it, and `mosaic-tiles.service.unit.test.ts` asserts the result shape by shape. That is what
+recoverable exactly: `TileEnumerationService.isMatching` filters the enumeration back down to
+it, and `tile-enumeration.service.unit.test.ts` asserts the result shape by shape. That is what
 says the widening is a widening and not a replacement.
 
 ### The five sit at the far end of one axis
@@ -1061,7 +1094,7 @@ If the decision is ever revisited, a follow-up implementation ticket would have 
 - re-express the modifiers as constructors over lattice tiles, deriving `unitWidth` and
   `rightEdge` from the tile instead of from per-family arithmetic;
 - give the space a canonical identifier and a symmetry folding, as
-  `MosaicSymmetryService` already does for its own much smaller alphabet.
+  `SymmetryService` already does for its own much smaller alphabet.
 
 **It would be a wide refactor and would need expand–contract sequencing.** It touches
 `MotifService`, all six motif services, `MeanderGenerationService`'s dispatch,
@@ -1075,7 +1108,7 @@ then could the contract phase delete the per-family path emission.
 > only the fourth. Every drawing in every family now carries a **lattice address** —
 > `<rows>r<span>c-` and one hexadecimal character per interior lattice point — with its
 > canonical symmetry class beside it, spelled and folded by
-> `LatticeIdentificationService` in `src/modules/lattice-identification/` and recorded
+> `AddressService` in `src/modules/drawing/` and recorded
 > for every committed drawing in the committed `output/meanders.sqlite` database. The
 > other three bullets are untouched: there is no family-agnostic lattice enumerator, the
 > motif services still emit their own path data rather than producing a lattice tile for
@@ -1179,10 +1212,10 @@ invariants 3 and 4 constrain ink, and no family is failed for what its white spa
 | 5 Band, not field | Applies | Applies |
 | 6 Flat path model | Applies | Applies |
 
-That declaration lives in `RELAXED_INVARIANTS` in
-[the charter property test](src/modules/meander-topology/meander-topology.service.integration.test.ts),
-which asserts a declared relaxation is _present_ as well as an undeclared one absent — so
-neither mode can quietly stop doing what this table says it does.
+That declaration lived in `RELAXED_INVARIANTS` in the charter property test, which
+asserted a declared relaxation was _present_ as well as an undeclared one absent. Both
+are retired: asserting that a declared relaxation is present means nothing once nothing
+is declared, and the charter is prose now rather than a gate.
 
 ### Provenance: derived, not attested
 
@@ -1212,7 +1245,7 @@ drawing one; this family draws them.
 
 Nothing here is invented. A `mosaic` drawing divides its band into cells, and the white
 between two neighboring cells is a **corridor** wherever the ink wall that would separate
-them is missing — which is exactly what `MeanderTopologyService` counts when it reports a
+them is missing — which is exactly what `MeasurementService` counts when it reports a
 document's negative junctions. `negative` puts one lattice point on every cell and one
 stroke along every corridor. The shapes were already produced, already orthogonal, and
 already on this grid; what is new is treating white as black.
@@ -1245,16 +1278,15 @@ mortar that branches and one that crosses.
 `brick-upright` is the one source that cannot always be a sub-family's tile. `diamond`'s
 vertical dashes cover the interior in pairs, so it names no tile over an odd number of
 levels; this family closes the stack with a one-level dot there instead, exactly as the
-stair caps its own. Where `diamond` exists the two tiles are identical, which
-`negative-source.service.unit.test.ts` asserts against `MosaicSubFamilyService.tile`
-rather than against an identifier.
+stair caps its own. Where `diamond` exists the two tiles are identical, which was
+asserted against the sub-family's own constructor rather than against an identifier.
 
 A `negative` of `rows` rows inverts a source of `rows + 1`, and that offset is arithmetic
 rather than taste: a source of `n` rows has `n` rows of cells, the negative puts a lattice
 point on each of them, and `n` lattice lines bound `n - 1` rows. Inverting a source drawn
 at the negative's own row count would leave the canvas's bottom lattice row with no ink on
 it — invariant 2 broken for a bookkeeping reason rather than a drawn one. It is also why
-the family's structural minimum is 3 where `MOSAIC_TILE_MINIMUM_ROWS` is 4.
+the family's structural minimum is 3 where `MINIMUM_ROWS` is 4.
 
 One consequence of the offset: the sweep draws `negative` at 3 through 12 rows, so
 everything from its 8-row drawings up inverts a source of 9 rows or more — past what the
@@ -1302,7 +1334,7 @@ diverge. Both halves of that are asserted rather than described.
 Six names is a sample of that space, not the space. **It is enumerated in full** under
 `output/negative/<rows>-rows/permutations/1-columns/`, one drawing per symmetry class, the
 same way `mosaic` enumerates its own tiles — because it is the same enumeration:
-`MosaicTilesService.enumerate(rows + 1, 1)` is every one-column tile there is, and every
+`TileEnumerationService.enumerate(rows + 1, 1)` is every one-column tile there is, and every
 one of them is a source this family can invert.
 
 | Negative rows | Sources | Branches only | Crosses | Neither |
@@ -1392,7 +1424,7 @@ else in the corpus.
 
 Thirty of those two hundred numbers have a committed source: the ones at 3 through 5 rows,
 whose `mosaic` sources are among the committed permutation tiles. Each of the thirty is
-asserted, in `meander-topology.service.integration.test.ts`, to equal the negative T- and
+asserted, by the retired charter integration suite, to equal the negative T- and
 X-junction counts of the committed `output/mosaic/<rows>-rows/<columns>-columns/` document it
 inverts — read off disk, from a file that existed before this family did. That assertion is
 what makes "the candidates come from the mosaic space" a fact rather than a claim: if a
@@ -1449,8 +1481,8 @@ apart. The corpus that resulted has no tree in it at all — `parallel`'s one-st
 and its names were then dropped as duplicates for a separate reason. What is left is the
 two-way split the tree was the exception to: 5,817 of the 9,877 committed documents are
 forests of many components — `branch`'s 80 among them — and 4,060 carry a loop.
-`meander-topology.service.integration.test.ts` reads every committed document off disk and
-asserts that.
+The retired charter integration suite read every committed document off disk and
+asserted that.
 
 ### What it draws
 
@@ -1617,7 +1649,7 @@ pieces with no cycle in any of them. The ten `negative` drawings that carry no c
 `ruled-closed`'s, whose ink is the band's own rules and nothing joining them: a forest of
 one component per lattice row, which is the corner of that family shaped the way this one
 now is throughout. Both ends of `negative`'s range are asserted in
-`meander-topology.service.integration.test.ts` rather than merely published here.
+the retired charter integration suite rather than merely published here.
 
 The survey anticipated the loop-free figure — its "A note for the branching family" found that
 every one of the 104 _branches only_ tiles has at least one cycle at the rendered scale,
@@ -2000,13 +2032,13 @@ Call stacks traced through `applications/meanderaw`, deepest first. Each frame s
 
 | Measure | Value |
 | --- | --- |
-| Callables | 329 |
-| Files | 101 |
-| Calls traced | 424 |
-| Call stacks | 33 |
+| Callables | 283 |
+| Files | 100 |
+| Calls traced | 367 |
+| Call stacks | 28 |
 | Deepest stack | 16 |
 | Stacks through recursion | 0 |
-| Unfollowable calls | 22 |
+| Unfollowable calls | 20 |
 
 ### Limits
 
@@ -2022,7 +2054,7 @@ What this project is judged against, as declared in its own `callidescope.config
 **1. `DrawCommand.run`** — depth ≥ 16 · decorated-method
 
 ```text
-🚀 DrawCommand.run(_passedParameters: string[], options: DrawCommandOptions): Promise<void> [applications/meanderaw/src/modules/draw/draw.command.ts:227]
+🚀 DrawCommand.run(_passedParameters: string[], options: DrawCommandOptions): Promise<void> [applications/meanderaw/src/modules/draw/draw.command.ts:225]
    ↳ Checks for drift when `--check` is given, sweeps every meander into the database when no Code is named, or draws the…
   └─> DrawCheckService.check(): Promise<MeanderDriftReport> [applications/meanderaw/src/modules/draw/draw-check.service.ts:154]
      ↳ Regenerates the whole corpus into a throwaway database, diffs it against the committed one, and throws {@link…
@@ -2032,402 +2064,327 @@ What this project is judged against, as declared in its own `callidescope.config
          ↳ Enumerates the shapes named and writes every meander they hold, one shape's rows at a time, answering with how many…
         └─> DrawEnumerationService.records(shape: MeanderShape): MeanderRecord[] [applications/meanderaw/src/modules/draw/draw-enumeration.service.ts:72]
            ↳ Every meander of one shape, as the rows the database holds for them.
-          └─> MeanderEnumerationService.enumerate(shape: MeanderShape): EnumeratedMeander[] [applications/meanderaw/src/modules/meander-enumeration/meander-enumeration.service.ts:77]
+          └─> EnumerationService.enumerate(shape: MeanderShape): EnumeratedMeander[] [applications/meanderaw/src/modules/enumeration/enumeration.service.ts:77]
              ↳ Every structurally distinct meander of one shape, one per symmetry class, each spelled by the Code of the class's own…
-            └─> MosaicTilesService.enumerate(rows: number, columns: number): MosaicTile[] [applications/meanderaw/src/modules/mosaic-tile/mosaic-tiles.service.ts:185]
+            └─> TileEnumerationService.enumerate(rows: number, columns: number): Tile[] [applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:166]
                ↳ Every distinct tile of the given size, one per symmetry class, ordered by canonical edge key so the sweep is stable…
-              └─> MosaicTilesService.assign(ordinal: number, enumeration: MosaicEnumeration): void [applications/meanderaw/src/modules/mosaic-tile/mosaic-tiles.service.ts:106]
+              └─> TileEnumerationService.assign(ordinal: number, enumeration: TileEnumerationState): void [applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:95]
                  ↳ Decides the `ordinal`-th edge both ways, recording a tile once every edge is decided.
-                └─> MosaicTilesService.record(enumeration: MosaicEnumeration): void [applications/meanderaw/src/modules/mosaic-tile/mosaic-tiles.service.ts:145]
+                └─> TileEnumerationService.record(enumeration: TileEnumerationState): void [applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:130]
                    ↳ Keeps the tile the current assignment describes, unless a tile already found draws the same pattern.
-                  └─> MosaicSymmetryService.canonicalTile(tile: MosaicTile): MosaicTile [applications/meanderaw/src/modules/mosaic-tile/mosaic-symmetry.service.ts:185]
+                  └─> SymmetryService.canonicalTile(tile: Tile): Tile [applications/meanderaw/src/modules/symmetry/symmetry.service.ts:174]
                      ↳ The one tile of a symmetry class the corpus draws.
-                    └─> MosaicSymmetryService.orbit(tile: MosaicTile): MosaicTile[] [applications/meanderaw/src/modules/mosaic-tile/mosaic-symmetry.service.ts:69]
+                    └─> SymmetryService.orbit(tile: Tile): Tile[] [applications/meanderaw/src/modules/symmetry/symmetry.service.ts:64]
                        ↳ Every tile the symmetry group maps `tile` to, itself included, with duplicates left in.
-                      └─> MosaicSymmetryService.transform(tile: MosaicTile, options: MosaicTransformChoice): MosaicTile [applications/meanderaw/src/modules/mosaic-tile/mosaic-symmetry.service.ts:150]
+                      └─> SymmetryService.transform(tile: Tile, options: TransformChoice): Tile [applications/meanderaw/src/modules/symmetry/symmetry.service.ts:145]
                          ↳ The tile one group element maps `tile` to.
-                        └─> MosaicTileService.blankEdges(shape: MosaicTileShape): MosaicEdgesDraft [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:151]
+                        └─> TileService.blankEdges(shape: TileShape): EdgesDraft [applications/meanderaw/src/modules/tile/tile.service.ts:143]
                            ↳ A tile's worth of unset edges, ready to be marked one at a time and handed to {@link build}.
-                          └─> MosaicTileService.grid(levels: number): boolean[][] [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:153]
-                            └─> MosaicTileService.from(…)(): boolean[] [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:154]
-                              └─> MosaicTileService.from(…)(): boolean [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:155]
+                          └─> TileService.grid(levels: number): boolean[][] [applications/meanderaw/src/modules/tile/tile.service.ts:145]
+                            └─> TileService.from(…)(): boolean[] [applications/meanderaw/src/modules/tile/tile.service.ts:146]
+                              └─> TileService.from(…)(): boolean [applications/meanderaw/src/modules/tile/tile.service.ts:147]
 ```
 
-**2. `MosaicTileGenerationService.generate`** — depth ≥ 9 · orphan-root
+**2. `AddressService.identifyDocument`** — depth ≥ 9 · orphan-root
 
 ```text
-🚀 MosaicTileGenerationService.generate(tile: MosaicTile, repeatCount: number): string [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile-generation.service.ts:57]
-   ↳ Validates the tile's row count and the repeat count, then renders the finished SVG document.
-  └─> MosaicTileGenerationService.from(…)(_value: unknown, unitIndex: number): string [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile-generation.service.ts:83]
-    └─> MosaicTileMotifService.path(geometry: GridGeometry, tile: MosaicTile, unit: MosaicTileUnit): string [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile-motif.service.ts:140]
-       ↳ Draws one repeat unit's ink and its two cap ticks, as an SVG path attribute value.
-      └─> MosaicTileMotifService.unitSegments(geometry: GridGeometry, tile: MosaicTile, tileStartColumn: number): string [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile-motif.service.ts:74]
-         ↳ The path data every point of one repeat unit draws, in reading order.
-        └─> MosaicTileMotifService.flatMap(…)(this: undefined, row: readonly MosaicDirections[], level: number): string[] [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile-motif.service.ts:80]
-          └─> MosaicTileMotifService.map(…)(directions: MosaicDirections, column: number): string [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile-motif.service.ts:81]
-            └─> MosaicTileMotifService.pointSegments(…): string [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile-motif.service.ts:51]
-               ↳ The path data one point draws: the edges it owns, or a dot where it owns none and is reached by none.
-              └─> MosaicTileMotifService.format(value: number): string [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile-motif.service.ts:46]
-                 ↳ Rounds and trims one pixel coordinate for interpolation into path data.
-                └─> GridGeometryService.formatCoordinate(value: number): string [applications/meanderaw/src/modules/grid-geometry/grid-geometry.service.ts:63]
-                   ↳ Rounds a coordinate to five decimal places and trims any trailing zeros.
-```
-
-**3. `LatticeIdentificationService.identifyDocument`** — depth ≥ 9 · orphan-root
-
-```text
-🚀 LatticeIdentificationService.identifyDocument(document: string, unit: LatticeUnit): LatticeAddress [applications/meanderaw/src/modules/lattice-identification/lattice-identification.service.ts:197]
+🚀 AddressService.identifyDocument(document: string, unit: LatticeUnit): LatticeAddress [applications/meanderaw/src/modules/drawing/address.service.ts:134]
    ↳ What a rendered document is, on the lattice: its band's row count, the column span its true repeat was read at, the…
-  └─> LatticeIdentificationService.canonicalIdentifier(tile: MosaicTile): string [applications/meanderaw/src/modules/lattice-identification/lattice-identification.service.ts:131]
-     ↳ The identifier every tile in a symmetry class shares: {@link identify} of the one member…
-    └─> MosaicSymmetryService.canonicalTile(tile: MosaicTile): MosaicTile [applications/meanderaw/src/modules/mosaic-tile/mosaic-symmetry.service.ts:185]
+  └─> CodeService.spellCanonical(tile: Tile): string [applications/meanderaw/src/modules/code/code.service.ts:183]
+     ↳ The Code every tile in a symmetry class shares: {@link spell} of the one member `SymmetryService.canonicalTile` picks.
+    └─> SymmetryService.canonicalTile(tile: Tile): Tile [applications/meanderaw/src/modules/symmetry/symmetry.service.ts:174]
        ↳ The one tile of a symmetry class the corpus draws.
-      └─> MosaicSymmetryService.orbit(tile: MosaicTile): MosaicTile[] [applications/meanderaw/src/modules/mosaic-tile/mosaic-symmetry.service.ts:69]
+      └─> SymmetryService.orbit(tile: Tile): Tile[] [applications/meanderaw/src/modules/symmetry/symmetry.service.ts:64]
          ↳ Every tile the symmetry group maps `tile` to, itself included, with duplicates left in.
-        └─> MosaicSymmetryService.transform(tile: MosaicTile, options: MosaicTransformChoice): MosaicTile [applications/meanderaw/src/modules/mosaic-tile/mosaic-symmetry.service.ts:150]
+        └─> SymmetryService.transform(tile: Tile, options: TransformChoice): Tile [applications/meanderaw/src/modules/symmetry/symmetry.service.ts:145]
            ↳ The tile one group element maps `tile` to.
-          └─> MosaicTileService.blankEdges(shape: MosaicTileShape): MosaicEdgesDraft [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:151]
+          └─> TileService.blankEdges(shape: TileShape): EdgesDraft [applications/meanderaw/src/modules/tile/tile.service.ts:143]
              ↳ A tile's worth of unset edges, ready to be marked one at a time and handed to {@link build}.
-            └─> MosaicTileService.grid(levels: number): boolean[][] [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:153]
-              └─> MosaicTileService.from(…)(): boolean[] [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:154]
-                └─> MosaicTileService.from(…)(): boolean [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:155]
+            └─> TileService.grid(levels: number): boolean[][] [applications/meanderaw/src/modules/tile/tile.service.ts:145]
+              └─> TileService.from(…)(): boolean[] [applications/meanderaw/src/modules/tile/tile.service.ts:146]
+                └─> TileService.from(…)(): boolean [applications/meanderaw/src/modules/tile/tile.service.ts:147]
+```
+
+**3. `SymmetryService.variants`** — depth 7 · orphan-root
+
+```text
+🚀 SymmetryService.variants(tile: Tile): Tile[] [applications/meanderaw/src/modules/symmetry/symmetry.service.ts:219]
+   ↳ Every distinct tile that draws the same pattern as `tile`, itself included — its symmetry class, as tiles rather than…
+  └─> SymmetryService.orbit(tile: Tile): Tile[] [applications/meanderaw/src/modules/symmetry/symmetry.service.ts:64]
+     ↳ Every tile the symmetry group maps `tile` to, itself included, with duplicates left in.
+    └─> SymmetryService.transform(tile: Tile, options: TransformChoice): Tile [applications/meanderaw/src/modules/symmetry/symmetry.service.ts:145]
+       ↳ The tile one group element maps `tile` to.
+      └─> TileService.blankEdges(shape: TileShape): EdgesDraft [applications/meanderaw/src/modules/tile/tile.service.ts:143]
+         ↳ A tile's worth of unset edges, ready to be marked one at a time and handed to {@link build}.
+        └─> TileService.grid(levels: number): boolean[][] [applications/meanderaw/src/modules/tile/tile.service.ts:145]
+          └─> TileService.from(…)(): boolean[] [applications/meanderaw/src/modules/tile/tile.service.ts:146]
+            └─> TileService.from(…)(): boolean [applications/meanderaw/src/modules/tile/tile.service.ts:147]
 ```
 
 <details>
-<summary>30 more call stacks</summary>
+<summary>25 more call stacks</summary>
 
-**4. `MosaicSymmetryService.variants`** — depth 7 · orphan-root
-
-```text
-🚀 MosaicSymmetryService.variants(tile: MosaicTile): MosaicTile[] [applications/meanderaw/src/modules/mosaic-tile/mosaic-symmetry.service.ts:230]
-   ↳ Every distinct tile that draws the same pattern as `tile`, itself included — its symmetry class, as tiles rather than…
-  └─> MosaicSymmetryService.orbit(tile: MosaicTile): MosaicTile[] [applications/meanderaw/src/modules/mosaic-tile/mosaic-symmetry.service.ts:69]
-     ↳ Every tile the symmetry group maps `tile` to, itself included, with duplicates left in.
-    └─> MosaicSymmetryService.transform(tile: MosaicTile, options: MosaicTransformChoice): MosaicTile [applications/meanderaw/src/modules/mosaic-tile/mosaic-symmetry.service.ts:150]
-       ↳ The tile one group element maps `tile` to.
-      └─> MosaicTileService.blankEdges(shape: MosaicTileShape): MosaicEdgesDraft [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:151]
-         ↳ A tile's worth of unset edges, ready to be marked one at a time and handed to {@link build}.
-        └─> MosaicTileService.grid(levels: number): boolean[][] [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:153]
-          └─> MosaicTileService.from(…)(): boolean[] [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:154]
-            └─> MosaicTileService.from(…)(): boolean [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:155]
-```
-
-**5. `MeanderTopologyService.connectivity`** — depth ≥ 6 · orphan-root
+**4. `MeasurementService.connectivity`** — depth ≥ 6 · orphan-root
 
 ```text
-🚀 MeanderTopologyService.connectivity(document: string): InkConnectivity [applications/meanderaw/src/modules/meander-topology/meander-topology.service.ts:284]
+🚀 MeasurementService.connectivity(document: string): InkConnectivity [applications/meanderaw/src/modules/drawing/measurement.service.ts:229]
    ↳ Counts one rendered meander's ink as a graph: its painted lattice points, the one-pitch steps joining them, and how…
-  └─> MeanderLatticeService.build(document: string): LatticeGraph [applications/meanderaw/src/modules/meander-lattice/meander-lattice.service.ts:233]
+  └─> LatticeService.build(document: string): LatticeGraph [applications/meanderaw/src/modules/drawing/lattice.service.ts:233]
      ↳ Reduces a rendered meander to the lattice steps and points its ink paints.
-    └─> MeanderLatticeService.commands(pathData: string): PathCommand[] [applications/meanderaw/src/modules/meander-lattice/meander-lattice.service.ts:120]
+    └─> LatticeService.commands(pathData: string): PathCommand[] [applications/meanderaw/src/modules/drawing/lattice.service.ts:120]
        ↳ Every command one path's `d` attribute draws, in order.
-      └─> MeanderLatticeService.map(…)(group: PathCommandGroup): PathCommand [applications/meanderaw/src/modules/meander-lattice/meander-lattice.service.ts:121]
-        └─> MeanderLatticeService.command(group: PathCommandGroup): PathCommand [applications/meanderaw/src/modules/meander-lattice/meander-lattice.service.ts:91]
+      └─> LatticeService.map(…)(group: PathCommandGroup): PathCommand [applications/meanderaw/src/modules/drawing/lattice.service.ts:121]
+        └─> LatticeService.command(group: PathCommandGroup): PathCommand [applications/meanderaw/src/modules/drawing/lattice.service.ts:91]
            ↳ Turns one command letter and the coordinates that followed it into a {@link PathCommand}, refusing any other coordinate…
-          └─> UnmeasurableDocumentError.constructor(reason: string): UnmeasurableDocumentError [applications/meanderaw/src/modules/meander-lattice/meander-lattice.constants.ts:61]
+          └─> UnmeasurableDocumentError.constructor(reason: string): UnmeasurableDocumentError [applications/meanderaw/src/modules/drawing/lattice.constants.ts:61]
 ```
 
-**6. `MeanderTopologyService.measure`** — depth ≥ 6 · orphan-root
+**5. `MeasurementService.measure`** — depth ≥ 6 · orphan-root
 
 ```text
-🚀 MeanderTopologyService.measure(document: string): MeanderTopology [applications/meanderaw/src/modules/meander-topology/meander-topology.service.ts:318]
+🚀 MeasurementService.measure(document: string): DrawingMeasurement [applications/meanderaw/src/modules/drawing/measurement.service.ts:241]
    ↳ Measures one rendered meander's channel widths and its ink and negative junction counts.
-  └─> MeanderLatticeService.build(document: string): LatticeGraph [applications/meanderaw/src/modules/meander-lattice/meander-lattice.service.ts:233]
+  └─> LatticeService.build(document: string): LatticeGraph [applications/meanderaw/src/modules/drawing/lattice.service.ts:233]
      ↳ Reduces a rendered meander to the lattice steps and points its ink paints.
-    └─> MeanderLatticeService.commands(pathData: string): PathCommand[] [applications/meanderaw/src/modules/meander-lattice/meander-lattice.service.ts:120]
+    └─> LatticeService.commands(pathData: string): PathCommand[] [applications/meanderaw/src/modules/drawing/lattice.service.ts:120]
        ↳ Every command one path's `d` attribute draws, in order.
-      └─> MeanderLatticeService.map(…)(group: PathCommandGroup): PathCommand [applications/meanderaw/src/modules/meander-lattice/meander-lattice.service.ts:121]
-        └─> MeanderLatticeService.command(group: PathCommandGroup): PathCommand [applications/meanderaw/src/modules/meander-lattice/meander-lattice.service.ts:91]
+      └─> LatticeService.map(…)(group: PathCommandGroup): PathCommand [applications/meanderaw/src/modules/drawing/lattice.service.ts:121]
+        └─> LatticeService.command(group: PathCommandGroup): PathCommand [applications/meanderaw/src/modules/drawing/lattice.service.ts:91]
            ↳ Turns one command letter and the coordinates that followed it into a {@link PathCommand}, refusing any other coordinate…
-          └─> UnmeasurableDocumentError.constructor(reason: string): UnmeasurableDocumentError [applications/meanderaw/src/modules/meander-lattice/meander-lattice.constants.ts:61]
+          └─> UnmeasurableDocumentError.constructor(reason: string): UnmeasurableDocumentError [applications/meanderaw/src/modules/drawing/lattice.constants.ts:61]
 ```
 
-**7. `MosaicConnectivityService.isAcyclic`** — depth ≥ 6 · orphan-root
+**6. `SubFamilyService.matches`** — depth ≥ 5 · orphan-root
 
 ```text
-🚀 MosaicConnectivityService.isAcyclic(tile: MosaicTile): boolean [applications/meanderaw/src/modules/mosaic-tile/mosaic-connectivity.service.ts:189]
-   ↳ Whether a tile's ink carries no loop, counting a run that closes only by wrapping into the next repeat as the loop it…
-  └─> MosaicConnectivityService.connectivity(tile: MosaicTile): InkConnectivity [applications/meanderaw/src/modules/mosaic-tile/mosaic-connectivity.service.ts:177]
-     ↳ One tile's ink counted as a graph — its points, the edges joining them, how many connected pieces those edges leave,…
-    └─> MosaicConnectivityService.edgeCount(tile: MosaicTile): number [applications/meanderaw/src/modules/mosaic-tile/mosaic-connectivity.service.ts:91]
-       ↳ How many edges a tile holds, counted once each at the point that owns them rather than twice from the direction bits.
-      └─> MosaicTileService.edges(tile: MosaicTile): MosaicEdges [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:206]
-         ↳ A tile's edges, each held once, at the point that owns it.
-        └─> MosaicTileService.map(…)(row: readonly MosaicDirections[]): boolean[] [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:208]
-          └─> MosaicTileService.map(…)({ east }: MosaicDirections): boolean [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:208]
-```
-
-**8. `MosaicConnectivityService.isOneComponent`** — depth ≥ 6 · orphan-root
-
-```text
-🚀 MosaicConnectivityService.isOneComponent(tile: MosaicTile): boolean [applications/meanderaw/src/modules/mosaic-tile/mosaic-connectivity.service.ts:194]
-   ↳ Whether a tile's ink is a single connected figure, which for a repeating band means connected up to the repeat rather…
-  └─> MosaicConnectivityService.connectivity(tile: MosaicTile): InkConnectivity [applications/meanderaw/src/modules/mosaic-tile/mosaic-connectivity.service.ts:177]
-     ↳ One tile's ink counted as a graph — its points, the edges joining them, how many connected pieces those edges leave,…
-    └─> MosaicConnectivityService.edgeCount(tile: MosaicTile): number [applications/meanderaw/src/modules/mosaic-tile/mosaic-connectivity.service.ts:91]
-       ↳ How many edges a tile holds, counted once each at the point that owns them rather than twice from the direction bits.
-      └─> MosaicTileService.edges(tile: MosaicTile): MosaicEdges [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:206]
-         ↳ A tile's edges, each held once, at the point that owns it.
-        └─> MosaicTileService.map(…)(row: readonly MosaicDirections[]): boolean[] [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:208]
-          └─> MosaicTileService.map(…)({ east }: MosaicDirections): boolean [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:208]
-```
-
-**9. `MosaicSubFamilyService.tile`** — depth 5 · orphan-root
-
-```text
-🚀 MosaicSubFamilyService.tile(subFamily: MosaicBuildableSubFamily, rows: number): MosaicTile | undefined [applications/meanderaw/src/modules/mosaic-tile/mosaic-sub-family.service.ts:118]
-   ↳ The tile a sub-family is named for at `rows`, or `undefined` where the sub-family names no tile at that row count at…
-  └─> MosaicTileService.build(shape: MosaicTileShape, edges: MosaicEdges): MosaicTile [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:170]
-     ↳ The tile a set of edges draws, with every point's four bits derived from the two edges it owns and the two its…
-    └─> MosaicTileService.from(…)(…): { east: boolean; north: boolean; south: boolean; west: boolean; }[] [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:175]
-      └─> MosaicTileService.from(…)(…): { east: boolean; north: boolean; south: boolean; west: boolean; } [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:176]
-        └─> MosaicTileService.horizontal(edges: MosaicEdges, level: number, column: number): boolean [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:97]
-           ↳ Whether the eastward edge leaving `(level, column)` is set, reading a level or column the tile does not have as unset.
-```
-
-**10. `MosaicNamingService.matches`** — depth ≥ 5 · orphan-root
-
-```text
-🚀 MosaicNamingService.matches(tile: MosaicTile): boolean [applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:227]
-  └─> MosaicNamingService.bare(tile: MosaicTile): boolean [applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:217]
-    └─> MosaicNamingService.everyPoint(…)(point: MosaicDirections): boolean [applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:218]
-      └─> MosaicTileService.isBare(directions: MosaicDirections): boolean [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:239]
-         ↳ Every point of a tile that carries no ink at all, and so draws a dot.
-        └─> MosaicTileService.degree(directions: MosaicDirections): number [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:196]
+🚀 SubFamilyService.matches(tile: Tile): boolean [applications/meanderaw/src/modules/classification/sub-family.service.ts:224]
+  └─> SubFamilyService.bare(tile: Tile): boolean [applications/meanderaw/src/modules/classification/sub-family.service.ts:214]
+    └─> SubFamilyService.everyPoint(…)(point: Directions): boolean [applications/meanderaw/src/modules/classification/sub-family.service.ts:215]
+      └─> TileService.isBare(directions: Directions): boolean [applications/meanderaw/src/modules/tile/tile.service.ts:231]
+         ↳ Whether a point carries no ink at all, and so draws a dot.
+        └─> TileService.degree(directions: Directions): number [applications/meanderaw/src/modules/tile/tile.service.ts:188]
            ↳ How many of a point's four direction bits are set — the point's degree as the drawing shows it.
 ```
 
-**11. `MosaicNamingService.matches`** — depth ≥ 5 · orphan-root
+**7. `SubFamilyService.matches`** — depth ≥ 5 · orphan-root
 
 ```text
-🚀 MosaicNamingService.matches(tile: MosaicTile): boolean [applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:229]
-  └─> MosaicNamingService.horizontal(tile: MosaicTile): boolean [applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:221]
-    └─> MosaicNamingService.everyPoint(…): boolean [applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:102]
+🚀 SubFamilyService.matches(tile: Tile): boolean [applications/meanderaw/src/modules/classification/sub-family.service.ts:226]
+  └─> SubFamilyService.horizontal(tile: Tile): boolean [applications/meanderaw/src/modules/classification/sub-family.service.ts:218]
+    └─> SubFamilyService.everyPoint(tile: Tile, predicate: (directions: Directions) => boolean): boolean [applications/meanderaw/src/modules/classification/sub-family.service.ts:99]
        ↳ Whether every point of a tile satisfies `predicate`.
-      └─> MosaicNamingService.every(…)(row: readonly MosaicDirections[]): boolean [applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:106]
-        └─> MosaicNamingService.every(…)(point: MosaicDirections): boolean [applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:106]
+      └─> SubFamilyService.every(…)(row: readonly Directions[]): boolean [applications/meanderaw/src/modules/classification/sub-family.service.ts:103]
+        └─> SubFamilyService.every(…)(point: Directions): boolean [applications/meanderaw/src/modules/classification/sub-family.service.ts:103]
 ```
 
-**12. `MosaicNamingService.matches`** — depth ≥ 5 · orphan-root
+**8. `SubFamilyService.matches`** — depth ≥ 5 · orphan-root
 
 ```text
-🚀 MosaicNamingService.matches(tile: MosaicTile): boolean [applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:233]
-  └─> MosaicNamingService.horizontal(tile: MosaicTile): boolean [applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:221]
-    └─> MosaicNamingService.everyPoint(…): boolean [applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:102]
+🚀 SubFamilyService.matches(tile: Tile): boolean [applications/meanderaw/src/modules/classification/sub-family.service.ts:230]
+  └─> SubFamilyService.horizontal(tile: Tile): boolean [applications/meanderaw/src/modules/classification/sub-family.service.ts:218]
+    └─> SubFamilyService.everyPoint(tile: Tile, predicate: (directions: Directions) => boolean): boolean [applications/meanderaw/src/modules/classification/sub-family.service.ts:99]
        ↳ Whether every point of a tile satisfies `predicate`.
-      └─> MosaicNamingService.every(…)(row: readonly MosaicDirections[]): boolean [applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:106]
-        └─> MosaicNamingService.every(…)(point: MosaicDirections): boolean [applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:106]
+      └─> SubFamilyService.every(…)(row: readonly Directions[]): boolean [applications/meanderaw/src/modules/classification/sub-family.service.ts:103]
+        └─> SubFamilyService.every(…)(point: Directions): boolean [applications/meanderaw/src/modules/classification/sub-family.service.ts:103]
 ```
 
-**13. `MosaicNamingService.matches`** — depth ≥ 5 · orphan-root
+**9. `SubFamilyService.matches`** — depth ≥ 5 · orphan-root
 
 ```text
-🚀 MosaicNamingService.matches(tile: MosaicTile): boolean [applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:237]
-  └─> MosaicNamingService.vertical(tile: MosaicTile): boolean [applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:223]
-    └─> MosaicNamingService.everyPoint(…): boolean [applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:102]
+🚀 SubFamilyService.matches(tile: Tile): boolean [applications/meanderaw/src/modules/classification/sub-family.service.ts:234]
+  └─> SubFamilyService.vertical(tile: Tile): boolean [applications/meanderaw/src/modules/classification/sub-family.service.ts:220]
+    └─> SubFamilyService.everyPoint(tile: Tile, predicate: (directions: Directions) => boolean): boolean [applications/meanderaw/src/modules/classification/sub-family.service.ts:99]
        ↳ Whether every point of a tile satisfies `predicate`.
-      └─> MosaicNamingService.every(…)(row: readonly MosaicDirections[]): boolean [applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:106]
-        └─> MosaicNamingService.every(…)(point: MosaicDirections): boolean [applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:106]
+      └─> SubFamilyService.every(…)(row: readonly Directions[]): boolean [applications/meanderaw/src/modules/classification/sub-family.service.ts:103]
+        └─> SubFamilyService.every(…)(point: Directions): boolean [applications/meanderaw/src/modules/classification/sub-family.service.ts:103]
 ```
 
-**14. `MosaicNamingService.matches`** — depth ≥ 5 · orphan-root
+**10. `SubFamilyService.matches`** — depth ≥ 5 · orphan-root
 
 ```text
-🚀 MosaicNamingService.matches(tile: MosaicTile): boolean [applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:241]
-  └─> MosaicNamingService.vertical(tile: MosaicTile): boolean [applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:223]
-    └─> MosaicNamingService.everyPoint(…): boolean [applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:102]
+🚀 SubFamilyService.matches(tile: Tile): boolean [applications/meanderaw/src/modules/classification/sub-family.service.ts:238]
+  └─> SubFamilyService.vertical(tile: Tile): boolean [applications/meanderaw/src/modules/classification/sub-family.service.ts:220]
+    └─> SubFamilyService.everyPoint(tile: Tile, predicate: (directions: Directions) => boolean): boolean [applications/meanderaw/src/modules/classification/sub-family.service.ts:99]
        ↳ Whether every point of a tile satisfies `predicate`.
-      └─> MosaicNamingService.every(…)(row: readonly MosaicDirections[]): boolean [applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:106]
-        └─> MosaicNamingService.every(…)(point: MosaicDirections): boolean [applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:106]
+      └─> SubFamilyService.every(…)(row: readonly Directions[]): boolean [applications/meanderaw/src/modules/classification/sub-family.service.ts:103]
+        └─> SubFamilyService.every(…)(point: Directions): boolean [applications/meanderaw/src/modules/classification/sub-family.service.ts:103]
 ```
 
-**15. `MosaicNamingService.matches`** — depth 5 · orphan-root
+**11. `SubFamilyService.matches`** — depth 5 · orphan-root
 
 ```text
-🚀 MosaicNamingService.matches(tile: MosaicTile): boolean [applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:245]
-  └─> MosaicNamingService.isUnbroken(tile: MosaicTile): MosaicUnbrokenRuns [applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:142]
+🚀 SubFamilyService.matches(tile: Tile): boolean [applications/meanderaw/src/modules/classification/sub-family.service.ts:242]
+  └─> SubFamilyService.isUnbroken(tile: Tile): UnbrokenRuns [applications/meanderaw/src/modules/classification/sub-family.service.ts:139]
      ↳ Whether a tile's runs are unbroken in each direction: `across` when every eastward edge is drawn, so each level is one…
-    └─> MosaicTileService.edges(tile: MosaicTile): MosaicEdges [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:206]
+    └─> TileService.edges(tile: Tile): Edges [applications/meanderaw/src/modules/tile/tile.service.ts:198]
        ↳ A tile's edges, each held once, at the point that owns it.
-      └─> MosaicTileService.map(…)(row: readonly MosaicDirections[]): boolean[] [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:208]
-        └─> MosaicTileService.map(…)({ east }: MosaicDirections): boolean [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:208]
+      └─> TileService.map(…)(row: readonly Directions[]): boolean[] [applications/meanderaw/src/modules/tile/tile.service.ts:200]
+        └─> TileService.map(…)({ east }: Directions): boolean [applications/meanderaw/src/modules/tile/tile.service.ts:200]
 ```
 
-**16. `MosaicNamingService.matches`** — depth ≥ 5 · orphan-root
+**12. `SubFamilyService.matches`** — depth ≥ 5 · orphan-root
 
 ```text
-🚀 MosaicNamingService.matches(tile: MosaicTile): boolean [applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:253]
-  └─> MosaicNamingService.corner(tile: MosaicTile): boolean [applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:219]
-    └─> MosaicNamingService.everyPoint(…)(point: MosaicDirections): boolean [applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:220]
-      └─> MosaicNamingService.isCorner(directions: MosaicDirections): boolean [applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:110]
+🚀 SubFamilyService.matches(tile: Tile): boolean [applications/meanderaw/src/modules/classification/sub-family.service.ts:250]
+  └─> SubFamilyService.corner(tile: Tile): boolean [applications/meanderaw/src/modules/classification/sub-family.service.ts:216]
+    └─> SubFamilyService.everyPoint(…)(point: Directions): boolean [applications/meanderaw/src/modules/classification/sub-family.service.ts:217]
+      └─> SubFamilyService.isCorner(directions: Directions): boolean [applications/meanderaw/src/modules/classification/sub-family.service.ts:107]
          ↳ Whether a point turns a corner: two bits, one of them running across the band and one down it.
-        └─> MosaicTileService.degree(directions: MosaicDirections): number [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:196]
+        └─> TileService.degree(directions: Directions): number [applications/meanderaw/src/modules/tile/tile.service.ts:188]
            ↳ How many of a point's four direction bits are set — the point's degree as the drawing shows it.
 ```
 
-**17. `MosaicNamingService.matches`** — depth ≥ 5 · orphan-root
+**13. `SubFamilyService.matches`** — depth ≥ 5 · orphan-root
 
 ```text
-🚀 MosaicNamingService.matches(tile: MosaicTile): boolean [applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:257]
-  └─> MosaicNamingService.corner(tile: MosaicTile): boolean [applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:219]
-    └─> MosaicNamingService.everyPoint(…)(point: MosaicDirections): boolean [applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:220]
-      └─> MosaicNamingService.isCorner(directions: MosaicDirections): boolean [applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:110]
+🚀 SubFamilyService.matches(tile: Tile): boolean [applications/meanderaw/src/modules/classification/sub-family.service.ts:254]
+  └─> SubFamilyService.corner(tile: Tile): boolean [applications/meanderaw/src/modules/classification/sub-family.service.ts:216]
+    └─> SubFamilyService.everyPoint(…)(point: Directions): boolean [applications/meanderaw/src/modules/classification/sub-family.service.ts:217]
+      └─> SubFamilyService.isCorner(directions: Directions): boolean [applications/meanderaw/src/modules/classification/sub-family.service.ts:107]
          ↳ Whether a point turns a corner: two bits, one of them running across the band and one down it.
-        └─> MosaicTileService.degree(directions: MosaicDirections): number [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:196]
+        └─> TileService.degree(directions: Directions): number [applications/meanderaw/src/modules/tile/tile.service.ts:188]
            ↳ How many of a point's four direction bits are set — the point's degree as the drawing shows it.
 ```
 
-**18. `MosaicTileService.assertWellFormed`** — depth ≥ 4 · orphan-root
+**14. `TileService.assertWellFormed`** — depth ≥ 4 · orphan-root
 
 ```text
-🚀 MosaicTileService.assertWellFormed(tile: MosaicTile): void [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:128]
+🚀 TileService.assertWellFormed(tile: Tile): void [applications/meanderaw/src/modules/tile/tile.service.ts:120]
    ↳ Refuses a grid of direction bits that is not a tile, naming what is wrong with it.
-  └─> MosaicTileService.assertPointAgrees(tile: MosaicTile, level: number, column: number): void [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:50]
+  └─> TileService.assertPointAgrees(tile: Tile, level: number, column: number): void [applications/meanderaw/src/modules/tile/tile.service.ts:50]
      ↳ Refuses one point whose bits disagree with its neighbors'.
-    └─> MosaicTileService.assertPointJoinsBelow(…): void [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:76]
+    └─> TileService.assertPointJoinsBelow(point: Directions, below: Directions | undefined, at: TilePoint): void [applications/meanderaw/src/modules/tile/tile.service.ts:72]
        ↳ Refuses one point whose southward bit the point below does not answer, or whose north is claimed where the cap tick…
-      └─> MalformedMosaicTileError.constructor(reason: string): MalformedMosaicTileError [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.constants.ts:207]
+      └─> MalformedTileError.constructor(reason: string): MalformedTileError [applications/meanderaw/src/modules/tile/tile.constants.ts:33]
 ```
 
-**19. `MosaicTileService.maximumDegree`** — depth 4 · orphan-root
+**15. `ClassificationService.matches`** — depth 3 · orphan-root
 
 ```text
-🚀 MosaicTileService.maximumDegree(tile: MosaicTile): number [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:253]
-   ↳ The most direction bits any one point of a tile carries: 1 a dash end, 2 a corner, 3 a T-junction, 4 a crossing.
-  └─> MosaicTileService.flatMap(…)(this: undefined, row: readonly MosaicDirections[]): number[] [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:256]
-    └─> MosaicTileService.map(…)(point: MosaicDirections): number [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:256]
-      └─> MosaicTileService.degree(directions: MosaicDirections): number [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:196]
-         ↳ How many of a point's four direction bits are set — the point's degree as the drawing shows it.
+🚀 ClassificationService.matches(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:246]
+  └─> ClassificationService.isClosedLoop(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:141]
+     ↳ Whether a repeat's ink is one closed loop through every point, which is what `snake` draws and `chain` is the same…
+    └─> ClassificationService.isJunctionFree(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:153]
+       ↳ Whether a repeat's ink neither forks nor crosses — charter invariants 3 and 4, read off one tile.
 ```
 
-**20. `MeanderTopologyService.neighbors`** — depth 3 · orphan-root
+**16. `ClassificationService.matches`** — depth 3 · orphan-root
 
 ```text
-🚀 MeanderTopologyService.neighbors(point: LatticePoint): LatticePoint[] [applications/meanderaw/src/modules/meander-topology/meander-topology.service.ts:82]
-  └─> MeanderTopologyService.neighbors(graph: LatticeGraph, point: LatticePoint): LatticePoint[] [applications/meanderaw/src/modules/meander-topology/meander-topology.service.ts:165]
+🚀 ClassificationService.matches(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:253]
+  └─> ClassificationService.isArc(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:104]
+     ↳ Whether a repeat's ink is one open arc with two ends and nothing else — the shape four families share and their pitch…
+    └─> ClassificationService.isJunctionFree(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:153]
+       ↳ Whether a repeat's ink neither forks nor crosses — charter invariants 3 and 4, read off one tile.
+```
+
+**17. `ClassificationService.matches`** — depth 3 · orphan-root
+
+```text
+🚀 ClassificationService.matches(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:260]
+  └─> ClassificationService.isArc(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:104]
+     ↳ Whether a repeat's ink is one open arc with two ends and nothing else — the shape four families share and their pitch…
+    └─> ClassificationService.isJunctionFree(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:153]
+       ↳ Whether a repeat's ink neither forks nor crosses — charter invariants 3 and 4, read off one tile.
+```
+
+**18. `ClassificationService.matches`** — depth 3 · orphan-root
+
+```text
+🚀 ClassificationService.matches(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:267]
+  └─> ClassificationService.isArc(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:104]
+     ↳ Whether a repeat's ink is one open arc with two ends and nothing else — the shape four families share and their pitch…
+    └─> ClassificationService.isJunctionFree(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:153]
+       ↳ Whether a repeat's ink neither forks nor crosses — charter invariants 3 and 4, read off one tile.
+```
+
+**19. `ClassificationService.matches`** — depth 3 · orphan-root
+
+```text
+🚀 ClassificationService.matches(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:274]
+  └─> ClassificationService.isArc(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:104]
+     ↳ Whether a repeat's ink is one open arc with two ends and nothing else — the shape four families share and their pitch…
+    └─> ClassificationService.isJunctionFree(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:153]
+       ↳ Whether a repeat's ink neither forks nor crosses — charter invariants 3 and 4, read off one tile.
+```
+
+**20. `ClassificationService.matches`** — depth 3 · orphan-root
+
+```text
+🚀 ClassificationService.matches(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:281]
+  └─> ClassificationService.isBundle(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:127]
+     ↳ Whether a repeat's ink is a bundle of nested brackets: `columns / 2` strands, since a `parallel` strand takes two…
+    └─> ClassificationService.isJunctionFree(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:153]
+       ↳ Whether a repeat's ink neither forks nor crosses — charter invariants 3 and 4, read off one tile.
+```
+
+**21. `MeasurementService.neighbors`** — depth 3 · orphan-root
+
+```text
+🚀 MeasurementService.neighbors(point: LatticePoint): LatticePoint[] [applications/meanderaw/src/modules/drawing/measurement.service.ts:83]
+  └─> MeasurementService.neighbors(graph: LatticeGraph, point: LatticePoint): LatticePoint[] [applications/meanderaw/src/modules/drawing/measurement.service.ts:166]
      ↳ The painted lattice points one step of ink away from `point`.
-    └─> MeanderTopologyService.key(column: number, row: number): string [applications/meanderaw/src/modules/meander-topology/meander-topology.service.ts:135]
-       ↳ The `"column,row"` key {@link MeanderLatticeService} records lattice points and one-pitch steps under.
+    └─> MeasurementService.key(column: number, row: number): string [applications/meanderaw/src/modules/drawing/measurement.service.ts:136]
+       ↳ The `"column,row"` key {@link LatticeService} records lattice points and one-pitch steps under.
 ```
 
-**21. `MosaicConnectivityService.neighbors`** — depth 3 · orphan-root
+**22. `TileEnumerationService.isMatching`** — depth 3 · orphan-root
 
 ```text
-🚀 MosaicConnectivityService.neighbors(point: MosaicTilePoint): MosaicTilePoint[] [applications/meanderaw/src/modules/mosaic-tile/mosaic-connectivity.service.ts:73]
-  └─> MosaicConnectivityService.neighbors(tile: MosaicTile, point: MosaicTilePoint): MosaicTilePoint[] [applications/meanderaw/src/modules/mosaic-tile/mosaic-connectivity.service.ts:134]
-     ↳ The points one step of ink away from `point`, wrapping east and west around the tile's own column span and stopping at…
-    └─> MosaicConnectivityService.map(…)(…): { column: number; level: number; } [applications/meanderaw/src/modules/mosaic-tile/mosaic-connectivity.service.ts:159]
-```
-
-**22. `MosaicTilesService.isMatching`** — depth 3 · orphan-root
-
-```text
-🚀 MosaicTilesService.isMatching(tile: MosaicTile): boolean [applications/meanderaw/src/modules/mosaic-tile/mosaic-tiles.service.ts:236]
+🚀 TileEnumerationService.isMatching(tile: Tile): boolean [applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:217]
    ↳ Whether every point of a tile is touched by at most one edge — the family's original exact-cover rule, restated over…
-  └─> MosaicTileService.incidentEdges(tile: MosaicTile, level: number, column: number): number [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:226]
+  └─> TileService.incidentEdges(tile: Tile, level: number, column: number): number [applications/meanderaw/src/modules/tile/tile.service.ts:218]
      ↳ How many distinct edges touch a point, which differs from {@link degree} at one column and nowhere else: there a set…
-    └─> MosaicTileService.degree(directions: MosaicDirections): number [applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:196]
+    └─> TileService.degree(directions: Directions): number [applications/meanderaw/src/modules/tile/tile.service.ts:188]
        ↳ How many of a point's four direction bits are set — the point's degree as the drawing shows it.
 ```
 
-**23. `MeanderClassificationService.matches`** — depth 3 · orphan-root
+**23. `CodeService.rotate`** — depth 2 · orphan-root
 
 ```text
-🚀 MeanderClassificationService.matches(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:244]
-  └─> MeanderClassificationService.isClosedLoop(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:138]
-     ↳ Whether a repeat's ink is one closed loop through every point, which is what `snake` draws and `chain` is the same…
-    └─> MeanderClassificationService.isJunctionFree(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:150]
-       ↳ Whether a repeat's ink neither forks nor crosses — charter invariants 3 and 4, read off one tile.
+🚀 CodeService.rotate(code: ParsedCode, shift: number): ParsedCode [applications/meanderaw/src/modules/code/code.service.ts:134]
+   ↳ The Code shifted `shift` columns west, wrapping each level around its own span — the same band cut at a different place.
+  └─> CodeService.from(…)(_unused: unknown, level: number): string [applications/meanderaw/src/modules/code/code.service.ts:137]
 ```
 
-**24. `MeanderClassificationService.matches`** — depth 3 · orphan-root
+**24. `ClassificationService.matches`** — depth 2 · orphan-root
 
 ```text
-🚀 MeanderClassificationService.matches(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:251]
-  └─> MeanderClassificationService.isArc(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:101]
-     ↳ Whether a repeat's ink is one open arc with two ends and nothing else — the shape four families share and their pitch…
-    └─> MeanderClassificationService.isJunctionFree(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:150]
-       ↳ Whether a repeat's ink neither forks nor crosses — charter invariants 3 and 4, read off one tile.
-```
-
-**25. `MeanderClassificationService.matches`** — depth 3 · orphan-root
-
-```text
-🚀 MeanderClassificationService.matches(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:258]
-  └─> MeanderClassificationService.isArc(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:101]
-     ↳ Whether a repeat's ink is one open arc with two ends and nothing else — the shape four families share and their pitch…
-    └─> MeanderClassificationService.isJunctionFree(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:150]
-       ↳ Whether a repeat's ink neither forks nor crosses — charter invariants 3 and 4, read off one tile.
-```
-
-**26. `MeanderClassificationService.matches`** — depth 3 · orphan-root
-
-```text
-🚀 MeanderClassificationService.matches(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:265]
-  └─> MeanderClassificationService.isArc(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:101]
-     ↳ Whether a repeat's ink is one open arc with two ends and nothing else — the shape four families share and their pitch…
-    └─> MeanderClassificationService.isJunctionFree(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:150]
-       ↳ Whether a repeat's ink neither forks nor crosses — charter invariants 3 and 4, read off one tile.
-```
-
-**27. `MeanderClassificationService.matches`** — depth 3 · orphan-root
-
-```text
-🚀 MeanderClassificationService.matches(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:272]
-  └─> MeanderClassificationService.isArc(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:101]
-     ↳ Whether a repeat's ink is one open arc with two ends and nothing else — the shape four families share and their pitch…
-    └─> MeanderClassificationService.isJunctionFree(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:150]
-       ↳ Whether a repeat's ink neither forks nor crosses — charter invariants 3 and 4, read off one tile.
-```
-
-**28. `MeanderClassificationService.matches`** — depth 3 · orphan-root
-
-```text
-🚀 MeanderClassificationService.matches(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:279]
-  └─> MeanderClassificationService.isBundle(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:124]
-     ↳ Whether a repeat's ink is a bundle of nested brackets: `columns / 2` strands, since a `parallel` strand takes two…
-    └─> MeanderClassificationService.isJunctionFree(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:150]
-       ↳ Whether a repeat's ink neither forks nor crosses — charter invariants 3 and 4, read off one tile.
-```
-
-**29. `MeanderTopologyService.key`** — depth 2 · orphan-root
-
-```text
-🚀 MeanderTopologyService.key({ column, row }: LatticePoint): string [applications/meanderaw/src/modules/meander-topology/meander-topology.service.ts:81]
-  └─> MeanderTopologyService.key(column: number, row: number): string [applications/meanderaw/src/modules/meander-topology/meander-topology.service.ts:135]
-     ↳ The `"column,row"` key {@link MeanderLatticeService} records lattice points and one-pitch steps under.
-```
-
-**30. `MeanderClassificationService.matches`** — depth 2 · orphan-root
-
-```text
-🚀 MeanderClassificationService.matches(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:222]
-  └─> MeanderClassificationService.reachesMinimumRows(structure: MeanderStructure, family: MeanderType): boolean [applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:157]
+🚀 ClassificationService.matches(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:224]
+  └─> ClassificationService.reachesMinimumRows(structure: MeanderStructure, family: MeanderType): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:160]
      ↳ Whether a repeat is deep enough for `family` to draw a non-degenerate motif in, read off the same record the command…
 ```
 
-**31. `MeanderClassificationService.matches`** — depth 2 · orphan-root
+**25. `ClassificationService.matches`** — depth 2 · orphan-root
 
 ```text
-🚀 MeanderClassificationService.matches(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:229]
-  └─> MeanderClassificationService.reachesMinimumRows(structure: MeanderStructure, family: MeanderType): boolean [applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:157]
+🚀 ClassificationService.matches(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:231]
+  └─> ClassificationService.reachesMinimumRows(structure: MeanderStructure, family: MeanderType): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:160]
      ↳ Whether a repeat is deep enough for `family` to draw a non-degenerate motif in, read off the same record the command…
 ```
 
-**32. `MeanderClassificationService.matches`** — depth 2 · orphan-root
+**26. `ClassificationService.matches`** — depth 2 · orphan-root
 
 ```text
-🚀 MeanderClassificationService.matches(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:236]
-  └─> MeanderClassificationService.reachesMinimumRows(structure: MeanderStructure, family: MeanderType): boolean [applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:157]
+🚀 ClassificationService.matches(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:238]
+  └─> ClassificationService.reachesMinimumRows(structure: MeanderStructure, family: MeanderType): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:160]
      ↳ Whether a repeat is deep enough for `family` to draw a non-degenerate motif in, read off the same record the command…
 ```
 
-**33. `MeanderClassificationService.matches`** — depth 2 · orphan-root
+**27. `ClassificationService.matches`** — depth 2 · orphan-root
 
 ```text
-🚀 MeanderClassificationService.matches(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:283]
-  └─> MeanderClassificationService.reachesMinimumRows(structure: MeanderStructure, family: MeanderType): boolean [applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:157]
+🚀 ClassificationService.matches(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:285]
+  └─> ClassificationService.reachesMinimumRows(structure: MeanderStructure, family: MeanderType): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:160]
      ↳ Whether a repeat is deep enough for `family` to draw a non-degenerate motif in, read off the same record the command…
+```
+
+**28. `MeasurementService.key`** — depth 2 · orphan-root
+
+```text
+🚀 MeasurementService.key({ column, row }: LatticePoint): string [applications/meanderaw/src/modules/drawing/measurement.service.ts:82]
+  └─> MeasurementService.key(column: number, row: number): string [applications/meanderaw/src/modules/drawing/measurement.service.ts:136]
+     ↳ The `"column,row"` key {@link LatticeService} records lattice points and one-pitch steps under.
 ```
 
 </details>
@@ -2436,197 +2393,168 @@ What this project is judged against, as declared in its own `callidescope.config
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `MosaicTileGenerationService.generate` | 8 | `InvalidMosaicRowsError.constructor`, `InvalidMosaicRepeatCountError.constructor`, `GridGeometryService.compute`, `MosaicTileGenerationService.from(…)`, `MosaicTileMotifService.leadingOverhang`, `MosaicTileMotifService.rightEdge`, `SvgRenderingService.render`, `MosaicTileGenerationService.format` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-tile-generation.service.ts:57` |
-| `MosaicTilesService.enumerate` | 7 | `MosaicTilesService.isAdmitted`, `OversizedMosaicTileError.constructor`, `MosaicTilesService.edges`, `MosaicTileService.blankEdges`, `MosaicTilesService.assign`, `MosaicTilesService.map(…)`, `MosaicTilesService.toSorted(…)` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-tiles.service.ts:185` |
-| `MeanderLatticeService.build` | 6 | `MeanderLatticeService.strokeWidth`, `MeanderLatticeService.pathData`, `MeanderLatticeService.trace`, `MeanderLatticeService.commands`, `MeanderLatticeService.snap`, `MeanderLatticeService.dimension` | `applications/meanderaw/src/modules/meander-lattice/meander-lattice.service.ts:233` |
+| `TileEnumerationService.enumerate` | 7 | `TileEnumerationService.isAdmitted`, `OversizedTileError.constructor`, `TileEnumerationService.edges`, `TileService.blankEdges`, `TileEnumerationService.assign`, `TileEnumerationService.map(…)`, `TileEnumerationService.toSorted(…)` | `applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:166` |
+| `LatticeService.build` | 6 | `LatticeService.strokeWidth`, `LatticeService.pathData`, `LatticeService.trace`, `LatticeService.commands`, `LatticeService.snap`, `LatticeService.dimension` | `applications/meanderaw/src/modules/drawing/lattice.service.ts:233` |
+| `AddressService.identifyDocument` | 6 | `LatticeService.build`, `AddressService.assertAddressable`, `AddressService.readTile`, `CodeService.spell`, `SubFamilyService.name`, `CodeService.spellCanonical` | `applications/meanderaw/src/modules/drawing/address.service.ts:134` |
 
 <details>
-<summary>204 more callables</summary>
+<summary>175 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `LatticeIdentificationService.identifyDocument` | 6 | `MeanderLatticeService.build`, `LatticeIdentificationService.assertAddressable`, `LatticeIdentificationService.readTile`, `LatticeIdentificationService.identify`, `MosaicNamingService.name`, `LatticeIdentificationService.canonicalIdentifier` | `applications/meanderaw/src/modules/lattice-identification/lattice-identification.service.ts:197` |
-| `MeanderTopologyService.measure` | 5 | `MeanderLatticeService.build`, `MeanderTopologyService.tally`, `MeanderTopologyService.inkDegree`, `MeanderTopologyService.negativeDegree`, `MeanderTopologyService.isChannelWidthCompliant` | `applications/meanderaw/src/modules/meander-topology/meander-topology.service.ts:318` |
-| `MeanderRenderingService.render` | 5 | `GridGeometryService.compute`, `MeanderRenderingService.gridSegments`, `GridGeometryService.borderPath`, `SvgRenderingService.render`, `MeanderRenderingService.format` | `applications/meanderaw/src/modules/meander-rendering/meander-rendering.service.ts:107` |
-| `HardcodedMeandersService.ingestOne` | 5 | `MeanderDecodingService.decode`, `MeanderRenderingService.render`, `MeanderCharacteristicsService.compute`, `MeanderDatabaseService.save`, `DuplicateHardcodedCodeError.constructor` | `applications/meanderaw/src/modules/hardcoded-meanders/hardcoded-meanders.service.ts:66` |
-| `DrawCheckService.check` | 5 | `DrawEnumerationService.sweep`, `HardcodedMeandersService.ingest`, `DrawCheckService.diff`, `DrawCheckService.hasDrift`, `MeanderDriftDetectedError.constructor` | `applications/meanderaw/src/modules/draw/draw-check.service.ts:154` |
-| `MeanderTopologyService.connectivity` | 4 | `MeanderLatticeService.build`, `MeanderTopologyService.components`, `MeanderTopologyService.adjacency`, `MeanderTopologyService.freeEnds` | `applications/meanderaw/src/modules/meander-topology/meander-topology.service.ts:284` |
-| `MeanderConnectivityService.connectivity` | 4 | `MeanderConnectivityService.edges`, `MeanderConnectivityService.adjacency`, `MeanderTopologyService.components`, `MeanderConnectivityService.freeEnds` | `applications/meanderaw/src/modules/meander-characteristics/meander-connectivity.service.ts:180` |
-| `MeanderCharacteristicsService.negativeDegree` | 4 | `MeanderCharacteristicsService.hasEastCorridor`, `MeanderCharacteristicsService.hasNorthCorridor`, `MeanderCharacteristicsService.hasSouthCorridor`, `MeanderCharacteristicsService.hasWestCorridor` | `applications/meanderaw/src/modules/meander-characteristics/meander-characteristics.service.ts:129` |
-| `MosaicConnectivityService.connectivity` | 4 | `MosaicConnectivityService.adjacency`, `MeanderTopologyService.components`, `MosaicConnectivityService.edgeCount`, `MosaicConnectivityService.freeEnds` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-connectivity.service.ts:177` |
-| `MosaicSymmetryService.transform` | 4 | `MosaicTileService.edges`, `MosaicTileService.blankEdges`, `MosaicSymmetryService.place`, `MosaicTileService.build` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-symmetry.service.ts:150` |
-| `MosaicTilesService.assign` | 4 | `MosaicTilesService.edges`, `MosaicTilesService.record`, `MosaicTilesService.set`, `MosaicTilesService.clear` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-tiles.service.ts:106` |
-| `DrawRecordService.record` | 4 | `MeanderDecodingService.decode`, `MeanderCharacteristicsService.compute`, `MeanderClassificationService.classify`, `MeanderRenderingService.render` | `applications/meanderaw/src/modules/draw/draw-record.service.ts:56` |
-| `MeanderLatticeService.trace` | 3 | `MeanderLatticeService.snap`, `MeanderLatticeService.addHorizontal`, `MeanderLatticeService.addVertical` | `applications/meanderaw/src/modules/meander-lattice/meander-lattice.service.ts:204` |
-| `MeanderTopologyService.neighbors` | 3 | `MeanderTopologyService.key`, `MeanderTopologyService.map(…)`, `MeanderTopologyService.filter(…)` | `applications/meanderaw/src/modules/meander-topology/meander-topology.service.ts:165` |
-| `MeanderConnectivityService.edges` | 3 | `MeanderConnectivityService.key`, `MeanderConnectivityService.joinsEast`, `MeanderConnectivityService.joinsSouth` | `applications/meanderaw/src/modules/meander-characteristics/meander-connectivity.service.ts:96` |
-| `MeanderCharacteristicsService.compute` | 3 | `MeanderCharacteristicsService.tallyInk`, `MeanderCharacteristicsService.tallyNegative`, `MeanderConnectivityService.connectivity` | `applications/meanderaw/src/modules/meander-characteristics/meander-characteristics.service.ts:196` |
-| `MeanderDecodingService.decode` | 3 | `InvalidCodeLengthError.constructor`, `MeanderDecodingService.from(…)`, `MeanderDecodingService.from(…)` | `applications/meanderaw/src/modules/meander-decoding/meander-decoding.service.ts:65` |
-| `MosaicSubFamilyService.tile` | 3 | `MosaicSubFamilyService.closes`, `MosaicTileService.build`, `MosaicSubFamilyService.grid` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-sub-family.service.ts:118` |
-| `MosaicTileMotifService.path` | 3 | `MosaicTileMotifService.unitSegments`, `MosaicTileMotifService.format`, `MosaicTileMotifService.rightEdge` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-tile-motif.service.ts:140` |
-| `MosaicTilesService.record` | 3 | `MosaicTileService.build`, `MosaicSymmetryService.canonicalTile`, `MosaicSymmetryService.edgeKey` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-tiles.service.ts:145` |
-| `MosaicNamingService.matching` | 3 | `MosaicNamingService.map(…)`, `MosaicNamingService.filter(…)`, `MosaicNamingService.rules` | `applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:168` |
-| `MeanderClassificationService.matching` | 3 | `MeanderClassificationService.map(…)`, `MeanderClassificationService.filter(…)`, `MeanderClassificationService.rules` | `applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:201` |
-| `LatticeIdentificationService.readTile` | 3 | `MosaicTileService.blankEdges`, `MosaicTileService.mark`, `MosaicTileService.build` | `applications/meanderaw/src/modules/lattice-identification/lattice-identification.service.ts:237` |
+| `DrawingService.render` | 5 | `GeometryService.compute`, `DrawingService.codeSegments`, `GeometryService.borderPath`, `SvgService.render`, `DrawingService.format` | `applications/meanderaw/src/modules/drawing/drawing.service.ts:116` |
+| `MeasurementService.measure` | 5 | `LatticeService.build`, `MeasurementService.tally`, `MeasurementService.inkDegree`, `MeasurementService.negativeDegree`, `MeasurementService.isChannelWidthCompliant` | `applications/meanderaw/src/modules/drawing/measurement.service.ts:241` |
+| `CorpusService.ingestOne` | 5 | `CodeService.parse`, `DrawingService.render`, `CharacteristicsService.compute`, `DatabaseService.save`, `DuplicateCorpusCodeError.constructor` | `applications/meanderaw/src/modules/corpus/corpus.service.ts:60` |
+| `DrawCheckService.check` | 5 | `DrawEnumerationService.sweep`, `CorpusService.ingest`, `DrawCheckService.diff`, `DrawCheckService.hasDrift`, `MeanderDriftDetectedError.constructor` | `applications/meanderaw/src/modules/draw/draw-check.service.ts:154` |
+| `SymmetryService.transform` | 4 | `TileService.edges`, `TileService.blankEdges`, `SymmetryService.place`, `TileService.build` | `applications/meanderaw/src/modules/symmetry/symmetry.service.ts:145` |
+| `ConnectivityService.connectivity` | 4 | `ConnectivityService.edges`, `ConnectivityService.adjacency`, `GraphService.components`, `ConnectivityService.freeEnds` | `applications/meanderaw/src/modules/characteristics/connectivity.service.ts:176` |
+| `CharacteristicsService.negativeDegree` | 4 | `CharacteristicsService.hasEastCorridor`, `CharacteristicsService.hasNorthCorridor`, `CharacteristicsService.hasSouthCorridor`, `CharacteristicsService.hasWestCorridor` | `applications/meanderaw/src/modules/characteristics/characteristics.service.ts:136` |
+| `MeasurementService.connectivity` | 4 | `LatticeService.build`, `GraphService.components`, `MeasurementService.adjacency`, `MeasurementService.freeEnds` | `applications/meanderaw/src/modules/drawing/measurement.service.ts:229` |
+| `TileEnumerationService.assign` | 4 | `TileEnumerationService.edges`, `TileEnumerationService.record`, `TileEnumerationService.set`, `TileEnumerationService.clear` | `applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:95` |
+| `DrawRecordService.record` | 4 | `CodeService.parse`, `CharacteristicsService.compute`, `ClassificationService.classify`, `DrawingService.render` | `applications/meanderaw/src/modules/draw/draw-record.service.ts:56` |
+| `ConnectivityService.edges` | 3 | `ConnectivityService.key`, `ConnectivityService.joinsEast`, `ConnectivityService.joinsSouth` | `applications/meanderaw/src/modules/characteristics/connectivity.service.ts:91` |
+| `CharacteristicsService.tallyInk` | 3 | `CharacteristicsService.tally`, `CharacteristicsService.inkDegree`, `CodeService.directionsAt` | `applications/meanderaw/src/modules/characteristics/characteristics.service.ts:161` |
+| `CharacteristicsService.compute` | 3 | `CharacteristicsService.tallyInk`, `CharacteristicsService.tallyNegative`, `ConnectivityService.connectivity` | `applications/meanderaw/src/modules/characteristics/characteristics.service.ts:194` |
+| `SubFamilyService.matching` | 3 | `SubFamilyService.map(…)`, `SubFamilyService.filter(…)`, `SubFamilyService.rules` | `applications/meanderaw/src/modules/classification/sub-family.service.ts:165` |
+| `ClassificationService.matching` | 3 | `ClassificationService.map(…)`, `ClassificationService.filter(…)`, `ClassificationService.rules` | `applications/meanderaw/src/modules/classification/classification.service.ts:203` |
+| `LatticeService.trace` | 3 | `LatticeService.snap`, `LatticeService.addHorizontal`, `LatticeService.addVertical` | `applications/meanderaw/src/modules/drawing/lattice.service.ts:204` |
+| `AddressService.readTile` | 3 | `TileService.blankEdges`, `TileService.mark`, `TileService.build` | `applications/meanderaw/src/modules/drawing/address.service.ts:174` |
+| `MeasurementService.neighbors` | 3 | `MeasurementService.key`, `MeasurementService.map(…)`, `MeasurementService.filter(…)` | `applications/meanderaw/src/modules/drawing/measurement.service.ts:166` |
+| `TileEnumerationService.record` | 3 | `TileService.build`, `SymmetryService.canonicalTile`, `SymmetryService.edgeKey` | `applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:130` |
 | `MeanderDriftDetectedError.describe` | 3 | `MeanderDriftDetectedError.map(…)`, `MeanderDriftDetectedError.map(…)`, `MeanderDriftDetectedError.map(…)` | `applications/meanderaw/src/modules/draw/draw-check.constants.ts:76` |
 | `DrawCheckService.diff` | 3 | `DrawCheckService.index`, `DrawCheckService.findNewAndChanged`, `DrawCheckService.findMissing` | `applications/meanderaw/src/modules/draw/draw-check.service.ts:196` |
-| `DrawIndexService.renderBand` | 3 | `GridGeometryService.compute`, `DrawIndexService.format`, `DrawIndexService.renderRepeats` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:161` |
+| `DrawIndexService.renderBand` | 3 | `GeometryService.compute`, `DrawIndexService.format`, `DrawIndexService.renderRepeats` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:161` |
 | `DrawIndexService.renderFigure` | 3 | `DrawIndexService.assertWellFormedSvg`, `DrawIndexService.renderBand`, `DrawIndexService.caption` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:187` |
 | `DrawIndexService.renderSection` | 3 | `DrawIndexService.escape`, `DrawIndexService.label`, `DrawIndexService.map(…)` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:203` |
 | `DrawIndexService.render` | 3 | `DrawIndexService.groupByFamily`, `DrawIndexService.map(…)`, `DrawIndexService.renderContents` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:234` |
-| `DrawCommand.sweep` | 3 | `DrawEnumerationService.sweep`, `HardcodedMeandersService.ingest`, `DrawIndexService.build` | `applications/meanderaw/src/modules/draw/draw.command.ts:136` |
-| `DrawCommand.run` | 3 | `DrawCheckService.check`, `DrawCommand.sweep`, `DrawCommand.runCodeDrawing` | `applications/meanderaw/src/modules/draw/draw.command.ts:227` |
-| `MeanderLatticeService.commands` | 2 | `MeanderLatticeService.map(…)`, `MeanderLatticeService.groups` | `applications/meanderaw/src/modules/meander-lattice/meander-lattice.service.ts:120` |
-| `MeanderLatticeService.groups` | 2 | `UnsupportedPathCommandError.constructor`, `UnmeasurableDocumentError.constructor` | `applications/meanderaw/src/modules/meander-lattice/meander-lattice.service.ts:138` |
-| `MeanderLatticeService.strokeWidth` | 2 | `MeanderLatticeService.map(…)`, `UnmeasurableDocumentError.constructor` | `applications/meanderaw/src/modules/meander-lattice/meander-lattice.service.ts:186` |
-| `MeanderConnectivityService.freeEnds` | 2 | `MeanderConnectivityService.bump`, `MeanderConnectivityService.filter(…)` | `applications/meanderaw/src/modules/meander-characteristics/meander-connectivity.service.ts:118` |
-| `MeanderCharacteristicsService.tallyInk` | 2 | `MeanderCharacteristicsService.tally`, `MeanderCharacteristicsService.inkDegree` | `applications/meanderaw/src/modules/meander-characteristics/meander-characteristics.service.ts:163` |
-| `MeanderCharacteristicsService.tallyNegative` | 2 | `MeanderCharacteristicsService.tally`, `MeanderCharacteristicsService.negativeDegree` | `applications/meanderaw/src/modules/meander-characteristics/meander-characteristics.service.ts:176` |
-| `MeanderRenderingService.pointSegments` | 2 | `MeanderRenderingService.format`, `MeanderRenderingService.isBare` | `applications/meanderaw/src/modules/meander-rendering/meander-rendering.service.ts:77` |
-| `MosaicTileService.assertPointAgrees` | 2 | `MalformedMosaicTileError.constructor`, `MosaicTileService.assertPointJoinsBelow` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:50` |
-| `MosaicTileService.assertWellFormed` | 2 | `MalformedMosaicTileError.constructor`, `MosaicTileService.assertPointAgrees` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:128` |
-| `MosaicTileService.from(…)` | 2 | `MosaicTileService.horizontal`, `MosaicTileService.vertical` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:176` |
-| `MosaicTileService.edges` | 2 | `MosaicTileService.map(…)`, `MosaicTileService.map(…)` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:206` |
-| `MosaicConnectivityService.edgeCount` | 2 | `MosaicTileService.edges`, `MosaicConnectivityService.markedEdges` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-connectivity.service.ts:91` |
-| `MosaicConnectivityService.neighbors` | 2 | `MosaicConnectivityService.map(…)`, `MosaicConnectivityService.filter(…)` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-connectivity.service.ts:134` |
-| `MosaicConnectivityService.isAcyclic` | 2 | `MeanderTopologyService.isAcyclic`, `MosaicConnectivityService.connectivity` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-connectivity.service.ts:189` |
-| `MosaicConnectivityService.isOneComponent` | 2 | `MeanderTopologyService.isOneComponent`, `MosaicConnectivityService.connectivity` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-connectivity.service.ts:194` |
-| `MosaicSymmetryService.place` | 2 | `MosaicTileService.mark`, `MosaicSymmetryService.mapColumn` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-symmetry.service.ts:91` |
-| `MosaicSymmetryService.signature` | 2 | `MosaicSymmetryService.flatMap(…)`, `MosaicSymmetryService.edgeKey` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-symmetry.service.ts:141` |
-| `MosaicSymmetryService.canonicalTile` | 2 | `MosaicSymmetryService.signature`, `MosaicSymmetryService.orbit` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-symmetry.service.ts:185` |
-| `MosaicSymmetryService.edgeKey` | 2 | `MosaicTileService.edges`, `MosaicSymmetryService.flatMap(…)` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-symmetry.service.ts:213` |
-| `MosaicSymmetryService.variants` | 2 | `MosaicSymmetryService.orbit`, `MosaicSymmetryService.edgeKey` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-symmetry.service.ts:230` |
-| `MosaicTileMotifService.pointSegments` | 2 | `MosaicTileMotifService.format`, `MosaicTileService.isBare` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-tile-motif.service.ts:51` |
-| `MosaicTilesService.set` | 2 | `MosaicTilesService.address`, `MosaicTileService.mark` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-tiles.service.ts:157` |
-| `MosaicNamingService.cornerLanes` | 2 | `MosaicTileService.edges`, `MosaicNamingService.from(…)` | `applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:83` |
-| `MosaicNamingService.isUnbroken` | 2 | `MosaicTileService.edges`, `MosaicNamingService.isEveryEdgeDrawn` | `applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:142` |
-| `MosaicNamingService.bare` | 2 | `MosaicNamingService.everyPoint(…)`, `MosaicNamingService.everyPoint` | `applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:217` |
-| `MosaicNamingService.corner` | 2 | `MosaicNamingService.everyPoint(…)`, `MosaicNamingService.everyPoint` | `applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:219` |
-| `MosaicNamingService.horizontal` | 2 | `MosaicNamingService.everyPoint(…)`, `MosaicNamingService.everyPoint` | `applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:221` |
-| `MosaicNamingService.vertical` | 2 | `MosaicNamingService.everyPoint(…)`, `MosaicNamingService.everyPoint` | `applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:223` |
-| `MosaicNamingService.matches` | 2 | `MosaicNamingService.horizontal`, `MosaicNamingService.isUnbroken` | `applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:229` |
-| `MosaicNamingService.matches` | 2 | `MosaicNamingService.horizontal`, `MosaicNamingService.isUnbroken` | `applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:233` |
-| `MosaicNamingService.matches` | 2 | `MosaicNamingService.vertical`, `MosaicNamingService.isUnbroken` | `applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:237` |
-| `MosaicNamingService.matches` | 2 | `MosaicNamingService.vertical`, `MosaicNamingService.isUnbroken` | `applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:241` |
-| `MosaicNamingService.matches` | 2 | `MosaicNamingService.corner`, `MosaicNamingService.cornerLanes` | `applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:253` |
-| `MosaicNamingService.matches` | 2 | `MosaicNamingService.corner`, `MosaicNamingService.cornerLanes` | `applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:257` |
-| `MeanderClassificationService.isBundle` | 2 | `MeanderClassificationService.isJunctionFree`, `MeanderClassificationService.reachesMinimumRows` | `applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:124` |
-| `MeanderClassificationService.classify` | 2 | `MeanderClassificationService.subFamily`, `MeanderClassificationService.matching` | `applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:177` |
-| `MeanderClassificationService.matches` | 2 | `MeanderClassificationService.isClosedLoop`, `MeanderClassificationService.reachesMinimumRows` | `applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:244` |
-| `MeanderClassificationService.matches` | 2 | `MeanderClassificationService.isArc`, `MeanderClassificationService.reachesMinimumRows` | `applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:251` |
-| `MeanderClassificationService.matches` | 2 | `MeanderClassificationService.isArc`, `MeanderClassificationService.reachesMinimumRows` | `applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:258` |
-| `MeanderClassificationService.matches` | 2 | `MeanderClassificationService.isArc`, `MeanderClassificationService.reachesMinimumRows` | `applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:265` |
-| `MeanderClassificationService.matches` | 2 | `MeanderClassificationService.isArc`, `MeanderClassificationService.reachesMinimumRows` | `applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:272` |
-| `LatticeIdentificationService.canonicalIdentifier` | 2 | `LatticeIdentificationService.identify`, `MosaicSymmetryService.canonicalTile` | `applications/meanderaw/src/modules/lattice-identification/lattice-identification.service.ts:131` |
-| `MeanderEnumerationService.enumerate` | 2 | `MeanderEnumerationService.map(…)`, `MosaicTilesService.enumerate` | `applications/meanderaw/src/modules/meander-enumeration/meander-enumeration.service.ts:77` |
-| `MeanderEnumerationService.shapes` | 2 | `MeanderEnumerationService.isAdmitted`, `MosaicTilesService.maximumColumns` | `applications/meanderaw/src/modules/meander-enumeration/meander-enumeration.service.ts:105` |
-| `DrawEnumerationService.persist` | 2 | `MeanderDatabaseService.saveAll`, `DrawEnumerationService.records` | `applications/meanderaw/src/modules/draw/draw-enumeration.service.ts:61` |
-| `DrawEnumerationService.records` | 2 | `DrawEnumerationService.map(…)`, `MeanderEnumerationService.enumerate` | `applications/meanderaw/src/modules/draw/draw-enumeration.service.ts:72` |
-| `DrawEnumerationService.sweep` | 2 | `DrawEnumerationService.persist`, `MeanderEnumerationService.shapes` | `applications/meanderaw/src/modules/draw/draw-enumeration.service.ts:81` |
+| `DrawCommand.sweep` | 3 | `DrawEnumerationService.sweep`, `CorpusService.ingest`, `DrawIndexService.build` | `applications/meanderaw/src/modules/draw/draw.command.ts:136` |
+| `DrawCommand.run` | 3 | `DrawCheckService.check`, `DrawCommand.sweep`, `DrawCommand.runCodeDrawing` | `applications/meanderaw/src/modules/draw/draw.command.ts:225` |
+| `TileService.assertPointAgrees` | 2 | `MalformedTileError.constructor`, `TileService.assertPointJoinsBelow` | `applications/meanderaw/src/modules/tile/tile.service.ts:50` |
+| `TileService.assertWellFormed` | 2 | `MalformedTileError.constructor`, `TileService.assertPointAgrees` | `applications/meanderaw/src/modules/tile/tile.service.ts:120` |
+| `TileService.from(…)` | 2 | `TileService.horizontal`, `TileService.vertical` | `applications/meanderaw/src/modules/tile/tile.service.ts:168` |
+| `TileService.edges` | 2 | `TileService.map(…)`, `TileService.map(…)` | `applications/meanderaw/src/modules/tile/tile.service.ts:198` |
+| `SymmetryService.place` | 2 | `TileService.mark`, `SymmetryService.mapColumn` | `applications/meanderaw/src/modules/symmetry/symmetry.service.ts:86` |
+| `SymmetryService.signature` | 2 | `SymmetryService.flatMap(…)`, `SymmetryService.edgeKey` | `applications/meanderaw/src/modules/symmetry/symmetry.service.ts:136` |
+| `SymmetryService.canonicalTile` | 2 | `SymmetryService.signature`, `SymmetryService.orbit` | `applications/meanderaw/src/modules/symmetry/symmetry.service.ts:174` |
+| `SymmetryService.edgeKey` | 2 | `TileService.edges`, `SymmetryService.flatMap(…)` | `applications/meanderaw/src/modules/symmetry/symmetry.service.ts:202` |
+| `SymmetryService.variants` | 2 | `SymmetryService.orbit`, `SymmetryService.edgeKey` | `applications/meanderaw/src/modules/symmetry/symmetry.service.ts:219` |
+| `CodeService.parse` | 2 | `InvalidCodeLengthError.constructor`, `InvalidCodeCharacterError.constructor` | `applications/meanderaw/src/modules/code/code.service.ts:104` |
+| `CodeService.spellCanonical` | 2 | `CodeService.spell`, `SymmetryService.canonicalTile` | `applications/meanderaw/src/modules/code/code.service.ts:183` |
+| `ConnectivityService.freeEnds` | 2 | `ConnectivityService.bump`, `ConnectivityService.filter(…)` | `applications/meanderaw/src/modules/characteristics/connectivity.service.ts:113` |
+| `CharacteristicsService.tallyNegative` | 2 | `CharacteristicsService.tally`, `CharacteristicsService.negativeDegree` | `applications/meanderaw/src/modules/characteristics/characteristics.service.ts:177` |
+| `SubFamilyService.cornerLanes` | 2 | `TileService.edges`, `SubFamilyService.from(…)` | `applications/meanderaw/src/modules/classification/sub-family.service.ts:80` |
+| `SubFamilyService.isUnbroken` | 2 | `TileService.edges`, `SubFamilyService.isEveryEdgeDrawn` | `applications/meanderaw/src/modules/classification/sub-family.service.ts:139` |
+| `SubFamilyService.bare` | 2 | `SubFamilyService.everyPoint(…)`, `SubFamilyService.everyPoint` | `applications/meanderaw/src/modules/classification/sub-family.service.ts:214` |
+| `SubFamilyService.corner` | 2 | `SubFamilyService.everyPoint(…)`, `SubFamilyService.everyPoint` | `applications/meanderaw/src/modules/classification/sub-family.service.ts:216` |
+| `SubFamilyService.horizontal` | 2 | `SubFamilyService.everyPoint(…)`, `SubFamilyService.everyPoint` | `applications/meanderaw/src/modules/classification/sub-family.service.ts:218` |
+| `SubFamilyService.vertical` | 2 | `SubFamilyService.everyPoint(…)`, `SubFamilyService.everyPoint` | `applications/meanderaw/src/modules/classification/sub-family.service.ts:220` |
+| `SubFamilyService.matches` | 2 | `SubFamilyService.horizontal`, `SubFamilyService.isUnbroken` | `applications/meanderaw/src/modules/classification/sub-family.service.ts:226` |
+| `SubFamilyService.matches` | 2 | `SubFamilyService.horizontal`, `SubFamilyService.isUnbroken` | `applications/meanderaw/src/modules/classification/sub-family.service.ts:230` |
+| `SubFamilyService.matches` | 2 | `SubFamilyService.vertical`, `SubFamilyService.isUnbroken` | `applications/meanderaw/src/modules/classification/sub-family.service.ts:234` |
+| `SubFamilyService.matches` | 2 | `SubFamilyService.vertical`, `SubFamilyService.isUnbroken` | `applications/meanderaw/src/modules/classification/sub-family.service.ts:238` |
+| `SubFamilyService.matches` | 2 | `SubFamilyService.corner`, `SubFamilyService.cornerLanes` | `applications/meanderaw/src/modules/classification/sub-family.service.ts:250` |
+| `SubFamilyService.matches` | 2 | `SubFamilyService.corner`, `SubFamilyService.cornerLanes` | `applications/meanderaw/src/modules/classification/sub-family.service.ts:254` |
+| `ClassificationService.isBundle` | 2 | `ClassificationService.isJunctionFree`, `ClassificationService.reachesMinimumRows` | `applications/meanderaw/src/modules/classification/classification.service.ts:127` |
+| `ClassificationService.classify` | 2 | `ClassificationService.subFamily`, `ClassificationService.matching` | `applications/meanderaw/src/modules/classification/classification.service.ts:179` |
+| `ClassificationService.matches` | 2 | `ClassificationService.isClosedLoop`, `ClassificationService.reachesMinimumRows` | `applications/meanderaw/src/modules/classification/classification.service.ts:246` |
+| `ClassificationService.matches` | 2 | `ClassificationService.isArc`, `ClassificationService.reachesMinimumRows` | `applications/meanderaw/src/modules/classification/classification.service.ts:253` |
+| `ClassificationService.matches` | 2 | `ClassificationService.isArc`, `ClassificationService.reachesMinimumRows` | `applications/meanderaw/src/modules/classification/classification.service.ts:260` |
+| `ClassificationService.matches` | 2 | `ClassificationService.isArc`, `ClassificationService.reachesMinimumRows` | `applications/meanderaw/src/modules/classification/classification.service.ts:267` |
+| `ClassificationService.matches` | 2 | `ClassificationService.isArc`, `ClassificationService.reachesMinimumRows` | `applications/meanderaw/src/modules/classification/classification.service.ts:274` |
+| `ClassificationService.subFamily` | 2 | `SubFamilyService.name`, `CodeService.tile` | `applications/meanderaw/src/modules/classification/classification.service.ts:294` |
+| `LatticeService.commands` | 2 | `LatticeService.map(…)`, `LatticeService.groups` | `applications/meanderaw/src/modules/drawing/lattice.service.ts:120` |
+| `LatticeService.groups` | 2 | `UnsupportedPathCommandError.constructor`, `UnmeasurableDocumentError.constructor` | `applications/meanderaw/src/modules/drawing/lattice.service.ts:138` |
+| `LatticeService.strokeWidth` | 2 | `LatticeService.map(…)`, `UnmeasurableDocumentError.constructor` | `applications/meanderaw/src/modules/drawing/lattice.service.ts:186` |
+| `DrawingService.codeSegments` | 2 | `DrawingService.pointSegments`, `CodeService.directionsAt` | `applications/meanderaw/src/modules/drawing/drawing.service.ts:54` |
+| `DrawingService.pointSegments` | 2 | `DrawingService.format`, `DrawingService.isBare` | `applications/meanderaw/src/modules/drawing/drawing.service.ts:86` |
+| `TileEnumerationService.set` | 2 | `TileEnumerationService.address`, `TileService.mark` | `applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:142` |
+| `EnumerationService.enumerate` | 2 | `EnumerationService.map(…)`, `TileEnumerationService.enumerate` | `applications/meanderaw/src/modules/enumeration/enumeration.service.ts:77` |
+| `EnumerationService.shapes` | 2 | `EnumerationService.isAdmitted`, `TileEnumerationService.maximumColumns` | `applications/meanderaw/src/modules/enumeration/enumeration.service.ts:105` |
+| `DrawEnumerationService.persist` | 2 | `DatabaseService.saveAll`, `DrawEnumerationService.records` | `applications/meanderaw/src/modules/draw/draw-enumeration.service.ts:61` |
+| `DrawEnumerationService.records` | 2 | `DrawEnumerationService.map(…)`, `EnumerationService.enumerate` | `applications/meanderaw/src/modules/draw/draw-enumeration.service.ts:72` |
+| `DrawEnumerationService.sweep` | 2 | `DrawEnumerationService.persist`, `EnumerationService.shapes` | `applications/meanderaw/src/modules/draw/draw-enumeration.service.ts:81` |
 | `DrawCheckService.findNewAndChanged` | 2 | `DrawCheckService.summarize`, `DrawCheckService.differingColumns` | `applications/meanderaw/src/modules/draw/draw-check.service.ts:87` |
-| `DrawCodeService.draw` | 2 | `MeanderDatabaseService.save`, `DrawRecordService.record` | `applications/meanderaw/src/modules/draw/draw-code.service.ts:43` |
+| `DrawCodeService.draw` | 2 | `DatabaseService.save`, `DrawRecordService.record` | `applications/meanderaw/src/modules/draw/draw-code.service.ts:43` |
 | `DrawIndexService.groupByFamily` | 2 | `DrawIndexService.toSorted(…)`, `DrawIndexService.map(…)` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:115` |
 | `DrawIndexService.map(…)` | 2 | `DrawIndexService.escape`, `DrawIndexService.label` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:178` |
-| `DrawIndexService.build` | 2 | `DrawIndexService.render`, `MeanderDatabaseService.findAll` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:221` |
+| `DrawIndexService.build` | 2 | `DrawIndexService.render`, `DatabaseService.findAll` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:221` |
 | `DrawCommand.runCodeDrawing` | 2 | `IncompleteCodeDrawingError.constructor`, `DrawCodeService.draw` | `applications/meanderaw/src/modules/draw/draw.command.ts:105` |
-| `GridGeometryService.borderPath` | 1 | `GridGeometryService.formatCoordinate` | `applications/meanderaw/src/modules/grid-geometry/grid-geometry.service.ts:41` |
-| `MeanderLatticeService.addHorizontal` | 1 | `MeanderLatticeService.key` | `applications/meanderaw/src/modules/meander-lattice/meander-lattice.service.ts:55` |
-| `MeanderLatticeService.addVertical` | 1 | `MeanderLatticeService.key` | `applications/meanderaw/src/modules/meander-lattice/meander-lattice.service.ts:73` |
-| `MeanderLatticeService.command` | 1 | `UnmeasurableDocumentError.constructor` | `applications/meanderaw/src/modules/meander-lattice/meander-lattice.service.ts:91` |
-| `MeanderLatticeService.map(…)` | 1 | `MeanderLatticeService.command` | `applications/meanderaw/src/modules/meander-lattice/meander-lattice.service.ts:121` |
-| `MeanderLatticeService.dimension` | 1 | `UnmeasurableDocumentError.constructor` | `applications/meanderaw/src/modules/meander-lattice/meander-lattice.service.ts:125` |
-| `MeanderLatticeService.pathData` | 1 | `MeanderLatticeService.map(…)` | `applications/meanderaw/src/modules/meander-lattice/meander-lattice.service.ts:170` |
-| `MeanderLatticeService.snap` | 1 | `OffLatticeCoordinateError.constructor` | `applications/meanderaw/src/modules/meander-lattice/meander-lattice.service.ts:175` |
-| `MeanderTopologyService.adjacency` | 1 | `MeanderTopologyService.key` | `applications/meanderaw/src/modules/meander-topology/meander-topology.service.ts:69` |
-| `MeanderTopologyService.key` | 1 | `MeanderTopologyService.key` | `applications/meanderaw/src/modules/meander-topology/meander-topology.service.ts:81` |
-| `MeanderTopologyService.neighbors` | 1 | `MeanderTopologyService.neighbors` | `applications/meanderaw/src/modules/meander-topology/meander-topology.service.ts:82` |
-| `MeanderTopologyService.freeEnds` | 1 | `MeanderTopologyService.inkDegree` | `applications/meanderaw/src/modules/meander-topology/meander-topology.service.ts:88` |
-| `MeanderTopologyService.inkDegree` | 1 | `MeanderTopologyService.key` | `applications/meanderaw/src/modules/meander-topology/meander-topology.service.ts:101` |
-| `MeanderTopologyService.isChannelWidthCompliant` | 1 | `MeanderTopologyService.key` | `applications/meanderaw/src/modules/meander-topology/meander-topology.service.ts:122` |
-| `MeanderTopologyService.negativeDegree` | 1 | `MeanderTopologyService.key` | `applications/meanderaw/src/modules/meander-topology/meander-topology.service.ts:147` |
-| `MeanderTopologyService.components` | 1 | `MeanderTopologyService.walk` | `applications/meanderaw/src/modules/meander-topology/meander-topology.service.ts:253` |
-| `MeanderConnectivityService.adjacency` | 1 | `MeanderConnectivityService.nodes` | `applications/meanderaw/src/modules/meander-characteristics/meander-connectivity.service.ts:71` |
-| `MeanderConnectivityService.nodes` | 1 | `MeanderConnectivityService.flatMap(…)` | `applications/meanderaw/src/modules/meander-characteristics/meander-connectivity.service.ts:163` |
-| `MeanderConnectivityService.flatMap(…)` | 1 | `MeanderConnectivityService.map(…)` | `applications/meanderaw/src/modules/meander-characteristics/meander-connectivity.service.ts:164` |
-| `MeanderConnectivityService.map(…)` | 1 | `MeanderConnectivityService.key` | `applications/meanderaw/src/modules/meander-characteristics/meander-connectivity.service.ts:165` |
-| `MeanderCharacteristicsService.hasEastCorridor` | 1 | `MeanderCharacteristicsService.pointAt` | `applications/meanderaw/src/modules/meander-characteristics/meander-characteristics.service.ts:74` |
-| `MeanderCharacteristicsService.hasNorthCorridor` | 1 | `MeanderCharacteristicsService.pointAt` | `applications/meanderaw/src/modules/meander-characteristics/meander-characteristics.service.ts:87` |
-| `MeanderCharacteristicsService.hasSouthCorridor` | 1 | `MeanderCharacteristicsService.pointAt` | `applications/meanderaw/src/modules/meander-characteristics/meander-characteristics.service.ts:96` |
-| `MeanderCharacteristicsService.hasWestCorridor` | 1 | `MeanderCharacteristicsService.pointAt` | `applications/meanderaw/src/modules/meander-characteristics/meander-characteristics.service.ts:107` |
-| `MeanderDatabaseService.saveAll` | 1 | `MeanderDatabaseService.transaction(…)` | `applications/meanderaw/src/modules/meander-database/meander-database.service.ts:87` |
-| `MeanderDecodingService.point` | 1 | `InvalidCodeCharacterError.constructor` | `applications/meanderaw/src/modules/meander-decoding/meander-decoding.service.ts:43` |
-| `MeanderDecodingService.from(…)` | 1 | `MeanderDecodingService.point` | `applications/meanderaw/src/modules/meander-decoding/meander-decoding.service.ts:72` |
-| `SvgRenderingService.render` | 1 | `SvgRenderingService.map(…)` | `applications/meanderaw/src/modules/svg-rendering/svg-rendering.service.ts:27` |
-| `MeanderRenderingService.format` | 1 | `GridGeometryService.formatCoordinate` | `applications/meanderaw/src/modules/meander-rendering/meander-rendering.service.ts:53` |
-| `MeanderRenderingService.gridSegments` | 1 | `MeanderRenderingService.flatMap(…)` | `applications/meanderaw/src/modules/meander-rendering/meander-rendering.service.ts:58` |
-| `MeanderRenderingService.flatMap(…)` | 1 | `MeanderRenderingService.map(…)` | `applications/meanderaw/src/modules/meander-rendering/meander-rendering.service.ts:60` |
-| `MeanderRenderingService.map(…)` | 1 | `MeanderRenderingService.pointSegments` | `applications/meanderaw/src/modules/meander-rendering/meander-rendering.service.ts:61` |
-| `HardcodedMeandersService.ingest` | 1 | `HardcodedMeandersService.ingestOne` | `applications/meanderaw/src/modules/hardcoded-meanders/hardcoded-meanders.service.ts:111` |
-| `MosaicTileService.assertPointJoinsBelow` | 1 | `MalformedMosaicTileError.constructor` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:76` |
-| `MosaicTileService.blankEdges` | 1 | `MosaicTileService.grid` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:151` |
-| `MosaicTileService.grid` | 1 | `MosaicTileService.from(…)` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:153` |
-| `MosaicTileService.from(…)` | 1 | `MosaicTileService.from(…)` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:154` |
-| `MosaicTileService.build` | 1 | `MosaicTileService.from(…)` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:170` |
-| `MosaicTileService.from(…)` | 1 | `MosaicTileService.from(…)` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:175` |
-| `MosaicTileService.map(…)` | 1 | `MosaicTileService.map(…)` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:208` |
-| `MosaicTileService.map(…)` | 1 | `MosaicTileService.map(…)` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:211` |
-| `MosaicTileService.incidentEdges` | 1 | `MosaicTileService.degree` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:226` |
-| `MosaicTileService.isBare` | 1 | `MosaicTileService.degree` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:239` |
-| `MosaicTileService.maximumDegree` | 1 | `MosaicTileService.flatMap(…)` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:253` |
-| `MosaicTileService.flatMap(…)` | 1 | `MosaicTileService.map(…)` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:256` |
-| `MosaicTileService.map(…)` | 1 | `MosaicTileService.degree` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-tile.service.ts:256` |
-| `MosaicConnectivityService.adjacency` | 1 | `MosaicConnectivityService.flatMap(…)` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-connectivity.service.ts:70` |
-| `MosaicConnectivityService.neighbors` | 1 | `MosaicConnectivityService.neighbors` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-connectivity.service.ts:73` |
-| `MosaicConnectivityService.flatMap(…)` | 1 | `MosaicConnectivityService.map(…)` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-connectivity.service.ts:74` |
-| `MosaicConnectivityService.freeEnds` | 1 | `MosaicConnectivityService.filter(…)` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-connectivity.service.ts:106` |
-| `MosaicConnectivityService.filter(…)` | 1 | `MosaicTileService.degree` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-connectivity.service.ts:109` |
-| `MosaicConnectivityService.markedEdges` | 1 | `MosaicConnectivityService.reduce(…)` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-connectivity.service.ts:114` |
-| `MosaicSubFamilyService.grid` | 1 | `MosaicSubFamilyService.from(…)` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-sub-family.service.ts:66` |
-| `MosaicSubFamilyService.from(…)` | 1 | `MosaicSubFamilyService.from(…)` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-sub-family.service.ts:71` |
-| `MosaicSubFamilyService.from(…)` | 1 | `MosaicSubFamilyService.marks` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-sub-family.service.ts:72` |
-| `MosaicSymmetryService.orbit` | 1 | `MosaicSymmetryService.transform` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-symmetry.service.ts:69` |
-| `MosaicSymmetryService.flatMap(…)` | 1 | `MosaicSymmetryService.map(…)` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-symmetry.service.ts:143` |
-| `MosaicSymmetryService.map(…)` | 1 | `MosaicSymmetryService.rank` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-symmetry.service.ts:143` |
-| `MosaicSymmetryService.flatMap(…)` | 1 | `MosaicSymmetryService.map(…)` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-symmetry.service.ts:217` |
-| `MosaicTileMotifService.format` | 1 | `GridGeometryService.formatCoordinate` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-tile-motif.service.ts:46` |
-| `MosaicTileMotifService.unitSegments` | 1 | `MosaicTileMotifService.flatMap(…)` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-tile-motif.service.ts:74` |
-| `MosaicTileMotifService.flatMap(…)` | 1 | `MosaicTileMotifService.map(…)` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-tile-motif.service.ts:80` |
-| `MosaicTileMotifService.map(…)` | 1 | `MosaicTileMotifService.pointSegments` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-tile-motif.service.ts:81` |
-| `MosaicTileMotifService.leadingOverhang` | 1 | `MosaicTileMotifService.flatMap(…)` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-tile-motif.service.ts:109` |
-| `MosaicTileMotifService.flatMap(…)` | 1 | `MosaicTileMotifService.flatMap(…)` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-tile-motif.service.ts:117` |
-| `MosaicTileMotifService.flatMap(…)` | 1 | `MosaicTileMotifService.format` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-tile-motif.service.ts:118` |
-| `MosaicTileMotifService.rightEdge` | 1 | `MosaicTileMotifService.flatMap(…)` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-tile-motif.service.ts:167` |
-| `MosaicTileMotifService.flatMap(…)` | 1 | `MosaicTileMotifService.map(…)` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-tile-motif.service.ts:173` |
-| `MosaicTileGenerationService.from(…)` | 1 | `MosaicTileMotifService.path` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-tile-generation.service.ts:83` |
-| `MosaicTileGenerationService.format` | 1 | `GridGeometryService.formatCoordinate` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-tile-generation.service.ts:96` |
-| `MosaicTilesService.clear` | 1 | `MosaicTilesService.address` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-tiles.service.ts:122` |
-| `MosaicTilesService.isAdmitted` | 1 | `MosaicTilesService.edges` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-tiles.service.ts:216` |
-| `MosaicTilesService.isMatching` | 1 | `MosaicTileService.incidentEdges` | `applications/meanderaw/src/modules/mosaic-tile/mosaic-tiles.service.ts:236` |
-| `MosaicNamingService.from(…)` | 1 | `MosaicNamingService.every(…)` | `applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:87` |
-| `MosaicNamingService.everyPoint` | 1 | `MosaicNamingService.every(…)` | `applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:102` |
-| `MosaicNamingService.every(…)` | 1 | `MosaicNamingService.every(…)` | `applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:106` |
-| `MosaicNamingService.isCorner` | 1 | `MosaicTileService.degree` | `applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:110` |
-| `MosaicNamingService.isEveryEdgeDrawn` | 1 | `MosaicNamingService.every(…)` | `applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:119` |
-| `MosaicNamingService.name` | 1 | `MosaicNamingService.matching` | `applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:175` |
-| `MosaicNamingService.everyPoint(…)` | 1 | `MosaicTileService.isBare` | `applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:218` |
-| `MosaicNamingService.everyPoint(…)` | 1 | `MosaicNamingService.isCorner` | `applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:220` |
-| `MosaicNamingService.everyPoint(…)` | 1 | `MosaicNamingService.isHorizontal` | `applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:222` |
-| `MosaicNamingService.everyPoint(…)` | 1 | `MosaicNamingService.isVertical` | `applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:224` |
-| `MosaicNamingService.matches` | 1 | `MosaicNamingService.bare` | `applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:227` |
-| `MosaicNamingService.matches` | 1 | `MosaicNamingService.isUnbroken` | `applications/meanderaw/src/modules/mosaic-naming/mosaic-naming.service.ts:245` |
-| `MeanderClassificationService.isArc` | 1 | `MeanderClassificationService.isJunctionFree` | `applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:101` |
-| `MeanderClassificationService.isClosedLoop` | 1 | `MeanderClassificationService.isJunctionFree` | `applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:138` |
-| `MeanderClassificationService.matches` | 1 | `MeanderClassificationService.reachesMinimumRows` | `applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:222` |
-| `MeanderClassificationService.matches` | 1 | `MeanderClassificationService.reachesMinimumRows` | `applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:229` |
-| `MeanderClassificationService.matches` | 1 | `MeanderClassificationService.reachesMinimumRows` | `applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:236` |
-| `MeanderClassificationService.matches` | 1 | `MeanderClassificationService.isBundle` | `applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:279` |
-| `MeanderClassificationService.matches` | 1 | `MeanderClassificationService.reachesMinimumRows` | `applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:283` |
-| `MeanderClassificationService.subFamily` | 1 | `MosaicNamingService.name` | `applications/meanderaw/src/modules/meander-classification/meander-classification.service.ts:292` |
-| `LatticeIdentificationService.assertAddressable` | 1 | `InvalidSpanError.constructor` | `applications/meanderaw/src/modules/lattice-identification/lattice-identification.service.ts:84` |
-| `LatticeIdentificationService.identify` | 1 | `LatticeIdentificationService.flatMap(…)` | `applications/meanderaw/src/modules/lattice-identification/lattice-identification.service.ts:159` |
-| `LatticeIdentificationService.flatMap(…)` | 1 | `LatticeIdentificationService.map(…)` | `applications/meanderaw/src/modules/lattice-identification/lattice-identification.service.ts:161` |
-| `MeanderEnumerationService.map(…)` | 1 | `LatticeIdentificationService.identify` | `applications/meanderaw/src/modules/meander-enumeration/meander-enumeration.service.ts:80` |
-| `MeanderEnumerationService.isAdmitted` | 1 | `MosaicTilesService.isAdmitted` | `applications/meanderaw/src/modules/meander-enumeration/meander-enumeration.service.ts:88` |
+| `TileService.assertPointJoinsBelow` | 1 | `MalformedTileError.constructor` | `applications/meanderaw/src/modules/tile/tile.service.ts:72` |
+| `TileService.blankEdges` | 1 | `TileService.grid` | `applications/meanderaw/src/modules/tile/tile.service.ts:143` |
+| `TileService.grid` | 1 | `TileService.from(…)` | `applications/meanderaw/src/modules/tile/tile.service.ts:145` |
+| `TileService.from(…)` | 1 | `TileService.from(…)` | `applications/meanderaw/src/modules/tile/tile.service.ts:146` |
+| `TileService.build` | 1 | `TileService.from(…)` | `applications/meanderaw/src/modules/tile/tile.service.ts:162` |
+| `TileService.from(…)` | 1 | `TileService.from(…)` | `applications/meanderaw/src/modules/tile/tile.service.ts:167` |
+| `TileService.map(…)` | 1 | `TileService.map(…)` | `applications/meanderaw/src/modules/tile/tile.service.ts:200` |
+| `TileService.map(…)` | 1 | `TileService.map(…)` | `applications/meanderaw/src/modules/tile/tile.service.ts:203` |
+| `TileService.incidentEdges` | 1 | `TileService.degree` | `applications/meanderaw/src/modules/tile/tile.service.ts:218` |
+| `TileService.isBare` | 1 | `TileService.degree` | `applications/meanderaw/src/modules/tile/tile.service.ts:231` |
+| `SymmetryService.orbit` | 1 | `SymmetryService.transform` | `applications/meanderaw/src/modules/symmetry/symmetry.service.ts:64` |
+| `SymmetryService.flatMap(…)` | 1 | `SymmetryService.map(…)` | `applications/meanderaw/src/modules/symmetry/symmetry.service.ts:138` |
+| `SymmetryService.map(…)` | 1 | `SymmetryService.rank` | `applications/meanderaw/src/modules/symmetry/symmetry.service.ts:138` |
+| `SymmetryService.flatMap(…)` | 1 | `SymmetryService.map(…)` | `applications/meanderaw/src/modules/symmetry/symmetry.service.ts:206` |
+| `CodeService.directionsAt` | 1 | `CodeService.decode` | `applications/meanderaw/src/modules/code/code.service.ts:84` |
+| `CodeService.rotate` | 1 | `CodeService.from(…)` | `applications/meanderaw/src/modules/code/code.service.ts:134` |
+| `CodeService.spell` | 1 | `CodeService.flatMap(…)` | `applications/meanderaw/src/modules/code/code.service.ts:157` |
+| `CodeService.flatMap(…)` | 1 | `CodeService.map(…)` | `applications/meanderaw/src/modules/code/code.service.ts:159` |
+| `CodeService.tile` | 1 | `CodeService.from(…)` | `applications/meanderaw/src/modules/code/code.service.ts:198` |
+| `CodeService.from(…)` | 1 | `CodeService.from(…)` | `applications/meanderaw/src/modules/code/code.service.ts:203` |
+| `CodeService.from(…)` | 1 | `CodeService.directionsAt` | `applications/meanderaw/src/modules/code/code.service.ts:204` |
+| `GraphService.components` | 1 | `GraphService.walk` | `applications/meanderaw/src/modules/graph/graph.service.ts:67` |
+| `ConnectivityService.adjacency` | 1 | `ConnectivityService.nodes` | `applications/meanderaw/src/modules/characteristics/connectivity.service.ts:66` |
+| `ConnectivityService.joinsEast` | 1 | `CodeService.directionsAt` | `applications/meanderaw/src/modules/characteristics/connectivity.service.ts:128` |
+| `ConnectivityService.joinsSouth` | 1 | `CodeService.directionsAt` | `applications/meanderaw/src/modules/characteristics/connectivity.service.ts:140` |
+| `ConnectivityService.nodes` | 1 | `ConnectivityService.from(…)` | `applications/meanderaw/src/modules/characteristics/connectivity.service.ts:157` |
+| `ConnectivityService.from(…)` | 1 | `ConnectivityService.from(…)` | `applications/meanderaw/src/modules/characteristics/connectivity.service.ts:158` |
+| `ConnectivityService.from(…)` | 1 | `ConnectivityService.key` | `applications/meanderaw/src/modules/characteristics/connectivity.service.ts:159` |
+| `CharacteristicsService.hasEastCorridor` | 1 | `CodeService.directionsAt` | `applications/meanderaw/src/modules/characteristics/characteristics.service.ts:73` |
+| `CharacteristicsService.hasNorthCorridor` | 1 | `CodeService.directionsAt` | `applications/meanderaw/src/modules/characteristics/characteristics.service.ts:87` |
+| `CharacteristicsService.hasSouthCorridor` | 1 | `CodeService.directionsAt` | `applications/meanderaw/src/modules/characteristics/characteristics.service.ts:98` |
+| `CharacteristicsService.hasWestCorridor` | 1 | `CodeService.directionsAt` | `applications/meanderaw/src/modules/characteristics/characteristics.service.ts:112` |
+| `SubFamilyService.from(…)` | 1 | `SubFamilyService.every(…)` | `applications/meanderaw/src/modules/classification/sub-family.service.ts:84` |
+| `SubFamilyService.everyPoint` | 1 | `SubFamilyService.every(…)` | `applications/meanderaw/src/modules/classification/sub-family.service.ts:99` |
+| `SubFamilyService.every(…)` | 1 | `SubFamilyService.every(…)` | `applications/meanderaw/src/modules/classification/sub-family.service.ts:103` |
+| `SubFamilyService.isCorner` | 1 | `TileService.degree` | `applications/meanderaw/src/modules/classification/sub-family.service.ts:107` |
+| `SubFamilyService.isEveryEdgeDrawn` | 1 | `SubFamilyService.every(…)` | `applications/meanderaw/src/modules/classification/sub-family.service.ts:116` |
+| `SubFamilyService.name` | 1 | `SubFamilyService.matching` | `applications/meanderaw/src/modules/classification/sub-family.service.ts:172` |
+| `SubFamilyService.everyPoint(…)` | 1 | `TileService.isBare` | `applications/meanderaw/src/modules/classification/sub-family.service.ts:215` |
+| `SubFamilyService.everyPoint(…)` | 1 | `SubFamilyService.isCorner` | `applications/meanderaw/src/modules/classification/sub-family.service.ts:217` |
+| `SubFamilyService.everyPoint(…)` | 1 | `SubFamilyService.isHorizontal` | `applications/meanderaw/src/modules/classification/sub-family.service.ts:219` |
+| `SubFamilyService.everyPoint(…)` | 1 | `SubFamilyService.isVertical` | `applications/meanderaw/src/modules/classification/sub-family.service.ts:221` |
+| `SubFamilyService.matches` | 1 | `SubFamilyService.bare` | `applications/meanderaw/src/modules/classification/sub-family.service.ts:224` |
+| `SubFamilyService.matches` | 1 | `SubFamilyService.isUnbroken` | `applications/meanderaw/src/modules/classification/sub-family.service.ts:242` |
+| `ClassificationService.isArc` | 1 | `ClassificationService.isJunctionFree` | `applications/meanderaw/src/modules/classification/classification.service.ts:104` |
+| `ClassificationService.isClosedLoop` | 1 | `ClassificationService.isJunctionFree` | `applications/meanderaw/src/modules/classification/classification.service.ts:141` |
+| `ClassificationService.matches` | 1 | `ClassificationService.reachesMinimumRows` | `applications/meanderaw/src/modules/classification/classification.service.ts:224` |
+| `ClassificationService.matches` | 1 | `ClassificationService.reachesMinimumRows` | `applications/meanderaw/src/modules/classification/classification.service.ts:231` |
+| `ClassificationService.matches` | 1 | `ClassificationService.reachesMinimumRows` | `applications/meanderaw/src/modules/classification/classification.service.ts:238` |
+| `ClassificationService.matches` | 1 | `ClassificationService.isBundle` | `applications/meanderaw/src/modules/classification/classification.service.ts:281` |
+| `ClassificationService.matches` | 1 | `ClassificationService.reachesMinimumRows` | `applications/meanderaw/src/modules/classification/classification.service.ts:285` |
+| `DatabaseService.saveAll` | 1 | `DatabaseService.transaction(…)` | `applications/meanderaw/src/modules/database/database.service.ts:87` |
+| `GeometryService.borderPath` | 1 | `GeometryService.formatCoordinate` | `applications/meanderaw/src/modules/geometry/geometry.service.ts:41` |
+| `SvgService.render` | 1 | `SvgService.map(…)` | `applications/meanderaw/src/modules/svg/svg.service.ts:27` |
+| `LatticeService.addHorizontal` | 1 | `LatticeService.key` | `applications/meanderaw/src/modules/drawing/lattice.service.ts:55` |
+| `LatticeService.addVertical` | 1 | `LatticeService.key` | `applications/meanderaw/src/modules/drawing/lattice.service.ts:73` |
+| `LatticeService.command` | 1 | `UnmeasurableDocumentError.constructor` | `applications/meanderaw/src/modules/drawing/lattice.service.ts:91` |
+| `LatticeService.map(…)` | 1 | `LatticeService.command` | `applications/meanderaw/src/modules/drawing/lattice.service.ts:121` |
+| `LatticeService.dimension` | 1 | `UnmeasurableDocumentError.constructor` | `applications/meanderaw/src/modules/drawing/lattice.service.ts:125` |
+| `LatticeService.pathData` | 1 | `LatticeService.map(…)` | `applications/meanderaw/src/modules/drawing/lattice.service.ts:170` |
+| `LatticeService.snap` | 1 | `OffLatticeCoordinateError.constructor` | `applications/meanderaw/src/modules/drawing/lattice.service.ts:175` |
+| `AddressService.assertAddressable` | 1 | `InvalidSpanError.constructor` | `applications/meanderaw/src/modules/drawing/address.service.ts:77` |
+| `DrawingService.format` | 1 | `GeometryService.formatCoordinate` | `applications/meanderaw/src/modules/drawing/drawing.service.ts:76` |
+| `MeasurementService.adjacency` | 1 | `MeasurementService.key` | `applications/meanderaw/src/modules/drawing/measurement.service.ts:70` |
+| `MeasurementService.key` | 1 | `MeasurementService.key` | `applications/meanderaw/src/modules/drawing/measurement.service.ts:82` |
+| `MeasurementService.neighbors` | 1 | `MeasurementService.neighbors` | `applications/meanderaw/src/modules/drawing/measurement.service.ts:83` |
+| `MeasurementService.freeEnds` | 1 | `MeasurementService.inkDegree` | `applications/meanderaw/src/modules/drawing/measurement.service.ts:89` |
+| `MeasurementService.inkDegree` | 1 | `MeasurementService.key` | `applications/meanderaw/src/modules/drawing/measurement.service.ts:102` |
+| `MeasurementService.isChannelWidthCompliant` | 1 | `MeasurementService.key` | `applications/meanderaw/src/modules/drawing/measurement.service.ts:123` |
+| `MeasurementService.negativeDegree` | 1 | `MeasurementService.key` | `applications/meanderaw/src/modules/drawing/measurement.service.ts:148` |
+| `CorpusService.ingest` | 1 | `CorpusService.ingestOne` | `applications/meanderaw/src/modules/corpus/corpus.service.ts:105` |
+| `TileEnumerationService.clear` | 1 | `TileEnumerationService.address` | `applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:111` |
+| `TileEnumerationService.isAdmitted` | 1 | `TileEnumerationService.edges` | `applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:197` |
+| `TileEnumerationService.isMatching` | 1 | `TileService.incidentEdges` | `applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:217` |
+| `EnumerationService.map(…)` | 1 | `CodeService.spell` | `applications/meanderaw/src/modules/enumeration/enumeration.service.ts:80` |
+| `EnumerationService.isAdmitted` | 1 | `TileEnumerationService.isAdmitted` | `applications/meanderaw/src/modules/enumeration/enumeration.service.ts:88` |
 | `MeanderDriftDetectedError.constructor` | 1 | `MeanderDriftDetectedError.describe` | `applications/meanderaw/src/modules/draw/draw-check.constants.ts:70` |
 | `MeanderDriftDetectedError.map(…)` | 1 | `MeanderDriftDetectedError.describeNew` | `applications/meanderaw/src/modules/draw/draw-check.constants.ts:82` |
 | `MeanderDriftDetectedError.map(…)` | 1 | `MeanderDriftDetectedError.describeMissing` | `applications/meanderaw/src/modules/draw/draw-check.constants.ts:85` |
@@ -2641,7 +2569,7 @@ What this project is judged against, as declared in its own `callidescope.config
 | `DrawCheckService.map(…)` | 1 | `DrawCheckService.key` | `applications/meanderaw/src/modules/draw/draw-check.service.ts:123` |
 | `DrawIndexService.assertWellFormedSvg` | 1 | `MalformedMeanderSvgError.constructor` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:75` |
 | `DrawIndexService.caption` | 1 | `DrawIndexService.escape` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:84` |
-| `DrawIndexService.format` | 1 | `GridGeometryService.formatCoordinate` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:110` |
+| `DrawIndexService.format` | 1 | `GeometryService.formatCoordinate` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:110` |
 | `DrawIndexService.map(…)` | 1 | `DrawIndexService.toSorted(…)` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:126` |
 | `DrawIndexService.toSorted(…)` | 1 | `DrawIndexService.familyRank` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:136` |
 | `DrawIndexService.renderContents` | 1 | `DrawIndexService.map(…)` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:176` |
@@ -2675,57 +2603,56 @@ graph LR
 <!-- codependix:start name="codependix-nestjs-modules" -->
 ```mermaid
 flowchart LR
+  CharacteristicsModule
+  ClassificationModule
+  CodeModule
   ConfigModule([ConfigModule])
+  CorpusModule
+  DatabaseModule
   DiscoveryModule
+  DrawingModule
   DrawModule
-  GridGeometryModule
-  HardcodedMeandersModule
-  LatticeIdentificationModule
+  EnumerationModule
+  GeometryModule
+  GraphModule
   LoggerModule([LoggerModule])
   MainModule
-  MeanderCharacteristicsModule
-  MeanderClassificationModule
-  MeanderDatabaseModule
-  MeanderDecodingModule
-  MeanderEnumerationModule
-  MeanderLatticeModule
-  MeanderRenderingModule
-  MeanderTopologyModule
-  MosaicNamingModule
-  MosaicTileModule
-  SvgRenderingModule
+  SvgModule
+  SymmetryModule
+  TileModule
   TypeOrmModule
-  DrawModule --> GridGeometryModule
-  DrawModule --> HardcodedMeandersModule
-  DrawModule --> MeanderCharacteristicsModule
-  DrawModule --> MeanderClassificationModule
-  DrawModule --> MeanderDatabaseModule
-  DrawModule --> MeanderDecodingModule
-  DrawModule --> MeanderEnumerationModule
-  DrawModule --> MeanderRenderingModule
-  HardcodedMeandersModule --> MeanderCharacteristicsModule
-  HardcodedMeandersModule --> MeanderDatabaseModule
-  HardcodedMeandersModule --> MeanderDecodingModule
-  HardcodedMeandersModule --> MeanderRenderingModule
-  LatticeIdentificationModule --> MeanderLatticeModule
-  LatticeIdentificationModule --> MosaicNamingModule
-  LatticeIdentificationModule --> MosaicTileModule
+  CharacteristicsModule --> CodeModule
+  CharacteristicsModule --> GraphModule
+  ClassificationModule --> CodeModule
+  ClassificationModule --> TileModule
+  CodeModule --> SymmetryModule
+  CorpusModule --> CharacteristicsModule
+  CorpusModule --> CodeModule
+  CorpusModule --> DatabaseModule
+  CorpusModule --> DrawingModule
+  DatabaseModule --> TypeOrmModule
+  DatabaseModule --> TypeOrmModule
+  DrawingModule --> ClassificationModule
+  DrawingModule --> CodeModule
+  DrawingModule --> GeometryModule
+  DrawingModule --> GraphModule
+  DrawingModule --> SvgModule
+  DrawingModule --> TileModule
+  DrawModule --> CharacteristicsModule
+  DrawModule --> ClassificationModule
+  DrawModule --> CodeModule
+  DrawModule --> CorpusModule
+  DrawModule --> DatabaseModule
+  DrawModule --> DrawingModule
+  DrawModule --> EnumerationModule
+  DrawModule --> GeometryModule
+  EnumerationModule --> CodeModule
+  EnumerationModule --> SymmetryModule
+  EnumerationModule --> TileModule
   MainModule --> DiscoveryModule
+  MainModule --> DrawingModule
   MainModule --> DrawModule
-  MainModule --> MeanderTopologyModule
-  MeanderCharacteristicsModule --> MeanderTopologyModule
-  MeanderClassificationModule --> MosaicNamingModule
-  MeanderDatabaseModule --> TypeOrmModule
-  MeanderDatabaseModule --> TypeOrmModule
-  MeanderEnumerationModule --> LatticeIdentificationModule
-  MeanderEnumerationModule --> MosaicTileModule
-  MeanderRenderingModule --> GridGeometryModule
-  MeanderRenderingModule --> SvgRenderingModule
-  MeanderTopologyModule --> MeanderLatticeModule
-  MosaicNamingModule --> MosaicTileModule
-  MosaicTileModule --> GridGeometryModule
-  MosaicTileModule --> MeanderTopologyModule
-  MosaicTileModule --> SvgRenderingModule
+  SymmetryModule --> TileModule
 ```
 
 _Rounded modules are global: every module can inject them, so their edges are left out._
@@ -2745,6 +2672,53 @@ graph LR
   file_src_main_module_ts["src/main.module.ts"]
   file_src_main_ts["src/main.ts"]
   file_src_main_unit_test_ts["src/main.unit.test.ts"]
+  file_src_modules_characteristics_characteristics_constants_ts["src/modules/characteristics/characteristics.constants.ts"]
+  file_src_modules_characteristics_characteristics_module_ts["src/modules/characteristics/characteristics.module.ts"]
+  file_src_modules_characteristics_characteristics_service_ts["src/modules/characteristics/characteristics.service.ts"]
+  file_src_modules_characteristics_characteristics_service_unit_test_ts["src/modules/characteristics/characteristics.service.unit.test.ts"]
+  file_src_modules_characteristics_characteristics_types_ts["src/modules/characteristics/characteristics.types.ts"]
+  file_src_modules_characteristics_connectivity_service_ts["src/modules/characteristics/connectivity.service.ts"]
+  file_src_modules_characteristics_connectivity_service_unit_test_ts["src/modules/characteristics/connectivity.service.unit.test.ts"]
+  file_src_modules_classification_classification_constants_ts["src/modules/classification/classification.constants.ts"]
+  file_src_modules_classification_classification_module_ts["src/modules/classification/classification.module.ts"]
+  file_src_modules_classification_classification_service_ts["src/modules/classification/classification.service.ts"]
+  file_src_modules_classification_classification_service_unit_test_ts["src/modules/classification/classification.service.unit.test.ts"]
+  file_src_modules_classification_classification_types_ts["src/modules/classification/classification.types.ts"]
+  file_src_modules_classification_sub_family_constants_ts["src/modules/classification/sub-family.constants.ts"]
+  file_src_modules_classification_sub_family_service_ts["src/modules/classification/sub-family.service.ts"]
+  file_src_modules_classification_sub_family_service_unit_test_ts["src/modules/classification/sub-family.service.unit.test.ts"]
+  file_src_modules_classification_sub_family_types_ts["src/modules/classification/sub-family.types.ts"]
+  file_src_modules_code_code_constants_ts["src/modules/code/code.constants.ts"]
+  file_src_modules_code_code_module_ts["src/modules/code/code.module.ts"]
+  file_src_modules_code_code_service_ts["src/modules/code/code.service.ts"]
+  file_src_modules_code_code_service_unit_test_ts["src/modules/code/code.service.unit.test.ts"]
+  file_src_modules_code_code_types_ts["src/modules/code/code.types.ts"]
+  file_src_modules_corpus_boxes_constants_ts["src/modules/corpus/boxes.constants.ts"]
+  file_src_modules_corpus_branch_constants_ts["src/modules/corpus/branch.constants.ts"]
+  file_src_modules_corpus_chain_constants_ts["src/modules/corpus/chain.constants.ts"]
+  file_src_modules_corpus_corpus_constants_ts["src/modules/corpus/corpus.constants.ts"]
+  file_src_modules_corpus_corpus_module_ts["src/modules/corpus/corpus.module.ts"]
+  file_src_modules_corpus_corpus_service_ts["src/modules/corpus/corpus.service.ts"]
+  file_src_modules_corpus_corpus_service_unit_test_ts["src/modules/corpus/corpus.service.unit.test.ts"]
+  file_src_modules_corpus_corpus_types_ts["src/modules/corpus/corpus.types.ts"]
+  file_src_modules_corpus_cross_constants_ts["src/modules/corpus/cross.constants.ts"]
+  file_src_modules_corpus_negative_constants_ts["src/modules/corpus/negative.constants.ts"]
+  file_src_modules_corpus_parallel_1_constants_ts["src/modules/corpus/parallel-1.constants.ts"]
+  file_src_modules_corpus_parallel_2_constants_ts["src/modules/corpus/parallel-2.constants.ts"]
+  file_src_modules_corpus_parallel_3_constants_ts["src/modules/corpus/parallel-3.constants.ts"]
+  file_src_modules_corpus_parallel_4_constants_ts["src/modules/corpus/parallel-4.constants.ts"]
+  file_src_modules_corpus_parallel_5_constants_ts["src/modules/corpus/parallel-5.constants.ts"]
+  file_src_modules_corpus_parallel_constants_ts["src/modules/corpus/parallel.constants.ts"]
+  file_src_modules_corpus_snake_constants_ts["src/modules/corpus/snake.constants.ts"]
+  file_src_modules_corpus_swirl_constants_ts["src/modules/corpus/swirl.constants.ts"]
+  file_src_modules_corpus_whirl_constants_ts["src/modules/corpus/whirl.constants.ts"]
+  file_src_modules_database_database_constants_ts["src/modules/database/database.constants.ts"]
+  file_src_modules_database_database_module_ts["src/modules/database/database.module.ts"]
+  file_src_modules_database_database_service_integration_test_ts["src/modules/database/database.service.integration.test.ts"]
+  file_src_modules_database_database_service_ts["src/modules/database/database.service.ts"]
+  file_src_modules_database_database_service_unit_test_ts["src/modules/database/database.service.unit.test.ts"]
+  file_src_modules_database_database_types_ts["src/modules/database/database.types.ts"]
+  file_src_modules_database_entities_Meander_entity_ts["src/modules/database/entities/Meander.entity.ts"]
   file_src_modules_draw_draw_check_sweep_module_ts["src/modules/draw/draw-check-sweep.module.ts"]
   file_src_modules_draw_draw_check_command_integration_test_ts["src/modules/draw/draw-check.command.integration.test.ts"]
   file_src_modules_draw_draw_check_constants_ts["src/modules/draw/draw-check.constants.ts"]
@@ -2770,223 +2744,325 @@ graph LR
   file_src_modules_draw_draw_constants_ts["src/modules/draw/draw.constants.ts"]
   file_src_modules_draw_draw_module_ts["src/modules/draw/draw.module.ts"]
   file_src_modules_draw_draw_types_ts["src/modules/draw/draw.types.ts"]
-  file_src_modules_grid_geometry_grid_geometry_constants_ts["src/modules/grid-geometry/grid-geometry.constants.ts"]
-  file_src_modules_grid_geometry_grid_geometry_module_ts["src/modules/grid-geometry/grid-geometry.module.ts"]
-  file_src_modules_grid_geometry_grid_geometry_service_ts["src/modules/grid-geometry/grid-geometry.service.ts"]
-  file_src_modules_grid_geometry_grid_geometry_service_unit_test_ts["src/modules/grid-geometry/grid-geometry.service.unit.test.ts"]
-  file_src_modules_grid_geometry_grid_geometry_types_ts["src/modules/grid-geometry/grid-geometry.types.ts"]
-  file_src_modules_hardcoded_meanders_boxes_constants_ts["src/modules/hardcoded-meanders/boxes.constants.ts"]
-  file_src_modules_hardcoded_meanders_branch_constants_ts["src/modules/hardcoded-meanders/branch.constants.ts"]
-  file_src_modules_hardcoded_meanders_chain_constants_ts["src/modules/hardcoded-meanders/chain.constants.ts"]
-  file_src_modules_hardcoded_meanders_cross_constants_ts["src/modules/hardcoded-meanders/cross.constants.ts"]
-  file_src_modules_hardcoded_meanders_hardcoded_meanders_constants_ts["src/modules/hardcoded-meanders/hardcoded-meanders.constants.ts"]
-  file_src_modules_hardcoded_meanders_hardcoded_meanders_module_ts["src/modules/hardcoded-meanders/hardcoded-meanders.module.ts"]
-  file_src_modules_hardcoded_meanders_hardcoded_meanders_service_ts["src/modules/hardcoded-meanders/hardcoded-meanders.service.ts"]
-  file_src_modules_hardcoded_meanders_hardcoded_meanders_service_unit_test_ts["src/modules/hardcoded-meanders/hardcoded-meanders.service.unit.test.ts"]
-  file_src_modules_hardcoded_meanders_hardcoded_meanders_types_ts["src/modules/hardcoded-meanders/hardcoded-meanders.types.ts"]
-  file_src_modules_hardcoded_meanders_negative_constants_ts["src/modules/hardcoded-meanders/negative.constants.ts"]
-  file_src_modules_hardcoded_meanders_parallel_1_constants_ts["src/modules/hardcoded-meanders/parallel-1.constants.ts"]
-  file_src_modules_hardcoded_meanders_parallel_2_constants_ts["src/modules/hardcoded-meanders/parallel-2.constants.ts"]
-  file_src_modules_hardcoded_meanders_parallel_3_constants_ts["src/modules/hardcoded-meanders/parallel-3.constants.ts"]
-  file_src_modules_hardcoded_meanders_parallel_4_constants_ts["src/modules/hardcoded-meanders/parallel-4.constants.ts"]
-  file_src_modules_hardcoded_meanders_parallel_5_constants_ts["src/modules/hardcoded-meanders/parallel-5.constants.ts"]
-  file_src_modules_hardcoded_meanders_parallel_constants_ts["src/modules/hardcoded-meanders/parallel.constants.ts"]
-  file_src_modules_hardcoded_meanders_snake_constants_ts["src/modules/hardcoded-meanders/snake.constants.ts"]
-  file_src_modules_hardcoded_meanders_swirl_constants_ts["src/modules/hardcoded-meanders/swirl.constants.ts"]
-  file_src_modules_hardcoded_meanders_whirl_constants_ts["src/modules/hardcoded-meanders/whirl.constants.ts"]
-  file_src_modules_lattice_identification_lattice_identification_constants_ts["src/modules/lattice-identification/lattice-identification.constants.ts"]
-  file_src_modules_lattice_identification_lattice_identification_module_ts["src/modules/lattice-identification/lattice-identification.module.ts"]
-  file_src_modules_lattice_identification_lattice_identification_service_ts["src/modules/lattice-identification/lattice-identification.service.ts"]
-  file_src_modules_lattice_identification_lattice_identification_service_unit_test_ts["src/modules/lattice-identification/lattice-identification.service.unit.test.ts"]
-  file_src_modules_lattice_identification_lattice_identification_types_ts["src/modules/lattice-identification/lattice-identification.types.ts"]
-  file_src_modules_meander_characteristics_meander_characteristics_constants_ts["src/modules/meander-characteristics/meander-characteristics.constants.ts"]
-  file_src_modules_meander_characteristics_meander_characteristics_module_ts["src/modules/meander-characteristics/meander-characteristics.module.ts"]
-  file_src_modules_meander_characteristics_meander_characteristics_service_ts["src/modules/meander-characteristics/meander-characteristics.service.ts"]
-  file_src_modules_meander_characteristics_meander_characteristics_service_unit_test_ts["src/modules/meander-characteristics/meander-characteristics.service.unit.test.ts"]
-  file_src_modules_meander_characteristics_meander_characteristics_types_ts["src/modules/meander-characteristics/meander-characteristics.types.ts"]
-  file_src_modules_meander_characteristics_meander_connectivity_service_ts["src/modules/meander-characteristics/meander-connectivity.service.ts"]
-  file_src_modules_meander_characteristics_meander_connectivity_service_unit_test_ts["src/modules/meander-characteristics/meander-connectivity.service.unit.test.ts"]
-  file_src_modules_meander_classification_meander_classification_constants_ts["src/modules/meander-classification/meander-classification.constants.ts"]
-  file_src_modules_meander_classification_meander_classification_module_ts["src/modules/meander-classification/meander-classification.module.ts"]
-  file_src_modules_meander_classification_meander_classification_service_ts["src/modules/meander-classification/meander-classification.service.ts"]
-  file_src_modules_meander_classification_meander_classification_service_unit_test_ts["src/modules/meander-classification/meander-classification.service.unit.test.ts"]
-  file_src_modules_meander_classification_meander_classification_types_ts["src/modules/meander-classification/meander-classification.types.ts"]
-  file_src_modules_meander_database_entities_Meander_entity_ts["src/modules/meander-database/entities/Meander.entity.ts"]
-  file_src_modules_meander_database_meander_database_constants_ts["src/modules/meander-database/meander-database.constants.ts"]
-  file_src_modules_meander_database_meander_database_module_ts["src/modules/meander-database/meander-database.module.ts"]
-  file_src_modules_meander_database_meander_database_service_integration_test_ts["src/modules/meander-database/meander-database.service.integration.test.ts"]
-  file_src_modules_meander_database_meander_database_service_ts["src/modules/meander-database/meander-database.service.ts"]
-  file_src_modules_meander_database_meander_database_service_unit_test_ts["src/modules/meander-database/meander-database.service.unit.test.ts"]
-  file_src_modules_meander_database_meander_database_types_ts["src/modules/meander-database/meander-database.types.ts"]
-  file_src_modules_meander_decoding_meander_decoding_constants_ts["src/modules/meander-decoding/meander-decoding.constants.ts"]
-  file_src_modules_meander_decoding_meander_decoding_module_ts["src/modules/meander-decoding/meander-decoding.module.ts"]
-  file_src_modules_meander_decoding_meander_decoding_service_ts["src/modules/meander-decoding/meander-decoding.service.ts"]
-  file_src_modules_meander_decoding_meander_decoding_service_unit_test_ts["src/modules/meander-decoding/meander-decoding.service.unit.test.ts"]
-  file_src_modules_meander_decoding_meander_decoding_types_ts["src/modules/meander-decoding/meander-decoding.types.ts"]
-  file_src_modules_meander_enumeration_meander_enumeration_constants_ts["src/modules/meander-enumeration/meander-enumeration.constants.ts"]
-  file_src_modules_meander_enumeration_meander_enumeration_module_ts["src/modules/meander-enumeration/meander-enumeration.module.ts"]
-  file_src_modules_meander_enumeration_meander_enumeration_service_ts["src/modules/meander-enumeration/meander-enumeration.service.ts"]
-  file_src_modules_meander_enumeration_meander_enumeration_service_unit_test_ts["src/modules/meander-enumeration/meander-enumeration.service.unit.test.ts"]
-  file_src_modules_meander_enumeration_meander_enumeration_types_ts["src/modules/meander-enumeration/meander-enumeration.types.ts"]
-  file_src_modules_meander_lattice_meander_lattice_constants_ts["src/modules/meander-lattice/meander-lattice.constants.ts"]
-  file_src_modules_meander_lattice_meander_lattice_module_ts["src/modules/meander-lattice/meander-lattice.module.ts"]
-  file_src_modules_meander_lattice_meander_lattice_service_ts["src/modules/meander-lattice/meander-lattice.service.ts"]
-  file_src_modules_meander_lattice_meander_lattice_service_unit_test_ts["src/modules/meander-lattice/meander-lattice.service.unit.test.ts"]
-  file_src_modules_meander_lattice_meander_lattice_types_ts["src/modules/meander-lattice/meander-lattice.types.ts"]
-  file_src_modules_meander_rendering_meander_rendering_constants_ts["src/modules/meander-rendering/meander-rendering.constants.ts"]
-  file_src_modules_meander_rendering_meander_rendering_module_ts["src/modules/meander-rendering/meander-rendering.module.ts"]
-  file_src_modules_meander_rendering_meander_rendering_service_ts["src/modules/meander-rendering/meander-rendering.service.ts"]
-  file_src_modules_meander_rendering_meander_rendering_service_unit_test_ts["src/modules/meander-rendering/meander-rendering.service.unit.test.ts"]
-  file_src_modules_meander_rendering_meander_rendering_types_ts["src/modules/meander-rendering/meander-rendering.types.ts"]
-  file_src_modules_meander_topology_meander_topology_constants_ts["src/modules/meander-topology/meander-topology.constants.ts"]
-  file_src_modules_meander_topology_meander_topology_module_ts["src/modules/meander-topology/meander-topology.module.ts"]
-  file_src_modules_meander_topology_meander_topology_service_ts["src/modules/meander-topology/meander-topology.service.ts"]
-  file_src_modules_meander_topology_meander_topology_service_unit_test_ts["src/modules/meander-topology/meander-topology.service.unit.test.ts"]
-  file_src_modules_meander_topology_meander_topology_types_ts["src/modules/meander-topology/meander-topology.types.ts"]
-  file_src_modules_mosaic_naming_mosaic_naming_constants_ts["src/modules/mosaic-naming/mosaic-naming.constants.ts"]
-  file_src_modules_mosaic_naming_mosaic_naming_module_ts["src/modules/mosaic-naming/mosaic-naming.module.ts"]
-  file_src_modules_mosaic_naming_mosaic_naming_service_ts["src/modules/mosaic-naming/mosaic-naming.service.ts"]
-  file_src_modules_mosaic_naming_mosaic_naming_service_unit_test_ts["src/modules/mosaic-naming/mosaic-naming.service.unit.test.ts"]
-  file_src_modules_mosaic_naming_mosaic_naming_types_ts["src/modules/mosaic-naming/mosaic-naming.types.ts"]
-  file_src_modules_mosaic_tile_mosaic_connectivity_service_integration_test_ts["src/modules/mosaic-tile/mosaic-connectivity.service.integration.test.ts"]
-  file_src_modules_mosaic_tile_mosaic_connectivity_service_ts["src/modules/mosaic-tile/mosaic-connectivity.service.ts"]
-  file_src_modules_mosaic_tile_mosaic_connectivity_service_unit_test_ts["src/modules/mosaic-tile/mosaic-connectivity.service.unit.test.ts"]
-  file_src_modules_mosaic_tile_mosaic_sub_family_service_ts["src/modules/mosaic-tile/mosaic-sub-family.service.ts"]
-  file_src_modules_mosaic_tile_mosaic_sub_family_service_unit_test_ts["src/modules/mosaic-tile/mosaic-sub-family.service.unit.test.ts"]
-  file_src_modules_mosaic_tile_mosaic_symmetry_service_ts["src/modules/mosaic-tile/mosaic-symmetry.service.ts"]
-  file_src_modules_mosaic_tile_mosaic_symmetry_service_unit_test_ts["src/modules/mosaic-tile/mosaic-symmetry.service.unit.test.ts"]
-  file_src_modules_mosaic_tile_mosaic_tile_generation_service_ts["src/modules/mosaic-tile/mosaic-tile-generation.service.ts"]
-  file_src_modules_mosaic_tile_mosaic_tile_generation_service_unit_test_ts["src/modules/mosaic-tile/mosaic-tile-generation.service.unit.test.ts"]
-  file_src_modules_mosaic_tile_mosaic_tile_motif_service_ts["src/modules/mosaic-tile/mosaic-tile-motif.service.ts"]
-  file_src_modules_mosaic_tile_mosaic_tile_motif_service_unit_test_ts["src/modules/mosaic-tile/mosaic-tile-motif.service.unit.test.ts"]
-  file_src_modules_mosaic_tile_mosaic_tile_constants_ts["src/modules/mosaic-tile/mosaic-tile.constants.ts"]
-  file_src_modules_mosaic_tile_mosaic_tile_module_ts["src/modules/mosaic-tile/mosaic-tile.module.ts"]
-  file_src_modules_mosaic_tile_mosaic_tile_service_ts["src/modules/mosaic-tile/mosaic-tile.service.ts"]
-  file_src_modules_mosaic_tile_mosaic_tile_service_unit_test_ts["src/modules/mosaic-tile/mosaic-tile.service.unit.test.ts"]
-  file_src_modules_mosaic_tile_mosaic_tile_types_ts["src/modules/mosaic-tile/mosaic-tile.types.ts"]
-  file_src_modules_mosaic_tile_mosaic_tiles_service_ts["src/modules/mosaic-tile/mosaic-tiles.service.ts"]
-  file_src_modules_mosaic_tile_mosaic_tiles_service_unit_test_ts["src/modules/mosaic-tile/mosaic-tiles.service.unit.test.ts"]
-  file_src_modules_svg_rendering_svg_rendering_constants_ts["src/modules/svg-rendering/svg-rendering.constants.ts"]
-  file_src_modules_svg_rendering_svg_rendering_module_ts["src/modules/svg-rendering/svg-rendering.module.ts"]
-  file_src_modules_svg_rendering_svg_rendering_service_ts["src/modules/svg-rendering/svg-rendering.service.ts"]
-  file_src_modules_svg_rendering_svg_rendering_service_unit_test_ts["src/modules/svg-rendering/svg-rendering.service.unit.test.ts"]
-  file_src_modules_svg_rendering_svg_rendering_types_ts["src/modules/svg-rendering/svg-rendering.types.ts"]
+  file_src_modules_drawing_address_constants_ts["src/modules/drawing/address.constants.ts"]
+  file_src_modules_drawing_address_service_ts["src/modules/drawing/address.service.ts"]
+  file_src_modules_drawing_address_service_unit_test_ts["src/modules/drawing/address.service.unit.test.ts"]
+  file_src_modules_drawing_address_types_ts["src/modules/drawing/address.types.ts"]
+  file_src_modules_drawing_drawing_constants_ts["src/modules/drawing/drawing.constants.ts"]
+  file_src_modules_drawing_drawing_module_ts["src/modules/drawing/drawing.module.ts"]
+  file_src_modules_drawing_drawing_service_ts["src/modules/drawing/drawing.service.ts"]
+  file_src_modules_drawing_drawing_service_unit_test_ts["src/modules/drawing/drawing.service.unit.test.ts"]
+  file_src_modules_drawing_drawing_types_ts["src/modules/drawing/drawing.types.ts"]
+  file_src_modules_drawing_lattice_constants_ts["src/modules/drawing/lattice.constants.ts"]
+  file_src_modules_drawing_lattice_service_ts["src/modules/drawing/lattice.service.ts"]
+  file_src_modules_drawing_lattice_service_unit_test_ts["src/modules/drawing/lattice.service.unit.test.ts"]
+  file_src_modules_drawing_lattice_types_ts["src/modules/drawing/lattice.types.ts"]
+  file_src_modules_drawing_measurement_constants_ts["src/modules/drawing/measurement.constants.ts"]
+  file_src_modules_drawing_measurement_service_ts["src/modules/drawing/measurement.service.ts"]
+  file_src_modules_drawing_measurement_service_unit_test_ts["src/modules/drawing/measurement.service.unit.test.ts"]
+  file_src_modules_drawing_measurement_types_ts["src/modules/drawing/measurement.types.ts"]
+  file_src_modules_enumeration_enumeration_constants_ts["src/modules/enumeration/enumeration.constants.ts"]
+  file_src_modules_enumeration_enumeration_module_ts["src/modules/enumeration/enumeration.module.ts"]
+  file_src_modules_enumeration_enumeration_service_ts["src/modules/enumeration/enumeration.service.ts"]
+  file_src_modules_enumeration_enumeration_service_unit_test_ts["src/modules/enumeration/enumeration.service.unit.test.ts"]
+  file_src_modules_enumeration_enumeration_types_ts["src/modules/enumeration/enumeration.types.ts"]
+  file_src_modules_enumeration_tile_enumeration_service_ts["src/modules/enumeration/tile-enumeration.service.ts"]
+  file_src_modules_enumeration_tile_enumeration_service_unit_test_ts["src/modules/enumeration/tile-enumeration.service.unit.test.ts"]
+  file_src_modules_geometry_geometry_constants_ts["src/modules/geometry/geometry.constants.ts"]
+  file_src_modules_geometry_geometry_module_ts["src/modules/geometry/geometry.module.ts"]
+  file_src_modules_geometry_geometry_service_ts["src/modules/geometry/geometry.service.ts"]
+  file_src_modules_geometry_geometry_service_unit_test_ts["src/modules/geometry/geometry.service.unit.test.ts"]
+  file_src_modules_geometry_geometry_types_ts["src/modules/geometry/geometry.types.ts"]
+  file_src_modules_graph_graph_constants_ts["src/modules/graph/graph.constants.ts"]
+  file_src_modules_graph_graph_module_ts["src/modules/graph/graph.module.ts"]
+  file_src_modules_graph_graph_service_ts["src/modules/graph/graph.service.ts"]
+  file_src_modules_graph_graph_service_unit_test_ts["src/modules/graph/graph.service.unit.test.ts"]
+  file_src_modules_graph_graph_types_ts["src/modules/graph/graph.types.ts"]
+  file_src_modules_svg_svg_constants_ts["src/modules/svg/svg.constants.ts"]
+  file_src_modules_svg_svg_module_ts["src/modules/svg/svg.module.ts"]
+  file_src_modules_svg_svg_service_ts["src/modules/svg/svg.service.ts"]
+  file_src_modules_svg_svg_service_unit_test_ts["src/modules/svg/svg.service.unit.test.ts"]
+  file_src_modules_svg_svg_types_ts["src/modules/svg/svg.types.ts"]
+  file_src_modules_symmetry_symmetry_constants_ts["src/modules/symmetry/symmetry.constants.ts"]
+  file_src_modules_symmetry_symmetry_module_ts["src/modules/symmetry/symmetry.module.ts"]
+  file_src_modules_symmetry_symmetry_service_ts["src/modules/symmetry/symmetry.service.ts"]
+  file_src_modules_symmetry_symmetry_service_unit_test_ts["src/modules/symmetry/symmetry.service.unit.test.ts"]
+  file_src_modules_symmetry_symmetry_types_ts["src/modules/symmetry/symmetry.types.ts"]
+  file_src_modules_tile_tile_constants_ts["src/modules/tile/tile.constants.ts"]
+  file_src_modules_tile_tile_module_ts["src/modules/tile/tile.module.ts"]
+  file_src_modules_tile_tile_service_ts["src/modules/tile/tile.service.ts"]
+  file_src_modules_tile_tile_service_unit_test_ts["src/modules/tile/tile.service.unit.test.ts"]
+  file_src_modules_tile_tile_types_ts["src/modules/tile/tile.types.ts"]
   file_src_repl_ts["src/repl.ts"]
   file_testing_mocks_ts["testing/mocks.ts"]
-  file_testing_mosaic_tiles_ts["testing/mosaic-tiles.ts"]
   file_testing_path_data_ts["testing/path-data.ts"]
   file_testing_setup_ts["testing/setup.ts"]
+  file_testing_tiles_ts["testing/tiles.ts"]
   file_vitest_config_ts["vitest.config.ts"]
   file_src_main_end_to_end_test_ts --> file_src_constants_ts
   file_src_main_module_ts --> file_src_constants_ts
   file_src_main_module_ts --> file_src_modules_draw_draw_module_ts
-  file_src_main_module_ts --> file_src_modules_meander_topology_meander_topology_module_ts
+  file_src_main_module_ts --> file_src_modules_drawing_drawing_module_ts
   file_src_main_ts --> file_src_main_module_ts
   file_src_main_unit_test_ts --> file_src_main_module_ts
+  file_src_modules_characteristics_characteristics_module_ts --> file_src_modules_characteristics_characteristics_service_ts
+  file_src_modules_characteristics_characteristics_module_ts --> file_src_modules_characteristics_connectivity_service_ts
+  file_src_modules_characteristics_characteristics_module_ts --> file_src_modules_code_code_module_ts
+  file_src_modules_characteristics_characteristics_module_ts --> file_src_modules_graph_graph_module_ts
+  file_src_modules_characteristics_characteristics_service_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_characteristics_service_ts --> file_src_modules_characteristics_connectivity_service_ts
+  file_src_modules_characteristics_characteristics_service_ts --> file_src_modules_code_code_service_ts
+  file_src_modules_characteristics_characteristics_service_ts --> file_src_modules_code_code_types_ts
+  file_src_modules_characteristics_characteristics_service_ts --> file_src_modules_tile_tile_types_ts
+  file_src_modules_characteristics_characteristics_service_unit_test_ts --> file_src_modules_characteristics_characteristics_service_ts
+  file_src_modules_characteristics_characteristics_service_unit_test_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_characteristics_service_unit_test_ts --> file_src_modules_characteristics_connectivity_service_ts
+  file_src_modules_characteristics_characteristics_service_unit_test_ts --> file_src_modules_code_code_service_ts
+  file_src_modules_characteristics_characteristics_service_unit_test_ts --> file_src_modules_graph_graph_service_ts
+  file_src_modules_characteristics_characteristics_service_unit_test_ts --> file_src_modules_symmetry_symmetry_service_ts
+  file_src_modules_characteristics_characteristics_service_unit_test_ts --> file_src_modules_tile_tile_service_ts
+  file_src_modules_characteristics_connectivity_service_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_connectivity_service_ts --> file_src_modules_code_code_service_ts
+  file_src_modules_characteristics_connectivity_service_ts --> file_src_modules_code_code_types_ts
+  file_src_modules_characteristics_connectivity_service_ts --> file_src_modules_graph_graph_service_ts
+  file_src_modules_characteristics_connectivity_service_ts --> file_src_modules_graph_graph_types_ts
+  file_src_modules_characteristics_connectivity_service_unit_test_ts --> file_src_modules_characteristics_connectivity_service_ts
+  file_src_modules_characteristics_connectivity_service_unit_test_ts --> file_src_modules_code_code_service_ts
+  file_src_modules_characteristics_connectivity_service_unit_test_ts --> file_src_modules_graph_graph_service_ts
+  file_src_modules_characteristics_connectivity_service_unit_test_ts --> file_src_modules_symmetry_symmetry_service_ts
+  file_src_modules_characteristics_connectivity_service_unit_test_ts --> file_src_modules_tile_tile_service_ts
+  file_src_modules_classification_classification_constants_ts --> file_src_modules_classification_classification_types_ts
+  file_src_modules_classification_classification_constants_ts --> file_src_modules_tile_tile_constants_ts
+  file_src_modules_classification_classification_module_ts --> file_src_modules_classification_classification_service_ts
+  file_src_modules_classification_classification_module_ts --> file_src_modules_classification_sub_family_service_ts
+  file_src_modules_classification_classification_module_ts --> file_src_modules_code_code_module_ts
+  file_src_modules_classification_classification_module_ts --> file_src_modules_tile_tile_module_ts
+  file_src_modules_classification_classification_service_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_classification_classification_service_ts --> file_src_modules_classification_classification_constants_ts
+  file_src_modules_classification_classification_service_ts --> file_src_modules_classification_classification_types_ts
+  file_src_modules_classification_classification_service_ts --> file_src_modules_classification_sub_family_service_ts
+  file_src_modules_classification_classification_service_ts --> file_src_modules_classification_sub_family_types_ts
+  file_src_modules_classification_classification_service_ts --> file_src_modules_code_code_service_ts
+  file_src_modules_classification_classification_service_ts --> file_src_modules_code_code_types_ts
+  file_src_modules_classification_classification_service_unit_test_ts --> file_src_modules_characteristics_characteristics_service_ts
+  file_src_modules_classification_classification_service_unit_test_ts --> file_src_modules_characteristics_connectivity_service_ts
+  file_src_modules_classification_classification_service_unit_test_ts --> file_src_modules_classification_classification_service_ts
+  file_src_modules_classification_classification_service_unit_test_ts --> file_src_modules_classification_classification_types_ts
+  file_src_modules_classification_classification_service_unit_test_ts --> file_src_modules_classification_sub_family_service_ts
+  file_src_modules_classification_classification_service_unit_test_ts --> file_src_modules_code_code_service_ts
+  file_src_modules_classification_classification_service_unit_test_ts --> file_src_modules_drawing_lattice_service_ts
+  file_src_modules_classification_classification_service_unit_test_ts --> file_src_modules_graph_graph_service_ts
+  file_src_modules_classification_classification_service_unit_test_ts --> file_src_modules_symmetry_symmetry_service_ts
+  file_src_modules_classification_classification_service_unit_test_ts --> file_src_modules_tile_tile_service_ts
+  file_src_modules_classification_classification_types_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_classification_classification_types_ts --> file_src_modules_classification_sub_family_types_ts
+  file_src_modules_classification_sub_family_constants_ts --> file_src_modules_classification_sub_family_types_ts
+  file_src_modules_classification_sub_family_service_ts --> file_src_modules_classification_sub_family_types_ts
+  file_src_modules_classification_sub_family_service_ts --> file_src_modules_tile_tile_service_ts
+  file_src_modules_classification_sub_family_service_ts --> file_src_modules_tile_tile_types_ts
+  file_src_modules_classification_sub_family_service_unit_test_ts --> file_src_modules_classification_sub_family_service_ts
+  file_src_modules_classification_sub_family_service_unit_test_ts --> file_src_modules_classification_sub_family_types_ts
+  file_src_modules_classification_sub_family_service_unit_test_ts --> file_src_modules_enumeration_tile_enumeration_service_ts
+  file_src_modules_classification_sub_family_service_unit_test_ts --> file_src_modules_symmetry_symmetry_service_ts
+  file_src_modules_classification_sub_family_service_unit_test_ts --> file_src_modules_tile_tile_service_ts
+  file_src_modules_classification_sub_family_service_unit_test_ts --> file_src_modules_tile_tile_types_ts
+  file_src_modules_classification_sub_family_service_unit_test_ts --> file_testing_tiles_ts
+  file_src_modules_classification_sub_family_types_ts --> file_src_modules_tile_tile_types_ts
+  file_src_modules_code_code_module_ts --> file_src_modules_code_code_service_ts
+  file_src_modules_code_code_module_ts --> file_src_modules_symmetry_symmetry_module_ts
+  file_src_modules_code_code_service_ts --> file_src_modules_code_code_constants_ts
+  file_src_modules_code_code_service_ts --> file_src_modules_code_code_types_ts
+  file_src_modules_code_code_service_ts --> file_src_modules_symmetry_symmetry_service_ts
+  file_src_modules_code_code_service_ts --> file_src_modules_tile_tile_types_ts
+  file_src_modules_code_code_service_unit_test_ts --> file_src_modules_code_code_constants_ts
+  file_src_modules_code_code_service_unit_test_ts --> file_src_modules_code_code_service_ts
+  file_src_modules_code_code_service_unit_test_ts --> file_src_modules_symmetry_symmetry_service_ts
+  file_src_modules_code_code_service_unit_test_ts --> file_src_modules_tile_tile_service_ts
+  file_src_modules_code_code_service_unit_test_ts --> file_testing_tiles_ts
+  file_src_modules_corpus_boxes_constants_ts --> file_src_modules_corpus_corpus_types_ts
+  file_src_modules_corpus_branch_constants_ts --> file_src_modules_corpus_corpus_types_ts
+  file_src_modules_corpus_chain_constants_ts --> file_src_modules_corpus_corpus_types_ts
+  file_src_modules_corpus_corpus_constants_ts --> file_src_modules_corpus_boxes_constants_ts
+  file_src_modules_corpus_corpus_constants_ts --> file_src_modules_corpus_branch_constants_ts
+  file_src_modules_corpus_corpus_constants_ts --> file_src_modules_corpus_chain_constants_ts
+  file_src_modules_corpus_corpus_constants_ts --> file_src_modules_corpus_corpus_types_ts
+  file_src_modules_corpus_corpus_constants_ts --> file_src_modules_corpus_cross_constants_ts
+  file_src_modules_corpus_corpus_constants_ts --> file_src_modules_corpus_negative_constants_ts
+  file_src_modules_corpus_corpus_constants_ts --> file_src_modules_corpus_parallel_constants_ts
+  file_src_modules_corpus_corpus_constants_ts --> file_src_modules_corpus_snake_constants_ts
+  file_src_modules_corpus_corpus_constants_ts --> file_src_modules_corpus_swirl_constants_ts
+  file_src_modules_corpus_corpus_constants_ts --> file_src_modules_corpus_whirl_constants_ts
+  file_src_modules_corpus_corpus_module_ts --> file_src_modules_characteristics_characteristics_module_ts
+  file_src_modules_corpus_corpus_module_ts --> file_src_modules_code_code_module_ts
+  file_src_modules_corpus_corpus_module_ts --> file_src_modules_corpus_corpus_service_ts
+  file_src_modules_corpus_corpus_module_ts --> file_src_modules_database_database_module_ts
+  file_src_modules_corpus_corpus_module_ts --> file_src_modules_drawing_drawing_module_ts
+  file_src_modules_corpus_corpus_service_ts --> file_src_modules_characteristics_characteristics_service_ts
+  file_src_modules_corpus_corpus_service_ts --> file_src_modules_code_code_service_ts
+  file_src_modules_corpus_corpus_service_ts --> file_src_modules_corpus_corpus_constants_ts
+  file_src_modules_corpus_corpus_service_ts --> file_src_modules_corpus_corpus_types_ts
+  file_src_modules_corpus_corpus_service_ts --> file_src_modules_database_database_service_ts
+  file_src_modules_corpus_corpus_service_ts --> file_src_modules_database_entities_Meander_entity_ts
+  file_src_modules_corpus_corpus_service_ts --> file_src_modules_drawing_drawing_service_ts
+  file_src_modules_corpus_corpus_service_unit_test_ts --> file_src_modules_characteristics_characteristics_service_ts
+  file_src_modules_corpus_corpus_service_unit_test_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_corpus_corpus_service_unit_test_ts --> file_src_modules_code_code_service_ts
+  file_src_modules_corpus_corpus_service_unit_test_ts --> file_src_modules_code_code_types_ts
+  file_src_modules_corpus_corpus_service_unit_test_ts --> file_src_modules_corpus_corpus_constants_ts
+  file_src_modules_corpus_corpus_service_unit_test_ts --> file_src_modules_corpus_corpus_service_ts
+  file_src_modules_corpus_corpus_service_unit_test_ts --> file_src_modules_corpus_corpus_types_ts
+  file_src_modules_corpus_corpus_service_unit_test_ts --> file_src_modules_database_database_service_ts
+  file_src_modules_corpus_corpus_service_unit_test_ts --> file_src_modules_database_entities_Meander_entity_ts
+  file_src_modules_corpus_corpus_service_unit_test_ts --> file_src_modules_drawing_drawing_service_ts
+  file_src_modules_corpus_corpus_types_ts --> file_src_modules_classification_sub_family_types_ts
+  file_src_modules_corpus_cross_constants_ts --> file_src_modules_corpus_corpus_types_ts
+  file_src_modules_corpus_negative_constants_ts --> file_src_modules_corpus_corpus_types_ts
+  file_src_modules_corpus_parallel_1_constants_ts --> file_src_modules_corpus_corpus_types_ts
+  file_src_modules_corpus_parallel_2_constants_ts --> file_src_modules_corpus_corpus_types_ts
+  file_src_modules_corpus_parallel_3_constants_ts --> file_src_modules_corpus_corpus_types_ts
+  file_src_modules_corpus_parallel_4_constants_ts --> file_src_modules_corpus_corpus_types_ts
+  file_src_modules_corpus_parallel_5_constants_ts --> file_src_modules_corpus_corpus_types_ts
+  file_src_modules_corpus_parallel_constants_ts --> file_src_modules_corpus_corpus_types_ts
+  file_src_modules_corpus_parallel_constants_ts --> file_src_modules_corpus_parallel_1_constants_ts
+  file_src_modules_corpus_parallel_constants_ts --> file_src_modules_corpus_parallel_2_constants_ts
+  file_src_modules_corpus_parallel_constants_ts --> file_src_modules_corpus_parallel_3_constants_ts
+  file_src_modules_corpus_parallel_constants_ts --> file_src_modules_corpus_parallel_4_constants_ts
+  file_src_modules_corpus_parallel_constants_ts --> file_src_modules_corpus_parallel_5_constants_ts
+  file_src_modules_corpus_snake_constants_ts --> file_src_modules_corpus_corpus_types_ts
+  file_src_modules_corpus_swirl_constants_ts --> file_src_modules_corpus_corpus_types_ts
+  file_src_modules_corpus_whirl_constants_ts --> file_src_modules_corpus_corpus_types_ts
+  file_src_modules_database_database_module_ts --> file_src_modules_database_database_constants_ts
+  file_src_modules_database_database_module_ts --> file_src_modules_database_database_service_ts
+  file_src_modules_database_database_module_ts --> file_src_modules_database_entities_Meander_entity_ts
+  file_src_modules_database_database_service_integration_test_ts --> file_src_modules_database_database_service_ts
+  file_src_modules_database_database_service_integration_test_ts --> file_src_modules_database_database_types_ts
+  file_src_modules_database_database_service_integration_test_ts --> file_src_modules_database_entities_Meander_entity_ts
+  file_src_modules_database_database_service_ts --> file_src_modules_database_database_constants_ts
+  file_src_modules_database_database_service_ts --> file_src_modules_database_database_types_ts
+  file_src_modules_database_database_service_ts --> file_src_modules_database_entities_Meander_entity_ts
+  file_src_modules_database_database_service_unit_test_ts --> file_src_modules_database_database_service_ts
+  file_src_modules_database_database_service_unit_test_ts --> file_src_modules_database_database_types_ts
+  file_src_modules_database_database_service_unit_test_ts --> file_src_modules_database_entities_Meander_entity_ts
+  file_src_modules_database_database_types_ts --> file_src_modules_classification_classification_types_ts
+  file_src_modules_database_database_types_ts --> file_src_modules_classification_sub_family_types_ts
+  file_src_modules_database_database_types_ts --> file_src_modules_database_database_constants_ts
+  file_src_modules_database_entities_Meander_entity_ts --> file_src_modules_classification_classification_constants_ts
+  file_src_modules_database_entities_Meander_entity_ts --> file_src_modules_classification_classification_types_ts
+  file_src_modules_database_entities_Meander_entity_ts --> file_src_modules_classification_sub_family_constants_ts
+  file_src_modules_database_entities_Meander_entity_ts --> file_src_modules_classification_sub_family_types_ts
+  file_src_modules_database_entities_Meander_entity_ts --> file_src_modules_database_database_constants_ts
+  file_src_modules_database_entities_Meander_entity_ts --> file_src_modules_database_database_types_ts
+  file_src_modules_draw_draw_check_sweep_module_ts --> file_src_modules_characteristics_characteristics_module_ts
+  file_src_modules_draw_draw_check_sweep_module_ts --> file_src_modules_classification_classification_module_ts
+  file_src_modules_draw_draw_check_sweep_module_ts --> file_src_modules_code_code_module_ts
+  file_src_modules_draw_draw_check_sweep_module_ts --> file_src_modules_corpus_corpus_service_ts
+  file_src_modules_draw_draw_check_sweep_module_ts --> file_src_modules_database_database_service_ts
+  file_src_modules_draw_draw_check_sweep_module_ts --> file_src_modules_database_entities_Meander_entity_ts
   file_src_modules_draw_draw_check_sweep_module_ts --> file_src_modules_draw_draw_check_constants_ts
   file_src_modules_draw_draw_check_sweep_module_ts --> file_src_modules_draw_draw_enumeration_service_ts
   file_src_modules_draw_draw_check_sweep_module_ts --> file_src_modules_draw_draw_record_service_ts
-  file_src_modules_draw_draw_check_sweep_module_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_service_ts
-  file_src_modules_draw_draw_check_sweep_module_ts --> file_src_modules_meander_characteristics_meander_characteristics_module_ts
-  file_src_modules_draw_draw_check_sweep_module_ts --> file_src_modules_meander_classification_meander_classification_module_ts
-  file_src_modules_draw_draw_check_sweep_module_ts --> file_src_modules_meander_database_entities_Meander_entity_ts
-  file_src_modules_draw_draw_check_sweep_module_ts --> file_src_modules_meander_database_meander_database_service_ts
-  file_src_modules_draw_draw_check_sweep_module_ts --> file_src_modules_meander_decoding_meander_decoding_module_ts
-  file_src_modules_draw_draw_check_sweep_module_ts --> file_src_modules_meander_enumeration_meander_enumeration_module_ts
-  file_src_modules_draw_draw_check_sweep_module_ts --> file_src_modules_meander_rendering_meander_rendering_module_ts
+  file_src_modules_draw_draw_check_sweep_module_ts --> file_src_modules_drawing_drawing_module_ts
+  file_src_modules_draw_draw_check_sweep_module_ts --> file_src_modules_enumeration_enumeration_module_ts
+  file_src_modules_draw_draw_check_command_integration_test_ts --> file_src_modules_corpus_corpus_constants_ts
+  file_src_modules_draw_draw_check_command_integration_test_ts --> file_src_modules_corpus_corpus_service_ts
+  file_src_modules_draw_draw_check_command_integration_test_ts --> file_src_modules_database_entities_Meander_entity_ts
   file_src_modules_draw_draw_check_command_integration_test_ts --> file_src_modules_draw_draw_check_service_ts
   file_src_modules_draw_draw_check_command_integration_test_ts --> file_src_modules_draw_draw_code_service_ts
   file_src_modules_draw_draw_check_command_integration_test_ts --> file_src_modules_draw_draw_enumeration_service_ts
   file_src_modules_draw_draw_check_command_integration_test_ts --> file_src_modules_draw_draw_index_service_ts
   file_src_modules_draw_draw_check_command_integration_test_ts --> file_src_modules_draw_draw_command_ts
-  file_src_modules_draw_draw_check_command_integration_test_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_constants_ts
-  file_src_modules_draw_draw_check_command_integration_test_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_service_ts
-  file_src_modules_draw_draw_check_command_integration_test_ts --> file_src_modules_meander_database_entities_Meander_entity_ts
+  file_src_modules_draw_draw_check_constants_ts --> file_src_modules_database_database_types_ts
   file_src_modules_draw_draw_check_constants_ts --> file_src_modules_draw_draw_check_types_ts
-  file_src_modules_draw_draw_check_constants_ts --> file_src_modules_meander_database_meander_database_types_ts
+  file_src_modules_draw_draw_check_service_ts --> file_src_modules_corpus_corpus_constants_ts
+  file_src_modules_draw_draw_check_service_ts --> file_src_modules_corpus_corpus_service_ts
+  file_src_modules_draw_draw_check_service_ts --> file_src_modules_database_entities_Meander_entity_ts
   file_src_modules_draw_draw_check_service_ts --> file_src_modules_draw_draw_check_sweep_module_ts
   file_src_modules_draw_draw_check_service_ts --> file_src_modules_draw_draw_check_constants_ts
   file_src_modules_draw_draw_check_service_ts --> file_src_modules_draw_draw_check_types_ts
   file_src_modules_draw_draw_check_service_ts --> file_src_modules_draw_draw_enumeration_service_ts
-  file_src_modules_draw_draw_check_service_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_constants_ts
-  file_src_modules_draw_draw_check_service_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_service_ts
-  file_src_modules_draw_draw_check_service_ts --> file_src_modules_meander_database_entities_Meander_entity_ts
+  file_src_modules_draw_draw_check_service_unit_test_ts --> file_src_modules_database_entities_Meander_entity_ts
   file_src_modules_draw_draw_check_service_unit_test_ts --> file_src_modules_draw_draw_check_service_ts
-  file_src_modules_draw_draw_check_service_unit_test_ts --> file_src_modules_meander_database_entities_Meander_entity_ts
+  file_src_modules_draw_draw_code_service_ts --> file_src_modules_database_database_service_ts
+  file_src_modules_draw_draw_code_service_ts --> file_src_modules_database_entities_Meander_entity_ts
   file_src_modules_draw_draw_code_service_ts --> file_src_modules_draw_draw_record_service_ts
   file_src_modules_draw_draw_code_service_ts --> file_src_modules_draw_draw_types_ts
-  file_src_modules_draw_draw_code_service_ts --> file_src_modules_meander_database_entities_Meander_entity_ts
-  file_src_modules_draw_draw_code_service_ts --> file_src_modules_meander_database_meander_database_service_ts
+  file_src_modules_draw_draw_code_service_unit_test_ts --> file_src_modules_database_database_service_ts
+  file_src_modules_draw_draw_code_service_unit_test_ts --> file_src_modules_database_database_types_ts
+  file_src_modules_draw_draw_code_service_unit_test_ts --> file_src_modules_database_entities_Meander_entity_ts
   file_src_modules_draw_draw_code_service_unit_test_ts --> file_src_modules_draw_draw_code_service_ts
   file_src_modules_draw_draw_code_service_unit_test_ts --> file_src_modules_draw_draw_record_service_ts
-  file_src_modules_draw_draw_code_service_unit_test_ts --> file_src_modules_meander_database_entities_Meander_entity_ts
-  file_src_modules_draw_draw_code_service_unit_test_ts --> file_src_modules_meander_database_meander_database_service_ts
-  file_src_modules_draw_draw_code_service_unit_test_ts --> file_src_modules_meander_database_meander_database_types_ts
+  file_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_src_modules_characteristics_characteristics_service_ts
+  file_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_src_modules_characteristics_connectivity_service_ts
+  file_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_src_modules_classification_classification_service_ts
+  file_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_src_modules_classification_sub_family_service_ts
+  file_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_src_modules_code_code_service_ts
+  file_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_src_modules_database_database_service_ts
+  file_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_src_modules_database_entities_Meander_entity_ts
   file_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_src_modules_draw_draw_enumeration_service_ts
   file_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_src_modules_draw_draw_record_service_ts
-  file_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
-  file_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_src_modules_lattice_identification_lattice_identification_service_ts
-  file_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_src_modules_meander_characteristics_meander_characteristics_service_ts
-  file_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_src_modules_meander_characteristics_meander_connectivity_service_ts
-  file_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_src_modules_meander_classification_meander_classification_service_ts
-  file_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_src_modules_meander_database_entities_Meander_entity_ts
-  file_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_src_modules_meander_database_meander_database_service_ts
-  file_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_src_modules_meander_decoding_meander_decoding_service_ts
-  file_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_src_modules_meander_enumeration_meander_enumeration_service_ts
-  file_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_src_modules_meander_lattice_meander_lattice_service_ts
-  file_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_src_modules_meander_rendering_meander_rendering_service_ts
-  file_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_src_modules_meander_topology_meander_topology_service_ts
-  file_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_src_modules_mosaic_naming_mosaic_naming_service_ts
-  file_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_src_modules_mosaic_tile_mosaic_symmetry_service_ts
-  file_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_service_ts
-  file_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_src_modules_mosaic_tile_mosaic_tiles_service_ts
-  file_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_src_modules_svg_rendering_svg_rendering_service_ts
+  file_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_src_modules_drawing_drawing_service_ts
+  file_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_src_modules_drawing_lattice_service_ts
+  file_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_src_modules_enumeration_enumeration_service_ts
+  file_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_src_modules_enumeration_tile_enumeration_service_ts
+  file_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_src_modules_geometry_geometry_service_ts
+  file_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_src_modules_graph_graph_service_ts
+  file_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_src_modules_svg_svg_service_ts
+  file_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_src_modules_symmetry_symmetry_service_ts
+  file_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_src_modules_tile_tile_service_ts
+  file_src_modules_draw_draw_enumeration_service_ts --> file_src_modules_classification_classification_types_ts
+  file_src_modules_draw_draw_enumeration_service_ts --> file_src_modules_database_database_service_ts
+  file_src_modules_draw_draw_enumeration_service_ts --> file_src_modules_database_database_types_ts
   file_src_modules_draw_draw_enumeration_service_ts --> file_src_modules_draw_draw_record_service_ts
-  file_src_modules_draw_draw_enumeration_service_ts --> file_src_modules_meander_classification_meander_classification_types_ts
-  file_src_modules_draw_draw_enumeration_service_ts --> file_src_modules_meander_database_meander_database_service_ts
-  file_src_modules_draw_draw_enumeration_service_ts --> file_src_modules_meander_database_meander_database_types_ts
-  file_src_modules_draw_draw_enumeration_service_ts --> file_src_modules_meander_enumeration_meander_enumeration_service_ts
+  file_src_modules_draw_draw_enumeration_service_ts --> file_src_modules_enumeration_enumeration_service_ts
+  file_src_modules_draw_draw_enumeration_service_unit_test_ts --> file_src_modules_database_database_service_ts
+  file_src_modules_draw_draw_enumeration_service_unit_test_ts --> file_src_modules_database_database_types_ts
   file_src_modules_draw_draw_enumeration_service_unit_test_ts --> file_src_modules_draw_draw_enumeration_service_ts
   file_src_modules_draw_draw_enumeration_service_unit_test_ts --> file_src_modules_draw_draw_record_service_ts
-  file_src_modules_draw_draw_enumeration_service_unit_test_ts --> file_src_modules_meander_database_meander_database_service_ts
-  file_src_modules_draw_draw_enumeration_service_unit_test_ts --> file_src_modules_meander_database_meander_database_types_ts
-  file_src_modules_draw_draw_enumeration_service_unit_test_ts --> file_src_modules_meander_enumeration_meander_enumeration_service_ts
+  file_src_modules_draw_draw_enumeration_service_unit_test_ts --> file_src_modules_enumeration_enumeration_service_ts
+  file_src_modules_draw_draw_index_service_integration_test_ts --> file_src_modules_database_database_service_ts
+  file_src_modules_draw_draw_index_service_integration_test_ts --> file_src_modules_database_database_types_ts
+  file_src_modules_draw_draw_index_service_integration_test_ts --> file_src_modules_database_entities_Meander_entity_ts
   file_src_modules_draw_draw_index_service_integration_test_ts --> file_src_modules_draw_draw_index_service_ts
-  file_src_modules_draw_draw_index_service_integration_test_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
-  file_src_modules_draw_draw_index_service_integration_test_ts --> file_src_modules_meander_database_entities_Meander_entity_ts
-  file_src_modules_draw_draw_index_service_integration_test_ts --> file_src_modules_meander_database_meander_database_service_ts
-  file_src_modules_draw_draw_index_service_integration_test_ts --> file_src_modules_meander_database_meander_database_types_ts
+  file_src_modules_draw_draw_index_service_integration_test_ts --> file_src_modules_geometry_geometry_service_ts
+  file_src_modules_draw_draw_index_service_ts --> file_src_modules_classification_classification_constants_ts
+  file_src_modules_draw_draw_index_service_ts --> file_src_modules_classification_classification_types_ts
+  file_src_modules_draw_draw_index_service_ts --> file_src_modules_database_database_service_ts
+  file_src_modules_draw_draw_index_service_ts --> file_src_modules_database_entities_Meander_entity_ts
   file_src_modules_draw_draw_index_service_ts --> file_src_modules_draw_draw_index_constants_ts
   file_src_modules_draw_draw_index_service_ts --> file_src_modules_draw_draw_index_types_ts
-  file_src_modules_draw_draw_index_service_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
-  file_src_modules_draw_draw_index_service_ts --> file_src_modules_meander_classification_meander_classification_constants_ts
-  file_src_modules_draw_draw_index_service_ts --> file_src_modules_meander_classification_meander_classification_types_ts
-  file_src_modules_draw_draw_index_service_ts --> file_src_modules_meander_database_entities_Meander_entity_ts
-  file_src_modules_draw_draw_index_service_ts --> file_src_modules_meander_database_meander_database_service_ts
+  file_src_modules_draw_draw_index_service_ts --> file_src_modules_geometry_geometry_service_ts
+  file_src_modules_draw_draw_index_service_unit_test_ts --> file_src_modules_database_database_service_ts
+  file_src_modules_draw_draw_index_service_unit_test_ts --> file_src_modules_database_entities_Meander_entity_ts
   file_src_modules_draw_draw_index_service_unit_test_ts --> file_src_modules_draw_draw_index_service_ts
-  file_src_modules_draw_draw_index_service_unit_test_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
-  file_src_modules_draw_draw_index_service_unit_test_ts --> file_src_modules_meander_database_entities_Meander_entity_ts
-  file_src_modules_draw_draw_index_service_unit_test_ts --> file_src_modules_meander_database_meander_database_service_ts
-  file_src_modules_draw_draw_index_types_ts --> file_src_modules_meander_classification_meander_classification_types_ts
-  file_src_modules_draw_draw_index_types_ts --> file_src_modules_meander_database_entities_Meander_entity_ts
-  file_src_modules_draw_draw_record_service_ts --> file_src_modules_meander_characteristics_meander_characteristics_service_ts
-  file_src_modules_draw_draw_record_service_ts --> file_src_modules_meander_classification_meander_classification_service_ts
-  file_src_modules_draw_draw_record_service_ts --> file_src_modules_meander_classification_meander_classification_types_ts
-  file_src_modules_draw_draw_record_service_ts --> file_src_modules_meander_database_meander_database_types_ts
-  file_src_modules_draw_draw_record_service_ts --> file_src_modules_meander_decoding_meander_decoding_service_ts
-  file_src_modules_draw_draw_record_service_ts --> file_src_modules_meander_rendering_meander_rendering_service_ts
+  file_src_modules_draw_draw_index_service_unit_test_ts --> file_src_modules_geometry_geometry_service_ts
+  file_src_modules_draw_draw_index_types_ts --> file_src_modules_classification_classification_types_ts
+  file_src_modules_draw_draw_index_types_ts --> file_src_modules_database_entities_Meander_entity_ts
+  file_src_modules_draw_draw_record_service_ts --> file_src_modules_characteristics_characteristics_service_ts
+  file_src_modules_draw_draw_record_service_ts --> file_src_modules_classification_classification_service_ts
+  file_src_modules_draw_draw_record_service_ts --> file_src_modules_classification_classification_types_ts
+  file_src_modules_draw_draw_record_service_ts --> file_src_modules_code_code_service_ts
+  file_src_modules_draw_draw_record_service_ts --> file_src_modules_database_database_types_ts
+  file_src_modules_draw_draw_record_service_ts --> file_src_modules_drawing_drawing_service_ts
+  file_src_modules_draw_draw_record_service_unit_test_ts --> file_src_modules_characteristics_characteristics_service_ts
+  file_src_modules_draw_draw_record_service_unit_test_ts --> file_src_modules_characteristics_connectivity_service_ts
+  file_src_modules_draw_draw_record_service_unit_test_ts --> file_src_modules_classification_classification_service_ts
+  file_src_modules_draw_draw_record_service_unit_test_ts --> file_src_modules_classification_sub_family_service_ts
+  file_src_modules_draw_draw_record_service_unit_test_ts --> file_src_modules_code_code_service_ts
   file_src_modules_draw_draw_record_service_unit_test_ts --> file_src_modules_draw_draw_record_service_ts
-  file_src_modules_draw_draw_record_service_unit_test_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
-  file_src_modules_draw_draw_record_service_unit_test_ts --> file_src_modules_meander_characteristics_meander_characteristics_service_ts
-  file_src_modules_draw_draw_record_service_unit_test_ts --> file_src_modules_meander_characteristics_meander_connectivity_service_ts
-  file_src_modules_draw_draw_record_service_unit_test_ts --> file_src_modules_meander_classification_meander_classification_service_ts
-  file_src_modules_draw_draw_record_service_unit_test_ts --> file_src_modules_meander_decoding_meander_decoding_service_ts
-  file_src_modules_draw_draw_record_service_unit_test_ts --> file_src_modules_meander_lattice_meander_lattice_service_ts
-  file_src_modules_draw_draw_record_service_unit_test_ts --> file_src_modules_meander_rendering_meander_rendering_service_ts
-  file_src_modules_draw_draw_record_service_unit_test_ts --> file_src_modules_meander_topology_meander_topology_service_ts
-  file_src_modules_draw_draw_record_service_unit_test_ts --> file_src_modules_mosaic_naming_mosaic_naming_service_ts
-  file_src_modules_draw_draw_record_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_service_ts
-  file_src_modules_draw_draw_record_service_unit_test_ts --> file_src_modules_svg_rendering_svg_rendering_service_ts
+  file_src_modules_draw_draw_record_service_unit_test_ts --> file_src_modules_drawing_drawing_service_ts
+  file_src_modules_draw_draw_record_service_unit_test_ts --> file_src_modules_drawing_lattice_service_ts
+  file_src_modules_draw_draw_record_service_unit_test_ts --> file_src_modules_geometry_geometry_service_ts
+  file_src_modules_draw_draw_record_service_unit_test_ts --> file_src_modules_graph_graph_service_ts
+  file_src_modules_draw_draw_record_service_unit_test_ts --> file_src_modules_svg_svg_service_ts
+  file_src_modules_draw_draw_record_service_unit_test_ts --> file_src_modules_symmetry_symmetry_service_ts
+  file_src_modules_draw_draw_record_service_unit_test_ts --> file_src_modules_tile_tile_service_ts
+  file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_characteristics_characteristics_module_ts
+  file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_classification_classification_module_ts
+  file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_code_code_module_ts
+  file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_corpus_corpus_constants_ts
+  file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_corpus_corpus_service_ts
+  file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_database_database_service_ts
+  file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_database_entities_Meander_entity_ts
   file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_draw_draw_check_service_ts
   file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_draw_draw_code_service_ts
   file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_draw_draw_enumeration_service_ts
@@ -2994,45 +3070,40 @@ graph LR
   file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_draw_draw_record_service_ts
   file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_draw_draw_command_ts
   file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_draw_draw_constants_ts
-  file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_grid_geometry_grid_geometry_module_ts
-  file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_constants_ts
-  file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_service_ts
-  file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_meander_characteristics_meander_characteristics_module_ts
-  file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_meander_classification_meander_classification_module_ts
-  file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_meander_database_entities_Meander_entity_ts
-  file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_meander_database_meander_database_service_ts
-  file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_meander_decoding_meander_decoding_module_ts
-  file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_meander_enumeration_meander_enumeration_module_ts
-  file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_meander_enumeration_meander_enumeration_service_ts
-  file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_meander_rendering_meander_rendering_module_ts
+  file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_drawing_drawing_module_ts
+  file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_enumeration_enumeration_module_ts
+  file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_enumeration_enumeration_service_ts
+  file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_geometry_geometry_module_ts
+  file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_characteristics_characteristics_service_ts
+  file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_characteristics_connectivity_service_ts
+  file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_classification_classification_service_ts
+  file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_classification_sub_family_service_ts
+  file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_code_code_module_ts
+  file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_corpus_corpus_service_ts
+  file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_database_database_service_ts
+  file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_database_entities_Meander_entity_ts
   file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_draw_draw_check_service_ts
   file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_draw_draw_code_service_ts
   file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_draw_draw_enumeration_service_ts
   file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_draw_draw_index_service_ts
   file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_draw_draw_record_service_ts
   file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_draw_draw_command_ts
-  file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
-  file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_service_ts
-  file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_meander_characteristics_meander_characteristics_service_ts
-  file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_meander_characteristics_meander_connectivity_service_ts
-  file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_meander_classification_meander_classification_service_ts
-  file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_meander_database_entities_Meander_entity_ts
-  file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_meander_database_meander_database_service_ts
-  file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_meander_decoding_meander_decoding_module_ts
-  file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_meander_lattice_meander_lattice_service_ts
-  file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_meander_rendering_meander_rendering_module_ts
-  file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_meander_topology_meander_topology_service_ts
-  file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_mosaic_naming_mosaic_naming_service_ts
-  file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_service_ts
-  file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_svg_rendering_svg_rendering_service_ts
+  file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_drawing_drawing_module_ts
+  file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_drawing_lattice_service_ts
+  file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_geometry_geometry_service_ts
+  file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_graph_graph_service_ts
+  file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_svg_svg_service_ts
+  file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_tile_tile_service_ts
+  file_src_modules_draw_draw_command_ts --> file_src_modules_corpus_corpus_constants_ts
+  file_src_modules_draw_draw_command_ts --> file_src_modules_corpus_corpus_service_ts
   file_src_modules_draw_draw_command_ts --> file_src_modules_draw_draw_check_service_ts
   file_src_modules_draw_draw_command_ts --> file_src_modules_draw_draw_code_service_ts
   file_src_modules_draw_draw_command_ts --> file_src_modules_draw_draw_enumeration_service_ts
   file_src_modules_draw_draw_command_ts --> file_src_modules_draw_draw_index_service_ts
   file_src_modules_draw_draw_command_ts --> file_src_modules_draw_draw_constants_ts
   file_src_modules_draw_draw_command_ts --> file_src_modules_draw_draw_types_ts
-  file_src_modules_draw_draw_command_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_constants_ts
-  file_src_modules_draw_draw_command_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_service_ts
+  file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_corpus_corpus_service_ts
+  file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_database_entities_Meander_entity_ts
   file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_draw_draw_check_service_ts
   file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_draw_draw_check_types_ts
   file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_draw_draw_code_service_ts
@@ -3040,322 +3111,133 @@ graph LR
   file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_draw_draw_index_service_ts
   file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_draw_draw_command_ts
   file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_draw_draw_constants_ts
-  file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_service_ts
-  file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_meander_database_entities_Meander_entity_ts
+  file_src_modules_draw_draw_module_ts --> file_src_modules_characteristics_characteristics_module_ts
+  file_src_modules_draw_draw_module_ts --> file_src_modules_classification_classification_module_ts
+  file_src_modules_draw_draw_module_ts --> file_src_modules_code_code_module_ts
+  file_src_modules_draw_draw_module_ts --> file_src_modules_corpus_corpus_module_ts
+  file_src_modules_draw_draw_module_ts --> file_src_modules_database_database_module_ts
   file_src_modules_draw_draw_module_ts --> file_src_modules_draw_draw_check_service_ts
   file_src_modules_draw_draw_module_ts --> file_src_modules_draw_draw_code_service_ts
   file_src_modules_draw_draw_module_ts --> file_src_modules_draw_draw_enumeration_service_ts
   file_src_modules_draw_draw_module_ts --> file_src_modules_draw_draw_index_service_ts
   file_src_modules_draw_draw_module_ts --> file_src_modules_draw_draw_record_service_ts
   file_src_modules_draw_draw_module_ts --> file_src_modules_draw_draw_command_ts
-  file_src_modules_draw_draw_module_ts --> file_src_modules_grid_geometry_grid_geometry_module_ts
-  file_src_modules_draw_draw_module_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_module_ts
-  file_src_modules_draw_draw_module_ts --> file_src_modules_meander_characteristics_meander_characteristics_module_ts
-  file_src_modules_draw_draw_module_ts --> file_src_modules_meander_classification_meander_classification_module_ts
-  file_src_modules_draw_draw_module_ts --> file_src_modules_meander_database_meander_database_module_ts
-  file_src_modules_draw_draw_module_ts --> file_src_modules_meander_decoding_meander_decoding_module_ts
-  file_src_modules_draw_draw_module_ts --> file_src_modules_meander_enumeration_meander_enumeration_module_ts
-  file_src_modules_draw_draw_module_ts --> file_src_modules_meander_rendering_meander_rendering_module_ts
-  file_src_modules_grid_geometry_grid_geometry_module_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
-  file_src_modules_grid_geometry_grid_geometry_service_ts --> file_src_modules_grid_geometry_grid_geometry_constants_ts
-  file_src_modules_grid_geometry_grid_geometry_service_ts --> file_src_modules_grid_geometry_grid_geometry_types_ts
-  file_src_modules_grid_geometry_grid_geometry_service_unit_test_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
-  file_src_modules_hardcoded_meanders_boxes_constants_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_types_ts
-  file_src_modules_hardcoded_meanders_branch_constants_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_types_ts
-  file_src_modules_hardcoded_meanders_chain_constants_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_types_ts
-  file_src_modules_hardcoded_meanders_cross_constants_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_types_ts
-  file_src_modules_hardcoded_meanders_hardcoded_meanders_constants_ts --> file_src_modules_hardcoded_meanders_boxes_constants_ts
-  file_src_modules_hardcoded_meanders_hardcoded_meanders_constants_ts --> file_src_modules_hardcoded_meanders_branch_constants_ts
-  file_src_modules_hardcoded_meanders_hardcoded_meanders_constants_ts --> file_src_modules_hardcoded_meanders_chain_constants_ts
-  file_src_modules_hardcoded_meanders_hardcoded_meanders_constants_ts --> file_src_modules_hardcoded_meanders_cross_constants_ts
-  file_src_modules_hardcoded_meanders_hardcoded_meanders_constants_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_types_ts
-  file_src_modules_hardcoded_meanders_hardcoded_meanders_constants_ts --> file_src_modules_hardcoded_meanders_negative_constants_ts
-  file_src_modules_hardcoded_meanders_hardcoded_meanders_constants_ts --> file_src_modules_hardcoded_meanders_parallel_constants_ts
-  file_src_modules_hardcoded_meanders_hardcoded_meanders_constants_ts --> file_src_modules_hardcoded_meanders_snake_constants_ts
-  file_src_modules_hardcoded_meanders_hardcoded_meanders_constants_ts --> file_src_modules_hardcoded_meanders_swirl_constants_ts
-  file_src_modules_hardcoded_meanders_hardcoded_meanders_constants_ts --> file_src_modules_hardcoded_meanders_whirl_constants_ts
-  file_src_modules_hardcoded_meanders_hardcoded_meanders_module_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_service_ts
-  file_src_modules_hardcoded_meanders_hardcoded_meanders_module_ts --> file_src_modules_meander_characteristics_meander_characteristics_module_ts
-  file_src_modules_hardcoded_meanders_hardcoded_meanders_module_ts --> file_src_modules_meander_database_meander_database_module_ts
-  file_src_modules_hardcoded_meanders_hardcoded_meanders_module_ts --> file_src_modules_meander_decoding_meander_decoding_module_ts
-  file_src_modules_hardcoded_meanders_hardcoded_meanders_module_ts --> file_src_modules_meander_rendering_meander_rendering_module_ts
-  file_src_modules_hardcoded_meanders_hardcoded_meanders_service_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_constants_ts
-  file_src_modules_hardcoded_meanders_hardcoded_meanders_service_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_types_ts
-  file_src_modules_hardcoded_meanders_hardcoded_meanders_service_ts --> file_src_modules_meander_characteristics_meander_characteristics_service_ts
-  file_src_modules_hardcoded_meanders_hardcoded_meanders_service_ts --> file_src_modules_meander_database_entities_Meander_entity_ts
-  file_src_modules_hardcoded_meanders_hardcoded_meanders_service_ts --> file_src_modules_meander_database_meander_database_service_ts
-  file_src_modules_hardcoded_meanders_hardcoded_meanders_service_ts --> file_src_modules_meander_decoding_meander_decoding_service_ts
-  file_src_modules_hardcoded_meanders_hardcoded_meanders_service_ts --> file_src_modules_meander_rendering_meander_rendering_service_ts
-  file_src_modules_hardcoded_meanders_hardcoded_meanders_service_unit_test_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_constants_ts
-  file_src_modules_hardcoded_meanders_hardcoded_meanders_service_unit_test_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_service_ts
-  file_src_modules_hardcoded_meanders_hardcoded_meanders_service_unit_test_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_types_ts
-  file_src_modules_hardcoded_meanders_hardcoded_meanders_service_unit_test_ts --> file_src_modules_meander_characteristics_meander_characteristics_service_ts
-  file_src_modules_hardcoded_meanders_hardcoded_meanders_service_unit_test_ts --> file_src_modules_meander_characteristics_meander_characteristics_types_ts
-  file_src_modules_hardcoded_meanders_hardcoded_meanders_service_unit_test_ts --> file_src_modules_meander_database_entities_Meander_entity_ts
-  file_src_modules_hardcoded_meanders_hardcoded_meanders_service_unit_test_ts --> file_src_modules_meander_database_meander_database_service_ts
-  file_src_modules_hardcoded_meanders_hardcoded_meanders_service_unit_test_ts --> file_src_modules_meander_decoding_meander_decoding_service_ts
-  file_src_modules_hardcoded_meanders_hardcoded_meanders_service_unit_test_ts --> file_src_modules_meander_decoding_meander_decoding_types_ts
-  file_src_modules_hardcoded_meanders_hardcoded_meanders_service_unit_test_ts --> file_src_modules_meander_rendering_meander_rendering_service_ts
-  file_src_modules_hardcoded_meanders_hardcoded_meanders_types_ts --> file_src_modules_mosaic_tile_mosaic_tile_types_ts
-  file_src_modules_hardcoded_meanders_negative_constants_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_types_ts
-  file_src_modules_hardcoded_meanders_parallel_1_constants_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_types_ts
-  file_src_modules_hardcoded_meanders_parallel_2_constants_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_types_ts
-  file_src_modules_hardcoded_meanders_parallel_3_constants_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_types_ts
-  file_src_modules_hardcoded_meanders_parallel_4_constants_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_types_ts
-  file_src_modules_hardcoded_meanders_parallel_5_constants_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_types_ts
-  file_src_modules_hardcoded_meanders_parallel_constants_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_types_ts
-  file_src_modules_hardcoded_meanders_parallel_constants_ts --> file_src_modules_hardcoded_meanders_parallel_1_constants_ts
-  file_src_modules_hardcoded_meanders_parallel_constants_ts --> file_src_modules_hardcoded_meanders_parallel_2_constants_ts
-  file_src_modules_hardcoded_meanders_parallel_constants_ts --> file_src_modules_hardcoded_meanders_parallel_3_constants_ts
-  file_src_modules_hardcoded_meanders_parallel_constants_ts --> file_src_modules_hardcoded_meanders_parallel_4_constants_ts
-  file_src_modules_hardcoded_meanders_parallel_constants_ts --> file_src_modules_hardcoded_meanders_parallel_5_constants_ts
-  file_src_modules_hardcoded_meanders_snake_constants_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_types_ts
-  file_src_modules_hardcoded_meanders_swirl_constants_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_types_ts
-  file_src_modules_hardcoded_meanders_whirl_constants_ts --> file_src_modules_hardcoded_meanders_hardcoded_meanders_types_ts
-  file_src_modules_lattice_identification_lattice_identification_module_ts --> file_src_modules_lattice_identification_lattice_identification_service_ts
-  file_src_modules_lattice_identification_lattice_identification_module_ts --> file_src_modules_meander_lattice_meander_lattice_module_ts
-  file_src_modules_lattice_identification_lattice_identification_module_ts --> file_src_modules_mosaic_naming_mosaic_naming_module_ts
-  file_src_modules_lattice_identification_lattice_identification_module_ts --> file_src_modules_mosaic_tile_mosaic_tile_module_ts
-  file_src_modules_lattice_identification_lattice_identification_service_ts --> file_src_modules_lattice_identification_lattice_identification_constants_ts
-  file_src_modules_lattice_identification_lattice_identification_service_ts --> file_src_modules_lattice_identification_lattice_identification_types_ts
-  file_src_modules_lattice_identification_lattice_identification_service_ts --> file_src_modules_meander_lattice_meander_lattice_service_ts
-  file_src_modules_lattice_identification_lattice_identification_service_ts --> file_src_modules_meander_lattice_meander_lattice_types_ts
-  file_src_modules_lattice_identification_lattice_identification_service_ts --> file_src_modules_mosaic_naming_mosaic_naming_service_ts
-  file_src_modules_lattice_identification_lattice_identification_service_ts --> file_src_modules_mosaic_tile_mosaic_symmetry_service_ts
-  file_src_modules_lattice_identification_lattice_identification_service_ts --> file_src_modules_mosaic_tile_mosaic_tile_service_ts
-  file_src_modules_lattice_identification_lattice_identification_service_ts --> file_src_modules_mosaic_tile_mosaic_tile_types_ts
-  file_src_modules_lattice_identification_lattice_identification_service_unit_test_ts --> file_src_modules_lattice_identification_lattice_identification_constants_ts
-  file_src_modules_lattice_identification_lattice_identification_service_unit_test_ts --> file_src_modules_lattice_identification_lattice_identification_service_ts
-  file_src_modules_lattice_identification_lattice_identification_service_unit_test_ts --> file_src_modules_lattice_identification_lattice_identification_types_ts
-  file_src_modules_lattice_identification_lattice_identification_service_unit_test_ts --> file_src_modules_meander_lattice_meander_lattice_constants_ts
-  file_src_modules_lattice_identification_lattice_identification_service_unit_test_ts --> file_src_modules_meander_lattice_meander_lattice_service_ts
-  file_src_modules_lattice_identification_lattice_identification_service_unit_test_ts --> file_src_modules_mosaic_naming_mosaic_naming_service_ts
-  file_src_modules_lattice_identification_lattice_identification_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_symmetry_service_ts
-  file_src_modules_lattice_identification_lattice_identification_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_service_ts
-  file_src_modules_lattice_identification_lattice_identification_service_unit_test_ts --> file_testing_mosaic_tiles_ts
-  file_src_modules_lattice_identification_lattice_identification_types_ts --> file_src_modules_mosaic_tile_mosaic_tile_types_ts
-  file_src_modules_meander_characteristics_meander_characteristics_module_ts --> file_src_modules_meander_characteristics_meander_characteristics_service_ts
-  file_src_modules_meander_characteristics_meander_characteristics_module_ts --> file_src_modules_meander_characteristics_meander_connectivity_service_ts
-  file_src_modules_meander_characteristics_meander_characteristics_module_ts --> file_src_modules_meander_topology_meander_topology_module_ts
-  file_src_modules_meander_characteristics_meander_characteristics_service_ts --> file_src_modules_meander_characteristics_meander_characteristics_types_ts
-  file_src_modules_meander_characteristics_meander_characteristics_service_ts --> file_src_modules_meander_characteristics_meander_connectivity_service_ts
-  file_src_modules_meander_characteristics_meander_characteristics_service_ts --> file_src_modules_meander_decoding_meander_decoding_types_ts
-  file_src_modules_meander_characteristics_meander_characteristics_service_unit_test_ts --> file_src_modules_meander_characteristics_meander_characteristics_service_ts
-  file_src_modules_meander_characteristics_meander_characteristics_service_unit_test_ts --> file_src_modules_meander_characteristics_meander_characteristics_types_ts
-  file_src_modules_meander_characteristics_meander_characteristics_service_unit_test_ts --> file_src_modules_meander_characteristics_meander_connectivity_service_ts
-  file_src_modules_meander_characteristics_meander_characteristics_service_unit_test_ts --> file_src_modules_meander_decoding_meander_decoding_types_ts
-  file_src_modules_meander_characteristics_meander_characteristics_service_unit_test_ts --> file_src_modules_meander_lattice_meander_lattice_service_ts
-  file_src_modules_meander_characteristics_meander_characteristics_service_unit_test_ts --> file_src_modules_meander_topology_meander_topology_service_ts
-  file_src_modules_meander_characteristics_meander_connectivity_service_ts --> file_src_modules_meander_characteristics_meander_characteristics_types_ts
-  file_src_modules_meander_characteristics_meander_connectivity_service_ts --> file_src_modules_meander_decoding_meander_decoding_types_ts
-  file_src_modules_meander_characteristics_meander_connectivity_service_ts --> file_src_modules_meander_topology_meander_topology_service_ts
-  file_src_modules_meander_characteristics_meander_connectivity_service_ts --> file_src_modules_meander_topology_meander_topology_types_ts
-  file_src_modules_meander_characteristics_meander_connectivity_service_unit_test_ts --> file_src_modules_meander_characteristics_meander_connectivity_service_ts
-  file_src_modules_meander_characteristics_meander_connectivity_service_unit_test_ts --> file_src_modules_meander_decoding_meander_decoding_service_ts
-  file_src_modules_meander_characteristics_meander_connectivity_service_unit_test_ts --> file_src_modules_meander_lattice_meander_lattice_service_ts
-  file_src_modules_meander_characteristics_meander_connectivity_service_unit_test_ts --> file_src_modules_meander_topology_meander_topology_service_ts
-  file_src_modules_meander_classification_meander_classification_constants_ts --> file_src_modules_meander_classification_meander_classification_types_ts
-  file_src_modules_meander_classification_meander_classification_constants_ts --> file_src_modules_mosaic_tile_mosaic_tile_constants_ts
-  file_src_modules_meander_classification_meander_classification_module_ts --> file_src_modules_meander_classification_meander_classification_service_ts
-  file_src_modules_meander_classification_meander_classification_module_ts --> file_src_modules_mosaic_naming_mosaic_naming_module_ts
-  file_src_modules_meander_classification_meander_classification_service_ts --> file_src_modules_meander_characteristics_meander_characteristics_types_ts
-  file_src_modules_meander_classification_meander_classification_service_ts --> file_src_modules_meander_classification_meander_classification_constants_ts
-  file_src_modules_meander_classification_meander_classification_service_ts --> file_src_modules_meander_classification_meander_classification_types_ts
-  file_src_modules_meander_classification_meander_classification_service_ts --> file_src_modules_meander_decoding_meander_decoding_types_ts
-  file_src_modules_meander_classification_meander_classification_service_ts --> file_src_modules_mosaic_naming_mosaic_naming_service_ts
-  file_src_modules_meander_classification_meander_classification_service_ts --> file_src_modules_mosaic_tile_mosaic_tile_types_ts
-  file_src_modules_meander_classification_meander_classification_service_unit_test_ts --> file_src_modules_meander_characteristics_meander_characteristics_service_ts
-  file_src_modules_meander_classification_meander_classification_service_unit_test_ts --> file_src_modules_meander_characteristics_meander_connectivity_service_ts
-  file_src_modules_meander_classification_meander_classification_service_unit_test_ts --> file_src_modules_meander_classification_meander_classification_service_ts
-  file_src_modules_meander_classification_meander_classification_service_unit_test_ts --> file_src_modules_meander_classification_meander_classification_types_ts
-  file_src_modules_meander_classification_meander_classification_service_unit_test_ts --> file_src_modules_meander_decoding_meander_decoding_service_ts
-  file_src_modules_meander_classification_meander_classification_service_unit_test_ts --> file_src_modules_meander_lattice_meander_lattice_service_ts
-  file_src_modules_meander_classification_meander_classification_service_unit_test_ts --> file_src_modules_meander_topology_meander_topology_service_ts
-  file_src_modules_meander_classification_meander_classification_service_unit_test_ts --> file_src_modules_mosaic_naming_mosaic_naming_service_ts
-  file_src_modules_meander_classification_meander_classification_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_service_ts
-  file_src_modules_meander_classification_meander_classification_types_ts --> file_src_modules_meander_characteristics_meander_characteristics_types_ts
-  file_src_modules_meander_classification_meander_classification_types_ts --> file_src_modules_mosaic_tile_mosaic_tile_types_ts
-  file_src_modules_meander_database_entities_Meander_entity_ts --> file_src_modules_meander_classification_meander_classification_constants_ts
-  file_src_modules_meander_database_entities_Meander_entity_ts --> file_src_modules_meander_classification_meander_classification_types_ts
-  file_src_modules_meander_database_entities_Meander_entity_ts --> file_src_modules_meander_database_meander_database_constants_ts
-  file_src_modules_meander_database_entities_Meander_entity_ts --> file_src_modules_meander_database_meander_database_types_ts
-  file_src_modules_meander_database_entities_Meander_entity_ts --> file_src_modules_mosaic_tile_mosaic_tile_constants_ts
-  file_src_modules_meander_database_entities_Meander_entity_ts --> file_src_modules_mosaic_tile_mosaic_tile_types_ts
-  file_src_modules_meander_database_meander_database_module_ts --> file_src_modules_meander_database_entities_Meander_entity_ts
-  file_src_modules_meander_database_meander_database_module_ts --> file_src_modules_meander_database_meander_database_constants_ts
-  file_src_modules_meander_database_meander_database_module_ts --> file_src_modules_meander_database_meander_database_service_ts
-  file_src_modules_meander_database_meander_database_service_integration_test_ts --> file_src_modules_meander_database_entities_Meander_entity_ts
-  file_src_modules_meander_database_meander_database_service_integration_test_ts --> file_src_modules_meander_database_meander_database_service_ts
-  file_src_modules_meander_database_meander_database_service_integration_test_ts --> file_src_modules_meander_database_meander_database_types_ts
-  file_src_modules_meander_database_meander_database_service_ts --> file_src_modules_meander_database_entities_Meander_entity_ts
-  file_src_modules_meander_database_meander_database_service_ts --> file_src_modules_meander_database_meander_database_constants_ts
-  file_src_modules_meander_database_meander_database_service_ts --> file_src_modules_meander_database_meander_database_types_ts
-  file_src_modules_meander_database_meander_database_service_unit_test_ts --> file_src_modules_meander_database_entities_Meander_entity_ts
-  file_src_modules_meander_database_meander_database_service_unit_test_ts --> file_src_modules_meander_database_meander_database_service_ts
-  file_src_modules_meander_database_meander_database_service_unit_test_ts --> file_src_modules_meander_database_meander_database_types_ts
-  file_src_modules_meander_database_meander_database_types_ts --> file_src_modules_meander_classification_meander_classification_types_ts
-  file_src_modules_meander_database_meander_database_types_ts --> file_src_modules_meander_database_meander_database_constants_ts
-  file_src_modules_meander_database_meander_database_types_ts --> file_src_modules_mosaic_tile_mosaic_tile_types_ts
-  file_src_modules_meander_decoding_meander_decoding_module_ts --> file_src_modules_meander_decoding_meander_decoding_service_ts
-  file_src_modules_meander_decoding_meander_decoding_service_ts --> file_src_modules_meander_decoding_meander_decoding_constants_ts
-  file_src_modules_meander_decoding_meander_decoding_service_ts --> file_src_modules_meander_decoding_meander_decoding_types_ts
-  file_src_modules_meander_decoding_meander_decoding_service_unit_test_ts --> file_src_modules_meander_decoding_meander_decoding_service_ts
-  file_src_modules_meander_enumeration_meander_enumeration_module_ts --> file_src_modules_lattice_identification_lattice_identification_module_ts
-  file_src_modules_meander_enumeration_meander_enumeration_module_ts --> file_src_modules_meander_enumeration_meander_enumeration_service_ts
-  file_src_modules_meander_enumeration_meander_enumeration_module_ts --> file_src_modules_mosaic_tile_mosaic_tile_module_ts
-  file_src_modules_meander_enumeration_meander_enumeration_service_ts --> file_src_modules_lattice_identification_lattice_identification_service_ts
-  file_src_modules_meander_enumeration_meander_enumeration_service_ts --> file_src_modules_meander_classification_meander_classification_types_ts
-  file_src_modules_meander_enumeration_meander_enumeration_service_ts --> file_src_modules_meander_enumeration_meander_enumeration_constants_ts
-  file_src_modules_meander_enumeration_meander_enumeration_service_ts --> file_src_modules_meander_enumeration_meander_enumeration_types_ts
-  file_src_modules_meander_enumeration_meander_enumeration_service_ts --> file_src_modules_mosaic_tile_mosaic_tiles_service_ts
-  file_src_modules_meander_enumeration_meander_enumeration_service_unit_test_ts --> file_src_modules_lattice_identification_lattice_identification_service_ts
-  file_src_modules_meander_enumeration_meander_enumeration_service_unit_test_ts --> file_src_modules_meander_enumeration_meander_enumeration_service_ts
-  file_src_modules_meander_enumeration_meander_enumeration_service_unit_test_ts --> file_src_modules_meander_lattice_meander_lattice_service_ts
-  file_src_modules_meander_enumeration_meander_enumeration_service_unit_test_ts --> file_src_modules_mosaic_naming_mosaic_naming_service_ts
-  file_src_modules_meander_enumeration_meander_enumeration_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_symmetry_service_ts
-  file_src_modules_meander_enumeration_meander_enumeration_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_service_ts
-  file_src_modules_meander_enumeration_meander_enumeration_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tiles_service_ts
-  file_src_modules_meander_lattice_meander_lattice_module_ts --> file_src_modules_meander_lattice_meander_lattice_service_ts
-  file_src_modules_meander_lattice_meander_lattice_service_ts --> file_src_modules_meander_lattice_meander_lattice_constants_ts
-  file_src_modules_meander_lattice_meander_lattice_service_ts --> file_src_modules_meander_lattice_meander_lattice_types_ts
-  file_src_modules_meander_lattice_meander_lattice_service_unit_test_ts --> file_src_modules_meander_lattice_meander_lattice_constants_ts
-  file_src_modules_meander_lattice_meander_lattice_service_unit_test_ts --> file_src_modules_meander_lattice_meander_lattice_service_ts
-  file_src_modules_meander_rendering_meander_rendering_module_ts --> file_src_modules_grid_geometry_grid_geometry_module_ts
-  file_src_modules_meander_rendering_meander_rendering_module_ts --> file_src_modules_meander_rendering_meander_rendering_service_ts
-  file_src_modules_meander_rendering_meander_rendering_module_ts --> file_src_modules_svg_rendering_svg_rendering_module_ts
-  file_src_modules_meander_rendering_meander_rendering_service_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
-  file_src_modules_meander_rendering_meander_rendering_service_ts --> file_src_modules_grid_geometry_grid_geometry_types_ts
-  file_src_modules_meander_rendering_meander_rendering_service_ts --> file_src_modules_meander_decoding_meander_decoding_types_ts
-  file_src_modules_meander_rendering_meander_rendering_service_ts --> file_src_modules_meander_rendering_meander_rendering_types_ts
-  file_src_modules_meander_rendering_meander_rendering_service_ts --> file_src_modules_svg_rendering_svg_rendering_service_ts
-  file_src_modules_meander_rendering_meander_rendering_service_unit_test_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
-  file_src_modules_meander_rendering_meander_rendering_service_unit_test_ts --> file_src_modules_meander_decoding_meander_decoding_types_ts
-  file_src_modules_meander_rendering_meander_rendering_service_unit_test_ts --> file_src_modules_meander_rendering_meander_rendering_service_ts
-  file_src_modules_meander_rendering_meander_rendering_service_unit_test_ts --> file_src_modules_svg_rendering_svg_rendering_service_ts
-  file_src_modules_meander_topology_meander_topology_module_ts --> file_src_modules_meander_lattice_meander_lattice_module_ts
-  file_src_modules_meander_topology_meander_topology_module_ts --> file_src_modules_meander_topology_meander_topology_service_ts
-  file_src_modules_meander_topology_meander_topology_service_ts --> file_src_modules_meander_lattice_meander_lattice_service_ts
-  file_src_modules_meander_topology_meander_topology_service_ts --> file_src_modules_meander_lattice_meander_lattice_types_ts
-  file_src_modules_meander_topology_meander_topology_service_ts --> file_src_modules_meander_topology_meander_topology_types_ts
-  file_src_modules_meander_topology_meander_topology_service_unit_test_ts --> file_src_modules_meander_lattice_meander_lattice_service_ts
-  file_src_modules_meander_topology_meander_topology_service_unit_test_ts --> file_src_modules_meander_topology_meander_topology_service_ts
-  file_src_modules_meander_topology_meander_topology_service_unit_test_ts --> file_src_modules_meander_topology_meander_topology_types_ts
-  file_src_modules_mosaic_naming_mosaic_naming_module_ts --> file_src_modules_mosaic_naming_mosaic_naming_service_ts
-  file_src_modules_mosaic_naming_mosaic_naming_module_ts --> file_src_modules_mosaic_tile_mosaic_tile_module_ts
-  file_src_modules_mosaic_naming_mosaic_naming_service_ts --> file_src_modules_mosaic_naming_mosaic_naming_types_ts
-  file_src_modules_mosaic_naming_mosaic_naming_service_ts --> file_src_modules_mosaic_tile_mosaic_tile_service_ts
-  file_src_modules_mosaic_naming_mosaic_naming_service_ts --> file_src_modules_mosaic_tile_mosaic_tile_types_ts
-  file_src_modules_mosaic_naming_mosaic_naming_service_unit_test_ts --> file_src_modules_meander_lattice_meander_lattice_service_ts
-  file_src_modules_mosaic_naming_mosaic_naming_service_unit_test_ts --> file_src_modules_meander_topology_meander_topology_service_ts
-  file_src_modules_mosaic_naming_mosaic_naming_service_unit_test_ts --> file_src_modules_mosaic_naming_mosaic_naming_service_ts
-  file_src_modules_mosaic_naming_mosaic_naming_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_connectivity_service_ts
-  file_src_modules_mosaic_naming_mosaic_naming_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_sub_family_service_ts
-  file_src_modules_mosaic_naming_mosaic_naming_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_symmetry_service_ts
-  file_src_modules_mosaic_naming_mosaic_naming_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_service_ts
-  file_src_modules_mosaic_naming_mosaic_naming_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_types_ts
-  file_src_modules_mosaic_naming_mosaic_naming_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tiles_service_ts
-  file_src_modules_mosaic_naming_mosaic_naming_service_unit_test_ts --> file_testing_mosaic_tiles_ts
-  file_src_modules_mosaic_naming_mosaic_naming_types_ts --> file_src_modules_mosaic_tile_mosaic_tile_types_ts
-  file_src_modules_mosaic_tile_mosaic_connectivity_service_integration_test_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
-  file_src_modules_mosaic_tile_mosaic_connectivity_service_integration_test_ts --> file_src_modules_meander_lattice_meander_lattice_service_ts
-  file_src_modules_mosaic_tile_mosaic_connectivity_service_integration_test_ts --> file_src_modules_meander_topology_meander_topology_service_ts
-  file_src_modules_mosaic_tile_mosaic_connectivity_service_integration_test_ts --> file_src_modules_mosaic_tile_mosaic_connectivity_service_ts
-  file_src_modules_mosaic_tile_mosaic_connectivity_service_integration_test_ts --> file_src_modules_mosaic_tile_mosaic_sub_family_service_ts
-  file_src_modules_mosaic_tile_mosaic_connectivity_service_integration_test_ts --> file_src_modules_mosaic_tile_mosaic_symmetry_service_ts
-  file_src_modules_mosaic_tile_mosaic_connectivity_service_integration_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_generation_service_ts
-  file_src_modules_mosaic_tile_mosaic_connectivity_service_integration_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_motif_service_ts
-  file_src_modules_mosaic_tile_mosaic_connectivity_service_integration_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_service_ts
-  file_src_modules_mosaic_tile_mosaic_connectivity_service_integration_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_types_ts
-  file_src_modules_mosaic_tile_mosaic_connectivity_service_integration_test_ts --> file_src_modules_mosaic_tile_mosaic_tiles_service_ts
-  file_src_modules_mosaic_tile_mosaic_connectivity_service_integration_test_ts --> file_src_modules_svg_rendering_svg_rendering_service_ts
-  file_src_modules_mosaic_tile_mosaic_connectivity_service_ts --> file_src_modules_meander_topology_meander_topology_service_ts
-  file_src_modules_mosaic_tile_mosaic_connectivity_service_ts --> file_src_modules_meander_topology_meander_topology_types_ts
-  file_src_modules_mosaic_tile_mosaic_connectivity_service_ts --> file_src_modules_mosaic_tile_mosaic_tile_service_ts
-  file_src_modules_mosaic_tile_mosaic_connectivity_service_ts --> file_src_modules_mosaic_tile_mosaic_tile_types_ts
-  file_src_modules_mosaic_tile_mosaic_connectivity_service_unit_test_ts --> file_src_modules_meander_lattice_meander_lattice_service_ts
-  file_src_modules_mosaic_tile_mosaic_connectivity_service_unit_test_ts --> file_src_modules_meander_topology_meander_topology_service_ts
-  file_src_modules_mosaic_tile_mosaic_connectivity_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_connectivity_service_ts
-  file_src_modules_mosaic_tile_mosaic_connectivity_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_sub_family_service_ts
-  file_src_modules_mosaic_tile_mosaic_connectivity_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_symmetry_service_ts
-  file_src_modules_mosaic_tile_mosaic_connectivity_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_service_ts
-  file_src_modules_mosaic_tile_mosaic_connectivity_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_types_ts
-  file_src_modules_mosaic_tile_mosaic_connectivity_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tiles_service_ts
-  file_src_modules_mosaic_tile_mosaic_sub_family_service_ts --> file_src_modules_mosaic_tile_mosaic_tile_constants_ts
-  file_src_modules_mosaic_tile_mosaic_sub_family_service_ts --> file_src_modules_mosaic_tile_mosaic_tile_service_ts
-  file_src_modules_mosaic_tile_mosaic_sub_family_service_ts --> file_src_modules_mosaic_tile_mosaic_tile_types_ts
-  file_src_modules_mosaic_tile_mosaic_sub_family_service_unit_test_ts --> file_src_modules_lattice_identification_lattice_identification_service_ts
-  file_src_modules_mosaic_tile_mosaic_sub_family_service_unit_test_ts --> file_src_modules_meander_lattice_meander_lattice_service_ts
-  file_src_modules_mosaic_tile_mosaic_sub_family_service_unit_test_ts --> file_src_modules_mosaic_naming_mosaic_naming_service_ts
-  file_src_modules_mosaic_tile_mosaic_sub_family_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_sub_family_service_ts
-  file_src_modules_mosaic_tile_mosaic_sub_family_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_symmetry_service_ts
-  file_src_modules_mosaic_tile_mosaic_sub_family_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_constants_ts
-  file_src_modules_mosaic_tile_mosaic_sub_family_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_service_ts
-  file_src_modules_mosaic_tile_mosaic_sub_family_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_types_ts
-  file_src_modules_mosaic_tile_mosaic_sub_family_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tiles_service_ts
-  file_src_modules_mosaic_tile_mosaic_symmetry_service_ts --> file_src_modules_mosaic_tile_mosaic_tile_service_ts
-  file_src_modules_mosaic_tile_mosaic_symmetry_service_ts --> file_src_modules_mosaic_tile_mosaic_tile_types_ts
-  file_src_modules_mosaic_tile_mosaic_symmetry_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_symmetry_service_ts
-  file_src_modules_mosaic_tile_mosaic_symmetry_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_service_ts
-  file_src_modules_mosaic_tile_mosaic_symmetry_service_unit_test_ts --> file_testing_mosaic_tiles_ts
-  file_src_modules_mosaic_tile_mosaic_tile_generation_service_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
-  file_src_modules_mosaic_tile_mosaic_tile_generation_service_ts --> file_src_modules_mosaic_tile_mosaic_tile_motif_service_ts
-  file_src_modules_mosaic_tile_mosaic_tile_generation_service_ts --> file_src_modules_mosaic_tile_mosaic_tile_constants_ts
-  file_src_modules_mosaic_tile_mosaic_tile_generation_service_ts --> file_src_modules_mosaic_tile_mosaic_tile_types_ts
-  file_src_modules_mosaic_tile_mosaic_tile_generation_service_ts --> file_src_modules_svg_rendering_svg_rendering_service_ts
-  file_src_modules_mosaic_tile_mosaic_tile_generation_service_unit_test_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
-  file_src_modules_mosaic_tile_mosaic_tile_generation_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_symmetry_service_ts
-  file_src_modules_mosaic_tile_mosaic_tile_generation_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_generation_service_ts
-  file_src_modules_mosaic_tile_mosaic_tile_generation_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_motif_service_ts
-  file_src_modules_mosaic_tile_mosaic_tile_generation_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_constants_ts
-  file_src_modules_mosaic_tile_mosaic_tile_generation_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_service_ts
-  file_src_modules_mosaic_tile_mosaic_tile_generation_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tiles_service_ts
-  file_src_modules_mosaic_tile_mosaic_tile_generation_service_unit_test_ts --> file_src_modules_svg_rendering_svg_rendering_service_ts
-  file_src_modules_mosaic_tile_mosaic_tile_generation_service_unit_test_ts --> file_testing_mosaic_tiles_ts
-  file_src_modules_mosaic_tile_mosaic_tile_motif_service_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
-  file_src_modules_mosaic_tile_mosaic_tile_motif_service_ts --> file_src_modules_grid_geometry_grid_geometry_types_ts
-  file_src_modules_mosaic_tile_mosaic_tile_motif_service_ts --> file_src_modules_mosaic_tile_mosaic_tile_service_ts
-  file_src_modules_mosaic_tile_mosaic_tile_motif_service_ts --> file_src_modules_mosaic_tile_mosaic_tile_types_ts
-  file_src_modules_mosaic_tile_mosaic_tile_motif_service_unit_test_ts --> file_src_modules_grid_geometry_grid_geometry_service_ts
-  file_src_modules_mosaic_tile_mosaic_tile_motif_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_motif_service_ts
-  file_src_modules_mosaic_tile_mosaic_tile_motif_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_service_ts
-  file_src_modules_mosaic_tile_mosaic_tile_motif_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_types_ts
-  file_src_modules_mosaic_tile_mosaic_tile_motif_service_unit_test_ts --> file_testing_mosaic_tiles_ts
-  file_src_modules_mosaic_tile_mosaic_tile_motif_service_unit_test_ts --> file_testing_path_data_ts
-  file_src_modules_mosaic_tile_mosaic_tile_constants_ts --> file_src_modules_mosaic_tile_mosaic_tile_types_ts
-  file_src_modules_mosaic_tile_mosaic_tile_module_ts --> file_src_modules_grid_geometry_grid_geometry_module_ts
-  file_src_modules_mosaic_tile_mosaic_tile_module_ts --> file_src_modules_meander_topology_meander_topology_module_ts
-  file_src_modules_mosaic_tile_mosaic_tile_module_ts --> file_src_modules_mosaic_tile_mosaic_connectivity_service_ts
-  file_src_modules_mosaic_tile_mosaic_tile_module_ts --> file_src_modules_mosaic_tile_mosaic_sub_family_service_ts
-  file_src_modules_mosaic_tile_mosaic_tile_module_ts --> file_src_modules_mosaic_tile_mosaic_symmetry_service_ts
-  file_src_modules_mosaic_tile_mosaic_tile_module_ts --> file_src_modules_mosaic_tile_mosaic_tile_generation_service_ts
-  file_src_modules_mosaic_tile_mosaic_tile_module_ts --> file_src_modules_mosaic_tile_mosaic_tile_motif_service_ts
-  file_src_modules_mosaic_tile_mosaic_tile_module_ts --> file_src_modules_mosaic_tile_mosaic_tile_service_ts
-  file_src_modules_mosaic_tile_mosaic_tile_module_ts --> file_src_modules_mosaic_tile_mosaic_tiles_service_ts
-  file_src_modules_mosaic_tile_mosaic_tile_module_ts --> file_src_modules_svg_rendering_svg_rendering_module_ts
-  file_src_modules_mosaic_tile_mosaic_tile_service_ts --> file_src_modules_mosaic_tile_mosaic_tile_constants_ts
-  file_src_modules_mosaic_tile_mosaic_tile_service_ts --> file_src_modules_mosaic_tile_mosaic_tile_types_ts
-  file_src_modules_mosaic_tile_mosaic_tile_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_constants_ts
-  file_src_modules_mosaic_tile_mosaic_tile_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_service_ts
-  file_src_modules_mosaic_tile_mosaic_tile_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_types_ts
-  file_src_modules_mosaic_tile_mosaic_tile_service_unit_test_ts --> file_testing_mosaic_tiles_ts
-  file_src_modules_mosaic_tile_mosaic_tiles_service_ts --> file_src_modules_mosaic_tile_mosaic_symmetry_service_ts
-  file_src_modules_mosaic_tile_mosaic_tiles_service_ts --> file_src_modules_mosaic_tile_mosaic_tile_constants_ts
-  file_src_modules_mosaic_tile_mosaic_tiles_service_ts --> file_src_modules_mosaic_tile_mosaic_tile_service_ts
-  file_src_modules_mosaic_tile_mosaic_tiles_service_ts --> file_src_modules_mosaic_tile_mosaic_tile_types_ts
-  file_src_modules_mosaic_tile_mosaic_tiles_service_unit_test_ts --> file_src_modules_lattice_identification_lattice_identification_service_ts
-  file_src_modules_mosaic_tile_mosaic_tiles_service_unit_test_ts --> file_src_modules_meander_lattice_meander_lattice_service_ts
-  file_src_modules_mosaic_tile_mosaic_tiles_service_unit_test_ts --> file_src_modules_mosaic_naming_mosaic_naming_service_ts
-  file_src_modules_mosaic_tile_mosaic_tiles_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_symmetry_service_ts
-  file_src_modules_mosaic_tile_mosaic_tiles_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_constants_ts
-  file_src_modules_mosaic_tile_mosaic_tiles_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tile_service_ts
-  file_src_modules_mosaic_tile_mosaic_tiles_service_unit_test_ts --> file_src_modules_mosaic_tile_mosaic_tiles_service_ts
-  file_src_modules_svg_rendering_svg_rendering_module_ts --> file_src_modules_svg_rendering_svg_rendering_service_ts
-  file_src_modules_svg_rendering_svg_rendering_service_ts --> file_src_modules_svg_rendering_svg_rendering_constants_ts
-  file_src_modules_svg_rendering_svg_rendering_service_ts --> file_src_modules_svg_rendering_svg_rendering_types_ts
-  file_src_modules_svg_rendering_svg_rendering_service_unit_test_ts --> file_src_modules_svg_rendering_svg_rendering_service_ts
+  file_src_modules_draw_draw_module_ts --> file_src_modules_drawing_drawing_module_ts
+  file_src_modules_draw_draw_module_ts --> file_src_modules_enumeration_enumeration_module_ts
+  file_src_modules_draw_draw_module_ts --> file_src_modules_geometry_geometry_module_ts
+  file_src_modules_drawing_address_service_ts --> file_src_modules_classification_sub_family_service_ts
+  file_src_modules_drawing_address_service_ts --> file_src_modules_code_code_service_ts
+  file_src_modules_drawing_address_service_ts --> file_src_modules_drawing_address_constants_ts
+  file_src_modules_drawing_address_service_ts --> file_src_modules_drawing_address_types_ts
+  file_src_modules_drawing_address_service_ts --> file_src_modules_drawing_lattice_service_ts
+  file_src_modules_drawing_address_service_ts --> file_src_modules_drawing_lattice_types_ts
+  file_src_modules_drawing_address_service_ts --> file_src_modules_tile_tile_service_ts
+  file_src_modules_drawing_address_service_ts --> file_src_modules_tile_tile_types_ts
+  file_src_modules_drawing_address_service_unit_test_ts --> file_src_modules_classification_sub_family_service_ts
+  file_src_modules_drawing_address_service_unit_test_ts --> file_src_modules_code_code_service_ts
+  file_src_modules_drawing_address_service_unit_test_ts --> file_src_modules_drawing_address_constants_ts
+  file_src_modules_drawing_address_service_unit_test_ts --> file_src_modules_drawing_address_service_ts
+  file_src_modules_drawing_address_service_unit_test_ts --> file_src_modules_drawing_address_types_ts
+  file_src_modules_drawing_address_service_unit_test_ts --> file_src_modules_drawing_lattice_constants_ts
+  file_src_modules_drawing_address_service_unit_test_ts --> file_src_modules_drawing_lattice_service_ts
+  file_src_modules_drawing_address_service_unit_test_ts --> file_src_modules_symmetry_symmetry_service_ts
+  file_src_modules_drawing_address_service_unit_test_ts --> file_src_modules_tile_tile_service_ts
+  file_src_modules_drawing_address_types_ts --> file_src_modules_classification_sub_family_types_ts
+  file_src_modules_drawing_drawing_module_ts --> file_src_modules_classification_classification_module_ts
+  file_src_modules_drawing_drawing_module_ts --> file_src_modules_code_code_module_ts
+  file_src_modules_drawing_drawing_module_ts --> file_src_modules_drawing_address_service_ts
+  file_src_modules_drawing_drawing_module_ts --> file_src_modules_drawing_drawing_service_ts
+  file_src_modules_drawing_drawing_module_ts --> file_src_modules_drawing_lattice_service_ts
+  file_src_modules_drawing_drawing_module_ts --> file_src_modules_drawing_measurement_service_ts
+  file_src_modules_drawing_drawing_module_ts --> file_src_modules_geometry_geometry_module_ts
+  file_src_modules_drawing_drawing_module_ts --> file_src_modules_graph_graph_module_ts
+  file_src_modules_drawing_drawing_module_ts --> file_src_modules_svg_svg_module_ts
+  file_src_modules_drawing_drawing_module_ts --> file_src_modules_tile_tile_module_ts
+  file_src_modules_drawing_drawing_service_ts --> file_src_modules_code_code_service_ts
+  file_src_modules_drawing_drawing_service_ts --> file_src_modules_code_code_types_ts
+  file_src_modules_drawing_drawing_service_ts --> file_src_modules_drawing_drawing_types_ts
+  file_src_modules_drawing_drawing_service_ts --> file_src_modules_geometry_geometry_service_ts
+  file_src_modules_drawing_drawing_service_ts --> file_src_modules_geometry_geometry_types_ts
+  file_src_modules_drawing_drawing_service_ts --> file_src_modules_svg_svg_service_ts
+  file_src_modules_drawing_drawing_service_ts --> file_src_modules_tile_tile_types_ts
+  file_src_modules_drawing_drawing_service_unit_test_ts --> file_src_modules_code_code_service_ts
+  file_src_modules_drawing_drawing_service_unit_test_ts --> file_src_modules_code_code_types_ts
+  file_src_modules_drawing_drawing_service_unit_test_ts --> file_src_modules_drawing_drawing_service_ts
+  file_src_modules_drawing_drawing_service_unit_test_ts --> file_src_modules_geometry_geometry_service_ts
+  file_src_modules_drawing_drawing_service_unit_test_ts --> file_src_modules_svg_svg_service_ts
+  file_src_modules_drawing_drawing_service_unit_test_ts --> file_src_modules_symmetry_symmetry_service_ts
+  file_src_modules_drawing_drawing_service_unit_test_ts --> file_src_modules_tile_tile_service_ts
+  file_src_modules_drawing_lattice_service_ts --> file_src_modules_drawing_lattice_constants_ts
+  file_src_modules_drawing_lattice_service_ts --> file_src_modules_drawing_lattice_types_ts
+  file_src_modules_drawing_lattice_service_unit_test_ts --> file_src_modules_drawing_lattice_constants_ts
+  file_src_modules_drawing_lattice_service_unit_test_ts --> file_src_modules_drawing_lattice_service_ts
+  file_src_modules_drawing_measurement_service_ts --> file_src_modules_drawing_lattice_service_ts
+  file_src_modules_drawing_measurement_service_ts --> file_src_modules_drawing_lattice_types_ts
+  file_src_modules_drawing_measurement_service_ts --> file_src_modules_drawing_measurement_types_ts
+  file_src_modules_drawing_measurement_service_ts --> file_src_modules_graph_graph_service_ts
+  file_src_modules_drawing_measurement_service_ts --> file_src_modules_graph_graph_types_ts
+  file_src_modules_drawing_measurement_service_unit_test_ts --> file_src_modules_drawing_lattice_service_ts
+  file_src_modules_drawing_measurement_service_unit_test_ts --> file_src_modules_drawing_measurement_service_ts
+  file_src_modules_drawing_measurement_service_unit_test_ts --> file_src_modules_drawing_measurement_types_ts
+  file_src_modules_drawing_measurement_service_unit_test_ts --> file_src_modules_graph_graph_service_ts
+  file_src_modules_enumeration_enumeration_module_ts --> file_src_modules_code_code_module_ts
+  file_src_modules_enumeration_enumeration_module_ts --> file_src_modules_enumeration_enumeration_service_ts
+  file_src_modules_enumeration_enumeration_module_ts --> file_src_modules_enumeration_tile_enumeration_service_ts
+  file_src_modules_enumeration_enumeration_module_ts --> file_src_modules_symmetry_symmetry_module_ts
+  file_src_modules_enumeration_enumeration_module_ts --> file_src_modules_tile_tile_module_ts
+  file_src_modules_enumeration_enumeration_service_ts --> file_src_modules_classification_classification_types_ts
+  file_src_modules_enumeration_enumeration_service_ts --> file_src_modules_code_code_service_ts
+  file_src_modules_enumeration_enumeration_service_ts --> file_src_modules_enumeration_enumeration_constants_ts
+  file_src_modules_enumeration_enumeration_service_ts --> file_src_modules_enumeration_enumeration_types_ts
+  file_src_modules_enumeration_enumeration_service_ts --> file_src_modules_enumeration_tile_enumeration_service_ts
+  file_src_modules_enumeration_enumeration_service_unit_test_ts --> file_src_modules_classification_sub_family_service_ts
+  file_src_modules_enumeration_enumeration_service_unit_test_ts --> file_src_modules_code_code_service_ts
+  file_src_modules_enumeration_enumeration_service_unit_test_ts --> file_src_modules_drawing_lattice_service_ts
+  file_src_modules_enumeration_enumeration_service_unit_test_ts --> file_src_modules_enumeration_enumeration_service_ts
+  file_src_modules_enumeration_enumeration_service_unit_test_ts --> file_src_modules_enumeration_tile_enumeration_service_ts
+  file_src_modules_enumeration_enumeration_service_unit_test_ts --> file_src_modules_symmetry_symmetry_service_ts
+  file_src_modules_enumeration_enumeration_service_unit_test_ts --> file_src_modules_tile_tile_service_ts
+  file_src_modules_enumeration_enumeration_types_ts --> file_src_modules_tile_tile_types_ts
+  file_src_modules_enumeration_tile_enumeration_service_ts --> file_src_modules_enumeration_enumeration_constants_ts
+  file_src_modules_enumeration_tile_enumeration_service_ts --> file_src_modules_enumeration_enumeration_types_ts
+  file_src_modules_enumeration_tile_enumeration_service_ts --> file_src_modules_symmetry_symmetry_service_ts
+  file_src_modules_enumeration_tile_enumeration_service_ts --> file_src_modules_tile_tile_service_ts
+  file_src_modules_enumeration_tile_enumeration_service_ts --> file_src_modules_tile_tile_types_ts
+  file_src_modules_enumeration_tile_enumeration_service_unit_test_ts --> file_src_modules_code_code_service_ts
+  file_src_modules_enumeration_tile_enumeration_service_unit_test_ts --> file_src_modules_enumeration_enumeration_constants_ts
+  file_src_modules_enumeration_tile_enumeration_service_unit_test_ts --> file_src_modules_enumeration_tile_enumeration_service_ts
+  file_src_modules_enumeration_tile_enumeration_service_unit_test_ts --> file_src_modules_symmetry_symmetry_service_ts
+  file_src_modules_enumeration_tile_enumeration_service_unit_test_ts --> file_src_modules_tile_tile_service_ts
+  file_src_modules_geometry_geometry_module_ts --> file_src_modules_geometry_geometry_service_ts
+  file_src_modules_geometry_geometry_service_ts --> file_src_modules_geometry_geometry_constants_ts
+  file_src_modules_geometry_geometry_service_ts --> file_src_modules_geometry_geometry_types_ts
+  file_src_modules_geometry_geometry_service_unit_test_ts --> file_src_modules_geometry_geometry_service_ts
+  file_src_modules_graph_graph_module_ts --> file_src_modules_graph_graph_service_ts
+  file_src_modules_graph_graph_service_ts --> file_src_modules_graph_graph_types_ts
+  file_src_modules_graph_graph_service_unit_test_ts --> file_src_modules_graph_graph_service_ts
+  file_src_modules_graph_graph_service_unit_test_ts --> file_src_modules_graph_graph_types_ts
+  file_src_modules_svg_svg_module_ts --> file_src_modules_svg_svg_service_ts
+  file_src_modules_svg_svg_service_ts --> file_src_modules_svg_svg_constants_ts
+  file_src_modules_svg_svg_service_ts --> file_src_modules_svg_svg_types_ts
+  file_src_modules_svg_svg_service_unit_test_ts --> file_src_modules_svg_svg_service_ts
+  file_src_modules_symmetry_symmetry_module_ts --> file_src_modules_symmetry_symmetry_service_ts
+  file_src_modules_symmetry_symmetry_module_ts --> file_src_modules_tile_tile_module_ts
+  file_src_modules_symmetry_symmetry_service_ts --> file_src_modules_symmetry_symmetry_types_ts
+  file_src_modules_symmetry_symmetry_service_ts --> file_src_modules_tile_tile_service_ts
+  file_src_modules_symmetry_symmetry_service_ts --> file_src_modules_tile_tile_types_ts
+  file_src_modules_symmetry_symmetry_service_unit_test_ts --> file_src_modules_symmetry_symmetry_service_ts
+  file_src_modules_symmetry_symmetry_service_unit_test_ts --> file_src_modules_tile_tile_service_ts
+  file_src_modules_symmetry_symmetry_service_unit_test_ts --> file_testing_tiles_ts
+  file_src_modules_tile_tile_module_ts --> file_src_modules_tile_tile_service_ts
+  file_src_modules_tile_tile_service_ts --> file_src_modules_tile_tile_constants_ts
+  file_src_modules_tile_tile_service_ts --> file_src_modules_tile_tile_types_ts
+  file_src_modules_tile_tile_service_unit_test_ts --> file_src_modules_tile_tile_constants_ts
+  file_src_modules_tile_tile_service_unit_test_ts --> file_src_modules_tile_tile_service_ts
+  file_src_modules_tile_tile_service_unit_test_ts --> file_src_modules_tile_tile_types_ts
+  file_src_modules_tile_tile_service_unit_test_ts --> file_testing_tiles_ts
   file_src_repl_ts --> file_src_main_module_ts
-  file_testing_mosaic_tiles_ts --> file_src_modules_mosaic_tile_mosaic_tile_service_ts
-  file_testing_mosaic_tiles_ts --> file_src_modules_mosaic_tile_mosaic_tile_types_ts
+  file_testing_tiles_ts --> file_src_modules_tile_tile_service_ts
+  file_testing_tiles_ts --> file_src_modules_tile_tile_types_ts
 ```
 <!-- codependix:end name="codependix-file-imports" -->
 
@@ -3365,23 +3247,23 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-15882-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-48.88_MB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-15659-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-37.06_MB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-20-4a4a4a?style=flat-square)
-![Source Files](https://img.shields.io/badge/Source_Files-141-3178c6?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-140-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-115.33_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-113.06_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
-![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-141-3178c6?style=flat-square)
+![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-140-3178c6?style=flat-square)
 ![Interfaces](https://img.shields.io/badge/Interfaces-53-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-1-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
-![Decorators](https://img.shields.io/badge/Decorators-115-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-333-6366f1?style=flat-square)
+![Decorators](https://img.shields.io/badge/Decorators-114-db2777?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-328-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-5-166534?style=flat-square)
 
 ### JavaScript
@@ -3390,15 +3272,15 @@ graph LR
 ![Test Files](https://img.shields.io/badge/Test_Files-36-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-13-8b5cf6?style=flat-square)
 ![Classes](https://img.shields.io/badge/Classes-59-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-569-16a34a?style=flat-square)
-![Methods](https://img.shields.io/badge/Methods-286-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-746-4ade80?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-566-16a34a?style=flat-square)
+![Methods](https://img.shields.io/badge/Methods-282-15803d?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-739-4ade80?style=flat-square)
 ![Async Functions](https://img.shields.io/badge/Async_Functions-109-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-598-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-655-0284c7?style=flat-square)
-![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-175-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-702-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-3157-475569?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-586-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-648-0284c7?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-172-ea580c?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-697-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-3075-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python
@@ -3419,16 +3301,16 @@ graph LR
 ### JSON
 
 ![JSON Files](https://img.shields.io/badge/JSON_Files-4-a16207?style=flat-square)
-![JSON Lines](https://img.shields.io/badge/JSON_Lines-164-ca8a04?style=flat-square)
+![JSON Lines](https://img.shields.io/badge/JSON_Lines-163-ca8a04?style=flat-square)
 ![JSON Objects](https://img.shields.io/badge/JSON_Objects-35-7c3aed?style=flat-square)
 ![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-14-8b5cf6?style=flat-square)
 ![JSON Properties](https://img.shields.io/badge/JSON_Properties-104-0284c7?style=flat-square)
-![JSON Strings](https://img.shields.io/badge/JSON_Strings-87-16a34a?style=flat-square)
+![JSON Strings](https://img.shields.io/badge/JSON_Strings-86-16a34a?style=flat-square)
 ![JSON Numbers](https://img.shields.io/badge/JSON_Numbers-1-059669?style=flat-square)
 ![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-10-0ea5e9?style=flat-square)
 ![JSON Nulls](https://img.shields.io/badge/JSON_Nulls-0-64748b?style=flat-square)
-![JSON Items](https://img.shields.io/badge/JSON_Items-39-475569?style=flat-square)
-![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-147-dc2626?style=flat-square)
+![JSON Items](https://img.shields.io/badge/JSON_Items-38-475569?style=flat-square)
+![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-146-dc2626?style=flat-square)
 ![JSON Max Depth](https://img.shields.io/badge/JSON_Max_Depth-7-ea580c?style=flat-square)
 
 ### YAML

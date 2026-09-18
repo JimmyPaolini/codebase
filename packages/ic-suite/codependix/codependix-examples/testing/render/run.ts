@@ -1,3 +1,4 @@
+import { closeConfigurationService } from "./builders";
 import { collectDocuments } from "./catalog";
 import { deliverDocuments } from "./document";
 import { EXAMPLES_DIRECTORY } from "./paths";
@@ -26,11 +27,14 @@ export async function run(
 
   if (mode === undefined) return { exitCode: 1, lines: [USAGE_MESSAGE] };
 
-  const outcome = deliverDocuments({
-    documents: await collectDocuments(),
-    mode,
-    outputDirectory,
-  });
+  const documents = await collectDocuments();
+
+  // Every document is rendered by now, so the container the configuration
+  // builder booted has nothing left to answer — and a context left open holds
+  // the process open with it.
+  await closeConfigurationService();
+
+  const outcome = deliverDocuments({ documents, mode, outputDirectory });
 
   if (outcome.stalePaths.length > 0) {
     return {

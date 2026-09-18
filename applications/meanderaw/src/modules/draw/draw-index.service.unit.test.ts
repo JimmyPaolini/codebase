@@ -2,12 +2,12 @@ import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
-import { MeanderDatabaseService } from "../meander-database/meander-database.service";
+import { DatabaseService } from "../database/database.service";
+import { GeometryService } from "../geometry/geometry.service";
 
 import { DrawIndexService } from "./draw-index.service";
 
-import type { Meander } from "../meander-database/entities/Meander.entity";
+import type { Meander } from "../database/entities/Meander.entity";
 
 /**
  * Covers `DrawIndexService.render` in isolation, against a small, hand-built
@@ -45,10 +45,10 @@ describe(DrawIndexService, () => {
     const module = await Test.createTestingModule({
       providers: [
         DrawIndexService,
-        GridGeometryService,
+        GeometryService,
         {
-          provide: MeanderDatabaseService,
-          useValue: createMock<MeanderDatabaseService>(),
+          provide: DatabaseService,
+          useValue: createMock<DatabaseService>(),
         },
       ],
     }).compile();

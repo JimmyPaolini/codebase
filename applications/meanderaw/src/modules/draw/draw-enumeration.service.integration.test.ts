@@ -3,23 +3,22 @@ import { getRepositoryToken, TypeOrmModule } from "@nestjs/typeorm";
 import { DataSource, type Repository } from "typeorm";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
-import { LatticeIdentificationService } from "../lattice-identification/lattice-identification.service";
-import { MeanderCharacteristicsService } from "../meander-characteristics/meander-characteristics.service";
-import { MeanderConnectivityService } from "../meander-characteristics/meander-connectivity.service";
-import { MeanderClassificationService } from "../meander-classification/meander-classification.service";
-import { Meander } from "../meander-database/entities/Meander.entity";
-import { MeanderDatabaseService } from "../meander-database/meander-database.service";
-import { MeanderDecodingService } from "../meander-decoding/meander-decoding.service";
-import { MeanderEnumerationService } from "../meander-enumeration/meander-enumeration.service";
-import { MeanderLatticeService } from "../meander-lattice/meander-lattice.service";
-import { MeanderRenderingService } from "../meander-rendering/meander-rendering.service";
-import { MeanderTopologyService } from "../meander-topology/meander-topology.service";
-import { MosaicNamingService } from "../mosaic-naming/mosaic-naming.service";
-import { MosaicSymmetryService } from "../mosaic-tile/mosaic-symmetry.service";
-import { MosaicTileService } from "../mosaic-tile/mosaic-tile.service";
-import { MosaicTilesService } from "../mosaic-tile/mosaic-tiles.service";
-import { SvgRenderingService } from "../svg-rendering/svg-rendering.service";
+import { CharacteristicsService } from "../characteristics/characteristics.service";
+import { ConnectivityService } from "../characteristics/connectivity.service";
+import { ClassificationService } from "../classification/classification.service";
+import { SubFamilyService } from "../classification/sub-family.service";
+import { CodeService } from "../code/code.service";
+import { DatabaseService } from "../database/database.service";
+import { Meander } from "../database/entities/Meander.entity";
+import { DrawingService } from "../drawing/drawing.service";
+import { LatticeService } from "../drawing/lattice.service";
+import { EnumerationService } from "../enumeration/enumeration.service";
+import { TileEnumerationService } from "../enumeration/tile-enumeration.service";
+import { GeometryService } from "../geometry/geometry.service";
+import { GraphService } from "../graph/graph.service";
+import { SvgService } from "../svg/svg.service";
+import { SymmetryService } from "../symmetry/symmetry.service";
+import { TileService } from "../tile/tile.service";
 
 import { DrawEnumerationService } from "./draw-enumeration.service";
 import { DrawRecordService } from "./draw-record.service";
@@ -44,7 +43,7 @@ const SWEEP_TIMEOUT_MILLISECONDS = 180_000;
  * a mocked service graph.
  *
  * The connection is assembled inline rather than through
- * `MeanderDatabaseModule`, which always opens the one committed database
+ * `DatabaseModule`, which always opens the one committed database
  * file — this suite needs a fresh, isolated connection instead.
  */
 describe(DrawEnumerationService, () => {
@@ -67,22 +66,22 @@ describe(DrawEnumerationService, () => {
       providers: [
         DrawEnumerationService,
         DrawRecordService,
-        GridGeometryService,
-        LatticeIdentificationService,
-        MeanderCharacteristicsService,
-        MeanderClassificationService,
-        MeanderConnectivityService,
-        MeanderDatabaseService,
-        MeanderDecodingService,
-        MeanderEnumerationService,
-        MeanderLatticeService,
-        MeanderRenderingService,
-        MeanderTopologyService,
-        MosaicNamingService,
-        MosaicSymmetryService,
-        MosaicTileService,
-        MosaicTilesService,
-        SvgRenderingService,
+        GeometryService,
+        CodeService,
+        CharacteristicsService,
+        ClassificationService,
+        ConnectivityService,
+        DatabaseService,
+        CodeService,
+        EnumerationService,
+        LatticeService,
+        DrawingService,
+        GraphService,
+        SubFamilyService,
+        SymmetryService,
+        TileService,
+        TileEnumerationService,
+        SvgService,
       ],
     }).compile();
 

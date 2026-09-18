@@ -150,16 +150,20 @@ graph LR
   codependix_boundaries["codependix-boundaries"]
   codependix_cli["codependix-cli"]
   codependix_configuration["codependix-configuration"]
+  codependix_core["codependix-core"]
   codependix_examples["codependix-examples"]
   codependix_file_imports["codependix-file-imports"]
   codependix_nestjs_modules["codependix-nestjs-modules"]
   codependix_nx_projects["codependix-nx-projects"]
+  codependix_output["codependix-output"]
   codependix_boundaries --> codependix_configuration
+  codependix_boundaries --> codependix_core
   codependix_boundaries --> codependix_file_imports
   codependix_boundaries --> codependix_nestjs_modules
   codependix_boundaries --> codependix_nx_projects
   codependix_cli --> codependix_boundaries
   codependix_examples --> codependix_boundaries
+  codependix_output --> codependix_boundaries
   classDef subject fill:#7c3aed,color:#fff,stroke:#4c1d95,stroke-width:2px
   class codependix_boundaries subject
 ```
@@ -172,11 +176,15 @@ graph LR
 flowchart LR
   BoundariesModule
   BoundaryCheckModule
+  ConfigurationModule
+  InputModule
   LoggerModule([LoggerModule])
   ModuleGraphModule
   NeighborhoodModule
   NestjsProjectModule
+  OverrideResolutionModule
   PythonModule
+  RunContextModule
   TypescriptModule
   WorkspaceGraphModule
   BoundaryCheckModule --> BoundariesModule
@@ -185,6 +193,10 @@ flowchart LR
   BoundaryCheckModule --> PythonModule
   BoundaryCheckModule --> TypescriptModule
   BoundaryCheckModule --> WorkspaceGraphModule
+  ConfigurationModule --> InputModule
+  ConfigurationModule --> OverrideResolutionModule
+  RunContextModule --> ConfigurationModule
+  RunContextModule --> NeighborhoodModule
   WorkspaceGraphModule --> NeighborhoodModule
 ```
 
@@ -221,6 +233,12 @@ graph LR
   file_src_modules_boundary_check_boundary_check_types_ts["src/modules/boundary-check/boundary-check.types.ts"]
   file_src_modules_boundary_check_boundary_graph_service_ts["src/modules/boundary-check/boundary-graph.service.ts"]
   file_src_modules_boundary_check_boundary_graph_service_unit_test_ts["src/modules/boundary-check/boundary-graph.service.unit.test.ts"]
+  file_src_modules_run_context_run_context_constants_ts["src/modules/run-context/run-context.constants.ts"]
+  file_src_modules_run_context_run_context_module_ts["src/modules/run-context/run-context.module.ts"]
+  file_src_modules_run_context_run_context_module_unit_test_ts["src/modules/run-context/run-context.module.unit.test.ts"]
+  file_src_modules_run_context_run_context_service_ts["src/modules/run-context/run-context.service.ts"]
+  file_src_modules_run_context_run_context_service_unit_test_ts["src/modules/run-context/run-context.service.unit.test.ts"]
+  file_src_modules_run_context_run_context_types_ts["src/modules/run-context/run-context.types.ts"]
   file_testing_mocks_ts["testing/mocks.ts"]
   file_testing_setup_ts["testing/setup.ts"]
   file_vitest_config_ts["vitest.config.ts"]
@@ -270,6 +288,11 @@ graph LR
   file_src_modules_boundary_check_boundary_check_types_ts --> file_src_modules_boundaries_boundaries_types_ts
   file_src_modules_boundary_check_boundary_graph_service_ts --> file_src_modules_boundaries_boundaries_types_ts
   file_src_modules_boundary_check_boundary_graph_service_unit_test_ts --> file_src_modules_boundary_check_boundary_graph_service_ts
+  file_src_modules_run_context_run_context_module_ts --> file_src_modules_run_context_run_context_service_ts
+  file_src_modules_run_context_run_context_module_unit_test_ts --> file_src_modules_run_context_run_context_module_ts
+  file_src_modules_run_context_run_context_module_unit_test_ts --> file_src_modules_run_context_run_context_service_ts
+  file_src_modules_run_context_run_context_service_ts --> file_src_modules_run_context_run_context_types_ts
+  file_src_modules_run_context_run_context_service_unit_test_ts --> file_src_modules_run_context_run_context_service_ts
 ```
 <!-- codependix:end name="codependix-file-imports" -->
 

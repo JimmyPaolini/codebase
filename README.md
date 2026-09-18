@@ -72,11 +72,13 @@ A modern TypeScript codebase with Nx, featuring automated releases, comprehensiv
 &nbsp;&nbsp;&nbsp;&nbsp;**[codependix-agents](packages/ic-suite/codependix/codependix-agents)** - Agent skills for the codependix toolchain, installable by any workspace that uses codependix\
 &nbsp;&nbsp;&nbsp;&nbsp;**[codependix-boundaries](packages/ic-suite/codependix/codependix-boundaries)** - Builds each level's graph for a workspace, judges it against the declared rules, and reports the edges and cycles that break them\
 &nbsp;&nbsp;&nbsp;&nbsp;**[codependix-cli](packages/ic-suite/codependix/codependix-cli)** - Command-line host that exports a project's Nx, NestJS, and file-level dependency graphs as JSON and Markdown anchor blocks, and gates the rules over them\
-&nbsp;&nbsp;&nbsp;&nbsp;**[codependix-configuration](packages/ic-suite/codependix/codependix-configuration)** - Reads `codependix.config.ts` and resolves per-project export destinations and boundary rules\
+&nbsp;&nbsp;&nbsp;&nbsp;**[codependix-configuration](packages/ic-suite/codependix/codependix-configuration)** - Reads `codependix.config.ts`, resolves the command line over it, and produces one resolved run configuration\
+&nbsp;&nbsp;&nbsp;&nbsp;**[codependix-core](packages/ic-suite/codependix/codependix-core)** - The contracts leaf: the run and result vocabulary every other codependix package states its types in\
 &nbsp;&nbsp;&nbsp;&nbsp;**[codependix-examples](packages/ic-suite/codependix/codependix-examples)** - Sixteen subjects built to be graphed, each carrying the guide codependix renders from it\
 &nbsp;&nbsp;&nbsp;&nbsp;**[codependix-file-imports](packages/ic-suite/codependix/codependix-file-imports)** - Builds a project's file-level import graph — a `typescript` module walking its own `ts.Program`, and a `python` module parsing `import`/`from ... import` statements\
 &nbsp;&nbsp;&nbsp;&nbsp;**[codependix-nestjs-modules](packages/ic-suite/codependix/codependix-nestjs-modules)** - Explores a NestJS project's container and builds its module graph\
-&nbsp;&nbsp;&nbsp;&nbsp;**[codependix-nx-projects](packages/ic-suite/codependix/codependix-nx-projects)** - Builds a project's one-hop Nx dependency neighborhood from the Nx project graph
+&nbsp;&nbsp;&nbsp;&nbsp;**[codependix-nx-projects](packages/ic-suite/codependix/codependix-nx-projects)** - Builds a project's one-hop Nx dependency neighborhood from the Nx project graph\
+&nbsp;&nbsp;&nbsp;&nbsp;**[codependix-output](packages/ic-suite/codependix/codependix-output)** - Renders every graph as JSON, Markdown, and mermaid, routes each to its configured destination, and splices anchor blocks into place
 
 </details>
 
@@ -340,8 +342,8 @@ Repository statistics measured by [codometer](packages/ic-suite/codometer/codome
 
 ### Repository
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-267249-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-14.88_MB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-267253-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-14.89_MB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-624-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-2188-3178c6?style=flat-square)
 
@@ -368,8 +370,8 @@ Repository statistics measured by [codometer](packages/ic-suite/codometer/codome
 ![Constants](https://img.shields.io/badge/Constants-13724-dc2626?style=flat-square)
 ![Imports](https://img.shields.io/badge/Imports-8826-0284c7?style=flat-square)
 ![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-2744-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-12005-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-29029-475569?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-12009-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-29033-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-29-ca8a04?style=flat-square)
 
 ### Python
@@ -524,24 +526,24 @@ Repository statistics measured by [codometer](packages/ic-suite/codometer/codome
 
 ### Markdown
 
-![Markdown Files](https://img.shields.io/badge/Markdown_Files-269-083fa1?style=flat-square)
-![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-75219-1f6feb?style=flat-square)
-![H1](https://img.shields.io/badge/H1-257-7c3aed?style=flat-square)
-![H2](https://img.shields.io/badge/H2-1755-8b5cf6?style=flat-square)
+![Markdown Files](https://img.shields.io/badge/Markdown_Files-270-083fa1?style=flat-square)
+![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-75382-1f6feb?style=flat-square)
+![H1](https://img.shields.io/badge/H1-258-7c3aed?style=flat-square)
+![H2](https://img.shields.io/badge/H2-1762-8b5cf6?style=flat-square)
 ![H3](https://img.shields.io/badge/H3-2064-a78bfa?style=flat-square)
 ![H4](https://img.shields.io/badge/H4-98-c4b5fd?style=flat-square)
 ![H5](https://img.shields.io/badge/H5-0-ddd6fe?style=flat-square)
 ![H6](https://img.shields.io/badge/H6-0-ede9fe?style=flat-square)
-![Paragraphs](https://img.shields.io/badge/Paragraphs-10946-64748b?style=flat-square)
-![Lists](https://img.shields.io/badge/Lists-1207-16a34a?style=flat-square)
-![List Items](https://img.shields.io/badge/List_Items-5528-22c55e?style=flat-square)
+![Paragraphs](https://img.shields.io/badge/Paragraphs-10965-64748b?style=flat-square)
+![Lists](https://img.shields.io/badge/Lists-1209-16a34a?style=flat-square)
+![List Items](https://img.shields.io/badge/List_Items-5536-22c55e?style=flat-square)
 ![Task List Items](https://img.shields.io/badge/Task_List_Items-57-4ade80?style=flat-square)
-![Tables](https://img.shields.io/badge/Tables-643-0284c7?style=flat-square)
-![Table Rows](https://img.shields.io/badge/Table_Rows-6768-0ea5e9?style=flat-square)
-![Links](https://img.shields.io/badge/Links-1861-059669?style=flat-square)
+![Tables](https://img.shields.io/badge/Tables-645-0284c7?style=flat-square)
+![Table Rows](https://img.shields.io/badge/Table_Rows-6780-0ea5e9?style=flat-square)
+![Links](https://img.shields.io/badge/Links-1862-059669?style=flat-square)
 ![Images](https://img.shields.io/badge/Images-7469-10b981?style=flat-square)
-![Code Blocks](https://img.shields.io/badge/Code_Blocks-2061-dc2626?style=flat-square)
-![Inline Code](https://img.shields.io/badge/Inline_Code-30383-ef4444?style=flat-square)
+![Code Blocks](https://img.shields.io/badge/Code_Blocks-2062-dc2626?style=flat-square)
+![Inline Code](https://img.shields.io/badge/Inline_Code-30446-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-38-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-33-a16207?style=flat-square)
 <!-- CODE_STATISTICS_END -->

@@ -3,7 +3,7 @@ import { Test } from "@nestjs/testing";
 import { getRepositoryToken } from "@nestjs/typeorm";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { Meander } from "../meander-database/entities/Meander.entity";
+import { Meander } from "../database/entities/Meander.entity";
 
 import { DrawCheckService } from "./draw-check.service";
 
