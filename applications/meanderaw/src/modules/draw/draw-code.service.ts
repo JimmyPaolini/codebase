@@ -1,10 +1,10 @@
 import { Inject, Injectable } from "@nestjs/common";
 
-import { MeanderDatabaseService } from "../meander-database/meander-database.service";
+import { DatabaseService } from "../database/database.service";
 
 import { DrawRecordService } from "./draw-record.service";
 
-import type { Meander } from "../meander-database/entities/Meander.entity";
+import type { Meander } from "../database/entities/Meander.entity";
 import type { CodeDrawingOptions } from "./draw.types";
 
 /**
@@ -27,8 +27,8 @@ export class DrawCodeService {
   constructor(
     @Inject(DrawRecordService)
     private readonly drawRecordService: DrawRecordService,
-    @Inject(MeanderDatabaseService)
-    private readonly meanderDatabaseService: MeanderDatabaseService,
+    @Inject(DatabaseService)
+    private readonly databaseService: DatabaseService,
   ) {}
 
   // 🔐 Private Fields
@@ -43,7 +43,7 @@ export class DrawCodeService {
   async draw(options: CodeDrawingOptions): Promise<Meander> {
     const { code, columns, rows } = options;
 
-    return this.meanderDatabaseService.save(
+    return this.databaseService.save(
       this.drawRecordService.record(code, { columns, rows }, "hardcoded"),
     );
   }

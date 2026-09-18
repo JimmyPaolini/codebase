@@ -1,6 +1,6 @@
 // ♟️ Constants
 
-import type { MeanderRecord } from "../meander-database/meander-database.types";
+import type { MeanderRecord } from "../database/database.types";
 import type {
   ChangedMeanderDrift,
   MeanderDriftReport,
