@@ -862,9 +862,6 @@ importers:
         specifier: 'catalog:'
         version: 4.4.3
     devDependencies:
-      '@conformetry/core':
-        specifier: workspace:*
-        version: link:../conformetry-core
       '@golevelup/ts-vitest':
         specifier: 'catalog:'
         version: 4.0.0
@@ -1056,6 +1053,9 @@ importers:
         specifier: 'catalog:'
         version: 4.4.3
     devDependencies:
+      '@conformetry/core':
+        specifier: workspace:*
+        version: link:../conformetry-core
       '@golevelup/ts-vitest':
         specifier: 'catalog:'
         version: 4.0.0
