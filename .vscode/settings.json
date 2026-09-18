@@ -103,7 +103,7 @@
     "cursor-global": false,
     "cursor-workspace": false,
     "windsurf": false
-  },
+},
   "chat.mcp.gallery.enabled": true,
   "chat.notifyWindowOnConfirmation": "always",
   "chat.notifyWindowOnResponseReceived": "always",
