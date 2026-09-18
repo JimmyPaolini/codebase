@@ -148,7 +148,7 @@
       },
       "defaultConfiguration": "check",
       "dependsOn": [],
-      "description": "Measure the whole repository: `check` gates the limits it declares over itself, chiefly the 128-word comment budgets declared per language, and `write` writes its README.md statistics badges. The two flags name two findings on opposite sides of a pull request, the same split callidescope makes. `check` reads no output destination and writes nothing, which is what makes it safe on a branch \u2014 a breached budget is something the branch did. `write` passes `--output-markdown` with no path, since the workspace configuration already declares README.md as its markdown destination. Report staleness is deliberately not checked: those badges are written on main by the release workflow, so every branch would fail for being behind rather than for anything it did. `dependsOn` is written out as an empty list rather than left to the `codometer` targetDefault, which depends on `build`: a per-project run measures compiled output and must wait for it, while this one measures source and would otherwise wait on every build in the workspace \u2014 slow, and circular, since the tools it would be waiting for are measured by it. The two are deliberately different and must not be collapsed into one. `options.env.SWC_NODE_PROJECT` is written out for the same reason: the `codometer` targetDefault points it at `../../configuration/tsconfig.json`, relative to a per-project run's own `{projectRoot}` cwd, and this target already overrides `cwd` back to `{workspaceRoot}` — merging the targetDefault's `env` in unchanged would resolve two directories above the repository entirely. `@swc-node/register`'s ESM hook needs this pointed at a real tsconfig to load `codometer-cli` at all, since it resolves `SWC_NODE_PROJECT` as `<cwd>/tsconfig.json` with no upward search. This is also the only run that reaches the workflows under .github, which belong to no project, so no per-project run ever measures them.",
+      "description": "Measure the whole repository: `check` gates the limits it declares over itself, chiefly the 128-word comment budgets declared per language, and `write` writes its README.md statistics badges. The two flags name two findings on opposite sides of a pull request, the same split callidescope makes. `check` reads no output destination and writes nothing, which is what makes it safe on a branch \u2014 a breached budget is something the branch did. `write` passes `--output-markdown` with no path, since the workspace configuration already declares README.md as its markdown destination. Report staleness is deliberately not checked: those badges are written on main by the release workflow, so every branch would fail for being behind rather than for anything it did. `dependsOn` is written out as an empty list rather than left to the `codometer` targetDefault, which depends on `build`: a per-project run measures compiled output and must wait for it, while this one measures source and would otherwise wait on every build in the workspace \u2014 slow, and circular, since the tools it would be waiting for are measured by it. The two are deliberately different and must not be collapsed into one. `options.env.SWC_NODE_PROJECT` is written out for the same reason: the `codometer` targetDefault points it at `../../configuration/tsconfig.json`, relative to a per-project run's own `{projectRoot}` cwd, and this target already overrides `cwd` back to `{workspaceRoot}` \u2014 merging the targetDefault's `env` in unchanged would resolve two directories above the repository entirely. `@swc-node/register`'s ESM hook needs this pointed at a real tsconfig to load `codometer-cli` at all, since it resolves `SWC_NODE_PROJECT` as `<cwd>/tsconfig.json` with no upward search. This is also the only run that reaches the workflows under .github, which belong to no project, so no per-project run ever measures them.",
       "executor": "nx:run-commands",
       "inputs": [
         "{workspaceRoot}/**/*.{cjs,cts,js,json,jsx,mjs,mts,py,ts,tsx}",
@@ -364,6 +364,8 @@
         "cwd": "{workspaceRoot}"
       }
     },
+    "form-codebase": {},
+    "gate-codebase": {},
     "gitleaks": {
       "cache": true,
       "configurations": {
@@ -689,6 +691,7 @@
       }
     },
     "scan-security": {},
+    "scrub-codebase": {},
     "sherif": {
       "cache": true,
       "configurations": {
@@ -882,6 +885,7 @@
         "cwd": "{workspaceRoot}"
       }
     },
+    "type-codebase": {},
     "type-coverage": {
       "cache": true,
       "description": "Check TypeScript type coverage for workspace root (minimum 95%)",

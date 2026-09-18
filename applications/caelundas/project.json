@@ -40,6 +40,8 @@
         "cwd": "{projectRoot}"
       }
     },
+    "form-codebase": {},
+    "gate-codebase": {},
     "knip": {},
     "lint-codebase": {},
     "make-projects": {},
@@ -56,6 +58,7 @@
         "cwd": "{projectRoot}"
       }
     },
+    "scrub-codebase": {},
     "spell-check": {},
     "start": {
       "cache": false,
@@ -73,6 +76,7 @@
       }
     },
     "test-coverage": {},
+    "type-codebase": {},
     "type-coverage": {},
     "typecheck": {},
     "yaml-lint": {}

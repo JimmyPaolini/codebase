@@ -1,4 +1,4 @@
-name: 🧑‍💻 Lint Codebase
+name: 🧹 Scrub Codebase
 
 # Static code analysis: every check that reads the source without executing it.
 # One `nx affected` invocation builds one task graph and one scheduler runs it.
@@ -40,8 +40,8 @@ concurrency:
   cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
-  lint-codebase:
-    name: 🧑‍💻 Lint Codebase
+  scrub-codebase:
+    name: 🧹 Scrub Codebase
     runs-on: ubuntu-latest
     timeout-minutes: 12
 
@@ -54,23 +54,6 @@ jobs:
       - name: 🕋 Setup Codebase
         id: setup
         uses: ./.github/actions/setup-codebase
-
-      # ESLint's own incremental cache, keyed per run and restored from the most
-      # recent one. This is deliberately not an Nx output: Nx restores outputs
-      # only on a cache hit, and a hit means ESLint never runs, so an
-      # Nx-managed copy would be present exactly when it is useless and absent
-      # exactly when it would help. `--cache-strategy content` (set on the
-      # target) is what makes it survive a fresh checkout, where every file
-      # has a new mtime and the default metadata strategy would treat the
-      # whole workspace as changed.
-      - name: ♻️ Sync ESLint Cache
-        uses: actions/cache@v6
-        with:
-          path: .eslintcache
-          key: eslint-cache-${{ runner.os }}-${{ github.sha }}
-          restore-keys: |
-            eslint-cache-${{ runner.os }}-
-
       # `codependix` and each derivation synchronization are named alongside
       # `lint-codebase` rather than hanging off its `dependsOn`, because each
       # also publishes on the default branch and Nx forwards an explicit
@@ -100,11 +83,11 @@ jobs:
       # There is no aggregate `synchronize` target: each is its own Nx target,
       # joining the same `nx affected` invocation, so one task graph owns the
       # run.
-      - name: 🧑‍💻 Lint Codebase
+      - name: 🧹 Scrub Codebase
         env:
           NX_VERBOSE_LOGGING: ${{ inputs.verbose || false }}
         run: |
-          pnpm exec nx affected --target=lint-codebase --configuration=check
+          pnpm exec nx affected --target=scrub-codebase --configuration=check
 
       # Last, unconditionally: a cold run of this task graph runs close
       # enough to this job's timeout that whether one commit's first attempt

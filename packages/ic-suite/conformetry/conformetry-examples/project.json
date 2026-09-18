@@ -93,6 +93,8 @@
         "parallel": false
       }
     },
+    "form-codebase": {},
+    "gate-codebase": {},
     "hello-template": {
       "cache": false,
       "description": "Validate the smallest possible template against its one instance",
@@ -155,6 +157,7 @@
         "parallel": false
       }
     },
+    "scrub-codebase": {},
     "spell-check": {},
     "structural-not-textual": {
       "cache": false,
@@ -185,6 +188,7 @@
         "parallel": false
       }
     },
+    "type-codebase": {},
     "type-coverage": {},
     "typecheck": {},
     "yaml-lint": {}

@@ -172,7 +172,7 @@ nx run synchronization:vitest
 
 ```bash
 nx run synchronization:repl
-nx run synchronization:lint-codebase --configuration=write
+nx run synchronization:type-codebase,lint-codebase,form-codebase,scrub-codebase,gate-codebase --configuration=write
 ```
 
 ## License

@@ -106,7 +106,7 @@ Always prefer running tasks through Nx rather than calling the underlying tools 
 
 ```bash
 nx run validation:start           # Run the command-line application
-nx run validation:lint-codebase   # Every static check, in one graph
+nx run validation:type-codebase,lint-codebase,form-codebase,scrub-codebase,gate-codebase   # Every static check, in one graph
 nx run validation:typecheck       # tsc --noEmit
 nx run validation:oxfmt           # Formatting
 ```

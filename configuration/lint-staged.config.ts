@@ -118,7 +118,7 @@ const config = {
   // without a shell, so `NX_DAEMON=false nx ...` would be parsed as the
   // executable name.
   "*": (files: string[]): string[] => [
-    `pnpm exec nx affected --target=lint-codebase --target=gate --target=conformetry-generators --target=conventional-config --target=devcontainer-configuration --target=pull-request-template --target=skill-exclusions --configuration=check --parallel=${String(ANALYSIS_PARALLELISM)} --outputStyle=static ${getStagedFilesFlags(files)}`,
+    `pnpm exec nx affected --target=type-codebase,lint-codebase,form-codebase,scrub-codebase,gate-codebase --configuration=check --parallel=${String(ANALYSIS_PARALLELISM)} --outputStyle=static ${getStagedFilesFlags(files)}`,
     "pnpm exec nx run-many --targets=conformetry-validate --outputStyle=static",
   ],
 };

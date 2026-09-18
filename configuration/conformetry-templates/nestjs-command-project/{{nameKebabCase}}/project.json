@@ -20,6 +20,10 @@
     "test-coverage": {},
     "type-coverage": {},
     "typecheck": {},
-    "yaml-lint": {}
+    "yaml-lint": {},
+    "type-codebase": {},
+    "form-codebase": {},
+    "scrub-codebase": {},
+    "gate-codebase": {}
   }
 }

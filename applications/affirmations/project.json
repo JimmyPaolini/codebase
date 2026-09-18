@@ -87,6 +87,10 @@
     "ty": {},
     "typecheck": {},
     "vulture": {},
-    "yaml-lint": {}
+    "yaml-lint": {},
+    "type-codebase": {},
+    "form-codebase": {},
+    "scrub-codebase": {},
+    "gate-codebase": {}
   }
 }

@@ -68,7 +68,7 @@ Outputs structured JSON in production (`NODE_ENV=production`) and pretty-printed
 Always prefer running tasks through Nx rather than calling the underlying tools directly.
 
 ```bash
-nx run codependix-configuration:lint-codebase   # Every static check, in one graph
+nx run codependix-configuration:type-codebase,lint-codebase,form-codebase,scrub-codebase,gate-codebase   # Every static check, in one graph
 nx run codependix-configuration:typecheck       # tsc --noEmit
 nx run codependix-configuration:oxfmt           # Formatting
 nx run codependix-configuration:build           # Compile for publication

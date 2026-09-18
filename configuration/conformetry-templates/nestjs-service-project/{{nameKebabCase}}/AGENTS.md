@@ -68,7 +68,7 @@ Outputs structured JSON in production (`NODE_ENV=production`) and pretty-printed
 Always prefer running tasks through Nx rather than calling the underlying tools directly.
 
 ```bash
-nx run {{nameKebabCase}}:lint-codebase   # Every static check, in one graph
+nx run {{nameKebabCase}}:type-codebase,lint-codebase,form-codebase,scrub-codebase,gate-codebase   # Every static check, in one graph
 nx run {{nameKebabCase}}:typecheck       # tsc --noEmit
 nx run {{nameKebabCase}}:oxfmt           # Formatting
 nx run {{nameKebabCase}}:build           # Compile for publication

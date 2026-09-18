@@ -86,8 +86,8 @@ from the file they layer over would mean neither half was usable alone.
 ## Validating
 
 ```bash
-pnpm exec nx run callidescope-agents:lint-codebase --configuration=write
-pnpm exec nx run callidescope-agents:lint-codebase --configuration=check
+pnpm exec nx run callidescope-agents:type-codebase,lint-codebase,form-codebase,scrub-codebase,gate-codebase --configuration=write
+pnpm exec nx run callidescope-agents:type-codebase,lint-codebase,form-codebase,scrub-codebase,gate-codebase --configuration=check
 pnpm exec nx run callidescope-agents:test-coverage
 ```
 

@@ -46,7 +46,7 @@ applications/affirmations/
 
 ```bash
 # Lint, format, typecheck, test
-nx run affirmations:lint-codebase       # every static check, in one graph
+nx run affirmations:type-codebase,lint-codebase,form-codebase,scrub-codebase,gate-codebase       # every static check, in one graph
 nx run affirmations:ruff-lint           # linting
 nx run affirmations:ruff-format         # formatting
 nx run affirmations:typecheck           # pyright + ty (parallel)

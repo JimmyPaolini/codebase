@@ -48,8 +48,8 @@ Content rules worth knowing before editing:
 ## Validating
 
 ```bash
-pnpm exec nx run conformetry-agents:lint-codebase --configuration=write
-pnpm exec nx run conformetry-agents:lint-codebase --configuration=check
+pnpm exec nx run conformetry-agents:type-codebase,lint-codebase,form-codebase,scrub-codebase,gate-codebase --configuration=write
+pnpm exec nx run conformetry-agents:type-codebase,lint-codebase,form-codebase,scrub-codebase,gate-codebase --configuration=check
 pnpm exec nx run conformetry-agents:test-coverage
 ```
 

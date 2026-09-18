@@ -78,7 +78,7 @@ Always prefer running tasks through Nx rather than calling the underlying tools 
 
 ```bash
 nx run conformetry-cli:start           # Run the command-line application
-nx run conformetry-cli:lint-codebase   # Every static check, in one graph
+nx run conformetry-cli:type-codebase,lint-codebase,form-codebase,scrub-codebase,gate-codebase   # Every static check, in one graph
 nx run conformetry-cli:typecheck       # tsc --noEmit
 nx run conformetry-cli:oxfmt           # Formatting
 ```

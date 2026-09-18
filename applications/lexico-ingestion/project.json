@@ -31,6 +31,8 @@
     },
     "codometer": {},
     "dependency-cruiser": {},
+    "form-codebase": {},
+    "gate-codebase": {},
     "knip": {},
     "lint-codebase": {},
     "make-projects": {},
@@ -38,6 +40,7 @@
     "oxfmt": {},
     "oxlint": {},
     "prettier": {},
+    "scrub-codebase": {},
     "spell-check": {},
     "start": {
       "cache": false,
@@ -82,6 +85,7 @@
       }
     },
     "test-coverage": {},
+    "type-codebase": {},
     "type-coverage": {},
     "typecheck": {},
     "yaml-lint": {}

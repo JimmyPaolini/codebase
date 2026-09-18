@@ -37,7 +37,11 @@
 [![Kubernetes](https://img.shields.io/badge/Kubernetes-K8s-326CE5?logo=kubernetes)](https://kubernetes.io/)
 [![Terraform](https://img.shields.io/badge/Terraform-IaC-844FBA?logo=terraform)](https://www.terraform.io/)
 
+[![Type Codebase](https://github.com/JimmyPaolini/codebase/actions/workflows/type-codebase.yml/badge.svg)](https://github.com/JimmyPaolini/codebase/actions/workflows/type-codebase.yml)
 [![Lint Codebase](https://github.com/JimmyPaolini/codebase/actions/workflows/lint-codebase.yml/badge.svg)](https://github.com/JimmyPaolini/codebase/actions/workflows/lint-codebase.yml)
+[![Form Codebase](https://github.com/JimmyPaolini/codebase/actions/workflows/form-codebase.yml/badge.svg)](https://github.com/JimmyPaolini/codebase/actions/workflows/form-codebase.yml)
+[![Scrub Codebase](https://github.com/JimmyPaolini/codebase/actions/workflows/scrub-codebase.yml/badge.svg)](https://github.com/JimmyPaolini/codebase/actions/workflows/scrub-codebase.yml)
+[![Gate Codebase](https://github.com/JimmyPaolini/codebase/actions/workflows/gate-codebase.yml/badge.svg)](https://github.com/JimmyPaolini/codebase/actions/workflows/gate-codebase.yml)
 [![Test Coverage](https://github.com/JimmyPaolini/codebase/actions/workflows/test-coverage.yml/badge.svg)](https://github.com/JimmyPaolini/codebase/actions/workflows/test-coverage.yml)
 [![Scan Security](https://github.com/JimmyPaolini/codebase/actions/workflows/scan-security.yml/badge.svg)](https://github.com/JimmyPaolini/codebase/actions/workflows/scan-security.yml)
 [![Validate Conventions](https://github.com/JimmyPaolini/codebase/actions/workflows/validate-conventions.yml/badge.svg?event=pull_request)](https://github.com/JimmyPaolini/codebase/actions/workflows/validate-conventions.yml)

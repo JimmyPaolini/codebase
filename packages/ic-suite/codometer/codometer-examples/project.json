@@ -22,13 +22,17 @@
       },
       "outputs": []
     },
+    "form-codebase": {},
+    "gate-codebase": {},
     "knip": {},
     "lint-codebase": {},
     "markdown-lint": {},
     "oxfmt": {},
     "prettier": {},
+    "scrub-codebase": {},
     "spell-check": {},
     "test-coverage": {},
+    "type-codebase": {},
     "type-coverage": {},
     "typecheck": {},
     "yaml-lint": {}

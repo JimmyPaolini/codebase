@@ -31,13 +31,15 @@
     },
     "codometer": {},
     "dependency-cruiser": {},
+    "form-codebase": {},
+    "gate-codebase": {},
     "knip": {},
     "lint-codebase": {},
     "make-projects": {},
     "markdown-lint": {},
     "meanderaw-check": {
       "cache": false,
-      "description": "Regenerate the whole sweep — the generalized enumeration and the historical corpus's hardcoded ingestion, exactly what a real sweep runs — into a throwaway in-memory database, and diff it against the committed output/meanders.sqlite, failing on any new, missing, or changed row. This is what catches drift in the generic renderer, the enumerator, or a Characteristic's own logic before it reaches the committed corpus, the same CI role `address-table` once played for the retired per-family procedural pipeline. Deliberately uncached, for the same reason that target was: it reads the committed database rather than any declared build output, so caching it buys nothing while a stale hit could hide real drift — and the sweep itself costs under a minute, not the hours a cache exists to save. `--check` is a boolean flag rather than a `check`/`write` configuration pair, unlike `address-table`: nothing here can \"fix\" drift by rewriting the committed database from a branch, since that database is populated by a real `start` run a person chooses to make, not by an aggregator's own `--configuration=write`.",
+      "description": "Regenerate the whole sweep \u2014 the generalized enumeration and the historical corpus's hardcoded ingestion, exactly what a real sweep runs \u2014 into a throwaway in-memory database, and diff it against the committed output/meanders.sqlite, failing on any new, missing, or changed row. This is what catches drift in the generic renderer, the enumerator, or a Characteristic's own logic before it reaches the committed corpus, the same CI role `address-table` once played for the retired per-family procedural pipeline. Deliberately uncached, for the same reason that target was: it reads the committed database rather than any declared build output, so caching it buys nothing while a stale hit could hide real drift \u2014 and the sweep itself costs under a minute, not the hours a cache exists to save. `--check` is a boolean flag rather than a `check`/`write` configuration pair, unlike `address-table`: nothing here can \"fix\" drift by rewriting the committed database from a branch, since that database is populated by a real `start` run a person chooses to make, not by an aggregator's own `--configuration=write`.",
       "executor": "nx:run-commands",
       "inputs": [
         "^production",
@@ -64,10 +66,11 @@
         "cwd": "{projectRoot}"
       }
     },
+    "scrub-codebase": {},
     "spell-check": {},
     "start": {
       "cache": false,
-      "description": "Run the Meanderaw application. With no arguments it sweeps every meander into output/meanders.sqlite — the whole lattice's unit space, enumerated and classified, then the historical corpus's hardcoded Codes beyond that budget; with --args=\"--rows <n> --columns <n> --code <code>\" it writes that one row; with --args=\"--check\" it regenerates that same sweep into a throwaway database and fails if it disagrees with the committed one, which `meanderaw-check` runs on every commit. `build` compiles this project rather than drawing anything, so populating the database is this target's job.",
+      "description": "Run the Meanderaw application. With no arguments it sweeps every meander into output/meanders.sqlite \u2014 the whole lattice's unit space, enumerated and classified, then the historical corpus's hardcoded Codes beyond that budget; with --args=\"--rows <n> --columns <n> --code <code>\" it writes that one row; with --args=\"--check\" it regenerates that same sweep into a throwaway database and fails if it disagrees with the committed one, which `meanderaw-check` runs on every commit. `build` compiles this project rather than drawing anything, so populating the database is this target's job.",
       "executor": "nx:run-commands",
       "options": {
         "command": "node --import @swc-node/register/esm-register src/main.ts {args}",
@@ -75,6 +78,7 @@
       }
     },
     "test-coverage": {},
+    "type-codebase": {},
     "type-coverage": {},
     "typecheck": {},
     "yaml-lint": {}
