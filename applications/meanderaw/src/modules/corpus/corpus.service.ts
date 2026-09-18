@@ -1,9 +1,12 @@
 import { Inject, Injectable } from "@nestjs/common";
 
 import { CharacteristicsService } from "../characteristics/characteristics.service";
+import { SubFamilyService } from "../classification/sub-family.service";
 import { CodeService } from "../code/code.service";
 import { DatabaseService } from "../database/database.service";
 import { DrawingService } from "../drawing/drawing.service";
+import { SWEEP_MINIMUM_ROWS } from "../enumeration/enumeration.constants";
+import { EnumerationService } from "../enumeration/enumeration.service";
 
 import { CORPUS_FAMILIES, DuplicateCorpusCodeError } from "./corpus.constants";
 
@@ -11,29 +14,48 @@ import type { Meander } from "../database/entities/Meander.entity";
 import type { CorpusEntry, CorpusFamily } from "./corpus.types";
 
 /**
- * Ingests the historical corpus's hardcoded Code constants into the
- * committed sqlite database, through the same generic reader, renderer, and
- * Characteristic computation `DrawCodeService` draws a `--code` meander
- * through — so an Enumerated row and a Hardcoded row are produced by the
- * exact same pipeline, and only ever differ in where their Code came from.
+ * Ingests the historical corpus into the committed sqlite database, through
+ * the same generic reader, renderer, and Characteristic computation
+ * `DrawCodeService` draws a `--code` meander through — so an Enumerated row
+ * and a Hardcoded row are produced by the exact same pipeline, and only ever
+ * differ in where their Code came from.
  *
- * A Hardcoded entry's `family` and `subFamily` are trusted rather than
- * classified: spec #813 keeps the historical corpus's own family and
- * sub-family metadata rather than re-deriving them through the new
- * Characteristic-combination classifiers ticket #817 builds for Enumerated
- * rows, since reclassifying years of curated corpus is explicitly out of
- * scope for this migration.
+ * **Which entries it ingests is computed, not listed.** A meander the sweep
+ * already reaches is reproduced by `EnumerationService` rather than
+ * preserved, so only the entries beyond that reach are ingested — and the
+ * reach is two bounds rather than one. `EnumerationService.isAdmitted` is
+ * the edge budget, which is what makes enumeration possible at all; and
+ * `SWEEP_MINIMUM_ROWS` is the floor the sweep starts at, because a
+ * two-row band's interior is a single level with no southward edge anywhere
+ * in it. An entry is kept when either bound puts it outside, which is what
+ * lets `parallel`'s five two-row entries stay in the corpus while sitting
+ * comfortably inside the budget. Nothing hand-lists the split, so raising
+ * the budget moves the boundary here rather than leaving a stale list behind.
+ *
+ * **A Hardcoded entry's family is provenance, not a verdict.** The
+ * `family` column records the first `output/<family>/` directory the
+ * retired file tree filed that Code under, and the tree is known to be wrong
+ * in places — see
+ * `docs/adr/0013-hold-the-historical-corpus-as-a-test-set.md`. Ingesting
+ * family by family in `CORPUS_FAMILIES` order is that same tree order, kept
+ * so the committed database's own row order is a fact about the tree rather
+ * than about whatever order a constant happens to be written in.
+ *
+ * A sub-family, by contrast, is **named rather than carried**:
+ * `SubFamilyService` reads the tile the Code draws, exactly as it does for
+ * an Enumerated row, so nothing derived is stored in the corpus alongside
+ * what was extracted.
  *
  * `pitch` is recorded equal to `columns`, the same convention
- * `DrawCodeService` follows: a hardcoded entry is extracted as one true
+ * `DrawCodeService` follows: a historical entry is extracted as one true
  * repeat span, with no wider drawing behind it for a database row to record
  * a separate pitch for.
  *
  * A Code that collides with one already committed — an Enumerated row, or
- * another hardcoded entry ingested earlier in the same sweep — fails loudly
- * through {@link DuplicateCorpusCodeError} rather than silently
- * overwriting, since `DatabaseService.save` relies on the `code`
- * column's own unique constraint rather than checking beforehand.
+ * another entry ingested earlier in the same sweep — fails loudly through
+ * {@link DuplicateCorpusCodeError} rather than silently overwriting, since
+ * `DatabaseService.save` relies on the `code` column's own unique constraint
+ * rather than checking beforehand.
  */
 @Injectable()
 export class CorpusService {
@@ -48,6 +70,10 @@ export class CorpusService {
     private readonly codeService: CodeService,
     @Inject(DrawingService)
     private readonly drawingService: DrawingService,
+    @Inject(EnumerationService)
+    private readonly enumerationService: EnumerationService,
+    @Inject(SubFamilyService)
+    private readonly subFamilyService: SubFamilyService,
   ) {}
 
   // 🔐 Private Fields
@@ -56,15 +82,18 @@ export class CorpusService {
 
   // 🔏 Private Methods
 
-  /** Reads, renders, measures, and persists one hardcoded entry, trusting `family` and `entry.subFamily`. */
+  /** Reads, renders, measures, names, and persists one entry under the family it was filed as. */
   private async ingestOne(
     family: CorpusFamily,
     entry: CorpusEntry,
   ): Promise<Meander> {
-    const { code, columns, rows, subFamily } = entry;
+    const { code, columns, rows } = entry;
     const parsed = this.codeService.parse(code, rows, columns);
     const svg = this.drawingService.render(parsed);
     const characteristics = this.characteristicsService.compute(parsed);
+    const earnedSubFamily = this.subFamilyService.name(
+      this.codeService.tile(parsed),
+    );
 
     try {
       return await this.databaseService.save({
@@ -83,7 +112,7 @@ export class CorpusService {
         pitch: columns,
         provenance: "hardcoded",
         rows,
-        subFamily: subFamily ?? null,
+        subFamily: earnedSubFamily ?? null,
         svg,
       });
     } catch (error) {
@@ -94,27 +123,44 @@ export class CorpusService {
   // 🌎 Public Methods
 
   /**
-   * Ingests every hardcoded entry named by `entriesByFamily`, family by
-   * family and in each family's own order, resolving with every row saved.
+   * Ingests every entry of `corpus` that {@link isBeyondEnumeration} keeps,
+   * family by family in `CORPUS_FAMILIES` order and in the corpus's own
+   * order within a family, resolving with every row saved.
    *
    * Ingestion is sequential rather than run in parallel across entries: a
    * failure has to name the one entry that caused it, which a `Promise.all`
    * racing every `save` at once cannot promise given `better-sqlite3`'s own
    * synchronous, single-connection writes.
    */
-  async ingest(
-    entriesByFamily: Readonly<
-      Partial<Record<CorpusFamily, readonly CorpusEntry[]>>
-    >,
-  ): Promise<Meander[]> {
+  async ingest(corpus: readonly CorpusEntry[]): Promise<Meander[]> {
+    const beyond = corpus.filter((entry) => this.isBeyondEnumeration(entry));
     const saved: Meander[] = [];
 
     for (const family of CORPUS_FAMILIES) {
-      for (const entry of entriesByFamily[family] ?? []) {
-        saved.push(await this.ingestOne(family, entry));
+      for (const entry of beyond) {
+        if (entry.filedUnder[0] === family) {
+          saved.push(await this.ingestOne(family, entry));
+        }
       }
     }
 
     return saved;
+  }
+
+  /**
+   * Whether an entry lies beyond what the sweep enumerates, and so has to be
+   * preserved rather than rediscovered.
+   *
+   * Both bounds are asked rather than restated: the edge budget through
+   * `EnumerationService`, and the sweep's own row floor. A shape outside
+   * either one is outside the sweep.
+   */
+  isBeyondEnumeration(entry: CorpusEntry): boolean {
+    const { columns, rows } = entry;
+
+    return (
+      rows < SWEEP_MINIMUM_ROWS ||
+      !this.enumerationService.isAdmitted({ columns, rows })
+    );
   }
 }

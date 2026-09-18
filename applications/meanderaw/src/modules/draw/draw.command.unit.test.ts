@@ -226,5 +226,7 @@ describe(DrawCommand, () => {
     expect(command.parseRows("3")).toBe(3);
     expect(command.parseCheck(undefined)).toBe(true);
     expect(command.parseCheck("false")).toBe(false);
+    expect(command.parseCheck("0")).toBe(false);
+    expect(command.parseCheck("true")).toBe(true);
   });
 });

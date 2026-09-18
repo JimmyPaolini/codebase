@@ -48,12 +48,13 @@ export interface Connectivity {
 }
 
 /**
- * A running count of three-armed and four-armed junctions — the same shape
- * `MeasurementService`'s own `JunctionCounts` takes for a rendered
- * document, read here directly off a Code instead. A fresh
- * type rather than a reuse: this service depends on nothing from
- * `meander-topology`, and importing across for one shared shape would cost
- * more coupling than the duplication it would save.
+ * A running count of three-armed and four-armed junctions, read directly
+ * off a Code.
+ *
+ * A retired reader counted the same two kinds of junction off a *rendered*
+ * document, by rebuilding a lattice from its path data. Nothing does that
+ * any more: a Code is what a meander is, and measuring it does not require
+ * rendering it first.
  */
 export interface JunctionCounts {
   tJunctions: number;
