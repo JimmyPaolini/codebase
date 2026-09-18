@@ -21,15 +21,17 @@ import { PluginService } from "./plugin.service";
 import type { ResolvedTraceScope } from "./plugin.types";
 import type { TraceOutcome } from "@callidescope/cli";
 import type {
+  ProjectLimits,
+  ProjectLimitsLookup,
+  ResolvedCallidescopeConfiguration,
+} from "@callidescope/configuration";
+import type {
   CallGraphResult,
   CallGraphSummary,
   DeepStackFinding,
-  ProjectLimits,
-  ProjectLimitsLookup,
   ProjectReport,
-  ResolvedCallidescopeConfiguration,
   WideCallableFinding,
-} from "@callidescope/configuration";
+} from "@callidescope/core";
 import type { ProjectGraph } from "@nx/devkit";
 
 vi.mock("node:fs", () => ({

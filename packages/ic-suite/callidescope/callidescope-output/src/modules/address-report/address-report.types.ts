@@ -1,10 +1,7 @@
 // 🏷️ Types
 
-import type {
-  CallableId,
-  CallidescopeOutputFormat,
-  SourceLocation,
-} from "@callidescope/configuration";
+import type { CallidescopeOutputFormat } from "@callidescope/configuration";
+import type { CallableId, SourceLocation } from "@callidescope/core";
 import type {
   CallableDirectCalls,
   CallAddressTreeResult,

@@ -11,7 +11,7 @@ import {
 
 import { CallableIdentityService } from "./callable-identity.service";
 
-import type { CallableNode } from "@callidescope/configuration";
+import type { CallableNode } from "@callidescope/core";
 
 /** Collects the described nodes for one in-memory source file. */
 function describeFixture(source: string): CallableNode[] {

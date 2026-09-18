@@ -4,7 +4,10 @@ import { afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
 
 import { LoggerService } from "@codebase/logger";
 
-import { buildCallGraphResult, buildStackFrame } from "../../../testing/mocks";
+import {
+  buildStackFrame,
+  buildTracedCallGraphResult,
+} from "../../../testing/mocks";
 
 import { ReportFindingsService } from "./report-findings.service";
 
@@ -53,7 +56,7 @@ describe(ReportFindingsService, () => {
   it("leaves the exit code alone when nothing was found", () => {
     service.reportFindings({
       mode: CLEAN_MODE,
-      result: buildCallGraphResult(),
+      result: buildTracedCallGraphResult(),
       stalePaths: [],
     });
 
@@ -64,7 +67,7 @@ describe(ReportFindingsService, () => {
   it("fails and names a stack that is too deep when depth is checked", () => {
     service.reportFindings({
       mode: { ...CLEAN_MODE, checksDepth: true },
-      result: buildCallGraphResult({
+      result: buildTracedCallGraphResult({
         deepStacks: [
           {
             depth: 4,
@@ -89,7 +92,7 @@ describe(ReportFindingsService, () => {
   it("names a stack that is too deep without failing when depth is not checked", () => {
     service.reportFindings({
       mode: CLEAN_MODE,
-      result: buildCallGraphResult({
+      result: buildTracedCallGraphResult({
         deepStacks: [
           {
             depth: 4,
@@ -114,7 +117,7 @@ describe(ReportFindingsService, () => {
   it("fails and names a callable that calls too much when breadth is checked", () => {
     service.reportFindings({
       mode: { ...CLEAN_MODE, checksBreadth: true },
-      result: buildCallGraphResult({
+      result: buildTracedCallGraphResult({
         wideCallables: [
           {
             breadth: 5,
@@ -145,7 +148,7 @@ describe(ReportFindingsService, () => {
   it("names a wide callable without failing when breadth is not checked", () => {
     service.reportFindings({
       mode: CLEAN_MODE,
-      result: buildCallGraphResult({
+      result: buildTracedCallGraphResult({
         wideCallables: [
           {
             breadth: 5,
@@ -179,7 +182,7 @@ describe(ReportFindingsService, () => {
   it("fails on a stale report regardless of what is checked", () => {
     service.reportFindings({
       mode: CLEAN_MODE,
-      result: buildCallGraphResult(),
+      result: buildTracedCallGraphResult(),
       stalePaths: ["report.json"],
     });
 
@@ -196,7 +199,7 @@ describe(ReportFindingsService, () => {
   it("fails a trace that collected no callables at all", () => {
     service.reportFindings({
       mode: CLEAN_MODE,
-      result: buildCallGraphResult({
+      result: buildTracedCallGraphResult({
         summary: {
           callableCount: 0,
           cyclicComponentCount: 0,

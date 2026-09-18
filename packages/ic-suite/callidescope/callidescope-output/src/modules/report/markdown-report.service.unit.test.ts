@@ -2,7 +2,7 @@ import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import {
-  buildCallGraphResult,
+  buildEmptyCallGraphResult,
   buildProjectLimitsLookup,
   buildSourceLocation,
   buildStackFrame,
@@ -19,12 +19,14 @@ import {
 } from "./report.constants";
 
 import type {
-  CallableBreadthReport,
-  CallStack,
   ProjectLimits,
   ProjectLimitsLookup,
-  ProjectReport,
 } from "@callidescope/configuration";
+import type {
+  CallableBreadthReport,
+  CallStack,
+  ProjectReport,
+} from "@callidescope/core";
 
 /** A callable with the given breadth and no callees, named uniquely. */
 function callableBreadth(args: {
@@ -251,7 +253,7 @@ describe(MarkdownReportService, () => {
       limits: buildProjectLimitsLookup(),
       previewCount: 3,
       rendering: "tree",
-      result: buildCallGraphResult({
+      result: buildEmptyCallGraphResult({
         deepStacks: [{ ...stack({ entry: "Resolver.read" }), limit: 1 }],
       }),
     });
@@ -267,7 +269,7 @@ describe(MarkdownReportService, () => {
       limits: buildProjectLimitsLookup(),
       previewCount: 3,
       rendering: "tree",
-      result: buildCallGraphResult({
+      result: buildEmptyCallGraphResult({
         wideCallables: [
           {
             breadth: 5,
@@ -292,7 +294,7 @@ describe(MarkdownReportService, () => {
       limits: buildProjectLimitsLookup(),
       previewCount: 3,
       rendering: "tree",
-      result: buildCallGraphResult(),
+      result: buildEmptyCallGraphResult(),
     });
 
     expect(rendered).toContain("# 🔭 Callidescope\n\nTraced on every release.");
@@ -305,7 +307,7 @@ describe(MarkdownReportService, () => {
       limits: buildProjectLimitsLookup(),
       previewCount: 3,
       rendering: "tree",
-      result: buildCallGraphResult(),
+      result: buildEmptyCallGraphResult(),
     });
 
     expect(rendered).toContain("\n### Projects\n");
@@ -319,7 +321,7 @@ describe(MarkdownReportService, () => {
       limits: buildProjectLimitsLookup(),
       previewCount: 3,
       rendering: "tree",
-      result: buildCallGraphResult(),
+      result: buildEmptyCallGraphResult(),
     });
 
     expect(rendered).toContain("\n## Projects\n");
@@ -333,7 +335,7 @@ describe(MarkdownReportService, () => {
         limits: buildProjectLimitsLookup(),
         previewCount: 3,
         rendering: "tree",
-        result: buildCallGraphResult(),
+        result: buildEmptyCallGraphResult(),
       }),
     ).toContain("None.");
   });
@@ -368,7 +370,7 @@ describe(MarkdownReportService, () => {
       limits: buildProjectLimitsLookup(),
       previewCount: 3,
       rendering: "tree",
-      result: buildCallGraphResult({ deepStacks }),
+      result: buildEmptyCallGraphResult({ deepStacks }),
     });
 
     // The headings live in one constant each, so a reader grepping a failed

@@ -1,9 +1,7 @@
 // 🏷️ Types
 
-import type {
-  CallGraphResult,
-  ResolvedCallidescopeJsonOutputConfiguration,
-} from "@callidescope/configuration";
+import type { ResolvedCallidescopeJsonOutputConfiguration } from "@callidescope/configuration";
+import type { CallGraphResult } from "@callidescope/core";
 
 /** Arguments for rendering the JSON report. */
 export interface BuildReportArguments {

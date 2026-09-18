@@ -6,7 +6,7 @@ import { ANALYSIS_MODULES } from "../../../testing/modules";
 
 import { ReportService } from "./report.service";
 
-import type { CallStack, StackFrame } from "@callidescope/configuration";
+import type { CallStack, StackFrame } from "@callidescope/core";
 
 /** Builds a stack frame for a printed tree. */
 function frame(

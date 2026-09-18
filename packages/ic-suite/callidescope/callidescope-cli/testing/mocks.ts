@@ -6,7 +6,7 @@ import type {
   CallGraphResult,
   SourceLocation,
   StackFrame,
-} from "@callidescope/configuration";
+} from "@callidescope/core";
 import type { DiscoveredCallable } from "@callidescope/graph";
 
 /**

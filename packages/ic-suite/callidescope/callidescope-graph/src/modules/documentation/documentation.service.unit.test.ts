@@ -11,7 +11,7 @@ import {
 import { DocumentationService } from "./documentation.service";
 
 import type { ReadDocumentationArguments } from "./documentation.types";
-import type { CallableDocumentation } from "@callidescope/configuration";
+import type { CallableDocumentation } from "@callidescope/core";
 
 /** Builds the arguments for one named callable in an in-memory file. */
 function readArguments(args: {

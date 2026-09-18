@@ -1,12 +1,11 @@
 // 🏷️ Types
 
 import type {
-  CallGraphResult,
   ProjectLimitsLookup,
-  ProjectReport,
   ResolvedCallidescopeConfiguration,
   ResolvedCallidescopeWriteConfiguration,
 } from "@callidescope/configuration";
+import type { CallGraphResult, ProjectReport } from "@callidescope/core";
 
 /** Arguments for writing every configured destination. */
 export interface SyncDestinationsArguments {

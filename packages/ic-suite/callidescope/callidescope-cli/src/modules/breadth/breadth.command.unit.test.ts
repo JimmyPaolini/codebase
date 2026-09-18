@@ -1,9 +1,11 @@
 import {
+  ConfigurationModule,
+  ConfigurationService,
   flagResolutionError,
-  InputService,
   ProjectConfigurationFieldNotPermittedError,
 } from "@callidescope/configuration";
 import { BreadthService, ProgramConfigurationError } from "@callidescope/graph";
+import { AddressReportService } from "@callidescope/output";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import {
@@ -20,7 +22,6 @@ import { LoggerService } from "@codebase/logger";
 
 import { buildDiscoveredCallable } from "../../../testing/mocks";
 import { AddressLookupService } from "../address-lookup/address-lookup.service";
-import { AddressReportService } from "../address-report/address-report.service";
 
 import { BreadthCommand } from "./breadth.command";
 
@@ -82,11 +83,12 @@ describe(BreadthCommand, () => {
   let addressReportService: ReturnType<typeof createMock<AddressReportService>>;
   let breadthService: ReturnType<typeof createMock<BreadthService>>;
   let command: BreadthCommand;
-  let inputService: InputService;
+  let configurationService: ConfigurationService;
   let logger: ReturnType<typeof createMock<LoggerService>>;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
+      imports: [ConfigurationModule],
       providers: [
         BreadthCommand,
         {
@@ -98,12 +100,12 @@ describe(BreadthCommand, () => {
           useValue: createMock<AddressReportService>(),
         },
         { provide: BreadthService, useValue: createMock<BreadthService>() },
-        InputService,
         { provide: LoggerService, useValue: createMock<LoggerService>() },
       ],
     }).compile();
 
     command = await module.resolve(BreadthCommand);
+    configurationService = await module.resolve(ConfigurationService);
   });
 
   const originalIsTty = process.stdin.isTTY;
@@ -113,7 +115,6 @@ describe(BreadthCommand, () => {
     addressReportService = createMock<AddressReportService>();
     breadthService = createMock<BreadthService>();
     logger = createMock<LoggerService>();
-    inputService = new InputService();
     // Not a terminal by default, so a test that does not opt into prompting
     // exercises the refusal a scripted run gets.
     process.stdin.isTTY = false;
@@ -122,7 +123,7 @@ describe(BreadthCommand, () => {
       addressLookupService,
       addressReportService,
       breadthService,
-      inputService,
+      configurationService,
       logger,
     );
 
@@ -141,6 +142,7 @@ describe(BreadthCommand, () => {
 
   it("sets logger context", async () => {
     const module = await Test.createTestingModule({
+      imports: [ConfigurationModule],
       providers: [
         BreadthCommand,
         {
@@ -152,10 +154,11 @@ describe(BreadthCommand, () => {
           useValue: createMock<AddressReportService>(),
         },
         { provide: BreadthService, useValue: createMock<BreadthService>() },
-        InputService,
         { provide: LoggerService, useValue: createMock<LoggerService>() },
       ],
     }).compile();
+
+    await module.resolve(BreadthCommand);
 
     const logger = await module.resolve(LoggerService);
 
@@ -309,7 +312,7 @@ describe(BreadthCommand, () => {
   it("prompts for the addresses when the flag is missing", async () => {
     process.stdin.isTTY = true;
     vi.spyOn(
-      inputService,
+      configurationService,
       "promptForAutocompleteMultiselect",
     ).mockResolvedValue(["a.ts#Foo.bar"]);
     addressLookupService.listAddresses.mockReturnValue([
@@ -333,7 +336,9 @@ describe(BreadthCommand, () => {
 
     // The list it completes against is what the one trace found, so the
     // caller picks a callable that provably exists.
-    expect(inputService.promptForAutocompleteMultiselect).toHaveBeenCalledWith({
+    expect(
+      configurationService.promptForAutocompleteMultiselect,
+    ).toHaveBeenCalledWith({
       message: "Which callables? (file#qualified-name)",
       subject:
         'At least one callable address, as in "breadth --addresses src/foo.service.ts#FooService.bar"',
@@ -349,7 +354,7 @@ describe(BreadthCommand, () => {
 
   it("does not prompt for the addresses when the flag was given", async () => {
     process.stdin.isTTY = true;
-    vi.spyOn(inputService, "promptForAutocompleteMultiselect");
+    vi.spyOn(configurationService, "promptForAutocompleteMultiselect");
     addressLookupService.locate.mockResolvedValue({
       configuration: buildConfiguration(),
       format: "markdown",
@@ -367,13 +372,13 @@ describe(BreadthCommand, () => {
     });
 
     expect(
-      inputService.promptForAutocompleteMultiselect,
+      configurationService.promptForAutocompleteMultiselect,
     ).not.toHaveBeenCalled();
   });
 
   it("prompts for a format when it was left off, at a terminal", async () => {
     process.stdin.isTTY = true;
-    vi.spyOn(inputService, "promptForSelect").mockResolvedValue("json");
+    vi.spyOn(configurationService, "promptForSelect").mockResolvedValue("json");
     addressLookupService.locate.mockResolvedValue({
       configuration: buildConfiguration(),
       format: "markdown",
@@ -387,7 +392,7 @@ describe(BreadthCommand, () => {
 
     await command.run([], { addresses: ["a.ts#Foo.bar"] });
 
-    expect(inputService.promptForSelect).toHaveBeenCalledWith({
+    expect(configurationService.promptForSelect).toHaveBeenCalledWith({
       choices: ["markdown", "mermaid", "json"],
       message: "Which output format?",
       subject: "An output format (--format)",
@@ -402,7 +407,7 @@ describe(BreadthCommand, () => {
 
   it("does not prompt for a format that was already given", async () => {
     process.stdin.isTTY = true;
-    vi.spyOn(inputService, "promptForSelect");
+    vi.spyOn(configurationService, "promptForSelect");
     addressLookupService.locate.mockResolvedValue({
       configuration: buildConfiguration(),
       format: "markdown",
@@ -419,7 +424,7 @@ describe(BreadthCommand, () => {
       format: "mermaid",
     });
 
-    expect(inputService.promptForSelect).not.toHaveBeenCalled();
+    expect(configurationService.promptForSelect).not.toHaveBeenCalled();
   });
 
   // A genuine failure keeps its stack rather than being reported to the

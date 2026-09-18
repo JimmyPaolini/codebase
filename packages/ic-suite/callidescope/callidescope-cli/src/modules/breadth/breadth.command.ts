@@ -1,5 +1,6 @@
-import { InputService } from "@callidescope/configuration";
+import { ConfigurationService } from "@callidescope/configuration";
 import { BreadthService } from "@callidescope/graph";
+import { AddressReportService } from "@callidescope/output";
 import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
 
@@ -7,14 +8,11 @@ import { LoggerService } from "@codebase/logger";
 
 import { REJECTED_ADDRESS } from "../address-lookup/address-lookup.constants";
 import { AddressLookupService } from "../address-lookup/address-lookup.service";
-import { AddressReportService } from "../address-report/address-report.service";
 import { readRefusalHeadline } from "../callidescope/callidescope.constants";
 
-import type {
-  AddressCommandOptions,
-  LocatedWorkspace,
-} from "../address-lookup/address-lookup.types";
-import type { BreadthReport } from "../address-report/address-report.types";
+import type { LocatedWorkspace } from "../address-lookup/address-lookup.types";
+import type { AddressCommandOptions } from "@callidescope/configuration";
+import type { BreadthReport } from "@callidescope/output";
 import type { LogData } from "@codebase/logger";
 
 /**
@@ -33,7 +31,7 @@ export class BreadthCommand extends CommandRunner {
     private readonly addressLookupService: AddressLookupService,
     private readonly addressReportService: AddressReportService,
     private readonly breadthService: BreadthService,
-    private readonly inputService: InputService,
+    private readonly configurationService: ConfigurationService,
     private readonly logger: LoggerService,
   ) {
     super();
@@ -128,7 +126,7 @@ export class BreadthCommand extends CommandRunner {
   /** Resolves the addresses and prints their direct callers and callees. */
   private async printBreadth(options: AddressCommandOptions): Promise<void> {
     const resolvedOptions =
-      await this.inputService.resolveFormatOption(options);
+      await this.configurationService.resolveFormatOption(options);
     // Traced before the addresses are read, not after: the trace is what the
     // prompt completes against, and it is the same trace the lookup needs, so
     // asking first would either offer nothing or cost a second one.
@@ -182,7 +180,7 @@ export class BreadthCommand extends CommandRunner {
       return addresses;
     }
 
-    return this.inputService.promptForAutocompleteMultiselect({
+    return this.configurationService.promptForAutocompleteMultiselect({
       message: "Which callables? (file#qualified-name)",
       subject:
         'At least one callable address, as in "breadth --addresses src/foo.service.ts#FooService.bar"',
@@ -199,7 +197,7 @@ export class BreadthCommand extends CommandRunner {
     flags: "-a, --addresses [addresses]",
   })
   public parseAddresses(value: string | undefined): string[] {
-    return this.inputService.parseCommaDelimitedOption(value);
+    return this.configurationService.parseCommaDelimitedOption(value);
   }
 
   /** Parses `--config`. */
@@ -208,7 +206,7 @@ export class BreadthCommand extends CommandRunner {
     flags: "--config [config]",
   })
   public parseConfig(value: string | undefined): string | undefined {
-    return this.inputService.parseOptionalOption(value);
+    return this.configurationService.parseOptionalOption(value);
   }
 
   /** Parses `--directories`, a comma-separated list of project directories. */
@@ -217,7 +215,7 @@ export class BreadthCommand extends CommandRunner {
     flags: "-d, --directories [directories]",
   })
   public parseDirectories(value: string | undefined): string[] {
-    return this.inputService.parseCommaDelimitedOption(value);
+    return this.configurationService.parseCommaDelimitedOption(value);
   }
 
   /** Parses `--entry-point-addresses`, overriding `entryPoints.addresses`. */
@@ -226,7 +224,7 @@ export class BreadthCommand extends CommandRunner {
     flags: "--entry-point-addresses [entryPointAddresses]",
   })
   public parseEntryPointAddresses(value: string | undefined): string[] {
-    return this.inputService.parseCommaDelimitedOption(value);
+    return this.configurationService.parseCommaDelimitedOption(value);
   }
 
   /** Parses `--entry-point-decorators`, overriding `entryPoints.decorators`. */
@@ -235,7 +233,7 @@ export class BreadthCommand extends CommandRunner {
     flags: "--entry-point-decorators [entryPointDecorators]",
   })
   public parseEntryPointDecorators(value: string | undefined): string[] {
-    return this.inputService.parseCommaDelimitedOption(value);
+    return this.configurationService.parseCommaDelimitedOption(value);
   }
 
   /** Parses `--exclude`, overriding `exclude`. */
@@ -244,7 +242,7 @@ export class BreadthCommand extends CommandRunner {
     flags: "--exclude [exclude]",
   })
   public parseExclude(value: string | undefined): string[] {
-    return this.inputService.parseCommaDelimitedOption(value);
+    return this.configurationService.parseCommaDelimitedOption(value);
   }
 
   /** Parses `--exclude-callees`, overriding `excludeCallees`. */
@@ -253,7 +251,7 @@ export class BreadthCommand extends CommandRunner {
     flags: "--exclude-callees [excludeCallees]",
   })
   public parseExcludeCallees(value: string | undefined): string[] {
-    return this.inputService.parseCommaDelimitedOption(value);
+    return this.configurationService.parseCommaDelimitedOption(value);
   }
 
   /**
@@ -268,7 +266,7 @@ export class BreadthCommand extends CommandRunner {
     flags: "-f, --format [format]",
   })
   public parseFormat(value: string | undefined): string | undefined {
-    return this.inputService.parseOptionalOption(value);
+    return this.configurationService.parseOptionalOption(value);
   }
 
   /**
@@ -284,7 +282,7 @@ export class BreadthCommand extends CommandRunner {
   public parseIncludeExportedFunctions(
     value: string | undefined,
   ): string | undefined {
-    return this.inputService.parseOptionalOption(value);
+    return this.configurationService.parseOptionalOption(value);
   }
 
   /** Parses `--include-orphans`, overriding the entry-point rule. */
@@ -293,7 +291,7 @@ export class BreadthCommand extends CommandRunner {
     flags: "--include-orphans [includeOrphans]",
   })
   public parseIncludeOrphans(value: string | undefined): string | undefined {
-    return this.inputService.parseOptionalOption(value);
+    return this.configurationService.parseOptionalOption(value);
   }
 
   /** Parses `--include-tests`, overriding the entry-point rule. */
@@ -302,7 +300,7 @@ export class BreadthCommand extends CommandRunner {
     flags: "--include-tests [includeTests]",
   })
   public parseIncludeTests(value: string | undefined): string | undefined {
-    return this.inputService.parseOptionalOption(value);
+    return this.configurationService.parseOptionalOption(value);
   }
 
   /**

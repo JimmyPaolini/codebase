@@ -2,7 +2,7 @@ import { createMock } from "@golevelup/ts-vitest";
 import { afterEach, beforeEach, vi } from "vitest";
 
 import type { DiscoveredCallable } from "../src/modules/callables/callables.types";
-import type { CallableNode, SourceLocation } from "@callidescope/configuration";
+import type { CallableNode, SourceLocation } from "@callidescope/core";
 
 /**
  * Default test date used across time-sensitive tests.

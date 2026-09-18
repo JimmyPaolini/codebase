@@ -1,18 +1,16 @@
 import path from "node:path";
 
-import {
-  MarkdownReportService,
-  MermaidReportService,
-  OutputJsonService,
-  OutputMarkdownService,
-  ReportService,
-  WorkspaceReportService,
-} from "@callidescope/output";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { buildCallGraphResult } from "../../../testing/mocks";
+import { buildEmptyCallGraphResult } from "../../../testing/mocks";
+import { OutputJsonService } from "../output-json/output-json.service";
+import { OutputMarkdownService } from "../output-markdown/output-markdown.service";
+import { MarkdownReportService } from "../report/markdown-report.service";
+import { MermaidReportService } from "../report/mermaid-report.service";
+import { ReportService } from "../report/report.service";
+import { WorkspaceReportService } from "../report/workspace-report.service";
 
 import { WriteDestinationsService } from "./write-destinations.service";
 
@@ -20,11 +18,11 @@ import type { SyncDestinationsArguments } from "./write-destinations.types";
 import type {
   ProjectLimits,
   ProjectLimitsLookup,
-  ProjectReport,
   ResolvedCallidescopeConfiguration,
   ResolvedCallidescopeMarkdownOutputConfiguration,
   ResolvedCallidescopeWriteConfiguration,
 } from "@callidescope/configuration";
+import type { ProjectReport } from "@callidescope/core";
 
 /** Builds a resolved configuration with no destinations configured. */
 function buildConfiguration(
@@ -109,6 +107,7 @@ function buildWrite(
 }
 
 describe(WriteDestinationsService, () => {
+  let outputJsonService: ReturnType<typeof createMock<OutputJsonService>>;
   let outputMarkdownService: ReturnType<
     typeof createMock<OutputMarkdownService>
   >;
@@ -120,12 +119,13 @@ describe(WriteDestinationsService, () => {
       string,
       ResolvedCallidescopeWriteConfiguration
     > = new Map(),
+    write: Partial<ResolvedCallidescopeWriteConfiguration> = {},
   ): SyncDestinationsArguments {
     return {
       check: false,
-      configuration: buildConfiguration(),
+      configuration: buildConfiguration(write),
       projectLimits: buildProjectLimitsLookup(),
-      result: buildCallGraphResult({
+      result: buildEmptyCallGraphResult({
         projects: [buildProjectReport("packages/example")],
       }),
       startingProjectRoots: new Map([["packages/example", "packages/example"]]),
@@ -139,6 +139,7 @@ describe(WriteDestinationsService, () => {
   }
 
   beforeAll(async () => {
+    outputJsonService = createMock<OutputJsonService>();
     outputMarkdownService = createMock<OutputMarkdownService>();
 
     const module = await Test.createTestingModule({
@@ -152,10 +153,7 @@ describe(WriteDestinationsService, () => {
             new WorkspaceReportService(),
           ),
         },
-        {
-          provide: OutputJsonService,
-          useValue: createMock<OutputJsonService>(),
-        },
+        { provide: OutputJsonService, useValue: outputJsonService },
         { provide: OutputMarkdownService, useValue: outputMarkdownService },
       ],
     }).compile();
@@ -206,6 +204,63 @@ describe(WriteDestinationsService, () => {
     expect(stale).toStrictEqual([
       path.join("packages/example", "docs/CALLS.md"),
     ]);
+  });
+
+  it("skips a project the run's own roots do not name", () => {
+    // A project can declare a destination and still not be part of this run:
+    // `--directories` scopes which roots were walked, and writing under a root
+    // the run never resolved would put a report somewhere nobody asked for.
+    stubWrites(true);
+
+    const stale = service.syncDestinations({
+      ...buildArguments(
+        new Map([
+          [
+            "packages/elsewhere",
+            buildWrite({ markdown: buildDestination("docs/CALLS.md") }),
+          ],
+        ]),
+      ),
+      result: buildEmptyCallGraphResult({
+        projects: [buildProjectReport("packages/elsewhere")],
+      }),
+      startingProjectRoots: new Map(),
+    });
+
+    expect(outputMarkdownService.sync).not.toHaveBeenCalled();
+    expect(stale).toStrictEqual([]);
+  });
+
+  // 📝 The run's own destinations
+
+  it("reports the run's own stale JSON destination by its path", () => {
+    stubWrites(true);
+    outputJsonService.sync.mockReturnValue(false);
+
+    const stale = service.syncDestinations(
+      buildArguments(new Map(), {
+        json: { indentation: 2, path: "output/calls.json" },
+      }),
+    );
+
+    expect(stale).toStrictEqual(["output/calls.json"]);
+  });
+
+  it("writes the run's own markdown and mermaid destinations from one report", () => {
+    stubWrites(true);
+    outputJsonService.sync.mockReturnValue(true);
+    service.syncDestinations(
+      buildArguments(new Map(), {
+        markdown: buildDestination("docs/RUN.md"),
+        mermaid: buildDestination("docs/RUN-DIAGRAM.md"),
+      }),
+    );
+
+    expect(
+      outputMarkdownService.sync.mock.calls.map(
+        ([call]) => call.destination.path,
+      ),
+    ).toStrictEqual(["docs/RUN.md", "docs/RUN-DIAGRAM.md"]);
   });
 
   it("publishes nothing for a project whose declared destinations are both absent", () => {

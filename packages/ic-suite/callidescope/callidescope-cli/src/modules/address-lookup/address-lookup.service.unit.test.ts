@@ -1,10 +1,10 @@
+import { ConfigurationService } from "@callidescope/configuration";
 import { AddressService } from "@callidescope/graph";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import { CallidescopeService } from "../callidescope/callidescope.service";
-import { RunPlanService } from "../run-plan/run-plan.service";
 
 import { AddressLookupService } from "./address-lookup.service";
 
@@ -54,20 +54,20 @@ function buildLocated(): LocateOutcome {
 describe(AddressLookupService, () => {
   let addressService: ReturnType<typeof createMock<AddressService>>;
   let callidescopeService: ReturnType<typeof createMock<CallidescopeService>>;
-  let runPlanService: ReturnType<typeof createMock<RunPlanService>>;
+  let configurationService: ReturnType<typeof createMock<ConfigurationService>>;
   let service: AddressLookupService;
 
   beforeAll(async () => {
     addressService = createMock<AddressService>();
     callidescopeService = createMock<CallidescopeService>();
-    runPlanService = createMock<RunPlanService>();
+    configurationService = createMock<ConfigurationService>();
 
     const module = await Test.createTestingModule({
       providers: [
         AddressLookupService,
         { provide: AddressService, useValue: addressService },
         { provide: CallidescopeService, useValue: callidescopeService },
-        { provide: RunPlanService, useValue: runPlanService },
+        { provide: ConfigurationService, useValue: configurationService },
       ],
     }).compile();
 
@@ -84,7 +84,7 @@ describe(AddressLookupService, () => {
     const configuration = buildConfiguration();
     const located = buildLocated();
 
-    runPlanService.prepareLookup.mockResolvedValue({
+    configurationService.prepareLookup.mockResolvedValue({
       authoredLimits: undefined,
       configuration,
       configurationPath: undefined,
@@ -117,7 +117,7 @@ describe(AddressLookupService, () => {
   it("lists every traced callable as an address, from one trace", async () => {
     const located = buildLocated();
 
-    runPlanService.prepareLookup.mockResolvedValue({
+    configurationService.prepareLookup.mockResolvedValue({
       authoredLimits: undefined,
       configuration: buildConfiguration(),
       configurationPath: undefined,
@@ -141,7 +141,7 @@ describe(AddressLookupService, () => {
   // the one resolver that does that. Choosing between them a second time here
   // is how the two came to disagree.
   it("scopes the trace to the directories the resolved configuration names", async () => {
-    runPlanService.prepareLookup.mockResolvedValue({
+    configurationService.prepareLookup.mockResolvedValue({
       authoredLimits: undefined,
       configuration: { ...buildConfiguration(), directories: ["alpha"] },
       configurationPath: undefined,

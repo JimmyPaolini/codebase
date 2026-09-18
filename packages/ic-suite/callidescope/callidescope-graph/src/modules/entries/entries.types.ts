@@ -3,11 +3,8 @@
 import type { UnresolvedCallableAddress } from "../callables/address.types";
 import type { DiscoveredCallable } from "../callables/callables.types";
 import type { CallGraph } from "../graph/graph.types";
-import type {
-  CallableId,
-  EntryPoint,
-  ResolvedCallidescopeEntryPoints,
-} from "@callidescope/configuration";
+import type { ResolvedCallidescopeEntryPoints } from "@callidescope/configuration";
+import type { CallableId, EntryPoint } from "@callidescope/core";
 
 /** What a pass that reads a project's rules works over. */
 export interface ClassificationPassArguments extends EntryPointPassArguments {

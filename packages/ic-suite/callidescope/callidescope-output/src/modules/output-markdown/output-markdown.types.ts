@@ -1,9 +1,7 @@
 // 🏷️ Types
 
-import type {
-  CallGraphResult,
-  ResolvedCallidescopeMarkdownOutputConfiguration,
-} from "@callidescope/configuration";
+import type { ResolvedCallidescopeMarkdownOutputConfiguration } from "@callidescope/configuration";
+import type { CallGraphResult } from "@callidescope/core";
 
 /** Arguments for splicing a block between its anchors. */
 export interface SyncAnchoredBlockArguments {

@@ -2,7 +2,7 @@
 
 import type { DiscoveredCallable } from "../callables/callables.types";
 import type { CallGraph } from "./graph.types";
-import type { CallableId, StackFrame } from "@callidescope/configuration";
+import type { CallableId, StackFrame } from "@callidescope/core";
 
 /** What one direction's walk reads a neighbor from, and what it may render. */
 export interface AddressDepthTraversalContext {

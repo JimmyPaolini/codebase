@@ -1,8 +1,9 @@
-import { MermaidReportService, ReportService } from "@callidescope/output";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import { buildSourceLocation, buildStackFrame } from "../../../testing/mocks";
+import { MermaidReportService } from "../report/mermaid-report.service";
+import { ReportService } from "../report/report.service";
 
 import { AddressReportService } from "./address-report.service";
 

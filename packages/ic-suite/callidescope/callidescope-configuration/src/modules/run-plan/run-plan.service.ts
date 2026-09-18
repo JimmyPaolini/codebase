@@ -1,11 +1,7 @@
-import {
-  ConfigurationService,
-  flagResolutionError,
-  FlagResolutionService,
-} from "@callidescope/configuration";
 import { Injectable } from "@nestjs/common";
 
-import { LoggerService } from "@codebase/logger";
+import { flagResolutionError } from "../flag-resolution/flag-resolution.constants";
+import { FlagResolutionService } from "../flag-resolution/flag-resolution.service";
 
 import {
   CHECK_BREADTH,
@@ -16,34 +12,39 @@ import {
   DESTINATION_FLAG_NAMES,
 } from "./run-plan.constants";
 
-import type { AddressCommandOptions } from "../address-lookup/address-lookup.types";
-import type { CallidescopeCommandOptions } from "../callidescope/callidescope.types";
+import type { ConfigurationFileReader } from "../configuration/configuration-file.types";
 import type {
+  AddressCommandOptions,
+  CallidescopeCommandOptions,
   PreparedLookup,
-  PreparedRun,
   RunMode,
   RunModeSelection,
+  RunPreparation,
 } from "./run-plan.types";
 
 /**
- * Reads the command line and configuration into what the run will do.
+ * Reads a command line and its configuration into what the run will do.
  *
- * Kept away from the command itself so the flag semantics — and now the
- * configuration a run resolves to — can be stated once and tested without
- * the command's own output/reporting concerns: which flag writes, which
- * flag fails, and whether the configuration a run resolved to can even
- * support what was asked of it, are questions this service answers on its
- * own, before `CallidescopeCommand` does anything with the result.
+ * A collaborator rather than more of `ConfigurationService`, for the reason
+ * every other one here is: resolving flags against a loaded file is its own
+ * job, with its own vocabulary of checks and destinations, and a facade that
+ * implemented it would be a facade in name only. What the layer publishes is
+ * still one object — `ConfigurationService` fronts this the same way it
+ * fronts the file loader, the project loader, and prompting.
+ *
+ * The file read arrives as an argument rather than an injected collaborator,
+ * and the facade hands over itself. That is what keeps the whole layer
+ * replaceable by a double at its one public object: a caller that stubs
+ * `ConfigurationService.loadConfigurationFile` has stubbed what a run plan
+ * reads, rather than only what it would have read by asking the facade
+ * directly. It is a type-only import, so nothing points back at the facade at
+ * module level.
  */
 @Injectable()
 export class RunPlanService {
   // 🏗 Dependency Injection
 
-  constructor(
-    private readonly configurationService: ConfigurationService,
-    private readonly flagResolutionService: FlagResolutionService,
-    private readonly logger: LoggerService,
-  ) {}
+  constructor(private readonly flagResolutionService: FlagResolutionService) {}
 
   // 🔐 Private Fields
 
@@ -95,20 +96,6 @@ export class RunPlanService {
     return this.validateCheckNames(names, errors);
   }
 
-  /**
-   * Reports a command line nothing can be done with, and fails the run.
-   *
-   * Two gates reach this rather than one: what `--check` and `--write` mean
-   * together is decided from the command line alone, while whether a
-   * destination flag has anything to override needs the configuration loaded
-   * first. Both report under the same headline, so which of the two refused
-   * is a detail of the reasons rather than of the message.
-   */
-  private reject(reasons: readonly string[]): void {
-    this.logger.error("🔭 Rejected the command line", undefined, { reasons });
-    process.exitCode = 1;
-  }
-
   /** Keeps the names `--check` knows and complains about the rest. */
   private validateCheckNames(names: string[], errors: string[]): Set<string> {
     const accepted = new Set<string>();
@@ -145,6 +132,7 @@ export class RunPlanService {
    */
   public async prepareLookup(
     options: AddressCommandOptions,
+    reader: ConfigurationFileReader,
   ): Promise<PreparedLookup> {
     const workspaceRoot = process.cwd();
     // The file-aware load rather than the plain one, for the same reason
@@ -158,7 +146,7 @@ export class RunPlanService {
       authored,
       configuration: loaded,
       path: configurationPath,
-    } = await this.configurationService.loadConfigurationFile({
+    } = await reader.loadConfigurationFile({
       configurationPath: options.config,
       searchDirectory: workspaceRoot,
     });
@@ -197,26 +185,23 @@ export class RunPlanService {
   /**
    * Reads the command line and configuration into what the run will do.
    *
-   * Returns nothing when the command line was rejected: the rejection is
-   * already logged and the exit code already set, so the caller only has to
-   * notice the absence and stop.
+   * Hands back whatever could not be made sense of rather than reporting it:
+   * two gates can refuse — what `--check` and `--write` mean together, decided
+   * from the command line alone, and whether a destination flag has anything
+   * to override, which needs the configuration loaded first — and both belong
+   * to the host to say out loud, under one headline.
    */
   public async prepareRun(
     options: CallidescopeCommandOptions,
-  ): Promise<PreparedRun | undefined> {
+    reader: ConfigurationFileReader,
+  ): Promise<RunPreparation> {
     const { errors: modeErrors, mode } = this.selectMode(options);
 
     if (modeErrors.length > 0) {
-      this.reject(modeErrors);
-      return undefined;
+      return { errors: modeErrors, run: undefined };
     }
 
     const workspaceRoot = process.cwd();
-
-    this.logger.debug("🔭 Starting a call-stack trace", undefined, {
-      format: options.format,
-      workspaceRoot,
-    });
 
     // The file-aware load rather than the plain one: the trace resolves a
     // configuration beside every project it reaches, and needs to know which
@@ -225,7 +210,7 @@ export class RunPlanService {
       authored,
       configuration: loaded,
       path: configurationPath,
-    } = await this.configurationService.loadConfigurationFile({
+    } = await reader.loadConfigurationFile({
       configurationPath: options.config,
       searchDirectory: workspaceRoot,
     });
@@ -259,18 +244,20 @@ export class RunPlanService {
       });
 
     if (errors.length > 0) {
-      this.reject(errors);
-      return undefined;
+      return { errors, run: undefined };
     }
 
     return {
-      authoredLimits: authored.limits,
-      configuration,
-      configurationPath,
-      format,
-      limitOverrides,
-      mode,
-      workspaceRoot,
+      errors,
+      run: {
+        authoredLimits: authored.limits,
+        configuration,
+        configurationPath,
+        format,
+        limitOverrides,
+        mode,
+        workspaceRoot,
+      },
     };
   }
 
