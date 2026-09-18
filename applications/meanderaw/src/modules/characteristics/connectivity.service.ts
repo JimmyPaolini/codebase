@@ -12,11 +12,10 @@ import type { CodeEdge, Connectivity } from "./characteristics.types";
  * charter invariant fixes: how many pieces the ink falls into, how many
  * loops it closes, and how many of its points terminate.
  *
- * They are the same three `MeasurementService.connectivity` reports for
- * a *rendered document* — read here off the Code directly,
- * for the same reason `CharacteristicsService` reads the junction
- * counts off it: a Code is what a meander is, and measuring it should not
- * require rendering it first, nor building a grid to walk.
+ * They are read off the Code directly, for the same reason
+ * `CharacteristicsService` reads the junction counts off it: a Code is what
+ * a meander is, and measuring it should not require rendering it first, nor
+ * building a grid to walk.
  *
  * **A Code is read as one repeat of a band, not as a finished drawing.** A
  * step east off the last column arrives at the first column of the same
