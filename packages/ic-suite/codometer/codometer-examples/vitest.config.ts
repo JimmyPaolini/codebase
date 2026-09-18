@@ -23,6 +23,7 @@ export default mergeConfig(
       fileParallelism: false,
       // Every test here spawns the codometer CLI over the corpus, which
       // bootstraps Nest and reaches an interpreter for the Python samples.
+      hookTimeout: 180_000,
       testTimeout: 180_000,
     },
   }),
