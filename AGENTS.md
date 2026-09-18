@@ -646,42 +646,12 @@ and breaks `fallow-dead-code` and `vitest`.
 
 ## Agent Context
 
-`.agents/skills/` and this file are the single sources of truth. Every other agent entrypoint is a symlink to them, so edit the source and never the mirror:
-
-| Symlink                           | Target           |
-| --------------------------------- | ---------------- |
-| `CLAUDE.md`                       | `AGENTS.md`      |
-| `.claude/skills`                  | `.agents/skills` |
-| `.github/copilot-instructions.md` | `AGENTS.md`      |
-| `.github/skills`                  | `.agents/skills` |
+`.agents/skills/` and this file are the single sources of truth.
+Use the [symlink-files](.agents/skills/symlink-files/SKILL.md) skill to understand how other entry points mirror them.
 
 ### Session Hooks
 
-Four checks run at the start of every agent session and inject their failure as
-additional context. **Fix what they report before writing any code** — each one
-names the problem and the command that repairs it.
-
-| Script                                  | Checks                                                                                                |
-| --------------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| `validate-session-branch-name.sh`       | Branch follows `<type>/<scope>-<description>`; directs the agent to the rename-branch skill           |
-| `validate-session-commit-signing.sh`    | `commit.gpgsign`, `user.signingkey`, and a GPG signing smoke test                                     |
-| `validate-session-gh-authentication.sh` | The active `gh` account plus Projects access                                                          |
-| `validate-session-skills.sh`            | Every skill declared in `skills-lock.json` is present; directs the agent to `codebase:install-skills` |
-
-Each script is registered twice, once per harness, and both registrations point
-at the same file:
-
-| Harness        | Registration                                      |
-| -------------- | ------------------------------------------------- |
-| Claude Code    | `SessionStart` entries in `.claude/settings.json` |
-| GitHub Copilot | `sessionStart` entries in `.github/hooks/*.json`  |
-
-When adding a check: put the script under `scripts/git/`, emit through
-`scripts/git/emit-session-hook-context.sh` so both harnesses can read it, and
-register it in both places. Why the credential checks resolve the session's own
-token and signing configuration rather than the hook shell's, and why a hook can
-fail but never hang, is
-[ADR 0010](docs/adr/0010-judge-the-credentials-a-session-really-uses.md).
+Startup scripts run at the start of every agent session and inject their failure as additional context. **Fix what they report before writing any code.** Use the [agent-session-hooks](.agents/skills/agent-session-hooks/SKILL.md) skill to understand how they work or to add a new check.
 
 ### Instructions
 
@@ -707,72 +677,7 @@ built and verified before it ships, and
 [writing-for-agents](.agents/skills/writing-for-agents/SKILL.md) for the prose
 inside it.
 
-**Every skill is committed**, vendored ones included. They are checked in rather
-than restored on demand for one reason: **a skill only becomes a slash command
-if its file is on disk when the session starts.** Nothing runs between
-`git worktree add` and an agent session, so a gitignored skill leaves
-`/grill-with-docs` reporting `Unknown command` for the whole of that first
-session. Committing them makes a fresh clone or worktree work with no setup step
-at all.
-
-`skills-lock.json` maps each skill to its source, and `skills update` rewrites
-the lockfile and the skill folders together so upstream drift arrives as a
-reviewable pull request rather than silently. `upgrade-dependencies.yml` runs it
-weekly. Upstream licenses travel with the copies in
-[`.agents/licenses/`](.agents/licenses), as MIT and Apache-2.0 both require.
-
-```bash
-pnpm exec skills update
-```
-
-`scripts/install-skills.sh` restores folders that are genuinely absent — after
-`skills update` adds a lockfile entry, or when one has been deleted. It is
-idempotent, never leaves tracked files dirty, and never fails an install,
-because a missing skill is a broken agent workflow rather than a broken build:
-
-```bash
-pnpm exec nx run codebase:install-skills
-```
-
-Five things reach `.agents/` and so must skip the **vendored** skills while
-still covering this repository's own: `prettier` scans `.`, `codometer`
-measures the process's working directory by default and reads
-`configuration/.codometerignore`, GitHub Linguist reads every committed file
-(one vendored skill
-ships half a megabyte of bundled browser JavaScript that would otherwise
-dominate the language bar), and `cspell` and `markdownlint` both reach
-`.agents/` because this repository's own skills are documentation and are held
-to the same standards as the rest of its prose. Correcting a vendored skill's
-spelling or reflowing its tables would be a change this repository has no right
-to make.
-
-The exclusions are generated, not hand-maintained. Each file marks its block
-with `installed-skills-start` and `installed-skills-end` comments in its own
-syntax — `#` in `configuration/.prettierignore`,
-`configuration/.codometerignore`, `configuration/cspell.config.yaml`, and
-`.gitattributes`; `//` in `configuration/.markdownlint-cli2.jsonc` — and the
-`skill-exclusions` synchronizer rewrites what sits between them from the
-lockfile. It joins `lint-codebase` in the same `nx affected` invocation, so a
-stale list fails there rather than silently:
-
-```bash
-pnpm exec nx run synchronization:skill-exclusions:write
-```
-
-Two details of that machinery matter before changing it:
-
-- **A wholesale pattern defeats the whole arrangement**, and no check catches
-  it. Re-adding `**/.agents/skills/**` outside a managed block leaves every
-  per-skill entry in place while quietly taking this repository's own skills
-  back out of scope, and the synchronizer reports nothing because its own block
-  still matches the lockfile. **Exclude a vendored skill by name.**
-- **The root `project.json` mirrors the exclusions as cache negations.** Its
-  `vendored-skills` named input drops them from the `spell-check` and
-  `markdown-lint` `inputs`, because a tool that ignores a file has no reason to
-  rehash on it. That is a cache optimization rather than a correctness gate.
-
-Every other tool scopes itself with explicit globs that never include
-`.agents/`.
+**Every skill is committed**, vendored ones included. Use the [install-skills](.agents/skills/install-skills/SKILL.md) skill to understand how skills are updated (`skills update`), installed, and excluded from repository tooling.
 
 ### Agent Skills Configuration
 
@@ -791,14 +696,6 @@ start over.
 [domain-modeling](.agents/skills/domain-modeling/SKILL.md) grows them lazily, as
 terms and decisions actually get resolved — so add to them when a decision
 lands, rather than scaffolding ahead of the work.
-
-### Agents
-
-This repository keeps no custom agent definitions. The four it used to hold each
-duplicated a skill in [`.agents/skills/`](.agents/skills) with nothing to keep
-the copies in step, and they drifted. Every agent entrypoint is a symlink to that
-one directory, so a skill is the only place a behavior needs to be written down.
-Add a skill rather than reintroducing an agent file.
 
 <!-- nx configuration start-->
 <!-- Leave the start & end comments to automatically receive updates. -->
