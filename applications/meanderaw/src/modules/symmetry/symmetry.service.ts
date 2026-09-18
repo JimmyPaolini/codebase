@@ -14,8 +14,8 @@ import type { PointRank, Transform, TransformChoice } from "./symmetry.types";
  * is what turns a combinatorial blow-up into a set small enough to look
  * through.
  *
- * What a representative is *called* is not here. `AddressService`
- * spells a tile out, because that spelling is the lattice's rather than this
+ * What a representative is *called* is not here. `CodeService` spells a
+ * tile out, because that spelling is the lattice's rather than this
  * family's, and it reaches this service for {@link canonicalTile} on its way
  * to a canonical name. Nothing here reaches back.
  *
@@ -191,8 +191,8 @@ export class SymmetryService {
    * A tile's edges as a bit string, one character each, every eastward edge
    * in reading order and then every southward one.
    *
-   * It is not what a drawing is named — `AddressService.identify`
-   * is, and it writes points rather than edges — and the two are kept apart
+   * It is not what a drawing is named — `CodeService.spell` is, and it
+   * writes points rather than edges — and the two are kept apart
    * deliberately. This one is the tile's own degrees of freedom with nothing
    * counted twice, which is what a tie-break wants, and what
    * `TileEnumerationService.enumerate` folds its walk on; how a filename is

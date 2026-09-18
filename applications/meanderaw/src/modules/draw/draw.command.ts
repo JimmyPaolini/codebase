@@ -5,8 +5,8 @@ import { Command, CommandRunner, Option } from "nest-commander";
 
 import { LoggerService } from "@codebase/logger";
 
-import { CORPUS_BY_FAMILY } from "../corpus/corpus.constants";
 import { CorpusService } from "../corpus/corpus.service";
+import { HISTORICAL_CORPUS } from "../corpus/historical-corpus.constants";
 
 import { DrawCheckService } from "./draw-check.service";
 import { DrawCodeService } from "./draw-code.service";
@@ -140,7 +140,7 @@ export class DrawCommand extends CommandRunner {
       enumerated,
     });
 
-    const hardcoded = await this.corpusService.ingest(CORPUS_BY_FAMILY);
+    const hardcoded = await this.corpusService.ingest(HISTORICAL_CORPUS);
 
     this.logger.log("✨ Generated every meander", undefined, {
       enumerated,

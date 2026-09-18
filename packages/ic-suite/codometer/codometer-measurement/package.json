@@ -5,7 +5,7 @@
     "@codometer/core": "workspace:*",
     "@codometer/languages": "workspace:*",
     "@nestjs/common": "catalog:",
-    "ignore": "catalog:",
+    "ignore": "7.0.5",
     "reflect-metadata": "catalog:",
     "tslib": "catalog:"
   },

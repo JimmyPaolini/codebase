@@ -16,8 +16,7 @@ import type { MeanderProvenance } from "../database.types";
  *
  * `code` is a hexadecimal string, one character per interior lattice point,
  * in the same `8`/`4`/`2`/`1` north/south/east/west encoding
- * `AddressService.identify` already spells filenames in, and
- * is declared unbounded, which is the whole reason this migration exists: a
+ * `CodeService.spell` writes, and is declared unbounded, which is the whole reason this migration exists: a
  * filesystem path component caps out at 255 bytes and several families' full
  * Codes do not, so a database row replaces the file a Code could not always
  * be a name for.

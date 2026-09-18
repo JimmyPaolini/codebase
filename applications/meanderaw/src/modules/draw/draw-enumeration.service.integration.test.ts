@@ -13,7 +13,6 @@ import { CodeService } from "../code/code.service";
 import { DatabaseService } from "../database/database.service";
 import { Meander } from "../database/entities/Meander.entity";
 import { DrawingService } from "../drawing/drawing.service";
-import { LatticeService } from "../drawing/lattice.service";
 import { EnumerationService } from "../enumeration/enumeration.service";
 import { TileEnumerationService } from "../enumeration/tile-enumeration.service";
 import { GeometryService } from "../geometry/geometry.service";
@@ -79,7 +78,6 @@ describe(DrawEnumerationService, () => {
         DatabaseService,
         CodeService,
         EnumerationService,
-        LatticeService,
         DrawingService,
         GraphService,
         SubFamilyService,

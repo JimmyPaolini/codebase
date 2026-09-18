@@ -3,8 +3,8 @@ import { NestFactory } from "@nestjs/core";
 import { getRepositoryToken, InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
-import { CORPUS_BY_FAMILY } from "../corpus/corpus.constants";
 import { CorpusService } from "../corpus/corpus.service";
+import { HISTORICAL_CORPUS } from "../corpus/historical-corpus.constants";
 import { Meander } from "../database/entities/Meander.entity";
 
 import { DrawCheckSweepModule } from "./draw-check-sweep.module";
@@ -166,7 +166,7 @@ export class DrawCheckService {
       );
 
       await drawEnumerationService.sweep();
-      await corpusService.ingest(CORPUS_BY_FAMILY);
+      await corpusService.ingest(HISTORICAL_CORPUS);
 
       regenerated = await throwawayMeanderRepository.find();
     } finally {

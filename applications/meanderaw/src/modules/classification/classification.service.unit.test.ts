@@ -4,7 +4,6 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { CharacteristicsService } from "../characteristics/characteristics.service";
 import { ConnectivityService } from "../characteristics/connectivity.service";
 import { CodeService } from "../code/code.service";
-import { LatticeService } from "../drawing/lattice.service";
 import { GraphService } from "../graph/graph.service";
 import { SymmetryService } from "../symmetry/symmetry.service";
 import { TileService } from "../tile/tile.service";
@@ -21,12 +20,10 @@ import type { MeanderStructure, MeanderType } from "./classification.types";
  * families its structure earns.
  *
  * Every Code below is a real reading of a committed drawing rather than a
- * Code invented to satisfy a predicate — taken from
- * `output/<family>/<rows>-rows/`, either off the filename's own lattice
- * address or by reading the document back through
- * `AddressService.readTile`. That is what makes these
- * assertions evidence about the corpus rather than a restatement of the
- * rules they test.
+ * Code invented to satisfy a predicate — taken from the historical
+ * drawings, read back onto the lattice once and committed as
+ * `HISTORICAL_CORPUS`. That is what makes these assertions evidence about
+ * the corpus rather than a restatement of the rules they test.
  */
 interface ClassificationCase {
   readonly code: string;
@@ -51,7 +48,6 @@ describe(ClassificationService, () => {
         ConnectivityService,
         CodeService,
         SymmetryService,
-        LatticeService,
         GraphService,
         SubFamilyService,
         TileService,

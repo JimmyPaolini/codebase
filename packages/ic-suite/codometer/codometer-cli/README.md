@@ -676,11 +676,11 @@ What this project is judged against, as declared in its own `callidescope.config
 ```text
 🚀 ConfigurationCommand.run(…): Promise<void> [packages/ic-suite/codometer/codometer-cli/src/modules/configuration/configuration.command.ts:110]
    ↳ Lists what the tree beneath the given directory configures.
-  └─> ConfigurationListingService.describeConfigurations(args: DescribeConfigurationsArguments): Promise<ConfiguredTree> [packages/ic-suite/codometer/codometer-output/src/modules/configuration-listing/configuration-listing.service.ts:155]
+  └─> ConfigurationService.describeConfigurations(args: DescribeConfigurationsArguments): Promise<ConfiguredTree> [packages/ic-suite/codometer/codometer-output/src/modules/configuration/configuration.service.ts:152]
      ↳ Resolves the configuration each file in a tree answers with.
-    └─> ConfigurationListingService.findConfigurationFiles(args: DescribeConfigurationsArguments): Promise<DiscoveredConfigurationFiles> [packages/ic-suite/codometer/codometer-output/src/modules/configuration-listing/configuration-listing.service.ts:188]
+    └─> ConfigurationService.findConfigurationFiles(args: DescribeConfigurationsArguments): Promise<DiscoveredConfigurationFiles> [packages/ic-suite/codometer/codometer-output/src/modules/configuration/configuration.service.ts:185]
        ↳ Finds every configuration file beneath a directory.
-      └─> ConfigurationListingService.resolveWalkExclusions(args: DescribeConfigurationsArguments): Promise<WalkExclusions> [packages/ic-suite/codometer/codometer-output/src/modules/configuration-listing/configuration-listing.service.ts:120]
+      └─> ConfigurationService.resolveWalkExclusions(args: DescribeConfigurationsArguments): Promise<WalkExclusions> [packages/ic-suite/codometer/codometer-output/src/modules/configuration/configuration.service.ts:117]
          ↳ Resolves the exclusions the walk uses, reporting rather than throwing.
         └─> ConfigurationService.loadConfigurationFile(args?: LoadConfigurationArguments): Promise<LoadedConfiguration> [packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration.service.ts:85]
            ↳ Loads a configuration and says which file answered.
@@ -835,7 +835,7 @@ What this project is judged against, as declared in its own `callidescope.config
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `ConfigurationCommand.run` | 4 | `ConfigurationListingService.describeConfigurations`, `ConfigurationCommand.filter(…)`, `RenderConfigurationService.render`, `ConfigurationListingService.toLimitRows` | `packages/ic-suite/codometer/codometer-cli/src/modules/configuration/configuration.command.ts:110` |
+| `ConfigurationCommand.run` | 4 | `ConfigurationService.describeConfigurations`, `ConfigurationCommand.filter(…)`, `RenderConfigurationService.render`, `ConfigurationService.toLimitRows` | `packages/ic-suite/codometer/codometer-cli/src/modules/configuration/configuration.command.ts:110` |
 | `MeasureCommand.reportFindings` | 4 | `MeasureCommand.reportFailures`, `MeasureCommand.reportStaleness`, `MeasureCommand.reportBreaches`, `MeasureCommand.filter(…)` | `packages/ic-suite/codometer/codometer-cli/src/modules/measure/measure.command.ts:189` |
 | `MeasureCommand.reportBreaches` | 3 | `MeasureCommand.filter(…)`, `MeasureCommand.filter(…)`, `MeasureCommand.filter(…)` | `packages/ic-suite/codometer/codometer-cli/src/modules/measure/measure.command.ts:142` |
 | `ChangesCommand.parseBaseline` | 1 | `ConfigurationService.parseOptionalOption` | `packages/ic-suite/codometer/codometer-cli/src/modules/changes/changes.command.ts:52` |
@@ -888,6 +888,7 @@ flowchart LR
   ChangesModule
   CommentsModule
   ConfigModule([ConfigModule])
+  ConfigurationListingModule
   ConfigurationModule
   CssModule
   CustomizationModule
@@ -896,7 +897,6 @@ flowchart LR
   DiscoveryModule
   DocumentsModule
   HclModule
-  InputModule
   InputsModule
   JsonModule
   JupyterModule
@@ -916,12 +916,13 @@ flowchart LR
   TypescriptModule
   YamlModule
   ChangesModule --> ChangesModule
+  ChangesModule --> ConfigurationModule
   ChangesModule --> DocumentsModule
-  ChangesModule --> InputModule
   ChangesModule --> RenderModule
+  ConfigurationListingModule --> ConfigurationModule
+  ConfigurationListingModule --> DiscoveryModule
+  ConfigurationModule --> ConfigurationListingModule
   ConfigurationModule --> ConfigurationModule
-  ConfigurationModule --> DiscoveryModule
-  ConfigurationModule --> InputModule
   DeliveryModule --> JsonModule
   DeliveryModule --> MarkdownModule
   JupyterModule --> JsonModule
@@ -944,7 +945,6 @@ flowchart LR
   MainModule --> ConfigurationModule
   MainModule --> DiscoveryModule
   MainModule --> DiscoveryModule
-  MainModule --> InputModule
   MainModule --> JsonModule
   MainModule --> MarkdownModule
   MainModule --> MeasureModule
@@ -954,7 +954,6 @@ flowchart LR
   MeasureModule --> DeliveryModule
   MeasureModule --> DestinationsModule
   MeasureModule --> DiscoveryModule
-  MeasureModule --> InputModule
   MeasureModule --> InputsModule
   MeasureModule --> LanguagesModule
   MeasureModule --> LimitsModule
@@ -992,14 +991,11 @@ graph LR
   file_src_modules_configuration_configuration_command_unit_test_ts["src/modules/configuration/configuration.command.unit.test.ts"]
   file_src_modules_configuration_configuration_constants_ts["src/modules/configuration/configuration.constants.ts"]
   file_src_modules_configuration_configuration_module_ts["src/modules/configuration/configuration.module.ts"]
-  file_src_modules_configuration_configuration_service_ts["src/modules/configuration/configuration.service.ts"]
-  file_src_modules_configuration_configuration_service_unit_test_ts["src/modules/configuration/configuration.service.unit.test.ts"]
   file_src_modules_configuration_configuration_types_ts["src/modules/configuration/configuration.types.ts"]
-  file_src_modules_configuration_render_configuration_service_ts["src/modules/configuration/render-configuration.service.ts"]
-  file_src_modules_configuration_render_configuration_service_unit_test_ts["src/modules/configuration/render-configuration.service.unit.test.ts"]
   file_src_modules_measure_measure_command_integration_test_ts["src/modules/measure/measure.command.integration.test.ts"]
   file_src_modules_measure_measure_command_ts["src/modules/measure/measure.command.ts"]
   file_src_modules_measure_measure_command_unit_test_ts["src/modules/measure/measure.command.unit.test.ts"]
+  file_src_modules_measure_measure_constants_ts["src/modules/measure/measure.constants.ts"]
   file_src_modules_measure_measure_module_ts["src/modules/measure/measure.module.ts"]
   file_src_modules_measure_measure_types_ts["src/modules/measure/measure.types.ts"]
   file_src_repl_ts["src/repl.ts"]
@@ -1022,22 +1018,9 @@ graph LR
   file_src_modules_changes_changes_command_unit_test_ts --> file_src_modules_changes_changes_command_ts
   file_src_modules_changes_changes_module_ts --> file_src_modules_changes_changes_command_ts
   file_src_modules_configuration_configuration_command_ts --> file_src_modules_configuration_configuration_constants_ts
-  file_src_modules_configuration_configuration_command_ts --> file_src_modules_configuration_configuration_service_ts
   file_src_modules_configuration_configuration_command_ts --> file_src_modules_configuration_configuration_types_ts
-  file_src_modules_configuration_configuration_command_ts --> file_src_modules_configuration_render_configuration_service_ts
   file_src_modules_configuration_configuration_command_unit_test_ts --> file_src_modules_configuration_configuration_command_ts
-  file_src_modules_configuration_configuration_command_unit_test_ts --> file_src_modules_configuration_configuration_service_ts
-  file_src_modules_configuration_configuration_command_unit_test_ts --> file_src_modules_configuration_render_configuration_service_ts
   file_src_modules_configuration_configuration_module_ts --> file_src_modules_configuration_configuration_command_ts
-  file_src_modules_configuration_configuration_module_ts --> file_src_modules_configuration_configuration_service_ts
-  file_src_modules_configuration_configuration_module_ts --> file_src_modules_configuration_render_configuration_service_ts
-  file_src_modules_configuration_configuration_service_ts --> file_src_modules_configuration_configuration_constants_ts
-  file_src_modules_configuration_configuration_service_ts --> file_src_modules_configuration_configuration_types_ts
-  file_src_modules_configuration_configuration_service_unit_test_ts --> file_src_modules_configuration_configuration_service_ts
-  file_src_modules_configuration_render_configuration_service_ts --> file_src_modules_configuration_configuration_constants_ts
-  file_src_modules_configuration_render_configuration_service_ts --> file_src_modules_configuration_configuration_types_ts
-  file_src_modules_configuration_render_configuration_service_unit_test_ts --> file_src_modules_configuration_configuration_types_ts
-  file_src_modules_configuration_render_configuration_service_unit_test_ts --> file_src_modules_configuration_render_configuration_service_ts
   file_src_modules_measure_measure_command_integration_test_ts --> file_src_main_module_ts
   file_src_modules_measure_measure_command_integration_test_ts --> file_src_modules_measure_measure_command_ts
   file_src_modules_measure_measure_command_integration_test_ts --> file_testing_fixture_tree_ts
