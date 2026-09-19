@@ -1,28 +1,25 @@
 ---
-name: triage-submission
-description: "Triage and fix git submission failures for both commits and pushes. Use when a git commit or push is rejected, when lint-staged errors occur, when pre-commit or pre-push hooks fail, when a branch name is invalid on push, or when you see errors from husky, commitlint, validate-branch-name, ESLint, oxfmt, prettier, typecheck, knip, cspell, markdownlint, or yamllint during a commit or push attempt. Reads the error output, identifies the failing hook and checks, reads the relevant configuration, and applies targeted fixes."
-argument-hint: "Optional: paste the error output, or omit to read it from last-lint-staged-output.log"
+name: triage-integration
+description: "Diagnose and fix codebase integration failures, whether they occur locally (husky pre-commit/pre-push hooks, lint-staged) or remotely (GitHub Actions CI workflows). Use when a commit is rejected, a push fails, or a CI check goes red. Retrieves logs automatically and provides specific fixes for lint-codebase (typecheck, eslint, oxfmt, knip, spell-check), test-coverage, sync checks, and conventions."
+argument-hint: "Optional: paste failure logs, or specify a workflow name / run URL to fetch"
 ---
 
-# Triage Submission Failures
+# Triage Integration Failures
 
-Diagnose and fix failures from the Husky pre-commit, commit-msg, and pre-push hooks in this codebase.
+Diagnose failing integration checks in this codebase—whether they occur locally during `git commit` / `git push` or remotely in GitHub Actions CI workflows. Map errors to their root causes, read the relevant configuration, apply targeted fixes, and verify locally.
 
 ## When to Use
 
-- A `git commit` was rejected by any hook
-- A `git push` was rejected by any hook (branch name validation, pre-push checks)
-- `lint-staged` output shows failing Nx targets
-- Errors from tools like ESLint, oxfmt, prettier, oxlint, TypeScript, cspell, markdownlint, yamllint, knip, or vulture appear during a commit or push
-- `commitlint` rejects the commit message format
-- `validate-branch-name` rejects the current branch name on push
-- Sync checks fail (conventional config, PR template, devcontainer, generator and graph tables, lockfile)
+- A `git commit` or `git push` is rejected by a local hook (Husky, lint-staged, commitlint, validate-branch-name).
+- A CI check is red on a pull request or push.
+- The user pastes error logs and asks for a fix.
+- Asked to "fix CI", "debug the failing check", or "triage submission errors".
 
-## Hook Architecture
+## Step 1: Obtain the Logs
 
-### pre-commit hook
+Determine if this is a local failure or a CI failure.
 
-File: [configuration/.husky/pre-commit](../../../configuration/.husky/pre-commit)
+### Option A: Local Submission Failure
 
 ```sh
 NX_PERF_LOGGING=false lint-staged --config configuration/lint-staged.config.ts --continue-on-error
@@ -140,9 +137,28 @@ If the user did not paste error output, read the last recorded output from the p
 cat last-lint-staged-output.log
 ```
 
-This file is written automatically after every commit attempt (git-ignored, workspace root).
+_(This file is written automatically after every commit attempt at the workspace root)._
 
-Identify from the output:
+### Option B: CI Workflow Failure
+
+If the user gave a specific run URL or log output in `$ARGUMENTS`, fetch only that run:
+
+```bash
+gh run view <run-id> --log-failed
+```
+
+If no logs are provided, fetch ALL failing runs for the current PR:
+
+```bash
+gh pr checks --json name,state,link \
+  --jq '.[] | select(.state == "FAILURE") | "\(.name) \(.link)"'
+```
+
+Parse the `<run-id>` from the link and fetch the logs for each failure.
+
+## Step 2: Identify the Failing Target
+
+Read the error output carefully to determine:
 
 - Which **Nx target** failed (e.g., `oxfmt`, `eslint`, `typecheck`, `spell-check`)
 - Which **project(s)** failed (e.g., `lexico`, `caelundas`, `codebase`)
@@ -258,7 +274,9 @@ pnpm exec nx run codebase:check-lockfile
 Command: `NODE_OPTIONS='--import=tsx' commitlint --config configuration/commitlint.config.ts --edit <msg-file>`
 Config: [configuration/commitlint.config.ts](../../../configuration/commitlint.config.ts)
 
-### Step 4: Apply Targeted Fixes
+---
+
+### Step 3: Apply Targeted Fixes
 
 #### ⚠️ CRITICAL RULE: Validate Fixes But Never Run lint-staged
 
@@ -268,18 +286,8 @@ Config: [configuration/commitlint.config.ts](../../../configuration/commitlint.c
 - ❌ **DO NOT** run `git commit`
 - ❌ **DO NOT** run `git push`
 - ❌ **DO NOT** invoke submit, checkout-branch, or create-pull-request skills
-
-**DO validate that fixes work:**
-
-- ✅ Run the exact failing Nx target with `--configuration=check` to verify it passes now
-- ✅ Example: if `oxfmt` failed, run `pnpm exec nx affected --target=oxfmt --configuration=check --files=<staged-files>`
-- ✅ If validation passes, all fixes are confirmed working
-
-**Then proceed:**
-
-- ✅ Leave all modified files **unstaged**
-- ✅ Go directly to Step 5 to summarize what was found and fixed
-- ✅ Let the user review, stage, and commit the fixes themselves
+- ✅ **DO** validate that fixes work by running the exact failing Nx target with `--configuration=check`
+- ✅ **DO** leave all modified files **unstaged** so the user can review and stage them
 
 #### Auto-Fixable Targets (run `--configuration=write`)
 
