@@ -87,6 +87,34 @@ const codependixConfiguration: CodependixConfiguration = {
    * that arrives red is a backlog rather than a gate, and a red pipeline
    * nobody can act on teaches people to ignore it.
    *
+   * The ic-suite rules are stated twice on purpose, and the two statements
+   * catch different mistakes. Five generic rules keyed on `layer:*` say the
+   * spine once for all four toolchains — a layer reaches its own layer and
+   * every layer beneath it — and gate a package nobody wrote a name rule for.
+   * The per-package `name:*` rules below them stay, and catch what a generic
+   * rule waves through: a package tagged into the wrong layer, and a
+   * cross-toolchain edge, which `layer:*` cannot express at all because there
+   * is no `suite:*` tag. Rules are ANDed, so a name rule only ever tightens a
+   * generic one. No generic rule carries an exception for any one toolchain,
+   * which is what the convergence had to be able to say.
+   *
+   * Five rather than four because the contracts leaf reaches nothing, and the
+   * schema compels that one to be a forbid: `boundarySelectorSchema` in
+   * `codependix-configuration` refuses a selector with no `id`, `path`,
+   * `project` or `tags`, so an allow reaching nothing cannot be written down.
+   * The four `*-core-is-a-leaf` rules below already set the idiom.
+   *
+   * What the generic rules do not reach, stated here rather than left to be
+   * discovered: every one selects `from` by `layer:*`, so an untagged package
+   * is gated only as a target — a tagged consumer reaching it fails, which is
+   * the common case. A new untagged package that merely consumes ic-suite
+   * packages is selected by nothing, since no generic rule matches its `from`
+   * and nobody wrote it a name rule. That hole is inherent: `*-agents` and
+   * `*-examples` deliberately carry no layer tag, so a rule forbidding
+   * untagged consumers would fire on them. The `layer:*` tag being part of a
+   * new ic-suite package's definition of done is what closes it, and that is
+   * a review question rather than a gate.
+   *
    * The `nxProjects` block restates all 32 `depConstraints` from
    * `configuration/eslint.config.ts`, translated mechanically:
    * `onlyDependOnLibsWithTags` is an `allow` rule, `notDependOnLibsWithTags`
@@ -172,6 +200,71 @@ const codependixConfiguration: CodependixConfiguration = {
           "An application composes packages; it never composes another application. Two applications that depend on each other cannot be deployed or versioned apart.",
         name: "applications-depend-only-on-packages",
         to: { tags: ["type:package"] },
+      },
+      // 🧬 The ic-suite spine
+      {
+        from: { tags: ["layer:core"] },
+        kind: "forbid",
+        message:
+          "A contracts leaf declares types and reaches nothing at all. This is the ic-suite spine stated once for every toolchain rather than four times: core, then configuration, then analysis, then output, then cli, each layer reaching its own layer and every layer beneath it. A forbid because the configuration schema refuses a selector naming no nodes, so the allow that would say the same thing cannot be written.",
+        name: "core-is-a-leaf",
+        to: { id: ["*"] },
+      },
+      {
+        from: { tags: ["layer:configuration"] },
+        kind: "allow",
+        message:
+          "The configuration layer resolves the config file and the command line into one object, and the only thing beneath it is the contracts leaf whose vocabulary that object is written in.",
+        name: "configuration-layer-reaches-core",
+        to: { tags: ["layer:configuration", "layer:core", "name:logger"] },
+      },
+      {
+        from: { tags: ["layer:analysis"] },
+        kind: "allow",
+        message:
+          "The analysis layer is what a toolchain actually does. It reads the contracts and the resolved configuration, and composes its sibling analyzers — the one layer named for what it analyzes rather than for its place in the spine — but never renders and never wires a command.",
+        name: "analysis-layer-reaches-configuration",
+        to: {
+          tags: [
+            "layer:analysis",
+            "layer:configuration",
+            "layer:core",
+            "name:logger",
+          ],
+        },
+      },
+      {
+        from: { tags: ["layer:output"] },
+        kind: "allow",
+        message:
+          "The output layer owns every render target — JSON, markdown, mermaid, anchor blocks, destination routing, delivery — so it reads what analysis produced and renders it without running any analysis of its own.",
+        name: "output-layer-reaches-analysis",
+        to: {
+          tags: [
+            "layer:analysis",
+            "layer:configuration",
+            "layer:core",
+            "layer:output",
+            "name:logger",
+          ],
+        },
+      },
+      {
+        from: { tags: ["layer:cli"] },
+        kind: "allow",
+        message:
+          "The cli layer is entrypoints: command modules and Nx plugins, which is why an Nx plugin carries `layer:cli` rather than a sixth tag of its own. It composes every layer beneath it and implements none of them, and reaches its own layer because a plugin delegates to the command-line host beside it.",
+        name: "cli-layer-reaches-output",
+        to: {
+          tags: [
+            "layer:analysis",
+            "layer:cli",
+            "layer:configuration",
+            "layer:core",
+            "layer:output",
+            "name:logger",
+          ],
+        },
       },
       // 🔭 Callidescope
       {

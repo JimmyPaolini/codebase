@@ -4,6 +4,9 @@ set -e
 TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S %z')
 printf '[%s] pre-commit\n' "$TIMESTAMP"
 
+# 🪾 Validate branch name
+validate-branch-name
+
 # 🔐 Check GPG git signing configuration
 REPOSITORY_ROOT="$(git rev-parse --show-toplevel)"
 "$REPOSITORY_ROOT/scripts/git/check-commit-signing-configuration.sh"
