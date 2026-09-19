@@ -26,7 +26,8 @@ If a `git commit` or `git push` failed and the user didn't paste the logs, read 
 ```bash
 cat last-lint-staged-output.log
 ```
-*(This file is written automatically after every commit attempt at the workspace root).*
+
+_(This file is written automatically after every commit attempt at the workspace root)._
 
 ### Option B: CI Workflow Failure
 
@@ -42,11 +43,13 @@ If no logs are provided, fetch ALL failing runs for the current PR:
 gh pr checks --json name,state,link \
   --jq '.[] | select(.state == "FAILURE") | "\(.name) \(.link)"'
 ```
+
 Parse the `<run-id>` from the link and fetch the logs for each failure.
 
 ## Step 2: Identify the Failing Target
 
 Read the error output carefully to determine:
+
 - Which **Nx target** failed (e.g., `oxfmt`, `eslint`, `typecheck`, `spell-check`)
 - Which **project(s)** failed (e.g., `lexico`, `caelundas`, `codebase`)
 - The **specific error messages** from the underlying tool
@@ -161,15 +164,14 @@ pnpm exec nx run codebase:check-lockfile
 Command: `NODE_OPTIONS='--import=tsx' commitlint --config configuration/commitlint.config.ts --edit <msg-file>`
 Config: [configuration/commitlint.config.ts](../../../configuration/commitlint.config.ts)
 
-
-
 ---
 
-## Step 3: Apply Targeted Fixes
+### Step 3: Apply Targeted Fixes
 
 #### ⚠️ CRITICAL RULE: Validate Fixes But Never Run lint-staged
 
 **After applying fixes with `--configuration=write`, you MUST:**
+
 - ❌ **DO NOT** run `lint-staged` (this would stage the unstaged fixes, defeating the purpose)
 - ❌ **DO NOT** run `git commit`
 - ❌ **DO NOT** run `git push`
@@ -206,7 +208,6 @@ pnpm exec nx run codebase:codependix --configuration=write
 # Or every derivation at once
 pnpm exec nx run-many --targets=conformetry-generators,conventional-config,devcontainer-configuration,pull-request-template,skill-exclusions --configuration=write
 ```
-
 
 #### Validate Fixes Passed
 
@@ -279,7 +280,6 @@ Required format: `<type>(<scope>): <gitmoji> <subject>`
 - No body or footer — all context in the subject
 
 Read `configuration/commitlint.config.ts` for the full rule set before amending.
-
 
 #### Valid Types and Scopes
 
