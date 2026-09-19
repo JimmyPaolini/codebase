@@ -948,7 +948,7 @@
       "cache": false,
       "executor": "nx:run-commands",
       "options": {
-        "command": "if [ -n \"$PULL_REQUEST_NUMBER\" ] && [ \"$GITHUB_ACTOR\" != \"dependabot[bot]\" ]; then gh pr view \"$PULL_REQUEST_NUMBER\" --json body -q .body > pull_request_body.md && NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/validation/src/main.ts pull-request-body -t pull_request_body.md && rm pull_request_body.md; else echo \"Skipping PR body validation\"; fi",
+        "command": "if [ -n \"$PULL_REQUEST_NUMBER\" ] && [ \"$GITHUB_ACTOR\" != \"dependabot[bot]\" ]; then gh pr view \"$PULL_REQUEST_NUMBER\" --json body -q .body > pull_request_body.md && NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/validation/src/main.ts pull-request-body pull_request_body.md && rm pull_request_body.md; else echo \"Skipping PR body validation\"; fi",
         "cwd": "{projectRoot}"
       }
     },
@@ -956,7 +956,7 @@
       "cache": false,
       "executor": "nx:run-commands",
       "options": {
-        "command": "if [ -n \"$PULL_REQUEST_NUMBER\" ]; then NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/validation/src/main.ts pull-request-release-significance -t \"$PULL_REQUEST_NUMBER\"; else echo \"Skipping release significance\"; fi",
+        "command": "if [ -n \"$PULL_REQUEST_NUMBER\" ]; then NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/validation/src/main.ts pull-request-release-significance \"$PULL_REQUEST_NUMBER\"; else echo \"Skipping release significance\"; fi",
         "cwd": "{projectRoot}"
       }
     },
