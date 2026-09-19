@@ -58,9 +58,8 @@ jobs:
 
       - name: 🌿 Verify Branch Name
         run: |
-          validation_output="$(
-            bash scripts/git/validate-session-branch-name.sh
-          )"
+          script="scripts/git/validate-session-branch-name.sh"
+          validation_output="$(bash "${script}")"
           if [[ -n "${validation_output}" ]]; then
             echo "${validation_output}"
             exit 1
@@ -69,8 +68,8 @@ jobs:
 
       - name: 🔑 Authenticate GitHub CLI
         env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN || github.token }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN || github.token }}
+          GH_TOKEN: >-
+            ${{ secrets.GH_TOKEN || secrets.GITHUB_TOKEN || github.token }}
         run: bash scripts/git/check-gh-authentication.sh
         shell: bash
 
@@ -84,9 +83,8 @@ jobs:
 
       - name: 🔎 Verify Commit Signing Configuration
         run: |
-          validation_output="$(
-            bash scripts/git/validate-session-commit-signing.sh
-          )"
+          script="scripts/git/validate-session-commit-signing.sh"
+          validation_output="$(bash "${script}")"
           if [[ -n "${validation_output}" ]]; then
             echo "${validation_output}"
             exit 1

@@ -152,7 +152,8 @@ jobs:
       # imports) in one run — no per-graph-type subcommand, see
       # `codependix.config.ts`. Same split as `callidescope` above: `check`
       # (verifying every configured export is current) is what a pull request
-      # would run, but nothing does, since `codependix map --check` is deliberately
+      # would run, but nothing does, since `codependix map --check` is
+      # deliberately
       # absent from `lint-codebase` and every pull-request-triggered workflow —
       # the exports move with the workspace they describe, so gating a branch
       # on their staleness would fail it for something `main` did.
@@ -178,7 +179,8 @@ jobs:
       # run then invalidates. Projects first, repository last.
       - name: 📊 Measure Codebase
         run: |
-          pnpm exec nx run-many --target=codometer --configuration=write --exclude=codebase
+          pnpm exec nx run-many --target=codometer --configuration=write \
+            --exclude=codebase
           pnpm exec nx run codebase:codometer:write
 
       # The committer is overridden so GitHub can verify the signature that `🔐

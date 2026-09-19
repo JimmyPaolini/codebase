@@ -178,8 +178,10 @@ runs:
         for datastore in .nx/workspace-data/*.db; do
           result="$(sqlite3 "${datastore}" 'PRAGMA integrity_check;' 2>&1 || true)"
           if [[ "${result}" != "ok" ]]; then
-            echo "::warning::Discarding a corrupt Nx cache store (${datastore}): ${result}"
-            rm -f "${datastore}" "${datastore}-wal" "${datastore}-shm" "${datastore}-journal"
+            echo "::warning::Discarding corrupt cache" \
+              "(${datastore}): ${result}"
+            rm -f "${datastore}" "${datastore}-wal" "${datastore}-shm" \
+              "${datastore}-journal"
           fi
         done
 
