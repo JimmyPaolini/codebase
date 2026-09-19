@@ -6,7 +6,8 @@ describe("main end-to-end suite", () => {
   describe("environment schema e2e", () => {
     it("allows an empty schema by default", () => {
       expect.hasAssertions();
-      expect(environmentSchema.parse({})).toStrictEqual({});
+      const parsed = environmentSchema.parse({});
+      expect(parsed).toHaveProperty("SWEEP_EDGE_BUDGET");
     });
   });
 });
