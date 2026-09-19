@@ -1,6 +1,6 @@
 ---
 name: codependix-export
-description: Run a codependix dependency graph export, choose between --check and --write, point a run at a workspace root or a configuration file, or read a Mermaid block or JSON graph it produced. Use when running codependix or npx codependix, when a run exits 0 having written nothing, when looking for a flag that selects one graph type, when wiring codependix into a CI step, or when reading an exported Nx Neighborhood, NestJS module graph, or file-level import graph. Covers the command-line host directly, without assuming any task runner.
+description: Run a codependix dependency graph export or boundary check, choose between --check boundaries, --check reports, and --write, point a run at a workspace root or a configuration file, or read a Mermaid block or JSON graph it produced. Use when running codependix or npx codependix, when a run exits 0 having written nothing, when --check is refused for carrying no value, when looking for a flag that selects one graph type, when wiring codependix into a CI step, or when reading an exported Nx Neighborhood, NestJS module graph, or file-level import graph. Covers the command-line host directly, without assuming any task runner.
 license: MIT
 ---
 
@@ -36,20 +36,48 @@ debugging one. Before looking for a defect, confirm in this order:
 2. The graph types you expected carry a `target` other than `"none"`, which is
    what every unset target defaults to.
 3. The projects you expected match the configured `include` globs and no
-   `exclude` glob.
+   `exclude` glob. `include` defaults to nothing, so a configuration that
+   never names one selects no project at all — the run warns, and still
+   exits zero.
 
 The `codependix-configure` skill covers all three.
 
-## Exactly two run modes
+## One `--write`, and two things `--check` can gate
+
+`--check` takes a **comma-separated set**, and naming the set is what selects
+which finding fails the run.
 
 | Mode | Meaning |
 | ---- | ------- |
-| `--check` | Verifies every configured export is current, writing nothing |
+| `--check boundaries` | Fails on an edge or a cycle breaking a declared rule. Reads no destination and writes nothing |
+| `--check reports` | Fails on a configured destination no longer holding what a fresh run would write |
 | `--write` | Writes every configured export |
 
-`--check` and `--write` are mutually exclusive, and **one of them is
-required**. A command line naming neither, or both, is rejected outright
-before anything is read — no mode is inferred and no default write happens.
+The two `--check` names exist because the findings belong on opposite sides of
+a pull request. A broken boundary is caused by the branch and fixed by the
+branch, so it gates every branch. A stale export moves with the workspace it
+describes, so gating it on a branch fails every branch that changed a project
+graph rather than anything the branch did. `reports` is deliberately spelled
+the same as callidescope's and codometer's, because it is the same finding.
+
+Combinations:
+
+- `--write --check boundaries` is legal — a boundary has no destination to be
+  stale.
+- `--write --check reports` is refused — an export cannot be stale in the run
+  that just wrote it.
+- **A bare `--check`, or one whose value is only commas, is refused.** Read as
+  "gate nothing" it would be a gate that cannot fail. If a run is rejected
+  with `--check needs a value`, the fix is to name the set, not to drop the
+  flag.
+- Naming neither `--check` nor `--write` is _asked_ which was meant, as a
+  three-item menu. No mode is ever inferred and no default write happens.
+
+**An agent should always name the mode explicitly.** There is no flag that
+suppresses the prompt, because an agent's run has no terminal to draw it on:
+that run fails immediately, naming the flag it wanted. Reading that failure as
+a broken tool is the mistake to avoid — it is a missing flag, and the fix is
+to add `--check <set>` or `--write`.
 
 Two options qualify whichever mode was picked:
 
@@ -59,8 +87,9 @@ Two options qualify whichever mode was picked:
 | `-d, --directory [directory]` | Workspace root whose Nx project graph this run reads. Defaults to the working directory |
 
 ```bash
-codependix --write
-codependix --check --directory . --config configuration/codependix.config.ts
+codependix map --write
+codependix map --check boundaries --directory . --config configuration/codependix.config.ts
+codependix map --check reports --directory . --config configuration/codependix.config.ts
 ```
 
 ## Codependix reads the Nx project graph
@@ -77,8 +106,39 @@ resolve underneath that folder, and the exports land in the wrong place — or
 fail on a readme that is not there — while the graph itself is unaffected.
 
 Run codependix from the workspace root, pass `--directory .`, and select
-projects through the configuration's `include`/`exclude` globs rather than
-through the directory.
+projects through the configuration's `include`/`exclude` globs, or through
+`--projects`/`--tags`, rather than through the directory.
+
+### Graphing a workspace the process is not standing in
+
+A configuration may name a **`projectGraph`** file to read instead of resolving
+one:
+
+```ts
+{ projectGraph: "artifacts/graph.json" }
+```
+
+It is a path, relative to the workspace root, to the JSON that
+`nx graph --file=graph.json` emits. That is the only way to graph a workspace
+the process is not inside — a job that checked out one repository and graphs
+another, or a run with no Nx workspace under it at all. The path resolves
+against the same root every export path does, and a supplied graph's node roots
+are workspace-relative and resolve underneath it too.
+
+It is a configuration field rather than a flag: what graph a run reads is a
+property of the workspace being described, and pinning it once is what a job
+graphing a fixed checkout wants.
+
+**A supplied graph is trusted, not validated.** Nx wrote it, so its contents
+are taken as given; only a file that is not a project graph at all is refused,
+by name, rather than crashing later with nothing pointing at the file. A stale
+or hand-edited graph will produce a diagram that is wrong rather than one that
+fails.
+
+Two things still need real files on disk regardless, so a supplied graph does
+not make a whole run workspace-free: the `nestjs` level boots each container,
+and the `imports` level builds a real `ts.Program`. The `nx` level reads only
+the graph.
 
 ## Four graph types, plus the workspace
 
@@ -93,12 +153,53 @@ Each is keyed by name in the configuration:
 
 The whole-workspace Nx graph is configured separately, under `workspace.nx`.
 It is exported **once for the repository** rather than once per project, has no
-per-project override, and is unaffected by `include`/`exclude`.
+per-project override, and is unaffected by `include`/`exclude`. Its node set is
+what `--projects`/`--tags` narrow — see below.
 
 **Participation is per graph type and is not one rule.** A project a given
 graph type does not apply to simply never appears in that type's results, which
 is why configuring a graph type for every project costs nothing: a project with
 no NestJS container is absent from the NestJS pass rather than failing it.
+
+## `--projects` and `--tags` select projects from the command line
+
+Both take a **comma-separated** list, and both do two things at once:
+
+```bash
+codependix map --write --projects widgets,tools/reporting
+codependix map --write --tags framework:nestjs,language:python
+```
+
+**They widen what gets exported.** A project participates when _anything_
+claims it — an `include` glob, a `--projects` glob, or a `--tags` tag. The
+flags add to what the configuration already selected rather than replacing it,
+so `--projects widgets` on a workspace whose `include` is `["**"]` exports
+exactly what it did before. `exclude` still wins over all three: a flag that
+could resurrect an excluded project would make `exclude` advisory.
+
+`--projects` matches the way `include` does, as a glob against a project's
+**name or its workspace-relative root**, so `--projects packages/*` and
+`--projects codependix-*` both work and mean what they look like. `--tags`
+matches a project's own Nx tags exactly.
+
+**They narrow what gets drawn and judged.** Naming a selection also narrows the
+whole-workspace graph's node set and every level `--check boundaries` judges to
+the selected projects. Naming neither selects everything, which is why the
+default behavior of both is unchanged.
+
+> ⚠️ **A narrowed gate sees fewer edges.** `--check boundaries` is the branch
+> gate, so a CI job that passes `--projects` or `--tags` is asking for a
+> smaller check than a whole-workspace run, and a green result means less. Use
+> them to narrow a _local_ run; leave them off in CI unless narrowing is the
+> point.
+
+`include`/`exclude` never do this — they decide which projects have exports
+written for them, and have never reached the workspace graph or the gate. That
+difference is the whole reason the flags exist as flags rather than as
+configuration fields.
+
+Two flags rather than Nx's own `--projects=tag:foo` spelling, deliberately:
+each shows up in `--help` under its own name. Do not "fix" the divergence.
 
 ## What the run reports
 
@@ -108,11 +209,17 @@ project that fails to boot its container, is collected as a failure while every
 other project still runs. `--write` either fully succeeds or names exactly
 which projects failed.
 
-Two findings are reported separately, and either one fails the run:
+Three findings are reported separately, and any one of them fails the run:
 
-- **Failures** — projects that raised before their exports could be resolved.
-- **Stale exports** — in `--check`, configured exports that disagree with a
-  freshly built graph.
+- **Failures** — projects that raised before their exports could be resolved,
+  or whose graph could not be built to judge.
+- **Stale exports** — under `--check reports`, configured exports that
+  disagree with a freshly built graph.
+- **Boundary violations** — under `--check boundaries`, edges and cycles
+  breaking a declared rule. Each names its level, its scope, the rule, both
+  endpoints, and whatever the rule says about why it exists. They go to the
+  console and the exit code and nowhere else: a list of things currently
+  wrong is not a document worth publishing.
 
 A project resolving to `target: "none"` is left out of the results **entirely**
 rather than reported as up to date, so an exit code depends only on exports
@@ -157,5 +264,8 @@ The next `--write` replaces an anchor block wholesale. A diagram edited by hand
 is a diff that silently disappears on the following run, and reviewers see a
 change that reverts itself for no visible reason.
 
-**Re-running `--write` is the entire fix for a stale `--check`.** Reach for the
-`codependix-triage` skill when a run fails for any other reason.
+**Re-running `--write` is the entire fix for a stale `--check reports`.** It
+is never the fix for a `--check boundaries` failure — that is a real edge in
+real code, and writing an export does not remove it. Reach for the
+`codependix-triage` skill for either one, and for `codependix-configure` to
+read or change the rules themselves.

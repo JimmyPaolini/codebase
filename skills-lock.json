@@ -5,109 +5,109 @@
       "source": "mattpocock/skills",
       "sourceType": "github",
       "skillPath": "skills/engineering/ask-matt/SKILL.md",
-      "computedHash": "b2e8ef5ffc2f142022c1e1e1bba68073f0821356a8e1cf1b23670f61d13fe50b"
+      "computedHash": "0cd14026efa0330083cbc7adf590976c162b60e02f696a8dcce96f0b4dab8a72"
     },
     "brainstorming": {
       "source": "obra/superpowers",
       "sourceType": "github",
       "skillPath": "skills/brainstorming/SKILL.md",
-      "computedHash": "b58d55b64742ecd37923985ec7bdfbe678ffbcb9895562abd28c0a32dcacd7fb"
+      "computedHash": "b95dc657c5dd79caf7340ee6dead6faf2ce2d1cc613352a027fa8993966b41b7"
     },
     "callidescope-configure": {
       "source": "JimmyPaolini/codebase",
       "sourceType": "github",
       "skillPath": "packages/ic-suite/callidescope/callidescope-agents/skills/callidescope-configure/SKILL.md",
-      "computedHash": "34b5327387c5f0dced6c6058e4bfeba986aff3e1025e741c0465aebac3e55806"
+      "computedHash": "e5032273a246c4664598d239398a06ddfc56e65bd0eddcf2857e09faeb75ad22"
     },
     "callidescope-trace": {
       "source": "JimmyPaolini/codebase",
       "sourceType": "github",
       "skillPath": "packages/ic-suite/callidescope/callidescope-agents/skills/callidescope-trace/SKILL.md",
-      "computedHash": "826e2404a5d9bd1d799b49671669868354efe47ebe7e241758999f0c032ad8c7"
+      "computedHash": "8ceb8d33b45bada1e705ccf8d230d9121493ec5f6710fa29eb09320d7e4c0a60"
     },
     "callidescope-triage": {
       "source": "JimmyPaolini/codebase",
       "sourceType": "github",
       "skillPath": "packages/ic-suite/callidescope/callidescope-agents/skills/callidescope-triage/SKILL.md",
-      "computedHash": "48325462f3841af550850fefee3463f8d20c5d21bed9e260accfbec9ddb474a7"
+      "computedHash": "eb988795e954121ac3a58b3342dd0815a5a2ca0ad0257823597ab9c87a7fed8f"
     },
     "code-review": {
       "source": "mattpocock/skills",
       "sourceType": "github",
       "skillPath": "skills/engineering/code-review/SKILL.md",
-      "computedHash": "f3b4a7f337455dc365ba8e3923930b067a362c9662779137170ea700cb4328cb"
+      "computedHash": "caa9a086baaf9e0f7cd71f64edfa83da6821c05e826b083221f3d02e3d6a1905"
     },
     "codebase-design": {
       "source": "mattpocock/skills",
       "sourceType": "github",
       "skillPath": "skills/engineering/codebase-design/SKILL.md",
-      "computedHash": "e6394592ecf4b5aa5bc93f95a20d0a56314788bde2e1221f87296d3becb734a2"
+      "computedHash": "5a17552cc1482f1a40124bf4e6c9dbd90ac0dbb47e71c07d47369f9e5f2ae3b5"
     },
     "codependix-configure": {
       "source": "JimmyPaolini/codebase",
       "sourceType": "github",
       "skillPath": "packages/ic-suite/codependix/codependix-agents/skills/codependix-configure/SKILL.md",
-      "computedHash": "d82205c6e554afd6a02df822c70632a00e1e31d2f4bfd424313d08cca8d22191"
+      "computedHash": "28826cf3f298192477299d1cd63a4252bfe93adbd6b012ae8dd3585a960eba72"
     },
     "codependix-export": {
       "source": "JimmyPaolini/codebase",
       "sourceType": "github",
       "skillPath": "packages/ic-suite/codependix/codependix-agents/skills/codependix-export/SKILL.md",
-      "computedHash": "f4f6fbf705d2edd7ff437e43e129165291fbf8b6668c89d1a2e9138c2616a6c4"
+      "computedHash": "c5b6fd94559467bf19466ef866c7f3218cde5be15a29c0699f63ffe37fb4289c"
     },
     "codependix-navigate": {
       "source": "JimmyPaolini/codebase",
       "sourceType": "github",
       "skillPath": "packages/ic-suite/codependix/codependix-agents/skills/codependix-navigate/SKILL.md",
-      "computedHash": "92a3eaec1e3b305bb3034e098e6bf6dc85cf9808b9d99b5e718fda6da981fdce"
+      "computedHash": "3354d2b0adb66d43086fdd3546aa5fe1eb33e6bfb37d8ee1c234b0690d419fed"
     },
     "codependix-triage": {
       "source": "JimmyPaolini/codebase",
       "sourceType": "github",
       "skillPath": "packages/ic-suite/codependix/codependix-agents/skills/codependix-triage/SKILL.md",
-      "computedHash": "afe6b9e16c052341bb6f7f1b37e76cd064b0544e6e1989ada96b5e0043b869a5"
+      "computedHash": "8ed6605dccef4acade28f7ac05e2cd420048bb6464ed799cba274c9c7d0128ac"
     },
     "codometer-configure": {
       "source": "JimmyPaolini/codebase",
       "sourceType": "github",
       "skillPath": "packages/ic-suite/codometer/codometer-agents/skills/codometer-configure/SKILL.md",
-      "computedHash": "183ee926aac656086e2969f53dd911f00a60fddd7ffb077f1cb7ac6182bd59a8"
+      "computedHash": "bcf48fb105088fa1e564b1fbc5ccf7ae7f449735a4135f7770c2970466482fbc"
     },
     "codometer-measure": {
       "source": "JimmyPaolini/codebase",
       "sourceType": "github",
       "skillPath": "packages/ic-suite/codometer/codometer-agents/skills/codometer-measure/SKILL.md",
-      "computedHash": "e2dff4186eaa6089e52d76748be66d540d5b22946029cfef95bd78550ee5b645"
+      "computedHash": "b75ed2659d3b7c4b918a785f32dc612f4e5d2d13fa9687a9d4a359b631d6ae3f"
     },
     "codometer-triage": {
       "source": "JimmyPaolini/codebase",
       "sourceType": "github",
       "skillPath": "packages/ic-suite/codometer/codometer-agents/skills/codometer-triage/SKILL.md",
-      "computedHash": "e96d367bd007b66edcf9ab86d6b7c10081968e5c15220d4ba1549ff664dc1d07"
+      "computedHash": "62e8780c9c34bac6592d8d8d5dfb0930ece3477d6e1e5d49125a00ce82ebcc71"
     },
     "conformetry-configure": {
       "source": "JimmyPaolini/codebase",
       "sourceType": "github",
       "skillPath": "packages/ic-suite/conformetry/conformetry-agents/skills/conformetry-configure/SKILL.md",
-      "computedHash": "1a63e79a4d1fc24bda6b39b9f76b469732c0c844993156ea57561f28992bbb17"
+      "computedHash": "123a8fec41538a3898c339c5445bc007646cee7aa952161932150a7169a42bb0"
     },
     "conformetry-generate": {
       "source": "JimmyPaolini/codebase",
       "sourceType": "github",
       "skillPath": "packages/ic-suite/conformetry/conformetry-agents/skills/conformetry-generate/SKILL.md",
-      "computedHash": "e573eda73b9c080900b99c0044675c237d13ba5092586344fb65aac04ada9d25"
+      "computedHash": "6527c4a802523b52bf343ffaeca13aba772c3599b55ee3fe2d2c4c4434d4b776"
     },
     "conformetry-validate": {
       "source": "JimmyPaolini/codebase",
       "sourceType": "github",
       "skillPath": "packages/ic-suite/conformetry/conformetry-agents/skills/conformetry-validate/SKILL.md",
-      "computedHash": "359e11676f573a6eb53c2096dba79255141222f2ac648ebd891820f900dbc776"
+      "computedHash": "20d9e8d3ffdbaccb36a2a4aae02c77eb76c22e4e6ca0fb133a10094d56067e9c"
     },
     "diagnosing-bugs": {
       "source": "mattpocock/skills",
       "sourceType": "github",
       "skillPath": "skills/engineering/diagnosing-bugs/SKILL.md",
-      "computedHash": "0354227d4242b8fecbde670d96cadb9703a771e6056cde888a11f12605e594dd"
+      "computedHash": "37b5e9c624513551da790b52864dc8c84bff996a6d03a380cc6facdcc0a88354"
     },
     "dispatching-parallel-agents": {
       "source": "obra/superpowers",
@@ -119,7 +119,7 @@
       "source": "mattpocock/skills",
       "sourceType": "github",
       "skillPath": "skills/engineering/domain-modeling/SKILL.md",
-      "computedHash": "683744795bdc9fbfb6c0c2122c4b8119c950e2fe5bcbbf44237dd28aaea34b67"
+      "computedHash": "a11713c0ff7870efa3c331b2e273f09116158485246edc89ae5088eefd1b0b48"
     },
     "finishing-a-development-branch": {
       "source": "obra/superpowers",
@@ -131,13 +131,13 @@
       "source": "github/gh-stack",
       "sourceType": "github",
       "skillPath": "skills/gh-stack/SKILL.md",
-      "computedHash": "213d3fe0b3dc87b453912b5a5947fd189a884e4a82ce41fe8ce6c16fb93cd8b3"
+      "computedHash": "28d42250d52f33424b807add6fbdec75736e835f98752311db321ab51733fea6"
     },
     "github-issues": {
       "source": "github/awesome-copilot",
       "sourceType": "github",
       "skillPath": "skills/github-issues/SKILL.md",
-      "computedHash": "efa9746a60c4507ad5a7ad60e1e9a704b4eea06c1229befe3c86b3bbcaea67c9"
+      "computedHash": "3eb6f99553920d6d94e47cb9e31432b10e2a6a235d9fc972165ec824a71ba0e9"
     },
     "grill-me": {
       "source": "mattpocock/skills",
@@ -155,7 +155,7 @@
       "source": "mattpocock/skills",
       "sourceType": "github",
       "skillPath": "skills/productivity/grilling/SKILL.md",
-      "computedHash": "a16b2f661db6caf310d7e02dd0d069e597cb888873e210e66f641eae715c5f23"
+      "computedHash": "4dd886b0196bf43729d954ae326016f2bd9f5f79d892500b407c33a753362f14"
     },
     "handoff": {
       "source": "mattpocock/skills",
@@ -167,7 +167,7 @@
       "source": "pbakaus/impeccable",
       "sourceType": "github",
       "skillPath": ".agents/skills/impeccable/SKILL.md",
-      "computedHash": "ee3199350aff70ed9dec8d852a6ec5402e69d8924d89915e2cdcfd8f2ef6a9ba"
+      "computedHash": "d4cfdc3b7a18041ff02e1ad4b6377450e978e10928ba7e96377ff7d66994b490"
     },
     "implement": {
       "source": "mattpocock/skills",
@@ -179,7 +179,7 @@
       "source": "mattpocock/skills",
       "sourceType": "github",
       "skillPath": "skills/engineering/improve-codebase-architecture/SKILL.md",
-      "computedHash": "4a02bd01030d5ed6a5040c0382b9f56fbf02c7c8b8fd68aa1bcc55628963f760"
+      "computedHash": "2449db6ab1ded9581f69fcc56c1f64818112d05e271fd4c5da23c6523f9d3d9d"
     },
     "link-workspace-packages": {
       "source": "nrwl/nx",
@@ -227,7 +227,7 @@
       "source": "mattpocock/skills",
       "sourceType": "github",
       "skillPath": "skills/engineering/prototype/SKILL.md",
-      "computedHash": "73862de6cd32acf30799bfb2220357b96c1a58ab0e3d01126b769fd659d6555a"
+      "computedHash": "d3fc74689bd993e39c44bfae510d014eecffbeec2922764b065377fd1327c0f6"
     },
     "receiving-code-review": {
       "source": "obra/superpowers",
@@ -239,79 +239,79 @@
       "source": "obra/superpowers",
       "sourceType": "github",
       "skillPath": "skills/requesting-code-review/SKILL.md",
-      "computedHash": "004f340ae65811095d6a9bb0a759c87d0a8085c5e705dbb019b011626293d2e9"
+      "computedHash": "2abaeac1de432c76abda0ca7ba618901d2e94f8817b3650f9c523acea2d224f5"
     },
     "research": {
       "source": "mattpocock/skills",
       "sourceType": "github",
       "skillPath": "skills/engineering/research/SKILL.md",
-      "computedHash": "bd3e2c6826671d82c86ed0da3dac3370ebcf63b0fe847f91bb444e1fb7dac21b"
+      "computedHash": "c8c1cba327a6f824b554cd978079a3dadd7406d73174f8fb9bfef58824691970"
     },
     "resolving-merge-conflicts": {
       "source": "mattpocock/skills",
       "sourceType": "github",
       "skillPath": "skills/engineering/resolving-merge-conflicts/SKILL.md",
-      "computedHash": "28aad6f8b1b7025abc8892fa8890f68fe1533499b28a565f416b159131d22fad"
+      "computedHash": "63b2dcadbe9124caeb3448f1378286fe18dcefb2494f60e136831b8b4986ca27"
     },
     "setup-matt-pocock-skills": {
       "source": "mattpocock/skills",
       "sourceType": "github",
       "skillPath": "skills/engineering/setup-matt-pocock-skills/SKILL.md",
-      "computedHash": "f9c2b933dda18eea572e96f6ebbcd5b30e0d1bfdc074af53cc99728dc5f0bdac"
+      "computedHash": "552b0f48b9fe054aa93c5d432fefbd7bd9645e3f2d20b4e22432453a81800b21"
     },
     "subagent-driven-development": {
       "source": "obra/superpowers",
       "sourceType": "github",
       "skillPath": "skills/subagent-driven-development/SKILL.md",
-      "computedHash": "367cc1d3216d6672b947c8c6583dbd6440ea407beb6da75a97d3a8ee1a23640a"
+      "computedHash": "d5caecf77dad1d6b86be893ce3fdeb0222921c64bb955db8b12a5780eecb4ec6"
     },
     "systematic-debugging": {
       "source": "obra/superpowers",
       "sourceType": "github",
       "skillPath": "skills/systematic-debugging/SKILL.md",
-      "computedHash": "a2750dfbaed1690da73b120254892c4f926b4576cb82eb16fc877783941fe39b"
+      "computedHash": "3589907ee34dc8b1b7223a33fac98ab841a9e42f9960ab4433a832f0c6f00be0"
     },
     "tdd": {
       "source": "mattpocock/skills",
       "sourceType": "github",
       "skillPath": "skills/engineering/tdd/SKILL.md",
-      "computedHash": "3ba0443442024d075ea30205faa586511d526534f7cbfcb9e6bfacbbeacec739"
+      "computedHash": "e753a5da75292bbe59d302d89566bc2c53d0e73944da2f0e944a7578883c07d0"
     },
     "teach": {
       "source": "mattpocock/skills",
       "sourceType": "github",
       "skillPath": "skills/productivity/teach/SKILL.md",
-      "computedHash": "68999bb1a241384b2f921f3321d779b7d05eb6089077b70d88cee2aee3d75ccc"
+      "computedHash": "b8a69574c7a019bed84e84313dc8bf02e1d1bf925ba43057d433217c63863206"
     },
     "test-driven-development": {
       "source": "obra/superpowers",
       "sourceType": "github",
       "skillPath": "skills/test-driven-development/SKILL.md",
-      "computedHash": "a4126a9c5f17be3c228aa9e5755898ade283448b86099f56f40852e8c14532be"
+      "computedHash": "3cfe4ebb6fa7288f668d87880d279c8e48f7a92b63415e296857060f5ce22e05"
     },
     "to-questionnaire": {
       "source": "mattpocock/skills",
       "sourceType": "github",
       "skillPath": "skills/productivity/to-questionnaire/SKILL.md",
-      "computedHash": "d8938509f3400d9977343e11e876fc6e1982b0b9c133a2f2e9d3d730a67a103e"
+      "computedHash": "befbec7005695163741a57bc94810dc5048fb766baaa485d5160b1d7f86335c1"
     },
     "to-spec": {
       "source": "mattpocock/skills",
       "sourceType": "github",
       "skillPath": "skills/engineering/to-spec/SKILL.md",
-      "computedHash": "e0d6ed875f646b788ea710714ca92b138adad59e18a12a2c045244b9364ca259"
+      "computedHash": "3fa1a0695d4ea242fae9e569e4d22aa1788623197abb33bfadafae7315789bbf"
     },
     "to-tickets": {
       "source": "mattpocock/skills",
       "sourceType": "github",
       "skillPath": "skills/engineering/to-tickets/SKILL.md",
-      "computedHash": "6d018d31ba390aeaf14ae65e7b3bb5bd693b03d635762e535a71446715780743"
+      "computedHash": "bf5e6ebcb4f1272de0c188d5b3901f265a03d1fa9935a21a7a56938e21e2e761"
     },
     "triage": {
       "source": "mattpocock/skills",
       "sourceType": "github",
       "skillPath": "skills/engineering/triage/SKILL.md",
-      "computedHash": "ad1b4d93e5995ffbc0f143fc716c8c3afb45cd13c8a1fd027a43852eb59544c7"
+      "computedHash": "b954d74c219c805bf353d6642251a713c9b2e9cfdb11babfe588bcfe7dfd16d5"
     },
     "using-git-worktrees": {
       "source": "obra/superpowers",
@@ -329,31 +329,31 @@
       "source": "mattpocock/skills",
       "sourceType": "github",
       "skillPath": "skills/productivity/wait-what/SKILL.md",
-      "computedHash": "9638acdcd76457ca70a007b5a02c4bf44893fb3064692a9158d907e82f200eec"
+      "computedHash": "71a9a1f1773d4b1ff70a9d496db63855ef83a7fe906c72b70cdebf4815a2c4c1"
     },
     "wayfinder": {
       "source": "mattpocock/skills",
       "sourceType": "github",
       "skillPath": "skills/engineering/wayfinder/SKILL.md",
-      "computedHash": "8f610a50e8e8044571d918088160a9657e23f1268080728bf92009db48f6c22f"
+      "computedHash": "fa790eb4255b13d24d7e33ff4891ccd3d621558cc0ab87ae226777538ea16a8f"
     },
     "wizard": {
       "source": "mattpocock/skills",
       "sourceType": "github",
       "skillPath": "skills/engineering/wizard/SKILL.md",
-      "computedHash": "2c0d1187398b1b7ebb9902a4c91b24181ee07892f285615b46c59f45e2c4229c"
+      "computedHash": "dee7f1a523994a1e063c69fe09c2f5b4da97a41ad68107722664e6e472cb2423"
     },
     "writing-for-agents": {
       "source": "mattpocock/skills",
       "sourceType": "github",
       "skillPath": "skills/productivity/writing-for-agents/SKILL.md",
-      "computedHash": "ccfa1e94d8f6ab5c6a1edd55293ca477faf93c39207771331efdb1e798ed21d6"
+      "computedHash": "95da47fc97af998e85b7d7e6d57b3ac76727c1e290cfe9ea09005aacb826959f"
     },
     "writing-skills": {
       "source": "obra/superpowers",
       "sourceType": "github",
       "skillPath": "skills/writing-skills/SKILL.md",
-      "computedHash": "e5dfc1a942f56dc757421b0d87ae1f38ab693ebc71138e65268fd408bb5c93d3"
+      "computedHash": "f06bbb471439736c838e89a57a2a371bcc687931ba878901d97373194e212ea9"
     }
   }
 }
