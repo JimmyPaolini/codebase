@@ -938,6 +938,7 @@
     "typecheck-code": {},
     "validate-branch-name": {
       "cache": false,
+      "dependsOn": ["validation:build"],
       "description": "Validate the current branch name against the configured naming convention. The pre-push hook calls the binary directly to avoid a project graph build; this target is for manual use.",
       "executor": "nx:run-commands",
       "options": {
@@ -947,6 +948,7 @@
     },
     "validate-pull-request-body": {
       "cache": false,
+      "dependsOn": ["validation:build"],
       "executor": "nx:run-commands",
       "options": {
         "command": "if [ -n \"$PULL_REQUEST_NUMBER\" ] && [ \"$GITHUB_ACTOR\" != \"dependabot[bot]\" ]; then gh pr view \"$PULL_REQUEST_NUMBER\" --json body -q .body > pull_request_body.md && validate-pull-request-body -t pull_request_body.md && rm pull_request_body.md; else echo \"Skipping PR body validation\"; fi",
@@ -955,6 +957,7 @@
     },
     "validate-pull-request-release-significance": {
       "cache": false,
+      "dependsOn": ["validation:build"],
       "executor": "nx:run-commands",
       "options": {
         "command": "if [ -n \"$PULL_REQUEST_NUMBER\" ]; then pull-request-release-significance -t \"$PULL_REQUEST_NUMBER\"; else echo \"Skipping release significance\"; fi",
