@@ -305,11 +305,11 @@ What this project is judged against, as declared in its own `callidescope.config
      ↳ Synchronizes the generators table and reports success without exiting.
     └─> ConformetryGeneratorsCommand.readGenerators(): Promise<ConformetryGeneratorMetadata[]> [tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:111]
        ↳ Reads configuration/conformetry.config.ts and returns the list of generator metadata.
-      └─> ConfigurationService.loadConformetryConfiguration(configurationPath: string): Promise<ConformetryConfiguration> [packages/ic-suite/conformetry/conformetry-configuration/src/modules/configuration/configuration.service.ts:169]
+      └─> ConfigurationService.loadConformetryConfiguration(configurationPath: string): Promise<ConformetryConfiguration> [packages/ic-suite/conformetry/conformetry-configuration/src/modules/configuration/configuration.service.ts:243]
          ↳ Loads, validates, and normalizes a conformetry configuration file.
-        └─> ConfigurationService.resolveConfigurationPath(configurationPath: string): Promise<string> [packages/ic-suite/conformetry/conformetry-configuration/src/modules/configuration/configuration.service.ts:135]
+        └─> ConfigurationService.resolveConfigurationPath(configurationPath: string): Promise<string> [packages/ic-suite/conformetry/conformetry-configuration/src/modules/configuration/configuration.service.ts:174]
            ↳ Resolves a config path against the cwd, falling back to the workspace root.
-          └─> ConfigurationService.findWorkspaceRoot(): Promise<string | undefined> [packages/ic-suite/conformetry/conformetry-configuration/src/modules/configuration/configuration.service.ts:74]
+          └─> ConfigurationService.findWorkspaceRoot(): Promise<string | undefined> [packages/ic-suite/conformetry/conformetry-configuration/src/modules/configuration/configuration.service.ts:113]
              ↳ Walks upward from the process cwd looking for the workspace manifest.
 ```
 
@@ -518,14 +518,27 @@ flowchart LR
   ConventionalConfigModule
   DevcontainerConfigurationModule
   DiscoveryModule
+  InputModule
+  InstanceDiscoveryModule
+  InstanceGroupModule
   IssueLabelsModule
   LoggerModule([LoggerModule])
   MainModule
   PullRequestLabelsModule
   PullRequestTemplateModule
+  RenderingModule
   SkillExclusionsModule
   SynchronizationModule
+  TemplateDiscoveryModule
+  ConfigurationModule --> InputModule
+  ConfigurationModule --> InstanceDiscoveryModule
+  ConfigurationModule --> InstanceGroupModule
+  ConfigurationModule --> RenderingModule
+  ConfigurationModule --> TemplateDiscoveryModule
   ConformetryGeneratorsModule --> ConfigurationModule
+  InstanceDiscoveryModule --> InstanceGroupModule
+  InstanceDiscoveryModule --> RenderingModule
+  InstanceDiscoveryModule --> TemplateDiscoveryModule
   MainModule --> DiscoveryModule
   MainModule --> IssueLabelsModule
   MainModule --> SynchronizationModule
@@ -535,6 +548,7 @@ flowchart LR
   SynchronizationModule --> PullRequestLabelsModule
   SynchronizationModule --> PullRequestTemplateModule
   SynchronizationModule --> SkillExclusionsModule
+  TemplateDiscoveryModule --> RenderingModule
 ```
 
 _Rounded modules are global: every module can inject them, so their edges are left out._
