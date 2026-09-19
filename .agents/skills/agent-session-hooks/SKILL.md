@@ -1,15 +1,15 @@
 ---
 name: agent-session-hooks
-description: Explains how startup scripts run at the start of agent sessions and inject context. Use when an agent session reports a failing hook (e.g. validate-session-branch-name.sh, validate-session-commit-signing.sh, validate-session-gh-authentication.sh, validate-session-skills.sh), or when adding a new startup check.
+description: Explains how startup scripts run at the start of agent sessions and inject context. Use when an agent session reports a failing hook (e.g. validate-session-branch-name.sh, validate-session-worktree-name.sh, validate-session-commit-signing.sh, validate-session-gh-authentication.sh, validate-session-skills.sh), or when adding a new startup check.
 ---
 # Agent Session Hooks
 
-Four checks run at the start of every agent session and inject their failure as additional context. **Fix what they report before writing any code** — each one names the problem and the command that repairs it.
+Startup checks run at the start of every agent session and inject their failure as additional context. **Fix what they report before writing any code** — each one names the problem and the command that repairs it.
 
 ## When to Use This Skill
 
 - When an agent session fails at startup due to a hook.
-- When you need to understand how the session gets context about branches, git signing, GitHub authentication, or missing skills.
+- When you need to understand how the session gets context about branches, worktrees, git signing, GitHub authentication, or missing skills.
 - When you need to add a new check that should run for every agent session.
 
 ## Architecture
@@ -17,6 +17,7 @@ Four checks run at the start of every agent session and inject their failure as 
 | Script                                  | Checks                                                                                                |
 | --------------------------------------- | ----------------------------------------------------------------------------------------------------- |
 | `validate-session-branch-name.sh`       | Branch follows `<type>/<scope>-<description>`; directs the agent to the rename-branch skill           |
+| `validate-session-worktree-name.sh`     | Worktree directory follows lowercase kebab-case naming and ignore conventions                         |
 | `validate-session-commit-signing.sh`    | `commit.gpgsign`, `user.signingkey`, and a GPG signing smoke test                                     |
 | `validate-session-gh-authentication.sh` | The active `gh` account plus Projects access                                                          |
 | `validate-session-skills.sh`            | Every skill declared in `skills-lock.json` is present; directs the agent to `codebase:install-skills` |
