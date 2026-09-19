@@ -1,4 +1,4 @@
-name: 🧑‍✈️ Setup Copilot
+name: 🤖 Setup Copilot
 
 on:
   workflow_dispatch:
@@ -11,7 +11,7 @@ on:
 
 jobs:
   copilot-setup-steps:
-    name: 🧑‍✈️ Setup Copilot
+    name: 🤖 Setup Copilot
     runs-on: ubuntu-latest
     timeout-minutes: 12
 

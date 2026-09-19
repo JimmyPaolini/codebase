@@ -38,7 +38,7 @@ concurrency:
 
 jobs:
   test-coverage:
-    name: 🧑‍🔬 Test Coverage
+    name: 🧑‍🔬 Test
     runs-on: ubuntu-latest
     timeout-minutes: 12
 

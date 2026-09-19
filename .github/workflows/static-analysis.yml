@@ -41,7 +41,7 @@ concurrency:
 
 jobs:
   static-analysis:
-    name: ${{ matrix.check.emoji }} Static Analysis (${{ matrix.check.name }})
+    name: ${{ matrix.check.emoji }} ${{ matrix.check.name }}
     runs-on: ubuntu-latest
     timeout-minutes: 12
     strategy:
@@ -49,19 +49,19 @@ jobs:
       matrix:
         check:
           - target: type-codebase
-            name: typecheck
+            name: Typecheck
             emoji: '🧑‍🎓'
           - target: tidy-codebase
-            name: format
+            name: Format
             emoji: '🧑‍🎨'
           - target: lint-codebase
-            name: lint
+            name: Lint
             emoji: '🧑‍💻'
           - target: form-codebase
-            name: deprecate
+            name: Deprecate
             emoji: '🧑‍🏭'
           - target: gate-codebase
-            name: gate
+            name: Guard
             emoji: '💂'
 
     steps:
