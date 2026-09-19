@@ -1,8 +1,4 @@
-import {
-  ConfigurationModule,
-  InputModule,
-  InstanceDiscoveryModule,
-} from "@conformetry/configuration";
+import { ConfigurationModule } from "@conformetry/configuration";
 import { InventoryModule } from "@conformetry/output";
 import { Module } from "@nestjs/common";
 
@@ -16,13 +12,7 @@ import { InstancesCommand } from "./instances.command";
 @Module({
   controllers: [],
   exports: [InstancesCommand],
-  imports: [
-    ConfigurationModule,
-    InputModule,
-    InstanceDiscoveryModule,
-    InventoryModule,
-    LoggerModule,
-  ],
+  imports: [ConfigurationModule, InventoryModule, LoggerModule],
   providers: [InstancesCommand],
 })
 export class InstancesModule {}

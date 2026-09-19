@@ -6,9 +6,6 @@ import path from "node:path";
 import {
   ConfigurationModule,
   ConfigurationService,
-  InstanceDiscoveryService,
-  TemplateDiscoveryModule,
-  TemplateDiscoveryService,
 } from "@conformetry/configuration";
 import { GenerationModule, GenerationService } from "@conformetry/generation";
 import { ReportingModule, ReportingService } from "@conformetry/output";
@@ -21,17 +18,16 @@ import { NestFactory } from "@nestjs/core";
 /**
  * The whole of conformetry a host needs, with no command-line layer above it.
  *
- * `ValidationModule` re-exports the discovery modules it already depends on,
- * so a host that validates gets instance matching without naming it.
- * `ReportingModule` is named separately because rendering sits in the output
- * layer above validation, which cannot reach up to it.
+ * `ConfigurationModule` publishes one service, so a host reaches template and
+ * instance discovery through `ConfigurationService` rather than naming a
+ * collaborator. `ReportingModule` is named separately because rendering sits
+ * in the output layer above validation, which cannot reach up to it.
  */
 @Module({
   imports: [
     ConfigurationModule,
     GenerationModule,
     ReportingModule,
-    TemplateDiscoveryModule,
     ValidationModule,
   ],
 })
@@ -49,11 +45,10 @@ async function main(): Promise<void> {
     EmbeddedConformetryModule,
     { abortOnError: false, logger: false },
   );
-  const configuration = await context
-    .get(ConfigurationService)
-    .loadConformetryConfiguration(
-      "packages/ic-suite/conformetry/conformetry-examples/examples/embedding/conformetry.config.ts",
-    );
+  const configurationService = context.get(ConfigurationService);
+  const configuration = await configurationService.loadConformetryConfiguration(
+    "packages/ic-suite/conformetry/conformetry-examples/examples/embedding/conformetry.config.ts",
+  );
   const [definition] = configuration;
 
   if (definition === undefined) {
@@ -78,17 +73,17 @@ async function main(): Promise<void> {
     `Generated ${String(generated.generatedFilePaths.length)} file(s) into ${generated.outputDirectoryPath}\n`,
   );
 
-  const instanceDiscoveryService = context.get(InstanceDiscoveryService);
   const result = context.get(ValidationService).validate({
     instances: definition.instances.flatMap((group) =>
-      instanceDiscoveryService.findInstances({
+      configurationService.findInstances({
         patterns: group.patterns ?? [],
         workingDirectory,
       }),
     ),
-    templates: context
-      .get(TemplateDiscoveryService)
-      .collectTemplates({ configuration, workingDirectory }),
+    templates: configurationService.collectTemplates({
+      configuration,
+      workingDirectory,
+    }),
   });
 
   process.stdout.write(

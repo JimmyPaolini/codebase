@@ -227,18 +227,25 @@ asserting that these paths _are_ instances:
 
 | Export | Purpose |
 | ------ | ------- |
-| `ConfigurationService` | Loads, validates, and normalizes a configuration file |
-| `DiscoveryService` | Expands globs into instances, reads templates, matches the two, prepares documents |
-| `InputService` | Parses command-line options and resolves generator inputs, prompting when allowed |
+| `ConfigurationService` | Everything this layer answers: loading a configuration file, reading templates, expanding globs into instances, matching the two, rendering placeholders, and resolving generator inputs |
+| `ConfigurationModule` | The NestJS module that provides it |
 | `ConformetryConfiguration` | The loaded configuration type — author your config as this |
 | `ConformetryInstanceGroup`, `ConformetryGeneratorDefinition` | Field-level types for the above |
 
-Each is a NestJS provider exported from its module (`ConfigurationModule`,
-`DiscoveryModule`, `InputModule`), so a host wires them like any other.
+**One service and one module, and no other collaborator** — the same pair
+`@callidescope/configuration`, `@codependix/configuration` and
+`@codometer/configuration` publish, so learning one of the four teaches you all
+of them.
 
-Loading a configuration file is deliberately separate from walking the
-filesystem: `ConfigurationService` owns reading, and everything that touches
-paths lives in `DiscoveryService`.
+Behind the facade, template discovery, instance discovery, rendering, instance
+groups, and input resolution stay six separate classes in six separate files,
+because they are six different jobs. What they are not is six entry points a
+host has to know the names of: a consumer imports `ConfigurationModule` and
+injects `ConfigurationService`.
+
+Loading a configuration file is the one job `ConfigurationService` holds
+itself; everything that touches paths is a one-line hand-off to the
+collaborator that owns it.
 
 ## Test
 

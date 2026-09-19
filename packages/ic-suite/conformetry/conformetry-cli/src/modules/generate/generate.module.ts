@@ -1,4 +1,4 @@
-import { ConfigurationModule, InputModule } from "@conformetry/configuration";
+import { ConfigurationModule } from "@conformetry/configuration";
 import { GenerationModule } from "@conformetry/generation";
 import { Module } from "@nestjs/common";
 
@@ -12,7 +12,7 @@ import { GenerateCommand } from "./generate.command";
 @Module({
   controllers: [],
   exports: [GenerateCommand],
-  imports: [ConfigurationModule, GenerationModule, InputModule, LoggerModule],
+  imports: [ConfigurationModule, GenerationModule, LoggerModule],
   providers: [GenerateCommand],
 })
 export class GenerateModule {}

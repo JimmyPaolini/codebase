@@ -1,7 +1,7 @@
 import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
-import { RenderingService } from "@conformetry/configuration";
+import { ConfigurationService } from "@conformetry/configuration";
 import { Injectable } from "@nestjs/common";
 
 import type {
@@ -17,19 +17,19 @@ import type { Substitutions } from "@conformetry/configuration";
 /* v8 ignore start -- the decorator helper emits a branch no test can reach */
 /**
  * Runs conformetry generators: walks a template tree, renders every path and
- * file through `RenderingService`, and writes the result.
+ * file through the configuration layer, and writes the result.
  *
  * Filesystem and formatter access go through adapters so a host with a virtual
  * filesystem (an Nx generator `Tree`) can reuse this runtime unchanged.
  * Rendering deliberately is *not* an adapter — validation must substitute
- * exactly as generation does, so both share one `RenderingService`.
+ * exactly as generation does, so both render through one service.
  */
 @Injectable()
 /* v8 ignore stop */
 export class GenerationService {
   // 🏗 Dependency Injection
 
-  constructor(private readonly renderingService: RenderingService) {}
+  constructor(private readonly configurationService: ConfigurationService) {}
 
   // 🔐 Private Fields
 
@@ -76,7 +76,7 @@ export class GenerationService {
     inputs: Substitutions;
   }): Substitutions {
     return {
-      ...this.renderingService.buildNameSubstitutions(
+      ...this.configurationService.buildNameSubstitutions(
         args.inputs["name"] ?? args.definitionName,
       ),
       ...args.inputs,
@@ -116,7 +116,7 @@ export class GenerationService {
       const templatePath = path.join(args.templateDirectoryPath, entry.name);
       const instancePath = path.join(
         args.instanceDirectoryPath,
-        this.renderingService.renderPath({
+        this.configurationService.renderPath({
           subject: templatePath,
           substitutions: args.substitutions,
           templatePath: entry.name,
@@ -160,7 +160,7 @@ export class GenerationService {
 
     await args.filesystem.writeFile(
       args.instancePath,
-      this.renderingService.renderContent({
+      this.configurationService.renderContent({
         subject: args.templatePath,
         substitutions: args.substitutions,
         templateContent,

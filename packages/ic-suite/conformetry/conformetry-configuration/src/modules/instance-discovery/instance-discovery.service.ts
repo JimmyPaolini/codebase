@@ -2,13 +2,13 @@ import path from "node:path";
 
 import { Injectable } from "@nestjs/common";
 
-import { InstanceGroupService } from "../configuration/instance-group.service";
+import { InstanceGroupService } from "../instance-group/instance-group.service";
 import { TemplateDiscoveryService } from "../template-discovery/template-discovery.service";
 
 import { InstanceDiscoveryLocatingService } from "./instance-discovery-locating.service";
 import { InstanceDiscoveryMatchingService } from "./instance-discovery-matching.service";
 
-import type { ConformetryInstanceGroup } from "../configuration/configuration.types.js";
+import type { ConformetryInstanceGroup } from "../instance-group/instance-group.types.js";
 import type { TemplateDefinition } from "../template-discovery/template-discovery.types.js";
 import type {
   FindInstancesArguments,

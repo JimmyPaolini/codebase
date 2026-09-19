@@ -2,7 +2,7 @@ import { mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
-import { RenderingService } from "@conformetry/configuration";
+import { ConfigurationModule } from "@conformetry/configuration";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
@@ -75,7 +75,8 @@ describe(GenerationService, () => {
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [GenerationService, RenderingService],
+      imports: [ConfigurationModule],
+      providers: [GenerationService],
     }).compile();
 
     service = await module.resolve(GenerationService);
