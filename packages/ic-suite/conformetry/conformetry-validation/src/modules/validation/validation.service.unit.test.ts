@@ -2,10 +2,7 @@ import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
-import {
-  InstanceDiscoveryService,
-  TemplateDiscoveryService,
-} from "@conformetry/configuration";
+import { ConfigurationService } from "@conformetry/configuration";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
@@ -77,12 +74,10 @@ describe(ValidationService, () => {
     }).compile();
 
     service = await module.resolve(ValidationService);
-    const templateDiscoveryService = await module.resolve(
-      TemplateDiscoveryService,
-    );
+    const configurationService = await module.resolve(ConfigurationService);
 
     templates = [
-      templateDiscoveryService.collectTemplate({
+      configurationService.collectTemplate({
         name: "widget",
         templatePath: await createTemplatePath(),
       }),
@@ -218,28 +213,25 @@ describe(ValidationService, () => {
         imports: [ValidationModule],
         providers: [ValidationService],
       }).compile();
-      const realInstanceDiscoveryService = await realModule.resolve(
-        InstanceDiscoveryService,
-      );
+      const realConfigurationService =
+        await realModule.resolve(ConfigurationService);
       const overriddenModule = await Test.createTestingModule({
         imports: [ValidationModule],
         providers: [ValidationService],
       })
-        .overrideProvider(InstanceDiscoveryService)
+        .overrideProvider(ConfigurationService)
         .useValue({
           matchInstances: (
-            args: Parameters<InstanceDiscoveryService["matchInstances"]>[0],
-          ) => realInstanceDiscoveryService.matchInstances(args),
+            args: Parameters<ConfigurationService["matchInstances"]>[0],
+          ) => realConfigurationService.matchInstances(args),
           // Always empty, unlike the real service, which returns one entry
           // per instance — this exercises the defensive fallback for a
           // missing prepared entry that a one-to-one mapping never reaches
           // in practice.
           prepareDocuments: () => [],
           resolveInstanceFiles: (
-            args: Parameters<
-              InstanceDiscoveryService["resolveInstanceFiles"]
-            >[0],
-          ) => realInstanceDiscoveryService.resolveInstanceFiles(args),
+            args: Parameters<ConfigurationService["resolveInstanceFiles"]>[0],
+          ) => realConfigurationService.resolveInstanceFiles(args),
         })
         .compile();
       const serviceUnderTest =

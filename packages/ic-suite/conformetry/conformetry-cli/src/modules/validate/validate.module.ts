@@ -1,9 +1,4 @@
-import {
-  ConfigurationModule,
-  InputModule,
-  InstanceDiscoveryModule,
-  TemplateDiscoveryModule,
-} from "@conformetry/configuration";
+import { ConfigurationModule } from "@conformetry/configuration";
 import { ReportingModule } from "@conformetry/output";
 import { ValidationModule } from "@conformetry/validation";
 import { Module } from "@nestjs/common";
@@ -20,10 +15,7 @@ import { ValidateCommand } from "./validate.command";
   exports: [ValidateCommand],
   imports: [
     ConfigurationModule,
-    InputModule,
-    InstanceDiscoveryModule,
     LoggerModule,
-    TemplateDiscoveryModule,
     ReportingModule,
     ValidationModule,
   ],

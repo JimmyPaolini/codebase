@@ -7,6 +7,13 @@ import { Injectable } from "@nestjs/common";
 import { createJiti } from "jiti";
 import { parse as parseJsonc } from "jsonc-parser";
 
+import { InputPromptingService } from "../input/input-prompting.service";
+import { InputService } from "../input/input.service";
+import { InstanceDiscoveryService } from "../instance-discovery/instance-discovery.service";
+import { InstanceGroupService } from "../instance-group/instance-group.service";
+import { RenderingService } from "../rendering/rendering.service";
+import { TemplateDiscoveryService } from "../template-discovery/template-discovery.service";
+
 import {
   conformetryConfigurationSchema,
   SUPPORTED_CONFIGURATION_EXTENSIONS,
@@ -14,6 +21,20 @@ import {
   WORKSPACE_MANIFEST_FILENAME,
 } from "./configuration.constants";
 
+import type { ResolveGeneratorInputsArguments } from "../input/input.types";
+import type {
+  FindInstancesArguments,
+  Instance,
+  InstanceFile,
+  MatchedInstance,
+  PreparedInstanceDocuments,
+  PrepareDocumentsArguments,
+  ResolvedInstances,
+  ResolveInventoryArguments,
+} from "../instance-discovery/instance-discovery.types";
+import type { ConformetryInstanceGroup } from "../instance-group/instance-group.types";
+import type { Substitutions } from "../rendering/rendering.types";
+import type { TemplateDefinition } from "../template-discovery/template-discovery.types";
 import type {
   ConformetryConfiguration,
   ConformetryGeneratorDefinition,
@@ -21,17 +42,35 @@ import type {
 } from "./configuration.types";
 
 /**
- * Loads and validates conformetry configuration files.
+ * The one answer to "what is this run actually configured to do".
  *
- * This service owns loading only — resolving templates, matching them to
- * projects, and preparing documents for validation all live in the discovery
- * module, so that reading a config file stays free of filesystem walking.
+ * Every question a caller outside this package can ask about configuration is
+ * asked here: what a config file declares, which templates it points at, which
+ * instances exist and what explains them, what a placeholder renders to, and
+ * what to ask a person for when an input was left off. A consumer therefore
+ * injects this and nothing else from this package, which is what makes the
+ * configuration layer one layer rather than a bag of collaborators a caller
+ * has to know the names of — the shape callidescope, codependix and codometer
+ * already publish.
+ *
+ * Loading a config file is the one job held here rather than delegated;
+ * everything below it is a one-line hand-off. Prompting, option parsing,
+ * rendering, template discovery, instance discovery and instance-group reading
+ * stay six classes in their own files, because they are six different jobs.
+ * What they stop being is six public entry points.
  */
 @Injectable()
 export class ConfigurationService {
   // 🏗 Dependency Injection
 
-  constructor() {}
+  constructor(
+    private readonly inputPromptingService: InputPromptingService,
+    private readonly inputService: InputService,
+    private readonly instanceDiscoveryService: InstanceDiscoveryService,
+    private readonly instanceGroupService: InstanceGroupService,
+    private readonly renderingService: RenderingService,
+    private readonly templateDiscoveryService: TemplateDiscoveryService,
+  ) {}
 
   // 🔐 Private Fields
 
@@ -159,6 +198,41 @@ export class ConfigurationService {
 
   // 🌎 Public Methods
 
+  /** Derives the case variants every template can reference from one name. */
+  public buildNameSubstitutions(name: string): Substitutions {
+    return this.renderingService.buildNameSubstitutions(name);
+  }
+
+  /** Reads one template folder. */
+  public collectTemplate(
+    args: Parameters<TemplateDiscoveryService["collectTemplate"]>[0],
+  ): TemplateDefinition {
+    return this.templateDiscoveryService.collectTemplate(args);
+  }
+
+  /** Reads every configured generator's template folder. */
+  public collectTemplates(args: {
+    configuration: ConformetryConfiguration;
+    workingDirectory: string;
+  }): TemplateDefinition[] {
+    return this.templateDiscoveryService.collectTemplates(args);
+  }
+
+  /** Expands instance globs into the instances that exist. */
+  public findInstances(args: FindInstancesArguments): Instance[] {
+    return this.instanceDiscoveryService.findInstances(args);
+  }
+
+  /** Whether anybody is there to answer a question. */
+  public isAtTerminal(): boolean {
+    return this.inputPromptingService.isAtTerminal();
+  }
+
+  /** Whether a group locates its instances inside the hosts its tags select. */
+  public isProjectScoped(group: ConformetryInstanceGroup): boolean {
+    return this.instanceGroupService.isProjectScoped(group);
+  }
+
   /**
    * Loads, validates, and normalizes a conformetry configuration file.
    *
@@ -183,5 +257,101 @@ export class ConfigurationService {
     return conformetryConfigurationSchema
       .parse(configurationModule)
       .map((definition) => this.applyGeneratorDefaults(definition));
+  }
+
+  /** Resolves every instance to the template, or templates, that explain it. */
+  public matchInstances(args: {
+    instances: Instance[];
+    templates: TemplateDefinition[];
+  }): ResolvedInstances {
+    return this.instanceDiscoveryService.matchInstances(args);
+  }
+
+  /** Splits a comma-delimited filter option into its values. */
+  public parseCommaDelimitedOption(
+    value: string | undefined,
+  ): string[] | undefined {
+    return this.inputService.parseCommaDelimitedOption(value);
+  }
+
+  /** Trims an optional string option, treating blank as absent. */
+  public parseOptionalOption(value: string | undefined): string | undefined {
+    return this.inputService.parseOptionalOption(value);
+  }
+
+  /** Parses a threshold option as a ratio from 0 to 1. */
+  public parseThresholdOption(value: string | undefined): number | undefined {
+    return this.inputService.parseThresholdOption(value);
+  }
+
+  /**
+   * Prepares the rendered template and instance document pairs for each matched
+   * instance, restricted to the extensions the caller's languages claim.
+   */
+  public prepareDocuments(
+    args: PrepareDocumentsArguments,
+  ): PreparedInstanceDocuments[] {
+    return this.instanceDiscoveryService.prepareDocuments(args);
+  }
+
+  /** Asks which single template to run, filtering as the caller types. */
+  public async promptForTemplate(
+    templates: Parameters<InputPromptingService["promptForTemplate"]>[0],
+  ): Promise<string | undefined> {
+    return this.inputPromptingService.promptForTemplate(templates);
+  }
+
+  /** Asks which templates to narrow a run to. */
+  public async promptForTemplates(
+    templates: Parameters<InputPromptingService["promptForTemplates"]>[0],
+  ): Promise<string[] | undefined> {
+    return this.inputPromptingService.promptForTemplates(templates);
+  }
+
+  /** Keeps the groups a host with no project graph can actually locate. */
+  public readWorkspaceGroups(
+    groups: readonly ConformetryInstanceGroup[],
+  ): ConformetryInstanceGroup[] {
+    return this.instanceDiscoveryService.readWorkspaceGroups(groups);
+  }
+
+  /** Renders template contents with mustache. */
+  public renderContent(
+    args: Parameters<RenderingService["renderContent"]>[0],
+  ): string {
+    return this.renderingService.renderContent(args);
+  }
+
+  /** Renders a template path with mustache. */
+  public renderPath(
+    args: Parameters<RenderingService["renderPath"]>[0],
+  ): string {
+    return this.renderingService.renderPath(args);
+  }
+
+  /** Resolves generator inputs from raw command-line arguments. */
+  public async resolveGeneratorInputs(
+    args: ResolveGeneratorInputsArguments,
+  ): Promise<Record<string, string>> {
+    return this.inputService.resolveGeneratorInputs(args);
+  }
+
+  /** Lists every file a matched instance's template requires it to have. */
+  public resolveInstanceFiles(instances: MatchedInstance[]): InstanceFile[] {
+    return this.instanceDiscoveryService.resolveInstanceFiles(instances);
+  }
+
+  /** Lists every instance found, paired with the templates that explain it. */
+  public resolveInventoriedInstances(
+    args: ResolveInventoryArguments,
+  ): ReturnType<InstanceDiscoveryService["resolveInventoriedInstances"]> {
+    return this.instanceDiscoveryService.resolveInventoriedInstances(args);
+  }
+
+  /** Lists every template declared, paired with the instances it explains. */
+  public resolveInventoriedTemplates(
+    args: ResolveInventoryArguments,
+  ): ReturnType<InstanceDiscoveryService["resolveInventoriedTemplates"]> {
+    return this.instanceDiscoveryService.resolveInventoriedTemplates(args);
   }
 }

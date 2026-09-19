@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 
-import type { ConformetryInstanceGroup } from "./configuration.types.js";
+import type { ConformetryInstanceGroup } from "./instance-group.types.js";
 
 /**
  * Reads an instance group's own fields, for every host that resolves one.
@@ -13,9 +13,10 @@ import type { ConformetryInstanceGroup } from "./configuration.types.js";
  * simply take a different set of groups to be its own, and validation would
  * quietly measure the wrong tree.
  *
- * Dependency-free on purpose. Both hosts already import `ConfigurationModule`,
- * so nothing has to be wired up to ask this question — including the
- * install-time bootstrap, which has no project graph to hand anybody.
+ * Dependency-free on purpose. Every host reaches it through
+ * `ConfigurationService`, so nothing has to be wired up to ask this question —
+ * including the install-time bootstrap, which has no project graph to hand
+ * anybody.
  */
 @Injectable()
 export class InstanceGroupService {

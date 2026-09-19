@@ -1,8 +1,4 @@
-import {
-  ConfigurationService,
-  InputService,
-  InstanceDiscoveryService,
-} from "@conformetry/configuration";
+import { ConfigurationService } from "@conformetry/configuration";
 import { InventoryService } from "@conformetry/output";
 import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
@@ -41,8 +37,6 @@ export class InstancesCommand extends CommandRunner {
 
   constructor(
     private readonly configurationService: ConfigurationService,
-    private readonly inputService: InputService,
-    private readonly instanceDiscoveryService: InstanceDiscoveryService,
     private readonly inventoryService: InventoryService,
     private readonly logger: LoggerService,
   ) {
@@ -64,7 +58,7 @@ export class InstancesCommand extends CommandRunner {
     flags: "--config [path]",
   })
   public parseConfig(value: string | undefined): string | undefined {
-    return this.inputService.parseOptionalOption(value);
+    return this.configurationService.parseOptionalOption(value);
   }
 
   /** Selects the machine-readable listing. */
@@ -83,7 +77,7 @@ export class InstancesCommand extends CommandRunner {
     flags: "--templates [names]",
   })
   public parseTemplates(value: string | undefined): string[] | undefined {
-    return this.inputService.parseCommaDelimitedOption(value);
+    return this.configurationService.parseCommaDelimitedOption(value);
   }
 
   /** Writes every instance found, filtered to the given templates. */
@@ -101,7 +95,7 @@ export class InstancesCommand extends CommandRunner {
         options.config ?? DEFAULT_CONFIGURATION_PATH,
       );
     const instances = this.inventoryService.shortenInstancePaths({
-      instances: this.instanceDiscoveryService.resolveInventoriedInstances({
+      instances: this.configurationService.resolveInventoriedInstances({
         configuration,
         ...(options.templates === undefined
           ? {}
