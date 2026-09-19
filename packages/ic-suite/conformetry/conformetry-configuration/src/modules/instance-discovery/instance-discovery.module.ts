@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
 
-import { ConfigurationModule } from "../configuration/configuration.module";
+import { InstanceGroupModule } from "../instance-group/instance-group.module";
 import { RenderingModule } from "../rendering/rendering.module";
 import { TemplateDiscoveryModule } from "../template-discovery/template-discovery.module";
 
@@ -24,7 +24,7 @@ import { InstanceDiscoveryService } from "./instance-discovery.service";
     InstanceDiscoveryService,
     TemplateDiscoveryModule,
   ],
-  imports: [ConfigurationModule, RenderingModule, TemplateDiscoveryModule],
+  imports: [InstanceGroupModule, RenderingModule, TemplateDiscoveryModule],
   providers: [
     InstanceDiscoveryLocatingService,
     InstanceDiscoveryMatchingService,
