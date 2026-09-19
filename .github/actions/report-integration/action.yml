@@ -1,5 +1,5 @@
-name: 📏 Measure Changes
-description: Download baseline, report changes to PR, and update baseline
+name: 📊 Report Integration
+description: Process artifacts, baseline reports, and coverage after a CI run
 
 inputs:
   github-token:
@@ -17,6 +17,9 @@ inputs:
   pull-request-number:
     description: The pull request number
     required: false
+  target:
+    description: The matrix check target being run
+    required: true
 
 runs:
   using: composite
@@ -24,8 +27,9 @@ runs:
     - name: 📥 Download Codometer Baseline
       id: baseline
       if: >-
-        (inputs.is-main-branch == 'true' && inputs.run-outcome == 'success') ||
-        inputs.is-pull-request == 'true'
+        inputs.target == 'build-projects' &&
+        ((inputs.is-main-branch == 'true' && inputs.run-outcome == 'success') ||
+        inputs.is-pull-request == 'true')
       continue-on-error: true
       env:
         GH_TOKEN: ${{ inputs.github-token }}
@@ -46,7 +50,10 @@ runs:
           >>"${GITHUB_OUTPUT}"
 
     - name: 🧺 Update Codometer Baseline
-      if: inputs.is-main-branch == 'true' && inputs.run-outcome == 'success'
+      if: >-
+        inputs.target == 'build-projects' &&
+        inputs.is-main-branch == 'true' &&
+        inputs.run-outcome == 'success'
       shell: bash
       run: |
         mkdir -p codometer-baseline
@@ -59,7 +66,10 @@ runs:
         done
 
     - name: 📤 Upload Codometer Baseline
-      if: inputs.is-main-branch == 'true' && inputs.run-outcome == 'success'
+      if: >-
+        inputs.target == 'build-projects' &&
+        inputs.is-main-branch == 'true' &&
+        inputs.run-outcome == 'success'
       uses: actions/upload-artifact@v7
       with:
         name: codometer-reports-main
@@ -68,7 +78,7 @@ runs:
         if-no-files-found: ignore
 
     - name: ⏲️ Report Codometer Changes
-      if: inputs.is-pull-request == 'true'
+      if: inputs.target == 'build-projects' && inputs.is-pull-request == 'true'
       env:
         BASELINE_URL: ${{ steps.baseline.outputs.run-url }}
         GH_TOKEN: ${{ inputs.github-token }}
@@ -83,8 +93,31 @@ runs:
           --markdown .pull-request-body.md
         gh pr edit "${PULL_REQUEST}" --body-file .pull-request-body.md
 
+    - name: 📊 Upload Type Coverage
+      if: inputs.run-outcome == 'failure' && inputs.target == 'typecheck-code'
+      uses: actions/upload-artifact@v7
+      with:
+        name: type-coverage-reports
+        path: |
+          applications/*/type-coverage-report.txt
+          packages/*/type-coverage-report.txt
+          tools/*/type-coverage-report.txt
+        retention-days: 30
+
+    - name: 📊 Upload Test Coverage
+      if: inputs.target == 'test-code'
+      uses: actions/upload-artifact@v7
+      with:
+        name: coverage-reports
+        path: |
+          coverage/
+          applications/**/coverage/
+          packages/**/coverage/
+          tools/**/coverage/
+        retention-days: 30
+
     - name: 🚦 Enforce Limits
-      if: inputs.run-outcome == 'failure'
+      if: inputs.target == 'build-projects' && inputs.run-outcome == 'failure'
       shell: bash
       run: |
         echo "::error::A project failed to build or breached its limit."

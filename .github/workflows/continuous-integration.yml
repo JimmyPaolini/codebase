@@ -158,27 +158,21 @@ jobs:
               --configuration=${CONFIG}
           fi
 
-      - name: 📏 Measure Changes
+      - name: 📊 Report Integration
         if: >-
+          always() &&
           steps.check-skip.outputs.skip != 'true' &&
-          matrix.check.target == 'build-projects'
-        uses: ./.github/actions/measure-changes
+          (matrix.check.target == 'build-projects' ||
+          matrix.check.target == 'typecheck-code' ||
+          matrix.check.target == 'test-code')
+        uses: ./.github/actions/report-integration
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           is-main-branch: ${{ github.ref == 'refs/heads/main' }}
           is-pull-request: ${{ github.event_name == 'pull_request' }}
           run-outcome: ${{ steps.run-check.outcome }}
           pull-request-number: ${{ github.event.pull_request.number }}
-
-      - name: 📊 Report Coverage
-        if: >-
-          always() &&
-          steps.check-skip.outputs.skip != 'true' &&
-          (matrix.check.target == 'typecheck-code' || matrix.check.target == 'test-code')
-        uses: ./.github/actions/report-coverage
-        with:
           target: ${{ matrix.check.target }}
-          is-failure: ${{ failure() }}
 
       - name: 🧹 Cleanup Codebase
         if: always() && steps.check-skip.outputs.skip != 'true'
