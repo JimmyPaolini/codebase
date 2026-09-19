@@ -130,6 +130,12 @@
         "inputs": ["^production", "dependency-versions", "production"]
       }
     ],
+    "build-projects": {
+      "cache": false,
+      "dependsOn": ["build", "codometer"],
+      "description": "Build every buildable project and measure it. An nx:noop aggregator; `build` carries its own ^build dependency, and `codometer` gates each project's declared limit.",
+      "executor": "nx:noop"
+    },
     "codometer": [
       {
         "cache": true,
@@ -259,6 +265,26 @@
         }
       }
     ],
+    "deprecate-code": {
+      "cache": false,
+      "configurations": {
+        "check": {},
+        "write": {}
+      },
+      "defaultConfiguration": "check",
+      "dependsOn": [
+        "dependency-cruiser",
+        "fallow-dead-code",
+        "knip",
+        "nbstripout",
+        "sherif",
+        "squawk",
+        "syncpack",
+        "vulture"
+      ],
+      "description": "Aggregator for deprecate-code",
+      "executor": "nx:noop"
+    },
     "eslint": [
       {
         "cache": true,
@@ -399,7 +425,7 @@
         ]
       }
     ],
-    "deprecate-code": {
+    "format-code": {
       "cache": false,
       "configurations": {
         "check": {},
@@ -407,16 +433,14 @@
       },
       "defaultConfiguration": "check",
       "dependsOn": [
-        "dependency-cruiser",
-        "fallow-dead-code",
-        "knip",
-        "nbstripout",
-        "sherif",
-        "squawk",
-        "syncpack",
-        "vulture"
+        "markdown-lint",
+        "oxfmt",
+        "ruff-format",
+        "spell-check",
+        "sqlfluff-format",
+        "yaml-lint"
       ],
-      "description": "Aggregator for deprecate-code",
+      "description": "Aggregator for format-code",
       "executor": "nx:noop"
     },
     "guard-code": {
@@ -481,12 +505,6 @@
         "stylelint"
       ],
       "description": "Aggregator for lint-code",
-      "executor": "nx:noop"
-    },
-    "build-projects": {
-      "cache": false,
-      "dependsOn": ["build", "codometer"],
-      "description": "Build every buildable project and measure it. An nx:noop aggregator; `build` carries its own ^build dependency, and `codometer` gates each project's declared limit.",
       "executor": "nx:noop"
     },
     "markdown-lint": [
@@ -991,24 +1009,6 @@
       "description": "Dynamic code analysis: the tests, which execute the source. An nx:noop aggregator. The configuration propagates down dependsOn, so test-code:coverage reaches test:coverage.",
       "executor": "nx:noop"
     },
-    "format-code": {
-      "cache": false,
-      "configurations": {
-        "check": {},
-        "write": {}
-      },
-      "defaultConfiguration": "check",
-      "dependsOn": [
-        "markdown-lint",
-        "oxfmt",
-        "ruff-format",
-        "spell-check",
-        "sqlfluff-format",
-        "yaml-lint"
-      ],
-      "description": "Aggregator for format-code",
-      "executor": "nx:noop"
-    },
     "ty": [
       {
         "cache": true,
@@ -1027,17 +1027,6 @@
         }
       }
     ],
-    "typecheck-code": {
-      "cache": false,
-      "configurations": {
-        "check": {},
-        "write": {}
-      },
-      "defaultConfiguration": "check",
-      "dependsOn": ["type-coverage", "typecheck"],
-      "description": "Aggregator for typecheck-code",
-      "executor": "nx:noop"
-    },
     "type-coverage": [
       {
         "cache": true,
@@ -1089,6 +1078,17 @@
         "outputs": []
       }
     ],
+    "typecheck-code": {
+      "cache": false,
+      "configurations": {
+        "check": {},
+        "write": {}
+      },
+      "defaultConfiguration": "check",
+      "dependsOn": ["type-coverage", "typecheck"],
+      "description": "Aggregator for typecheck-code",
+      "executor": "nx:noop"
+    },
     "vitest": {
       "configurations": {
         "coverage": {

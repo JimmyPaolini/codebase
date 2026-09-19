@@ -162,34 +162,15 @@ jobs:
           echo "::error::A project failed to build or breached its limit."
           exit 1
 
-      - name: 📊 Upload Type Coverage
-        if: >-
-          failure() &&
-          steps.supersession.outputs.superseded != 'true' &&
-          matrix.check.target == 'typecheck-code'
-        uses: actions/upload-artifact@v7
-        with:
-          name: type-coverage-reports
-          path: |
-            applications/*/type-coverage-report.txt
-            packages/*/type-coverage-report.txt
-            tools/*/type-coverage-report.txt
-          retention-days: 30
-
-      - name: 📊 Upload Test Coverage
+      - name: 📊 Report Coverage
         if: >-
           always() &&
           steps.supersession.outputs.superseded != 'true' &&
-          matrix.check.target == 'test-code'
-        uses: actions/upload-artifact@v7
+          (matrix.check.target == 'typecheck-code' || matrix.check.target == 'test-code')
+        uses: ./.github/actions/report-coverage
         with:
-          name: coverage-reports
-          path: |
-            coverage/
-            applications/**/coverage/
-            packages/**/coverage/
-            tools/**/coverage/
-          retention-days: 30
+          target: ${{ matrix.check.target }}
+          is-failure: ${{ failure() }}
 
       - name: 🧹 Cleanup Codebase
         if: always() && steps.supersession.outputs.superseded != 'true'

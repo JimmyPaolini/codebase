@@ -34,7 +34,7 @@
     "form-codebase": {},
     "gate-codebase": {},
     "knip": {},
-    "lint-codebase": {},
+    "lint-code": {},
     "make-projects": {},
     "markdown-lint": {},
     "oxfmt": {},
@@ -83,9 +83,9 @@
         "cwd": "{projectRoot}"
       }
     },
-    "test-coverage": {},
+    "test-code": {},
     "tidy-codebase": {},
-    "type-codebase": {},
+    "typecheck-code": {},
     "type-coverage": {},
     "typecheck": {},
     "yaml-lint": {}

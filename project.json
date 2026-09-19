@@ -66,6 +66,12 @@
   },
   "projectType": "application",
   "targets": {
+    "build-projects": {
+      "cache": false,
+      "dependsOn": ["codometer"],
+      "description": "Measure the repository and gate the limits it declares over itself. An nx:noop aggregator, the way every project's `build-projects` is. `dependsOn` names `codometer` alone rather than inheriting the targetDefault's `build`: the root project builds nothing, and this run measures source. It exists so 👷 Make Projects reaches the repository itself — the workflows under .github belong to no project, so without this nothing gates their comment budgets.",
+      "executor": "nx:noop"
+    },
     "callidescope": {
       "cache": true,
       "configurations": {
@@ -193,6 +199,7 @@
         "cwd": "{workspaceRoot}"
       }
     },
+    "deprecate-code": {},
     "eslint": {
       "cache": true,
       "configurations": {
@@ -364,8 +371,7 @@
         "cwd": "{workspaceRoot}"
       }
     },
-    "deprecate-code": {},
-    "guard-code": {},
+    "format-code": {},
     "gitleaks": {
       "cache": true,
       "configurations": {
@@ -388,6 +394,7 @@
         "cwd": "{projectRoot}"
       }
     },
+    "guard-code": {},
     "install-skills": {
       "cache": false,
       "configurations": {
@@ -425,6 +432,17 @@
       "options": {
         "cwd": "{workspaceRoot}"
       }
+    },
+    "judge-conventions": {
+      "cache": false,
+      "dependsOn": [
+        "reconcile-pull-request-labels",
+        "validate-branch-name",
+        "validate-pull-request-body",
+        "validate-pull-request-release-significance",
+        "validate-pull-request-title"
+      ],
+      "executor": "nx:noop"
     },
     "knip": {
       "cache": true,
@@ -466,12 +484,6 @@
         "command": "NODE_OPTIONS='--import=tsx' lint-staged --config configuration/lint-staged.config.ts --continue-on-error",
         "cwd": "{projectRoot}"
       }
-    },
-    "build-projects": {
-      "cache": false,
-      "dependsOn": ["codometer"],
-      "description": "Measure the repository and gate the limits it declares over itself. An nx:noop aggregator, the way every project's `build-projects` is. `dependsOn` names `codometer` alone rather than inheriting the targetDefault's `build`: the root project builds nothing, and this run measures source. It exists so 👷 Make Projects reaches the repository itself — the workflows under .github belong to no project, so without this nothing gates their comment budgets.",
-      "executor": "nx:noop"
     },
     "markdown-lint": {
       "cache": true,
@@ -887,7 +899,6 @@
         "cwd": "infrastructure/terraform"
       }
     },
-    "format-code": {},
     "trivy-config": {
       "cache": true,
       "description": "Scan Terraform infrastructure code for misconfigurations using Trivy. Identical to what the Scan Security workflow runs, so a local run reproduces CI exactly. Requires trivy on PATH (the devcontainer installs it; otherwise `brew install trivy`).",
@@ -901,7 +912,6 @@
         "cwd": "{workspaceRoot}"
       }
     },
-    "typecheck-code": {},
     "type-coverage": {
       "cache": true,
       "description": "Check TypeScript type coverage for workspace root (minimum 95%)",
@@ -924,6 +934,7 @@
         "cwd": "{projectRoot}"
       }
     },
+    "typecheck-code": {},
     "validate-branch-name": {
       "cache": false,
       "description": "Validate the current branch name against the configured naming convention. The pre-push hook calls the binary directly to avoid a project graph build; this target is for manual use.",
@@ -932,17 +943,6 @@
         "command": "if [ -n \"$BRANCH_NAME\" ]; then validate-branch-name -t \"$BRANCH_NAME\"; else validate-branch-name; fi",
         "cwd": "{projectRoot}"
       }
-    },
-    "judge-conventions": {
-      "cache": false,
-      "dependsOn": [
-        "reconcile-pull-request-labels",
-        "validate-branch-name",
-        "validate-pull-request-body",
-        "validate-pull-request-release-significance",
-        "validate-pull-request-title"
-      ],
-      "executor": "nx:noop"
     },
     "validate-pull-request-body": {
       "cache": false,
