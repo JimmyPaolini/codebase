@@ -628,7 +628,7 @@ Call stacks traced through `packages/ic-suite/codometer/codometer-cli`, deepest 
 | Stacks through recursion | 0 |
 | Unfollowable calls | 3 |
 
-### Limits
+### Callidescope Limits
 
 What this project is judged against, as declared in its own `callidescope.config.ts`.
 
@@ -1051,7 +1051,7 @@ graph LR
 
 <!-- CODE_STATISTICS_START -->
 
-## ⏲️ Codometer
+## ⏲️ Codometer Output
 
 ### Project
 
