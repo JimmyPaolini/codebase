@@ -704,6 +704,7 @@
     },
     "reconcile-pull-request-labels": {
       "cache": false,
+      "dependsOn": ["synchronization:build"],
       "executor": "nx:run-commands",
       "options": {
         "command": "if [ -n \"$PULL_REQUEST_NUMBER\" ]; then node tools/synchronization/dist/modules/pull-request-labels/pull-request-labels.command.js \"$PULL_REQUEST_NUMBER\"; else echo \"Skipping label reconciliation\"; fi",
