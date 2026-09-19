@@ -31,12 +31,7 @@ nx run callidescope-core:vitest
 
 ## 👔 Conformetry
 
-No conformetry template describes a contracts-only package yet, so this one is
-held to no template and carries no `conformetry-validate` target. It
-deliberately does **not** claim `framework:nestjs` to obtain one: it declares no
-service and depends on no NestJS package, and a `src/modules/<name>/` holding
-only types matches three module templates equally well and fails as ambiguous.
-A contracts template is tracked as follow-up work in the conformetry toolchain.
+This project was generated from the [nestjs-service-project](../../configuration/conformetry-templates/nestjs-service-project) conformetry template.
 
 ## 🕸️ Codependix
 
@@ -76,9 +71,50 @@ graph LR
   file_eslint_config_ts["eslint.config.ts"]
   file_src_index_ts["src/index.ts"]
   file_src_index_unit_test_ts["src/index.unit.test.ts"]
-  file_src_modules_call_graph_call_graph_types_ts["src/modules/call-graph/call-graph.types.ts"]
+  file_src_lib_call_graph_types_ts["src/lib/call-graph.types.ts"]
+  file_testing_mocks_ts["testing/mocks.ts"]
   file_testing_setup_ts["testing/setup.ts"]
   file_vitest_config_ts["vitest.config.ts"]
   file_src_index_unit_test_ts --> file_src_index_ts
 ```
 <!-- codependix:end name="codependix-file-imports" -->
+
+<!-- CALL_STACKS_START -->
+
+### NestJS Module Graph
+
+<!-- codependix:start name="codependix-nestjs-modules" -->
+_This project defines no NestJS modules to graph._
+<!-- codependix:end name="codependix-nestjs-modules" -->
+
+## 🔭 Callidescope
+
+Call stacks traced through `packages/ic-suite/callidescope/callidescope-core`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
+
+| Measure | Value |
+| --- | --- |
+| Callables | 0 |
+| Files | 7 |
+| Calls traced | 0 |
+| Call stacks | 0 |
+| Deepest stack | 0 |
+| Stacks through recursion | 0 |
+| Unfollowable calls | 0 |
+
+### Limits
+
+What this project is judged against, as declared in its own `callidescope.config.ts`.
+
+| Limit | Value |
+| --- | --- |
+| `maximumDepth` | 17 |
+| `maximumBreadth` | none |
+
+### Call stacks (depth)
+
+None.
+
+### Breadth
+
+None.
+<!-- CALL_STACKS_END -->

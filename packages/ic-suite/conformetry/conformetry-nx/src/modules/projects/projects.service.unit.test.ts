@@ -72,7 +72,7 @@ describe(ProjectsService, () => {
       expect(service.listWorkspaceProjects(workspaceRoot)).toContainEqual({
         name: "widgets",
         root: "packages/widgets",
-        tags: ["framework:nestjs"],
+        tags: ["framework:nestjs", "name:widgets"],
       });
     });
 
@@ -103,7 +103,7 @@ describe(ProjectsService, () => {
       ).toStrictEqual({
         name: "packages/widgets",
         root: "packages/widgets",
-        tags: [],
+        tags: ["name:packages/widgets"],
       });
     });
 
@@ -119,7 +119,7 @@ describe(ProjectsService, () => {
           projectConfigurationFile: "packages/widgets/scalar.json",
           workspaceRoot,
         }).tags,
-      ).toStrictEqual([]);
+      ).toStrictEqual(["name:packages/widgets"]);
     });
 
     it("keeps only the tags that are text", async () => {
@@ -134,7 +134,7 @@ describe(ProjectsService, () => {
           projectConfigurationFile: "packages/widgets/mixed.json",
           workspaceRoot,
         }).tags,
-      ).toStrictEqual(["keep"]);
+      ).toStrictEqual(["keep", "name:mixed"]);
     });
   });
 });

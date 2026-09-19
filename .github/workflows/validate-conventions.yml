@@ -98,7 +98,6 @@ jobs:
         id: supersession
         env:
           GH_TOKEN: ${{ github.token }}
-          HEAD_BRANCH: ${{ github.head_ref }}
         run: |
           runs_url="repos/${{ github.repository }}"
           runs_url="${runs_url}/actions/workflows/validate-conventions.yml/runs"

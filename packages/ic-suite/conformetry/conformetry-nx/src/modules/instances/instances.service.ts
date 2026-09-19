@@ -74,7 +74,7 @@ export class InstancesService {
       );
     const projectRootPath = path.resolve(args.workspaceRoot, args.project.root);
 
-    return configuration
+    const instances = configuration
       .flatMap((generator) => generator.instances)
       .flatMap((group) => {
         // A tagged group is read inside the project; an untagged one is the
@@ -96,5 +96,16 @@ export class InstancesService {
       .filter((instance) => {
         return this.isInsideProject({ instance, projectRootPath });
       });
+
+    // First-match-wins logic: deduplicate instances by path so earlier generators override later ones.
+    const seenInstances = new Set<string>();
+    return instances.filter((instance) => {
+      const key = `${instance.path}:${instance.nameStem}`;
+      if (seenInstances.has(key)) {
+        return false;
+      }
+      seenInstances.add(key);
+      return true;
+    });
   }
 }
