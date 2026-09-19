@@ -41,9 +41,18 @@ concurrency:
 
 jobs:
   lint-codebase:
-    name: 🧑‍💻 Lint Codebase
+    name: 🧑‍💻 Lint Codebase (${{ matrix.target }})
     runs-on: ubuntu-latest
     timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - type-codebase
+          - lint-codebase
+          - tidy-codebase
+          - form-codebase
+          - gate-codebase
 
     steps:
       - name: 📥 Checkout Repository
@@ -64,6 +73,7 @@ jobs:
       # has a new mtime and the default metadata strategy would treat the
       # whole workspace as changed.
       - name: ♻️ Sync ESLint Cache
+        if: matrix.target == 'lint-codebase'
         uses: actions/cache@v6
         with:
           path: .eslintcache
@@ -100,11 +110,22 @@ jobs:
       # There is no aggregate `synchronize` target: each is its own Nx target,
       # joining the same `nx affected` invocation, so one task graph owns the
       # run.
-      - name: 🧑‍💻 Lint Codebase
+      - name: 🧑‍💻 Run ${{ matrix.target }}
         env:
           NX_VERBOSE_LOGGING: ${{ inputs.verbose || false }}
         run: |
-          pnpm exec nx affected --target=lint-codebase --configuration=check
+          pnpm exec nx affected --target=${{ matrix.target }} --configuration=check
+
+      - name: 📊 Upload Type Coverage
+        if: failure() && matrix.target == 'type-codebase'
+        uses: actions/upload-artifact@v7
+        with:
+          name: type-coverage-reports
+          path: |
+            applications/*/type-coverage-report.txt
+            packages/*/type-coverage-report.txt
+            tools/*/type-coverage-report.txt
+          retention-days: 30
 
       # Last, unconditionally: a cold run of this task graph runs close
       # enough to this job's timeout that whether one commit's first attempt
