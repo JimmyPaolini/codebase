@@ -130,8 +130,8 @@ export class ClassificationService {
     return (
       this.isJunctionFree(structure) &&
       cycles === 0 &&
-      structure.columns % 2 === 0 &&
-      components === structure.columns / 2 + 1 &&
+      structure.characteristics.pitch % 2 === 0 &&
+      components === structure.characteristics.pitch / 2 + 1 &&
       freeEnds === 2 * components &&
       this.reachesMinimumRows(structure, "parallel")
     );
@@ -245,35 +245,35 @@ export class ClassificationService {
       {
         matches: (structure) =>
           this.isClosedLoop(structure) &&
-          structure.columns === structure.rows - 1 &&
+          structure.characteristics.pitch === structure.rows - 1 &&
           this.reachesMinimumRows(structure, "snake"),
         name: "snake",
       },
       {
         matches: (structure) =>
           this.isArc(structure) &&
-          structure.columns === structure.rows - 1 &&
+          structure.characteristics.pitch === structure.rows - 1 &&
           this.reachesMinimumRows(structure, "boxes"),
         name: "boxes",
       },
       {
         matches: (structure) =>
           this.isArc(structure) &&
-          structure.columns === structure.rows - 1 &&
+          structure.characteristics.pitch === structure.rows - 1 &&
           this.reachesMinimumRows(structure, "chain"),
         name: "chain",
       },
       {
         matches: (structure) =>
           this.isArc(structure) &&
-          structure.columns === 2 * structure.rows - 3 &&
+          structure.characteristics.pitch === 2 * structure.rows - 3 &&
           this.reachesMinimumRows(structure, "swirl"),
         name: "swirl",
       },
       {
         matches: (structure) =>
           this.isArc(structure) &&
-          structure.columns === structure.rows &&
+          structure.characteristics.pitch === structure.rows &&
           this.reachesMinimumRows(structure, "whirl"),
         name: "whirl",
       },

@@ -72,7 +72,6 @@ export class DrawRecordService {
       code,
       columns,
       family: classification.family ?? null,
-      pitch: columns,
       provenance,
       rows,
       subFamily: classification.subFamily ?? null,

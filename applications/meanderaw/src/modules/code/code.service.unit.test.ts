@@ -169,6 +169,36 @@ describe(CodeService, () => {
     });
   });
 
+  describe("reduce", () => {
+    it("finds the smallest repeating sub-tile", () => {
+      const code = service.parse("3366cc99", 5, 2);
+
+      expect(service.reduceToUnit(code)).toStrictEqual({
+        columns: 1,
+        digits: "36c9",
+        levels: 4,
+        rows: 5,
+      });
+    });
+
+    it("returns the original Code if it is not repeating", () => {
+      const code = service.parse("36c9", 5, 1);
+
+      expect(service.reduceToUnit(code)).toStrictEqual(code);
+    });
+
+    it("reduces across multiple repeating pieces", () => {
+      const code = service.parse("36369c9c", 3, 4);
+
+      expect(service.reduceToUnit(code)).toStrictEqual({
+        columns: 2,
+        digits: "369c",
+        levels: 2,
+        rows: 3,
+      });
+    });
+  });
+
   describe("rotate", () => {
     it("shifts every level's own columns west by the same amount", () => {
       const code = service.parse("1230abc0", 5, 2);

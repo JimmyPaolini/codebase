@@ -21,25 +21,26 @@ describe(DrawIndexService, () => {
   /** Every field a fixture row does not care about, defaulted so a case only spells out what it means to test. */
   const meander = (
     overrides: Partial<Meander> & Pick<Meander, "code" | "id">,
-  ): Meander => ({
-    columns: 1,
-    components: 1,
-    cycles: 0,
-    family: null,
-    freeEnds: 0,
-    hasBranching: false,
-    hasCrossing: false,
-    inkTJunctions: 0,
-    inkXJunctions: 0,
-    negativeTJunctions: 0,
-    negativeXJunctions: 0,
-    pitch: 1,
-    provenance: "hardcoded",
-    rows: 2,
-    subFamily: null,
-    svg: '<svg width="1" height="1"><path d="M0 0"/></svg>',
-    ...overrides,
-  });
+  ): Meander =>
+    ({
+      columns: 1,
+      components: 1,
+      cycles: 0,
+      family: null,
+      freeEnds: 0,
+      hasBranching: false,
+      hasCrossing: false,
+      inkTJunctions: 0,
+      inkXJunctions: 0,
+      negativeTJunctions: 0,
+      negativeXJunctions: 0,
+      pitch: 1,
+      provenance: "hardcoded",
+      rows: 2,
+      subFamily: null,
+      svg: '<svg width="1" height="1"><path d="M0 0"/></svg>',
+      ...overrides,
+    });
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({

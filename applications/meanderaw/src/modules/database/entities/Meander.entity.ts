@@ -1,3 +1,5 @@
+// cspell:ignore Neighbours
+
 import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
 
 import { SUPPORTED_TYPES } from "../../classification/classification.constants";
@@ -91,11 +93,44 @@ export class Meander {
   @Column({ type: "int" })
   columns!: number;
 
+  @Column({ default: 0, type: "int" })
+  componentCount!: number;
+
   @Column({ type: "int" })
   components!: number;
 
+  @Column({ default: 0, type: "int" })
+  cornerCount!: number;
+
+  @Column({ default: false, type: "boolean" })
+  crossesTheSeam!: boolean;
+
+  @Column({ default: 0, type: "int" })
+  cycleCount!: number;
+
   @Column({ type: "int" })
   cycles!: number;
+
+  @Column({ default: 0, type: "float" })
+  density!: number;
+
+  @Column({ default: 0, type: "int" })
+  dotCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  edgeCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  embeddedOCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  embeddedUCount!: number;
+
+  @Column({ default: false, type: "boolean" })
+  endsAreLatticeNeighbours!: boolean;
+
+  @Column({ default: false, type: "boolean" })
+  endsOnBorderRules!: boolean;
 
   @Column({ enum: SUPPORTED_TYPES, nullable: true, type: "simple-enum" })
   family!: MeanderType | null;
@@ -109,8 +144,26 @@ export class Meander {
   @Column({ type: "boolean" })
   hasCrossing!: boolean;
 
+  @Column({ default: false, type: "boolean" })
+  hasDots!: boolean;
+
+  @Column({ default: false, type: "boolean" })
+  hasTJunctions!: boolean;
+
+  @Column({ default: false, type: "boolean" })
+  hasXJunctions!: boolean;
+
+  @Column({ default: 0, type: "int" })
+  horizontalDashCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  horizontalPointCount!: number;
+
   @PrimaryGeneratedColumn()
   id!: number;
+
+  @Column({ default: 0, type: "int" })
+  inkPointCount!: number;
 
   @Column({ type: "int" })
   inkTJunctions!: number;
@@ -118,24 +171,96 @@ export class Meander {
   @Column({ type: "int" })
   inkXJunctions!: number;
 
+  @Column({ default: false, type: "boolean" })
+  isClosedLoop!: boolean;
+
+  @Column({ default: false, type: "boolean" })
+  isConnected!: boolean;
+
+  @Column({ default: false, type: "boolean" })
+  isFlipSymmetric!: boolean;
+
+  @Column({ default: false, type: "boolean" })
+  isJunctionFree!: boolean;
+
+  @Column({ default: false, type: "boolean" })
+  isMirrorSymmetric!: boolean;
+
+  @Column({ default: false, type: "boolean" })
+  isReducible!: boolean;
+
+  @Column({ default: false, type: "boolean" })
+  isSingleArc!: boolean;
+
+  @Column({ default: 0, type: "int" })
+  lCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  longestHorizontalRun!: number;
+
+  @Column({ default: 0, type: "int" })
+  longestVerticalRun!: number;
+
   @Column({ type: "int" })
   negativeTJunctions!: number;
 
   @Column({ type: "int" })
   negativeXJunctions!: number;
 
+  @Column({ default: 0, type: "int" })
+  oCount!: number;
+
   @Column({ type: "int" })
   pitch!: number;
+
+  @Column({ default: 0, type: "int" })
+  plusCount!: number;
 
   @Column({ enum: MEANDER_PROVENANCES, type: "simple-enum" })
   provenance!: MeanderProvenance;
 
+  @Column({ default: false, type: "boolean" })
+  reversesAtItsTightestTurn!: boolean;
+
   @Column({ type: "int" })
   rows!: number;
+
+  @Column({ default: 0, type: "int" })
+  seamComponents!: number;
+
+  @Column({ default: 0, type: "int" })
+  seamCycles!: number;
+
+  @Column({ default: 0, type: "int" })
+  seamTJunctions!: number;
+
+  @Column({ default: 0, type: "int" })
+  seamXJunctions!: number;
+
+  @Column({ default: 0, type: "int" })
+  shapeICount!: number;
 
   @Column({ enum: SUPPORTED_SUB_FAMILIES, nullable: true, type: "simple-enum" })
   subFamily!: null | SubFamily;
 
   @Column({ type: "text" })
   svg!: string;
+
+  @Column({ default: 0, type: "int" })
+  tCount!: number;
+
+  @Column({ default: false, type: "boolean" })
+  turnsMonotonically!: boolean;
+
+  @Column({ default: 0, type: "int" })
+  uCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  verticalDashCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  verticalPointCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  xCount!: number;
 }

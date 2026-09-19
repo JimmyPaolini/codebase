@@ -36,7 +36,7 @@ describe(CorpusService, () => {
     rows: 2,
   };
   const tile = createMock<Tile>({ columns: 1, rows: 2 });
-  const characteristics: Characteristics = {
+  const characteristics = createMock<Characteristics>({
     components: 1,
     cycles: 0,
     freeEnds: 2,
@@ -46,7 +46,7 @@ describe(CorpusService, () => {
     inkXJunctions: 0,
     negativeTJunctions: 0,
     negativeXJunctions: 0,
-  };
+  });
   const savedMeander = createMock<Meander>({ id: 1 });
 
   beforeAll(async () => {
