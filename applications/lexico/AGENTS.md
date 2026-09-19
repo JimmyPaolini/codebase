@@ -62,7 +62,7 @@ See the [testing-strategy skill](../../.agents/skills/testing-strategy/SKILL.md)
 
 ## Troubleshooting
 
-See the [triage-submission skill](../../.agents/skills/triage-submission/SKILL.md) for lint and git hook failures.
+See the [triage-integration skill](../../.agents/skills/triage-integration/SKILL.md) for lint and git hook failures.
 
 ## Key Files
 

@@ -54,7 +54,7 @@
         "{workspaceRoot}/.agents/skills/commit-code/SKILL.md",
         "{workspaceRoot}/.agents/skills/create-pull-request/SKILL.md",
         "{workspaceRoot}/.agents/skills/rename-branch/SKILL.md",
-        "{workspaceRoot}/.agents/skills/triage-submission/SKILL.md",
+        "{workspaceRoot}/.agents/skills/triage-integration/SKILL.md",
         "{workspaceRoot}/.github/ISSUE_TEMPLATE/issue.yml",
         "{workspaceRoot}/.vscode/settings.json",
         "{workspaceRoot}/configuration/conventional.config.cjs",
