@@ -19,6 +19,12 @@ const error = new Error("failed");
 
 Exceptions: `args` (reserved word collision with `arguments`) and `str` (collision with `string`).
 
+## File Naming
+
+- **Kebab-case**: All file names must be lowercase with hyphens separating words (e.g., `my-file-name.ts`).
+- **Always** prefer service files `*.service.ts` over `*.ts` or `*.utilities.ts` for NestJS service classes.
+- Only use utilities files `*.utilities.ts` in cases where a top level function is needed, and only use them to invoke service class methods or to compose multiple service class methods together. Never use utilities files to implement business logic directly.
+
 ## Naming Conventions
 
 | Pattern | Used for |
