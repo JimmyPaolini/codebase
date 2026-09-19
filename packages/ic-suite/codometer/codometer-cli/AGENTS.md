@@ -78,7 +78,7 @@ Always prefer running tasks through Nx rather than calling the underlying tools 
 
 ```bash
 nx run codometer-cli:start           # Run the command-line application
-nx run codometer-cli:type-codebase,lint-codebase,tidy-codebase,form-codebase,gate-codebase   # Every static check, in one graph
+nx run codometer-cli:typecheck-code,lint-code,format-code,deprecate-code,guard-code   # Every static check, in one graph
 nx run codometer-cli:typecheck       # tsc --noEmit
 nx run codometer-cli:oxfmt           # Formatting
 ```

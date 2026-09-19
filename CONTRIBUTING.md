@@ -213,13 +213,13 @@ pnpm exec nx run meanderaw:repl           # Interactive REPL
 pnpm exec nx run <project>:vitest             # Coverage is the default configuration
 pnpm exec nx run <project>:vitest:watch       # Watch mode
 pnpm exec nx run caelundas:vitest:unit        # One kind: unit, integration, end-to-end
-pnpm exec nx run <project>:test-coverage      # Aggregate — reaches pytest too
+pnpm exec nx run <project>:test-code      # Aggregate — reaches pytest too
 ```
 
 ```bash
-# Code quality — lint-codebase runs every static analyser in one task graph
-pnpm exec nx run-many --target=lint-codebase                            # check (default)
-pnpm exec nx run-many --target=lint-codebase --configuration=write      # auto-fix
+# Code quality — lint-code runs every static analyser in one task graph
+pnpm exec nx run-many --target=lint-code                            # check (default)
+pnpm exec nx run-many --target=lint-code --configuration=write      # auto-fix
 ```
 
 ```bash
@@ -235,10 +235,10 @@ pnpm exec nx run-many --target=knip              # or --configuration=write (cau
 
 ```bash
 # Affected projects only — the fastest useful check
-pnpm exec nx affected --target=lint-codebase --base=main
+pnpm exec nx affected --target=lint-code --base=main
 ```
 
-Always run tasks through Nx rather than the underlying tool, so caching and the task graph apply. Note there is **no `test` target** in this workspace — it is `vitest` for TypeScript projects and `pytest` for Python ones, both reachable through `test-coverage`.
+Always run tasks through Nx rather than the underlying tool, so caching and the task graph apply. Note there is **no `test` target** in this workspace — it is `vitest` for TypeScript projects and `pytest` for Python ones, both reachable through `test-code`.
 
 ### Python Projects
 
@@ -252,7 +252,7 @@ Always run tasks through Nx rather than the underlying tool, so caching and the 
 | Tests     | `vitest`                     | `pytest`        |
 | Dead code | `knip`                       | `vulture`       |
 
-The composite targets pick whichever set a project's `language:*` tag selects, so `lint-codebase` and `test-coverage` work unchanged either way — which is the reason to reach for those rather than a tool by name. See [write-python](.agents/skills/write-python/SKILL.md) for the full setup.
+The composite targets pick whichever set a project's `language:*` tag selects, so `lint-code` and `test-code` work unchanged either way — which is the reason to reach for those rather than a tool by name. See [write-python](.agents/skills/write-python/SKILL.md) for the full setup.
 
 ### The Gates
 
@@ -260,10 +260,10 @@ Five workflows run on every pull request. Each maps to targets you can run local
 
 | Workflow             | Runs                                                                                                                     | Local equivalent                                  |
 | -------------------- | ------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------- |
-| Lint Codebase        | Format, lint, typecheck, type coverage, spelling, markdown, YAML, dead code, conformance, and the synchronization checks | `nx affected --target=lint-codebase`              |
-| Test Coverage        | Unit, integration, and end-to-end tests with coverage thresholds                                                         | `nx affected --target=test-coverage`              |
+| Lint Codebase        | Format, lint, typecheck, type coverage, spelling, markdown, YAML, dead code, conformance, and the synchronization checks | `nx affected --target=lint-code`              |
+| Test Coverage        | Unit, integration, and end-to-end tests with coverage thresholds                                                         | `nx affected --target=test-code`              |
 | Scan Security        | Secrets, Python AST, dependency vulnerabilities, licenses, infrastructure misconfiguration                               | `nx affected --target=scan-security`              |
-| Make Projects        | Builds every buildable project and gates its declared bundle size                                                        | `nx affected --target=make-projects`              |
+| Make Projects        | Builds every buildable project and gates its declared bundle size                                                        | `nx affected --target=build-projects`              |
 | Validate Conventions | Branch name, pull request title, body, labels, assignees, and release significance                                       | See [Pull Request Process](#pull-request-process) |
 
 🧑‍🔧 Make Codebase additionally builds the dev container image, but only when `.devcontainer/**` changes.
@@ -327,10 +327,10 @@ Four toolchains are developed in this repository and gate its own code. You are 
 
 | Toolchain      | What it does                                                                                                                   | What fails a pull request                                                           |
 | -------------- | ------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------- |
-| `conformetry`  | Scaffolds projects, modules, and components from templates, then measures the generated instances back against those templates | `conformetry-validate`, inside `lint-codebase`                                      |
+| `conformetry`  | Scaffolds projects, modules, and components from templates, then measures the generated instances back against those templates | `conformetry-validate`, inside `lint-code`                                      |
 | `codometer`    | Measures a directory — languages, declared conventions, compressed size — against the limits its configuration declares        | that project's `codometer` target, inside Make Projects                             |
-| `codependix`   | Exports Nx, NestJS module, and file-level import graphs, and judges them against declared boundary rules                       | `codependix --check boundaries`, run beside `lint-codebase` in Lint Codebase        |
-| `callidescope` | Traces call stacks through injected dependencies and flags stacks that are too deep or callables that reach too widely         | the inferred per-project `gate` target, run beside `lint-codebase` in Lint Codebase |
+| `codependix`   | Exports Nx, NestJS module, and file-level import graphs, and judges them against declared boundary rules                       | `codependix --check boundaries`, run beside `lint-code` in Lint Codebase        |
+| `callidescope` | Traces call stacks through injected dependencies and flags stacks that are too deep or callables that reach too widely         | the inferred per-project `gate` target, run beside `lint-code` in Lint Codebase |
 
 Each is documented in its command-line package — [conformetry-cli](packages/ic-suite/conformetry/conformetry-cli/README.md), [codometer-cli](packages/ic-suite/codometer/codometer-cli/README.md), [codependix-cli](packages/ic-suite/codependix/codependix-cli/README.md), [callidescope-cli](packages/ic-suite/callidescope/callidescope-cli/README.md) — and each has agent skills for the same three moments, which read just as well for a human: running it, configuring it, and acting on what it said (codependix adds a fourth, for reading a graph the repository already committed). They are the `conformetry-*`, `codometer-*`, `codependix-*`, and `callidescope-*` entries under [.agents/skills](.agents/skills).
 
@@ -358,7 +358,7 @@ Both signing checks are run by Husky already — do not invoke `scripts/git/` si
 
 Worktrees are the normal way to run several branches side by side here, and three traps are specific to this repository.
 
-- **`pnpm-lock.yaml` goes dirty on its own.** `pnpm install` or `lint-codebase --write` rewrites the `applications/JimmyPaolini` entry, because a placeholder `package.json` is inconsistently present across checkouts. Revert the lockfile rather than trying to reconcile it.
+- **`pnpm-lock.yaml` goes dirty on its own.** `pnpm install` or `lint-code --write` rewrites the `applications/JimmyPaolini` entry, because a placeholder `package.json` is inconsistently present across checkouts. Revert the lockfile rather than trying to reconcile it.
 - **Never run `git submodule update --init` for `applications/JimmyPaolini`.** That submodule is deliberately left uninitialized everywhere, locally and in CI. A `-` prefix in `git submodule status` is expected here, not broken.
 - **The stash stack is shared with every other worktree.** A bare `git stash pop` can take someone else's work. Prefer a temporary commit, or `git stash push -u -m "<unique-tag>"` and `git stash apply <sha>`.
 

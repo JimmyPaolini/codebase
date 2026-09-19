@@ -399,7 +399,7 @@
         ]
       }
     ],
-    "form-codebase": {
+    "deprecate-code": {
       "cache": false,
       "configurations": {
         "check": {},
@@ -416,10 +416,10 @@
         "syncpack",
         "vulture"
       ],
-      "description": "Aggregator for form-codebase",
+      "description": "Aggregator for deprecate-code",
       "executor": "nx:noop"
     },
-    "gate-codebase": {
+    "guard-code": {
       "cache": false,
       "configurations": {
         "check": {},
@@ -434,7 +434,7 @@
         "meanderaw-check",
         "sync-vscode-extensions"
       ],
-      "description": "Aggregator for gate-codebase",
+      "description": "Aggregator for guard-code",
       "executor": "nx:noop"
     },
     "knip": [
@@ -466,7 +466,7 @@
         }
       }
     ],
-    "lint-codebase": {
+    "lint-code": {
       "cache": false,
       "configurations": {
         "check": {},
@@ -480,10 +480,10 @@
         "sqlfluff-lint",
         "stylelint"
       ],
-      "description": "Aggregator for lint-codebase",
+      "description": "Aggregator for lint-code",
       "executor": "nx:noop"
     },
-    "make-projects": {
+    "build-projects": {
       "cache": false,
       "dependsOn": ["build", "codometer"],
       "description": "Build every buildable project and measure it. An nx:noop aggregator; `build` carries its own ^build dependency, and `codometer` gates each project's declared limit.",
@@ -979,7 +979,7 @@
         }
       }
     ],
-    "test-coverage": {
+    "test-code": {
       "cache": false,
       "configurations": {
         "coverage": {},
@@ -988,10 +988,10 @@
       },
       "defaultConfiguration": "coverage",
       "dependsOn": ["pytest", "vitest"],
-      "description": "Dynamic code analysis: the tests, which execute the source. An nx:noop aggregator. The configuration propagates down dependsOn, so test-coverage:coverage reaches test:coverage.",
+      "description": "Dynamic code analysis: the tests, which execute the source. An nx:noop aggregator. The configuration propagates down dependsOn, so test-code:coverage reaches test:coverage.",
       "executor": "nx:noop"
     },
-    "tidy-codebase": {
+    "format-code": {
       "cache": false,
       "configurations": {
         "check": {},
@@ -1006,7 +1006,7 @@
         "sqlfluff-format",
         "yaml-lint"
       ],
-      "description": "Aggregator for tidy-codebase",
+      "description": "Aggregator for format-code",
       "executor": "nx:noop"
     },
     "ty": [
@@ -1027,15 +1027,15 @@
         }
       }
     ],
-    "type-codebase": {
+    "typecheck-code": {
       "cache": false,
       "configurations": {
         "check": {},
         "write": {}
       },
       "defaultConfiguration": "check",
-      "dependsOn": [ "type-coverage","typecheck"],
-      "description": "Aggregator for type-codebase",
+      "dependsOn": ["type-coverage", "typecheck"],
+      "description": "Aggregator for typecheck-code",
       "executor": "nx:noop"
     },
     "type-coverage": [
@@ -1108,7 +1108,7 @@
         }
       },
       "defaultConfiguration": "coverage",
-      "description": "Extra configurations layered onto the vitest target that @nx/vitest infers. The plugin supplies the command, inputs, and outputs. Coverage is the default so that a bare `test-coverage` run still enforces the thresholds \u2014 Nx only propagates a configuration down `dependsOn` when it is named explicitly."
+      "description": "Extra configurations layered onto the vitest target that @nx/vitest infers. The plugin supplies the command, inputs, and outputs. Coverage is the default so that a bare `test-code` run still enforces the thresholds \u2014 Nx only propagates a configuration down `dependsOn` when it is named explicitly."
     },
     "vulture": [
       {

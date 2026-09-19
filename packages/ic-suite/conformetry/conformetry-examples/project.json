@@ -93,8 +93,8 @@
         "parallel": false
       }
     },
-    "form-codebase": {},
-    "gate-codebase": {},
+    "deprecate-code": {},
+    "guard-code": {},
     "hello-template": {
       "cache": false,
       "description": "Validate the smallest possible template against its one instance",
@@ -120,7 +120,7 @@
         }
       }
     },
-    "lint-codebase": {},
+    "lint-code": {},
     "markdown-lint": {},
     "nx-host": {
       "cache": false,
@@ -170,8 +170,8 @@
         }
       }
     },
-    "test-coverage": {},
-    "tidy-codebase": {},
+    "test-code": {},
+    "format-code": {},
     "two-directions": {
       "cache": false,
       "description": "Ask which templates explain a path, then which instances a template explains, against the same fixtures",
@@ -188,7 +188,7 @@
         "parallel": false
       }
     },
-    "type-codebase": {},
+    "typecheck-code": {},
     "type-coverage": {},
     "typecheck": {},
     "yaml-lint": {}

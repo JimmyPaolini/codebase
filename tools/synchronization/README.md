@@ -48,21 +48,21 @@ taxonomy the commands declare about themselves. Five of the six — every one
 except `pull-request-labels` — are **derivations**: committed files derived
 from configuration a pull request can also change, so `check` runs on a pull
 request and `write` runs on the default branch's release. The
-[🧑‍💻 Lint Codebase](../../.github/workflows/lint-codebase.yml) workflow and
+[🧑‍💻 Lint Codebase](../../.github/workflows/lint-code.yml) workflow and
 [`configuration/lint-staged.config.ts`](../../configuration/lint-staged.config.ts)
-each name every derivation target directly alongside `lint-codebase` in one
+each name every derivation target directly alongside `lint-code` in one
 `nx affected` invocation, rather than reaching them through
-[`lint-codebase`](../../AGENTS.md#code-quality)'s `dependsOn` — Nx forwards an
+[`lint-code`](../../AGENTS.md#code-quality)'s `dependsOn` — Nx forwards an
 explicit configuration down `dependsOn`, so an edge there would let
-`lint-codebase --configuration=write` publish from a branch.
+`lint-code --configuration=write` publish from a branch.
 
 `pull-request-labels` needs credentials: its destination is GitHub's label set
 rather than a file in the tree, so reaching it needs a token that neither a
-fork nor a developer's `lint-codebase` run has. It must not run in
-`lint-codebase`, and it must not wait for the default branch either — a change
+fork nor a developer's `lint-code` run has. It must not run in
+`lint-code`, and it must not wait for the default branch either — a change
 introducing a new scope needs that scope's label to exist before 🧾 Validate
 Pull Request Metadata runs on the very same pull request. So the one caller
-holding a token, [validate-conventions.yml](../../.github/workflows/validate-conventions.yml),
+holding a token, [judge-conventions.yml](../../.github/workflows/judge-conventions.yml),
 runs its `write` mode directly through `node` rather than through this Nx
 target, on `opened`/`reopened`, and nothing else names it.
 
@@ -125,13 +125,13 @@ sources as `inputs`, so `nx affected` only reruns it when a file it actually
 reads has changed, and each caller decides for itself which targets belong in
 which invocation:
 
-- [🧑‍💻 Lint Codebase](../../.github/workflows/lint-codebase.yml) and
+- [🧑‍💻 Lint Codebase](../../.github/workflows/lint-code.yml) and
   [`configuration/lint-staged.config.ts`](../../configuration/lint-staged.config.ts)
-  each name every derivation target directly alongside `lint-codebase` in one
+  each name every derivation target directly alongside `lint-code` in one
   `nx affected` invocation, so a pull request and a commit both check drift.
 - The release workflow runs every derivation's `write` configuration through
   `nx run-many`, so one command still publishes everything.
-- [validate-conventions.yml](../../.github/workflows/validate-conventions.yml)
+- [judge-conventions.yml](../../.github/workflows/judge-conventions.yml)
   runs `pull-request-labels write` directly through `node`, bypassing Nx
   entirely, since it is the one caller with a token and needs no project graph.
 
@@ -149,7 +149,7 @@ through it, so it needs no taxonomy: `start` always means all of them.
 3. Add a top-level target for it in `project.json`, with `check`/`write`
    configurations and its own source paths as `inputs`, the same shape as the
    existing six. That target is the whole declaration of where the command
-   runs: name it directly wherever it belongs — `lint-codebase`'s dependents
+   runs: name it directly wherever it belongs — `lint-code`'s dependents
    for a derivation, the release workflow's `run-many` for a report, or a
    caller with its own credentials for anything needing them.
 4. Register the command in `SynchronizationCommand.getCommands()`, and import
@@ -172,7 +172,7 @@ nx run synchronization:vitest
 
 ```bash
 nx run synchronization:repl
-nx run synchronization:type-codebase,lint-codebase,tidy-codebase,form-codebase,gate-codebase --configuration=write
+nx run synchronization:typecheck-code,lint-code,format-code,deprecate-code,guard-code --configuration=write
 ```
 
 ## License

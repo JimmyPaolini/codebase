@@ -187,7 +187,7 @@ fixture whose meaning silently changes when the resolver changes is worse than
 no fixture. Any edit under `examples/` or `src/` therefore takes three steps:
 
 ```bash
-nx run callidescope-examples:type-codebase,lint-codebase,tidy-codebase,form-codebase,gate-codebase --configuration=write   # first — see below
+nx run callidescope-examples:typecheck-code,lint-code,format-code,deprecate-code,guard-code --configuration=write   # first — see below
 nx run callidescope-examples:examples:write                        # regenerate output/ and the three published sections
 nx run callidescope-examples:vitest                                # update the expectations, then confirm
 ```

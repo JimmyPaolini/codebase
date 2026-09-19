@@ -15,7 +15,7 @@ import path from "node:path";
  * This was pinned to 2 because the run exhausted memory and the operating
  * system killed it. That was blamed on `analyze-code` spawning a nested
  * `nx run` per tool, each with its own scheduler, so `--parallel` bounded the
- * outer process only. `lint-codebase` is an `nx:noop` whose work hangs off
+ * outer process only. `lint-code` is an `nx:noop` whose work hangs off
  * `dependsOn`, so one scheduler now owns every task and this number means what
  * it says.
  *
@@ -72,7 +72,7 @@ const config = {
   ],
 
   // 🔬 Static analysis and conformetry validation
-  // One `nx affected` run over every staged path, on the same `lint-codebase`
+  // One `nx affected` run over every staged path, on the same `lint-code`
   // target the Lint Codebase workflow runs, so what passes here passes there.
 
   // This replaces a table of per-path entries that mapped a changed file to
@@ -86,17 +86,17 @@ const config = {
   // instances need not match a template-pattern glob to have drifted, so it
   // cannot be scoped to `affected`.
 
-  // Each derivation synchronization is named alongside `lint-codebase` rather
+  // Each derivation synchronization is named alongside `lint-code` rather
   // than reached through its `dependsOn`, for the reason the Lint Codebase
   // workflow names them: each also publishes on the default branch, and Nx
   // forwards an explicit configuration down `dependsOn`, so an edge there
-  // would let `lint-codebase --configuration=write` publish from a branch.
+  // would let `lint-code --configuration=write` publish from a branch.
 
   // `gate` is named the same way, but for a different reason: the callidescope
   // Nx plugin infers it with no configuration at all, so it has nothing for
   // `dependsOn` to forward in the first place. It stays a sibling target
   // because `nx affected` scopes it to the projects a commit actually
-  // touched, the same way it scopes `lint-codebase` itself — a commit that
+  // touched, the same way it scopes `lint-code` itself — a commit that
   // deepens one project's call stacks fails that project's own task, which
   // the workspace-wide `callidescope --check depth` run this replaced never
   // named. Naming both in this same invocation is what keeps a commit gating
@@ -118,7 +118,7 @@ const config = {
   // without a shell, so `NX_DAEMON=false nx ...` would be parsed as the
   // executable name.
   "*": (files: string[]): string[] => [
-    `pnpm exec nx affected --target=type-codebase,lint-codebase,tidy-codebase,form-codebase,gate-codebase --configuration=check --parallel=${String(ANALYSIS_PARALLELISM)} --outputStyle=static ${getStagedFilesFlags(files)}`,
+    `pnpm exec nx affected --target=typecheck-code,lint-code,format-code,deprecate-code,guard-code --configuration=check --parallel=${String(ANALYSIS_PARALLELISM)} --outputStyle=static ${getStagedFilesFlags(files)}`,
     "pnpm exec nx run-many --targets=conformetry-validate --outputStyle=static",
   ],
 };

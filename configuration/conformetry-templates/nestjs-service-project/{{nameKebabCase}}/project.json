@@ -33,20 +33,20 @@
     "codometer": {},
     "dependency-cruiser": {},
     "knip": {},
-    "lint-codebase": {},
-    "make-projects": {},
+    "lint-code": {},
+    "build-projects": {},
     "markdown-lint": {},
     "oxfmt": {},
     "oxlint": {},
     "prettier": {},
     "spell-check": {},
-    "test-coverage": {},
+    "test-code": {},
     "type-coverage": {},
     "typecheck": {},
     "yaml-lint": {},
-    "type-codebase": {},
-    "tidy-codebase": {},
-    "form-codebase": {},
-    "gate-codebase": {}
+    "typecheck-code": {},
+    "format-code": {},
+    "deprecate-code": {},
+    "guard-code": {}
   }
 }

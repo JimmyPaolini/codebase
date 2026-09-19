@@ -12,7 +12,7 @@
     "codometer": {},
     "dependency-cruiser": {},
     "knip": {},
-    "lint-codebase": {},
+    "lint-code": {},
     "markdown-lint": {},
     "oxfmt": {},
     "oxlint": {},
@@ -26,13 +26,13 @@
         "cwd": "{projectRoot}"
       }
     },
-    "test-coverage": {},
+    "test-code": {},
     "type-coverage": {},
     "typecheck": {},
     "yaml-lint": {},
-    "type-codebase": {},
-    "tidy-codebase": {},
-    "form-codebase": {},
-    "gate-codebase": {}
+    "typecheck-code": {},
+    "format-code": {},
+    "deprecate-code": {},
+    "guard-code": {}
   }
 }

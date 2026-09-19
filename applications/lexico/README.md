@@ -38,7 +38,7 @@ nx run lexico:develop     # http://localhost:3000
 | `preview` | Preview the production build locally |
 | `codometer` | Measure the entry, route, CSS, and server bundles and gate the limit each declares |
 | `vitest` | Tests — `:unit`, `:integration`, `:end-to-end` |
-| `lint-codebase` | All static analysis; `--configuration=write` to auto-fix |
+| `lint-code` | All static analysis; `--configuration=write` to auto-fix |
 
 ## Structure
 

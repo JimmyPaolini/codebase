@@ -35,6 +35,9 @@ const config: KnipConfig = {
     "gitleaks", // Gitleaks CLI, used for detecting hardcoded secrets
     "trivy", // Trivy CLI, used for security scanning (container images & infrastructure)
     "uv", // uv Python package manager, used in lint-staged for nbstripout
+    "validate-branch-name",
+    "validate-pull-request-body",
+    "pull-request-release-significance",
   ],
 
   // Dependencies nothing imports, each verified live: remove one and knip

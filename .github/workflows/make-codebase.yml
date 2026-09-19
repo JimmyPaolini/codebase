@@ -50,7 +50,7 @@ jobs:
         uses: actions/checkout@v7
 
       # No `setup-codebase`: nothing here runs Nx. The VS Code extension sync
-      # check that used to justify it is a `lint-codebase` leaf now.
+      # check that used to justify it is a `lint-code` leaf now.
       - name: 🗂️ Setup Environment File
         run: |
           cp .env.default .env

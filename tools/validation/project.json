@@ -13,10 +13,10 @@
   "targets": {
     "codometer": {},
     "dependency-cruiser": {},
-    "form-codebase": {},
-    "gate-codebase": {},
+    "deprecate-code": {},
+    "guard-code": {},
     "knip": {},
-    "lint-codebase": {},
+    "lint-code": {},
     "markdown-lint": {},
     "oxfmt": {},
     "oxlint": {},
@@ -52,9 +52,9 @@
         "cwd": "{workspaceRoot}"
       }
     },
-    "test-coverage": {},
-    "tidy-codebase": {},
-    "type-codebase": {},
+    "test-code": {},
+    "format-code": {},
+    "typecheck-code": {},
     "type-coverage": {},
     "typecheck": {},
     "yaml-lint": {}

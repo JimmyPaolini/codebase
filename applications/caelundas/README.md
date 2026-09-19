@@ -118,7 +118,7 @@ nx run caelundas:vitest:end-to-end    # Full pipeline
 ```bash
 nx run caelundas:repl                 # NestJS REPL against the graph
 nx run caelundas:typecheck
-nx run caelundas:lint-codebase --configuration=write
+nx run caelundas:lint-code --configuration=write
 ```
 
 See [AGENTS.md](AGENTS.md) for the astronomical domain concepts, event

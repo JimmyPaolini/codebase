@@ -49,9 +49,9 @@ Content rules worth knowing before editing:
 ## Validating
 
 ```bash
-pnpm exec nx run codometer-agents:type-codebase,lint-codebase,tidy-codebase,form-codebase,gate-codebase --configuration=write
-pnpm exec nx run codometer-agents:type-codebase,lint-codebase,tidy-codebase,form-codebase,gate-codebase --configuration=check
-pnpm exec nx run codometer-agents:test-coverage
+pnpm exec nx run codometer-agents:typecheck-code,lint-code,format-code,deprecate-code,guard-code --configuration=write
+pnpm exec nx run codometer-agents:typecheck-code,lint-code,format-code,deprecate-code,guard-code --configuration=check
+pnpm exec nx run codometer-agents:test-code
 ```
 
 Coverage is empty by nature here — there is no source to instrument — so the

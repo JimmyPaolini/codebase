@@ -50,9 +50,9 @@ this package, never that one.
 ## Validating
 
 ```bash
-pnpm exec nx run codometer-agents:lint-codebase --configuration=write
-pnpm exec nx run codometer-agents:lint-codebase --configuration=check
-pnpm exec nx run codometer-agents:test-coverage
+pnpm exec nx run codometer-agents:lint-code --configuration=write
+pnpm exec nx run codometer-agents:lint-code --configuration=check
+pnpm exec nx run codometer-agents:test-code
 ```
 
 Coverage is empty by nature here — there is no source to instrument — so the

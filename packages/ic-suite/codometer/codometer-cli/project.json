@@ -32,11 +32,11 @@
     },
     "codometer": {},
     "dependency-cruiser": {},
-    "form-codebase": {},
-    "gate-codebase": {},
+    "deprecate-code": {},
+    "guard-code": {},
     "knip": {},
-    "lint-codebase": {},
-    "make-projects": {},
+    "lint-code": {},
+    "build-projects": {},
     "markdown-lint": {},
     "oxfmt": {},
     "oxlint": {},
@@ -53,9 +53,9 @@
         }
       }
     },
-    "test-coverage": {},
-    "tidy-codebase": {},
-    "type-codebase": {},
+    "test-code": {},
+    "format-code": {},
+    "typecheck-code": {},
     "type-coverage": {},
     "typecheck": {},
     "yaml-lint": {}

@@ -73,7 +73,7 @@ Outputs structured JSON in production (`NODE_ENV=production`) and pretty-printed
 Always prefer running tasks through Nx rather than calling the underlying tools directly.
 
 ```bash
-nx run conformetry-core:type-codebase,lint-codebase,tidy-codebase,form-codebase,gate-codebase   # Every static check, in one graph
+nx run conformetry-core:typecheck-code,lint-code,format-code,deprecate-code,guard-code   # Every static check, in one graph
 nx run conformetry-core:typecheck       # tsc --noEmit
 nx run conformetry-core:oxfmt           # Formatting
 nx run conformetry-core:build           # Compile for publication
