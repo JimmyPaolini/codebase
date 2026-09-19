@@ -145,7 +145,7 @@ jobs:
       # failure fails this job rather than committing half-written READMEs.
       # Every step below is a `write` configuration no pull-request workflow
       # can reach; their gates run there under `check`.
-      - name: 🔭 Trace Call Stacks
+      - name: 🔭 Trace Calls
         run: pnpm exec nx run codebase:callidescope:write
 
       # `codependix map --write` covers all three graph types (Nx, NestJS, file
@@ -156,27 +156,36 @@ jobs:
       # absent from `lint-code` and every pull-request-triggered workflow —
       # the exports move with the workspace they describe, so gating a branch
       # on their staleness would fail it for something `main` did.
-      - name: 🕸️ Export Dependency Graphs
+      - name: 🕸️ Graph Dependencies
         run: pnpm exec nx run codebase:codependix:write
+
+      # Splices the generator catalog into the root README.md file.
+      - name: 👔 Inventory Generators
+        run: |
+          pnpm exec nx run-many \
+            --target=conformetry-generators \
+            --configuration=write
 
       # Every synchronization command is its own Nx target, run directly the
       # way `callidescope` and `codometer` are above — no aggregate command
       # loops over them. On main the derivations are already in sync — the
       # pull request gate is what proves it — so this writes them back
       # unchanged.
-      - name: 🔗 Publish Derivations
+      - name: 🔗 Synchronize
         run: |
           pnpm exec nx run-many \
-            --target=conformetry-generators --target=conventional-config \
-            --target=devcontainer-configuration --target=pull-request-template \
-            --target=skill-exclusions --configuration=write
+            --target=conventional-config \
+            --target=devcontainer-configuration \
+            --target=pull-request-template \
+            --target=skill-exclusions \
+            --configuration=write
 
       # Two codometer commands, in this order, because the second measures the
       # output of the first: the workspace report counts every markdown file in
       # the repository, project READMEs included, so measuring the repository
       # before those READMEs are rewritten publishes an aggregate that the same
       # run then invalidates. Projects first, repository last.
-      - name: 📊 Measure Codebase
+      - name: 📊 Measure Code
         run: |
           pnpm exec nx run-many --target=codometer --configuration=write \
             --exclude=codebase

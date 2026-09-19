@@ -1,4 +1,4 @@
-# codebase
+# Codebase v2.11.1
 
 [![Nx](https://img.shields.io/badge/Nx-Codebase-143055?logo=nx)](https://nx.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Strict-3178C6?logo=typescript)](https://www.typescriptlang.org/)
@@ -565,7 +565,7 @@ The workspace's call graph, traced by [callidescope](packages/ic-suite/callidesc
 | Call stacks | 1291 |
 | Deepest stack | 17 |
 | Stacks through recursion | 12 |
-| Unfollowable calls | 334 |
+| Unfollowable calls | 335 |
 
 ### Projects
 
@@ -586,7 +586,7 @@ The workspace's call graph, traced by [callidescope](packages/ic-suite/callidesc
 | `packages/lexico-components` | 3 | 3 | 0 | 7 |
 | `packages/lexico-entities` | 3 | 3 | 0 | 3 |
 | `packages/logger` | 4 | 4 | 0 | 2 |
-| `tools/synchronization` | 10 | 10 | 0 | 9 |
+| `tools/synchronization` | 10 | 10 | 0 | 10 |
 | `tools/validation` | 8 | 8 | 0 | 9 |
 | `packages/ic-suite/codependix/codependix-core` | 0 | 1 | 1 | 0 |
 | `packages/ic-suite/codometer/codometer-core` | 0 | 1 | 1 | 0 |
