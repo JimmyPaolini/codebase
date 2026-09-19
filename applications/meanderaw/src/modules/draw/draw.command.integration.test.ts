@@ -6,20 +6,19 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { LoggerService } from "@codebase/logger";
 
-import { GridGeometryService } from "../grid-geometry/grid-geometry.service";
-import { HardcodedMeandersService } from "../hardcoded-meanders/hardcoded-meanders.service";
-import { MeanderCharacteristicsService } from "../meander-characteristics/meander-characteristics.service";
-import { MeanderConnectivityService } from "../meander-characteristics/meander-connectivity.service";
-import { MeanderClassificationService } from "../meander-classification/meander-classification.service";
-import { Meander } from "../meander-database/entities/Meander.entity";
-import { MeanderDatabaseService } from "../meander-database/meander-database.service";
-import { MeanderDecodingModule } from "../meander-decoding/meander-decoding.module";
-import { MeanderLatticeService } from "../meander-lattice/meander-lattice.service";
-import { MeanderRenderingModule } from "../meander-rendering/meander-rendering.module";
-import { MeanderTopologyService } from "../meander-topology/meander-topology.service";
-import { MosaicNamingService } from "../mosaic-naming/mosaic-naming.service";
-import { MosaicTileService } from "../mosaic-tile/mosaic-tile.service";
-import { SvgRenderingService } from "../svg-rendering/svg-rendering.service";
+import { CharacteristicsService } from "../characteristics/characteristics.service";
+import { ConnectivityService } from "../characteristics/connectivity.service";
+import { ClassificationService } from "../classification/classification.service";
+import { SubFamilyService } from "../classification/sub-family.service";
+import { CodeModule } from "../code/code.module";
+import { CorpusService } from "../corpus/corpus.service";
+import { DatabaseService } from "../database/database.service";
+import { Meander } from "../database/entities/Meander.entity";
+import { DrawingModule } from "../drawing/drawing.module";
+import { GeometryService } from "../geometry/geometry.service";
+import { GraphService } from "../graph/graph.service";
+import { SvgService } from "../svg/svg.service";
+import { TileService } from "../tile/tile.service";
 
 import { DrawCheckService } from "./draw-check.service";
 import { DrawCodeService } from "./draw-code.service";
@@ -36,7 +35,7 @@ import { DrawCommand } from "./draw.command";
  * graph.
  *
  * The connection is assembled inline rather than through
- * `MeanderDatabaseModule`, which always opens the one committed database
+ * `DatabaseModule`, which always opens the one committed database
  * file — this suite needs a fresh, isolated connection per test instead.
  */
 describe("drawCommand --code mode", () => {
@@ -55,8 +54,8 @@ describe("drawCommand --code mode", () => {
           type: "better-sqlite3",
         }),
         TypeOrmModule.forFeature([Meander]),
-        MeanderDecodingModule,
-        MeanderRenderingModule,
+        CodeModule,
+        DrawingModule,
       ],
       providers: [
         DrawCommand,
@@ -66,16 +65,15 @@ describe("drawCommand --code mode", () => {
           provide: DrawCheckService,
           useValue: createMock<DrawCheckService>(),
         },
-        GridGeometryService,
-        MeanderCharacteristicsService,
-        MeanderClassificationService,
-        MeanderConnectivityService,
-        MeanderDatabaseService,
-        MeanderLatticeService,
-        MeanderTopologyService,
-        MosaicNamingService,
-        MosaicTileService,
-        SvgRenderingService,
+        GeometryService,
+        CharacteristicsService,
+        ClassificationService,
+        ConnectivityService,
+        DatabaseService,
+        GraphService,
+        SubFamilyService,
+        TileService,
+        SvgService,
         {
           provide: DrawEnumerationService,
           useValue: createMock<DrawEnumerationService>(),
@@ -89,8 +87,8 @@ describe("drawCommand --code mode", () => {
           useValue: createMock<LoggerService>(),
         },
         {
-          provide: HardcodedMeandersService,
-          useValue: createMock<HardcodedMeandersService>({
+          provide: CorpusService,
+          useValue: createMock<CorpusService>({
             ingest: vi.fn<() => Promise<Meander[]>>().mockResolvedValue([]),
           }),
         },
@@ -132,7 +130,7 @@ describe("drawCommand --code mode", () => {
     expect(rows[0]?.svg).toContain("<svg");
   });
 
-  it("populates a row's Characteristics from its decoded grid, for a code with a three-armed ink junction", async () => {
+  it("populates a row's Characteristics from its Code, for a code with a three-armed ink junction", async () => {
     await command.run([], {
       code: "e",
       columns: 1,

@@ -5,8 +5,8 @@ import { Command, CommandRunner, Option } from "nest-commander";
 
 import { LoggerService } from "@codebase/logger";
 
-import { HARDCODED_MEANDERS_BY_FAMILY } from "../hardcoded-meanders/hardcoded-meanders.constants";
-import { HardcodedMeandersService } from "../hardcoded-meanders/hardcoded-meanders.service";
+import { CorpusService } from "../corpus/corpus.service";
+import { HISTORICAL_CORPUS } from "../corpus/historical-corpus.constants";
 
 import { DrawCheckService } from "./draw-check.service";
 import { DrawCodeService } from "./draw-code.service";
@@ -31,9 +31,9 @@ import type { DrawCommandOptions } from "./draw.types";
  *   space — every shape the edge budget admits, every structurally distinct
  *   repeat within each — and writes a row per meander found, its family read
  *   off its own structure rather than off whichever generator drew it. Then
- *   {@link HardcodedMeandersService} ingests the historical corpus's
+ *   {@link CorpusService} ingests the historical corpus's
  *   hardcoded Code constants, which are exactly the meanders that lie
- *   *beyond* that budget — see `hardcoded-meanders.constants.ts` for how that
+ *   *beyond* that budget — see `corpus.constants.ts` for how that
  *   boundary is drawn and why it has to be.
  * - **`draw --rows <n> --columns <n> --code <code>`** decodes, renders, and
  *   persists that one meander, through the same generic pipeline both halves
@@ -79,8 +79,8 @@ export class DrawCommand extends CommandRunner {
     private readonly drawEnumerationService: DrawEnumerationService,
     @Inject(DrawIndexService)
     private readonly drawIndexService: DrawIndexService,
-    @Inject(HardcodedMeandersService)
-    private readonly hardcodedMeandersService: HardcodedMeandersService,
+    @Inject(CorpusService)
+    private readonly corpusService: CorpusService,
   ) {
     super();
     this.logger.setContext(DrawCommand.name);
@@ -140,9 +140,7 @@ export class DrawCommand extends CommandRunner {
       enumerated,
     });
 
-    const hardcoded = await this.hardcodedMeandersService.ingest(
-      HARDCODED_MEANDERS_BY_FAMILY,
-    );
+    const hardcoded = await this.corpusService.ingest(HISTORICAL_CORPUS);
 
     this.logger.log("✨ Generated every meander", undefined, {
       enumerated,
@@ -178,8 +176,8 @@ export class DrawCommand extends CommandRunner {
 
   /**
    * Parses `--code`, passed through unchanged: the hexadecimal digits a
-   * decoded grid's own points are read from, one character per interior
-   * lattice point. `MeanderDecodingService.decode` is what refuses a
+   * a meander's own points are read from, one character per interior
+   * lattice point. `CodeService.parse` is what refuses a
    * non-hexadecimal character or a length `--rows`/`--columns` disagree
    * with, so nothing is validated here.
    */

@@ -1,5 +1,8 @@
 {
   "author": "Jimmy Paolini",
+  "dependencies": {
+    "pino-pretty": "catalog:"
+  },
   "description": "",
   "devDependencies": {
     "@callidescope/configuration": "workspace:*",
@@ -117,5 +120,5 @@
     ]
   },
   "type": "module",
-  "version": "2.8.1"
+  "version": "2.10.3"
 }

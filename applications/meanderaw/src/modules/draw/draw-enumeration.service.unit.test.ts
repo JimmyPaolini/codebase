@@ -2,13 +2,13 @@ import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { MeanderDatabaseService } from "../meander-database/meander-database.service";
-import { MeanderEnumerationService } from "../meander-enumeration/meander-enumeration.service";
+import { DatabaseService } from "../database/database.service";
+import { EnumerationService } from "../enumeration/enumeration.service";
 
 import { DrawEnumerationService } from "./draw-enumeration.service";
 import { DrawRecordService } from "./draw-record.service";
 
-import type { MeanderRecord } from "../meander-database/meander-database.types";
+import type { MeanderRecord } from "../database/database.types";
 
 // 🧪 Tests
 
@@ -21,8 +21,8 @@ import type { MeanderRecord } from "../meander-database/meander-database.types";
  */
 describe(DrawEnumerationService, () => {
   let drawRecordService: DrawRecordService;
-  let meanderDatabaseService: MeanderDatabaseService;
-  let meanderEnumerationService: MeanderEnumerationService;
+  let databaseService: DatabaseService;
+  let enumerationService: EnumerationService;
   let service: DrawEnumerationService;
 
   const record = createMock<MeanderRecord>({ code: "00" });
@@ -36,33 +36,33 @@ describe(DrawEnumerationService, () => {
           useValue: createMock<DrawRecordService>(),
         },
         {
-          provide: MeanderDatabaseService,
-          useValue: createMock<MeanderDatabaseService>(),
+          provide: DatabaseService,
+          useValue: createMock<DatabaseService>(),
         },
         {
-          provide: MeanderEnumerationService,
-          useValue: createMock<MeanderEnumerationService>(),
+          provide: EnumerationService,
+          useValue: createMock<EnumerationService>(),
         },
       ],
     }).compile();
 
     service = await module.resolve(DrawEnumerationService);
     drawRecordService = await module.resolve(DrawRecordService);
-    meanderDatabaseService = await module.resolve(MeanderDatabaseService);
-    meanderEnumerationService = await module.resolve(MeanderEnumerationService);
+    databaseService = await module.resolve(DatabaseService);
+    enumerationService = await module.resolve(EnumerationService);
   });
 
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(meanderEnumerationService.shapes).mockReturnValue([
+    vi.mocked(enumerationService.shapes).mockReturnValue([
       { columns: 1, rows: 3 },
       { columns: 2, rows: 3 },
     ]);
-    vi.mocked(meanderEnumerationService.enumerate).mockReturnValue([
+    vi.mocked(enumerationService.enumerate).mockReturnValue([
       { code: "00", columns: 1, rows: 3 },
     ]);
     vi.mocked(drawRecordService.record).mockReturnValue(record);
-    vi.mocked(meanderDatabaseService.saveAll).mockResolvedValue(1);
+    vi.mocked(databaseService.saveAll).mockResolvedValue(1);
   });
 
   it("is defined", () => {
@@ -92,7 +92,7 @@ describe(DrawEnumerationService, () => {
         { columns: 2, rows: 3 },
       ]);
 
-      expect(meanderDatabaseService.saveAll).toHaveBeenCalledTimes(2);
+      expect(databaseService.saveAll).toHaveBeenCalledTimes(2);
     });
 
     it("answers with how many rows were written", async () => {
@@ -104,9 +104,10 @@ describe(DrawEnumerationService, () => {
     it("walks every shape the budget admits, rather than a range of its own", async () => {
       await service.sweep();
 
-      expect(
-        vi.mocked(meanderEnumerationService.enumerate).mock.calls,
-      ).toStrictEqual([[{ columns: 1, rows: 3 }], [{ columns: 2, rows: 3 }]]);
+      expect(vi.mocked(enumerationService.enumerate).mock.calls).toStrictEqual([
+        [{ columns: 1, rows: 3 }],
+        [{ columns: 2, rows: 3 }],
+      ]);
     });
   });
 });
