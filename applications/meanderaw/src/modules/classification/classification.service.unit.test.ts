@@ -1,6 +1,8 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
+import { CharacteristicsPathService } from "../characteristics/characteristics-path.service";
+import { CharacteristicsShapeService } from "../characteristics/characteristics-shape.service";
 import { CharacteristicsService } from "../characteristics/characteristics.service";
 import { ConnectivityService } from "../characteristics/connectivity.service";
 import { CodeService } from "../code/code.service";
@@ -44,6 +46,8 @@ describe(ClassificationService, () => {
     const module = await Test.createTestingModule({
       providers: [
         CharacteristicsService,
+        CharacteristicsPathService,
+        CharacteristicsShapeService,
         ClassificationService,
         ConnectivityService,
         CodeService,
@@ -163,10 +167,10 @@ describe(ClassificationService, () => {
       {
         code: "4488",
         columns: 2,
-        families: ["parallel", "mosaic"],
+        families: ["mosaic"],
         rows: 3,
         source:
-          "branch/3-rows/plain, which is bar for bar parallel/3-rows/aligned-strands-1",
+          "branch/3-rows/plain, which reduces to a single strand and earns mosaic",
       },
       {
         code: "56a9",
@@ -213,7 +217,7 @@ describe(ClassificationService, () => {
           columns: 2,
           rows: 3,
         }),
-      ).toStrictEqual({ family: "parallel", subFamily: "bars" });
+      ).toStrictEqual({ family: "mosaic", subFamily: "bars" });
     });
 
     it("leaves family and sub-family undefined for a tile whose structure earns neither", () => {

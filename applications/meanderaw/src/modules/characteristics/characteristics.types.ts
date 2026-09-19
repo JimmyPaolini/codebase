@@ -1,3 +1,5 @@
+// cspell:ignore Neighbours
+
 // 🏷️ Types
 
 /**
@@ -10,12 +12,70 @@
  * negative count rather than the ink count alone.
  */
 export interface Characteristics extends Connectivity {
+  // Graph
+  readonly componentCount: number;
+  readonly cornerCount: number;
+  // Seam
+  readonly crossesTheSeam: boolean;
+  readonly cycleCount: number;
+  readonly density: number;
+  // Digit histogram
+  readonly dotCount: number;
+
+  readonly edgeCount: number;
+  readonly embeddedOCount: number;
+  // Embedded unit shapes
+  readonly embeddedUCount: number;
+  readonly endsAreLatticeNeighbours: boolean;
+  readonly endsOnBorderRules: boolean;
   readonly hasBranching: boolean;
   readonly hasCrossing: boolean;
+  readonly hasDots: boolean;
+  readonly hasTJunctions: boolean;
+
+  readonly hasXJunctions: boolean;
+  // Isolated unit shapes
+  readonly horizontalDashCount: number;
+  readonly horizontalPointCount: number;
+  readonly inkPointCount: number;
   readonly inkTJunctions: number;
   readonly inkXJunctions: number;
+  // Family-defining
+  readonly isClosedLoop: boolean;
+
+  readonly isConnected: boolean;
+  readonly isFlipSymmetric: boolean;
+
+  readonly isJunctionFree: boolean;
+  readonly isMirrorSymmetric: boolean;
+
+  // Structure
+  readonly isReducible: boolean;
+  readonly isSingleArc: boolean;
+  readonly lCount: number;
+  // Runs
+  readonly longestHorizontalRun: number;
+  readonly longestVerticalRun: number;
+
   readonly negativeTJunctions: number;
   readonly negativeXJunctions: number;
+  readonly oCount: number;
+  readonly pitch: number;
+
+  readonly plusCount: number;
+  readonly reversesAtItsTightestTurn: boolean;
+  readonly seamComponents: number;
+  readonly seamCycles: number;
+  readonly seamTJunctions: number;
+  readonly seamXJunctions: number;
+  readonly shapeICount: number;
+
+  readonly tCount: number;
+  readonly turnsMonotonically: boolean;
+  readonly uCount: number;
+  readonly verticalDashCount: number;
+  readonly verticalPointCount: number;
+  readonly xCount: number;
 }
 
 /** One edge a Code holds, named by the two points it joins — `from` and `to` are the same point for a single-column Code's wrapped eastward edge. */
@@ -47,6 +107,24 @@ export interface Connectivity {
   readonly freeEnds: number;
 }
 
+/** Tally of digit character occurrences across the Code's points. */
+export interface HistogramCounts {
+  cornerCount: number;
+  density: number;
+  dotCount: number;
+  edgeCount: number;
+  freeEnds: number;
+  hasDots: boolean;
+  hasTJunctions: boolean;
+  hasXJunctions: boolean;
+  horizontalPointCount: number;
+  inkPointCount: number;
+  isJunctionFree: boolean;
+  tCount: number;
+  verticalPointCount: number;
+  xCount: number;
+}
+
 /**
  * A running count of three-armed and four-armed junctions, read directly
  * off a Code.
@@ -59,4 +137,30 @@ export interface Connectivity {
 export interface JunctionCounts {
   tJunctions: number;
   xJunctions: number;
+}
+
+/** Fields that are mutated while calculating a histogram. */
+export type MutableHistogram = Pick<
+  HistogramCounts,
+  | "cornerCount"
+  | "dotCount"
+  | "edgeCount"
+  | "freeEnds"
+  | "horizontalPointCount"
+  | "tCount"
+  | "verticalPointCount"
+  | "xCount"
+>;
+
+/** Counts for exactly matched shapes in 2x2 windows. */
+export interface UnitShapeCounts {
+  embeddedOCount: number;
+  embeddedUCount: number;
+  horizontalDashCount: number;
+  lCount: number;
+  oCount: number;
+  plusCount: number;
+  shapeICount: number;
+  uCount: number;
+  verticalDashCount: number;
 }
