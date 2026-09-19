@@ -134,7 +134,7 @@ Always prefer running tasks through Nx rather than calling the underlying tools 
 
 ```bash
 nx run caelundas:start           # Run the command-line application
-nx run caelundas:lint-codebase   # Every static check, in one graph
+nx run caelundas:typecheck-code,lint-code,format-code,deprecate-code,guard-code   # Every static check, in one graph
 nx run caelundas:typecheck       # tsc --noEmit
 nx run caelundas:oxfmt           # Formatting
 ```

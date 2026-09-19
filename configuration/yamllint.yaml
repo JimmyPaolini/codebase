@@ -29,7 +29,7 @@ rules:
     indent-sequences: true
 
   line-length:
-    max: 80 # Matches Prettier printWidth
+    max: 96 # Matches Prettier printWidth
     level: warning # Warning only to match ESLint behavior
 
   quoted-strings:

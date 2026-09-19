@@ -141,14 +141,14 @@ request leaves every committed report exactly as it found it.
 run that just wrote it.
 
 Those two configurations are the whole target — there is no third one for the
-release, because nothing forwards a configuration to it. `lint-codebase` does
+release, because nothing forwards a configuration to it. `lint-code` does
 not depend on `callidescope`: Nx forwards an explicit configuration down
-`dependsOn`, so if it did, `lint-codebase --configuration=write` would publish
+`dependsOn`, so if it did, `lint-code --configuration=write` would publish
 the report from a branch. `codebase:codometer` sits outside that list for the
 same reason. The depth gate is therefore named directly, alongside
-`lint-codebase` and inside the same `nx affected` invocation, in both places
+`lint-code` and inside the same `nx affected` invocation, in both places
 that gate: the
-[🧑‍💻 Lint Codebase](../../../../.github/workflows/lint-codebase.yml) workflow, so it
+[🧑‍💻 Lint Codebase](../../../../.github/workflows/lint-code.yml) workflow, so it
 runs on every pull request, and
 [`configuration/lint-staged.config.ts`](../../../../configuration/lint-staged.config.ts),
 so it runs on every commit. Depth reads source and needs no build, which is
@@ -596,7 +596,7 @@ nx run callidescope-cli:vitest
 ## Contributing
 
 ```bash
-nx run callidescope-cli:lint-codebase --configuration=check
+nx run callidescope-cli:lint-code --configuration=check
 ```
 
 ## License

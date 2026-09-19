@@ -6,15 +6,19 @@
   "tags": ["language:typescript", "name:codometer-agents", "type:package"],
   "targets": {
     "codometer": {},
+    "deprecate-code": {},
+    "format-code": {},
+    "guard-code": {},
     "knip": {},
-    "lint-codebase": {},
+    "lint-code": {},
     "markdown-lint": {},
     "oxfmt": {},
     "prettier": {},
     "spell-check": {},
-    "test-coverage": {},
+    "test-code": {},
     "type-coverage": {},
     "typecheck": {},
+    "typecheck-code": {},
     "yaml-lint": {}
   }
 }

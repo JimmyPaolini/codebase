@@ -40,10 +40,10 @@ running lint-staged.
 lint-staged config: [configuration/lint-staged.config.ts](../../../configuration/lint-staged.config.ts)
 
 Almost every check reaches the staged files through one `nx affected` run over the
-`lint-codebase` target:
+`lint-code` target:
 
 ```bash
-nx affected --target=lint-codebase --configuration=check --parallel=8 --outputStyle=static --files=<path> --files=<path> …
+nx affected --target=lint-code --configuration=check --parallel=8 --outputStyle=static --files=<path> --files=<path> …
 ```
 
 One `--files=` flag per staged path, never one comma-separated value: Node is
@@ -82,9 +82,9 @@ staged `package.json` matches all three, so all four commands run.
 | --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `{**/package.json,pnpm-workspace.yaml}` | `validation lockfile`, run as the CLI directly rather than through its Nx target                                                                                                                                                                                                                                     |
 | `**/package.json`                       | `nx run-many --projects=codebase --targets=check-catalog-manifests,sherif,syncpack`                                                                                                                                                                                                                                  |
-| `*` (every staged path)                 | `nx affected --target=lint-codebase --target=gate --target=conformetry-generators --target=conventional-config --target=devcontainer-configuration --target=pull-request-template --target=skill-exclusions --configuration=check --parallel=8 --files=…`, then `nx run-many --targets=conformetry-validate`         |
+| `*` (every staged path)                 | `nx affected --target=lint-code --target=gate --target=conformetry-generators --target=conventional-config --target=devcontainer-configuration --target=pull-request-template --target=skill-exclusions --configuration=check --parallel=8 --files=…`, then `nx run-many --targets=conformetry-validate`             |
 
-There is deliberately no per-file-type row any more. `lint-codebase` is an
+There is deliberately no per-file-type row any more. `lint-code` is an
 `nx:noop` aggregator whose `dependsOn` list holds every static check, and each
 leaf target declares the config files it reads in its own `inputs` — so staging
 `configuration/knip.config.ts` re-runs `knip` and cache-hits the rest, with no
@@ -95,14 +95,14 @@ reached through that `dependsOn` list.
 Each derivation synchronization target is named in the same invocation rather
 than reached through `dependsOn`, because each also publishes on the default
 branch, and Nx forwards an explicit configuration down `dependsOn` — so an
-edge there would let `lint-codebase --configuration=write` publish from a
+edge there would let `lint-code --configuration=write` publish from a
 branch.
 
 `gate` is named the same way, but for a different reason: the callidescope Nx
 plugin infers it with no configuration at all, so it has nothing for
 `dependsOn` to forward in the first place. It stays a named sibling because
 `nx affected` scopes it to the projects a commit actually touched, the same
-way it scopes `lint-codebase` itself — a commit that deepens one project's
+way it scopes `lint-code` itself — a commit that deepens one project's
 call stacks fails that project's own task, which the workspace-wide
 `callidescope --check depth` run this replaced never could name.
 
@@ -154,7 +154,7 @@ Use the table below to find the exact config file and command for the failing to
 
 #### `prettier` and `oxfmt` (formatting — no composite `format` target exists)
 
-Both are independent leaf targets that `lint-codebase` depends on directly.
+Both are independent leaf targets that `lint-code` depends on directly.
 
 | Target     | Check command                                                                                                                               | Write command       | Config file                                                                                                                                            |
 | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -166,7 +166,7 @@ config: [pyproject.toml](../../../pyproject.toml)
 
 #### `eslint` and `oxlint` (linting — no composite `lint` target exists)
 
-Both are independent leaf targets that `lint-codebase` depends on directly.
+Both are independent leaf targets that `lint-code` depends on directly.
 
 | Target   | Check command                                                                                                                     | Write command     | Config file                                                                                                        |
 | -------- | --------------------------------------------------------------------------------------------------------------------------------- | ----------------- | ------------------------------------------------------------------------------------------------------------------ |
@@ -225,7 +225,7 @@ Config: [applications/affirmations/project.json](../../../applications/affirmati
 
 #### Sync checks
 
-Every synchronization command is its own Nx target on the `synchronization` project — `conformetry-generators`, `conventional-config`, `devcontainer-configuration`, `pull-request-template`, and `skill-exclusions` — run directly rather than through a shared aggregate, the same way `codebase:codometer` and `codebase:callidescope` are run. There is no `sync-*` target, no `scripts/sync-*.ts` script, and no `synchronization:synchronize` aggregate target — those were retired when the work moved into [tools/synchronization](../../../tools/synchronization). `lint-codebase`'s dependents name each derivation target directly.
+Every synchronization command is its own Nx target on the `synchronization` project — `conformetry-generators`, `conventional-config`, `devcontainer-configuration`, `pull-request-template`, and `skill-exclusions` — run directly rather than through a shared aggregate, the same way `codebase:codometer` and `codebase:callidescope` are run. There is no `sync-*` target, no `scripts/sync-*.ts` script, and no `synchronization:synchronize` aggregate target — those were retired when the work moved into [tools/synchronization](../../../tools/synchronization). `lint-code`'s dependents name each derivation target directly.
 
 The `nestjs-module-graphs` and `nx-project-graphs` targets were retired too, per issue #296: [codependix](../../../packages/ic-suite/codependix/codependix-cli) now derives the same NestJS module graphs and Nx neighborhood graphs through its own anchor blocks, checked by `nx run codebase:codependix` instead.
 
@@ -538,10 +538,10 @@ Specifically, after every implementation task:
 
 ```bash
 # Auto-fix format, lint, and unused-code issues
-pnpm exec nx affected --target=lint-codebase --configuration=write --base=main
+pnpm exec nx affected --target=lint-code --configuration=write --base=main
 
 # Verify all checks pass — do not commit until this is clean
-pnpm exec nx affected --target=lint-codebase --configuration=check --base=main
+pnpm exec nx affected --target=lint-code --configuration=check --base=main
 ```
 
 Running this loop _before_ staging catches 100% of the pre-commit hook failures this skill handles — formatting, linting, typecheck, spell-check, unused code, and sync checks — without any pre-commit interruption.

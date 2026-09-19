@@ -10,7 +10,7 @@
   "targets": {
     "bandit": {},
     "codometer": {},
-    "lint-codebase": {},
+    "lint-code": {},
     "markdown-lint": {},
     "nbstripout": {},
     "pyright": {},
@@ -18,10 +18,14 @@
     "ruff-format": {},
     "ruff-lint": {},
     "spell-check": {},
-    "test-coverage": {},
+    "test-code": {},
     "ty": {},
     "typecheck": {},
     "vulture": {},
-    "yaml-lint": {}
+    "yaml-lint": {},
+    "typecheck-code": {},
+    "format-code": {},
+    "deprecate-code": {},
+    "guard-code": {}
   }
 }

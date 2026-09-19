@@ -1,0 +1,124 @@
+name: 📊 Report Integration
+description: Process artifacts, baseline reports, and coverage after a CI run
+
+inputs:
+  github-token:
+    description: GitHub Token for API calls
+    required: true
+  is-main-branch:
+    description: Whether this is running on the main branch
+    required: true
+  is-pull-request:
+    description: Whether this is running on a pull request
+    required: true
+  run-outcome:
+    description: The outcome of the run-check step
+    required: true
+  pull-request-number:
+    description: The pull request number
+    required: false
+  target:
+    description: The matrix check target being run
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: 📥 Download Codometer Baseline
+      id: baseline
+      if: >-
+        inputs.target == 'build-projects' &&
+        ((inputs.is-main-branch == 'true' && inputs.run-outcome == 'success') ||
+        inputs.is-pull-request == 'true')
+      continue-on-error: true
+      env:
+        GH_TOKEN: ${{ inputs.github-token }}
+      shell: bash
+      run: |
+        run_id="$(gh run list --workflow=continuous-integration.yml \
+          --branch=main --status=success --limit=1 \
+          --json databaseId --jq '.[0].databaseId')"
+        if [[ -z "${run_id}" ]]; then
+          echo "No successful main run to compare against yet."
+          exit 0
+        fi
+        gh run download "${run_id}" --name codometer-reports-main \
+          --dir codometer-baseline
+        echo "run-url=${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions" \
+          >>"${GITHUB_OUTPUT}"
+        echo "run-url=$(cat ${GITHUB_OUTPUT})/runs/${run_id}" \
+          >>"${GITHUB_OUTPUT}"
+
+    - name: 🧺 Update Codometer Baseline
+      if: >-
+        inputs.target == 'build-projects' &&
+        inputs.is-main-branch == 'true' &&
+        inputs.run-outcome == 'success'
+      shell: bash
+      run: |
+        mkdir -p codometer-baseline
+        shopt -s nullglob
+        for report in applications/*/codometer-report.json \
+          packages/*/codometer-report.json \
+          tools/*/codometer-report.json; do
+          mkdir -p "codometer-baseline/$(dirname "${report}")"
+          cp "${report}" "codometer-baseline/${report}"
+        done
+
+    - name: 📤 Upload Codometer Baseline
+      if: >-
+        inputs.target == 'build-projects' &&
+        inputs.is-main-branch == 'true' &&
+        inputs.run-outcome == 'success'
+      uses: actions/upload-artifact@v7
+      with:
+        name: codometer-reports-main
+        path: codometer-baseline
+        retention-days: 90
+        if-no-files-found: ignore
+
+    - name: ⏲️ Report Codometer Changes
+      if: inputs.target == 'build-projects' && inputs.is-pull-request == 'true'
+      env:
+        BASELINE_URL: ${{ steps.baseline.outputs.run-url }}
+        GH_TOKEN: ${{ inputs.github-token }}
+        PULL_REQUEST: ${{ inputs.pull-request-number }}
+      shell: bash
+      run: |
+        gh pr view "${PULL_REQUEST}" --json body --jq '.body' \
+          >.pull-request-body.md
+        pnpm exec nx run codometer-cli:start -- changes \
+          --baseline codometer-baseline \
+          --baseline-url "${BASELINE_URL}" \
+          --markdown .pull-request-body.md
+        gh pr edit "${PULL_REQUEST}" --body-file .pull-request-body.md
+
+    - name: 📊 Upload Type Coverage
+      if: inputs.run-outcome == 'failure' && inputs.target == 'typecheck-code'
+      uses: actions/upload-artifact@v7
+      with:
+        name: type-coverage-reports
+        path: |
+          applications/*/type-coverage-report.txt
+          packages/*/type-coverage-report.txt
+          tools/*/type-coverage-report.txt
+        retention-days: 30
+
+    - name: 📊 Upload Test Coverage
+      if: inputs.target == 'test-code'
+      uses: actions/upload-artifact@v7
+      with:
+        name: coverage-reports
+        path: |
+          coverage/
+          applications/**/coverage/
+          packages/**/coverage/
+          tools/**/coverage/
+        retention-days: 30
+
+    - name: 🚦 Enforce Limits
+      if: inputs.target == 'build-projects' && inputs.run-outcome == 'failure'
+      shell: bash
+      run: |
+        echo "::error::A project failed to build or breached its limit."
+        exit 1

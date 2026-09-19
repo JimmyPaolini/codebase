@@ -23,7 +23,7 @@
         }
       },
       "defaultConfiguration": "check",
-      "description": "Reconciles generated code against the conformetry templates it was scaffolded from. `check` runs on a pull request, because drift is the author's to fix in the same change; `write` runs on the default branch's release, alongside every other derivation. Named on its own by whichever caller wants it — `configuration/lint-staged.config.ts`, the Lint Codebase workflow, and the release workflow — rather than through a shared aggregate, the way `codebase:codometer` and `codebase:callidescope` are named by their own callers.",
+      "description": "Reconciles generated code against the conformetry templates it was scaffolded from. `check` runs on a pull request, because drift is the author's to fix in the same change; `write` runs on the default branch's release, alongside every other derivation. Named on its own by whichever caller wants it \u2014 `configuration/lint-staged.config.ts`, the Lint Codebase workflow, and the release workflow \u2014 rather than through a shared aggregate, the way `codebase:codometer` and `codebase:callidescope` are named by their own callers.",
       "executor": "nx:run-commands",
       "inputs": [
         "{projectRoot}/**/*.ts",
@@ -67,6 +67,7 @@
       }
     },
     "dependency-cruiser": {},
+    "deprecate-code": {},
     "devcontainer-configuration": {
       "cache": true,
       "configurations": {
@@ -90,15 +91,17 @@
         "cwd": "{workspaceRoot}"
       }
     },
+    "format-code": {},
+    "guard-code": {},
     "issue-labels": {
       "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts issue-labels",
-      "description": "Adds the type and scope labels a submitted `issue.yml` body implies. Its destination is GitHub itself rather than a file, so reaching it needs a token that neither a fork nor a developer's `lint-codebase` run has: the 👮 Audit Issues workflow runs it directly through node rather than through this Nx target on an issue's `opened` event, and nothing else names it. This target exists for a human running it locally with their own credentials.",
+      "description": "Adds the type and scope labels a submitted `issue.yml` body implies. Its destination is GitHub itself rather than a file, so reaching it needs a token that neither a fork nor a developer's `lint-code` run has: the \ud83d\udc6e Audit Issues workflow runs it directly through node rather than through this Nx target on an issue's `opened` event, and nothing else names it. This target exists for a human running it locally with their own credentials.",
       "options": {
         "cwd": "{workspaceRoot}"
       }
     },
     "knip": {},
-    "lint-codebase": {},
+    "lint-code": {},
     "markdown-lint": {},
     "oxfmt": {},
     "oxlint": {},
@@ -113,7 +116,7 @@
         }
       },
       "defaultConfiguration": "check",
-      "description": "Reconciles this repository's GitHub label vocabulary against `configuration/conventional.config.cjs`. Its destination is GitHub itself rather than a file, so reaching it needs a token that neither a fork nor a developer's `lint-codebase` run has: the pull request workflow that holds one runs `write` directly through node rather than through this Nx target on `opened`/`reopened`, and nothing else names it. This target exists for a human running it locally with their own credentials.",
+      "description": "Reconciles this repository's GitHub label vocabulary against `configuration/conventional.config.cjs`. Its destination is GitHub itself rather than a file, so reaching it needs a token that neither a fork nor a developer's `lint-code` run has: the pull request workflow that holds one runs `write` directly through node rather than through this Nx target on `opened`/`reopened`, and nothing else names it. This target exists for a human running it locally with their own credentials.",
       "executor": "nx:run-commands",
       "options": {
         "cwd": "{workspaceRoot}"
@@ -178,15 +181,16 @@
         }
       },
       "defaultConfiguration": "check",
-      "description": "Runs every synchronization command in one process — the only target that does. Not referenced by CI: no workflow or `configuration/lint-staged.config.ts` pattern names `start`, so this exists purely for a human at a terminal who wants to check or write everything in one command, uncached because nothing should ever depend on its result. Each synchronization also runs on its own through its own Nx target — for example `nx run synchronization:skill-exclusions:check` — which is what every other caller uses.",
+      "description": "Runs every synchronization command in one process \u2014 the only target that does. Not referenced by CI: no workflow or `configuration/lint-staged.config.ts` pattern names `start`, so this exists purely for a human at a terminal who wants to check or write everything in one command, uncached because nothing should ever depend on its result. Each synchronization also runs on its own through its own Nx target \u2014 for example `nx run synchronization:skill-exclusions:check` \u2014 which is what every other caller uses.",
       "executor": "nx:run-commands",
       "options": {
         "cwd": "{workspaceRoot}"
       }
     },
-    "test-coverage": {},
+    "test-code": {},
     "type-coverage": {},
     "typecheck": {},
+    "typecheck-code": {},
     "yaml-lint": {}
   }
 }

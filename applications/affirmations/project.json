@@ -87,6 +87,14 @@
     "ty": {},
     "typecheck": {},
     "vulture": {},
-    "yaml-lint": {}
+    "yaml-lint": {},
+    "build-projects": {},
+    "codometer": {},
+    "deprecate-code": {},
+    "format-code": {},
+    "guard-code": {},
+    "lint-code": {},
+    "test-code": {},
+    "typecheck-code": {}
   }
 }

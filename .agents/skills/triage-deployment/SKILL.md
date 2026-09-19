@@ -1,6 +1,6 @@
 ---
 name: triage-deployment
-description: "Diagnose and fix failing GitHub Actions CI workflows in this codebase. Use when a CI check fails on a pull request or push, when you see red checks in GitHub Actions, when asked to fix CI, debug a workflow failure, or investigate a failing job. Accepts logs pasted directly in chat OR retrieves them automatically via the gh CLI. Triages failures for: lint-codebase (typecheck, eslint, oxlint, oxfmt, spell-check, knip, markdown-lint, yaml-lint, conformetry-validate, synchronization targets), test-coverage, validate-conventions (branch name, PR title/body, config sync), audit-issues (issue labels and metadata), scan-security (gitleaks, bandit, dependency audit, licenses, trivy), and make-projects (builds, bundle sizes, devcontainer image)."
+description: "Diagnose and fix failing GitHub Actions CI workflows in this codebase. Use when a CI check fails on a pull request or push, when you see red checks in GitHub Actions, when asked to fix CI, debug a workflow failure, or investigate a failing job. Accepts logs pasted directly in chat OR retrieves them automatically via the gh CLI. Triages failures for: lint-code (typecheck, eslint, oxlint, oxfmt, spell-check, knip, markdown-lint, yaml-lint, conformetry-validate, synchronization targets), test-code, judge-conventions (branch name, PR title/body, config sync), audit-issues (issue labels and metadata), scan-security (gitleaks, bandit, dependency audit, licenses, trivy), and build-projects (builds, bundle sizes, devcontainer image)."
 argument-hint: "Optional: paste failure logs, or specify a workflow name / run URL to fetch"
 ---
 
@@ -54,21 +54,23 @@ Process all failing runs before moving to Step 4. Each failure may require a sep
 
 Match the log header against the known workflows:
 
-| Workflow name             | Job name               | Trigger                                |
-| ------------------------- | ---------------------- | -------------------------------------- |
-| `🧑‍💻 Lint Codebase`        | `lint-codebase`        | push / PR / manual                     |
-| `🧑‍🔬 Test Coverage`        | `test-coverage`        | push / PR / manual                     |
-| `🧑‍⚖️ Validate Conventions` | `validate-conventions` | PR (opened/sync/edited) / push to main |
-| `👮 Audit Issues`         | `audit-issues`         | issue opened/edited/labeled/unlabeled  |
-| `🕵️ Scan Security`        | `scan-security`        | push / PR / weekly schedule            |
+<!-- markdownlint-disable MD060 -->
+| Workflow name             | Job name              | Trigger                                |
+| ------------------------- | --------------------- | -------------------------------------- |
+| `🧑‍💻 Lint Codebase`     | `lint-code`           | push / PR / manual                     |
+| `🧑‍🔬 Test Coverage`     | `test-code`           | push / PR / manual                     |
+| `🧑‍⚖️ Judge Conventions` | `judge-conventions`   | PR (opened/sync/edited) / push to main |
+| `👮 Audit Issues`         | `audit-issues`        | issue opened/edited/labeled/unlabeled  |
+| `🕵️ Scan Security`       | `scan-security`       | push / PR / weekly schedule            |
+<!-- markdownlint-enable MD060 -->
 
 Identify which **step** within the job failed (visible in the log as `##[error]` or step exit code `!= 0`).
 
 ## Step 3: Triage by Workflow
 
-### 🧑‍💻 Lint Codebase — `pnpm exec nx affected --target=lint-codebase`
+### 🧑‍💻 Lint Codebase — `pnpm exec nx affected --target=lint-code`
 
-The `lint-codebase` target is an `nx:noop` whose `dependsOn` leaves do the work. Identify which sub-target failed:
+The `lint-code` target is an `nx:noop` whose `dependsOn` leaves do the work. Identify which sub-target failed:
 
 | Sub-target                                                                                                                 | Underlying tool   | Config file                                                                                                     |
 | -------------------------------------------------------------------------------------------------------------------------- | ----------------- | --------------------------------------------------------------------------------------------------------------- |
@@ -114,12 +116,12 @@ list, which also covers `callidescope`, `check-catalog-manifests`,
 **Verify:**
 
 ```bash
-pnpm exec nx affected -t lint-codebase
+pnpm exec nx affected -t lint-code
 ```
 
-The three sections below read as convention checks, but none of them is part of Validate Conventions — a failure in any of them shows up in a Lint Codebase run. They do not all come from the same leaf, and that decides how each one is fixed:
+The three sections below read as convention checks, but none of them is part of Judge Conventions — a failure in any of them shows up in a Lint Codebase run. They do not all come from the same leaf, and that decides how each one is fixed:
 
-- Five derivation targets on the `synchronization` project join the same `nx affected` invocation as `lint-codebase`: `conformetry-generators`, `conventional-config`, `devcontainer-configuration`, `pull-request-template`, and `skill-exclusions` — each its own Nx target rather than a configuration of a shared aggregate. Only the two that fail most often are written up below; every one of them is fixed the same way, by running its own `:write` configuration and committing what it generates. Read the failure output to see which target reported the drift.
+- Five derivation targets on the `synchronization` project join the same `nx affected` invocation as `lint-code`: `conformetry-generators`, `conventional-config`, `devcontainer-configuration`, `pull-request-template`, and `skill-exclusions` — each its own Nx target rather than a configuration of a shared aggregate. Only the two that fail most often are written up below; every one of them is fixed the same way, by running its own `:write` configuration and committing what it generates. Read the failure output to see which target reported the drift.
 
 #### 🏛️ Validate Convention Configuration
 
@@ -172,7 +174,7 @@ pnpm exec nx affected -t vitest --configuration=coverage --parallel=3
 
 ---
 
-### 🧑‍⚖️ Validate Conventions
+### 🧑‍⚖️ Judge Conventions
 
 Each step is independent. Identify which step failed:
 
@@ -378,7 +380,7 @@ Run the equivalent Nx target before handing back:
 
 ```bash
 # Analyze code
-pnpm exec nx affected -t lint-codebase
+pnpm exec nx affected -t lint-code
 
 # Test coverage
 pnpm exec nx affected -t vitest --configuration=coverage --parallel=3
@@ -403,13 +405,13 @@ Specifically, after every implementation task:
 
 ```bash
 # Auto-fix format, lint, and unused-code issues
-pnpm exec nx affected --target=lint-codebase --configuration=write --base=main
+pnpm exec nx affected --target=lint-code --configuration=write --base=main
 
 # Verify all checks pass — do not push until this is clean
-pnpm exec nx affected --target=lint-codebase --configuration=check --base=main
+pnpm exec nx affected --target=lint-code --configuration=check --base=main
 ```
 
-Running this loop locally catches 100% of `lint-codebase` CI failures — typecheck, lint, format, spell-check, unused code, and sync checks — without waiting for CI to report them.
+Running this loop locally catches 100% of `lint-code` CI failures — typecheck, lint, format, spell-check, unused code, and sync checks — without waiting for CI to report them.
 
 ## Step 6: Report Errors Found and Fixes Implemented
 
