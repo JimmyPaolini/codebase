@@ -10,6 +10,11 @@
             "type": "command"
           },
           {
+            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/git/validate-session-worktree-name.sh\"",
+            "timeout": 15,
+            "type": "command"
+          },
+          {
             "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/git/validate-session-commit-signing.sh\"",
             "timeout": 15,
             "type": "command"
