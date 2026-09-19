@@ -127,7 +127,7 @@ Always prefer running tasks through Nx rather than calling the underlying tools 
 
 ```bash
 nx run lexico-ingestion:start           # Run the command-line application
-nx run lexico-ingestion:type-codebase,lint-codebase,tidy-codebase,form-codebase,gate-codebase   # Every static check, in one graph
+nx run lexico-ingestion:typecheck-code,lint-code,format-code,deprecate-code,guard-code   # Every static check, in one graph
 nx run lexico-ingestion:typecheck       # tsc --noEmit
 nx run lexico-ingestion:oxfmt           # Formatting
 ```

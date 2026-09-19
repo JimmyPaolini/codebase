@@ -187,7 +187,7 @@ Always prefer running tasks through Nx rather than calling the underlying tools 
 
 ```bash
 nx run meanderaw:start           # Run the command-line application
-nx run meanderaw:type-codebase,lint-codebase,tidy-codebase,form-codebase,gate-codebase   # Every static check, in one graph
+nx run meanderaw:typecheck-code,lint-code,format-code,deprecate-code,guard-code   # Every static check, in one graph
 nx run meanderaw:typecheck       # tsc --noEmit
 nx run meanderaw:oxfmt           # Formatting
 ```

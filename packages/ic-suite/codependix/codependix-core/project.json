@@ -28,23 +28,23 @@
       },
       "outputs": ["{options.outputPath}"]
     },
+    "build-projects": {},
     "codometer": {},
     "dependency-cruiser": {},
     "deprecate-code": {},
+    "format-code": {},
     "guard-code": {},
     "knip": {},
     "lint-code": {},
-    "build-projects": {},
     "markdown-lint": {},
     "oxfmt": {},
     "oxlint": {},
     "prettier": {},
     "spell-check": {},
     "test-code": {},
-    "format-code": {},
-    "typecheck-code": {},
     "type-coverage": {},
     "typecheck": {},
+    "typecheck-code": {},
     "yaml-lint": {}
   }
 }

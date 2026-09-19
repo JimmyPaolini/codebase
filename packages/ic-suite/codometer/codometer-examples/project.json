@@ -7,6 +7,7 @@
   "tags": ["language:typescript", "name:codometer-examples", "type:package"],
   "targets": {
     "codometer": {},
+    "deprecate-code": {},
     "examples": {
       "cache": true,
       "description": "Run every example this package ships, the way its own guide says to, and gate on the exit code that guide promises. This is the smoke gate over all of it \u2014 `vitest` is where the numbers and the refusal messages are asserted, in the prose that explains them. It also holds the two completeness checks no assertion about output would catch: a configuration with no expected exit code, and an example directory with no `README.md`.",
@@ -22,7 +23,7 @@
       },
       "outputs": []
     },
-    "deprecate-code": {},
+    "format-code": {},
     "guard-code": {},
     "knip": {},
     "lint-code": {},
@@ -31,10 +32,9 @@
     "prettier": {},
     "spell-check": {},
     "test-code": {},
-    "format-code": {},
-    "typecheck-code": {},
     "type-coverage": {},
     "typecheck": {},
+    "typecheck-code": {},
     "yaml-lint": {}
   }
 }

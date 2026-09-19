@@ -21,8 +21,10 @@
       },
       "outputs": ["{projectRoot}/dist"]
     },
+    "build-projects": {},
     "codometer": {},
     "dependency-cruiser": {},
+    "deprecate-code": {},
     "develop": {
       "description": "Start development server with hot reload",
       "executor": "nx:run-commands",
@@ -31,11 +33,10 @@
         "cwd": "applications/lexico"
       }
     },
-    "deprecate-code": {},
+    "format-code": {},
     "guard-code": {},
     "knip": {},
     "lint-code": {},
-    "build-projects": {},
     "markdown-lint": {},
     "oxfmt": {},
     "oxlint": {},
@@ -59,10 +60,9 @@
     },
     "stylelint": {},
     "test-code": {},
-    "format-code": {},
-    "typecheck-code": {},
     "type-coverage": {},
     "typecheck": {},
+    "typecheck-code": {},
     "yaml-lint": {}
   }
 }

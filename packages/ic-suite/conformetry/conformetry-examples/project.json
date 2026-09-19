@@ -41,6 +41,7 @@
       }
     },
     "codometer": {},
+    "deprecate-code": {},
     "drift-catalogue": {
       "cache": false,
       "description": "Report one instance per kind of drift conformetry catches. Exits non-zero: five of the six instances are drifted on purpose",
@@ -93,7 +94,7 @@
         "parallel": false
       }
     },
-    "deprecate-code": {},
+    "format-code": {},
     "guard-code": {},
     "hello-template": {
       "cache": false,
@@ -171,7 +172,6 @@
       }
     },
     "test-code": {},
-    "format-code": {},
     "two-directions": {
       "cache": false,
       "description": "Ask which templates explain a path, then which instances a template explains, against the same fixtures",
@@ -188,9 +188,9 @@
         "parallel": false
       }
     },
-    "typecheck-code": {},
     "type-coverage": {},
     "typecheck": {},
+    "typecheck-code": {},
     "yaml-lint": {}
   }
 }

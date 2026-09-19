@@ -88,9 +88,13 @@
     "typecheck": {},
     "vulture": {},
     "yaml-lint": {},
-    "type-codebase": {},
-    "tidy-codebase": {},
-    "form-codebase": {},
-    "gate-codebase": {}
+    "build-projects": {},
+    "codometer": {},
+    "deprecate-code": {},
+    "format-code": {},
+    "guard-code": {},
+    "lint-code": {},
+    "test-code": {},
+    "typecheck-code": {}
   }
 }

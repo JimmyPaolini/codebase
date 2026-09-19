@@ -29,11 +29,16 @@
       },
       "outputs": ["{options.outputPath}"]
     },
+    "build-projects": {},
     "codometer": {},
     "dependency-cruiser": {},
+    "deprecate-code": {},
     "form-codebase": {},
+    "format-code": {},
     "gate-codebase": {},
+    "guard-code": {},
     "knip": {},
+    "lint-code": {},
     "lint-codebase": {},
     "make-projects": {},
     "markdown-lint": {},
@@ -76,11 +81,13 @@
         "cwd": "{projectRoot}"
       }
     },
+    "test-code": {},
     "test-coverage": {},
     "tidy-codebase": {},
     "type-codebase": {},
     "type-coverage": {},
     "typecheck": {},
+    "typecheck-code": {},
     "yaml-lint": {}
   }
 }

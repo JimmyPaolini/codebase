@@ -68,6 +68,7 @@
       }
     },
     "dependency-cruiser": {},
+    "deprecate-code": {},
     "devcontainer-configuration": {
       "cache": true,
       "configurations": {
@@ -91,7 +92,7 @@
         "cwd": "{workspaceRoot}"
       }
     },
-    "deprecate-code": {},
+    "format-code": {},
     "guard-code": {},
     "issue-labels": {
       "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts issue-labels",
@@ -188,10 +189,9 @@
       }
     },
     "test-code": {},
-    "format-code": {},
-    "typecheck-code": {},
     "type-coverage": {},
     "typecheck": {},
+    "typecheck-code": {},
     "yaml-lint": {}
   }
 }

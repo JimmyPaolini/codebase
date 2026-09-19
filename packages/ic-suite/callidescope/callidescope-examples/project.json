@@ -13,6 +13,7 @@
   "targets": {
     "codometer": {},
     "dependency-cruiser": {},
+    "deprecate-code": {},
     "examples": {
       "cache": true,
       "configurations": {
@@ -45,7 +46,7 @@
       },
       "outputs": []
     },
-    "deprecate-code": {},
+    "format-code": {},
     "guard-code": {},
     "knip": {},
     "lint-code": {},
@@ -55,10 +56,9 @@
     "prettier": {},
     "spell-check": {},
     "test-code": {},
-    "format-code": {},
-    "typecheck-code": {},
     "type-coverage": {},
     "typecheck": {},
+    "typecheck-code": {},
     "yaml-lint": {}
   }
 }

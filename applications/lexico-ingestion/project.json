@@ -31,8 +31,11 @@
     },
     "codometer": {},
     "dependency-cruiser": {},
+    "deprecate-code": {},
     "form-codebase": {},
+    "format-code": {},
     "gate-codebase": {},
+    "guard-code": {},
     "knip": {},
     "lint-code": {},
     "make-projects": {},
@@ -85,9 +88,9 @@
     },
     "test-code": {},
     "tidy-codebase": {},
-    "typecheck-code": {},
     "type-coverage": {},
     "typecheck": {},
+    "typecheck-code": {},
     "yaml-lint": {}
   }
 }
