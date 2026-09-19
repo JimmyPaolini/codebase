@@ -23,13 +23,12 @@ two fields are required:
 | `templatePath` | yes | Template folder, relative to the workspace root |
 | `inputs` | no | Values the template renders with, as JSON Schema fragments |
 | `instances` | no | Where this generator's output already lives |
-| `aliases` | no | Short alternative names |
 | `description` | no | Shown when generators are listed |
 | `threshold` | no | Lowest conformance score this generator's instances may have, 0 to 1 |
 
-Unknown keys are **stripped silently** rather than rejected, so a misspelled
-field is not an error — it simply does nothing. Check your entry took effect by
-listing the generators:
+Unknown keys are **rejected**, so a misspelled field — or `aliases`, which was
+removed outright — fails the load rather than quietly doing nothing. Check your
+entry took effect by listing the generators:
 
 ```bash
 conformetry templates
@@ -38,14 +37,17 @@ conformetry templates
 A generator with neither `inputs` nor `instances` is legal: it renders a fixed
 template that nothing validates afterwards.
 
-### Three collisions the configuration refuses to load with
+### Four collisions the configuration refuses to load with
 
-1. **Names and aliases share one namespace.** An alias may not collide with
-   another generator's name, or with another alias.
+1. **Two generators may not share a `name`.** A host resolves the first match,
+   leaving the other unreachable.
 2. **Two generators may not name the same `templatePath`.** Validation could not
    tell which generator a matching instance belongs to.
-3. **A name or alias may not be empty or contain a path separator.** Each becomes
-   a filename in the emitted Nx plugin.
+3. **A name may not be empty or contain a path separator.** It becomes a
+   filename in the emitted Nx plugin.
+4. **A name may not be `all`.** `validate --templates all` already means every
+   template, and a generator answering to that word would make the same token
+   mean two things on one command line.
 
 ### Instance groups: where output already lives
 
@@ -89,8 +91,9 @@ deliberately rather than by accident: `project`, `module`, `type`, and
 `directory` all steer where output lands. Declaring an input called `project` on
 a generator whose groups carry tags additionally turns it into a project picker.
 
-`config`, `generator`, `help`, and `instancePath` are reserved and never treated
-as inputs. `name` is deliberately _not_ reserved.
+`config`, `help`, `instancePath`, and `template` are reserved and never treated
+as inputs — `--template` is how the command-line host selects which template to
+render. `name` is deliberately _not_ reserved.
 
 ## Writing a template
 
@@ -118,11 +121,22 @@ Four naming-case variants are always available, derived from the name:
 Explicit inputs and configured substitutions are applied _last_, so they always
 beat a derived variant of the same name.
 
-**An unknown placeholder renders as an empty string. It never raises.** A typo
-in content leaves a silent hole; a typo in a path leaves an empty path segment.
-This is the single most common way a generated file comes out wrong, and nothing
-reports it — the run succeeds. After changing a template, generate once and read
-the output.
+**An interpolated placeholder nobody supplied raises
+`MissingSubstitutionError`**, naming the placeholder and the template file, on
+generation and validation alike. So a typo in a placeholder name fails loudly
+rather than leaving a silent hole in content or an empty segment in a path.
+
+Two things are still permissive, and are how a template asks for something
+optional:
+
+- **Section tags.** `{{#owner}}Owner: {{owner}}{{/owner}}` and
+  `{{^owner}}Unowned.{{/owner}}` are conditionals, so an absent `owner` renders
+  nothing rather than raising. Interpolate inside the section, never outside it.
+- **A supplied empty value.** `substitutions: { owner: "" }` is an answer.
+  Only an absent key is a hole.
+
+Adding a placeholder to a template is therefore a breaking change for every
+instance group that does not supply it. Add the substitution in the same change.
 
 ### There is no conditional-file mechanism
 
@@ -183,3 +197,22 @@ Generate an instance, then check it conforms. A freshly generated instance
 conforms by construction, so any difference means the template and the
 configuration disagree — see the `conformetry-validate` skill for reading the
 result, and `conformetry-generate` for the generation step itself.
+
+## Seeing it rather than reading about it
+
+[`conformetry-examples`](https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/conformetry/conformetry-examples) is eleven self-contained examples, each
+a complete configuration small enough to read in one sitting. The ones that
+answer configuration questions:
+
+- **`hello-template`** — the minimum fields, and where a template is laid down.
+- **`case-variants`** — the derived variants, and overriding one.
+- **`scoring-thresholds`** — two instance groups at two thresholds, and which
+  of the three levels wins.
+- **`ambiguous-attribution`** — what two templates claiming one path reports,
+  and why declaring the same glob twice is a mistake.
+- **`nx-host`** — tag-scoped instance groups, and what a host without a project
+  graph does with them.
+- **`failure-modes`** — a placeholder nobody supplied, rendered as an empty
+  string on both sides of the loop rather than as an error.
+
+See [its AGENTS.md](https://github.com/JimmyPaolini/codebase/blob/main/packages/ic-suite/conformetry/conformetry-examples/AGENTS.md) for the full index.

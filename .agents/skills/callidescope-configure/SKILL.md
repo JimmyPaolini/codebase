@@ -271,16 +271,15 @@ entryPoints: {
 ```
 
 Declared addresses **add** roots and take none away: the rules below still run
-first and keep the kind saying _why_ something calls a callable, orphan
-promotion still catches whatever nobody named, and an already-rooted callable
-stays one root.
+first, orphan promotion still catches whatever nobody named, and an
+already-rooted callable stays one root.
 
 Reach for it when a package sits low in the graph: a stack is filed under the
 project owning its **root**, and most of what such a package publishes is
 called from above, so it roots nothing and any limit on it gates nothing.
 **An address resolving to nothing, to several declarations, or to nothing
-parseable fails the whole run**; the `callidescope-triage` skill carries each
-message and its fix.
+parseable fails the whole run** — `callidescope-triage` carries each message
+and its fix.
 
 `decorators` **replaces** the built-in list rather than adding to it, so a
 configuration naming its own framework's decorator should restate the ones it
@@ -485,11 +484,12 @@ npx callidescope limits
 ```
 
 A markdown table, one row per project per limit — `Project`, `Limit`, `Value`,
-`Declared in` — naming the file each number is written in. `none` means nothing
-anywhere declares that limit, the usual case for breadth. The `workspace` row
-comes first: it is the default every project's own file spreads, rather than a
-number a project wrote for itself. It resolves configuration and measures
-nothing, so it costs milliseconds rather than a trace.
+`Declared in` — naming the file each number is written in. `none` means
+nothing anywhere declares that limit, the usual case for breadth. The
+`workspace` row comes first and is the only one that may carry no file: it is
+the default every project's own file spreads, not a number any file wrote down
+for itself. It resolves configuration and measures nothing, so it costs
+milliseconds rather than a trace.
 
 ## After changing any of this
 
