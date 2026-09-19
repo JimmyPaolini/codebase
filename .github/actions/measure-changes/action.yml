@@ -82,3 +82,10 @@ runs:
           --baseline-url "${BASELINE_URL}" \
           --markdown .pull-request-body.md
         gh pr edit "${PULL_REQUEST}" --body-file .pull-request-body.md
+
+    - name: 🚦 Enforce Limits
+      if: inputs.run-outcome == 'failure'
+      shell: bash
+      run: |
+        echo "::error::A project failed to build or breached its limit."
+        exit 1

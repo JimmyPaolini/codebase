@@ -170,15 +170,6 @@ jobs:
           run-outcome: ${{ steps.run-check.outcome }}
           pull-request-number: ${{ github.event.pull_request.number }}
 
-      - name: 🚦 Enforce Codometer Limits
-        if: >-
-          steps.check-skip.outputs.skip != 'true' &&
-          matrix.check.target == 'build-projects' &&
-          steps.run-check.outcome == 'failure'
-        run: |
-          echo "::error::A project failed to build or breached its limit."
-          exit 1
-
       - name: 📊 Report Coverage
         if: >-
           always() &&
