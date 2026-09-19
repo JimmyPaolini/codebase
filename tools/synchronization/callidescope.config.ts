@@ -6,15 +6,11 @@ import { projectDefaults } from "../../configuration/callidescope.config.js";
  * Ten frames down `SynchronizationCommand.run`, the top-level command every
  * synchronizer runs beneath.
  *
- * Nine direct callees at the widest, where two callables tie:
- * `SynchronizationCommand.synchronize` dispatching to one `synchronize`
- * method per registered synchronizer — a fixed roster — and
- * `PullRequestLabelsCommand.reconcile`'s ordinary sequential orchestration
- * with error handling: list the repository's labels, bail out on failure,
- * plan the reconciliation, bail out on that failing too, then report the
- * plan and report what is stale. Every traced project gates breadth now, the
- * orchestrator included, so the next step or failure branch it gains is what
- * moves this number rather than what a tie once excused it from.
+ * Ten direct callees at the widest, where `SynchronizationCommand.synchronize`
+ * dispatches to one `synchronize` method per registered synchronizer — a fixed
+ * roster of seven commands, plus `getCommands`, `reportResults`, and Array `every`.
+ * Every traced project gates breadth now, the orchestrator included, so the next
+ * step or synchronizer it gains is what moves this number.
  *
  * Measured by a run scoped to this project and its dependency closure, and set
  * **at** what it measured rather than above it: a stack or a callable at either
@@ -27,7 +23,7 @@ import { projectDefaults } from "../../configuration/callidescope.config.js";
 export default {
   ...projectDefaults,
   limits: {
-    maximumBreadth: 9,
+    maximumBreadth: 10,
     maximumDepth: 10,
   },
 };
