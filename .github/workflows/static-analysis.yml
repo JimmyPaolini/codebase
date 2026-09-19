@@ -1,4 +1,4 @@
-name: 🧑‍💻 Validate Code
+name: 🧍 Static Analysis
 
 # Static code analysis: every check that reads the source without executing it.
 # One `nx affected` invocation builds one task graph and one scheduler runs it.
@@ -40,8 +40,8 @@ concurrency:
   cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
-  validate-code:
-    name: ${{ matrix.check.emoji }} Validate Code (${{ matrix.check.name }})
+  static-analysis:
+    name: ${{ matrix.check.emoji }} Static Analysis (${{ matrix.check.name }})
     runs-on: ubuntu-latest
     timeout-minutes: 12
     strategy:
