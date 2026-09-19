@@ -548,6 +548,7 @@ flowchart LR
   MainModule
   PullRequestLabelsModule
   PullRequestTemplateModule
+  ReadmeVersionModule
   RenderingModule
   SkillExclusionsModule
   SynchronizationModule
@@ -569,6 +570,7 @@ flowchart LR
   SynchronizationModule --> DevcontainerConfigurationModule
   SynchronizationModule --> PullRequestLabelsModule
   SynchronizationModule --> PullRequestTemplateModule
+  SynchronizationModule --> ReadmeVersionModule
   SynchronizationModule --> SkillExclusionsModule
   TemplateDiscoveryModule --> RenderingModule
 ```
@@ -636,6 +638,13 @@ graph LR
   file_src_modules_pull_request_template_pull_request_template_constants_ts["src/modules/pull-request-template/pull-request-template.constants.ts"]
   file_src_modules_pull_request_template_pull_request_template_module_ts["src/modules/pull-request-template/pull-request-template.module.ts"]
   file_src_modules_pull_request_template_pull_request_template_types_ts["src/modules/pull-request-template/pull-request-template.types.ts"]
+  file_src_modules_readme_version_readme_version_command_ts["src/modules/readme-version/readme-version.command.ts"]
+  file_src_modules_readme_version_readme_version_command_unit_test_ts["src/modules/readme-version/readme-version.command.unit.test.ts"]
+  file_src_modules_readme_version_readme_version_constants_ts["src/modules/readme-version/readme-version.constants.ts"]
+  file_src_modules_readme_version_readme_version_module_ts["src/modules/readme-version/readme-version.module.ts"]
+  file_src_modules_readme_version_readme_version_service_ts["src/modules/readme-version/readme-version.service.ts"]
+  file_src_modules_readme_version_readme_version_service_unit_test_ts["src/modules/readme-version/readme-version.service.unit.test.ts"]
+  file_src_modules_readme_version_readme_version_types_ts["src/modules/readme-version/readme-version.types.ts"]
   file_src_modules_skill_exclusions_skill_exclusions_command_ts["src/modules/skill-exclusions/skill-exclusions.command.ts"]
   file_src_modules_skill_exclusions_skill_exclusions_command_unit_test_ts["src/modules/skill-exclusions/skill-exclusions.command.unit.test.ts"]
   file_src_modules_skill_exclusions_skill_exclusions_constants_ts["src/modules/skill-exclusions/skill-exclusions.constants.ts"]
@@ -767,6 +776,20 @@ graph LR
   file_src_modules_pull_request_template_pull_request_template_command_unit_test_ts --> file_testing_mocks_ts
   file_src_modules_pull_request_template_pull_request_template_module_ts --> file_src_modules_pull_request_template_pull_request_template_command_ts
   file_src_modules_pull_request_template_pull_request_template_module_ts --> file_src_modules_synchronization_synchronization_service_ts
+  file_src_modules_readme_version_readme_version_command_ts --> file_src_modules_readme_version_readme_version_service_ts
+  file_src_modules_readme_version_readme_version_command_ts --> file_src_modules_synchronization_synchronization_service_ts
+  file_src_modules_readme_version_readme_version_command_ts --> file_src_modules_synchronization_synchronization_types_ts
+  file_src_modules_readme_version_readme_version_command_unit_test_ts --> file_src_modules_readme_version_readme_version_command_ts
+  file_src_modules_readme_version_readme_version_command_unit_test_ts --> file_src_modules_readme_version_readme_version_constants_ts
+  file_src_modules_readme_version_readme_version_command_unit_test_ts --> file_src_modules_readme_version_readme_version_service_ts
+  file_src_modules_readme_version_readme_version_command_unit_test_ts --> file_src_modules_synchronization_synchronization_service_ts
+  file_src_modules_readme_version_readme_version_command_unit_test_ts --> file_testing_mocks_ts
+  file_src_modules_readme_version_readme_version_module_ts --> file_src_modules_readme_version_readme_version_command_ts
+  file_src_modules_readme_version_readme_version_module_ts --> file_src_modules_readme_version_readme_version_service_ts
+  file_src_modules_readme_version_readme_version_module_ts --> file_src_modules_synchronization_synchronization_service_ts
+  file_src_modules_readme_version_readme_version_service_ts --> file_src_modules_readme_version_readme_version_constants_ts
+  file_src_modules_readme_version_readme_version_service_unit_test_ts --> file_src_modules_readme_version_readme_version_constants_ts
+  file_src_modules_readme_version_readme_version_service_unit_test_ts --> file_src_modules_readme_version_readme_version_service_ts
   file_src_modules_skill_exclusions_skill_exclusions_command_ts --> file_src_modules_skill_exclusions_skill_exclusions_constants_ts
   file_src_modules_skill_exclusions_skill_exclusions_command_ts --> file_src_modules_skill_exclusions_skill_exclusions_types_ts
   file_src_modules_skill_exclusions_skill_exclusions_command_ts --> file_src_modules_synchronization_synchronization_service_ts
@@ -785,6 +808,7 @@ graph LR
   file_src_modules_synchronization_synchronization_command_ts --> file_src_modules_devcontainer_configuration_devcontainer_configuration_command_ts
   file_src_modules_synchronization_synchronization_command_ts --> file_src_modules_pull_request_labels_pull_request_labels_command_ts
   file_src_modules_synchronization_synchronization_command_ts --> file_src_modules_pull_request_template_pull_request_template_command_ts
+  file_src_modules_synchronization_synchronization_command_ts --> file_src_modules_readme_version_readme_version_command_ts
   file_src_modules_synchronization_synchronization_command_ts --> file_src_modules_skill_exclusions_skill_exclusions_command_ts
   file_src_modules_synchronization_synchronization_command_ts --> file_src_modules_synchronization_synchronization_service_ts
   file_src_modules_synchronization_synchronization_command_ts --> file_src_modules_synchronization_synchronization_types_ts
@@ -793,6 +817,7 @@ graph LR
   file_src_modules_synchronization_synchronization_command_unit_test_ts --> file_src_modules_devcontainer_configuration_devcontainer_configuration_command_ts
   file_src_modules_synchronization_synchronization_command_unit_test_ts --> file_src_modules_pull_request_labels_pull_request_labels_command_ts
   file_src_modules_synchronization_synchronization_command_unit_test_ts --> file_src_modules_pull_request_template_pull_request_template_command_ts
+  file_src_modules_synchronization_synchronization_command_unit_test_ts --> file_src_modules_readme_version_readme_version_command_ts
   file_src_modules_synchronization_synchronization_command_unit_test_ts --> file_src_modules_skill_exclusions_skill_exclusions_command_ts
   file_src_modules_synchronization_synchronization_command_unit_test_ts --> file_src_modules_synchronization_synchronization_command_ts
   file_src_modules_synchronization_synchronization_command_unit_test_ts --> file_src_modules_synchronization_synchronization_service_ts
@@ -803,6 +828,7 @@ graph LR
   file_src_modules_synchronization_synchronization_module_ts --> file_src_modules_devcontainer_configuration_devcontainer_configuration_module_ts
   file_src_modules_synchronization_synchronization_module_ts --> file_src_modules_pull_request_labels_pull_request_labels_module_ts
   file_src_modules_synchronization_synchronization_module_ts --> file_src_modules_pull_request_template_pull_request_template_module_ts
+  file_src_modules_synchronization_synchronization_module_ts --> file_src_modules_readme_version_readme_version_module_ts
   file_src_modules_synchronization_synchronization_module_ts --> file_src_modules_skill_exclusions_skill_exclusions_module_ts
   file_src_modules_synchronization_synchronization_module_ts --> file_src_modules_synchronization_synchronization_command_ts
   file_src_modules_synchronization_synchronization_module_ts --> file_src_modules_synchronization_synchronization_service_ts
@@ -828,36 +854,36 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-8997-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-298.39_kB-6b7280?style=flat-square)
-![Folders](https://img.shields.io/badge/Folders-11-4a4a4a?style=flat-square)
-![Source Files](https://img.shields.io/badge/Source_Files-75-3178c6?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-9621-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-318.25_kB-6b7280?style=flat-square)
+![Folders](https://img.shields.io/badge/Folders-12-4a4a4a?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-82-3178c6?style=flat-square)
 
 ### TypeScript
 
-![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-75-3178c6?style=flat-square)
+![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-82-3178c6?style=flat-square)
 ![Interfaces](https://img.shields.io/badge/Interfaces-21-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-0-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
-![Decorators](https://img.shields.io/badge/Decorators-34-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-180-6366f1?style=flat-square)
+![Decorators](https://img.shields.io/badge/Decorators-38-db2777?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-192-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-0-166534?style=flat-square)
 
 ### JavaScript
 
 ![JavaScript Files](https://img.shields.io/badge/JavaScript_Files-0-f7df1e?style=flat-square)
-![Test Files](https://img.shields.io/badge/Test_Files-23-10b981?style=flat-square)
+![Test Files](https://img.shields.io/badge/Test_Files-25-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-18-8b5cf6?style=flat-square)
-![Classes](https://img.shields.io/badge/Classes-27-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-422-16a34a?style=flat-square)
-![Methods](https://img.shields.io/badge/Methods-178-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-461-4ade80?style=flat-square)
-![Async Functions](https://img.shields.io/badge/Async_Functions-139-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-456-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-359-0284c7?style=flat-square)
-![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-81-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-310-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-707-475569?style=flat-square)
+![Classes](https://img.shields.io/badge/Classes-30-7c3aed?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-465-16a34a?style=flat-square)
+![Methods](https://img.shields.io/badge/Methods-187-15803d?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-499-4ade80?style=flat-square)
+![Async Functions](https://img.shields.io/badge/Async_Functions-153-059669?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-499-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-395-0284c7?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-88-ea580c?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-334-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-729-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-3-ca8a04?style=flat-square)
 
 ### Python
@@ -878,16 +904,16 @@ graph LR
 ### JSON
 
 ![JSON Files](https://img.shields.io/badge/JSON_Files-3-a16207?style=flat-square)
-![JSON Lines](https://img.shields.io/badge/JSON_Lines-261-ca8a04?style=flat-square)
-![JSON Objects](https://img.shields.io/badge/JSON_Objects-60-7c3aed?style=flat-square)
-![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-13-8b5cf6?style=flat-square)
-![JSON Properties](https://img.shields.io/badge/JSON_Properties-159-0284c7?style=flat-square)
-![JSON Strings](https://img.shields.io/badge/JSON_Strings-128-16a34a?style=flat-square)
+![JSON Lines](https://img.shields.io/badge/JSON_Lines-284-ca8a04?style=flat-square)
+![JSON Objects](https://img.shields.io/badge/JSON_Objects-65-7c3aed?style=flat-square)
+![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-14-8b5cf6?style=flat-square)
+![JSON Properties](https://img.shields.io/badge/JSON_Properties-172-0284c7?style=flat-square)
+![JSON Strings](https://img.shields.io/badge/JSON_Strings-138-16a34a?style=flat-square)
 ![JSON Numbers](https://img.shields.io/badge/JSON_Numbers-1-059669?style=flat-square)
-![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-11-0ea5e9?style=flat-square)
+![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-12-0ea5e9?style=flat-square)
 ![JSON Nulls](https://img.shields.io/badge/JSON_Nulls-0-64748b?style=flat-square)
-![JSON Items](https://img.shields.io/badge/JSON_Items-51-475569?style=flat-square)
-![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-213-dc2626?style=flat-square)
+![JSON Items](https://img.shields.io/badge/JSON_Items-55-475569?style=flat-square)
+![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-230-dc2626?style=flat-square)
 ![JSON Max Depth](https://img.shields.io/badge/JSON_Max_Depth-6-ea580c?style=flat-square)
 
 ### YAML
@@ -968,14 +994,14 @@ graph LR
 
 ### Conventions
 
-![Module Files](https://img.shields.io/badge/Module_Files-9-7c3aed?style=flat-square)
-![Service Files](https://img.shields.io/badge/Service_Files-9-0284c7?style=flat-square)
-![Command Files](https://img.shields.io/badge/Command_Files-8-16a34a?style=flat-square)
-![Constants Files](https://img.shields.io/badge/Constants_Files-8-ea580c?style=flat-square)
-![Types Files](https://img.shields.io/badge/Types_Files-8-db2777?style=flat-square)
+![Module Files](https://img.shields.io/badge/Module_Files-10-7c3aed?style=flat-square)
+![Service Files](https://img.shields.io/badge/Service_Files-10-0284c7?style=flat-square)
+![Command Files](https://img.shields.io/badge/Command_Files-9-16a34a?style=flat-square)
+![Constants Files](https://img.shields.io/badge/Constants_Files-9-ea580c?style=flat-square)
+![Types Files](https://img.shields.io/badge/Types_Files-9-db2777?style=flat-square)
 ![Utilities Files](https://img.shields.io/badge/Utilities_Files-0-0ea5e9?style=flat-square)
 ![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-0-059669?style=flat-square)
-![Unit Tests](https://img.shields.io/badge/Unit_Tests-21-ca8a04?style=flat-square)
+![Unit Tests](https://img.shields.io/badge/Unit_Tests-23-ca8a04?style=flat-square)
 ![Integration Tests](https://img.shields.io/badge/Integration_Tests-1-7c3aed?style=flat-square)
 ![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-1-0284c7?style=flat-square)
 ![CSS Comment Budget](https://img.shields.io/badge/CSS_Comment_Budget-0-16a34a?style=flat-square)
