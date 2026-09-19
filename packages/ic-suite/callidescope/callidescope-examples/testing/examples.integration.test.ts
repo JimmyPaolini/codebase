@@ -152,6 +152,27 @@ function readTargetDirectories(configuration: "check" | "write"): string {
 const STARTING_DIRECTORIES = readTargetDirectories("check");
 
 /**
+ * Reads a printed report, saying what went wrong when it cannot.
+ *
+ * The parse is the one place the stream contract `callidescope-cli/README.md`
+ * states is relied on, so a failure here is reported as the contract being
+ * broken rather than as bare malformed JSON. Both ways it breaks look identical
+ * to `JSON.parse` and neither is guessable from its message: a diagnostic
+ * printed onto standard output lands mid-document, and a document outgrowing
+ * its `maxBuffer` is truncated. Whichever it was, the fix is not in this file.
+ */
+function parseReport(report: string): CallGraphResult {
+  try {
+    return JSON.parse(report) as CallGraphResult;
+  } catch (error) {
+    throw new Error(
+      `callidescope --format json did not print parseable JSON (${report.length} bytes). Standard output must carry the report alone, and the whole of it: check that the CLI still sends its log lines to standard error, and that the document still fits the maxBuffer the trace sets.`,
+      { cause: error },
+    );
+  }
+}
+
+/**
  * The `dependency-closure` fixture's stack, frame by frame, with the project
  * each frame was declared in.
  *
@@ -400,12 +421,27 @@ function runDocumented(command: string): { output: string; status: number } {
 }
 
 /**
- * Traces the fixtures the way the Nx target does, into a throwaway report.
+ * Traces the fixtures the way the Nx target does, without writing anything.
  *
  * The real configuration is reused rather than restated — only its output is
- * redirected — so a limit changed in `callidescope.workspace.config.ts` changes
- * what this asserts instead of quietly disagreeing with it. The committed
- * reports under `output/` are left exactly where they were.
+ * dropped — so a limit changed in `callidescope.workspace.config.ts` changes
+ * what this asserts instead of quietly disagreeing with it.
+ *
+ * The run prints its report rather than writing one, which is why it is handed
+ * `--format json` and no `--write`. `--write` is what publishes, and it
+ * publishes **two** independent sets of destinations: the ones the workspace
+ * configuration names, which a derived copy can redirect, and the ones each
+ * traced project names in its own `callidescope.config.ts`, which it cannot —
+ * those are discovered beside the project and resolved against its root. This
+ * package's own file names `README.md`, so a writing run here republished the
+ * committed README as a side effect of the suite, from whichever trace happened
+ * to run last. The differential below excludes a project, so that last trace was
+ * the narrow one and the committed README depended on target order. A run that
+ * writes nothing has no order to depend on.
+ *
+ * Reading the report off standard output is only sound because the CLI sends
+ * every log line to standard error, which `src/main.ts` chooses before anything
+ * logs. A diagnostic sharing this stream would arrive as data mid-document.
  *
  * Both overrides exist for a differential, because a rule that narrows
  * something can only be shown to do anything by running the same fixtures again
@@ -427,7 +463,6 @@ function traceFixtures(
   const temporaryDirectory = mkdtempSync(
     path.join(tmpdir(), "callidescope-examples-"),
   );
-  const reportPath = path.join(temporaryDirectory, "report.json");
   const configurationPath = path.join(
     temporaryDirectory,
     "callidescope.config.json",
@@ -442,12 +477,14 @@ function traceFixtures(
         ...(overrides.exclude ?? []),
       ],
       limits: { ...callidescopeConfiguration.limits, ...overrides.limits },
-      write: { json: { path: reportPath } },
+      // No destination at all, rather than a throwaway one. A destination is
+      // something `--write` would publish, and this run does not write.
+      write: {},
     }),
     "utf8",
   );
 
-  execFileSync(
+  const report = execFileSync(
     process.execPath,
     [
       "--import",
@@ -458,12 +495,26 @@ function traceFixtures(
       STARTING_DIRECTORIES,
       "--config",
       configurationPath,
-      "--write",
+      "--format",
+      "json",
     ],
-    { cwd: WORKSPACE_ROOT, stdio: "ignore" },
+    {
+      cwd: WORKSPACE_ROOT,
+      encoding: "utf8",
+      // Generous rather than merely sufficient. The default is a megabyte and
+      // this document is already past half of one, in a suite whose closure
+      // reaches nine real packages that only grow. Crossing it would truncate
+      // the buffer and surface as a parse failure indistinguishable from a
+      // corrupted stream, which is the one thing this helper must not confuse.
+      maxBuffer: 16 * 1024 * 1024,
+      // Standard output is the report; standard error carries the log lines
+      // this inherits so a failing trace still says why on the suite's own
+      // output.
+      stdio: ["ignore", "pipe", "inherit"],
+    },
   );
 
-  return JSON.parse(readFileSync(reportPath, "utf8")) as CallGraphResult;
+  return parseReport(report);
 }
 
 describe("callidescope examples (integration)", () => {
@@ -609,17 +660,19 @@ describe("callidescope examples (integration)", () => {
   describe("what the run measured", () => {
     it("traces this package and the projects its imports reach", () => {
       // The closure, stated as a set. What is absent asserts the narrowing
-      // rule this run exercises: the package's program reads five files under
-      // `configuration/` — its `codependix.config.ts` scaffold added a fifth,
-      // spreading `configuration/codependix.config.ts` and reaching
-      // `packages/codependix-configuration` and `packages/codependix-core`
-      // — alongside the four it already read: a project root with
-      // `tsconfig.json` and no `package.json`, which would otherwise reach
-      // every toolchain configured. The workspace root is only reachable
-      // through that project root here, so this list asserts narrowing.
+      // rule this run exercises: the package's program really reads five
+      // files under `configuration/` — its own `codependix.config.ts`
+      // scaffold added a fifth, spreading `configuration/codependix.config.ts`
+      // and so reaching `packages/codependix-configuration` — alongside the
+      // four it already read: a project root holding a `tsconfig.json` and
+      // no `package.json`, and admitting it would reach every toolchain the
+      // repository configures. The other refusal — the workspace root — is
+      // only reachable through that one here, so this list stands for the
+      // first rule rather than for both.
       //
-      // `callidescope-core` is reached because the result vocabulary moved
-      // down into it from `callidescope-configuration`.
+      // Every `*-core` here arrives behind the `configuration` package above
+      // it: each toolchain moved its result vocabulary down into a contracts
+      // leaf. Neither refusal above is weakened.
       expect(
         result.projects.map((project) => project.projectName),
       ).toStrictEqual([

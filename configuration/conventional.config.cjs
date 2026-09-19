@@ -178,6 +178,11 @@ const scopes = [
     name: "codometer",
   },
   {
+    description:
+      "In-house code measurement and validation toolchains (Callidescope, Codependix, Codometer, Conformetry) and their shared conventions",
+    name: "ic-suite",
+  },
+  {
     description: "Escape hatch: suppress semantic-release for any commit type",
     name: "no-release",
   },

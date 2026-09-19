@@ -16,6 +16,12 @@ import { MainModule } from "./main.module";
 /**
  * Bootstraps the callidescope CLI command application.
  *
+ * Standard output belongs to the result, so every diagnostic goes to standard
+ * error. It is chosen here, before anything logs, because the pino instance is
+ * built on first use — see
+ * [Where the report goes](../README.md#where-the-report-goes) for the contract
+ * it settles and who relies on it.
+ *
  * The error handler is not optional decoration. nest-commander's own default
  * writes the error to stderr and returns, leaving the exit code at zero — so
  * anything a command throws rather than reports becomes a run that printed a
@@ -24,6 +30,8 @@ import { MainModule } from "./main.module";
  * worse outcome than the failure itself.
  */
 async function main(): Promise<void> {
+  LoggerService.logToStandardError();
+
   const logger = new LoggerService();
   logger.setContext("CommandFactory");
 
