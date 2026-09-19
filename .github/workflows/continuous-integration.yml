@@ -96,8 +96,7 @@ jobs:
             RUNS_ENDPOINT="repos/${{ github.repository }}/actions"
             RUNS_ENDPOINT="${RUNS_ENDPOINT}/workflows/continuous-integration.yml"
             LATEST_RUN_ID="$(gh api \
-              "${RUNS_ENDPOINT}/runs?event=pull_request&branch=${HEAD_BRANCH}" \
-              -f per_page=1 \
+              "${RUNS_ENDPOINT}/runs?event=pull_request&branch=${HEAD_BRANCH}&per_page=1" \
               --jq '.workflow_runs[0].id')"
             if [ -n "$LATEST_RUN_ID" ] && [ "$LATEST_RUN_ID" != "${{ github.run_id }}" ]; then
               echo "⏭️ Run ${LATEST_RUN_ID} is newer for this pull request."
