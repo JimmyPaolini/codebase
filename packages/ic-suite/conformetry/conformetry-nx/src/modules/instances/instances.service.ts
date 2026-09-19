@@ -100,10 +100,11 @@ export class InstancesService {
     // First-match-wins logic: deduplicate instances by path so earlier generators override later ones.
     const seenInstances = new Set<string>();
     return instances.filter((instance) => {
-      if (seenInstances.has(instance.path)) {
+      const key = `${instance.path}:${instance.nameStem}`;
+      if (seenInstances.has(key)) {
         return false;
       }
-      seenInstances.add(instance.path);
+      seenInstances.add(key);
       return true;
     });
   }
