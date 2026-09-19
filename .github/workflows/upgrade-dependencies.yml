@@ -97,10 +97,10 @@ jobs:
       - name: 🤹 Upgrade Skills
         run: |
           pnpm exec skills update --yes
-          # The skills CLI has a bug when no agents are detected globally and --yes is passed:
-          # it falls back to installing for ALL 80+ agents. For the 'eve' agent, it hardcodes
-          # canonicalBase to agent/skills, which creates an untracked agent/ folder in the root.
-          # This violates the eslint-plugin-project-structure rules in the pre-commit hook.
+          # The skills CLI has a bug when no agents are detected and --yes is passed:
+          # it falls back to installing for ALL agents. For the 'eve' agent, it
+          # hardcodes canonicalBase to agent/skills, creating an untracked agent/ folder.
+          # This violates eslint-plugin-project-structure rules in the pre-commit hook.
           # We remove it here until the CLI is fixed.
           rm -rf agent/
 
