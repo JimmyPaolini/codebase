@@ -54,13 +54,15 @@ Process all failing runs before moving to Step 4. Each failure may require a sep
 
 Match the log header against the known workflows:
 
-| Workflow name             | Job name               | Trigger                                |
-| ------------------------- | ---------------------- | -------------------------------------- |
-| `🧑‍💻 Lint Codebase`        | `lint-code`        | push / PR / manual                     |
-| `🧑‍🔬 Test Coverage`        | `test-code`        | push / PR / manual                     |
-| `🧑‍⚖️ Judge Conventions` | `judge-conventions` | PR (opened/sync/edited) / push to main |
-| `👮 Audit Issues`         | `audit-issues`         | issue opened/edited/labeled/unlabeled  |
-| `🕵️ Scan Security`        | `scan-security`        | push / PR / weekly schedule            |
+<!-- markdownlint-disable MD060 -->
+| Workflow name             | Job name              | Trigger                                |
+| ------------------------- | --------------------- | -------------------------------------- |
+| `🧑‍💻 Lint Codebase`     | `lint-code`           | push / PR / manual                     |
+| `🧑‍🔬 Test Coverage`     | `test-code`           | push / PR / manual                     |
+| `🧑‍⚖️ Judge Conventions` | `judge-conventions`   | PR (opened/sync/edited) / push to main |
+| `👮 Audit Issues`         | `audit-issues`        | issue opened/edited/labeled/unlabeled  |
+| `🕵️ Scan Security`       | `scan-security`       | push / PR / weekly schedule            |
+<!-- markdownlint-enable MD060 -->
 
 Identify which **step** within the job failed (visible in the log as `##[error]` or step exit code `!= 0`).
 

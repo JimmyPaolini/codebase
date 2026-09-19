@@ -231,7 +231,7 @@ All PRs must pass these checks before merging:
 | PR Title             | `commitlint`                                           | Title follows commit message format                                                                    |
 | PR Body              | Section validation                                     | Required sections: 🌰 Summary, 📝 Details, 🧪 Testing, 🔗 Related                                      |
 | Release Significance | `validation pull-request-release-significance`         | Title's type is at least as significant as every commit's, and every commit scope appears in the title |
-| Lint                 | `nx affected --target=lint-code`                   | Every static check: ESLint, oxlint, oxfmt, typecheck, spell-check, knip, and more                      |
+| Lint                 | `nx affected --target=lint-code`                       | Every static check: ESLint, oxlint, oxfmt, typecheck, spell-check, knip, and more                      |
 | Test                 | `nx affected --target=vitest --configuration=coverage` | Unit and integration tests against the coverage gates                                                  |
 
 There is no `lint`, `format`, or `clean` target in this workspace. `nx affected

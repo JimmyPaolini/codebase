@@ -260,10 +260,10 @@ Five workflows run on every pull request. Each maps to targets you can run local
 
 | Workflow             | Runs                                                                                                                     | Local equivalent                                  |
 | -------------------- | ------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------- |
-| Lint Codebase        | Format, lint, typecheck, type coverage, spelling, markdown, YAML, dead code, conformance, and the synchronization checks | `nx affected --target=lint-code`              |
-| Test Coverage        | Unit, integration, and end-to-end tests with coverage thresholds                                                         | `nx affected --target=test-code`              |
+| Lint Codebase        | Format, lint, typecheck, type coverage, spelling, markdown, YAML, dead code, conformance, and the synchronization checks | `nx affected --target=lint-code`                  |
+| Test Coverage        | Unit, integration, and end-to-end tests with coverage thresholds                                                         | `nx affected --target=test-code`                  |
 | Scan Security        | Secrets, Python AST, dependency vulnerabilities, licenses, infrastructure misconfiguration                               | `nx affected --target=scan-security`              |
-| Make Projects        | Builds every buildable project and gates its declared bundle size                                                        | `nx affected --target=build-projects`              |
+| Make Projects        | Builds every buildable project and gates its declared bundle size                                                        | `nx affected --target=build-projects`             |
 | Validate Conventions | Branch name, pull request title, body, labels, assignees, and release significance                                       | See [Pull Request Process](#pull-request-process) |
 
 🧑‍🔧 Make Codebase additionally builds the dev container image, but only when `.devcontainer/**` changes.
@@ -327,10 +327,10 @@ Four toolchains are developed in this repository and gate its own code. You are 
 
 | Toolchain      | What it does                                                                                                                   | What fails a pull request                                                           |
 | -------------- | ------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------- |
-| `conformetry`  | Scaffolds projects, modules, and components from templates, then measures the generated instances back against those templates | `conformetry-validate`, inside `lint-code`                                      |
+| `conformetry`  | Scaffolds projects, modules, and components from templates, then measures the generated instances back against those templates | `conformetry-validate`, inside `lint-code`                                          |
 | `codometer`    | Measures a directory — languages, declared conventions, compressed size — against the limits its configuration declares        | that project's `codometer` target, inside Make Projects                             |
-| `codependix`   | Exports Nx, NestJS module, and file-level import graphs, and judges them against declared boundary rules                       | `codependix --check boundaries`, run beside `lint-code` in Lint Codebase        |
-| `callidescope` | Traces call stacks through injected dependencies and flags stacks that are too deep or callables that reach too widely         | the inferred per-project `gate` target, run beside `lint-code` in Lint Codebase |
+| `codependix`   | Exports Nx, NestJS module, and file-level import graphs, and judges them against declared boundary rules                       | `codependix --check boundaries`, run beside `lint-code` in Lint Codebase            |
+| `callidescope` | Traces call stacks through injected dependencies and flags stacks that are too deep or callables that reach too widely         | the inferred per-project `gate` target, run beside `lint-code` in Lint Codebase     |
 
 Each is documented in its command-line package — [conformetry-cli](packages/ic-suite/conformetry/conformetry-cli/README.md), [codometer-cli](packages/ic-suite/codometer/codometer-cli/README.md), [codependix-cli](packages/ic-suite/codependix/codependix-cli/README.md), [callidescope-cli](packages/ic-suite/callidescope/callidescope-cli/README.md) — and each has agent skills for the same three moments, which read just as well for a human: running it, configuring it, and acting on what it said (codependix adds a fourth, for reading a graph the repository already committed). They are the `conformetry-*`, `codometer-*`, `codependix-*`, and `callidescope-*` entries under [.agents/skills](.agents/skills).
 
