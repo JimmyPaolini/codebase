@@ -84,13 +84,7 @@ export class DeliveryService {
     }
 
     if (!anchorExists) {
-      return this.writeAutoCreatedAnchorSection({
-        anchorName: args.anchorName,
-        content: args.content,
-        fileContent,
-        markdownSection: args.markdownSection,
-        resolvedPath,
-      });
+      throw new AnchorNotFoundError(args.anchorName, resolvedPath);
     }
 
     const updated = this.anchorsService.replaceAnchorContent({
@@ -227,38 +221,6 @@ export class DeliveryService {
       content: markdownContent,
       path: resolvedOutput.markdown.path,
     };
-  }
-
-  /**
-   * Auto-creates a missing anchor's `## 🕸️ Codependix` section and writes it.
-   *
-   * Falls back to the historical hard failure when the caller supplied no
-   * `markdownSection` — there is nothing safe to build without a heading and
-   * intro line, and `GraphRunService` always supplies one for every real
-   * anchored destination it delivers.
-   */
-  private writeAutoCreatedAnchorSection(args: {
-    anchorName: string;
-    content: string;
-    fileContent: string;
-    markdownSection: MarkdownSectionArguments | undefined;
-    resolvedPath: string;
-  }): boolean {
-    if (args.markdownSection === undefined) {
-      throw new AnchorNotFoundError(args.anchorName, args.resolvedPath);
-    }
-
-    const updated = this.anchorsService.insertAnchorSection({
-      anchorName: args.anchorName,
-      content: args.content,
-      fileContent: args.fileContent,
-      introLine: args.markdownSection.introLine,
-      subheading: args.markdownSection.subheading,
-    });
-
-    writeFileSync(args.resolvedPath, updated, "utf8");
-
-    return true;
   }
 
   // 🌎 Public Methods

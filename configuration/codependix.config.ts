@@ -49,11 +49,11 @@ export const projectDefaults = {
    * `main` and nowhere else, so a pull request cannot catch this.
    */
   fileImports: {
-    markdown: { anchor: "codependix-file-imports" },
+    markdown: { path: "output/codependix/file-imports.md" },
     target: "markdown",
   },
   nestjsModules: {
-    markdown: { anchor: "codependix-nestjs-modules" },
+    markdown: { path: "output/codependix/nestjs-modules.md" },
     target: "markdown",
   },
   nxProjects: {
@@ -697,11 +697,11 @@ const codependixConfiguration: CodependixConfiguration = {
    */
   workspace: {
     fileImports: {
-      markdown: { anchor: "codependix-file-imports" },
+      markdown: { path: "output/codependix/file-imports.md" },
       target: "markdown",
     },
     nestjsModules: {
-      markdown: { anchor: "codependix-nestjs-modules" },
+      markdown: { path: "output/codependix/nestjs-modules.md" },
       target: "markdown",
     },
     nxProjects: {
