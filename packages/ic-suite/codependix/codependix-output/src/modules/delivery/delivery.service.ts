@@ -71,16 +71,14 @@ export class DeliveryService {
     });
 
     if (args.mode === "check") {
-      if (!anchorExists) {
-        return false;
-      }
-
-      return this.anchorsService.checkAnchor({
-        anchorName: args.anchorName,
-        fileContent,
-        filePath: resolvedPath,
-        freshContent: args.content,
-      }).isCurrent;
+      return anchorExists
+        ? this.anchorsService.checkAnchor({
+            anchorName: args.anchorName,
+            fileContent,
+            filePath: resolvedPath,
+            freshContent: args.content,
+          }).isCurrent
+        : false;
     }
 
     if (!anchorExists) {
