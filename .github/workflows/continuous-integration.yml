@@ -142,7 +142,6 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_EVENT_NAME: ${{ github.event_name }}
-          NODE_OPTIONS: --import=tsx
         run: |
           TARGET="${{ matrix.check.target }}"
           if [[ "${TARGET}" == "judge-conventions" || "${TARGET}" == "scan-security" ]]; then
