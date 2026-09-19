@@ -108,7 +108,8 @@ jobs:
             --target=gate --target=codependix \
             --target=conformetry-generators --target=conventional-config \
             --target=devcontainer-configuration \
-            --target=pull-request-template --target=skill-exclusions \
+            --target=pull-request-template \
+            --target=skill-exclusions \
             --configuration=check --parallel=4
 
       - name: 📊 Upload Type Coverage
