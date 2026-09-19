@@ -2,10 +2,7 @@ import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
-import {
-  ConfigurationModule,
-  InstanceDiscoveryModule,
-} from "@conformetry/configuration";
+import { ConfigurationModule } from "@conformetry/configuration";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
@@ -71,7 +68,7 @@ describe(InstancesService, () => {
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      imports: [ConfigurationModule, InstanceDiscoveryModule, ScopeModule],
+      imports: [ConfigurationModule, ScopeModule],
       providers: [InstancesService],
     }).compile();
 

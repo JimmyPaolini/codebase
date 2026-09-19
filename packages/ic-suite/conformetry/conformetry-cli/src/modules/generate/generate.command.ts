@@ -1,9 +1,4 @@
-import {
-  ConfigurationService,
-  InputError,
-  InputPromptingService,
-  InputService,
-} from "@conformetry/configuration";
+import { ConfigurationService, InputError } from "@conformetry/configuration";
 import { GenerationService } from "@conformetry/generation";
 import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
@@ -53,8 +48,6 @@ export class GenerateCommand extends CommandRunner {
   constructor(
     private readonly configurationService: ConfigurationService,
     private readonly generationService: GenerationService,
-    private readonly inputPromptingService: InputPromptingService,
-    private readonly inputService: InputService,
     private readonly logger: LoggerService,
   ) {
     super();
@@ -115,7 +108,7 @@ export class GenerateCommand extends CommandRunner {
       properties: definition.inputs,
       required: Object.keys(definition.inputs),
     };
-    const inputs = await this.inputService.resolveGeneratorInputs({
+    const inputs = await this.configurationService.resolveGeneratorInputs({
       rawArguments,
       schema,
     });
@@ -199,14 +192,14 @@ export class GenerateCommand extends CommandRunner {
       return generator.name;
     });
 
-    if (!this.inputPromptingService.isAtTerminal()) {
+    if (!this.configurationService.isAtTerminal()) {
       throw missingTemplateError(availableNames);
     }
 
     // The loaded configuration is handed over as-is: a definition already
     // carries the name and description a choice needs, and mapping it here
     // would be a second source the picker could disagree with.
-    const chosenName = await this.inputPromptingService.promptForTemplate(
+    const chosenName = await this.configurationService.promptForTemplate(
       args.configuration,
     );
 
@@ -225,7 +218,7 @@ export class GenerateCommand extends CommandRunner {
     flags: "--config [path]",
   })
   public parseConfig(value: string | undefined): string | undefined {
-    return this.inputService.parseOptionalOption(value);
+    return this.configurationService.parseOptionalOption(value);
   }
 
   /** Parses the output directory override. */
@@ -234,7 +227,7 @@ export class GenerateCommand extends CommandRunner {
     flags: "--directory [path]",
   })
   public parseDirectory(value: string | undefined): string | undefined {
-    return this.inputService.parseOptionalOption(value);
+    return this.configurationService.parseOptionalOption(value);
   }
 
   /**
@@ -248,7 +241,7 @@ export class GenerateCommand extends CommandRunner {
     flags: "--template [name]",
   })
   public parseTemplate(value: string | undefined): string | undefined {
-    return this.inputService.parseOptionalOption(value);
+    return this.configurationService.parseOptionalOption(value);
   }
 
   /**
