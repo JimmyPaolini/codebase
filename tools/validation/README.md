@@ -172,14 +172,14 @@ What this project is judged against, as declared in its own `callidescope.config
    ↳ Checks the pull request's title against its commits and exits 0 or 1.
   └─> PullRequestReleaseSignificanceCommand.readLivePullRequest(reportLines: string[], pullRequestNumber: string): PullRequestCommitsResolution [tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.command.ts:114]
      ↳ Reads the pull request's title and commits live, through `gh pr view`.
-    └─> PullRequestReleaseSignificanceService.resolveFromDocument(documentText: string): PullRequestCommitsResolution [tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.service.ts:306]
+    └─> PullRequestReleaseSignificanceService.resolveFromDocument(documentText: string): PullRequestCommitsResolution [tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.service.ts:317]
        ↳ Reads the title and commits out of a `gh pr view` document.
-      └─> PullRequestReleaseSignificanceService.map(…)(entry: unknown): PullRequestCommit [tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.service.ts:325]
-        └─> PullRequestReleaseSignificanceService.readRawCommit(entry: unknown): PullRequestCommit [tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.service.ts:153]
+      └─> PullRequestReleaseSignificanceService.map(…)(entry: unknown): PullRequestCommit [tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.service.ts:336]
+        └─> PullRequestReleaseSignificanceService.readRawCommit(entry: unknown): PullRequestCommit [tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.service.ts:164]
            ↳ Reads one raw `commits` array entry into a `PullRequestCommit`.
-          └─> PullRequestReleaseSignificanceService.parseConventionalSubject(subject: string, body?: string): ConventionalSubject | undefined [tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.service.ts:250]
+          └─> PullRequestReleaseSignificanceService.parseConventionalSubject(subject: string, body?: string): ConventionalSubject | undefined [tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.service.ts:261]
              ↳ Reads the type, scopes, and breaking marker out of a conventional subject line.
-            └─> PullRequestReleaseSignificanceService.filter(…)(scope: string): boolean [tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.service.ts:266]
+            └─> PullRequestReleaseSignificanceService.filter(…)(scope: string): boolean [tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.service.ts:277]
 ```
 
 <details>
@@ -252,7 +252,7 @@ What this project is judged against, as declared in its own `callidescope.config
 | `IssueMetadataCommand.readLiveMetadata` | 5 | `IssueMetadataGithubService.isAvailable`, `IssueMetadataCommand.failWithUsageError`, `IssueMetadataGithubService.run`, `IssueMetadataGithubService.describeFailure`, `IssueMetadataService.resolveFromDocument` | `tools/validation/src/modules/issue-metadata/issue-metadata.command.ts:151` |
 | `PullRequestMetadataService.checkMetadata` | 5 | `PullRequestMetadataService.groupLabels`, `PullRequestMetadataService.checkTypeLabel`, `PullRequestMetadataService.checkScopeLabels`, `PullRequestMetadataService.record`, `PullRequestMetadataService.checkSourceLabel` | `tools/validation/src/modules/pull-request-metadata/pull-request-metadata.service.ts:213` |
 | `PullRequestMetadataCommand.readLiveMetadata` | 5 | `PullRequestMetadataGithubService.isAvailable`, `PullRequestMetadataCommand.failWithUsageError`, `PullRequestMetadataGithubService.run`, `PullRequestMetadataGithubService.describeFailure`, `PullRequestMetadataService.resolveFromDocument` | `tools/validation/src/modules/pull-request-metadata/pull-request-metadata.command.ts:154` |
-| `PullRequestReleaseSignificanceService.checkSignificance` | 5 | `PullRequestReleaseSignificanceService.significanceRank`, `PullRequestReleaseSignificanceService.findMostSignificantCommit`, `PullRequestReleaseSignificanceService.findMissingScopes`, `PullRequestReleaseSignificanceService.describeSignificanceFailure`, `PullRequestReleaseSignificanceService.describeMissingScopeFailures` | `tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.service.ts:205` |
+| `PullRequestReleaseSignificanceService.checkSignificance` | 5 | `PullRequestReleaseSignificanceService.significanceRank`, `PullRequestReleaseSignificanceService.findMostSignificantCommit`, `PullRequestReleaseSignificanceService.findMissingScopes`, `PullRequestReleaseSignificanceService.describeSignificanceFailure`, `PullRequestReleaseSignificanceService.describeMissingScopeFailures` | `tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.service.ts:216` |
 | `PullRequestReleaseSignificanceCommand.readLivePullRequest` | 5 | `PullRequestReleaseSignificanceGithubService.isAvailable`, `PullRequestReleaseSignificanceCommand.failWithUsageError`, `PullRequestReleaseSignificanceGithubService.run`, `PullRequestReleaseSignificanceGithubService.describeFailure`, `PullRequestReleaseSignificanceService.resolveFromDocument` | `tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.command.ts:114` |
 | `IssueMetadataService.checkMetadata` | 4 | `IssueMetadataService.groupLabels`, `IssueMetadataService.checkTypeLabel`, `IssueMetadataService.checkScopeLabels`, `IssueMetadataService.checkSourceLabel` | `tools/validation/src/modules/issue-metadata/issue-metadata.service.ts:230` |
 | `PullRequestBodyCommand.run` | 4 | `PullRequestBodyCommand.resolveBody`, `PullRequestBodyService.checkBody`, `PullRequestBodyService.extractTemplateComments`, `PullRequestBodyCommand.reportVerdict` | `tools/validation/src/modules/pull-request-body/pull-request-body.command.ts:123` |
@@ -285,10 +285,10 @@ What this project is judged against, as declared in its own `callidescope.config
 | `PullRequestMetadataCommand.readEnvironmentMetadata` | 2 | `PullRequestMetadataCommand.failWithUsageError`, `PullRequestMetadataService.resolveFromEnvironment` | `tools/validation/src/modules/pull-request-metadata/pull-request-metadata.command.ts:132` |
 | `PullRequestMetadataCommand.reportFailures` | 2 | `PullRequestMetadataCommand.appendToReport`, `PullRequestMetadataCommand.mirrorToStepSummary` | `tools/validation/src/modules/pull-request-metadata/pull-request-metadata.command.ts:186` |
 | `PullRequestReleaseSignificanceService.describeSignificanceFailure` | 2 | `PullRequestReleaseSignificanceService.releaseLevelName`, `PullRequestReleaseSignificanceService.find(…)` | `tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.service.ts:61` |
-| `PullRequestReleaseSignificanceService.readRawCommit` | 2 | `PullRequestReleaseSignificanceService.isRecord`, `PullRequestReleaseSignificanceService.parseConventionalSubject` | `tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.service.ts:153` |
-| `PullRequestReleaseSignificanceService.parseConventionalSubject` | 2 | `PullRequestReleaseSignificanceService.filter(…)`, `PullRequestReleaseSignificanceService.map(…)` | `tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.service.ts:250` |
-| `PullRequestReleaseSignificanceService.resolveFromDocument` | 2 | `PullRequestReleaseSignificanceService.describeError`, `PullRequestReleaseSignificanceService.map(…)` | `tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.service.ts:306` |
-| `PullRequestReleaseSignificanceService.significanceRank` | 2 | `PullRequestReleaseSignificanceService.matchRule`, `PullRequestReleaseSignificanceService.rankOfRelease` | `tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.service.ts:332` |
+| `PullRequestReleaseSignificanceService.readRawCommit` | 2 | `PullRequestReleaseSignificanceService.isRecord`, `PullRequestReleaseSignificanceService.parseConventionalSubject` | `tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.service.ts:164` |
+| `PullRequestReleaseSignificanceService.parseConventionalSubject` | 2 | `PullRequestReleaseSignificanceService.filter(…)`, `PullRequestReleaseSignificanceService.map(…)` | `tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.service.ts:261` |
+| `PullRequestReleaseSignificanceService.resolveFromDocument` | 2 | `PullRequestReleaseSignificanceService.describeError`, `PullRequestReleaseSignificanceService.map(…)` | `tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.service.ts:317` |
+| `PullRequestReleaseSignificanceService.significanceRank` | 2 | `PullRequestReleaseSignificanceService.matchRule`, `PullRequestReleaseSignificanceService.rankOfRelease` | `tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.service.ts:343` |
 | `PullRequestReleaseSignificanceCommand.failWithMessage` | 2 | `PullRequestReleaseSignificanceCommand.appendToReport`, `PullRequestReleaseSignificanceCommand.mirrorToStepSummary` | `tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.command.ts:73` |
 | `PullRequestReleaseSignificanceCommand.failWithUsageError` | 2 | `PullRequestReleaseSignificanceCommand.appendToReport`, `PullRequestReleaseSignificanceCommand.mirrorToStepSummary` | `tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.command.ts:81` |
 | `PullRequestReleaseSignificanceCommand.reportFailures` | 2 | `PullRequestReleaseSignificanceCommand.appendToReport`, `PullRequestReleaseSignificanceCommand.mirrorToStepSummary` | `tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.command.ts:146` |
@@ -314,12 +314,12 @@ What this project is judged against, as declared in its own `callidescope.config
 | `PullRequestReleaseSignificanceGithubService.describeFailure` | 1 | `PullRequestReleaseSignificanceGithubService.filter(…)` | `tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance-github.service.ts:42` |
 | `PullRequestReleaseSignificanceGithubService.isAvailable` | 1 | `PullRequestReleaseSignificanceGithubService.run` | `tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance-github.service.ts:51` |
 | `PullRequestReleaseSignificanceService.describeMissingScopeFailures` | 1 | `PullRequestReleaseSignificanceService.map(…)` | `tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.service.ts:51` |
-| `PullRequestReleaseSignificanceService.findMostSignificantCommit` | 1 | `PullRequestReleaseSignificanceService.significanceRank` | `tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.service.ts:103` |
-| `PullRequestReleaseSignificanceService.matchRule` | 1 | `PullRequestReleaseSignificanceService.find(…)` | `tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.service.ts:140` |
-| `PullRequestReleaseSignificanceService.find(…)` | 1 | `PullRequestReleaseSignificanceService.ruleMatches` | `tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.service.ts:144` |
-| `PullRequestReleaseSignificanceService.releaseLevelName` | 1 | `PullRequestReleaseSignificanceService.find(…)` | `tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.service.ts:172` |
-| `PullRequestReleaseSignificanceService.readReleaseRules` | 1 | `PullRequestReleaseSignificanceService.find(…)` | `tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.service.ts:284` |
-| `PullRequestReleaseSignificanceService.map(…)` | 1 | `PullRequestReleaseSignificanceService.readRawCommit` | `tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.service.ts:325` |
+| `PullRequestReleaseSignificanceService.findMostSignificantCommit` | 1 | `PullRequestReleaseSignificanceService.significanceRank` | `tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.service.ts:114` |
+| `PullRequestReleaseSignificanceService.matchRule` | 1 | `PullRequestReleaseSignificanceService.find(…)` | `tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.service.ts:151` |
+| `PullRequestReleaseSignificanceService.find(…)` | 1 | `PullRequestReleaseSignificanceService.ruleMatches` | `tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.service.ts:155` |
+| `PullRequestReleaseSignificanceService.releaseLevelName` | 1 | `PullRequestReleaseSignificanceService.find(…)` | `tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.service.ts:183` |
+| `PullRequestReleaseSignificanceService.readReleaseRules` | 1 | `PullRequestReleaseSignificanceService.find(…)` | `tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.service.ts:295` |
+| `PullRequestReleaseSignificanceService.map(…)` | 1 | `PullRequestReleaseSignificanceService.readRawCommit` | `tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.service.ts:336` |
 | `PullRequestReleaseSignificanceCommand.resolvePullRequestNumber` | 1 | `PullRequestReleaseSignificanceCommand.failWithUsageError` | `tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.command.ts:173` |
 | `ReadmeProjectsService.findUndocumentedProjectPaths` | 1 | `ReadmeProjectsService.filter(…)` | `tools/validation/src/modules/readme-projects/readme-projects.service.ts:67` |
 | `ReadmeProjectsService.resolveWorkspaceProjectPaths` | 1 | `ReadmeProjectsService.findProjectPaths` | `tools/validation/src/modules/readme-projects/readme-projects.service.ts:82` |
@@ -610,8 +610,8 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-8386-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-270.51_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-8397-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-270.88_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-10-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-76-3178c6?style=flat-square)
 
@@ -635,7 +635,7 @@ graph LR
 ![Methods](https://img.shields.io/badge/Methods-144-15803d?style=flat-square)
 ![Sync Functions](https://img.shields.io/badge/Sync_Functions-504-4ade80?style=flat-square)
 ![Async Functions](https://img.shields.io/badge/Async_Functions-102-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-327-dc2626?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-328-dc2626?style=flat-square)
 ![Imports](https://img.shields.io/badge/Imports-306-0284c7?style=flat-square)
 ![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-115-ea580c?style=flat-square)
 ![Comments](https://img.shields.io/badge/Comments-307-64748b?style=flat-square)

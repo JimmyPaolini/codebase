@@ -204,6 +204,12 @@ terminal, pastes into an issue, and is already what the files hold. `--format
 json` is for a machine reading standard output, and `--format mermaid` prints
 diagram source to paste somewhere that draws it.
 
+**Standard output carries the result; every diagnostic goes to standard error.**
+`callidescope --format json > report.json` has to produce a file something can
+parse, so a log line never shares that stream — it is still on the console and
+still in front of a human, just not inside the data. Only `--format` ever writes
+to that stream.
+
 Three destinations, each independent:
 
 | `write` key | What it writes |
