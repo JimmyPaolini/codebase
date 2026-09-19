@@ -69,7 +69,7 @@ pnpm exec nx affected --target=lint-codebase --configuration=check --base=main
 - **Sync checks**: Run the failing synchronization's own `write` configuration (e.g., `nx run synchronization:conventional-config:write`), or `nx run-many --targets=conformetry-generators,conventional-config,devcontainer-configuration,pull-request-template,skill-exclusions --configuration=write` for every derivation at once.
 - **Check skill exclusions**: Add the exclusion lines the failure names to `configuration/.prettierignore`, `configuration/.codometerignore`, and `.gitattributes`. This leaf has no `write` variant.
 
-See [triage-submission](../triage-submission/SKILL.md) for detailed per-tool fix instructions.
+See [triage-integration](../triage-integration/SKILL.md) for detailed per-tool fix instructions.
 
 ### Step 3 — Done
 
@@ -146,6 +146,5 @@ Everything outside those markers is hand-written and needs no synchronization ru
 
 ## Resources
 
-- [triage-submission skill](../triage-submission/SKILL.md) — Detailed per-tool fix instructions for pre-commit failures
-- [triage-deployment skill](../triage-deployment/SKILL.md) — Detailed per-tool fix instructions for CI failures
+- [triage-integration skill](../triage-integration/SKILL.md) — Detailed per-tool fix instructions for pre-commit failures
 - [write-typescript skill](../write-typescript/SKILL.md) — TypeScript strict mode patterns
