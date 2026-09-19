@@ -1,3 +1,6 @@
+export { CallidescopeCoreModule } from "./modules/callidescope-core/callidescope-core.module";
+
+export { CallidescopeCoreService } from "./modules/callidescope-core/callidescope-core.service";
 // 📤 Exports
 export type {
   CallableBreadthReport,
@@ -22,4 +25,4 @@ export type {
   UnresolvedReason,
   WideCallableCallee,
   WideCallableFinding,
-} from "./lib/call-graph.types";
+} from "./modules/callidescope-core/callidescope-core.types";

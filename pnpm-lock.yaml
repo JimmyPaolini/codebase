@@ -1302,6 +1302,9 @@ importers:
 
   packages/ic-suite/callidescope/callidescope-core:
     dependencies:
+      '@nestjs/common':
+        specifier: 'catalog:'
+        version: 12.0.1(reflect-metadata@0.2.2)(rxjs@7.8.2)
       reflect-metadata:
         specifier: 'catalog:'
         version: 0.2.2
@@ -1312,6 +1315,9 @@ importers:
       '@golevelup/ts-vitest':
         specifier: 'catalog:'
         version: 4.0.0
+      '@nestjs/testing':
+        specifier: 'catalog:'
+        version: 12.0.1(@nestjs/common@12.0.1(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@12.0.1(@nestjs/common@12.0.1(reflect-metadata@0.2.2)(rxjs@7.8.2))(reflect-metadata@0.2.2)(rxjs@7.8.2))
       '@nx/eslint-plugin':
         specifier: 'catalog:'
         version: 23.1.0(@babel/traverse@7.29.7)(@swc-node/register@1.12.1(@swc/core@1.16.2(@swc/helpers@0.5.23))(@swc/types@0.1.28)(typescript@6.0.3))(@swc/core@1.16.2(@swc/helpers@0.5.23))(@typescript-eslint/parser@8.65.0(eslint@10.10.0(jiti@2.7.0))(typescript@6.0.3))(eslint-config-prettier@10.1.8(eslint@10.10.0(jiti@2.7.0)))(eslint@10.10.0(jiti@2.7.0))(nx@23.2.1(@swc-node/register@1.12.1(@swc/core@1.16.2(@swc/helpers@0.5.23))(@swc/types@0.1.28)(typescript@6.0.3))(@swc/core@1.16.2(@swc/helpers@0.5.23)))(typescript@6.0.3)
@@ -1721,6 +1727,9 @@ importers:
 
   packages/ic-suite/codependix/codependix-core:
     dependencies:
+      '@nestjs/common':
+        specifier: 'catalog:'
+        version: 12.0.1(reflect-metadata@0.2.2)(rxjs@7.8.2)
       reflect-metadata:
         specifier: 'catalog:'
         version: 0.2.2
@@ -1731,6 +1740,9 @@ importers:
       '@golevelup/ts-vitest':
         specifier: 'catalog:'
         version: 4.0.0
+      '@nestjs/testing':
+        specifier: 'catalog:'
+        version: 12.0.1(@nestjs/common@12.0.1(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@12.0.1(@nestjs/common@12.0.1(reflect-metadata@0.2.2)(rxjs@7.8.2))(reflect-metadata@0.2.2)(rxjs@7.8.2))
       '@nx/eslint-plugin':
         specifier: 'catalog:'
         version: 23.1.0(@babel/traverse@7.29.7)(@swc-node/register@1.12.1(@swc/core@1.16.2(@swc/helpers@0.5.23))(@swc/types@0.1.28)(typescript@6.0.3))(@swc/core@1.16.2(@swc/helpers@0.5.23))(@typescript-eslint/parser@8.65.0(eslint@10.10.0(jiti@2.7.0))(typescript@6.0.3))(eslint-config-prettier@10.1.8(eslint@10.10.0(jiti@2.7.0)))(eslint@10.10.0(jiti@2.7.0))(nx@23.2.1(@swc-node/register@1.12.1(@swc/core@1.16.2(@swc/helpers@0.5.23))(@swc/types@0.1.28)(typescript@6.0.3))(@swc/core@1.16.2(@swc/helpers@0.5.23)))(typescript@6.0.3)
@@ -2125,6 +2137,9 @@ importers:
 
   packages/ic-suite/codometer/codometer-core:
     dependencies:
+      '@nestjs/common':
+        specifier: 'catalog:'
+        version: 12.0.1(reflect-metadata@0.2.2)(rxjs@7.8.2)
       reflect-metadata:
         specifier: 'catalog:'
         version: 0.2.2
@@ -2135,6 +2150,9 @@ importers:
       '@golevelup/ts-vitest':
         specifier: 'catalog:'
         version: 4.0.0
+      '@nestjs/testing':
+        specifier: 'catalog:'
+        version: 12.0.1(@nestjs/common@12.0.1(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@12.0.1(@nestjs/common@12.0.1(reflect-metadata@0.2.2)(rxjs@7.8.2))(reflect-metadata@0.2.2)(rxjs@7.8.2))
       '@nx/eslint-plugin':
         specifier: 'catalog:'
         version: 23.1.0(@babel/traverse@7.29.7)(@swc-node/register@1.12.1(@swc/core@1.16.2(@swc/helpers@0.5.23))(@swc/types@0.1.28)(typescript@6.0.3))(@swc/core@1.16.2(@swc/helpers@0.5.23))(@typescript-eslint/parser@8.65.0(eslint@10.10.0(jiti@2.7.0))(typescript@6.0.3))(eslint-config-prettier@10.1.8(eslint@10.10.0(jiti@2.7.0)))(eslint@10.10.0(jiti@2.7.0))(nx@23.2.1(@swc-node/register@1.12.1(@swc/core@1.16.2(@swc/helpers@0.5.23))(@swc/types@0.1.28)(typescript@6.0.3))(@swc/core@1.16.2(@swc/helpers@0.5.23)))(typescript@6.0.3)
@@ -2507,6 +2525,9 @@ importers:
 
   packages/ic-suite/conformetry/conformetry-core:
     dependencies:
+      '@nestjs/common':
+        specifier: 'catalog:'
+        version: 12.0.1(reflect-metadata@0.2.2)(rxjs@7.8.2)
       reflect-metadata:
         specifier: 'catalog:'
         version: 0.2.2
@@ -2517,6 +2538,9 @@ importers:
       '@golevelup/ts-vitest':
         specifier: 'catalog:'
         version: 4.0.0
+      '@nestjs/testing':
+        specifier: 'catalog:'
+        version: 12.0.1(@nestjs/common@12.0.1(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@12.0.1(@nestjs/common@12.0.1(reflect-metadata@0.2.2)(rxjs@7.8.2))(reflect-metadata@0.2.2)(rxjs@7.8.2))
       '@nx/eslint-plugin':
         specifier: 'catalog:'
         version: 23.1.0(@babel/traverse@7.29.7)(@swc-node/register@1.12.1(@swc/core@1.16.2(@swc/helpers@0.5.23))(@swc/types@0.1.28)(typescript@6.0.3))(@swc/core@1.16.2(@swc/helpers@0.5.23))(@typescript-eslint/parser@8.65.0(eslint@10.10.0(jiti@2.7.0))(typescript@6.0.3))(eslint-config-prettier@10.1.8(eslint@10.10.0(jiti@2.7.0)))(eslint@10.10.0(jiti@2.7.0))(nx@23.2.1(@swc-node/register@1.12.1(@swc/core@1.16.2(@swc/helpers@0.5.23))(@swc/types@0.1.28)(typescript@6.0.3))(@swc/core@1.16.2(@swc/helpers@0.5.23)))(typescript@6.0.3)
