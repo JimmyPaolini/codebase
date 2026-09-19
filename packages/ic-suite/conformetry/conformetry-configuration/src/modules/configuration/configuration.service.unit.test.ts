@@ -4,7 +4,7 @@ import path from "node:path";
 
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
-import { beforeAll, describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it, vi } from "vitest";
 
 import { InputPromptingService } from "../input/input-prompting.service";
 import { InputService } from "../input/input.service";
@@ -17,6 +17,11 @@ import { UnknownConfigurationFileTypeError } from "./configuration.constants";
 import { ConfigurationService } from "./configuration.service";
 
 import type { ConformetryConfiguration } from "./configuration.types";
+
+function mockValue<T>(_unused?: T): T {
+  // type-coverage:ignore-next-line
+  return {} as unknown as T;
+}
 
 /** Writes a JSON config holding whatever the caller passes. */
 async function writeConfiguration(configuration: unknown): Promise<string> {
@@ -41,6 +46,12 @@ async function writeTypescriptConfiguration(source: string): Promise<string> {
 
 describe(ConfigurationService, () => {
   let service: ConfigurationService;
+  let inputPromptingService: InputPromptingService;
+  let inputService: InputService;
+  let instanceDiscoveryService: InstanceDiscoveryService;
+  let instanceGroupService: InstanceGroupService;
+  let renderingService: RenderingService;
+  let templateDiscoveryService: TemplateDiscoveryService;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
@@ -68,10 +79,298 @@ describe(ConfigurationService, () => {
     }).compile();
 
     service = await module.resolve(ConfigurationService);
+    inputPromptingService = await module.resolve(InputPromptingService);
+    inputService = await module.resolve(InputService);
+    instanceDiscoveryService = await module.resolve(InstanceDiscoveryService);
+    instanceGroupService = await module.resolve(InstanceGroupService);
+    renderingService = await module.resolve(RenderingService);
+    templateDiscoveryService = await module.resolve(TemplateDiscoveryService);
   });
 
   it("is defined", () => {
     expect(service).toBeDefined();
+  });
+
+  describe("facade delegation", () => {
+    it("delegates buildNameSubstitutions", () => {
+      const result =
+        mockValue<ReturnType<typeof renderingService.buildNameSubstitutions>>();
+      vi.mocked(renderingService.buildNameSubstitutions).mockReturnValue(
+        result,
+      );
+
+      expect(service.buildNameSubstitutions("test")).toBe(result);
+      expect(renderingService.buildNameSubstitutions).toHaveBeenCalledWith(
+        "test",
+      );
+    });
+
+    it("delegates collectTemplate", () => {
+      const result =
+        mockValue<
+          ReturnType<typeof templateDiscoveryService.collectTemplate>
+        >();
+      vi.mocked(templateDiscoveryService.collectTemplate).mockReturnValue(
+        result,
+      );
+
+      expect(
+        service.collectTemplate(
+          mockValue<Parameters<typeof service.collectTemplate>[0]>(),
+        ),
+      ).toBe(result);
+      expect(templateDiscoveryService.collectTemplate).toHaveBeenCalledWith({});
+    });
+
+    it("delegates collectTemplates", () => {
+      const result =
+        mockValue<
+          ReturnType<typeof templateDiscoveryService.collectTemplates>
+        >();
+      vi.mocked(templateDiscoveryService.collectTemplates).mockReturnValue(
+        result,
+      );
+
+      expect(
+        service.collectTemplates(
+          mockValue<Parameters<typeof service.collectTemplates>[0]>(),
+        ),
+      ).toBe(result);
+      expect(templateDiscoveryService.collectTemplates).toHaveBeenCalledWith(
+        {},
+      );
+    });
+
+    it("delegates findInstances", () => {
+      const result =
+        mockValue<ReturnType<typeof instanceDiscoveryService.findInstances>>();
+      vi.mocked(instanceDiscoveryService.findInstances).mockReturnValue(result);
+
+      expect(
+        service.findInstances(
+          mockValue<Parameters<typeof service.findInstances>[0]>(),
+        ),
+      ).toBe(result);
+      expect(instanceDiscoveryService.findInstances).toHaveBeenCalledWith({});
+    });
+
+    it("delegates isAtTerminal", () => {
+      const result = true;
+      vi.mocked(inputPromptingService.isAtTerminal).mockReturnValue(result);
+
+      expect(service.isAtTerminal()).toBe(result);
+      expect(inputPromptingService.isAtTerminal).toHaveBeenCalledWith();
+    });
+
+    it("delegates isProjectScoped", () => {
+      const result = true;
+      vi.mocked(instanceGroupService.isProjectScoped).mockReturnValue(result);
+
+      expect(service.isProjectScoped({})).toBe(result);
+      expect(instanceGroupService.isProjectScoped).toHaveBeenCalledWith({});
+    });
+
+    it("delegates matchInstances", () => {
+      const result =
+        mockValue<ReturnType<typeof instanceDiscoveryService.matchInstances>>();
+      vi.mocked(instanceDiscoveryService.matchInstances).mockReturnValue(
+        result,
+      );
+
+      expect(
+        service.matchInstances(
+          mockValue<Parameters<typeof service.matchInstances>[0]>(),
+        ),
+      ).toBe(result);
+      expect(instanceDiscoveryService.matchInstances).toHaveBeenCalledWith({});
+    });
+
+    it("delegates parseCommaDelimitedOption", () => {
+      const result =
+        mockValue<ReturnType<typeof inputService.parseCommaDelimitedOption>>();
+      vi.mocked(inputService.parseCommaDelimitedOption).mockReturnValue(result);
+
+      expect(service.parseCommaDelimitedOption("test")).toBe(result);
+      expect(inputService.parseCommaDelimitedOption).toHaveBeenCalledWith(
+        "test",
+      );
+    });
+
+    it("delegates parseOptionalOption", () => {
+      const result = "test";
+      vi.mocked(inputService.parseOptionalOption).mockReturnValue(result);
+
+      expect(service.parseOptionalOption("test")).toBe(result);
+      expect(inputService.parseOptionalOption).toHaveBeenCalledWith("test");
+    });
+
+    it("delegates parseThresholdOption", () => {
+      const result = 1;
+      vi.mocked(inputService.parseThresholdOption).mockReturnValue(result);
+
+      expect(service.parseThresholdOption("test")).toBe(result);
+      expect(inputService.parseThresholdOption).toHaveBeenCalledWith("test");
+    });
+
+    it("delegates prepareDocuments", () => {
+      const result =
+        mockValue<
+          ReturnType<typeof instanceDiscoveryService.prepareDocuments>
+        >();
+      vi.mocked(instanceDiscoveryService.prepareDocuments).mockReturnValue(
+        result,
+      );
+
+      expect(
+        service.prepareDocuments(
+          mockValue<Parameters<typeof service.prepareDocuments>[0]>(),
+        ),
+      ).toBe(result);
+      expect(instanceDiscoveryService.prepareDocuments).toHaveBeenCalledWith(
+        {},
+      );
+    });
+
+    it("delegates promptForTemplate", async () => {
+      const result = "test";
+      vi.mocked(inputPromptingService.promptForTemplate).mockResolvedValue(
+        result,
+      );
+
+      await expect(
+        service.promptForTemplate(
+          mockValue<Parameters<typeof service.promptForTemplate>[0]>(),
+        ),
+      ).resolves.toBe(result);
+      expect(inputPromptingService.promptForTemplate).toHaveBeenCalledWith({});
+    });
+
+    it("delegates promptForTemplates", async () => {
+      const result = ["test"];
+      vi.mocked(inputPromptingService.promptForTemplates).mockResolvedValue(
+        result,
+      );
+
+      await expect(
+        service.promptForTemplates(
+          mockValue<Parameters<typeof service.promptForTemplates>[0]>(),
+        ),
+      ).resolves.toBe(result);
+      expect(inputPromptingService.promptForTemplates).toHaveBeenCalledWith({});
+    });
+
+    it("delegates readWorkspaceGroups", () => {
+      const result =
+        mockValue<
+          ReturnType<typeof instanceDiscoveryService.readWorkspaceGroups>
+        >();
+      vi.mocked(instanceDiscoveryService.readWorkspaceGroups).mockReturnValue(
+        result,
+      );
+
+      expect(service.readWorkspaceGroups([])).toBe(result);
+      expect(instanceDiscoveryService.readWorkspaceGroups).toHaveBeenCalledWith(
+        [],
+      );
+    });
+
+    it("delegates renderContent", () => {
+      const result = "test";
+      vi.mocked(renderingService.renderContent).mockReturnValue(result);
+
+      expect(
+        service.renderContent(
+          mockValue<Parameters<typeof service.renderContent>[0]>(),
+        ),
+      ).toBe(result);
+      expect(renderingService.renderContent).toHaveBeenCalledWith({});
+    });
+
+    it("delegates renderPath", () => {
+      const result = "test";
+      vi.mocked(renderingService.renderPath).mockReturnValue(result);
+
+      expect(
+        service.renderPath(
+          mockValue<Parameters<typeof service.renderPath>[0]>(),
+        ),
+      ).toBe(result);
+      expect(renderingService.renderPath).toHaveBeenCalledWith({});
+    });
+
+    it("delegates resolveGeneratorInputs", async () => {
+      const result =
+        mockValue<ReturnType<typeof inputService.resolveGeneratorInputs>>();
+      vi.mocked(inputService.resolveGeneratorInputs).mockReturnValue(result);
+
+      await expect(
+        service.resolveGeneratorInputs(
+          mockValue<Parameters<typeof service.resolveGeneratorInputs>[0]>(),
+        ),
+      ).resolves.toBe(result);
+      expect(inputService.resolveGeneratorInputs).toHaveBeenCalledWith({});
+    });
+
+    it("delegates resolveInstanceFiles", () => {
+      const result =
+        mockValue<
+          ReturnType<typeof instanceDiscoveryService.resolveInstanceFiles>
+        >();
+      vi.mocked(instanceDiscoveryService.resolveInstanceFiles).mockReturnValue(
+        result,
+      );
+
+      expect(service.resolveInstanceFiles([])).toBe(result);
+      expect(
+        instanceDiscoveryService.resolveInstanceFiles,
+      ).toHaveBeenCalledWith([]);
+    });
+
+    it("delegates resolveInventoriedInstances", () => {
+      const result =
+        mockValue<
+          ReturnType<
+            typeof instanceDiscoveryService.resolveInventoriedInstances
+          >
+        >();
+      vi.mocked(
+        instanceDiscoveryService.resolveInventoriedInstances,
+      ).mockReturnValue(result);
+
+      expect(
+        service.resolveInventoriedInstances(
+          mockValue<
+            Parameters<typeof service.resolveInventoriedInstances>[0]
+          >(),
+        ),
+      ).toBe(result);
+      expect(
+        instanceDiscoveryService.resolveInventoriedInstances,
+      ).toHaveBeenCalledWith({});
+    });
+
+    it("delegates resolveInventoriedTemplates", () => {
+      const result =
+        mockValue<
+          ReturnType<
+            typeof instanceDiscoveryService.resolveInventoriedTemplates
+          >
+        >();
+      vi.mocked(
+        instanceDiscoveryService.resolveInventoriedTemplates,
+      ).mockReturnValue(result);
+
+      expect(
+        service.resolveInventoriedTemplates(
+          mockValue<
+            Parameters<typeof service.resolveInventoriedTemplates>[0]
+          >(),
+        ),
+      ).toBe(result);
+      expect(
+        instanceDiscoveryService.resolveInventoriedTemplates,
+      ).toHaveBeenCalledWith({});
+    });
   });
 
   it("loads the workspace configuration", async () => {
