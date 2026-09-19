@@ -279,7 +279,7 @@ See the [write-typescript skill](../../.agents/skills/write-typescript/SKILL.md)
 - **Env var validation error on startup** — add the missing variable to `environmentSchema` in `.constants.ts` and to `.env.default`.
 - **Env var validation error on startup** — add the missing variable to `environmentSchema` in `src/constants.ts` and to `.env.default`.
 
-See the [triage-submission skill](../../.agents/skills/triage-submission/SKILL.md) for lint and git hook failures.
+See the [triage-integration skill](../../.agents/skills/triage-integration/SKILL.md) for lint and git hook failures.
 
 ## Key Files
 

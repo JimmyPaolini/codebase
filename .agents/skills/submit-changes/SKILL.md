@@ -150,7 +150,7 @@ gh pr list --head <branch> --state open
 
    If any expected label or the assignee is missing, add it with `gh pr edit <number> --add-label <label>` / `--add-assignee @me` rather than leaving it to Validate Conventions to catch and fail on.
 
-For complete PR conventions and description guidelines, see [create-pull-request skill](../create-pull-request/SKILL.md). For the full label vocabulary, the `opened`/`reopened` reconciliation step that creates missing labels, and how to fix each individual metadata failure, see the [triage-deployment skill](../triage-deployment/SKILL.md).
+For complete PR conventions and description guidelines, see [create-pull-request skill](../create-pull-request/SKILL.md). For the full label vocabulary, the `opened`/`reopened` reconciliation step that creates missing labels, and how to fix each individual metadata failure, see the [triage-integration skill](../triage-integration/SKILL.md).
 
 ## Output
 
@@ -170,6 +170,6 @@ After completing all phases, print a summary table:
 - [rename-branch skill](../rename-branch/SKILL.md) — Rename non-conforming branches before commit/push
 - [commit-code skill](../commit-code/SKILL.md) — Commit message format, types, scopes, gitmoji
 - [create-pull-request skill](../create-pull-request/SKILL.md) — PR conventions and description template, full Labels section
-- [triage-deployment skill](../triage-deployment/SKILL.md) — Label vocabulary, `opened`/`reopened` reconciliation, fixing metadata failures
+- [triage-integration skill](../triage-integration/SKILL.md) — Label vocabulary, `opened`/`reopened` reconciliation, fixing metadata failures
 - [check-commit-signing-configuration.sh](../../../scripts/git/check-commit-signing-configuration.sh) — Pre-commit hook signing prerequisite check
 - [check-push-commit-signatures.sh](../../../scripts/git/check-push-commit-signatures.sh) — Pre-push hook commit signature validation

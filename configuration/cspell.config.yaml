@@ -224,18 +224,20 @@ patterns:
   - name: notebook-outputs
     pattern: /"outputs"\s*:\s*\[(?:[^\[\]]*|\[(?:[^\[\]]*|\[(?:[^\[\]]*|\[[^\[\]]*\])*[^\[\]]*\])*[^\[\]]*\])*[^\[\]]*\]/g
   # cspell:disable
-  # The POSIX temporary directory, written as a literal path (`/tmp/fixture.xml`) or as an
-  # excluded workspace folder (`"tmp"`). A `tmp` identifier is still flagged.
+  # The POSIX temporary directory, written as a literal path (`/tmp/fixture.xml`)
+  # or as an excluded workspace folder (`"tmp"`). A `tmp` identifier is flagged.
   - name: temporary-directory-path
     pattern: /(?<![\w-])\/?tmp(?=["'`/]|$)/gm
   # The `.txt` file extension.
   - name: text-file-extension
     pattern: /\.txt(?![\w])/g
-  # Tailwind utility classes (`bg-card`, `px-4`, `flex-col`, `grid-cols-2`) and CSS pixel
-  # units (`400px`), whose names come from Tailwind and CSS rather than from this codebase.
+  # Tailwind utility classes (`bg-card`, `px-4`, `flex-col`, `grid-cols-2`) and
+  # CSS pixel units (`400px`), whose names come from Tailwind and CSS rather than
+  # from this codebase.
   - name: css-utility-class
     pattern: /(?<![\w-])(?:bg|px|cols?)-[\w[\]/.%-]+|(?<![\w-])(?:flex|grid)-cols?(?![\w-])|\b\d+(?:\.\d+)?px(?![\w])/g
-  # TypeORM-generated index and constraint identifiers, whose hex hashes also spell `db`.
+  # TypeORM-generated index and constraint identifiers, whose hex hashes also
+  # spell `db`.
   - name: typeorm-constraint-identifier
     pattern: /\b(?:IDX|FK|PK|UQ|REL|CHK|DF)_[\da-f]{8,}\b/g
   # postcss's declaration node spells its property name `prop`, so reading one

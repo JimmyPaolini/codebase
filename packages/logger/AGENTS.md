@@ -138,7 +138,7 @@ nx run logger:vitest:unit
   imported in that project's root module; `@Global()` only applies once the
   module is registered somewhere.
 
-See the [triage-submission skill](../../.agents/skills/triage-submission/SKILL.md) for lint and git hook failures.
+See the [triage-integration skill](../../.agents/skills/triage-integration/SKILL.md) for lint and git hook failures.
 
 ## Key Files
 
