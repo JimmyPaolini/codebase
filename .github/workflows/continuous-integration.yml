@@ -130,7 +130,7 @@ jobs:
           nx-shas: ${{ matrix.check.target == 'judge-conventions' && 'false' || 'true' }}
           eslint-cache: ${{ matrix.check.target == 'lint-code' && 'true' || 'false' }}
 
-      - name: ${{ matrix.check.emoji }} Run ${{ matrix.check.name }}
+      - name: ${{ matrix.check.emoji }} ${{ matrix.check.name }}
         id: run-check
         if: steps.check-skip.outputs.skip != 'true'
         continue-on-error: ${{ matrix.check.target == 'build-projects' }}
