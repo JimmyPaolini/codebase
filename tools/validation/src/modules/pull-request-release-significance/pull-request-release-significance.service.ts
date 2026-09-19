@@ -86,18 +86,7 @@ export class PullRequestReleaseSignificanceService {
       }
 
       for (const scope of commit.convention.scopes) {
-        // ic-suite is a parent scope for these four toolchains
-        const effectiveTitleScopes = titleConvention.scopes.includes("ic-suite")
-          ? [
-              ...titleConvention.scopes,
-              "callidescope",
-              "codependix",
-              "codometer",
-              "conformetry",
-            ]
-          : titleConvention.scopes;
-
-        if (effectiveTitleScopes.includes(scope)) {
+        if (titleConvention.scopes.includes(scope)) {
           continue;
         }
 

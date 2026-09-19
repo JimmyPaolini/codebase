@@ -23,50 +23,39 @@ structurally distinct repeat within reach, one generic family-agnostic renderer 
 one from its decoded Code, and a family is _read off_ the result rather than chosen before
 it. See "One Command" and "Output Layout" in [README.md](./README.md).
 
-**Each module is named for the one job it does, with no shared prefix**, and `code` owns
-a meander's Code in both directions — reading one, reading a lattice point's four
-direction bits at `level × columns + column`, spelling a tile into one, and rotating its
-phase. There is no grid between a Code and its ink: reading a point is indexing a string,
-so do not build an array of arrays to walk. The module table is in
-[README.md](./README.md) under "Modules". `mosaic` is the name of a **family** — a stored
-value on 131 rows — and of nothing else.
-
 **The corpus is two provenances that partition it, and the partition is load-bearing.**
-`enumerated` holds the 30,279 meanders `EnumerationService` walks — the fourteen
+`enumerated` holds the 30,279 meanders `MeanderEnumerationService` walks — the fourteen
 shapes the edge budget admits. `hardcoded` holds the 965 meanders of the historical corpus
 that lie beyond that budget, extracted once as Codes from the retired file tree.
-`CorpusService.isBeyondEnumeration` computes that boundary rather than reading a
-hand-listed one, from two bounds: `EDGE_BUDGET` through `EnumerationService.isAdmitted`,
-and the sweep's own `SWEEP_MINIMUM_ROWS` floor. The filter is by shape rather than by
-Code because the enumeration applies no degree ceiling and no family filter, so at an
-admitted shape _every_ structurally distinct meander is already a row before ingestion
-begins.
-**Raising `EDGE_BUDGET` without re-filtering that corpus is how the two halves
+`HARDCODED_MEANDERS_BY_FAMILY` carries the filter and why it is by shape rather than by
+Code: the enumeration applies no degree ceiling and no family filter, so at an admitted
+shape _every_ structurally distinct meander is already a row before ingestion begins.
+**Raising `MOSAIC_TILE_EDGE_BUDGET` without re-filtering that corpus is how the two halves
 collide** — `draw-sweep.command.integration.test.ts` is what catches it.
 
 **What bounds the enumeration is one edge budget, not a column cap.** A repeat is a
 `columns` by `rows - 1` grid of lattice points, each carrying four direction bits, and its
 edges are its only degrees of freedom — so a shape holds `2 ** (columns * (2 * rows - 3))`
 repeats and rows and columns are not independent knobs.
-`EDGE_BUDGET` caps that edge count at 16, and
-`SWEEP_MINIMUM_ROWS` sets the floor at 3, which between them admit fourteen
+`MOSAIC_TILE_EDGE_BUDGET` caps that edge count at 16, and
+`MEANDER_ENUMERATION_MINIMUM_ROWS` sets the floor at 3, which between them admit fourteen
 shapes: 3×1 through 3×5, 4×1 through 4×3, 5×1, 5×2, and 6×1 through 9×1. A shape past the
 budget is refused rather than enumerated slowly. Raising it is a one-line change with a
-visible effect on counts `tile-enumeration.service.unit.test.ts` asserts — which is the point
+visible effect on counts `mosaic-tiles.service.unit.test.ts` asserts — which is the point
 of it being one number.
 
 **A family is a combination of Characteristics, not a label a generator attached.**
-`ClassificationService` holds one predicate per family, read off a Code's
+`MeanderClassificationService` holds one predicate per family, read off a decoded grid's
 measured Characteristics and its shape; a meander matching none is recorded with a null
 `family`, which is most of the enumerated space and is the design rather than a gap.
 Adding a family means adding a rule there, never a motif service. The same is true one
-level down: `SubFamilyService` holds one predicate per sub-family, and **unbroken or broken
+level down: `mosaic-naming` holds one predicate per sub-family, and **unbroken or broken
 is a question about edges, not points** — `lines` and `dashes` differ on it, and so do
 `bars` and `diamond`.
 
 **A hardcoded row's `family` and `subFamily` are trusted, not classified.** Spec #813 puts
 reclassifying the historical corpus through the new predicates explicitly out of scope, so
-`CorpusService` carries that metadata over rather than re-deriving it. Do not
+`HardcodedMeandersService` carries that metadata over rather than re-deriving it. Do not
 "fix" a hardcoded row whose structure would classify differently.
 
 **A duplicate lattice address is a build failure.** The unique index over
@@ -87,14 +76,14 @@ measurements behind it, is in [README.md](./README.md), under "Meander Charter".
 
 **The property test that gated them is gone with the corpus it swept.** It measured every
 drawing the per-family sweep produced, and that sweep no longer exists; the structural
-facts it asserted are now computed per row by `CharacteristicsService` and stored as
+facts it asserted are now computed per row by `MeanderCharacteristicsService` and stored as
 columns, so they are queryable rather than gated. Rebuilding a gate over the database is
 open work, not something this project claims to have.
 
 The three invariants that most often catch a change:
 
 - **Space-filling.** Every interior white channel is exactly one stroke width — which
-  equals half a grid unit. `GeometryService` derives stroke width and offset from the
+  equals half a grid unit. `GridGeometryService` derives stroke width and offset from the
   grid unit for this reason; setting either independently breaks the invariant silently.
 - **No branching and no crossing.** These are the charter's two negotiable invariants, and
   the lattice-first corpus relaxes both wholesale: the enumerated space is every subset of

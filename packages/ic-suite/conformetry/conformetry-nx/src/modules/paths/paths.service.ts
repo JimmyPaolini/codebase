@@ -86,6 +86,8 @@ export class PathsService {
   }): string | undefined {
     const countsByParent = new Map<string, number>();
 
+    console.log("instances", args.instances);
+
     for (const instance of args.instances) {
       // An instance's path is already the parent: the template supplies the
       // folder, so nothing is stripped here.
@@ -97,6 +99,8 @@ export class PathsService {
 
       countsByParent.set(parentPath, (countsByParent.get(parentPath) ?? 0) + 1);
     }
+
+    console.log("countsByParent", [...countsByParent.entries()]);
 
     return [...countsByParent.entries()].toSorted(
       ([left, leftCount], [right, rightCount]) => {

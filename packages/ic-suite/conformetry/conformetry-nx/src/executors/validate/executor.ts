@@ -44,7 +44,7 @@ export default async function validateExecutor(
     project: {
       name: projectName,
       root: projectConfiguration.root,
-      tags: projectConfiguration.tags ?? [],
+      tags: [...(projectConfiguration.tags ?? []), `name:${projectName}`],
     },
     workspaceRoot: context.root,
   });

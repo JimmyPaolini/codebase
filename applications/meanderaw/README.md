@@ -30,37 +30,6 @@ Code, its rows, and its columns — and by nothing else.
 nx run meanderaw:vitest
 ```
 
-## 🧩 Modules
-
-Each module is named for the one job it does, with no shared prefix. In an
-application where everything concerns meanders on a lattice, a `meander-` or
-`lattice-` prefix distinguishes nothing, and the split between those two put
-the reading of a rendered drawing on the wrong side of a line it straddled.
-
-| Job | Module |
-| --- | --- |
-| Own the Code: read one, read a point's bits, spell a tile, rotate its phase | `code` |
-| Draw a Code, read a drawing back, address a repeat in one, measure it | `drawing` |
-| Edges and points vocabulary | `tile` |
-| The symmetry group and its fold | `symmetry` |
-| Walk the space | `enumeration` |
-| Measure a meander | `characteristics` |
-| Decide its families, and the sub-family region its ink earns | `classification` |
-| Generic graph primitives | `graph` |
-| Pixel arithmetic, drawing document wrapper, persistence | `geometry`, `svg`, `database` |
-| The historical corpus | `corpus` |
-| The command line | `draw` |
-
-**A meander is its Code**, and there is no grid between the two. A Code is one
-hexadecimal character per interior lattice point in reading order, so the point
-at `(level, column)` is the character at `level × columns + column` and reading
-its four direction bits is indexing a string. The array of arrays that used to
-stand between them gave nothing the string does not.
-
-`mosaic` survives as the name of a **family** — 131 rows of the committed
-database carry it — and nowhere else. No module, service or type is named for
-it.
-
 ## 🗂️ Output Layout
 
 ```text
@@ -86,14 +55,13 @@ sweep draw through — so the column can be regenerated rather than trusted.
 - **Enumerated** — every structurally distinct repeat the lattice's edge budget admits,
   at each of the fourteen shapes it admits one at: 30,279 meanders, found by walking the
   space rather than by drawing a family. A row's `family` is read off its own structure
-  by `ClassificationService`, and is null where the structure satisfies no
+  by `MeanderClassificationService`, and is null where the structure satisfies no
   family's defining combination.
 - **Hardcoded** — the 965 meanders of the historical corpus that lie _beyond_ that
-  budget, read back once off the retired file tree's own drawings and committed as
-  `HISTORICAL_CORPUS`. A row's `family` is the directory that tree filed the drawing
-  under — provenance rather than a verdict, and known to be wrong in places. Which
-  entries lie beyond the budget is computed by `CorpusService.isBeyondEnumeration`
-  rather than hand-listed.
+  budget, preserved as Codes extracted once from the retired file tree. Their family and
+  sub-family are carried over as trusted metadata rather than re-derived. See
+  `HARDCODED_MEANDERS_BY_FAMILY` for exactly where the boundary sits and why the filter
+  is by shape rather than by Code.
 
 A duplicate lattice address across the two is a build failure rather than a convention
 nobody checks: the unique index over `(code, rows, columns)` refuses the second insert,
@@ -308,7 +276,7 @@ a name that says nothing about what it draws. `split` is `diamond`. At 3 rows al
 varying a parameter that changes nothing.
 
 The five that were not in the enumeration were not in it for one reason: their column
-span is past `EDGE_BUDGET`. Two columns at six rows is 18 edges against a
+span is past `MOSAIC_TILE_EDGE_BUDGET`. Two columns at six rows is 18 edges against a
 budget of 16, and six columns is 54. Raising the budget to reach them is not an option —
 it would admit `2 ** 54` tiles at that shape — so those five drawings are the cost of the
 removal, stated rather than glossed: a staircase at 5 and 6 rows and two dot ladders at 6
@@ -338,14 +306,14 @@ and needs no predicate.
 
 **The bits are twice-redundant, and the redundancy is a checked invariant.** `east` at one
 point is `west` at the point to its right, wrapping from the last column into the next
-repeat, and `south` is `north` at the point below. `TileService.assertWellFormed`
+repeat, and `south` is `north` at the point below. `MosaicTileService.assertWellFormed`
 refuses a grid that disagrees. That agreement is what makes a tile's bits denote exactly
 one drawing — no two assignments draw the same pattern, and no assignment draws none — and
 the east–west wrap at the last column **is** what makes a tile join up with its own next
 repeat, stated once rather than handled wherever a mark used to reach past the tile's edge.
 
 The alternative reading — each bit draws a half-unit arm, so disagreeing neighbors leave a
-stub ending between lattice lines — is rejected. Nothing on the lattice admits a
+stub ending between lattice lines — is rejected. `MeanderLatticeService` refuses a
 coordinate that is not on a lattice line, so half-arms would break the whole measurement
 stack, and a stub ending in mid-air is not obviously legal under invariant 2 either.
 
@@ -353,7 +321,7 @@ stack, and a stub ending in mid-air is not obviously legal under invariant 2 eit
 eastward and one southward per point, minus the last level's southward ones, which have
 nowhere to reach — so a shape holds exactly `2 ** (columns * (2 * rows - 3))` tiles and
 rows and columns are not independent knobs. Capping each alone caps neither: six rows is
-fine, six columns is fine, and a six-by-six tile is `2 ** 54` of them. `EDGE_BUDGET`
+fine, six columns is fine, and a six-by-six tile is `2 ** 54` of them. `MOSAIC_TILE_EDGE_BUDGET`
 caps the edge count at **16**, which admits eleven shapes and 8,551 distinct tiles after
 symmetry folding — a corpus a person can look through. Twenty would admit about 116,000.
 
@@ -392,8 +360,8 @@ change and is not worth making for a vocabulary correction.
 The charter reports a **rendered document**'s ink as a graph — nodes, edges, components,
 free ends — and two predicates follow from those counts by arithmetic and nothing else: a
 **forest** is exactly `edges = nodes − components`, and a **tree** is exactly
-`components = 1 && edges = nodes − 1`. The same two questions were asked of a **tile**,
-and answered without drawing it — the counts below are what that reading found.
+`components = 1 && edges = nodes − 1`. `MosaicConnectivityService` asks the same two
+questions of a **tile**, and answers them without drawing it.
 
 | Question | Over the 8,551 tiles |
 | --- | --- |
@@ -441,20 +409,19 @@ repeat the ink really does close on itself, and the distinction it draws — ink
 terminates inside the repeat against ink that runs on through the repeats forever — is one
 the drawing cannot state.
 
-Both halves were asserted rather than argued, by a suite that rendered every tile of
-three shapes at two
-repeat counts, measured each document the way any committed document is measured, and
-checked that the implication had no exception and that the set of tiles the two readings
+Both halves are asserted rather than argued.
+`mosaic-connectivity.service.integration.test.ts` renders every tile of three shapes at two
+repeat counts, measures each document the way any committed document is measured, and
+checks that the implication has no exception and that the set of tiles the two readings
 disagree about is the same set once enough repeats are drawn for a wrapping run to show
 itself rather than close by coincidence within a narrow drawing — 1,631 tiles disagree at
 one repeat and 1,039 at two, against 1,033 from three repeats on, which is where the set
 settles into a property of the tile rather than of how much of it was drawn.
 
-The walk that counts the pieces is `GraphService.components` and the arithmetic
-is its `isAcyclic` and `isOneComponent`, reached through an
+The walk that counts the pieces is `MeanderTopologyService.components` and the arithmetic
+is its `isAcyclic` and `isOneComponent`, shared with the document-level reading through an
 `InkAdjacency` — nodes, neighbors, and an identity for a node. That is the whole of what a
-component count needs, and it is the only thing a document-level reading could ever have
-shared with it: one lives on a
+component count needs, and it is the only thing the two readings can share: one lives on a
 bounded lattice of `"column,row"` points and the other on a wrapping repeat of
 `[level][column]` points, so neither coordinate system is a special case of the other. The
 dependency runs mosaic onto topology, which leaves the topology service free of any
@@ -506,12 +473,12 @@ decoded point by point without a table.
 
 It names a tile completely, because the points determine every edge: each one owns its
 `east` and its `south`. It is deliberately redundant, writing every edge twice — once at
-each end — which is the same redundancy `TileService.assertWellFormed` checks, and
+each end — which is the same redundancy `MosaicTileService.assertWellFormed` checks, and
 paying it buys a filename whose characters are the tile's own points rather than a packed
 edge list nobody can read. The directory a drawing is filed under carries the shape, so
 two tiles of different shapes may share a string.
 
-Recognition lives in `classification`, as `SubFamilyService` — a list of **rules**: a name,
+Recognition lives in the `mosaic-naming` module, which is a list of **rules**: a name,
 and a predicate over the tile's own direction bits that a tile must satisfy to be called
 it. Adding a name to the family is adding one of these, not writing a motif service.
 
@@ -525,7 +492,7 @@ Three consequences, and each is asserted rather than assumed:
   says nothing.
 - **A tile matching two rules is a defect in the rule set**, not a tie to break. The rules
   are exclusive by construction — each requires the _absence_ of the directions the others
-  are about — and `sub-family.service.unit.test.ts` asserts it over the whole
+  are about — and `mosaic-naming.service.unit.test.ts` asserts it over the whole
   enumerated space. `zigzag` and `square` are the one pair that cannot separate that way,
   since every point turns a corner in both; they split on a reading whose two halves are
   false together rather than true together whenever a tile is neither.
@@ -606,7 +573,8 @@ rows is asked of the rows instead, and it is exact.
 ### Every name is a constructor as well as a predicate
 
 A name is a rule, so recognizing a region costs nothing; building its aligned
-representative was a separate job, and for a while only five of the names had one. `mesh` and `zigzag` did not, because the shape table
+representative is the separate job `MosaicSubFamilyService` does, and for a while only
+five of the names had one. `mesh` and `zigzag` did not, because the shape table
 could say one thing — one direction's edges, anchored in the first column, every
 `levelStep` levels — and neither of those two is that. `mesh` uses both directions at
 once. `zigzag` needs its eastward edges to start a column further along at every level,
@@ -651,7 +619,7 @@ smallest `mesh` is `7b`, a single column with every edge it has.
 **Advancing the phase keeps every lane stepping, at every row count**, which is what makes
 one boolean enough rather than a rule that only reads right at the shallowest tile. The
 phase is the level index, so consecutive levels always disagree by one, so every lane is
-offset — and `sub-family.service.unit.test.ts` names both constructors' tiles back at
+offset — and `mosaic-naming.service.unit.test.ts` names both constructors' tiles back at
 every row count each exists at, from 5 through 11, rather than only at the smallest.
 
 Ask for a sub-family by name:
@@ -720,22 +688,23 @@ at a corner.
 
 Every `output/mosaic/<rows>-rows/<columns>-columns/*.svg` file was read from disk — no generation, no motif
 service, the same approach the charter test already uses to gate the corpus — and passed
-to the drawing reader that then existed, `MeasurementService.measure`, which has
-since been deleted along with the rest of the reading direction.
+to the existing
+[`MeanderTopologyService.measure`](src/modules/meander-topology/meander-topology.service.ts).
 A tile is classified from its own `negativeTJunctions`/`negativeXJunctions`:
 
 - **Crosses**: `negativeXJunctions > 0`.
 - **Branches only**: `negativeTJunctions > 0` and `negativeXJunctions === 0`.
 - **Neither**: both zero.
 
-This measurement adds no committed source: it ran as a temporary test beside the
-charter integration suite, and both are gone. It is nothing but a loop calling `measure` on each file and tallying the
+This measurement adds no committed source: it ran as a temporary test beside
+`meander-topology.service.integration.test.ts`, deleted before this section was
+committed. It is nothing but a loop calling `measure` on each file and tallying the
 result against the two thresholds above — reproducible in a few lines against the
 already-committed service.
 
-One further tally needed a small extension beyond what `measure` reported (see
+One further tally needed a small extension beyond what `measure` reports (see
 "Is the negative itself space-filling?" below): for each cell of the same lattice graph
-that reader already produced, how many of its corridor-eligible sides
+`MeanderLatticeService.build` already produces, how many of its corridor-eligible sides
 carry no corridor — the same four-arm check `measure` uses to find negative T- and
 X-junctions, just also recording degree 0.
 
@@ -953,8 +922,8 @@ count and column span, 3,179 in all — so the two descriptions were the same de
 
 Recognizing that is what made the matching rule droppable. `mosaic` is now the _whole_
 lattice under an edge budget rather than one region of it, and the matching region is still
-recoverable exactly: `TileEnumerationService.isMatching` filters the enumeration back down to
-it, and `tile-enumeration.service.unit.test.ts` asserts the result shape by shape. That is what
+recoverable exactly: `MosaicTilesService.isMatching` filters the enumeration back down to
+it, and `mosaic-tiles.service.unit.test.ts` asserts the result shape by shape. That is what
 says the widening is a widening and not a replacement.
 
 ### The five sit at the far end of one axis
@@ -1096,7 +1065,7 @@ If the decision is ever revisited, a follow-up implementation ticket would have 
 - re-express the modifiers as constructors over lattice tiles, deriving `unitWidth` and
   `rightEdge` from the tile instead of from per-family arithmetic;
 - give the space a canonical identifier and a symmetry folding, as
-  `SymmetryService` already does for its own much smaller alphabet.
+  `MosaicSymmetryService` already does for its own much smaller alphabet.
 
 **It would be a wide refactor and would need expand–contract sequencing.** It touches
 `MotifService`, all six motif services, `MeanderGenerationService`'s dispatch,
@@ -1110,7 +1079,7 @@ then could the contract phase delete the per-family path emission.
 > only the fourth. Every drawing in every family now carries a **lattice address** —
 > `<rows>r<span>c-` and one hexadecimal character per interior lattice point — with its
 > canonical symmetry class beside it, spelled and folded by
-> `CodeService` in `src/modules/code/` and recorded
+> `LatticeIdentificationService` in `src/modules/lattice-identification/` and recorded
 > for every committed drawing in the committed `output/meanders.sqlite` database. The
 > other three bullets are untouched: there is no family-agnostic lattice enumerator, the
 > motif services still emit their own path data rather than producing a lattice tile for
@@ -1214,10 +1183,10 @@ invariants 3 and 4 constrain ink, and no family is failed for what its white spa
 | 5 Band, not field | Applies | Applies |
 | 6 Flat path model | Applies | Applies |
 
-That declaration lived in `RELAXED_INVARIANTS` in the charter property test, which
-asserted a declared relaxation was _present_ as well as an undeclared one absent. Both
-are retired: asserting that a declared relaxation is present means nothing once nothing
-is declared, and the charter is prose now rather than a gate.
+That declaration lives in `RELAXED_INVARIANTS` in
+[the charter property test](src/modules/meander-topology/meander-topology.service.integration.test.ts),
+which asserts a declared relaxation is _present_ as well as an undeclared one absent — so
+neither mode can quietly stop doing what this table says it does.
 
 ### Provenance: derived, not attested
 
@@ -1247,8 +1216,8 @@ drawing one; this family draws them.
 
 Nothing here is invented. A `mosaic` drawing divides its band into cells, and the white
 between two neighboring cells is a **corridor** wherever the ink wall that would separate
-them is missing — which is exactly what `CharacteristicsService` counts when it reports a
-meander's negative junctions. `negative` puts one lattice point on every cell and one
+them is missing — which is exactly what `MeanderTopologyService` counts when it reports a
+document's negative junctions. `negative` puts one lattice point on every cell and one
 stroke along every corridor. The shapes were already produced, already orthogonal, and
 already on this grid; what is new is treating white as black.
 
@@ -1280,15 +1249,16 @@ mortar that branches and one that crosses.
 `brick-upright` is the one source that cannot always be a sub-family's tile. `diamond`'s
 vertical dashes cover the interior in pairs, so it names no tile over an odd number of
 levels; this family closes the stack with a one-level dot there instead, exactly as the
-stair caps its own. Where `diamond` exists the two tiles are identical, which was
-asserted against the sub-family's own constructor rather than against an identifier.
+stair caps its own. Where `diamond` exists the two tiles are identical, which
+`negative-source.service.unit.test.ts` asserts against `MosaicSubFamilyService.tile`
+rather than against an identifier.
 
 A `negative` of `rows` rows inverts a source of `rows + 1`, and that offset is arithmetic
 rather than taste: a source of `n` rows has `n` rows of cells, the negative puts a lattice
 point on each of them, and `n` lattice lines bound `n - 1` rows. Inverting a source drawn
 at the negative's own row count would leave the canvas's bottom lattice row with no ink on
 it — invariant 2 broken for a bookkeeping reason rather than a drawn one. It is also why
-the family's structural minimum is 3 where `MINIMUM_ROWS` is 4.
+the family's structural minimum is 3 where `MOSAIC_TILE_MINIMUM_ROWS` is 4.
 
 One consequence of the offset: the sweep draws `negative` at 3 through 12 rows, so
 everything from its 8-row drawings up inverts a source of 9 rows or more — past what the
@@ -1336,7 +1306,7 @@ diverge. Both halves of that are asserted rather than described.
 Six names is a sample of that space, not the space. **It is enumerated in full** under
 `output/negative/<rows>-rows/permutations/1-columns/`, one drawing per symmetry class, the
 same way `mosaic` enumerates its own tiles — because it is the same enumeration:
-`TileEnumerationService.enumerate(rows + 1, 1)` is every one-column tile there is, and every
+`MosaicTilesService.enumerate(rows + 1, 1)` is every one-column tile there is, and every
 one of them is a source this family can invert.
 
 | Negative rows | Sources | Branches only | Crosses | Neither |
@@ -1426,7 +1396,7 @@ else in the corpus.
 
 Thirty of those two hundred numbers have a committed source: the ones at 3 through 5 rows,
 whose `mosaic` sources are among the committed permutation tiles. Each of the thirty is
-asserted, by the retired charter integration suite, to equal the negative T- and
+asserted, in `meander-topology.service.integration.test.ts`, to equal the negative T- and
 X-junction counts of the committed `output/mosaic/<rows>-rows/<columns>-columns/` document it
 inverts — read off disk, from a file that existed before this family did. That assertion is
 what makes "the candidates come from the mosaic space" a fact rather than a claim: if a
@@ -1483,8 +1453,8 @@ apart. The corpus that resulted has no tree in it at all — `parallel`'s one-st
 and its names were then dropped as duplicates for a separate reason. What is left is the
 two-way split the tree was the exception to: 5,817 of the 9,877 committed documents are
 forests of many components — `branch`'s 80 among them — and 4,060 carry a loop.
-The retired charter integration suite read every committed document off disk and
-asserted that.
+`meander-topology.service.integration.test.ts` reads every committed document off disk and
+asserts that.
 
 ### What it draws
 
@@ -1651,7 +1621,7 @@ pieces with no cycle in any of them. The ten `negative` drawings that carry no c
 `ruled-closed`'s, whose ink is the band's own rules and nothing joining them: a forest of
 one component per lattice row, which is the corner of that family shaped the way this one
 now is throughout. Both ends of `negative`'s range are asserted in
-the retired charter integration suite rather than merely published here.
+`meander-topology.service.integration.test.ts` rather than merely published here.
 
 The survey anticipated the loop-free figure — its "A note for the branching family" found that
 every one of the 104 _branches only_ tiles has at least one cycle at the rendered scale,
@@ -3132,14 +3102,14 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-15394-22c55e?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-15340-22c55e?style=flat-square)
 ![Repository Size](https://img.shields.io/badge/Repository_Size-48.80_MB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-18-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-121-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-96.17_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-95.87_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
@@ -3148,7 +3118,7 @@ graph LR
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-1-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
 ![Decorators](https://img.shields.io/badge/Decorators-103-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-271-6366f1?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-268-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-5-166534?style=flat-square)
 
 ### JavaScript
@@ -3157,15 +3127,15 @@ graph LR
 ![Test Files](https://img.shields.io/badge/Test_Files-29-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-13-8b5cf6?style=flat-square)
 ![Classes](https://img.shields.io/badge/Classes-45-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-462-16a34a?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-459-16a34a?style=flat-square)
 ![Methods](https://img.shields.io/badge/Methods-216-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-564-4ade80?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-561-4ade80?style=flat-square)
 ![Async Functions](https://img.shields.io/badge/Async_Functions-114-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-421-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-574-0284c7?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-422-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-573-0284c7?style=flat-square)
 ![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-126-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-578-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-2678-475569?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-575-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-2663-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python
@@ -3321,23 +3291,23 @@ graph LR
 ### Markdown
 
 ![Markdown Files](https://img.shields.io/badge/Markdown_Files-1-083fa1?style=flat-square)
-![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-369-1f6feb?style=flat-square)
+![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-358-1f6feb?style=flat-square)
 ![H1](https://img.shields.io/badge/H1-1-7c3aed?style=flat-square)
 ![H2](https://img.shields.io/badge/H2-8-8b5cf6?style=flat-square)
 ![H3](https://img.shields.io/badge/H3-16-a78bfa?style=flat-square)
 ![H4](https://img.shields.io/badge/H4-0-c4b5fd?style=flat-square)
 ![H5](https://img.shields.io/badge/H5-0-ddd6fe?style=flat-square)
 ![H6](https://img.shields.io/badge/H6-0-ede9fe?style=flat-square)
-![Paragraphs](https://img.shields.io/badge/Paragraphs-69-64748b?style=flat-square)
+![Paragraphs](https://img.shields.io/badge/Paragraphs-68-64748b?style=flat-square)
 ![Lists](https://img.shields.io/badge/Lists-8-16a34a?style=flat-square)
 ![List Items](https://img.shields.io/badge/List_Items-33-22c55e?style=flat-square)
 ![Task List Items](https://img.shields.io/badge/Task_List_Items-0-4ade80?style=flat-square)
 ![Tables](https://img.shields.io/badge/Tables-2-0284c7?style=flat-square)
 ![Table Rows](https://img.shields.io/badge/Table_Rows-10-0ea5e9?style=flat-square)
-![Links](https://img.shields.io/badge/Links-16-059669?style=flat-square)
+![Links](https://img.shields.io/badge/Links-15-059669?style=flat-square)
 ![Images](https://img.shields.io/badge/Images-0-10b981?style=flat-square)
 ![Code Blocks](https://img.shields.io/badge/Code_Blocks-15-dc2626?style=flat-square)
-![Inline Code](https://img.shields.io/badge/Inline_Code-124-ef4444?style=flat-square)
+![Inline Code](https://img.shields.io/badge/Inline_Code-118-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-0-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-0-a16207?style=flat-square)
 <!-- CODE_STATISTICS_END -->

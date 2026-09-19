@@ -95,6 +95,10 @@ const types = [
 
 const scopes = [
   {
+    description: "In-house code measurement and validation toolchains (Callidescope, Codependix, Codometer, Conformetry) and their shared conventions",
+    name: "ic-suite",
+  },
+  {
     description:
       "Python Jupyter notebook application for LangGraph affirmation generation",
     name: "affirmations",
@@ -176,11 +180,6 @@ const scopes = [
     description:
       "Code statistics measurement CLI, the configuration package it reads, and the packages that diff and render its pull request change report",
     name: "codometer",
-  },
-  {
-    description:
-      "In-house code measurement and validation toolchains (Callidescope, Codependix, Codometer, Conformetry) and their shared conventions",
-    name: "ic-suite",
   },
   {
     description: "Escape hatch: suppress semantic-release for any commit type",

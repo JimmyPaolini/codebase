@@ -76,6 +76,7 @@ const config: KnipConfig = {
     // typescript-eslint and @swc-node/register still require TypeScript 6.
     "typescript-7",
     "squawk-cli", // SQL linter CLI, invoked via nx:run-commands in project.json
+    "pino-pretty", // Used by NX daemon and plugins
   ],
 
   // Allow exports that are only used in the same file (common for barrel re-exports)

@@ -145,10 +145,16 @@ export class ProjectsService {
       ? configuration.tags
       : [];
 
+    const projectName =
+      typeof configuration.name === "string" ? configuration.name : root;
+    const stringTags = tags.filter(
+      (tag): tag is string => typeof tag === "string",
+    );
+
     return {
-      name: typeof configuration.name === "string" ? configuration.name : root,
+      name: projectName,
       root,
-      tags: tags.filter((tag) => typeof tag === "string"),
+      tags: [...stringTags, `name:${projectName}`],
     };
   }
 }

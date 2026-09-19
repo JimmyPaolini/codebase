@@ -4,6 +4,8 @@
   "projectType": "library",
   "sourceRoot": "packages/ic-suite/callidescope/callidescope-core",
   "tags": [
+    "framework:nestjs",
+    "generator:nestjs-service-project",
     "language:typescript",
     "layer:core",
     "name:callidescope-core",

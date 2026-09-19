@@ -1,13 +1,14 @@
+export { CodependixCoreModule } from "./modules/codependix-core/codependix-core.module";
+
+export { CodependixCoreService } from "./modules/codependix-core/codependix-core.service";
 // 📤 Exports
 export type {
   AnchorCheckResult,
+  CodependixRunMode,
   GraphRunOutcome,
   MarkdownSectionArguments,
   ProjectRunFailure,
   ProjectRunResult,
-} from "./modules/results/results.types";
-export type {
-  CodependixRunMode,
   RunMode,
   RunModeSelection,
-} from "./modules/run/run.types";
+} from "./modules/codependix-core/codependix-core.types";

@@ -177,15 +177,7 @@ graph LR
 ### NestJS Module Graph
 
 <!-- codependix:start name="codependix-nestjs-modules" -->
-```mermaid
-flowchart LR
-  DifferencesModule
-  InventoryModule
-  ReportingModule
-  RunnerModule
-  ScoringModule
-  ReportingModule --> ScoringModule
-```
+_This project defines no NestJS modules to graph._
 <!-- codependix:end name="codependix-nestjs-modules" -->
 
 ### File Imports

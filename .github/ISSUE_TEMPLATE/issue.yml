@@ -41,6 +41,7 @@ body:
       label: Scope
       description: Which area of the codebase does this apply to?
       options:
+        - ic-suite
         - affirmations
         - caelundas
         - configuration
@@ -59,7 +60,6 @@ body:
         - callidescope
         - codependix
         - codometer
-        - ic-suite
         - no-release
         - release
         - reporting

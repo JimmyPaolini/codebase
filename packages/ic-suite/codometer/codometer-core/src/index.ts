@@ -1,24 +1,26 @@
 // 📤 Exports
 
 export {
+  CODOMETER_SEVERITIES,
+  CODOMETER_STATISTIC_GROUPS,
+  CODOMETER_SYMBOL_KINDS,
+  CODOMETER_SYMBOL_MODIFIERS,
   ConfigurationFileNotFoundError,
   InvalidConfigurationError,
   InvalidLimitValueError,
   UnknownConfigurationFileTypeError,
-} from "./lib/errors.constants";
-export type {
-  CodometerReport,
-  CodometerSeverity,
-  MetricUnit,
-  ReportFailure,
-  ReportFailureKind,
-  ReportLimit,
-  ReportMetric,
-  ReportTarget,
-} from "./lib/report.types";
+} from "./modules/codometer-core/codometer-core.constants";
+
+export { CodometerCoreModule } from "./modules/codometer-core/codometer-core.module";
+
+export { CodometerCoreService } from "./modules/codometer-core/codometer-core.service";
 export type {
   CodeStatisticsResult,
+  CodometerReport,
+  CodometerSeverity,
   CodometerStatisticGroup,
+  CodometerSymbolKind,
+  CodometerSymbolModifier,
   CssStatistics,
   CustomStatisticResult,
   CustomStatisticResultInstance,
@@ -27,20 +29,16 @@ export type {
   JsonStatistics,
   JupyterStatistics,
   MarkdownStatistics,
+  MetricUnit,
   PythonStatistics,
+  ReportFailure,
+  ReportFailureKind,
+  ReportLimit,
+  ReportMetric,
+  ReportTarget,
   ShellStatistics,
   SqlStatistics,
   TomlStatistics,
   TypescriptStatistics,
   YamlStatistics,
-} from "./lib/statistics.types";
-export {
-  CODOMETER_SEVERITIES,
-  CODOMETER_STATISTIC_GROUPS,
-  CODOMETER_SYMBOL_KINDS,
-  CODOMETER_SYMBOL_MODIFIERS,
-} from "./lib/symbols.constants";
-export type {
-  CodometerSymbolKind,
-  CodometerSymbolModifier,
-} from "./lib/symbols.types";
+} from "./modules/codometer-core/codometer-core.types";
