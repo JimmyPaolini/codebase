@@ -1,4 +1,4 @@
-name: 🧑‍💻 Lint Codebase
+name: 🧑‍💻 Validate Code
 
 # Static code analysis: every check that reads the source without executing it.
 # One `nx affected` invocation builds one task graph and one scheduler runs it.
@@ -40,19 +40,29 @@ concurrency:
   cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
-  lint-codebase:
-    name: 🧑‍💻 Lint Codebase (${{ matrix.target }})
+  validate-code:
+    name: ${{ matrix.check.emoji }} Validate Code (${{ matrix.check.name }})
     runs-on: ubuntu-latest
     timeout-minutes: 12
     strategy:
       fail-fast: false
       matrix:
-        target:
-          - type-codebase
-          - lint-codebase
-          - tidy-codebase
-          - form-codebase
-          - gate-codebase
+        check:
+          - target: type-codebase
+            name: typecheck
+            emoji: '🧑‍🎓'
+          - target: tidy-codebase
+            name: format
+            emoji: '🧑‍🎨'
+          - target: lint-codebase
+            name: lint
+            emoji: '🧑‍💻'
+          - target: form-codebase
+            name: deprecate
+            emoji: '🧑‍🏭'
+          - target: gate-codebase
+            name: gate
+            emoji: '💂'
 
     steps:
       - name: 📥 Checkout Repository
@@ -73,7 +83,7 @@ jobs:
       # has a new mtime and the default metadata strategy would treat the
       # whole workspace as changed.
       - name: ♻️ Sync ESLint Cache
-        if: matrix.target == 'lint-codebase'
+        if: matrix.check.target == 'lint-codebase'
         uses: actions/cache@v6
         with:
           path: .eslintcache
@@ -110,14 +120,14 @@ jobs:
       # There is no aggregate `synchronize` target: each is its own Nx target,
       # joining the same `nx affected` invocation, so one task graph owns the
       # run.
-      - name: 🧑‍💻 Run ${{ matrix.target }}
+      - name: ${{ matrix.check.emoji }} Run ${{ matrix.check.target }}
         env:
           NX_VERBOSE_LOGGING: ${{ inputs.verbose || false }}
         run: |
-          pnpm exec nx affected --target=${{ matrix.target }} --configuration=check
+          pnpm exec nx affected --target=${{ matrix.check.target }} --configuration=check
 
       - name: 📊 Upload Type Coverage
-        if: failure() && matrix.target == 'type-codebase'
+        if: failure() && matrix.check.target == 'type-codebase'
         uses: actions/upload-artifact@v7
         with:
           name: type-coverage-reports
