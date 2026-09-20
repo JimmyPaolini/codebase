@@ -89,8 +89,8 @@ export class CharacteristicsService {
     const first = freeEnds[0];
     const second = freeEnds[1];
     if (!first || !second) return false;
-    const { column: c1, level: l1 } = first;
-    const { column: c2, level: l2 } = second;
+    const { column: c1 = 0, level: l1 = 0 } = first;
+    const { column: c2 = 0, level: l2 = 0 } = second;
     const columnDiff = Math.abs(c1 - c2);
     const minimumColumnDiff = Math.min(columnDiff, columns - columnDiff);
     const levelDiff = Math.abs(l1 - l2);
@@ -128,8 +128,15 @@ export class CharacteristicsService {
     const freeEnds: { column: number; level: number }[] = [];
     for (const [node, d] of degree.entries()) {
       if (d === 1) {
-        const [level, column] = node.split(",").map(Number);
-        freeEnds.push({ column: column ?? 0, level: level ?? 0 });
+        const parts = node.split(",");
+        const levelStr = parts[0];
+        const columnStr = parts[1];
+        const level = Number(levelStr);
+        const column = Number(columnStr);
+        freeEnds.push({ 
+          column: Number.isNaN(column) ? 0 : column, 
+          level: Number.isNaN(level) ? 0 : level 
+        });
       }
     }
     return freeEnds;
@@ -404,7 +411,7 @@ export class CharacteristicsService {
     const endsOnBorderRules =
       freeEndsList.length === 2 &&
       freeEndsList.every(
-        (end) => end.level === 0 || end.level === reduced.levels - 1,
+        (end) => end && (end.level === 0 || end.level === reduced.levels - 1),
       );
     const endsAreLatticeNeighbours = this.checkEndsAreLatticeNeighbours(
       freeEndsList,

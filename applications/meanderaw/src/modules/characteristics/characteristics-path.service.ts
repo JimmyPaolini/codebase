@@ -24,7 +24,7 @@ export class CharacteristicsPathService {
     },
     stepsSinceTurn: number,
   ): number {
-    if (turn === 0) return stepsSinceTurn + 1;
+    if (turn === 0 || turn === 2) return stepsSinceTurn + 1;
     if (turn === 1) {
       metrics.hasRightTurn = true;
       if (stepsSinceTurn === 1) metrics.hasTightU = true;
@@ -188,12 +188,19 @@ export class CharacteristicsPathService {
       args.adjacency,
       args.visited,
     );
+    
+    const initialNode = currentNode;
+    let initialDirection = -1;
 
     while (nextNode) {
-      const isLoop = args.visited.has(nextNode);
+      const loopDetected = args.visited.has(nextNode);
       args.visited.add(nextNode);
 
       const direction = this.getDirection(currentNode, nextNode, args.columns);
+      if (initialDirection === -1) {
+        initialDirection = direction;
+      }
+
       stepsSinceTurn =
         previousDirection !== -1 && direction !== -1
           ? this.applyTurn(
@@ -206,13 +213,22 @@ export class CharacteristicsPathService {
       previousDirection = direction;
       const previous = currentNode;
       currentNode = nextNode;
-      nextNode = isLoop
+      nextNode = loopDetected
         ? undefined
         : this.findNextNode(
             { current: currentNode, previous },
             args.adjacency,
             args.visited,
           );
+    }
+    
+    // For loops, calculate turn from final node back to start node if connected
+    if (previousDirection !== -1 && currentNode === initialNode && initialDirection !== -1) {
+       this.applyTurn(
+         (initialDirection - previousDirection + 4) % 4,
+         args.metrics,
+         stepsSinceTurn
+       );
     }
   }
 

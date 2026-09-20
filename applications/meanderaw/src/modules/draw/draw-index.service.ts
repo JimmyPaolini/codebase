@@ -226,10 +226,16 @@ ${figures}
     }
 
     const sortedShapes = [...byShape.entries()].toSorted((a, b) => {
-      const [rA, cA] = a[0].split("×").map(Number);
-      const [rB, cB] = b[0].split("×").map(Number);
-      if (rA !== rB) return (rA ?? 0) - (rB ?? 0);
-      return (cA ?? 0) - (cB ?? 0);
+      const partsA = a[0].split("×");
+      const rA = Number(partsA[0]);
+      const cA = Number(partsA[1]);
+      
+      const partsB = b[0].split("×");
+      const rB = Number(partsB[0]);
+      const cB = Number(partsB[1]);
+      
+      if (rA !== rB) return rA - rB;
+      return cA - cB;
     });
 
     const sections = sortedShapes

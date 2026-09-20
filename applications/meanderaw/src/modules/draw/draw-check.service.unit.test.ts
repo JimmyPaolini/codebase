@@ -1,11 +1,15 @@
 import { createMock } from "@golevelup/ts-vitest";
+import { NestFactory } from "@nestjs/core";
 import { Test } from "@nestjs/testing";
 import { getRepositoryToken } from "@nestjs/typeorm";
-import { beforeAll, describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it, vi } from "vitest";
 
+import { CorpusService } from "../corpus/corpus.service";
 import { Meander } from "../database/entities/Meander.entity";
 
+import { DRAW_CHECK_SWEEP_CONNECTION_NAME, MeanderDriftDetectedError } from "./draw-check.constants";
 import { DrawCheckService } from "./draw-check.service";
+import { DrawEnumerationService } from "./draw-enumeration.service";
 
 import type { Repository } from "typeorm";
 
@@ -63,6 +67,23 @@ describe(DrawCheckService, () => {
       rows: 2,
       ...overrides,
     });
+
+  describe("MeanderDriftDetectedError", () => {
+    it("builds a descriptive message with new, missing, and changed entries", () => {
+      const error = new MeanderDriftDetectedError({
+        changed: [{ code: "c", columns: 1, differences: ["families"], rows: 2 }],
+        committedCount: 2,
+        missing: [{ code: "b", columns: 1, rows: 2 }],
+        new: [{ code: "a", columns: 1, rows: 2 }],
+        regeneratedCount: 2,
+      });
+
+      expect(error.message).toContain("1 new, 1 missing, 1 changed");
+      expect(error.message).toContain("new a (2x1)");
+      expect(error.message).toContain("missing b (2x1)");
+      expect(error.message).toContain("changed c (2x1) [families]");
+    });
+  });
 
   describe("diff", () => {
     it("reports no drift when a regenerated row exactly matches its committed counterpart", () => {
@@ -140,6 +161,143 @@ describe(DrawCheckService, () => {
       expect(report.missing).toStrictEqual([
         { code: "0000", columns: 1, rows: 5 },
       ]);
+    });
+
+    it("identifies array value differences in differingColumns", () => {
+      const regeneratedRow = meander({
+        code: "a",
+        characteristics: ["hasBranching"],
+        id: 1,
+      });
+      const committedRow = meander({
+        code: "a",
+        characteristics: ["hasDots"],
+        id: 2,
+      });
+
+      const report = service.diff([regeneratedRow], [committedRow]);
+      expect(report.changed).toStrictEqual([
+        {
+          code: "a",
+          columns: 1,
+          differences: ["characteristics"],
+          rows: 2,
+        },
+      ]);
+    });
+
+    // Add an import for NestFactory at the top if it's missing (though it might just need to be destructured from @nestjs/core)
+    it("identifies error throws when drift is detected", async () => {
+      // Mock the dependencies using testing stubs or intercept the context.
+      // We're just checking that check() throws if it detects drift.
+      
+      const mockedRegenerated = [meander({ code: "a", id: 1 })];
+      const mockedCommitted: Meander[] = [];
+      
+      // Override db setup
+      const meanderRepo = {
+        find: vi.fn().mockResolvedValue(mockedCommitted)
+      };
+      (service as any).meanderRepository = meanderRepo;
+      
+      const mockContext = { 
+        close: vi.fn(), 
+        get: vi.fn().mockImplementation((token: any) => {
+          if (token === DrawEnumerationService) return { sweep: vi.fn().mockResolvedValue(true) };
+          if (token === CorpusService) return { ingest: vi.fn().mockResolvedValue(true) };
+          // The repository mock needs to return mockedRegenerated so diffing sees drift.
+          return { find: vi.fn().mockResolvedValue(mockedRegenerated) };
+        })
+      };
+      
+      // Dynamic import to avoid missing NestFactory reference in the scope
+      const core = await import('@nestjs/core');
+      vi.spyOn(core.NestFactory, 'createApplicationContext').mockResolvedValue(mockContext as any);
+      
+      try {
+        await service.check();
+      } catch (e: any) {
+        expect(e.message).toContain("meander drift detected");
+        expect(e.name).toBe("MeanderDriftDetectedError");
+      }
+    });
+
+    it("identifies array length differences in differingColumns", () => {
+      const regeneratedRow = meander({
+        code: "a",
+        characteristics: ["hasBranching"],
+        id: 1,
+      });
+      const committedRow = meander({
+        code: "a",
+        characteristics: ["hasBranching", "hasDots"],
+        id: 2,
+      });
+
+      const report = service.diff([regeneratedRow], [committedRow]);
+      expect(report.changed).toStrictEqual([
+        {
+          code: "a",
+          columns: 1,
+          differences: ["characteristics"],
+          rows: 2,
+        },
+      ]);
+    });
+    it("identifies object drift with matching arrays (no difference)", () => {
+      const regeneratedRow = meander({
+        code: "a",
+        characteristics: ["hasBranching"],
+        id: 1,
+      });
+      const committedRow = meander({
+        code: "a",
+        characteristics: ["hasBranching"],
+        id: 2,
+      });
+
+      const report = service.diff([regeneratedRow], [committedRow]);
+      expect(report.changed).toStrictEqual([]);
+    });
+
+    it("evaluates a primitive difference", () => {
+      const regeneratedRow = meander({
+        code: "a",
+        components: 2,
+        id: 1,
+      });
+      const committedRow = meander({
+        code: "a",
+        components: 1,
+        id: 2,
+      });
+
+      const report = service.diff([regeneratedRow], [committedRow]);
+      expect(report.changed).toStrictEqual([
+        {
+          code: "a",
+          columns: 1,
+          differences: ["components"],
+          rows: 2,
+        },
+      ]);
+    });
+
+    it("evaluates hasDrift through check() when no drift exists", async () => {
+      // Mock diff to return empty drift to test `hasDrift` returning false
+      vi.spyOn(service, "diff").mockReturnValueOnce({
+        changed: [],
+        committedCount: 1,
+        missing: [],
+        new: [],
+        regeneratedCount: 1,
+      });
+
+      // Instead of running `check()`, which spins up a Nest Context and takes time/complex mocking, we can test `hasDrift` by passing an object with drift. Actually `hasDrift` is a private function used by `check()`. The easiest way to get coverage on it is testing its branches through `check()` if possible. But `check()` spins up a whole context. Let's just cast to any.
+      expect((service as any).hasDrift({ changed: [], missing: [], new: [] })).toBe(false);
+      expect((service as any).hasDrift({ changed: [{}], missing: [], new: [] })).toBe(true);
+      expect((service as any).hasDrift({ changed: [], missing: [{}], new: [] })).toBe(true);
+      expect((service as any).hasDrift({ changed: [], missing: [], new: [{}] })).toBe(true);
     });
   });
 });

@@ -9,6 +9,12 @@ import { Meander } from "../database/entities/Meander.entity";
 import { DrawingService } from "../drawing/drawing.service";
 import { GeometryService } from "../geometry/geometry.service";
 
+import { SvgService } from "../svg/svg.service";
+import { SymmetryModule } from "../symmetry/symmetry.module";
+import { SymmetryService } from "../symmetry/symmetry.service";
+
+import { TileService } from "../tile/tile.service";
+
 import { DrawIndexService } from "./draw-index.service";
 
 import type { MeanderRecord } from "../database/database.types";
@@ -46,6 +52,9 @@ describe(DrawIndexService, () => {
         DrawingService,
         GeometryService,
         DatabaseService,
+        SymmetryService,
+        SvgService,
+        TileService,
       ],
     }).compile();
 
@@ -55,7 +64,9 @@ describe(DrawIndexService, () => {
   });
 
   afterAll(async () => {
-    await dataSource.destroy();
+    if (dataSource) {
+      await dataSource.destroy();
+    }
   });
 
   /** Every field besides `code` a fixture row does not care about, defaulted so a case only spells out what it means to test. */
@@ -110,15 +121,22 @@ describe(DrawIndexService, () => {
   });
 
   it("builds pages from the committed rows, grouped by family with a section for the unclassified ones", async () => {
-    await repository.save(record({ code: "snake-row", families: ["snake"] }));
+    await repository.save(
+      record({
+        code: "0".repeat(1), // levels = 2 - 1 = 1, columns = 1 => 1 character
+        families: ["snake"],
+      }),
+    );
     await repository.save(
       record({
         characteristics: ["dots"],
-        code: "sample-row",
+        code: "1".repeat(1),
         families: ["whirl"],
       }),
     );
-    await repository.save(record({ code: "unclassified-row", families: [] }));
+    await repository.save(
+      record({ code: "2".repeat(1), families: [] }),
+    );
 
     const pages = await service.build();
 
@@ -128,7 +146,7 @@ describe(DrawIndexService, () => {
       '<section id="unclassified">',
     );
     expect(pages["families/snake.html"]).toContain(
-      "<figcaption>2×1 · snake-row</figcaption>",
+      "<figcaption>2×1 · 0</figcaption>",
     );
     expect(pages["families/whirl.html"]).toContain("(dots)");
 
@@ -140,6 +158,6 @@ describe(DrawIndexService, () => {
     expect(indexPage.indexOf("whirl.html")).toBeLessThan(
       indexPage.indexOf("unclassified.html"),
     );
-    expect(pages["families/snake.html"]).toContain('<path d="M0 0"/>');
+    expect(pages["families/snake.html"]).toContain('<path d="M7.5 37.5H7.5"');
   });
 });

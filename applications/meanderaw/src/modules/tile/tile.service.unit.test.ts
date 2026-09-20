@@ -197,6 +197,11 @@ describe(TileService, () => {
       expect(() => service.assertWellFormed(tile)).toThrow(MalformedTileError);
     });
 
+    it("refuses a point where the point itself is undefined in the matrix", () => {
+      const tile: Tile = { columns: 1, points: [[]], rows: 2 };
+      expect(() => service.assertWellFormed(tile)).toThrow(MalformedTileError);
+    });
+
     it("refuses two points that disagree about the edge between them", () => {
       const tile: Tile = {
         columns: 2,

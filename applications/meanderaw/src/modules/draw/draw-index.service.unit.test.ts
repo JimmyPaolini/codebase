@@ -108,6 +108,10 @@ describe(DrawIndexService, () => {
   });
 
   describe("render", () => {
+    it("handles an empty corpus", () => {
+      const pages = service.render([]);
+      expect(pages["index.html"]).toContain("0 meanders across 0 families.");
+    });
     it("embeds every meander's own SVG rather than linking to a file", () => {
       const pages = service.render([
         meander({ code: "a", drawingHash: "hash", families: ["snake"], id: 1 }),
@@ -188,15 +192,61 @@ describe(DrawIndexService, () => {
         meander({ code: "z", columns: 5, families: ["snake"], id: 1, rows: 3 }),
         meander({ code: "b", columns: 2, families: ["snake"], id: 2, rows: 4 }),
         meander({ code: "a", columns: 1, families: ["snake"], id: 3, rows: 4 }),
+        meander({ code: "b", columns: 1, families: ["snake"], id: 4, rows: 4 }), // Same rows and columns, different code
       ]);
       const page = pages["families/snake.html"] ?? "";
 
       const shallow = page.indexOf("3×5 · z");
-      const narrow = page.indexOf("4×1 · a");
+      const narrowA = page.indexOf("4×1 · a");
+      const narrowB = page.indexOf("4×1 · b");
       const wide = page.indexOf("4×2 · b");
 
-      expect(shallow).toBeLessThan(narrow);
-      expect(narrow).toBeLessThan(wide);
+      expect(shallow).toBeLessThan(narrowA);
+      expect(narrowA).toBeLessThan(narrowB);
+      expect(narrowB).toBeLessThan(wide);
+    });
+
+    it("sorts multiple null families effectively", () => {
+      const pages = service.render([
+        meander({ code: "a", families: [], id: 1, columns: 2, rows: 2 }),
+        meander({ code: "b", families: [], id: 2, columns: 1, rows: 3 }),
+        meander({ code: "c", families: [], id: 3, columns: 1, rows: 2 }),
+      ]);
+      expect(pages["families/unclassified.html"]).toContain("3 meanders");
+      
+      const unclassified = pages["families/unclassified.html"] ?? "";
+      
+      const shallowNarrow = unclassified.indexOf("2×1");
+      const shallowWide = unclassified.indexOf("2×2");
+      const deepNarrow = unclassified.indexOf("3×1");
+
+      expect(shallowNarrow).toBeLessThan(shallowWide);
+      expect(shallowWide).toBeLessThan(deepNarrow);
+    });
+
+    it("sorts null/null combinations", () => {
+      const pages = service.render([
+        meander({ code: "a", families: [], id: 1, columns: 2, rows: 2 }),
+        meander({ code: "b", families: [], id: 2, columns: 2, rows: 2 }),
+      ]);
+      expect(pages["families/unclassified.html"]).toContain("2 meanders");
+    });
+
+    it("sorts unrecognised families alphabetically when missing from FAMILY_SORT_KEYS", () => {
+      const pages = service.render([
+        meander({ code: "a", families: ["zeta"], id: 1 }),
+        meander({ code: "b", families: ["alpha"], id: 2 }),
+        meander({ code: "c", families: ["zeta"], id: 3 }),
+        meander({ code: "d", families: [], id: 4 }),
+      ]);
+
+      const indexPage = pages["index.html"] ?? "";
+
+      // Neither is in FAMILY_SORT_KEYS, so alpha comes before zeta
+      // and null comes after everything. Also multiple of same unrecognized family rank correctly.
+      expect(indexPage.indexOf("alpha.html")).toBeLessThan(
+        indexPage.indexOf("zeta.html"),
+      );
     });
 
     it("counts meanders in a section's own heading and in the page summary", () => {
