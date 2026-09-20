@@ -6,6 +6,7 @@
   "sourceRoot": "packages/ic-suite/codometer/codometer-examples",
   "tags": ["language:typescript", "name:codometer-examples", "type:package"],
   "targets": {
+    "build-projects": {},
     "codometer": {},
     "deprecate-code": {},
     "examples": {

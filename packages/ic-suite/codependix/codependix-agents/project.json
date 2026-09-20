@@ -5,6 +5,7 @@
   "sourceRoot": "packages/ic-suite/codependix/codependix-agents",
   "tags": ["language:typescript", "name:codependix-agents", "type:package"],
   "targets": {
+    "build-projects": {},
     "codometer": {},
     "deprecate-code": {},
     "format-code": {},

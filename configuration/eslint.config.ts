@@ -86,6 +86,7 @@ export default [
       "**/.superpowers/**",
       "**/vite.config.*.timestamp*",
       "**/vitest.config.*.timestamp*",
+      "**/codometer-report.json",
       "CHANGELOG.md",
       "lint-staged.config.ts",
       // Shadcn generated components

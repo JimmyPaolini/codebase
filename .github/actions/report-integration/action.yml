@@ -58,8 +58,10 @@ runs:
       run: |
         mkdir -p codometer-baseline
         shopt -s nullglob
-        for report in applications/*/codometer-report.json \
+        for report in codometer-report.json \
+          applications/*/codometer-report.json \
           packages/*/codometer-report.json \
+          packages/*/*/*/codometer-report.json \
           tools/*/codometer-report.json; do
           mkdir -p "codometer-baseline/$(dirname "${report}")"
           cp "${report}" "codometer-baseline/${report}"

@@ -10,8 +10,10 @@ import { z } from "zod";
  * mistaken for a project's own measurement.
  */
 export const REPORT_GLOBS = [
+  "codometer-report.json",
   "applications/*/codometer-report.json",
   "packages/*/codometer-report.json",
+  "packages/*/*/*/codometer-report.json",
   "tools/*/codometer-report.json",
 ];
 
