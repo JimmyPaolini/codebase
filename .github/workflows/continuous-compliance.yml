@@ -1,9 +1,10 @@
-name: 👮 Audit Issues
+name: 🦹 Continuous Compliance
 
-# Issue metadata — the `type:*`, `scope:*`, and `source:*` labels an issue
-# carries, judged against the `issue.yml` body it came from. Not an Nx target,
-# so this workflow skips `setup-codebase` entirely: no cache, no uv, no
-# install.
+# External and repository compliance checks outside the codebase — such as
+# issue metadata (the `type:*`, `scope:*`, and `source:*` labels an issue carries,
+# judged against the `issue.yml` body it came from).
+# Not an Nx target, so this workflow skips `setup-codebase` entirely: no cache,
+# no uv, no install.
 #
 # On `opened`, the labels a submitted body implies are reconciled onto the
 # issue first by `issue-labels` in `tools/synchronization`; the metadata check
@@ -18,6 +19,7 @@ name: 👮 Audit Issues
 on:
   issues:
     types: [opened, edited, labeled, unlabeled]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -99,6 +101,7 @@ jobs:
       # ISSUE_BODY and ISSUE_LABELS. ISSUE_NUMBER is still set because the
       # remediation commands the report prints name it.
       - name: 🧾 Audit Issue Metadata
+        if: github.event.issue != null
         env:
           GH_TOKEN: ${{ github.token }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}
