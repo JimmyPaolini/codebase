@@ -266,7 +266,7 @@ Five workflows run on every pull request. Each maps to targets you can run local
 | Make Projects | Builds every buildable project and gates its declared bundle size                                                        | `nx affected --target=build-projects`             |
 | Comply Code   | Branch name, pull request title, body, labels, assignees, and release significance                                       | See [Pull Request Process](#pull-request-process) |
 
-🧑‍🏭 Make Codebase additionally builds the dev container image, but only when `.devcontainer/**` changes.
+🚀 Continuous Deployment runs post-merge on `main` to build and verify workspace projects and the dev container image.
 
 ## Code Standards
 
