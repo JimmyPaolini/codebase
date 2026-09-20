@@ -286,7 +286,7 @@ nx run callidescope-nx:vitest
 ## Contributing
 
 ```bash
-nx run callidescope-nx:lint-codebase --configuration=check
+nx run callidescope-nx:lint-code --configuration=check
 ```
 
 ## License

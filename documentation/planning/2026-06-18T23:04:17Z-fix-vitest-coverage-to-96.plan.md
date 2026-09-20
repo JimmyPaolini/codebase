@@ -17,7 +17,7 @@ This plan raises the shared Vitest coverage floor to 96 percent, keeps all Vites
 - **REQ-001**: Raise the shared Vitest coverage thresholds in `configuration/vitest.config.ts` from 80 percent to 96 percent for lines, functions, branches, and statements.
 - **REQ-002**: Keep every Vitest-based project aligned with the shared threshold so no project bypasses the 96 percent floor through local configuration.
 - **REQ-003**: Expand tests only where they improve real behavioral coverage; do not add tests that merely increase line counts without asserting meaningful behavior.
-- **REQ-004**: Keep the coverage workflow compatible with `npx nx affected --target=test --parallel=3 --configuration=coverage` in `.github/workflows/test-coverage.yml`.
+- **REQ-004**: Keep the coverage workflow compatible with `npx nx affected --target=test --parallel=3 --configuration=coverage` in `.github/workflows/test-code.yml`.
 - **REQ-005**: Update documentation that still describes the old 80 percent threshold so the written guidance matches enforcement.
 - **CON-001**: `affirmations` is pytest-based and out of scope for Vitest threshold changes.
 - **CON-002**: Existing Vitest project structure must remain intact; do not rewrite project scaffolding to chase coverage.
@@ -37,7 +37,7 @@ This plan raises the shared Vitest coverage floor to 96 percent, keeps all Vites
 | ---- | ----------- | --------- | ---- |
 | TASK-001 | Update `configuration/vitest.config.ts` coverage thresholds for `lines`, `functions`, `branches`, and `statements` from `80` to `96`. |  |  |
 | TASK-002 | Verify `applications/caelundas/vitest.config.ts`, `applications/lexico-ingestion/vitest.config.ts`, and `tools/conformance/vitest.config.ts` continue to inherit or match the shared 96 percent floor without project-specific drift. |  |  |
-| TASK-003 | Confirm `.github/workflows/test-coverage.yml` still invokes the Vitest coverage path used by CI and does not need command changes for the higher threshold. |  |  |
+| TASK-003 | Confirm `.github/workflows/test-code.yml` still invokes the Vitest coverage path used by CI and does not need command changes for the higher threshold. |  |  |
 
 ### Implementation Phase 2 — Coverage Expansion
 
@@ -204,7 +204,7 @@ Strategy: fix the scoped-provider retrieval in `lexico-ingestion`, then rerun co
 
 - **DEP-001**: Shared Vitest configuration in `configuration/vitest.config.ts`.
 - **DEP-002**: Vitest project configs for `applications/caelundas`, `applications/lexico-ingestion`, and `tools/conformance`.
-- **DEP-003**: Existing CI coverage workflow in `.github/workflows/test-coverage.yml`.
+- **DEP-003**: Existing CI coverage workflow in `.github/workflows/test-code.yml`.
 - **DEP-004**: Test data, fixtures, and helpers already present in each Vitest-enabled project.
 
 ## 6. Files
@@ -213,7 +213,7 @@ Strategy: fix the scoped-provider retrieval in `lexico-ingestion`, then rerun co
 - **FILE-002**: `applications/caelundas/vitest.config.ts` — project Vitest config to verify alignment.
 - **FILE-003**: `applications/lexico-ingestion/vitest.config.ts` — project Vitest config to verify alignment.
 - **FILE-004**: `tools/conformance/vitest.config.ts` — project Vitest config to verify alignment.
-- **FILE-005**: `.github/workflows/test-coverage.yml` — CI coverage entry point.
+- **FILE-005**: `.github/workflows/test-code.yml` — CI coverage entry point.
 - **FILE-006**: `documentation/vitest.md` — coverage threshold documentation that must be updated.
 - **FILE-007**: `applications/caelundas/src/**/*.test.ts` — primary test expansion surface.
 - **FILE-008**: `applications/lexico-ingestion/src/**/*.test.ts` — secondary test expansion surface.
@@ -242,7 +242,7 @@ Strategy: fix the scoped-provider retrieval in `lexico-ingestion`, then rerun co
 ## 9. Related Specifications / Further Reading
 
 - `configuration/vitest.config.ts`
-- `.github/workflows/test-coverage.yml`
+- `.github/workflows/test-code.yml`
 - `documentation/vitest.md`
 - Vitest coverage documentation: https://vitest.dev/guide/coverage
 - Nx affected task documentation: https://nx.dev

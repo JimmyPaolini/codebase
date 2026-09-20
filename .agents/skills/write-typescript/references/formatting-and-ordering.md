@@ -1,6 +1,6 @@
 # Formatting and ordering
 
-Formatting is not a judgement call — `lint-codebase --configuration=write`
+Formatting is not a judgement call — `lint-code --configuration=write`
 produces the canonical result. Write code in the shape below so the first pass
 is a no-op.
 
@@ -12,7 +12,7 @@ commas everywhere, LF endings, one JSX attribute per line. Configured in
 formatter for manual or non-default use; it is not what a target runs.
 
 ```bash
-nx run <project>:lint-codebase --configuration=write
+nx run <project>:lint-code --configuration=write
 ```
 
 ## Import groups

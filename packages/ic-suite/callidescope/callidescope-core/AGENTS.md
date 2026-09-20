@@ -68,7 +68,7 @@ Outputs structured JSON in production (`NODE_ENV=production`) and pretty-printed
 Always prefer running tasks through Nx rather than calling the underlying tools directly.
 
 ```bash
-nx run callidescope-core:lint-codebase   # Every static check, in one graph
+nx run callidescope-core:typecheck-code,lint-code,format-code,deprecate-code,guard-code   # Every static check, in one graph
 nx run callidescope-core:typecheck       # tsc --noEmit
 nx run callidescope-core:oxfmt           # Formatting
 nx run callidescope-core:build           # Compile for publication

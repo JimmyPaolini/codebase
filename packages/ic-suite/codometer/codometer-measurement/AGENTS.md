@@ -68,7 +68,7 @@ Outputs structured JSON in production (`NODE_ENV=production`) and pretty-printed
 Always prefer running tasks through Nx rather than calling the underlying tools directly.
 
 ```bash
-nx run codometer-measurement:lint-codebase   # Every static check, in one graph
+nx run codometer-measurement:typecheck-code,lint-code,format-code,deprecate-code,guard-code   # Every static check, in one graph
 nx run codometer-measurement:typecheck       # tsc --noEmit
 nx run codometer-measurement:oxfmt           # Formatting
 nx run codometer-measurement:build           # Compile for publication

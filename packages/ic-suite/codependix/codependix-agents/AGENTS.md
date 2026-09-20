@@ -74,9 +74,9 @@ match neither well.
 ## Validating
 
 ```bash
-pnpm exec nx run codependix-agents:lint-codebase --configuration=write
-pnpm exec nx run codependix-agents:lint-codebase --configuration=check
-pnpm exec nx run codependix-agents:test-coverage
+pnpm exec nx run codependix-agents:typecheck-code,lint-code,format-code,deprecate-code,guard-code --configuration=write
+pnpm exec nx run codependix-agents:typecheck-code,lint-code,format-code,deprecate-code,guard-code --configuration=check
+pnpm exec nx run codependix-agents:test-code
 ```
 
 Coverage is empty by nature here — there is no source to instrument — so the
