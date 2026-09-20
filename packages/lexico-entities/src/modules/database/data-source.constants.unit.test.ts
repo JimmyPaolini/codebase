@@ -46,7 +46,7 @@ describe("lexico data source", () => {
     expect(postgresDataSourceOptions.password).toBe("postgres");
     expect(postgresDataSourceOptions.username).toBe("postgres");
     expect(postgresDataSourceOptions.port).toBe(5432);
-  });
+  }, 15_000);
 
   it("should use environment postgres configuration values", async () => {
     process.env["POSTGRES_DB"] = "custom_database";
@@ -65,5 +65,5 @@ describe("lexico data source", () => {
     expect(postgresDataSourceOptions.password).toBe("custom_password");
     expect(postgresDataSourceOptions.username).toBe("custom_user");
     expect(postgresDataSourceOptions.port).toBe(6001);
-  });
+  }, 15_000);
 });

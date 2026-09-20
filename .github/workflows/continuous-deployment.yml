@@ -52,13 +52,17 @@ jobs:
           EVENT_NAME="${{ github.event_name }}"
 
           if [ "$TARGET_ID" = "build-devcontainer" ] && [ "$EVENT_NAME" = "push" ]; then
-            if [ -n "${{ github.event.before }}" ] && [ "${{ github.event.before }}" != "0000000000000000000000000000000000000000" ]; then
-              CHANGED_FILES=$(git diff --name-only "${{ github.event.before }}" "${{ github.sha }}" || true)
+            BEFORE_SHA="${{ github.event.before }}"
+            ZERO_SHA="0000000000000000000000000000000000000000"
+            if [ -n "$BEFORE_SHA" ] && [ "$BEFORE_SHA" != "$ZERO_SHA" ]; then
+              CHANGED_FILES=$(git diff --name-only "$BEFORE_SHA" \
+                "${{ github.sha }}" || true)
             else
               CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD || true)
             fi
 
-            if ! echo "$CHANGED_FILES" | grep -qE '^(\.devcontainer/|\.github/workflows/continuous-deployment\.yml)'; then
+            MATCH_PATTERN='^(\.devcontainer/|\.github/workflows/continuous-deployment\.yml)'
+            if ! echo "$CHANGED_FILES" | grep -qE "$MATCH_PATTERN"; then
               echo "⏭️ No devcontainer changes detected; skipping devcontainer build."
               echo "skip=true" >> "$GITHUB_OUTPUT"
               exit 0
@@ -70,36 +74,49 @@ jobs:
       # Codebase Build Steps
       - name: 🕋 Setup Codebase
         id: setup
-        if: steps.check-skip.outputs.skip != 'true' && matrix.target.id == 'build-codebase'
+        if: >-
+          steps.check-skip.outputs.skip != 'true' &&
+          matrix.target.id == 'build-codebase'
         uses: ./.github/actions/setup-codebase
         with:
           python-dependencies: "false"
 
       - name: 👷 Build Codebase
-        if: steps.check-skip.outputs.skip != 'true' && matrix.target.id == 'build-codebase'
+        if: >-
+          steps.check-skip.outputs.skip != 'true' &&
+          matrix.target.id == 'build-codebase'
         env:
           NX_VERBOSE_LOGGING: ${{ inputs.verbose || false }}
         run: pnpm exec nx affected --target=build-projects
 
       - name: 🧹 Cleanup Codebase
-        if: always() && steps.check-skip.outputs.skip != 'true' && matrix.target.id == 'build-codebase'
+        if: >-
+          always() &&
+          steps.check-skip.outputs.skip != 'true' &&
+          matrix.target.id == 'build-codebase'
         uses: ./.github/actions/cleanup-codebase
         with:
           nx-cache-primary-key: ${{ steps.setup.outputs.nx-cache-primary-key }}
 
       # Devcontainer Build & Publish Steps
       - name: 🗂️ Setup Environment File
-        if: steps.check-skip.outputs.skip != 'true' && matrix.target.id == 'build-devcontainer'
+        if: >-
+          steps.check-skip.outputs.skip != 'true' &&
+          matrix.target.id == 'build-devcontainer'
         run: |
           cp .env.default .env
           echo "LOCAL_WORKSPACE_FOLDER=$GITHUB_WORKSPACE" >> .env
 
       - name: 🔧 Set up Docker Buildx
-        if: steps.check-skip.outputs.skip != 'true' && matrix.target.id == 'build-devcontainer'
+        if: >-
+          steps.check-skip.outputs.skip != 'true' &&
+          matrix.target.id == 'build-devcontainer'
         uses: docker/setup-buildx-action@v4
 
       - name: 🔐 Login to GitHub Container Registry
-        if: steps.check-skip.outputs.skip != 'true' && matrix.target.id == 'build-devcontainer'
+        if: >-
+          steps.check-skip.outputs.skip != 'true' &&
+          matrix.target.id == 'build-devcontainer'
         uses: docker/login-action@v4
         with:
           registry: ghcr.io
@@ -107,7 +124,9 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: 🐳 Build Devcontainer Image
-        if: steps.check-skip.outputs.skip != 'true' && matrix.target.id == 'build-devcontainer'
+        if: >-
+          steps.check-skip.outputs.skip != 'true' &&
+          matrix.target.id == 'build-devcontainer'
         uses: devcontainers/ci@v0.3
         with:
           configFile: .devcontainer/cloud/devcontainer.json
@@ -126,7 +145,9 @@ jobs:
             GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
 
       - name: 🔬 Test Devcontainer Image
-        if: steps.check-skip.outputs.skip != 'true' && matrix.target.id == 'build-devcontainer'
+        if: >-
+          steps.check-skip.outputs.skip != 'true' &&
+          matrix.target.id == 'build-devcontainer'
         uses: devcontainers/ci@v0.3
         with:
           configFile: .devcontainer/cloud/devcontainer.json
