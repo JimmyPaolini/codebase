@@ -1,12 +1,14 @@
 import { appendFileSync } from "node:fs";
 
 import { Injectable } from "@nestjs/common";
-import { Command, CommandRunner } from "nest-commander";
+import { Command, CommandRunner, Option } from "nest-commander";
 
 import { LoggerService } from "@codebase/logger";
 
 import { IssueMetadataGithubService } from "./issue-metadata-github.service";
 import {
+  ALL_ISSUES_FLAG,
+  ALL_ISSUES_SHORT_FLAG,
   ISSUE_NUMBER_PATTERN,
   PLACEHOLDER_ISSUE_NUMBER,
   STEP_SUMMARY_FAILURE_MESSAGE,
@@ -251,14 +253,76 @@ export class IssueMetadataCommand extends CommandRunner {
     return this.readLiveMetadata(reportLines, argument);
   }
 
+  /** Sweeps and validates all open issues and their hierarchy relationships. */
+  private runBulkAudit(reportLines: string[]): never | void {
+    if (!this.issueMetadataGithubService.isAvailable()) {
+      this.failWithUsageError(
+        reportLines,
+        "❌ Unable to list open issues: gh is not available",
+      );
+    }
+
+    const listResult = this.issueMetadataGithubService.listOpenIssues();
+    if (!listResult.success || listResult.issues === undefined) {
+      this.failWithMessage(
+        reportLines,
+        `❌ Unable to list open issues: ${listResult.error ?? "unknown error"}`,
+      );
+    }
+
+    const issues = listResult.issues;
+    const verdict = this.issueMetadataService.checkBulkIssues(issues);
+
+    if (verdict.failureCount > 0) {
+      this.appendToReport(
+        reportLines,
+        `❌ Found ${verdict.failures.length} compliance issue(s) across ${verdict.totalIssues} open issue(s)`,
+      );
+      this.appendToReport(reportLines, "");
+      for (const failure of verdict.failures) {
+        this.appendToReport(reportLines, `- ${failure}`);
+      }
+      this.mirrorToStepSummary(reportLines);
+      process.exit(1);
+    }
+
+    this.appendToReport(
+      reportLines,
+      `✅ All ${verdict.totalIssues} open issues and hierarchy relationships are compliant`,
+    );
+    this.mirrorToStepSummary(reportLines);
+  }
+
   // 🌎 Public Methods
 
+  /** Option parser for sweeping all open issues. */
+  @Option({
+    description: "Sweep and audit all open issues and hierarchy relationships",
+    flags: "-a, --all",
+  })
+  public parseAllOption(): boolean {
+    return true;
+  }
+
   /** Checks the issue's metadata and exits 0 or 1 on the verdict. */
-  public async run(passedParameters: string[]): Promise<void> {
+  public async run(
+    passedParameters: string[],
+    options?: { readonly all?: boolean },
+  ): Promise<void> {
     // Nothing here is asynchronous; the base class signature is.
     await Promise.resolve();
 
     const reportLines: string[] = [];
+
+    if (
+      options?.all === true ||
+      passedParameters.includes(ALL_ISSUES_FLAG) ||
+      passedParameters.includes(ALL_ISSUES_SHORT_FLAG)
+    ) {
+      this.runBulkAudit(reportLines);
+      return;
+    }
+
     const resolution = this.resolveMetadata(reportLines, passedParameters);
 
     if (!resolution.resolved) {

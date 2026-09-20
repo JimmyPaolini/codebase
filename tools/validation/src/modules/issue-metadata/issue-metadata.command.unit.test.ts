@@ -212,6 +212,7 @@ describe(IssueMetadataCommand, () => {
         "❌ Expected an issue number, or ISSUE_BODY and ISSUE_LABELS in the environment",
         "",
         "Usage: validation issue-metadata <issue-number>",
+        "   or: validation issue-metadata --all",
         "   or: ISSUE_BODY=… ISSUE_LABELS=… validation issue-metadata",
       ]);
     });
@@ -345,6 +346,79 @@ describe(IssueMetadataCommand, () => {
       await expect(runCommand()).resolves.toBe(false);
       expect(reportLines).toContain(
         "⚠️ Unable to write the report to GITHUB_STEP_SUMMARY",
+      );
+    });
+  });
+
+  describe("bulk audit mode (--all)", () => {
+    it("passes when all open issues are compliant", async () => {
+      expect.hasAssertions();
+
+      vi.mocked(githubService.listOpenIssues).mockReturnValue({
+        issues: [
+          {
+            body: "### Type\n\nfeat\n\n### Scope\n\nlexico\n",
+            labels: [
+              { name: "scope:lexico" },
+              { name: "source:agent" },
+              { name: "type:feat" },
+            ],
+            number: 1,
+            title: "feat(lexico): ✨ feature",
+          },
+        ],
+        success: true,
+      });
+
+      await expect(runCommand(["--all"])).resolves.toBe(false);
+      expect(reportLines).toContain(
+        "✅ All 1 open issues and hierarchy relationships are compliant",
+      );
+    });
+
+    it("fails when gh is not available", async () => {
+      expect.hasAssertions();
+
+      vi.mocked(githubService.isAvailable).mockReturnValue(false);
+
+      await expect(runCommand(["--all"])).resolves.toBe(true);
+      expect(reportLines[0]).toBe(
+        "❌ Unable to list open issues: gh is not available",
+      );
+    });
+
+    it("fails when listing open issues errors", async () => {
+      expect.hasAssertions();
+
+      vi.mocked(githubService.listOpenIssues).mockReturnValue({
+        error: "rate limit exceeded",
+        success: false,
+      });
+
+      await expect(runCommand(["--all"])).resolves.toBe(true);
+      expect(reportLines[0]).toBe(
+        "❌ Unable to list open issues: rate limit exceeded",
+      );
+    });
+
+    it("fails when non-compliant issues are found", async () => {
+      expect.hasAssertions();
+
+      vi.mocked(githubService.listOpenIssues).mockReturnValue({
+        issues: [
+          {
+            body: "no template",
+            labels: [],
+            number: 1,
+            title: "broken issue",
+          },
+        ],
+        success: true,
+      });
+
+      await expect(runCommand(["--all"])).resolves.toBe(true);
+      expect(reportLines[0]).toContain(
+        "❌ Found 3 compliance issue(s) across 1 open issue(s)",
       );
     });
   });

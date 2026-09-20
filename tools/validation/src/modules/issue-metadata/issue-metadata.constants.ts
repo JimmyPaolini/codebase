@@ -40,8 +40,47 @@ export const SCOPE_FIELD_LABEL = "Scope";
 /** An issue number, as an argument may spell one. */
 export const ISSUE_NUMBER_PATTERN = /^\d+$/u;
 
+/** Flag to sweep all open issues. */
+export const ALL_ISSUES_FLAG = "--all";
+export const ALL_ISSUES_SHORT_FLAG = "-a";
+
+/** Pattern to identify parent issue references in issue bodies. */
+export const PARENT_ISSUE_PATTERN =
+  /(?:Part of\s+|Parent(?: issue)?:\s*|### Parent\s+)#(?<parentNumber>\d+)/iu;
+
+/** Pattern to parse conventional commit-styled issue titles. */
+export const CONVENTIONAL_ISSUE_TITLE_PATTERN =
+  /^([a-z][a-z-]*)(?:\(([^()]+)\))?(?<breaking>!)?:\s+(?<subject>\S.*)$/u;
+
+/** Maximum allowed nesting depth in the issue hierarchy (Spec -\> PR -\> Commit). */
+export const MAX_HIERARCHY_DEPTH = 3;
+
+/** Relative rank of release levels. */
+export const RELEASE_LEVEL_RANK: Record<string, number> = {
+  major: 3,
+  minor: 2,
+  none: 0,
+  patch: 1,
+};
+
+/** Release levels associated with conventional commit types. */
+export const TYPE_RELEASE_LEVEL: Record<string, string> = {
+  build: "patch",
+  chore: "none",
+  ci: "none",
+  ["docs"]: "none",
+  feat: "minor",
+  fix: "patch",
+  perf: "patch",
+  refactor: "patch",
+  revert: "patch",
+  style: "none",
+  test: "none",
+};
+
 /** How to run this check, printed whenever the input could not be used. */
 export const USAGE_LINES = [
   "Usage: validation issue-metadata <issue-number>",
+  "   or: validation issue-metadata --all",
   "   or: ISSUE_BODY=… ISSUE_LABELS=… validation issue-metadata",
 ];

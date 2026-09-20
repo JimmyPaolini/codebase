@@ -4,7 +4,11 @@ import { Injectable } from "@nestjs/common";
 
 import { GITHUB_CLI_BINARY } from "./issue-metadata.constants";
 
-import type { GithubCliResult } from "./issue-metadata.types";
+import type {
+  GithubCliResult,
+  IssueSummary,
+  ListIssuesResult,
+} from "./issue-metadata.types";
 
 /**
  * Runs the `gh` command-line client and reports what it produced.
@@ -55,6 +59,35 @@ export class IssueMetadataGithubService {
   /** Whether the `gh` binary can be executed at all. */
   public isAvailable(): boolean {
     return this.run(["--version"]).available;
+  }
+
+  /** Lists all open issues with their number, title, body, and labels. */
+  public listOpenIssues(): ListIssuesResult {
+    const result = this.run([
+      "issue",
+      "list",
+      "--state",
+      "open",
+      "--limit",
+      "500",
+      "--json",
+      "number,title,body,labels",
+    ]);
+
+    if (!result.succeeded) {
+      return { error: this.describeFailure(result), success: false };
+    }
+
+    try {
+      const issues = JSON.parse(result.standardOutput) as IssueSummary[];
+      return { issues, success: true };
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      return {
+        error: `Unable to parse gh issue list output: ${message}`,
+        success: false,
+      };
+    }
   }
 
   /** Invokes `gh` with these arguments, capturing each stream on its own. */

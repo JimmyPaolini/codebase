@@ -1,5 +1,13 @@
 // 🏷️ Types
 
+/** Result of a bulk issues sweep. */
+export interface BulkIssuesVerdict {
+  readonly failureCount: number;
+  readonly failures: readonly string[];
+  readonly hierarchyViolations: readonly HierarchyViolation[];
+  readonly totalIssues: number;
+}
+
 /**
  * What one `gh` invocation produced.
  *
@@ -27,6 +35,13 @@ export interface GroupedLabels {
   readonly scopeLabels: readonly string[];
   readonly sourceLabels: readonly string[];
   readonly typeLabels: readonly string[];
+}
+
+/** A violation in issue hierarchy. */
+export interface HierarchyViolation {
+  readonly childNumber: number;
+  readonly message: string;
+  readonly parentNumber?: number;
 }
 
 /**
@@ -58,6 +73,21 @@ export interface IssueMetadata {
 export type IssueMetadataResolution =
   | { readonly failure: string; readonly resolved: false }
   | { readonly metadata: IssueMetadata; readonly resolved: true };
+
+/** Summary representation of a GitHub issue from list API. */
+export interface IssueSummary {
+  readonly body: string;
+  readonly labels: readonly { readonly name: string }[];
+  readonly number: number;
+  readonly title: string;
+}
+
+/** Result of listing open issues through gh CLI. */
+export interface ListIssuesResult {
+  readonly error?: string;
+  readonly issues?: readonly IssueSummary[];
+  readonly success: boolean;
+}
 
 /**
  * Everything wrong with one issue, and the commands that fix it.
