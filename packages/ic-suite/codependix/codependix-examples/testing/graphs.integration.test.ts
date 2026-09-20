@@ -65,6 +65,24 @@ describe("codependix example graphs", () => {
       expect(graph.edges).toStrictEqual([]);
     });
 
+    it("resolves ambient module names deterministically under concurrent load", async () => {
+      expect.hasAssertions();
+
+      const graphs = await Promise.all(
+        Array.from({ length: 8 }, async () =>
+          nestjsGraphs.buildContainerGraph([
+            "ambient-modules",
+            "global-container",
+          ]),
+        ),
+      );
+
+      for (const graph of graphs) {
+        expect(graph.ambientModuleNames).toStrictEqual(["SettingsModule"]);
+        expect(graph.edges).toStrictEqual([]);
+      }
+    });
+
     it("leaves a global module's edges drawn below the minimum module count", async () => {
       expect.hasAssertions();
 

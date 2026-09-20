@@ -69,7 +69,7 @@ const FAILING_CONTAINER = ["container-rooting", "failing-container"];
  * cached: a container that refuses to load raises every time it is asked for,
  * which is what the container-rooting example shows.
  */
-const graphsByRoot = new Map<string, NestjsModuleGraph>();
+const graphsByRoot = new Map<string, Promise<NestjsModuleGraph>>();
 
 /** Builds one example container's module graph. */
 export async function buildContainerGraph(
@@ -86,13 +86,21 @@ export async function buildGraphAt(
 
   if (cached !== undefined) return cached;
 
-  const project = describeProjectAt(absoluteRoot);
-  const tree = await nestjsProjectService.exploreProject(project);
-  const graph = moduleGraphService.buildGraph(tree, project.name);
+  const promise = (async () => {
+    const project = describeProjectAt(absoluteRoot);
+    const tree = await nestjsProjectService.exploreProject(project);
 
-  graphsByRoot.set(absoluteRoot, graph);
+    return moduleGraphService.buildGraph(tree, project.name);
+  })();
 
-  return graph;
+  graphsByRoot.set(absoluteRoot, promise);
+
+  try {
+    return await promise;
+  } catch (error) {
+    graphsByRoot.delete(absoluteRoot);
+    throw error;
+  }
 }
 
 /** Builds every NestJS module-graph example document. */
