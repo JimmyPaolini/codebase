@@ -1,4 +1,5 @@
-import { writeFile } from "node:fs/promises";
+import { mkdir, writeFile } from "node:fs/promises";
+import path from "node:path";
 
 import { Inject, Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
@@ -12,10 +13,7 @@ import { DrawCheckService } from "./draw-check.service";
 import { DrawCodeService } from "./draw-code.service";
 import { DrawEnumerationService } from "./draw-enumeration.service";
 import { DrawIndexService } from "./draw-index.service";
-import {
-  DEFAULT_INDEX_PATH,
-  IncompleteCodeDrawingError,
-} from "./draw.constants";
+import { IncompleteCodeDrawingError } from "./draw.constants";
 
 import type { DrawCommandOptions } from "./draw.types";
 
@@ -148,13 +146,15 @@ export class DrawCommand extends CommandRunner {
       total: enumerated + hardcoded.length,
     });
 
-    const page = await this.drawIndexService.build();
+    const pages = await this.drawIndexService.build();
 
-    await writeFile(DEFAULT_INDEX_PATH, page);
+    for (const [relativePath, content] of Object.entries(pages)) {
+      const fullPath = path.join("output", relativePath);
+      await mkdir(path.dirname(fullPath), { recursive: true });
+      await writeFile(fullPath, content);
+    }
 
-    this.logger.log("✨ Rebuilt the index page", undefined, {
-      indexPath: DEFAULT_INDEX_PATH,
-    });
+    this.logger.log("✨ Rebuilt the index pages");
   }
 
   // 🌎 Public Methods

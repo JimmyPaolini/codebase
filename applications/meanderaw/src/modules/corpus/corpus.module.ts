@@ -17,7 +17,7 @@ import { CorpusService } from "./corpus.service";
  * run over extracted constants instead of one command-line Code — plus the
  * enumeration, which decides which entries are beyond the sweep's reach and
  * so have to be preserved at all, and the classification, whose
- * `` names an ingested tile exactly as it names an
+ * `DrawIndexService` names an ingested tile exactly as it names an
  * enumerated one.
  */
 @Module({
