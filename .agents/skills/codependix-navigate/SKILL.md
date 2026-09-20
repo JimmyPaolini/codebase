@@ -19,7 +19,7 @@ own graph is exported once at the repository root.
 ## Confirm it is current first
 
 **A committed graph is only as fresh as the last `--write`.** Before trusting
-one to scope a change, run `codependix --check` — it reports exactly which
+one to scope a change, run `codependix map --check` — it reports exactly which
 exports disagree with a freshly built graph and writes nothing. If the graph
 you are about to read is among them, `--write` first. The `codependix-export`
 skill covers both modes.
