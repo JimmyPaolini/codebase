@@ -43,6 +43,17 @@ export class DatabaseService {
   }
 
   /**
+   * Finds one meander by its lattice address, which is its identity.
+   */
+  async findOneByLattice(
+    code: string,
+    rows: number,
+    columns: number,
+  ): Promise<Meander | null> {
+    return this.meanderRepository.findOneBy({ code, columns, rows });
+  }
+
+  /**
    * Writes one meander row, letting the database assign its `id`.
    *
    * Refuses — by rejecting, through the unique index over `code`, `rows`

@@ -13,7 +13,6 @@ import { DuplicateCorpusCodeError } from "./corpus.constants";
 import { CorpusService } from "./corpus.service";
 
 import type { Characteristics } from "../characteristics/characteristics.types";
-import type { ParsedCode } from "../code/code.types";
 import type { Meander } from "../database/entities/Meander.entity";
 import type { Tile } from "../tile/tile.types";
 import type { CorpusEntry } from "./corpus.types";
@@ -29,12 +28,6 @@ describe(CorpusService, () => {
   let enumerationService: EnumerationService;
   let subFamilyService: SubFamilyService;
 
-  const parsed: ParsedCode = {
-    columns: 1,
-    digits: "2",
-    levels: 1,
-    rows: 2,
-  };
   const tile = createMock<Tile>({ columns: 1, rows: 2 });
   const characteristics = createMock<Characteristics>({
     components: 1,
@@ -90,12 +83,21 @@ describe(CorpusService, () => {
   });
 
   beforeEach(() => {
-    vi.mocked(codeService.parse).mockReturnValue(parsed);
+    vi.mocked(codeService.parse).mockImplementation((code, rows, columns) => ({
+      columns,
+      digits: code,
+      levels: rows - 1,
+      rows,
+    }));
+    vi.mocked(codeService.canonicalPhase).mockImplementation(
+      (parsed) => parsed,
+    );
     vi.mocked(codeService.tile).mockReturnValue(tile);
     vi.mocked(drawingService.render).mockReturnValue("<svg>fixture</svg>\n");
     vi.mocked(characteristicsService.compute).mockReturnValue(characteristics);
     vi.mocked(subFamilyService.name).mockReturnValue(undefined);
     vi.mocked(enumerationService.isAdmitted).mockReturnValue(false);
+    vi.mocked(databaseService.findOneByLattice).mockResolvedValue(null);
     vi.mocked(databaseService.save).mockResolvedValue(savedMeander);
   });
 
@@ -120,13 +122,17 @@ describe(CorpusService, () => {
     it("renders the Code it read, which already carries the entry's rows and columns", async () => {
       await service.ingest([entry]);
 
-      expect(drawingService.render).toHaveBeenCalledWith(parsed);
+      expect(drawingService.render).toHaveBeenCalledWith(
+        expect.objectContaining({ columns: 1, digits: "2", rows: 4 }),
+      );
     });
 
     it("computes the Characteristics of the Code it read", async () => {
       await service.ingest([entry]);
 
-      expect(characteristicsService.compute).toHaveBeenCalledWith(parsed);
+      expect(characteristicsService.compute).toHaveBeenCalledWith(
+        expect.objectContaining({ columns: 1, digits: "2", rows: 4 }),
+      );
     });
 
     it("persists each entry with pitch equal to columns, hardcoded provenance, and the first family it was filed under", async () => {

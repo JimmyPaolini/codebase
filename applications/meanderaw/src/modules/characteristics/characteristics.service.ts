@@ -1,6 +1,10 @@
 // cspell:ignore Neighbours
 
-import { Inject, Injectable } from "@nestjs/common";
+import {
+  forwardRef as forwardReference,
+  Inject,
+  Injectable,
+} from "@nestjs/common";
 
 import { CodeService } from "../code/code.service";
 
@@ -8,6 +12,7 @@ import { CharacteristicsPathService } from "./characteristics-path.service";
 import { CharacteristicsShapeService } from "./characteristics-shape.service";
 import { ConnectivityService } from "./connectivity.service";
 
+import type { CodeService as ICodeService } from "../code/code.service";
 import type { ParsedCode } from "../code/code.types";
 import type { Directions } from "../tile/tile.types";
 import type {
@@ -58,8 +63,8 @@ export class CharacteristicsService {
   // 🏗 Dependency Injection
 
   constructor(
-    @Inject(CodeService)
-    private readonly codeService: CodeService,
+    @Inject(forwardReference(() => CodeService))
+    private readonly codeService: ICodeService,
     @Inject(ConnectivityService)
     private readonly meanderConnectivityService: ConnectivityService,
     @Inject(CharacteristicsPathService)
@@ -372,7 +377,6 @@ export class CharacteristicsService {
     return counts;
   }
 
-  /** Internal helper method. */
   /** Computes every characteristic for a given code. */
   public compute(code: ParsedCode): Characteristics {
     const reduced = this.codeService.reduceToUnit(code);
@@ -452,5 +456,13 @@ export class CharacteristicsService {
         wrappedJunctions.xJunctions - unwrappedJunctions.xJunctions,
       turnsMonotonically: pathProps.turnsMonotonically,
     };
+  }
+
+  /** Internal helper method. */
+  /** Computes the number of seam components for a given code. */
+  public seamComponents(code: ParsedCode): number {
+    const wrapped = this.meanderConnectivityService.connectivity(code, false);
+    const unwrapped = this.meanderConnectivityService.connectivity(code, true);
+    return unwrapped.components - wrapped.components;
   }
 }

@@ -1,8 +1,13 @@
-import { Inject, Injectable } from "@nestjs/common";
+import {
+  forwardRef as forwardReference,
+  Inject,
+  Injectable,
+} from "@nestjs/common";
 
 import { CodeService } from "../code/code.service";
 import { GraphService } from "../graph/graph.service";
 
+import type { CodeService as ICodeService } from "../code/code.service";
 import type { ParsedCode } from "../code/code.types";
 import type { InkAdjacency } from "../graph/graph.types";
 import type { CodeEdge, Connectivity } from "./characteristics.types";
@@ -49,8 +54,8 @@ export class ConnectivityService {
   // 🏗 Dependency Injection
 
   constructor(
-    @Inject(CodeService)
-    private readonly codeService: CodeService,
+    @Inject(forwardReference(() => CodeService))
+    private readonly codeService: ICodeService,
     @Inject(GraphService)
     private readonly graphService: GraphService,
   ) {}

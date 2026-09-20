@@ -87,6 +87,36 @@ export class CodeService {
   }
 
   /**
+   * The canonical phase of a Code is the one that minimizes seamComponents,
+   * breaking ties by choosing the lexicographically smallest Code string.
+   *
+   * The group of phases defaults to every cyclic column rotation.
+   */
+  canonicalPhase(
+    code: ParsedCode,
+    measureSeams: (phase: ParsedCode) => number,
+    group: (code: ParsedCode) => ParsedCode[] = (c) =>
+      Array.from({ length: c.columns }, (_, index) => this.rotate(c, index)),
+  ): ParsedCode {
+    let best = code;
+    let minimumSeamComponents = Infinity;
+
+    for (const phase of group(code)) {
+      const seamComponents = measureSeams(phase);
+
+      if (
+        seamComponents < minimumSeamComponents ||
+        (seamComponents === minimumSeamComponents && phase.digits < best.digits)
+      ) {
+        best = phase;
+        minimumSeamComponents = seamComponents;
+      }
+    }
+
+    return best;
+  }
+
+  /**
    * The four direction bits the point at `(level, column)` carries, read off
    * the single character at `level * columns + column`.
    *
