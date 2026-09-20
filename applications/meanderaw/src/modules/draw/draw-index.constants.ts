@@ -25,7 +25,6 @@ export const BAND_REPEAT_COUNT = 6;
  * primary key already is, and the prefix keeps it from colliding with any
  * other kind of identifier the page might grow.
  */
-export const TILE_ID_PREFIX = "meander-";
 
 /**
  * The label a null-`family` row's section is headed and jump-linked with.
@@ -84,11 +83,3 @@ figcaption { font-family: ui-monospace, monospace; font-size: 11px; margin-top: 
  * row rather than a sanitizer: refusing the whole build is safer than
  * emitting a page whose markup a bad row could have torn open.
  */
-export class MalformedMeanderSvgError extends Error {
-  constructor(code: string) {
-    super(
-      `meander "${code}" does not carry a well-formed inline <svg> document`,
-    );
-    this.name = "MalformedMeanderSvgError";
-  }
-}

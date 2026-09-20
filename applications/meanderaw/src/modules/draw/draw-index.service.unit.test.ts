@@ -2,7 +2,9 @@ import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
+import { CodeService } from "../code/code.service";
 import { DatabaseService } from "../database/database.service";
+import { DrawingService } from "../drawing/drawing.service";
 import { GeometryService } from "../geometry/geometry.service";
 
 import { DrawIndexService } from "./draw-index.service";
@@ -26,7 +28,7 @@ describe(DrawIndexService, () => {
     componentCount: 0,
     components: 1,
     cornerCount: 0,
-    crossesTheSeam: false,
+
     cycleCount: 0,
     cycles: 0,
     density: 0,
@@ -35,47 +37,35 @@ describe(DrawIndexService, () => {
     embeddedOCount: 0,
     embeddedUCount: 0,
     // cspell:ignore Neighbours
-    endsAreLatticeNeighbours: false,
-    endsOnBorderRules: false,
-    family: null,
+
+    families: [],
     freeEnds: 0,
-    hasBranching: false,
-    hasCrossing: false,
-    hasDots: false,
-    hasTJunctions: false,
-    hasXJunctions: false,
+
     horizontalDashCount: 0,
     horizontalPointCount: 0,
     inkPointCount: 0,
     inkTJunctions: 0,
     inkXJunctions: 0,
-    isClosedLoop: false,
-    isConnected: false,
-    isFlipSymmetric: false,
-    isJunctionFree: false,
-    isMirrorSymmetric: false,
-    isReducible: false,
-    isSingleArc: false,
+
     lCount: 0,
     longestHorizontalRun: 0,
     longestVerticalRun: 0,
-    negativeTJunctions: 0,
-    negativeXJunctions: 0,
+
     oCount: 0,
     pitch: 1,
     plusCount: 0,
     provenance: "hardcoded",
-    reversesAtItsTightestTurn: false,
+
+    characteristics: [],
+    drawingHash: "hash",
     rows: 2,
     seamComponents: 0,
     seamCycles: 0,
     seamTJunctions: 0,
     seamXJunctions: 0,
     shapeICount: 0,
-    subFamily: null,
-    svg: '<svg width="1" height="1"><path d="M0 0"/></svg>',
     tCount: 0,
-    turnsMonotonically: false,
+
     uCount: 0,
     verticalDashCount: 0,
     verticalPointCount: 0,
@@ -92,6 +82,21 @@ describe(DrawIndexService, () => {
           provide: DatabaseService,
           useValue: createMock<DatabaseService>(),
         },
+        {
+          provide: CodeService,
+          useValue: {
+            parse: (c: string) => ({
+              columns: 3,
+              digits: c,
+              levels: 4,
+              rows: 4,
+            }),
+          },
+        },
+        {
+          provide: DrawingService,
+          useValue: { render: () => '<path d="M1 1"/>' },
+        },
       ],
     }).compile();
 
@@ -105,7 +110,7 @@ describe(DrawIndexService, () => {
   describe("render", () => {
     it("embeds every meander's own SVG rather than linking to a file", () => {
       const page = service.render([
-        meander({ code: "a", id: 1, svg: '<svg><path d="M1 1"/></svg>' }),
+        meander({ code: "a", drawingHash: "hash", id: 1 }),
       ]);
 
       expect(page).toContain('<path d="M1 1"/>');
@@ -123,37 +128,37 @@ describe(DrawIndexService, () => {
     it("appends a subFamily to the caption where the row earned one", () => {
       const page = service.render([
         meander({
+          characteristics: ["dots"],
           code: "abc",
           columns: 1,
-          family: "mosaic",
+          families: ["mosaic"],
           id: 1,
           rows: 3,
-          subFamily: "dots",
         }),
       ]);
 
       expect(page).toContain("<figcaption>3×1 · abc (dots)</figcaption>");
     });
 
-    it("lays the families out in the order they are declared rather than alphabetically", () => {
+    it("lays the families out alphabetically", () => {
       const page = service.render([
-        meander({ code: "a", family: "mosaic", id: 1 }),
-        meander({ code: "b", family: "boxes", id: 2 }),
-        meander({ code: "c", family: "snake", id: 3 }),
+        meander({ code: "a", families: ["mosaic"], id: 1 }),
+        meander({ code: "b", families: ["boxes"], id: 2 }),
+        meander({ code: "c", families: ["snake"], id: 3 }),
       ]);
 
-      expect(page.indexOf("<h2>snake</h2>")).toBeLessThan(
-        page.indexOf("<h2>boxes</h2>"),
-      );
       expect(page.indexOf("<h2>boxes</h2>")).toBeLessThan(
         page.indexOf("<h2>mosaic</h2>"),
+      );
+      expect(page.indexOf("<h2>mosaic</h2>")).toBeLessThan(
+        page.indexOf("<h2>snake</h2>"),
       );
     });
 
     it("groups a null-family row into a dedicated unclassified section, sorted after every named family", () => {
       const page = service.render([
-        meander({ code: "a", family: null, id: 1 }),
-        meander({ code: "b", family: "snake", id: 2 }),
+        meander({ code: "a", families: [], id: 1 }),
+        meander({ code: "b", families: ["snake"], id: 2 }),
       ]);
 
       expect(page).toContain('<section id="unclassified">');
@@ -164,9 +169,9 @@ describe(DrawIndexService, () => {
 
     it("orders rows within a family by rows, then columns, then code", () => {
       const page = service.render([
-        meander({ code: "z", columns: 5, family: "snake", id: 1, rows: 3 }),
-        meander({ code: "b", columns: 2, family: "snake", id: 2, rows: 4 }),
-        meander({ code: "a", columns: 1, family: "snake", id: 3, rows: 4 }),
+        meander({ code: "z", columns: 5, families: ["snake"], id: 1, rows: 3 }),
+        meander({ code: "b", columns: 2, families: ["snake"], id: 2, rows: 4 }),
+        meander({ code: "a", columns: 1, families: ["snake"], id: 3, rows: 4 }),
       ]);
 
       const shallow = page.indexOf("3×5 · z");
@@ -179,9 +184,9 @@ describe(DrawIndexService, () => {
 
     it("counts meanders in a section's own heading and in the page summary", () => {
       const page = service.render([
-        meander({ code: "a", family: "snake", id: 1 }),
-        meander({ code: "b", family: "snake", id: 2 }),
-        meander({ code: "c", family: "boxes", id: 3 }),
+        meander({ code: "a", families: ["snake"], id: 1 }),
+        meander({ code: "b", families: ["snake"], id: 2 }),
+        meander({ code: "c", families: ["boxes"], id: 3 }),
       ]);
 
       expect(page).toContain("2 meanders");
@@ -191,7 +196,7 @@ describe(DrawIndexService, () => {
 
     it("links each family section from a jump list", () => {
       const page = service.render([
-        meander({ code: "a", family: "snake", id: 1 }),
+        meander({ code: "a", families: ["snake"], id: 1 }),
       ]);
 
       expect(page).toContain('<a href="#snake">snake</a>');
@@ -209,10 +214,10 @@ describe(DrawIndexService, () => {
         meander({
           code: "a",
           columns: 3,
+          drawingHash: "hash",
           id: 7,
           pitch: 3,
           rows: 4,
-          svg: '<svg width="52.5" height="67.5"><path d="M1 1"/></svg>',
         }),
       ]);
 
@@ -240,14 +245,6 @@ describe(DrawIndexService, () => {
       expect(page).toContain(
         '<svg width="277.5" height="67.5" viewBox="0 0 277.5 67.5" fill="none"',
       );
-    });
-
-    it("refuses a row whose svg field is not a well-formed inline SVG document, rather than emitting broken markup", () => {
-      expect(() =>
-        service.render([
-          meander({ code: "broken", id: 1, svg: "<div>not an svg</div>" }),
-        ]),
-      ).toThrow(/well-formed inline <svg>/);
     });
   });
 });

@@ -2,13 +2,7 @@
 
 import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
 
-import { SUPPORTED_TYPES } from "../../classification/classification.constants";
-import { SUPPORTED_SUB_FAMILIES } from "../../classification/sub-family.constants";
 import { MEANDER_PROVENANCES } from "../database.constants";
-
-import type { MeanderType } from "../../classification/classification.types";
-import type { SubFamily } from "../../classification/sub-family.types";
-import type { MeanderProvenance } from "../database.types";
 
 /**
  * One row of the committed `output/meanders.sqlite` database: a single
@@ -50,19 +44,13 @@ import type { MeanderProvenance } from "../database.types";
  * ticket's own single-drawing rows are recorded `"hardcoded"` too: a Code
  * typed at the command line is authored the same way a corpus constant is,
  * named by a person rather than found by a search.
- *
- * `family` and `subFamily` are both nullable: an Enumerated row leaves them
  * null when no family's Characteristic combination matches its structure,
  * and a Hardcoded row carries whichever of the two the historical corpus
  * already recorded for it, trusted rather than re-derived — see
  * `CorpusService`'s own doc comment for why a Hardcoded row's
  * metadata is trusted rather than classified.
- *
- * `family` and `subFamily` are both nullable, and for opposite reasons.
  * A `family` is null where a meander's structure satisfies no family's
  * defining combination — most of the enumerated space is like that, and
- * spec #813 asks for exactly that rather than for the tile to be excluded
- * from the sweep. A `subFamily` is null where the structure sits in none of
  * the named regions of the unit space, which is a separate question with a
  * separate answer: `docs/adr/0007-address-every-meander-by-its-lattice.md`
  * measured 85 drawings earning a region's name from outside `mosaic`, so
@@ -76,8 +64,6 @@ import type { MeanderProvenance } from "../database.types";
  * than gates, and they are what most of the family definitions are stated
  * in: the junction counts alone read a `snake` repeat, a `boxes` repeat and
  * a `parallel` repeat identically.
- *
- * `inkTJunctions`, `inkXJunctions`, `negativeTJunctions`, and
  * `negativeXJunctions` are the raw junction counts
  * `CharacteristicsService.compute` derives directly from the row's
  * Code, and `hasBranching`/`hasCrossing` are the first two of a
@@ -87,6 +73,9 @@ import type { MeanderProvenance } from "../database.types";
 @Entity({ name: "meanders" })
 @Index(["code", "rows", "columns"], { unique: true })
 export class Meander {
+  @Column({ type: "simple-array" })
+  characteristics!: string[];
+
   @Column({ type: "text" })
   code!: string;
 
@@ -102,9 +91,6 @@ export class Meander {
   @Column({ default: 0, type: "int" })
   cornerCount!: number;
 
-  @Column({ default: false, type: "boolean" })
-  crossesTheSeam!: boolean;
-
   @Column({ default: 0, type: "int" })
   cycleCount!: number;
 
@@ -117,6 +103,9 @@ export class Meander {
   @Column({ default: 0, type: "int" })
   dotCount!: number;
 
+  @Column({ type: "text" })
+  drawingHash!: string;
+
   @Column({ default: 0, type: "int" })
   edgeCount!: number;
 
@@ -126,32 +115,11 @@ export class Meander {
   @Column({ default: 0, type: "int" })
   embeddedUCount!: number;
 
-  @Column({ default: false, type: "boolean" })
-  endsAreLatticeNeighbours!: boolean;
-
-  @Column({ default: false, type: "boolean" })
-  endsOnBorderRules!: boolean;
-
-  @Column({ enum: SUPPORTED_TYPES, nullable: true, type: "simple-enum" })
-  family!: MeanderType | null;
+  @Column({ type: "simple-array" })
+  families!: string[];
 
   @Column({ type: "int" })
   freeEnds!: number;
-
-  @Column({ type: "boolean" })
-  hasBranching!: boolean;
-
-  @Column({ type: "boolean" })
-  hasCrossing!: boolean;
-
-  @Column({ default: false, type: "boolean" })
-  hasDots!: boolean;
-
-  @Column({ default: false, type: "boolean" })
-  hasTJunctions!: boolean;
-
-  @Column({ default: false, type: "boolean" })
-  hasXJunctions!: boolean;
 
   @Column({ default: 0, type: "int" })
   horizontalDashCount!: number;
@@ -171,27 +139,6 @@ export class Meander {
   @Column({ type: "int" })
   inkXJunctions!: number;
 
-  @Column({ default: false, type: "boolean" })
-  isClosedLoop!: boolean;
-
-  @Column({ default: false, type: "boolean" })
-  isConnected!: boolean;
-
-  @Column({ default: false, type: "boolean" })
-  isFlipSymmetric!: boolean;
-
-  @Column({ default: false, type: "boolean" })
-  isJunctionFree!: boolean;
-
-  @Column({ default: false, type: "boolean" })
-  isMirrorSymmetric!: boolean;
-
-  @Column({ default: false, type: "boolean" })
-  isReducible!: boolean;
-
-  @Column({ default: false, type: "boolean" })
-  isSingleArc!: boolean;
-
   @Column({ default: 0, type: "int" })
   lCount!: number;
 
@@ -200,12 +147,6 @@ export class Meander {
 
   @Column({ default: 0, type: "int" })
   longestVerticalRun!: number;
-
-  @Column({ type: "int" })
-  negativeTJunctions!: number;
-
-  @Column({ type: "int" })
-  negativeXJunctions!: number;
 
   @Column({ default: 0, type: "int" })
   oCount!: number;
@@ -217,10 +158,7 @@ export class Meander {
   plusCount!: number;
 
   @Column({ enum: MEANDER_PROVENANCES, type: "simple-enum" })
-  provenance!: MeanderProvenance;
-
-  @Column({ default: false, type: "boolean" })
-  reversesAtItsTightestTurn!: boolean;
+  provenance!: "enumerated" | "hardcoded";
 
   @Column({ type: "int" })
   rows!: number;
@@ -240,17 +178,8 @@ export class Meander {
   @Column({ default: 0, type: "int" })
   shapeICount!: number;
 
-  @Column({ enum: SUPPORTED_SUB_FAMILIES, nullable: true, type: "simple-enum" })
-  subFamily!: null | SubFamily;
-
-  @Column({ type: "text" })
-  svg!: string;
-
   @Column({ default: 0, type: "int" })
   tCount!: number;
-
-  @Column({ default: false, type: "boolean" })
-  turnsMonotonically!: boolean;
 
   @Column({ default: 0, type: "int" })
   uCount!: number;

@@ -3,7 +3,6 @@ import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { CharacteristicsService } from "../characteristics/characteristics.service";
-import { SubFamilyService } from "../classification/sub-family.service";
 import { CodeService } from "../code/code.service";
 import { DatabaseService } from "../database/database.service";
 import { DrawingService } from "../drawing/drawing.service";
@@ -26,19 +25,15 @@ describe(CorpusService, () => {
   let codeService: CodeService;
   let drawingService: DrawingService;
   let enumerationService: EnumerationService;
-  let subFamilyService: SubFamilyService;
 
   const tile = createMock<Tile>({ columns: 1, rows: 2 });
   const characteristics = createMock<Characteristics>({
     components: 1,
     cycles: 0,
     freeEnds: 2,
-    hasBranching: true,
-    hasCrossing: false,
+
     inkTJunctions: 1,
     inkXJunctions: 0,
-    negativeTJunctions: 0,
-    negativeXJunctions: 0,
   });
   const savedMeander = createMock<Meander>({ id: 1 });
 
@@ -66,10 +61,6 @@ describe(CorpusService, () => {
           provide: EnumerationService,
           useValue: createMock<EnumerationService>(),
         },
-        {
-          provide: SubFamilyService,
-          useValue: createMock<SubFamilyService>(),
-        },
       ],
     }).compile();
 
@@ -79,7 +70,6 @@ describe(CorpusService, () => {
     codeService = await module.resolve(CodeService);
     drawingService = await module.resolve(DrawingService);
     enumerationService = await module.resolve(EnumerationService);
-    subFamilyService = await module.resolve(SubFamilyService);
   });
 
   beforeEach(() => {
@@ -95,7 +85,6 @@ describe(CorpusService, () => {
     vi.mocked(codeService.tile).mockReturnValue(tile);
     vi.mocked(drawingService.render).mockReturnValue("<svg>fixture</svg>\n");
     vi.mocked(characteristicsService.compute).mockReturnValue(characteristics);
-    vi.mocked(subFamilyService.name).mockReturnValue(undefined);
     vi.mocked(enumerationService.isAdmitted).mockReturnValue(false);
     vi.mocked(databaseService.findOneByLattice).mockResolvedValue(null);
     vi.mocked(databaseService.save).mockResolvedValue(savedMeander);
@@ -140,43 +129,25 @@ describe(CorpusService, () => {
         { code: "3", columns: 3, filedUnder: ["branch", "parallel"], rows: 4 },
       ]);
 
-      expect(databaseService.save).toHaveBeenCalledWith({
-        code: "3",
-        columns: 3,
-        components: 1,
-        cycles: 0,
-        family: "branch",
-        freeEnds: 2,
-        hasBranching: true,
-        hasCrossing: false,
-        inkTJunctions: 1,
-        inkXJunctions: 0,
-        negativeTJunctions: 0,
-        negativeXJunctions: 0,
-        pitch: 3,
-        provenance: "hardcoded",
-        rows: 4,
-        subFamily: null,
-        svg: "<svg>fixture</svg>\n",
-      });
-    });
-
-    it("names a sub-family from the tile the Code draws rather than carrying one in the entry", async () => {
-      vi.mocked(subFamilyService.name).mockReturnValue("zigzag");
-
-      await service.ingest([entry]);
-
-      expect(subFamilyService.name).toHaveBeenCalledWith(tile);
       expect(databaseService.save).toHaveBeenCalledWith(
-        expect.objectContaining({ subFamily: "zigzag" }),
-      );
-    });
+        expect.objectContaining({
+          code: "3",
+          columns: 3,
+          components: 1,
+          cycles: 0,
+          families: ["branch", "parallel"],
+          freeEnds: 2,
 
-    it("leaves subFamily unset for a tile that earns no name", async () => {
-      await service.ingest([entry]);
+          inkTJunctions: 1,
+          inkXJunctions: 0,
 
-      expect(databaseService.save).toHaveBeenCalledWith(
-        expect.objectContaining({ subFamily: null }),
+          characteristics: [],
+          drawingHash:
+            "8fa0825a9fafc5c9cc0fa1377d44f9c63d0113001d1fe09388da64ebb410dd7d",
+          pitch: 3,
+          provenance: "hardcoded",
+          rows: 4,
+        }),
       );
     });
 

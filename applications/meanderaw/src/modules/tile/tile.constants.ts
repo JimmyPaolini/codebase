@@ -14,7 +14,6 @@
  * against one at six rows, so the shallowest band is where the family is
  * widest.
  */
-export const TILE_MINIMUM_ROWS = 3;
 
 // 🚨 Errors
 

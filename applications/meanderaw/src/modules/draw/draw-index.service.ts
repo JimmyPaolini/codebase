@@ -4,19 +4,17 @@
 
 import { Inject, Injectable } from "@nestjs/common";
 
-import { SUPPORTED_TYPES } from "../classification/classification.constants";
+import { CodeService } from "../code/code.service";
 import { DatabaseService } from "../database/database.service";
+import { DrawingService } from "../drawing/drawing.service";
 import { GeometryService } from "../geometry/geometry.service";
 
 import {
   BAND_REPEAT_COUNT,
-  MalformedMeanderSvgError,
   PAGE_STYLES,
-  TILE_ID_PREFIX,
   UNCLASSIFIED_FAMILY_LABEL,
 } from "./draw-index.constants";
 
-import type { MeanderType } from "../classification/classification.types";
 import type { Meander } from "../database/entities/Meander.entity";
 import type { MeanderIndexGroup } from "./draw-index.types";
 
@@ -46,16 +44,19 @@ export class DrawIndexService {
   // 🏗 Dependency Injection
 
   constructor(
-    @Inject(GeometryService)
-    private readonly geometryService: GeometryService,
+    @Inject(CodeService)
+    private readonly codeService: CodeService,
     @Inject(DatabaseService)
     private readonly databaseService: DatabaseService,
+    @Inject(DrawingService)
+    private readonly drawingService: DrawingService,
+    @Inject(GeometryService)
+    private readonly geometryService: GeometryService,
   ) {}
 
   // 🔐 Private Fields
 
   /** Orders rows within a family the way a reader reads them: shallower repeats before deeper ones, narrower before wider, and numeric-aware within `code` itself. */
-  private readonly collator = new Intl.Collator("en", { numeric: true });
 
   /**
    * Where each family sits on the page, read off the order `SUPPORTED_TYPES`
@@ -63,30 +64,20 @@ export class DrawIndexService {
    * past the last of them, so it sorts after every named family rather than
    * by the alphabetical accident of its own label.
    */
-  private readonly familyRanks = new Map<string, number>(
-    SUPPORTED_TYPES.map((type, index) => [type, index]),
-  );
-
   // 🔑 Public Fields
 
   // 🔏 Private Methods
 
   /** Throws unless `svg` looks like a complete, well-formed inline SVG document. */
-  private assertWellFormedSvg(meander: Meander): void {
-    const svg = meander.svg.trim();
-
-    if (!svg.startsWith("<svg") || !svg.endsWith("</svg>")) {
-      throw new MalformedMeanderSvgError(meander.code);
-    }
-  }
-
   /** One meander's own caption: its lattice address, and its subFamily where it earned one. */
   private caption(meander: Meander): string {
-    const { code, columns, rows, subFamily } = meander;
+    const { characteristics, code, columns, rows } = meander;
     const address = `${rows}×${columns} · ${code}`;
 
     return this.escape(
-      subFamily === null ? address : `${address} (${subFamily})`,
+      characteristics.length === 0
+        ? address
+        : `${address} (${characteristics.join(", ")})`,
     );
   }
 
@@ -100,11 +91,6 @@ export class DrawIndexService {
   }
 
   /** Ranks a family by its declared order, so `null` — the unclassified section — sorts after every named one. */
-  private familyRank(family: MeanderType | null): number {
-    return family === null
-      ? SUPPORTED_TYPES.length
-      : (this.familyRanks.get(family) ?? SUPPORTED_TYPES.length);
-  }
 
   /** Rounds and trims one band coordinate the same way every drawn coordinate is. */
   private format(value: number): string {
@@ -113,33 +99,35 @@ export class DrawIndexService {
 
   /** Collects the rows into their family groups, the groups in family order and the rows within each in reading order. */
   private groupByFamily(meanders: readonly Meander[]): MeanderIndexGroup[] {
-    const groups = new Map<MeanderType | null, Meander[]>();
-
+    const groups = new Map<null | string, Meander[]>();
     for (const meander of meanders) {
-      const members = groups.get(meander.family) ?? [];
-
-      members.push(meander);
-      groups.set(meander.family, members);
+      const families = meander.families.length > 0 ? meander.families : [null];
+      for (const family of families) {
+        const members = groups.get(family) ?? [];
+        members.push(meander);
+        groups.set(family, members);
+      }
     }
-
     return [...groups.entries()]
-      .map(([family, members]): MeanderIndexGroup => ({
+      .toSorted(([a], [b]) => {
+        if (a === null && b === null) return 0;
+        if (a === null) return 1;
+        if (b === null) return -1;
+        return a.localeCompare(b);
+      })
+      .map(([family, group]) => ({
         family,
-        meanders: members.toSorted(
+        meanders: group.toSorted(
           (left, right) =>
             left.rows - right.rows ||
             left.columns - right.columns ||
-            this.collator.compare(left.code, right.code),
+            left.code.localeCompare(right.code),
         ),
-      }))
-      .toSorted(
-        (left, right) =>
-          this.familyRank(left.family) - this.familyRank(right.family),
-      );
+      }));
   }
 
   /** The heading and slug a family group is shown and linked under. */
-  private label(family: MeanderType | null): string {
+  private label(family: null | string): string {
     return family ?? UNCLASSIFIED_FAMILY_LABEL;
   }
 
@@ -167,9 +155,14 @@ export class DrawIndexService {
         meander.columns * geometry.unit +
         geometry.strokeWidth,
     );
-    const tile = `${TILE_ID_PREFIX}${meander.id}`;
-
-    return `<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><g id="${tile}">${meander.svg.trim()}</g></defs>${this.renderRepeats(tile, pitch)}</svg>`;
+    const tile = `meander-${meander.id}`;
+    const parsed = this.codeService.parse(
+      meander.code,
+      meander.rows,
+      meander.columns,
+    );
+    const svg = this.drawingService.render(parsed).trim();
+    return `<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><g id="${tile}">${svg}</g></defs>${this.renderRepeats(tile, pitch)}</svg>`;
   }
 
   /** Renders the jump list, so a family thousands of rows down the page is one click away. */
@@ -185,8 +178,6 @@ export class DrawIndexService {
 
   /** Renders one meander's own figure: the band its tile repeats into, and its caption. */
   private renderFigure(meander: Meander): string {
-    this.assertWellFormedSvg(meander);
-
     return `<figure><div class="art">${this.renderBand(meander)}</div><figcaption>${this.caption(meander)}</figcaption></figure>`;
   }
 

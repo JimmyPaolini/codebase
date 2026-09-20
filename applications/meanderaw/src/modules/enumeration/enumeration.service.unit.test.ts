@@ -3,7 +3,6 @@ import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import { environmentSchema } from "../../constants";
-import { SubFamilyService } from "../classification/sub-family.service";
 import { CodeService } from "../code/code.service";
 import { SymmetryService } from "../symmetry/symmetry.service";
 import { TileService } from "../tile/tile.service";
@@ -22,7 +21,6 @@ async function createService(
     providers: [
       CodeService,
       EnumerationService,
-      SubFamilyService,
       SymmetryService,
       TileService,
       TileEnumerationService,
@@ -49,7 +47,6 @@ describe(EnumerationService, () => {
       providers: [
         CodeService,
         EnumerationService,
-        SubFamilyService,
         SymmetryService,
         TileService,
         TileEnumerationService,
@@ -155,7 +152,6 @@ describe(EnumerationService, () => {
         providers: [
           CodeService,
           EnumerationService,
-          SubFamilyService,
           SymmetryService,
           TileService,
           TileEnumerationService,
