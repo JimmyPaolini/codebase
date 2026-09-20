@@ -1,4 +1,4 @@
-import { Module } from "@nestjs/common";
+import { forwardRef as forwardReference, Module } from "@nestjs/common";
 
 import { CodeModule } from "../code/code.module";
 import { GraphModule } from "../graph/graph.module";
@@ -25,7 +25,7 @@ import { ConnectivityService } from "./connectivity.service";
 @Module({
   controllers: [],
   exports: [CharacteristicsService, ConnectivityService],
-  imports: [CodeModule, GraphModule],
+  imports: [forwardReference(() => CodeModule), GraphModule],
   providers: [
     CharacteristicsPathService,
     CharacteristicsShapeService,
