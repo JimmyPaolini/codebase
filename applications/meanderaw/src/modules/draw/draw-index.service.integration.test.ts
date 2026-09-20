@@ -3,8 +3,10 @@ import { getRepositoryToken, TypeOrmModule } from "@nestjs/typeorm";
 import { DataSource, type Repository } from "typeorm";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
+import { CodeService } from "../code/code.service";
 import { DatabaseService } from "../database/database.service";
 import { Meander } from "../database/entities/Meander.entity";
+import { DrawingService } from "../drawing/drawing.service";
 import { GeometryService } from "../geometry/geometry.service";
 
 import { DrawIndexService } from "./draw-index.service";
@@ -38,7 +40,13 @@ describe(DrawIndexService, () => {
         }),
         TypeOrmModule.forFeature([Meander]),
       ],
-      providers: [DrawIndexService, GeometryService, DatabaseService],
+      providers: [
+        DrawIndexService,
+        CodeService,
+        DrawingService,
+        GeometryService,
+        DatabaseService,
+      ],
     }).compile();
 
     service = await module.resolve(DrawIndexService);
