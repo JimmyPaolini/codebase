@@ -9,7 +9,7 @@
 
 /**
  * How far two coordinates may differ before the difference counts as real.
- * `GeometryService.formatCoordinate` rounds every coordinate to five
+ * `GridGeometryService.formatCoordinate` rounds every coordinate to five
  * decimal places, so at a row count whose grid unit doesn't divide the
  * canvas evenly (7, 9, 11) two rounded values that should be equal can land
  * a few millionths of a pixel apart.

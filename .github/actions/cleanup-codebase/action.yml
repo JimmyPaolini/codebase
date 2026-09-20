@@ -18,6 +18,9 @@ inputs:
       output. Required when `nx-cache` is "true"; saving is skipped, rather
       than failing the job, when it is empty — the same job asked
       `setup-codebase` to skip restoring, or restore itself never ran.
+  eslint-cache:
+    description: Save the ESLint cache
+    default: "false"
 
 runs:
   using: composite
@@ -38,8 +41,9 @@ runs:
         for datastore in .nx/workspace-data/*.db; do
           result="$(sqlite3 "${datastore}" 'PRAGMA integrity_check;' 2>&1 || true)"
           if [[ "${result}" != "ok" ]]; then
-            echo "::warning::Discarding a corrupt Nx cache store (${datastore}): ${result}"
-            rm -f "${datastore}" "${datastore}-wal" "${datastore}-shm" "${datastore}-journal"
+            echo "::warning::Discarding corrupt cache (${datastore}): ${result}"
+            rm -f "${datastore}" "${datastore}-wal" "${datastore}-shm" \
+              "${datastore}-journal"
           fi
         done
 
@@ -64,3 +68,10 @@ runs:
           .nx/cache
           .nx/workspace-data/*.db*
         key: ${{ inputs.nx-cache-primary-key }}
+
+    - name: ♻️ Save ESLint Cache
+      if: always() && inputs.eslint-cache == 'true'
+      uses: actions/cache/save@v6
+      with:
+        path: .eslintcache
+        key: eslint-cache-${{ runner.os }}-${{ github.sha }}

@@ -61,9 +61,9 @@ package, never that one.
 ## Validating
 
 ```bash
-pnpm exec nx run codependix-agents:lint-codebase --configuration=write
-pnpm exec nx run codependix-agents:lint-codebase --configuration=check
-pnpm exec nx run codependix-agents:test-coverage
+pnpm exec nx run codependix-agents:lint-code --configuration=write
+pnpm exec nx run codependix-agents:lint-code --configuration=check
+pnpm exec nx run codependix-agents:test-code
 ```
 
 Coverage is empty by nature here — there is no source to instrument — so the

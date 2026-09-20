@@ -13,6 +13,7 @@
   "targets": {
     "codometer": {},
     "dependency-cruiser": {},
+    "deprecate-code": {},
     "examples": {
       "cache": true,
       "configurations": {
@@ -45,16 +46,19 @@
       },
       "outputs": []
     },
+    "format-code": {},
+    "guard-code": {},
     "knip": {},
-    "lint-codebase": {},
+    "lint-code": {},
     "markdown-lint": {},
     "oxfmt": {},
     "oxlint": {},
     "prettier": {},
     "spell-check": {},
-    "test-coverage": {},
+    "test-code": {},
     "type-coverage": {},
     "typecheck": {},
+    "typecheck-code": {},
     "yaml-lint": {}
   }
 }

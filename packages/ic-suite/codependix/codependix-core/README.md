@@ -44,11 +44,51 @@ graph LR
   file_eslint_config_ts["eslint.config.ts"]
   file_src_index_ts["src/index.ts"]
   file_src_index_unit_test_ts["src/index.unit.test.ts"]
-  file_src_modules_results_results_types_ts["src/modules/results/results.types.ts"]
-  file_src_modules_run_run_types_ts["src/modules/run/run.types.ts"]
+  file_src_lib_results_types_ts["src/lib/results.types.ts"]
+  file_src_lib_run_types_ts["src/lib/run.types.ts"]
   file_testing_mocks_ts["testing/mocks.ts"]
   file_testing_setup_ts["testing/setup.ts"]
   file_vitest_config_ts["vitest.config.ts"]
   file_src_index_unit_test_ts --> file_src_index_ts
 ```
 <!-- codependix:end name="codependix-file-imports" -->
+
+<!-- CALL_STACKS_START -->
+
+### NestJS Module Graph
+
+<!-- codependix:start name="codependix-nestjs-modules" -->
+_This project defines no NestJS modules to graph._
+<!-- codependix:end name="codependix-nestjs-modules" -->
+
+## 🔭 Callidescope
+
+Call stacks traced through `packages/ic-suite/codependix/codependix-core`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
+
+| Measure | Value |
+| --- | --- |
+| Callables | 0 |
+| Files | 8 |
+| Calls traced | 0 |
+| Call stacks | 0 |
+| Deepest stack | 0 |
+| Stacks through recursion | 0 |
+| Unfollowable calls | 0 |
+
+### Limits
+
+What this project is judged against, as declared in its own `callidescope.config.ts`.
+
+| Limit | Value |
+| --- | --- |
+| `maximumDepth` | 1 |
+| `maximumBreadth` | 1 |
+
+### Call stacks (depth)
+
+None.
+
+### Breadth
+
+None.
+<!-- CALL_STACKS_END -->

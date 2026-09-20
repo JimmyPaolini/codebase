@@ -68,7 +68,7 @@ Outputs structured JSON in production (`NODE_ENV=production`) and pretty-printed
 Always prefer running tasks through Nx rather than calling the underlying tools directly.
 
 ```bash
-nx run codometer-measurement:lint-codebase   # Every static check, in one graph
+nx run codometer-measurement:typecheck-code,lint-code,format-code,deprecate-code,guard-code   # Every static check, in one graph
 nx run codometer-measurement:typecheck       # tsc --noEmit
 nx run codometer-measurement:oxfmt           # Formatting
 nx run codometer-measurement:build           # Compile for publication
@@ -209,7 +209,7 @@ See the [write-typescript skill](../../.agents/skills/write-typescript/SKILL.md)
 - **Dependency injection failure** — verify the service is `@Injectable()`, exported from its module, and that module is imported by the consuming module.
 - **Env var validation error on startup** — add the missing variable to `environmentSchema` in `src/constants.ts` and to `.env.default`.
 
-See the [triage-submission skill](../../.agents/skills/triage-submission/SKILL.md) for lint and git hook failures.
+See the [triage-integration skill](../../.agents/skills/triage-integration/SKILL.md) for lint and git hook failures.
 
 ## Key Files
 

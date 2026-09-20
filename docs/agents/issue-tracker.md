@@ -13,7 +13,7 @@ The single issue template lives at `.github/ISSUE_TEMPLATE/issue.yml`, with requ
 
 This is enforced two ways. First, the template's required dropdowns and disabled blank issues stop most drift at the source. Second, the 👮 Audit Issues GitHub Actions workflow runs on an issue's `opened`/`edited`/`labeled`/`unlabeled` events: an `issue-metadata` check (`tools/validation`) fails the job outright when an issue's labels disagree with its own `issue.yml` submission or carry more than one `type:*`/`source:*` label. On `opened` an `issue-labels` command (`tools/synchronization`) reconciles the labels a submitted form implies onto the issue first, so a freshly filed template issue already carries them before the check runs.
 
-The README's Audit Issues badge is this workflow's own status badge. It used to be a second job inside 🧑‍⚖️ Validate Conventions, which left one badge standing for both pull request and issue metadata; a red badge now means an issue and nothing else. There is no separate signal for "is every currently open issue still compliant"; an issue nobody has touched since a label was renamed out from under it stays unflagged until it is next edited or labeled.
+The README's Audit Issues badge is this workflow's own status badge. It used to be a second job inside 🧑‍⚖️ Comply Code, which left one badge standing for both pull request and issue metadata; a red badge now means an issue and nothing else. There is no separate signal for "is every currently open issue still compliant"; an issue nobody has touched since a label was renamed out from under it stays unflagged until it is next edited or labeled.
 
 ### GitHub Projects is not currently reachable
 

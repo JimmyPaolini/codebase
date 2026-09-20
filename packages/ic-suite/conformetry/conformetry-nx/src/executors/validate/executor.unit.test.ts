@@ -72,7 +72,11 @@ describe(validateExecutor, () => {
 
     expect(runValidation).toHaveBeenCalledWith(
       expect.objectContaining({
-        project: { name: "widgets", root: "packages/widgets", tags: [] },
+        project: {
+          name: "widgets",
+          root: "packages/widgets",
+          tags: ["name:widgets"],
+        },
         workspaceRoot: "/w",
       }),
     );
@@ -96,7 +100,7 @@ describe(validateExecutor, () => {
         project: {
           name: "widgets",
           root: "packages/widgets",
-          tags: ["type:package"],
+          tags: ["type:package", "name:widgets"],
         },
       }),
     );

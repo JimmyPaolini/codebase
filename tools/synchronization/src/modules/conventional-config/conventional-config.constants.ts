@@ -19,7 +19,7 @@ export const SYNC_CONVENTIONAL_CONFIG_MARKDOWN_FILES = [
   ".agents/skills/commit-code/SKILL.md",
   ".agents/skills/create-pull-request/SKILL.md",
   ".agents/skills/rename-branch/SKILL.md",
-  ".agents/skills/triage-submission/SKILL.md",
+  ".agents/skills/triage-integration/SKILL.md",
 ];
 
 /** Issue template files that contain type and scope dropdowns. */

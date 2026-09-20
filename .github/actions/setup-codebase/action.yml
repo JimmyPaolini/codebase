@@ -36,6 +36,9 @@ inputs:
   trivy:
     description: Install trivy via Homebrew (infrastructure scanning)
     default: "false"
+  eslint-cache:
+    description: Restore and save the ESLint cache
+    default: "false"
   uv:
     description: |
       Install uv. Required by far more than the Python projects — yaml-lint
@@ -178,8 +181,9 @@ runs:
         for datastore in .nx/workspace-data/*.db; do
           result="$(sqlite3 "${datastore}" 'PRAGMA integrity_check;' 2>&1 || true)"
           if [[ "${result}" != "ok" ]]; then
-            echo "::warning::Discarding a corrupt Nx cache store (${datastore}): ${result}"
-            rm -f "${datastore}" "${datastore}-wal" "${datastore}-shm" "${datastore}-journal"
+            echo "::warning::Discarding corrupt cache (${datastore}): ${result}"
+            rm -f "${datastore}" "${datastore}-wal" "${datastore}-shm" \
+              "${datastore}-journal"
           fi
         done
 
@@ -228,6 +232,15 @@ runs:
       # tools out of that shared environment.
       run: uv sync --frozen --quiet
       shell: bash
+
+    - name: ♻️ Sync ESLint Cache
+      if: inputs.eslint-cache == 'true'
+      uses: actions/cache@v6
+      with:
+        path: .eslintcache
+        key: eslint-cache-${{ runner.os }}-${{ github.sha }}
+        restore-keys: |
+          eslint-cache-${{ runner.os }}-
 
     # pnpm's bundled node-gyp lands `gyp/gyp_main.py` without an executable bit.
     # gyp runs it through `python3` itself, so generating a Makefile works — but

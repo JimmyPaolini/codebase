@@ -77,7 +77,7 @@ jobs:
     runs-on: ubuntu-latest
     # Two populations of run hide behind one average. Most pushes release
     # nothing and finish in 6–7 minutes. A releasing push spends 8–10 minutes
-    # in the pre-commit hook's `lint-codebase` gate over the version commit;
+    # in the pre-commit hook's `lint-code` gate over the version commit;
     # measured end to end, 14m24s to 16m18s against 18 minutes left only 2–4
     # minutes of slack.
     #
@@ -98,7 +98,7 @@ jobs:
       # This job looks like it runs no Nx target, but it runs the whole static
       # analysis gate: `@semantic-release/git` makes the version commit with a
       # plain `git commit`, which fires the pre-commit hook, which runs
-      # `nx affected --target=lint-codebase` over every project the root
+      # `nx affected --target=lint-code` over every project the root
       # package.json touches. So it needs uv — yaml-lint, sqlfluff, and vulture
       # all shell out to `uv run` — and it wants both Nx caches for the 241
       # tasks that follow. Opting out of them failed the release outright with
@@ -145,7 +145,7 @@ jobs:
       # failure fails this job rather than committing half-written READMEs.
       # Every step below is a `write` configuration no pull-request workflow
       # can reach; their gates run there under `check`.
-      - name: 🔭 Trace Call Stacks
+      - name: 🔭 Trace Calls
         run: pnpm exec nx run codebase:callidescope:write
 
       # `codependix map --write` covers all three graph types (Nx, NestJS, file
@@ -153,32 +153,42 @@ jobs:
       # `codependix.config.ts`. Same split as `callidescope` above: `check`
       # (verifying every configured export is current) is what a pull request
       # would run, but nothing does, since `codependix map --check` is deliberately
-      # absent from `lint-codebase` and every pull-request-triggered workflow —
+      # absent from `lint-code` and every pull-request-triggered workflow —
       # the exports move with the workspace they describe, so gating a branch
       # on their staleness would fail it for something `main` did.
-      - name: 🕸️ Export Dependency Graphs
+      - name: 🕸️ Graph Dependencies
         run: pnpm exec nx run codebase:codependix:write
+
+      # Splices the generator catalog into the root README.md file.
+      - name: 👔 Inventory Generators
+        run: |
+          pnpm exec nx run-many \
+            --target=conformetry-generators \
+            --configuration=write
 
       # Every synchronization command is its own Nx target, run directly the
       # way `callidescope` and `codometer` are above — no aggregate command
       # loops over them. On main the derivations are already in sync — the
       # pull request gate is what proves it — so this writes them back
       # unchanged.
-      - name: 🔗 Publish Derivations
+      - name: 🔗 Synchronize
         run: |
           pnpm exec nx run-many \
-            --target=conformetry-generators --target=conventional-config \
-            --target=devcontainer-configuration --target=pull-request-template \
-            --target=skill-exclusions --configuration=write
+            --target=conventional-config \
+            --target=devcontainer-configuration \
+            --target=pull-request-template \
+            --target=skill-exclusions \
+            --configuration=write
 
       # Two codometer commands, in this order, because the second measures the
       # output of the first: the workspace report counts every markdown file in
       # the repository, project READMEs included, so measuring the repository
       # before those READMEs are rewritten publishes an aggregate that the same
       # run then invalidates. Projects first, repository last.
-      - name: 📊 Measure Codebase
+      - name: 📊 Measure Code
         run: |
-          pnpm exec nx run-many --target=codometer --configuration=write --exclude=codebase
+          pnpm exec nx run-many --target=codometer --configuration=write \
+            --exclude=codebase
           pnpm exec nx run codebase:codometer:write
 
       # The committer is overridden so GitHub can verify the signature that `🔐

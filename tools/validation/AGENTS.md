@@ -106,7 +106,7 @@ Always prefer running tasks through Nx rather than calling the underlying tools 
 
 ```bash
 nx run validation:start           # Run the command-line application
-nx run validation:lint-codebase   # Every static check, in one graph
+nx run validation:typecheck-code,lint-code,format-code,deprecate-code,guard-code   # Every static check, in one graph
 nx run validation:typecheck       # tsc --noEmit
 nx run validation:oxfmt           # Formatting
 ```
@@ -262,7 +262,7 @@ See the [write-typescript skill](../../.agents/skills/write-typescript/SKILL.md)
 - **Unrecognized CLI flag** — check that `@Option()` decorators in the command class exactly match the flag names passed.
 - **Env var validation error on startup** — add the missing variable to `environmentSchema` in `src/constants.ts` and to `.env.default`.
 
-See the [triage-submission skill](../../.agents/skills/triage-submission/SKILL.md) for lint and git hook failures.
+See the [triage-integration skill](../../.agents/skills/triage-integration/SKILL.md) for lint and git hook failures.
 
 ## Key Files
 

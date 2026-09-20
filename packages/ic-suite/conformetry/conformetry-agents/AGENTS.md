@@ -48,9 +48,9 @@ Content rules worth knowing before editing:
 ## Validating
 
 ```bash
-pnpm exec nx run conformetry-agents:lint-codebase --configuration=write
-pnpm exec nx run conformetry-agents:lint-codebase --configuration=check
-pnpm exec nx run conformetry-agents:test-coverage
+pnpm exec nx run conformetry-agents:typecheck-code,lint-code,format-code,deprecate-code,guard-code --configuration=write
+pnpm exec nx run conformetry-agents:typecheck-code,lint-code,format-code,deprecate-code,guard-code --configuration=check
+pnpm exec nx run conformetry-agents:test-code
 ```
 
 Coverage is empty by nature here — there is no source to instrument — so the

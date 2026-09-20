@@ -41,6 +41,7 @@
       }
     },
     "codometer": {},
+    "deprecate-code": {},
     "drift-catalogue": {
       "cache": false,
       "description": "Report one instance per kind of drift conformetry catches. Exits non-zero: five of the six instances are drifted on purpose",
@@ -93,6 +94,8 @@
         "parallel": false
       }
     },
+    "format-code": {},
+    "guard-code": {},
     "hello-template": {
       "cache": false,
       "description": "Validate the smallest possible template against its one instance",
@@ -118,7 +121,7 @@
         }
       }
     },
-    "lint-codebase": {},
+    "lint-code": {},
     "markdown-lint": {},
     "nx-host": {
       "cache": false,
@@ -168,7 +171,7 @@
         }
       }
     },
-    "test-coverage": {},
+    "test-code": {},
     "two-directions": {
       "cache": false,
       "description": "Ask which templates explain a path, then which instances a template explains, against the same fixtures",
@@ -187,6 +190,7 @@
     },
     "type-coverage": {},
     "typecheck": {},
+    "typecheck-code": {},
     "yaml-lint": {}
   }
 }

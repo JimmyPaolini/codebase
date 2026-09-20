@@ -18,11 +18,14 @@
       },
       "outputs": ["{options.outputPath}"]
     },
+    "build-projects": {},
     "codometer": {},
     "dependency-cruiser": {},
+    "deprecate-code": {},
+    "format-code": {},
+    "guard-code": {},
     "knip": {},
-    "lint-codebase": {},
-    "make-projects": {},
+    "lint-code": {},
     "markdown-lint": {},
     "oxfmt": {},
     "oxlint": {},
@@ -35,6 +38,7 @@
       }
     },
     "typecheck": {},
+    "typecheck-code": {},
     "yaml-lint": {}
   }
 }

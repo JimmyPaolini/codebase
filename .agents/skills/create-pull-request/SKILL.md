@@ -57,6 +57,7 @@ PR titles **must** follow the same format as commit messages:
 
 | Scope | Description |
 | ----- | ----------- |
+| `ic-suite` | In-house code measurement and validation toolchains (Callidescope, Codependix, Codometer, Conformetry) and their shared conventions |
 | `affirmations` | Python Jupyter notebook application for LangGraph affirmation generation |
 | `caelundas` | Node.js CLI for astronomical calendar generation (NASA JPL ephemeris) |
 | `configuration` | Workspace root config files (tsconfig, eslint, vitest, nx.json, etc.) |
@@ -230,7 +231,7 @@ All PRs must pass these checks before merging:
 | PR Title             | `commitlint`                                           | Title follows commit message format                                                                    |
 | PR Body              | Section validation                                     | Required sections: 🌰 Summary, 📝 Details, 🧪 Testing, 🔗 Related                                      |
 | Release Significance | `validation pull-request-release-significance`         | Title's type is at least as significant as every commit's, and every commit scope appears in the title |
-| Lint                 | `nx affected --target=lint-codebase`                   | Every static check: ESLint, oxlint, oxfmt, typecheck, spell-check, knip, and more                      |
+| Lint                 | `nx affected --target=lint-code`                       | Every static check: ESLint, oxlint, oxfmt, typecheck, spell-check, knip, and more                      |
 | Test                 | `nx affected --target=vitest --configuration=coverage` | Unit and integration tests against the coverage gates                                                  |
 
 There is no `lint`, `format`, or `clean` target in this workspace. `nx affected
@@ -241,8 +242,8 @@ Run locally before pushing:
 
 ```bash
 # Run all checks on affected projects
-nx affected --target=lint-codebase --configuration=write --base=main
-nx affected --target=lint-codebase --configuration=check --base=main
+nx affected --target=lint-code --configuration=write --base=main
+nx affected --target=lint-code --configuration=check --base=main
 nx affected --target=vitest --configuration=coverage --base=main
 ```
 
@@ -295,7 +296,7 @@ Validate Conventions checks that labels agree with the title: exactly one `type:
 gh pr create --label type:feat --label scope:lexico --label source:human
 ```
 
-See the [triage-deployment skill](../triage-deployment/SKILL.md) for the full label vocabulary, the reconciliation step that creates missing labels on `opened`/`reopened`, and how to fix each metadata failure.
+See the [triage-integration skill](../triage-integration/SKILL.md) for the full label vocabulary, the reconciliation step that creates missing labels on `opened`/`reopened`, and how to fix each metadata failure.
 
 ## Review Requests
 
@@ -340,7 +341,7 @@ Before creating the PR, verify:
 - [ ] Description includes Summary, Details, and Testing sections
 - [ ] Related issues and documentation are linked in the Related section
 - [ ] The title's type and scopes are at least as release-significant as every commit on the branch — see [Release Significance](../commit-code/SKILL.md#release-significance)
-- [ ] Local CI checks pass: `nx affected --target=lint-codebase --configuration=check --base=main && nx affected --target=vitest --configuration=coverage --base=main`
+- [ ] Local CI checks pass: `nx affected --target=lint-code --configuration=check --base=main && nx affected --target=vitest --configuration=coverage --base=main`
 
 ## Common Patterns
 
@@ -477,7 +478,7 @@ git checkout -b <type>/<scope>-<description>
 gh pr create --title "<type>(<scope>): <gitmoji> <subject>" --assignee @me --body "..."
 
 # Run CI checks locally
-nx affected --target=lint-codebase --configuration=check --base=main &&
+nx affected --target=lint-code --configuration=check --base=main &&
   nx affected --target=vitest --configuration=coverage --base=main
 
 # Update branch
@@ -492,7 +493,7 @@ gh pr merge --squash --delete-branch
 - [PR template](../../../.github/PULL_REQUEST_TEMPLATE.md) — Default PR description template
 - [commit-code skill](../commit-code/SKILL.md) — Commit and PR title format
 - [checkout-branch skill](../checkout-branch/SKILL.md) — Branch naming conventions
-- [triage-deployment skill](../triage-deployment/SKILL.md) — Diagnosing failing CI checks on a PR
+- [triage-integration skill](../triage-integration/SKILL.md) — Diagnosing failing CI checks on a PR
 - [backup-code](../backup-code/SKILL.md) — Safety checkpoint before history rewrite
 - [restore-code](../restore-code/SKILL.md) — Recovery workflow after failed branch update
 - [Conventional Commits](https://www.conventionalcommits.org/)

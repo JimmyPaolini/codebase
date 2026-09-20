@@ -44,25 +44,25 @@ nx run synchronization:start:write    # write every synchronization
 ## Where each synchronization's drift is answered
 
 Which runs check which synchronization is a property of the caller, not a
-taxonomy the commands declare about themselves. Five of the six — every one
+taxonomy the commands declare about themselves. Six of the seven — every one
 except `pull-request-labels` — are **derivations**: committed files derived
 from configuration a pull request can also change, so `check` runs on a pull
 request and `write` runs on the default branch's release. The
-[🧑‍💻 Lint Codebase](../../.github/workflows/lint-codebase.yml) workflow and
+[🧑‍🔧 Lint Codebase](../../.github/workflows/lint-code.yml) workflow and
 [`configuration/lint-staged.config.ts`](../../configuration/lint-staged.config.ts)
-each name every derivation target directly alongside `lint-codebase` in one
+each name every derivation target directly alongside `lint-code` in one
 `nx affected` invocation, rather than reaching them through
-[`lint-codebase`](../../AGENTS.md#code-quality)'s `dependsOn` — Nx forwards an
+[`lint-code`](../../AGENTS.md#code-quality)'s `dependsOn` — Nx forwards an
 explicit configuration down `dependsOn`, so an edge there would let
-`lint-codebase --configuration=write` publish from a branch.
+`lint-code --configuration=write` publish from a branch.
 
 `pull-request-labels` needs credentials: its destination is GitHub's label set
 rather than a file in the tree, so reaching it needs a token that neither a
-fork nor a developer's `lint-codebase` run has. It must not run in
-`lint-codebase`, and it must not wait for the default branch either — a change
+fork nor a developer's `lint-code` run has. It must not run in
+`lint-code`, and it must not wait for the default branch either — a change
 introducing a new scope needs that scope's label to exist before 🧾 Validate
 Pull Request Metadata runs on the very same pull request. So the one caller
-holding a token, [validate-conventions.yml](../../.github/workflows/validate-conventions.yml),
+holding a token, [comply-code.yml](../../.github/workflows/comply-code.yml),
 runs its `write` mode directly through `node` rather than through this Nx
 target, on `opened`/`reopened`, and nothing else names it.
 
@@ -75,6 +75,7 @@ target, on `opened`/`reopened`, and nothing else names it.
 | `devcontainer-configuration` | `.devcontainer/local/devcontainer.json`  | The shared fields of `.devcontainer/cloud/devcontainer.json`                                          |
 | `pull-request-labels`        | `configuration/conventional.config.cjs`  | This repository's `type:`, `scope:`, and `source:` labels on GitHub. Needs credentials                |
 | `pull-request-template`      | `.github/PULL_REQUEST_TEMPLATE.md`       | The template embedded in the PR skill files                                                           |
+| `readme-version`             | `package.json`                           | The root `README.md` title (`# Codebase v<version>`)                                                  |
 | `skill-exclusions`           | `skills-lock.json`                       | The installed-skill exclusion lists in five ignore files                                              |
 
 ### Pull request labels
@@ -125,13 +126,13 @@ sources as `inputs`, so `nx affected` only reruns it when a file it actually
 reads has changed, and each caller decides for itself which targets belong in
 which invocation:
 
-- [🧑‍💻 Lint Codebase](../../.github/workflows/lint-codebase.yml) and
+- [🧑‍🔧 Lint Codebase](../../.github/workflows/lint-code.yml) and
   [`configuration/lint-staged.config.ts`](../../configuration/lint-staged.config.ts)
-  each name every derivation target directly alongside `lint-codebase` in one
+  each name every derivation target directly alongside `lint-code` in one
   `nx affected` invocation, so a pull request and a commit both check drift.
 - The release workflow runs every derivation's `write` configuration through
   `nx run-many`, so one command still publishes everything.
-- [validate-conventions.yml](../../.github/workflows/validate-conventions.yml)
+- [comply-code.yml](../../.github/workflows/comply-code.yml)
   runs `pull-request-labels write` directly through `node`, bypassing Nx
   entirely, since it is the one caller with a token and needs no project graph.
 
@@ -149,7 +150,7 @@ through it, so it needs no taxonomy: `start` always means all of them.
 3. Add a top-level target for it in `project.json`, with `check`/`write`
    configurations and its own source paths as `inputs`, the same shape as the
    existing six. That target is the whole declaration of where the command
-   runs: name it directly wherever it belongs — `lint-codebase`'s dependents
+   runs: name it directly wherever it belongs — `lint-code`'s dependents
    for a derivation, the release workflow's `run-many` for a report, or a
    caller with its own credentials for anything needing them.
 4. Register the command in `SynchronizationCommand.getCommands()`, and import
@@ -172,7 +173,7 @@ nx run synchronization:vitest
 
 ```bash
 nx run synchronization:repl
-nx run synchronization:lint-codebase --configuration=write
+nx run synchronization:typecheck-code,lint-code,format-code,deprecate-code,guard-code --configuration=write
 ```
 
 ## License
@@ -191,13 +192,13 @@ Call stacks traced through `tools/synchronization`, deepest first. Each frame sh
 
 | Measure | Value |
 | --- | --- |
-| Callables | 201 |
-| Files | 50 |
-| Calls traced | 217 |
-| Call stacks | 10 |
+| Callables | 212 |
+| Files | 55 |
+| Calls traced | 232 |
+| Call stacks | 11 |
 | Deepest stack | 10 |
 | Stacks through recursion | 0 |
-| Unfollowable calls | 9 |
+| Unfollowable calls | 10 |
 
 ### Limits
 
@@ -206,16 +207,16 @@ What this project is judged against, as declared in its own `callidescope.config
 | Limit | Value |
 | --- | --- |
 | `maximumDepth` | 10 |
-| `maximumBreadth` | 9 |
+| `maximumBreadth` | 10 |
 
 ### Call stacks (depth)
 
 **1. `SynchronizationCommand.run`** — depth ≥ 10 · decorated-method
 
 ```text
-🚀 SynchronizationCommand.run(passedParameters: string[]): Promise<void> [tools/synchronization/src/modules/synchronization/synchronization.command.ts:117]
+🚀 SynchronizationCommand.run(passedParameters: string[]): Promise<void> [tools/synchronization/src/modules/synchronization/synchronization.command.ts:120]
    ↳ Runs every synchronization, exiting once if any reported drift.
-  └─> SynchronizationCommand.synchronize(mode: SynchronizationMode): Promise<boolean> [tools/synchronization/src/modules/synchronization/synchronization.command.ts:139]
+  └─> SynchronizationCommand.synchronize(mode: SynchronizationMode): Promise<boolean> [tools/synchronization/src/modules/synchronization/synchronization.command.ts:142]
      ↳ Runs every synchronization and reports whether all succeeded.
     └─> ConventionalConfigCommand.synchronize(mode: SynchronizationMode): Promise<boolean> [tools/synchronization/src/modules/conventional-config/conventional-config.command.ts:70]
        ↳ Synchronizes conventional-commit config and reports success without exiting.
@@ -277,7 +278,7 @@ What this project is judged against, as declared in its own `callidescope.config
 ```
 
 <details>
-<summary>7 more call stacks</summary>
+<summary>8 more call stacks</summary>
 
 **4. `PullRequestLabelsCommand.run`** — depth 7 · decorated-method
 
@@ -305,11 +306,11 @@ What this project is judged against, as declared in its own `callidescope.config
      ↳ Synchronizes the generators table and reports success without exiting.
     └─> ConformetryGeneratorsCommand.readGenerators(): Promise<ConformetryGeneratorMetadata[]> [tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:111]
        ↳ Reads configuration/conformetry.config.ts and returns the list of generator metadata.
-      └─> ConfigurationService.loadConformetryConfiguration(configurationPath: string): Promise<ConformetryConfiguration> [packages/ic-suite/conformetry/conformetry-configuration/src/modules/configuration/configuration.service.ts:169]
+      └─> ConfigurationService.loadConformetryConfiguration(configurationPath: string): Promise<ConformetryConfiguration> [packages/ic-suite/conformetry/conformetry-configuration/src/modules/configuration/configuration.service.ts:243]
          ↳ Loads, validates, and normalizes a conformetry configuration file.
-        └─> ConfigurationService.resolveConfigurationPath(configurationPath: string): Promise<string> [packages/ic-suite/conformetry/conformetry-configuration/src/modules/configuration/configuration.service.ts:135]
+        └─> ConfigurationService.resolveConfigurationPath(configurationPath: string): Promise<string> [packages/ic-suite/conformetry/conformetry-configuration/src/modules/configuration/configuration.service.ts:174]
            ↳ Resolves a config path against the cwd, falling back to the workspace root.
-          └─> ConfigurationService.findWorkspaceRoot(): Promise<string | undefined> [packages/ic-suite/conformetry/conformetry-configuration/src/modules/configuration/configuration.service.ts:74]
+          └─> ConfigurationService.findWorkspaceRoot(): Promise<string | undefined> [packages/ic-suite/conformetry/conformetry-configuration/src/modules/configuration/configuration.service.ts:113]
              ↳ Walks upward from the process cwd looking for the workspace manifest.
 ```
 
@@ -360,7 +361,22 @@ What this project is judged against, as declared in its own `callidescope.config
            ↳ Returns true if the feature key refers to a Docker-in-Docker or Docker-outside-of-Docker feature.
 ```
 
-**9. `SynchronizationMarkersService.extractContent`** — depth 3 · orphan-root
+**9. `ReadmeVersionCommand.run`** — depth 5 · decorated-method
+
+```text
+🚀 ReadmeVersionCommand.run(passedParameters: string[], _options?: Record<string, unknown>): Promise<void> [tools/synchronization/src/modules/readme-version/readme-version.command.ts:89]
+   ↳ Runs the readme-version sync command and exits 1 on drift in check mode.
+  └─> ReadmeVersionCommand.synchronize(mode: SynchronizationMode): Promise<boolean> [tools/synchronization/src/modules/readme-version/readme-version.command.ts:108]
+     ↳ Synchronizes the root README version and reports success without exiting.
+    └─> ReadmeVersionCommand.writeSync(workspaceRoot: string, version: string, isSync: boolean): boolean [tools/synchronization/src/modules/readme-version/readme-version.command.ts:67]
+       ↳ Handles writing output and updating README in write mode.
+      └─> ReadmeVersionService.writeReadmeVersion(workspaceRoot: string): void [tools/synchronization/src/modules/readme-version/readme-version.service.ts:58]
+         ↳ Synchronizes the root README.md title with the package.json version.
+        └─> ReadmeVersionService.readPackageVersion(workspaceRoot: string): string [tools/synchronization/src/modules/readme-version/readme-version.service.ts:43]
+           ↳ Reads and parses the version string from root package.json.
+```
+
+**10. `SynchronizationMarkersService.extractContent`** — depth 3 · orphan-root
 
 ```text
 🚀 SynchronizationMarkersService.extractContent(content: string, markerName: string): string | undefined [tools/synchronization/src/modules/synchronization/synchronization-markers.service.ts:44]
@@ -371,7 +387,7 @@ What this project is judged against, as declared in its own `callidescope.config
        ↳ Renders the opening marker comment for a marker name.
 ```
 
-**10. `SynchronizationMarkersService.replaceContent`** — depth 3 · orphan-root
+**11. `SynchronizationMarkersService.replaceContent`** — depth 3 · orphan-root
 
 ```text
 🚀 SynchronizationMarkersService.replaceContent(content: string, markerName: string, replacement: string): string [tools/synchronization/src/modules/synchronization/synchronization-markers.service.ts:65]
@@ -388,12 +404,12 @@ What this project is judged against, as declared in its own `callidescope.config
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
+| `SynchronizationCommand.synchronize` | 10 | `SynchronizationCommand.getCommands`, `ConformetryGeneratorsCommand.synchronize`, `ConventionalConfigCommand.synchronize`, `DevcontainerConfigurationCommand.synchronize`, `PullRequestLabelsCommand.synchronize`, `PullRequestTemplateCommand.synchronize`, `ReadmeVersionCommand.synchronize`, `SkillExclusionsCommand.synchronize`, `SynchronizationCommand.reportResults`, `SynchronizationCommand.every(…)` | `tools/synchronization/src/modules/synchronization/synchronization.command.ts:142` |
 | `PullRequestLabelsCommand.reconcile` | 9 | `PullRequestLabelsGithubService.run`, `PullRequestLabelsCommand.appendToReport`, `PullRequestLabelsGithubService.describeFailure`, `PullRequestLabelsService.planReconciliation`, `PullRequestLabelsService.parseRepositoryLabels`, `PullRequestLabelsService.readExpectedLabels`, `PullRequestLabelsCommand.describeError`, `PullRequestLabelsCommand.reportPlan`, `PullRequestLabelsCommand.reportStaleLabels` | `tools/synchronization/src/modules/pull-request-labels/pull-request-labels.command.ts:175` |
-| `SynchronizationCommand.synchronize` | 9 | `SynchronizationCommand.getCommands`, `ConformetryGeneratorsCommand.synchronize`, `ConventionalConfigCommand.synchronize`, `DevcontainerConfigurationCommand.synchronize`, `PullRequestLabelsCommand.synchronize`, `PullRequestTemplateCommand.synchronize`, `SkillExclusionsCommand.synchronize`, `SynchronizationCommand.reportResults`, `SynchronizationCommand.every(…)` | `tools/synchronization/src/modules/synchronization/synchronization.command.ts:139` |
 | `ConventionalConfigService.handleCheckMode` | 8 | `ConventionalConfigValidatorsService.checkSettingsSync`, `ConventionalConfigValidatorsService.checkAllSkillsSync`, `ConventionalConfigValidatorsService.checkAllTemplatesSync`, `ConventionalConfigService.loadReleaseConfig`, `ConventionalConfigValidatorsService.checkReleaseRulesSync`, `ConventionalConfigIoService.getReleaseRulesTypes`, `ConventionalConfigValidatorsService.checkPresetConfigSync`, `ConventionalConfigIoService.getPresetConfigTypes` | `tools/synchronization/src/modules/conventional-config/conventional-config.service.ts:126` |
 
 <details>
-<summary>87 more callables</summary>
+<summary>93 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
@@ -402,12 +418,13 @@ What this project is judged against, as declared in its own `callidescope.config
 | `ConventionalConfigService.runSynchronization` | 6 | `ConventionalConfigService.loadConventionalConfig`, `ConventionalConfigService.map(…)`, `ConventionalConfigIoService.parseSettingsScopes`, `ConventionalConfigService.map(…)`, `ConventionalConfigService.handleCheckMode`, `ConventionalConfigService.handleWriteMode` | `tools/synchronization/src/modules/conventional-config/conventional-config.service.ts:240` |
 | `PullRequestLabelsService.planReconciliation` | 6 | `PullRequestLabelsService.map(…)`, `PullRequestLabelsService.map(…)`, `PullRequestLabelsService.filter(…)`, `PullRequestLabelsService.map(…)`, `PullRequestLabelsService.filter(…)`, `PullRequestLabelsService.filter(…)` | `tools/synchronization/src/modules/pull-request-labels/pull-request-labels.service.ts:66` |
 | `ConventionalConfigService.syncReleaseConfigIfNeeded` | 5 | `ConventionalConfigService.loadReleaseConfig`, `ConventionalConfigService.filter(…)`, `ConventionalConfigIoService.getReleaseRulesTypes`, `ConventionalConfigIoService.getPresetConfigTypes`, `ConventionalConfigIoService.writeReleaseConfigSync` | `tools/synchronization/src/modules/conventional-config/conventional-config.service.ts:93` |
-| `SynchronizationCommand.reportResults` | 5 | `SynchronizationCommand.filter(…)`, `SynchronizationCommand.map(…)`, `SynchronizationCommand.filter(…)`, `SynchronizationCommand.map(…)`, `SynchronizationCommand.filter(…)` | `tools/synchronization/src/modules/synchronization/synchronization.command.ts:86` |
+| `SynchronizationCommand.reportResults` | 5 | `SynchronizationCommand.filter(…)`, `SynchronizationCommand.map(…)`, `SynchronizationCommand.filter(…)`, `SynchronizationCommand.map(…)`, `SynchronizationCommand.filter(…)` | `tools/synchronization/src/modules/synchronization/synchronization.command.ts:89` |
 | `IssueLabelsCommand.resolvePlan` | 4 | `IssueLabelsCommand.readIssueNumber`, `IssueLabelsService.parseFormAnswers`, `IssueLabelsCommand.readExistingLabelNames`, `IssueLabelsService.missingLabels` | `tools/synchronization/src/modules/issue-labels/issue-labels.command.ts:130` |
 | `ConventionalConfigIoService.writeSkillSync` | 4 | `ConventionalConfigIoService.map(…)`, `ConventionalConfigIoService.map(…)`, `ConventionalConfigIoService.generateMarkdownTable`, `ConventionalConfigIoService.replaceMarkerContent` | `tools/synchronization/src/modules/conventional-config/conventional-config-io.service.ts:353` |
 | `PullRequestLabelsCommand.reportPlan` | 4 | `PullRequestLabelsCommand.appendToReport`, `PullRequestLabelsCommand.describePlan`, `PullRequestLabelsCommand.createLabels`, `PullRequestLabelsCommand.updateLabels` | `tools/synchronization/src/modules/pull-request-labels/pull-request-labels.command.ts:215` |
 | `PullRequestLabelsCommand.synchronize` | 4 | `PullRequestLabelsCommand.reconcile`, `PullRequestLabelsCommand.appendToReport`, `PullRequestLabelsCommand.describeError`, `PullRequestLabelsCommand.mirrorToStepSummary` | `tools/synchronization/src/modules/pull-request-labels/pull-request-labels.command.ts:300` |
 | `PullRequestTemplateCommand.synchronize` | 4 | `PullRequestTemplateCommand.map(…)`, `PullRequestTemplateCommand.loadTemplate`, `PullRequestTemplateCommand.handleCheckMode`, `PullRequestTemplateCommand.handleWriteMode` | `tools/synchronization/src/modules/pull-request-template/pull-request-template.command.ts:221` |
+| `ReadmeVersionCommand.synchronize` | 4 | `ReadmeVersionService.readPackageVersion`, `ReadmeVersionService.isSynchronized`, `ReadmeVersionCommand.checkSync`, `ReadmeVersionCommand.writeSync` | `tools/synchronization/src/modules/readme-version/readme-version.command.ts:108` |
 | `IssueLabelsCommand.run` | 3 | `IssueLabelsCommand.resolvePlan`, `IssueLabelsGithubService.isAvailable`, `IssueLabelsCommand.addLabel` | `tools/synchronization/src/modules/issue-labels/issue-labels.command.ts:158` |
 | `ConformetryGeneratorsCommand.synchronize` | 3 | `ConformetryGeneratorsCommand.readGenerators`, `ConformetryGeneratorsCommand.checkSync`, `ConformetryGeneratorsCommand.writeSync` | `tools/synchronization/src/modules/conformetry-generators/conformetry-generators.command.ts:206` |
 | `ConventionalConfigIoService.writeIssueTemplateSync` | 3 | `ConventionalConfigIoService.writeIssueTemplateDropdown`, `ConventionalConfigIoService.map(…)`, `ConventionalConfigIoService.map(…)` | `tools/synchronization/src/modules/conventional-config/conventional-config-io.service.ts:258` |
@@ -417,6 +434,8 @@ What this project is judged against, as declared in its own `callidescope.config
 | `DevcontainerConfigurationCommand.synchronize` | 3 | `DevcontainerConfigurationCommand.applySync`, `DevcontainerConfigurationCommand.check`, `DevcontainerConfigurationCommand.writeWhenDrifted` | `tools/synchronization/src/modules/devcontainer-configuration/devcontainer-configuration.command.ts:285` |
 | `PullRequestLabelsCommand.createLabels` | 3 | `PullRequestLabelsGithubService.run`, `PullRequestLabelsCommand.appendToReport`, `PullRequestLabelsGithubService.describeFailure` | `tools/synchronization/src/modules/pull-request-labels/pull-request-labels.command.ts:85` |
 | `PullRequestLabelsCommand.updateLabels` | 3 | `PullRequestLabelsGithubService.run`, `PullRequestLabelsCommand.appendToReport`, `PullRequestLabelsGithubService.describeFailure` | `tools/synchronization/src/modules/pull-request-labels/pull-request-labels.command.ts:251` |
+| `ReadmeVersionService.isSynchronized` | 3 | `ReadmeVersionService.readPackageVersion`, `ReadmeVersionService.readReadme`, `ReadmeVersionService.formatTitle` | `tools/synchronization/src/modules/readme-version/readme-version.service.ts:34` |
+| `ReadmeVersionService.writeReadmeVersion` | 3 | `ReadmeVersionService.readPackageVersion`, `ReadmeVersionService.readReadme`, `ReadmeVersionService.formatTitle` | `tools/synchronization/src/modules/readme-version/readme-version.service.ts:58` |
 | `SkillExclusionsCommand.writeSync` | 3 | `SkillExclusionsCommand.readExclusionFile`, `SkillExclusionsCommand.renderBlock`, `SkillExclusionsCommand.map(…)` | `tools/synchronization/src/modules/skill-exclusions/skill-exclusions.command.ts:144` |
 | `SkillExclusionsCommand.synchronize` | 3 | `SkillExclusionsCommand.readSkillNames`, `SkillExclusionsCommand.writeSync`, `SkillExclusionsCommand.findStaleFiles` | `tools/synchronization/src/modules/skill-exclusions/skill-exclusions.command.ts:180` |
 | `IssueLabelsService.missingLabels` | 2 | `IssueLabelsService.filter(…)`, `IssueLabelsService.labelsFromAnswers` | `tools/synchronization/src/modules/issue-labels/issue-labels.service.ts:77` |
@@ -441,11 +460,12 @@ What this project is judged against, as declared in its own `callidescope.config
 | `PullRequestTemplateCommand.handleWriteMode` | 2 | `PullRequestTemplateCommand.filter(…)`, `PullRequestTemplateCommand.writeTargetSync` | `tools/synchronization/src/modules/pull-request-template/pull-request-template.command.ts:129` |
 | `PullRequestTemplateCommand.writeTargetSync` | 2 | `PullRequestTemplateCommand.wrapInCodeBlock`, `PullRequestTemplateCommand.replaceMarkerContent` | `tools/synchronization/src/modules/pull-request-template/pull-request-template.command.ts:176` |
 | `PullRequestTemplateCommand.run` | 2 | `SynchronizationService.resolveSynchronizationModeOrExit`, `PullRequestTemplateCommand.synchronize` | `tools/synchronization/src/modules/pull-request-template/pull-request-template.command.ts:202` |
+| `ReadmeVersionCommand.run` | 2 | `SynchronizationService.resolveSynchronizationModeOrExit`, `ReadmeVersionCommand.synchronize` | `tools/synchronization/src/modules/readme-version/readme-version.command.ts:89` |
 | `SkillExclusionsCommand.findStaleFiles` | 2 | `SkillExclusionsCommand.map(…)`, `SkillExclusionsCommand.filter(…)` | `tools/synchronization/src/modules/skill-exclusions/skill-exclusions.command.ts:71` |
 | `SkillExclusionsCommand.filter(…)` | 2 | `SkillExclusionsCommand.readExclusionFile`, `SkillExclusionsCommand.renderBlock` | `tools/synchronization/src/modules/skill-exclusions/skill-exclusions.command.ts:72` |
 | `SkillExclusionsCommand.readExclusionFile` | 2 | `SkillExclusionsCommand.renderStartMarker`, `SkillExclusionsCommand.renderEndMarker` | `tools/synchronization/src/modules/skill-exclusions/skill-exclusions.command.ts:82` |
 | `SkillExclusionsCommand.run` | 2 | `SynchronizationService.resolveSynchronizationModeOrExit`, `SkillExclusionsCommand.synchronize` | `tools/synchronization/src/modules/skill-exclusions/skill-exclusions.command.ts:165` |
-| `SynchronizationCommand.run` | 2 | `SynchronizationService.resolveSynchronizationModeOrExit`, `SynchronizationCommand.synchronize` | `tools/synchronization/src/modules/synchronization/synchronization.command.ts:117` |
+| `SynchronizationCommand.run` | 2 | `SynchronizationService.resolveSynchronizationModeOrExit`, `SynchronizationCommand.synchronize` | `tools/synchronization/src/modules/synchronization/synchronization.command.ts:120` |
 | `SynchronizationMarkersService.locateMarkers` | 2 | `SynchronizationMarkersService.getStartMarker`, `SynchronizationMarkersService.getEndMarker` | `tools/synchronization/src/modules/synchronization/synchronization-markers.service.ts:24` |
 | `IssueLabelsGithubService.describeFailure` | 1 | `IssueLabelsGithubService.filter(…)` | `tools/synchronization/src/modules/issue-labels/issue-labels-github.service.ts:43` |
 | `IssueLabelsGithubService.isAvailable` | 1 | `IssueLabelsGithubService.run` | `tools/synchronization/src/modules/issue-labels/issue-labels-github.service.ts:52` |
@@ -480,6 +500,8 @@ What this project is judged against, as declared in its own `callidescope.config
 | `PullRequestLabelsCommand.reportStaleLabels` | 1 | `PullRequestLabelsCommand.appendToReport` | `tools/synchronization/src/modules/pull-request-labels/pull-request-labels.command.ts:238` |
 | `PullRequestTemplateCommand.handleCheckMode` | 1 | `PullRequestTemplateCommand.checkTargetSync` | `tools/synchronization/src/modules/pull-request-template/pull-request-template.command.ts:106` |
 | `PullRequestTemplateCommand.filter(…)` | 1 | `PullRequestTemplateCommand.checkTargetSync` | `tools/synchronization/src/modules/pull-request-template/pull-request-template.command.ts:134` |
+| `ReadmeVersionCommand.checkSync` | 1 | `ReadmeVersionService.formatTitle` | `tools/synchronization/src/modules/readme-version/readme-version.command.ts:48` |
+| `ReadmeVersionCommand.writeSync` | 1 | `ReadmeVersionService.writeReadmeVersion` | `tools/synchronization/src/modules/readme-version/readme-version.command.ts:67` |
 | `SkillExclusionsCommand.readSkillNames` | 1 | `SkillExclusionsCommand.toSorted(…)` | `tools/synchronization/src/modules/skill-exclusions/skill-exclusions.command.ts:115` |
 | `SkillExclusionsCommand.renderBlock` | 1 | `SkillExclusionsCommand.map(…)` | `tools/synchronization/src/modules/skill-exclusions/skill-exclusions.command.ts:127` |
 | `SynchronizationMarkersService.extractContent` | 1 | `SynchronizationMarkersService.locateMarkers` | `tools/synchronization/src/modules/synchronization/synchronization-markers.service.ts:44` |
@@ -518,14 +540,28 @@ flowchart LR
   ConventionalConfigModule
   DevcontainerConfigurationModule
   DiscoveryModule
+  InputModule
+  InstanceDiscoveryModule
+  InstanceGroupModule
   IssueLabelsModule
   LoggerModule([LoggerModule])
   MainModule
   PullRequestLabelsModule
   PullRequestTemplateModule
+  ReadmeVersionModule
+  RenderingModule
   SkillExclusionsModule
   SynchronizationModule
+  TemplateDiscoveryModule
+  ConfigurationModule --> InputModule
+  ConfigurationModule --> InstanceDiscoveryModule
+  ConfigurationModule --> InstanceGroupModule
+  ConfigurationModule --> RenderingModule
+  ConfigurationModule --> TemplateDiscoveryModule
   ConformetryGeneratorsModule --> ConfigurationModule
+  InstanceDiscoveryModule --> InstanceGroupModule
+  InstanceDiscoveryModule --> RenderingModule
+  InstanceDiscoveryModule --> TemplateDiscoveryModule
   MainModule --> DiscoveryModule
   MainModule --> IssueLabelsModule
   MainModule --> SynchronizationModule
@@ -534,7 +570,9 @@ flowchart LR
   SynchronizationModule --> DevcontainerConfigurationModule
   SynchronizationModule --> PullRequestLabelsModule
   SynchronizationModule --> PullRequestTemplateModule
+  SynchronizationModule --> ReadmeVersionModule
   SynchronizationModule --> SkillExclusionsModule
+  TemplateDiscoveryModule --> RenderingModule
 ```
 
 _Rounded modules are global: every module can inject them, so their edges are left out._
@@ -600,6 +638,13 @@ graph LR
   file_src_modules_pull_request_template_pull_request_template_constants_ts["src/modules/pull-request-template/pull-request-template.constants.ts"]
   file_src_modules_pull_request_template_pull_request_template_module_ts["src/modules/pull-request-template/pull-request-template.module.ts"]
   file_src_modules_pull_request_template_pull_request_template_types_ts["src/modules/pull-request-template/pull-request-template.types.ts"]
+  file_src_modules_readme_version_readme_version_command_ts["src/modules/readme-version/readme-version.command.ts"]
+  file_src_modules_readme_version_readme_version_command_unit_test_ts["src/modules/readme-version/readme-version.command.unit.test.ts"]
+  file_src_modules_readme_version_readme_version_constants_ts["src/modules/readme-version/readme-version.constants.ts"]
+  file_src_modules_readme_version_readme_version_module_ts["src/modules/readme-version/readme-version.module.ts"]
+  file_src_modules_readme_version_readme_version_service_ts["src/modules/readme-version/readme-version.service.ts"]
+  file_src_modules_readme_version_readme_version_service_unit_test_ts["src/modules/readme-version/readme-version.service.unit.test.ts"]
+  file_src_modules_readme_version_readme_version_types_ts["src/modules/readme-version/readme-version.types.ts"]
   file_src_modules_skill_exclusions_skill_exclusions_command_ts["src/modules/skill-exclusions/skill-exclusions.command.ts"]
   file_src_modules_skill_exclusions_skill_exclusions_command_unit_test_ts["src/modules/skill-exclusions/skill-exclusions.command.unit.test.ts"]
   file_src_modules_skill_exclusions_skill_exclusions_constants_ts["src/modules/skill-exclusions/skill-exclusions.constants.ts"]
@@ -731,6 +776,20 @@ graph LR
   file_src_modules_pull_request_template_pull_request_template_command_unit_test_ts --> file_testing_mocks_ts
   file_src_modules_pull_request_template_pull_request_template_module_ts --> file_src_modules_pull_request_template_pull_request_template_command_ts
   file_src_modules_pull_request_template_pull_request_template_module_ts --> file_src_modules_synchronization_synchronization_service_ts
+  file_src_modules_readme_version_readme_version_command_ts --> file_src_modules_readme_version_readme_version_service_ts
+  file_src_modules_readme_version_readme_version_command_ts --> file_src_modules_synchronization_synchronization_service_ts
+  file_src_modules_readme_version_readme_version_command_ts --> file_src_modules_synchronization_synchronization_types_ts
+  file_src_modules_readme_version_readme_version_command_unit_test_ts --> file_src_modules_readme_version_readme_version_command_ts
+  file_src_modules_readme_version_readme_version_command_unit_test_ts --> file_src_modules_readme_version_readme_version_constants_ts
+  file_src_modules_readme_version_readme_version_command_unit_test_ts --> file_src_modules_readme_version_readme_version_service_ts
+  file_src_modules_readme_version_readme_version_command_unit_test_ts --> file_src_modules_synchronization_synchronization_service_ts
+  file_src_modules_readme_version_readme_version_command_unit_test_ts --> file_testing_mocks_ts
+  file_src_modules_readme_version_readme_version_module_ts --> file_src_modules_readme_version_readme_version_command_ts
+  file_src_modules_readme_version_readme_version_module_ts --> file_src_modules_readme_version_readme_version_service_ts
+  file_src_modules_readme_version_readme_version_module_ts --> file_src_modules_synchronization_synchronization_service_ts
+  file_src_modules_readme_version_readme_version_service_ts --> file_src_modules_readme_version_readme_version_constants_ts
+  file_src_modules_readme_version_readme_version_service_unit_test_ts --> file_src_modules_readme_version_readme_version_constants_ts
+  file_src_modules_readme_version_readme_version_service_unit_test_ts --> file_src_modules_readme_version_readme_version_service_ts
   file_src_modules_skill_exclusions_skill_exclusions_command_ts --> file_src_modules_skill_exclusions_skill_exclusions_constants_ts
   file_src_modules_skill_exclusions_skill_exclusions_command_ts --> file_src_modules_skill_exclusions_skill_exclusions_types_ts
   file_src_modules_skill_exclusions_skill_exclusions_command_ts --> file_src_modules_synchronization_synchronization_service_ts
@@ -749,6 +808,7 @@ graph LR
   file_src_modules_synchronization_synchronization_command_ts --> file_src_modules_devcontainer_configuration_devcontainer_configuration_command_ts
   file_src_modules_synchronization_synchronization_command_ts --> file_src_modules_pull_request_labels_pull_request_labels_command_ts
   file_src_modules_synchronization_synchronization_command_ts --> file_src_modules_pull_request_template_pull_request_template_command_ts
+  file_src_modules_synchronization_synchronization_command_ts --> file_src_modules_readme_version_readme_version_command_ts
   file_src_modules_synchronization_synchronization_command_ts --> file_src_modules_skill_exclusions_skill_exclusions_command_ts
   file_src_modules_synchronization_synchronization_command_ts --> file_src_modules_synchronization_synchronization_service_ts
   file_src_modules_synchronization_synchronization_command_ts --> file_src_modules_synchronization_synchronization_types_ts
@@ -757,6 +817,7 @@ graph LR
   file_src_modules_synchronization_synchronization_command_unit_test_ts --> file_src_modules_devcontainer_configuration_devcontainer_configuration_command_ts
   file_src_modules_synchronization_synchronization_command_unit_test_ts --> file_src_modules_pull_request_labels_pull_request_labels_command_ts
   file_src_modules_synchronization_synchronization_command_unit_test_ts --> file_src_modules_pull_request_template_pull_request_template_command_ts
+  file_src_modules_synchronization_synchronization_command_unit_test_ts --> file_src_modules_readme_version_readme_version_command_ts
   file_src_modules_synchronization_synchronization_command_unit_test_ts --> file_src_modules_skill_exclusions_skill_exclusions_command_ts
   file_src_modules_synchronization_synchronization_command_unit_test_ts --> file_src_modules_synchronization_synchronization_command_ts
   file_src_modules_synchronization_synchronization_command_unit_test_ts --> file_src_modules_synchronization_synchronization_service_ts
@@ -767,6 +828,7 @@ graph LR
   file_src_modules_synchronization_synchronization_module_ts --> file_src_modules_devcontainer_configuration_devcontainer_configuration_module_ts
   file_src_modules_synchronization_synchronization_module_ts --> file_src_modules_pull_request_labels_pull_request_labels_module_ts
   file_src_modules_synchronization_synchronization_module_ts --> file_src_modules_pull_request_template_pull_request_template_module_ts
+  file_src_modules_synchronization_synchronization_module_ts --> file_src_modules_readme_version_readme_version_module_ts
   file_src_modules_synchronization_synchronization_module_ts --> file_src_modules_skill_exclusions_skill_exclusions_module_ts
   file_src_modules_synchronization_synchronization_module_ts --> file_src_modules_synchronization_synchronization_command_ts
   file_src_modules_synchronization_synchronization_module_ts --> file_src_modules_synchronization_synchronization_service_ts
@@ -792,36 +854,36 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-8997-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-298.42_kB-6b7280?style=flat-square)
-![Folders](https://img.shields.io/badge/Folders-11-4a4a4a?style=flat-square)
-![Source Files](https://img.shields.io/badge/Source_Files-75-3178c6?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-9621-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-318.41_kB-6b7280?style=flat-square)
+![Folders](https://img.shields.io/badge/Folders-12-4a4a4a?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-82-3178c6?style=flat-square)
 
 ### TypeScript
 
-![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-75-3178c6?style=flat-square)
+![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-82-3178c6?style=flat-square)
 ![Interfaces](https://img.shields.io/badge/Interfaces-21-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-0-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
-![Decorators](https://img.shields.io/badge/Decorators-34-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-180-6366f1?style=flat-square)
+![Decorators](https://img.shields.io/badge/Decorators-38-db2777?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-192-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-0-166534?style=flat-square)
 
 ### JavaScript
 
 ![JavaScript Files](https://img.shields.io/badge/JavaScript_Files-0-f7df1e?style=flat-square)
-![Test Files](https://img.shields.io/badge/Test_Files-23-10b981?style=flat-square)
+![Test Files](https://img.shields.io/badge/Test_Files-25-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-18-8b5cf6?style=flat-square)
-![Classes](https://img.shields.io/badge/Classes-27-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-422-16a34a?style=flat-square)
-![Methods](https://img.shields.io/badge/Methods-178-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-461-4ade80?style=flat-square)
-![Async Functions](https://img.shields.io/badge/Async_Functions-139-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-456-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-359-0284c7?style=flat-square)
-![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-81-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-310-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-707-475569?style=flat-square)
+![Classes](https://img.shields.io/badge/Classes-30-7c3aed?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-465-16a34a?style=flat-square)
+![Methods](https://img.shields.io/badge/Methods-187-15803d?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-499-4ade80?style=flat-square)
+![Async Functions](https://img.shields.io/badge/Async_Functions-153-059669?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-499-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-395-0284c7?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-88-ea580c?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-334-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-729-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-3-ca8a04?style=flat-square)
 
 ### Python
@@ -842,16 +904,16 @@ graph LR
 ### JSON
 
 ![JSON Files](https://img.shields.io/badge/JSON_Files-3-a16207?style=flat-square)
-![JSON Lines](https://img.shields.io/badge/JSON_Lines-262-ca8a04?style=flat-square)
-![JSON Objects](https://img.shields.io/badge/JSON_Objects-60-7c3aed?style=flat-square)
-![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-13-8b5cf6?style=flat-square)
-![JSON Properties](https://img.shields.io/badge/JSON_Properties-159-0284c7?style=flat-square)
-![JSON Strings](https://img.shields.io/badge/JSON_Strings-129-16a34a?style=flat-square)
+![JSON Lines](https://img.shields.io/badge/JSON_Lines-288-ca8a04?style=flat-square)
+![JSON Objects](https://img.shields.io/badge/JSON_Objects-69-7c3aed?style=flat-square)
+![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-14-8b5cf6?style=flat-square)
+![JSON Properties](https://img.shields.io/badge/JSON_Properties-176-0284c7?style=flat-square)
+![JSON Strings](https://img.shields.io/badge/JSON_Strings-138-16a34a?style=flat-square)
 ![JSON Numbers](https://img.shields.io/badge/JSON_Numbers-1-059669?style=flat-square)
-![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-11-0ea5e9?style=flat-square)
+![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-12-0ea5e9?style=flat-square)
 ![JSON Nulls](https://img.shields.io/badge/JSON_Nulls-0-64748b?style=flat-square)
-![JSON Items](https://img.shields.io/badge/JSON_Items-52-475569?style=flat-square)
-![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-214-dc2626?style=flat-square)
+![JSON Items](https://img.shields.io/badge/JSON_Items-55-475569?style=flat-square)
+![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-234-dc2626?style=flat-square)
 ![JSON Max Depth](https://img.shields.io/badge/JSON_Max_Depth-6-ea580c?style=flat-square)
 
 ### YAML
@@ -932,14 +994,14 @@ graph LR
 
 ### Conventions
 
-![Module Files](https://img.shields.io/badge/Module_Files-9-7c3aed?style=flat-square)
-![Service Files](https://img.shields.io/badge/Service_Files-9-0284c7?style=flat-square)
-![Command Files](https://img.shields.io/badge/Command_Files-8-16a34a?style=flat-square)
-![Constants Files](https://img.shields.io/badge/Constants_Files-8-ea580c?style=flat-square)
-![Types Files](https://img.shields.io/badge/Types_Files-8-db2777?style=flat-square)
+![Module Files](https://img.shields.io/badge/Module_Files-10-7c3aed?style=flat-square)
+![Service Files](https://img.shields.io/badge/Service_Files-10-0284c7?style=flat-square)
+![Command Files](https://img.shields.io/badge/Command_Files-9-16a34a?style=flat-square)
+![Constants Files](https://img.shields.io/badge/Constants_Files-9-ea580c?style=flat-square)
+![Types Files](https://img.shields.io/badge/Types_Files-9-db2777?style=flat-square)
 ![Utilities Files](https://img.shields.io/badge/Utilities_Files-0-0ea5e9?style=flat-square)
 ![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-0-059669?style=flat-square)
-![Unit Tests](https://img.shields.io/badge/Unit_Tests-21-ca8a04?style=flat-square)
+![Unit Tests](https://img.shields.io/badge/Unit_Tests-23-ca8a04?style=flat-square)
 ![Integration Tests](https://img.shields.io/badge/Integration_Tests-1-7c3aed?style=flat-square)
 ![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-1-0284c7?style=flat-square)
 ![CSS Comment Budget](https://img.shields.io/badge/CSS_Comment_Budget-0-16a34a?style=flat-square)

@@ -23,7 +23,7 @@ Use this skill when:
 - [Strict typing](./references/strict-typing.md)
 : strict flags, explicit return types, `any` avoidance, `unknown`, promises, exhaustive switches.
 - [Naming and imports](./references/naming-and-imports.md)
-: identifier naming, abbreviation rules, type imports, NodeNext `.js` extensions.
+: identifier naming, abbreviation rules, file naming, type imports, NodeNext `.js` extensions.
 - [Class and control flow](./references/class-and-control-flow.md)
 : readonly properties, braces, early returns, object shorthand, template literals.
 - [Error handling and tests](./references/errors-and-tests.md)
@@ -31,6 +31,8 @@ Use this skill when:
 - [Formatting and ordering](./references/formatting-and-ordering.md)
 : `oxfmt` settings, import groups, enforced alphabetical order, the 3-parameter
 limit, JSDoc on public APIs.
+- [Size limits](./references/size-limits.md)
+: file length, function length, block nesting depth, parameter limits, complexity, comment block sizes.
 
 ## Related Skills
 
@@ -43,8 +45,8 @@ limit, JSDoc on public APIs.
 After TypeScript changes:
 
 ```bash
-pnpm exec nx run <project>:lint-codebase --configuration=write
-pnpm exec nx run <project>:lint-codebase --configuration=check
+pnpm exec nx run <project>:lint-code --configuration=write
+pnpm exec nx run <project>:lint-code --configuration=check
 ```
 
 ## Notes

@@ -609,17 +609,19 @@ describe("callidescope examples (integration)", () => {
   describe("what the run measured", () => {
     it("traces this package and the projects its imports reach", () => {
       // The closure, stated as a set. What is absent asserts the narrowing
-      // rule this run exercises: the package's program reads five files under
-      // `configuration/` — its `codependix.config.ts` scaffold added a fifth,
-      // spreading `configuration/codependix.config.ts` and reaching
-      // `packages/codependix-configuration` and `packages/codependix-core`
-      // — alongside the four it already read: a project root with
-      // `tsconfig.json` and no `package.json`, which would otherwise reach
-      // every toolchain configured. The workspace root is only reachable
-      // through that project root here, so this list asserts narrowing.
+      // rule this run exercises: the package's program really reads five
+      // files under `configuration/` — its own `codependix.config.ts`
+      // scaffold added a fifth, spreading `configuration/codependix.config.ts`
+      // and so reaching `packages/codependix-configuration` alongside the
+      // four it already read — a project root holding a `tsconfig.json` and
+      // no `package.json`, and admitting it would reach every toolchain the
+      // repository configures. The other refusal — the workspace root — is
+      // only reachable through that one here, so this list stands for the
+      // first rule rather than for both.
       //
-      // `callidescope-core` is reached because the result vocabulary moved
-      // down into it from `callidescope-configuration`.
+      // Every `*-core` here arrives behind the `configuration` package above
+      // it: each toolchain moved its result vocabulary down into a contracts
+      // leaf. Neither refusal above is weakened.
       expect(
         result.projects.map((project) => project.projectName),
       ).toStrictEqual([

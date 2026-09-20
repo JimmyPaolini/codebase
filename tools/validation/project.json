@@ -13,8 +13,11 @@
   "targets": {
     "codometer": {},
     "dependency-cruiser": {},
+    "deprecate-code": {},
+    "format-code": {},
+    "guard-code": {},
     "knip": {},
-    "lint-codebase": {},
+    "lint-code": {},
     "markdown-lint": {},
     "oxfmt": {},
     "oxlint": {},
@@ -50,9 +53,10 @@
         "cwd": "{workspaceRoot}"
       }
     },
-    "test-coverage": {},
+    "test-code": {},
     "type-coverage": {},
     "typecheck": {},
+    "typecheck-code": {},
     "yaml-lint": {}
   }
 }

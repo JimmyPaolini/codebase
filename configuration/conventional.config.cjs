@@ -95,6 +95,10 @@ const types = [
 
 const scopes = [
   {
+    description: "In-house code measurement and validation toolchains (Callidescope, Codependix, Codometer, Conformetry) and their shared conventions",
+    name: "ic-suite",
+  },
+  {
     description:
       "Python Jupyter notebook application for LangGraph affirmation generation",
     name: "affirmations",

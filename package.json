@@ -1,5 +1,8 @@
 {
   "author": "Jimmy Paolini",
+  "dependencies": {
+    "pino-pretty": "catalog:"
+  },
   "description": "",
   "devDependencies": {
     "@callidescope/configuration": "workspace:*",
@@ -25,6 +28,7 @@
     "@nx/web": "catalog:",
     "@semantic-release/changelog": "catalog:",
     "@semantic-release/commit-analyzer": "catalog:",
+    "@semantic-release/exec": "catalog:",
     "@semantic-release/git": "catalog:",
     "@semantic-release/github": "catalog:",
     "@semantic-release/npm": "catalog:",
@@ -117,5 +121,5 @@
     ]
   },
   "type": "module",
-  "version": "2.10.2"
+  "version": "2.13.0"
 }

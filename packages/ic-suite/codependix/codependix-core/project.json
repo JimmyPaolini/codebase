@@ -4,6 +4,7 @@
   "projectType": "library",
   "sourceRoot": "packages/ic-suite/codependix/codependix-core",
   "tags": [
+    "framework:nestjs",
     "generator:nestjs-service-project",
     "language:typescript",
     "layer:core",
@@ -28,19 +29,23 @@
       },
       "outputs": ["{options.outputPath}"]
     },
+    "build-projects": {},
     "codometer": {},
     "dependency-cruiser": {},
+    "deprecate-code": {},
+    "format-code": {},
+    "guard-code": {},
     "knip": {},
-    "lint-codebase": {},
-    "make-projects": {},
+    "lint-code": {},
     "markdown-lint": {},
     "oxfmt": {},
     "oxlint": {},
     "prettier": {},
     "spell-check": {},
-    "test-coverage": {},
+    "test-code": {},
     "type-coverage": {},
     "typecheck": {},
+    "typecheck-code": {},
     "yaml-lint": {}
   }
 }

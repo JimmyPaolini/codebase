@@ -1,10 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 
-import {
-  ConfigurationService,
-  TemplateDiscoveryService,
-} from "@conformetry/configuration";
+import { ConfigurationService } from "@conformetry/configuration";
 import { GenerationService } from "@conformetry/generation";
 import { ReportingService } from "@conformetry/output";
 import { ValidationService } from "@conformetry/validation";
@@ -57,7 +54,6 @@ export class PluginService {
     private readonly adapterService: AdapterService,
     private readonly instancesService: InstancesService,
     private readonly configurationService: ConfigurationService,
-    private readonly templateDiscoveryService: TemplateDiscoveryService,
     private readonly generatorService: GeneratorService,
     private readonly generationService: GenerationService,
     private readonly optionsService: OptionsService,
@@ -247,7 +243,7 @@ export class PluginService {
       );
 
     return configuration.map((generator) => {
-      return this.templateDiscoveryService.collectTemplate({
+      return this.configurationService.collectTemplate({
         name: generator.name,
         templatePath: path.resolve(args.workspaceRoot, generator.templatePath),
         threshold: generator.threshold,

@@ -16,7 +16,7 @@ it: the rule is now rebound so that one pass judges every path in the workspace.
   worked, but it doubled the surface that has to stay in step, and its `inputs`
   had to be `{workspaceRoot}` globs — with `{projectRoot}` globs a markdown file
   added inside a project never changed the root project's hash, so
-  `nx affected --target=lint-codebase` passed green with the violation present.
+  `nx affected --target=lint-code` passed green with the violation present.
   Both CI and lint-staged run `nx affected`, so that hole was invisible.
 - **Override `languageOptions` on markdown.** Impossible. ESLint resolves
   exactly one `language` per file, so re-parsing markdown as JavaScript is

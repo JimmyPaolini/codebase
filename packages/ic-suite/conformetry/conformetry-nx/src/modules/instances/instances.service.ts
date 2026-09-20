@@ -1,9 +1,6 @@
 import path from "node:path";
 
-import {
-  ConfigurationService,
-  InstanceDiscoveryService,
-} from "@conformetry/configuration";
+import { ConfigurationService } from "@conformetry/configuration";
 import { Injectable } from "@nestjs/common";
 
 import { ScopeService } from "../scope/scope.service";
@@ -25,7 +22,6 @@ export class InstancesService {
 
   constructor(
     private readonly configurationService: ConfigurationService,
-    private readonly instanceDiscoveryService: InstanceDiscoveryService,
     private readonly scopeService: ScopeService,
   ) {}
 
@@ -78,7 +74,7 @@ export class InstancesService {
       );
     const projectRootPath = path.resolve(args.workspaceRoot, args.project.root);
 
-    return configuration
+    const instances = configuration
       .flatMap((generator) => generator.instances)
       .flatMap((group) => {
         // A tagged group is read inside the project; an untagged one is the
@@ -86,7 +82,7 @@ export class InstancesService {
         return this.scopeService.resolveGroup({ group, project: args.project });
       })
       .flatMap((group) => {
-        return this.instanceDiscoveryService.findInstances({
+        return this.configurationService.findInstances({
           patterns: group.patterns ?? [],
           ...(group.substitutions === undefined
             ? {}
@@ -100,5 +96,16 @@ export class InstancesService {
       .filter((instance) => {
         return this.isInsideProject({ instance, projectRootPath });
       });
+
+    // First-match-wins logic: deduplicate instances by path so earlier generators override later ones.
+    const seenInstances = new Set<string>();
+    return instances.filter((instance) => {
+      const key = `${instance.path}:${instance.nameStem}`;
+      if (seenInstances.has(key)) {
+        return false;
+      }
+      seenInstances.add(key);
+      return true;
+    });
   }
 }

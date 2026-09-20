@@ -35,6 +35,9 @@ const config: KnipConfig = {
     "gitleaks", // Gitleaks CLI, used for detecting hardcoded secrets
     "trivy", // Trivy CLI, used for security scanning (container images & infrastructure)
     "uv", // uv Python package manager, used in lint-staged for nbstripout
+    "validate-branch-name",
+    "validate-pull-request-body",
+    "pull-request-release-significance",
   ],
 
   // Dependencies nothing imports, each verified live: remove one and knip
@@ -73,6 +76,7 @@ const config: KnipConfig = {
     // typescript-eslint and @swc-node/register still require TypeScript 6.
     "typescript-7",
     "squawk-cli", // SQL linter CLI, invoked via nx:run-commands in project.json
+    "pino-pretty", // Used by NX daemon and plugins
   ],
 
   // Allow exports that are only used in the same file (common for barrel re-exports)
