@@ -93,7 +93,7 @@
     "zod": "catalog:"
   },
   "engines": {
-    "node": ">=24.16.0",
+    "node": ">=",
     "vscode": "^1.22.0"
   },
   "exports": {
@@ -102,7 +102,7 @@
   "keywords": [],
   "license": "MIT",
   "name": "codebase",
-  "packageManager": "pnpm@11.2.2",
+  "packageManager": "pnpm@12.4.2",
   "repository": "JimmyPaolini/codebase.git",
   "scripts": {
     "postinstall": "conformetry-nx-bootstrap && bash scripts/install-skills.sh",

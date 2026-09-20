@@ -1,17 +1,44 @@
 ---
 name: codependix-triage
-description: Act on a codependix run that failed or reported drift — a --check that reported stale exports, a project that failed its export, a missing anchor block, a NestJS container that failed to boot, a rejected command line, or a --write that produced no files at all. Use when codependix exits non-zero, when a committed Mermaid block disagrees with a fresh run, when a graph export is missing for one project but not others, or before hand-editing an exported diagram to make a check pass.
+description: Act on a codependix run that failed or reported drift — a boundary violation, a --check reports run that found stale exports, a project that failed its export, a missing anchor block, a NestJS container that failed to boot, a rejected command line, or a --write that produced no files at all. Use when codependix exits non-zero, when an edge or a cycle breaks a declared rule, when a committed Mermaid block disagrees with a fresh run, when a graph export is missing for one project but not others, or before hand-editing an exported diagram or loosening a rule to make a check pass.
 license: MIT
 ---
 
 # Acting on a codependix failure
 
 Codependix reports a handful of distinct outcomes, and reading which one
-occurred is most of the work. Start by separating them: a **stale export** is
-drift, a **failure** is a project that never got as far as producing one, and a
-run that wrote nothing at all is usually neither.
+occurred is most of the work. Start by separating them: a **boundary
+violation** is a real edge in real code, a **stale export** is drift, a
+**failure** is a project that never got as far as producing one, and a run that
+wrote nothing at all is usually neither.
 
-## A stale `--check`
+## A boundary violation
+
+`--check boundaries` found an edge, or a cycle, that a declared rule
+condemns. Each violation names the graph level, the scope it was found in, the
+rule, both endpoints, and whatever the rule says about why it exists.
+
+**This is the one finding a re-run never fixes.** Nothing is stale and nothing
+needs regenerating: the edge is in the code, and one of two things has to give.
+
+1. **Remove the edge.** Usually the right answer, and usually smaller than it
+   looks — move a type into a `*.types.ts` file, invert a dependency, or lift
+   a shared piece into a package both ends may reach.
+2. **Change the rule**, when the rule is what is wrong. That is a deliberate
+   decision to write down in `codependix.config.ts`, with the reason, not a
+   quiet widening of a selector until the run goes green.
+
+Never narrow a selector, add an exclusion, or delete a rule purely to make a
+failing check pass. A gate loosened to pass is a gate that no longer protects
+anything, and the next reader has no way to tell it was ever meant to.
+
+If the violation is at the `nx` level and mentions an edge with no import
+statement behind it, that is the point of the level: an
+`implicitDependencies` entry is a real project-graph edge, and
+`@nx/enforce-module-boundaries` cannot see it. Remove the entry, or the rule
+has to change.
+
+## A stale `--check reports`
 
 One or more configured exports disagree with a freshly built graph. The run
 names the projects.
@@ -93,9 +120,26 @@ has to do the same.
 
 ## A rejected command line
 
-`--check` and `--write` are mutually exclusive and one is required. A command
-line naming neither, or both, is rejected before anything is read — nothing is
-inferred and no default write happens. Pick one.
+`--check` takes a comma-separated set drawn from `boundaries` and `reports`,
+and the whole command line is read before anything else happens:
+
+- **`--check needs a value`** — a bare `--check`, or one whose value is only
+  separators. Name the set; do not drop the flag. Read as "gate nothing" it
+  would be a gate that cannot fail.
+- **`--check does not accept "..."`** — a name from another tool. `limits` is
+  codometer's and `depth` is callidescope's; only `reports` is shared.
+- **`--write cannot be combined with --check reports`** — an export cannot be
+  stale in the run that just wrote it. `--write --check boundaries` is legal.
+- **Naming neither `--check` nor `--write`** is asked about at a terminal, and
+  refused everywhere else — including any run an agent or a CI job makes,
+  since neither has a terminal to answer on. Nothing is inferred and no
+  default write happens.
+
+Every mistake on one command line is collected before any is reported, so two
+complaints are two things to fix rather than two runs.
+
+The command is `codependix map`, not bare `codependix`: a command line with no
+subcommand is rejected by the argument parser before any of this applies.
 
 ## A `--write` that produced no files
 
@@ -114,9 +158,15 @@ Work down this list before suspecting the tool:
    still resolves to `"none"`.
 3. **Is the field spelled `defaults`?** `default` is stripped as an unknown
    key and has no effect.
-4. **Do the projects match `include`, and escape `exclude`?** Both match
+4. **Does the configuration name an `include` at all?** It defaults to
+   nothing, so a configuration naming only `defaults` selects no project and
+   exports nothing. The run warns — `🕸️ Selected no project to export` — and
+   still exits zero, and `--check boundaries` stays green either way, because
+   it judges every project regardless of `include`. Write `include: ["**"]`
+   for whole-workspace coverage.
+5. **Do the projects match `include`, and escape `exclude`?** Both match
    against a project's Nx name _and_ its workspace-relative root.
-5. **Is `--directory` the workspace root?** It is what every project's path
+6. **Is `--directory` the workspace root?** It is what every project's path
    resolves against, not a subtree to scan — Nx resolves the graph itself from
    the process working directory. Pointed at a single project's folder, the
    run still reads the whole graph but resolves every project underneath that
@@ -135,9 +185,10 @@ is refused for the same reason — nothing would say where the export goes.
 
 ## Whose problem the graph is
 
-A finished export is a description, not a verdict — codependix gates nothing
-about a codebase's shape. A diagram that shows something alarming (a cycle, a
-project depending on far more than expected) is a real finding about the code,
-and the fix belongs in the code rather than in the configuration that exported
+A finished export is a description, not a verdict — an export gates nothing
+about a codebase's shape, and only a declared boundary rule does. A diagram
+that shows something alarming (a cycle, a project depending on far more than
+expected) is a real finding about the code even when no rule condemns it, and
+the fix belongs in the code rather than in the configuration that exported
 it. Reach for the `codependix-navigate` skill to read what the graph is
 actually saying before changing anything.
