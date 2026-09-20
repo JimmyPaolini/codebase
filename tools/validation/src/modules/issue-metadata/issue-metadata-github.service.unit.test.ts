@@ -105,6 +105,49 @@ describe(IssueMetadataGithubService, () => {
     });
   });
 
+  describe("listOpenIssues", () => {
+    it("returns parsed open issues when gh succeeds", () => {
+      expect.hasAssertions();
+
+      const sampleIssues = [
+        {
+          body: "Part of #100",
+          labels: [{ name: "type:feat" }],
+          number: 101,
+          title: "feat(auth): add login",
+        },
+      ];
+      completeWith({ stdout: JSON.stringify(sampleIssues) });
+
+      expect(service.listOpenIssues()).toStrictEqual({
+        issues: sampleIssues,
+        success: true,
+      });
+    });
+
+    it("returns error when gh fails", () => {
+      expect.hasAssertions();
+
+      completeWith({ status: 1, stderr: "auth required" });
+
+      expect(service.listOpenIssues()).toStrictEqual({
+        error: "auth required",
+        success: false,
+      });
+    });
+
+    it("returns error when json output is invalid", () => {
+      expect.hasAssertions();
+
+      completeWith({ stdout: "not valid json" });
+
+      const result = service.listOpenIssues();
+
+      expect(result.success).toBe(false);
+      expect(result.error).toContain("Unable to parse gh issue list output");
+    });
+  });
+
   describe("isAvailable", () => {
     it.each([
       ["true when gh runs", undefined, true],

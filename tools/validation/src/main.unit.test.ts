@@ -1,6 +1,7 @@
 import { createMock } from "@golevelup/ts-vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import type { AuditGovernanceModule } from "./modules/audit-governance/audit-governance.module";
 import type { CatalogManifestsModule } from "./modules/catalog-manifests/catalog-manifests.module";
 import type { IssueMetadataModule } from "./modules/issue-metadata/issue-metadata.module";
 import type { LockfileModule } from "./modules/lockfile/lockfile.module";
@@ -17,6 +18,7 @@ type CommandFactoryRun = (
 
 const run = vi.fn<CommandFactoryRun>().mockResolvedValue(undefined);
 const loggerServiceMock = createMock<LoggerService>();
+const auditGovernanceModuleMock = createMock<AuditGovernanceModule>();
 const catalogManifestsModuleMock = createMock<CatalogManifestsModule>();
 const issueMetadataModuleMock = createMock<IssueMetadataModule>();
 const lockfileModuleMock = createMock<LockfileModule>();
@@ -43,6 +45,12 @@ vi.mock("@codebase/logger", () => ({
 
 // Mocked so that bootstrapping never reaches the real commands, which extend a
 // `nest-commander` class this suite has replaced.
+vi.mock("./modules/audit-governance/audit-governance.module", () => ({
+  AuditGovernanceModule: function AuditGovernanceModule() {
+    return auditGovernanceModuleMock;
+  },
+}));
+
 vi.mock("./modules/catalog-manifests/catalog-manifests.module", () => ({
   CatalogManifestsModule: function CatalogManifestsModule() {
     return catalogManifestsModuleMock;

@@ -425,4 +425,259 @@ describe(IssueMetadataService, () => {
       expect(service.describeError("broken")).toBe("broken");
     });
   });
+
+  describe("extractParentIssueNumber", () => {
+    it.each([
+      ["Part of #123", 123],
+      ["Parent: #456", 456],
+      ["Parent issue: #789", 789],
+      ["### Parent\n#999", 999],
+    ])("extracts parent from '%s'", (body, expected) => {
+      expect.hasAssertions();
+      expect(service.extractParentIssueNumber(body)).toBe(expected);
+    });
+
+    it("returns undefined when no parent pattern exists", () => {
+      expect.hasAssertions();
+      expect(
+        service.extractParentIssueNumber("Just a regular issue body"),
+      ).toBeUndefined();
+    });
+  });
+
+  describe("resolveIssueReleaseLevel", () => {
+    it("identifies breaking changes as major release level", () => {
+      expect.hasAssertions();
+      expect(
+        service.resolveIssueReleaseLevel({
+          body: "BREAKING CHANGE: changes everything",
+          labelNames: ["type:feat"],
+          title: "feat(auth)!: break API",
+        }),
+      ).toStrictEqual({ level: "major", rank: 3, type: "feat" });
+    });
+
+    it("identifies feat as minor release level", () => {
+      expect.hasAssertions();
+      expect(
+        service.resolveIssueReleaseLevel({
+          body: "description",
+          labelNames: ["type:feat"],
+          title: "feat(auth): add login",
+        }),
+      ).toStrictEqual({ level: "minor", rank: 2, type: "feat" });
+    });
+
+    it("identifies fix as patch release level", () => {
+      expect.hasAssertions();
+      expect(
+        service.resolveIssueReleaseLevel({
+          body: "description",
+          labelNames: ["type:fix"],
+          title: "fix(auth): resolve bug",
+        }),
+      ).toStrictEqual({ level: "patch", rank: 1, type: "fix" });
+    });
+
+    it("identifies chore/docs as none release level", () => {
+      expect.hasAssertions();
+      expect(
+        service.resolveIssueReleaseLevel({
+          body: "description",
+          labelNames: ["type:docs"],
+          title: "docs(readme): update docs",
+        }),
+      ).toStrictEqual({ level: "none", rank: 0, type: "docs" });
+    });
+
+    it("falls back to label when title is non-conventional", () => {
+      expect.hasAssertions();
+      expect(
+        service.resolveIssueReleaseLevel({
+          body: "description",
+          labelNames: ["type:feat"],
+          title: "Non conventional title",
+        }),
+      ).toStrictEqual({ level: "minor", rank: 2, type: "feat" });
+    });
+  });
+
+  describe("checkHierarchy", () => {
+    it("passes valid child under parent with same or higher release significance", () => {
+      expect.hasAssertions();
+
+      const issues = [
+        {
+          body: "Spec definition",
+          labels: [
+            { name: "type:feat" },
+            { name: "scope:auth" },
+            { name: "source:agent" },
+          ],
+          number: 1,
+          title: "feat(auth): add oauth",
+        },
+        {
+          body: "Part of #1",
+          labels: [
+            { name: "type:fix" },
+            { name: "scope:auth" },
+            { name: "source:agent" },
+          ],
+          number: 2,
+          title: "fix(auth): fix route",
+        },
+      ];
+
+      expect(service.checkHierarchy(issues)).toStrictEqual([]);
+    });
+
+    it("reports violation when child release significance exceeds parent", () => {
+      expect.hasAssertions();
+
+      const issues = [
+        {
+          body: "Fix bug",
+          labels: [
+            { name: "type:fix" },
+            { name: "scope:auth" },
+            { name: "source:agent" },
+          ],
+          number: 1,
+          title: "fix(auth): fix token bug",
+        },
+        {
+          body: "Part of #1",
+          labels: [
+            { name: "type:feat" },
+            { name: "scope:auth" },
+            { name: "source:agent" },
+          ],
+          number: 2,
+          title: "feat(auth): add whole new subsystem",
+        },
+      ];
+
+      const violations = service.checkHierarchy(issues);
+
+      expect(violations).toHaveLength(1);
+      expect(violations[0]?.message).toContain("exceeds parent #1");
+    });
+
+    it("reports violation when hierarchy depth exceeds MAX_HIERARCHY_DEPTH (3)", () => {
+      expect.hasAssertions();
+
+      const issues = [
+        {
+          body: "Root Spec",
+          labels: [
+            { name: "type:feat" },
+            { name: "scope:auth" },
+            { name: "source:agent" },
+          ],
+          number: 1,
+          title: "feat(auth): spec",
+        },
+        {
+          body: "Part of #1",
+          labels: [
+            { name: "type:feat" },
+            { name: "scope:auth" },
+            { name: "source:agent" },
+          ],
+          number: 2,
+          title: "feat(auth): pr parent",
+        },
+        {
+          body: "Part of #2",
+          labels: [
+            { name: "type:feat" },
+            { name: "scope:auth" },
+            { name: "source:agent" },
+          ],
+          number: 3,
+          title: "feat(auth): commit child",
+        },
+        {
+          body: "Part of #3",
+          labels: [
+            { name: "type:feat" },
+            { name: "scope:auth" },
+            { name: "source:agent" },
+          ],
+          number: 4,
+          title: "feat(auth): deep child 4",
+        },
+      ];
+
+      const violations = service.checkHierarchy(issues);
+
+      expect(violations).toHaveLength(1);
+      expect(violations[0]?.message).toContain(
+        "Hierarchy depth of issue #4 is 4, exceeding maximum depth of 3",
+      );
+    });
+  });
+
+  describe("checkBulkIssues", () => {
+    it("reports compliant verdict when all issues and relationships are valid", () => {
+      expect.hasAssertions();
+
+      const issues = [
+        {
+          body: formBody("feat", "lexico"),
+          labels: [
+            { name: "type:feat" },
+            { name: "scope:lexico" },
+            { name: "source:agent" },
+          ],
+          number: 10,
+          title: "feat(lexico): ✨ feature",
+        },
+      ];
+
+      expect(service.checkBulkIssues(issues)).toStrictEqual({
+        failureCount: 0,
+        failures: [],
+        hierarchyViolations: [],
+        totalIssues: 1,
+      });
+    });
+
+    it("aggregates metadata and hierarchy violations across multiple issues", () => {
+      expect.hasAssertions();
+
+      const issues = [
+        {
+          body: "Plain body with no scope label",
+          labels: [{ name: "type:chore" }, { name: "source:agent" }],
+          number: 10,
+          title: "chore(ci): update",
+        },
+        {
+          body: "Part of #10",
+          labels: [
+            { name: "type:feat" },
+            { name: "scope:ci" },
+            { name: "source:agent" },
+          ],
+          number: 11,
+          title: "feat(ci): new feature",
+        },
+      ];
+
+      const verdict = service.checkBulkIssues(issues);
+
+      expect(verdict.totalIssues).toBe(2);
+      expect(verdict.failureCount).toBeGreaterThan(0);
+      expect(
+        verdict.failures.some((f) =>
+          f.includes("Issue #10: ❌ No scope label"),
+        ),
+      ).toBe(true);
+      expect(
+        verdict.failures.some((f) => f.includes("Hierarchy violation:")),
+      ).toBe(true);
+    });
+  });
 });

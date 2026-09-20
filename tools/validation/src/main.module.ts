@@ -5,6 +5,7 @@ import { DiscoveryModule } from "@nestjs/core";
 import { LoggerModule } from "@codebase/logger";
 
 import { environmentSchema } from "./constants";
+import { AuditGovernanceModule } from "./modules/audit-governance/audit-governance.module";
 import { CatalogManifestsModule } from "./modules/catalog-manifests/catalog-manifests.module";
 import { IssueMetadataModule } from "./modules/issue-metadata/issue-metadata.module";
 import { LockfileModule } from "./modules/lockfile/lockfile.module";
@@ -24,6 +25,7 @@ import { ReadmeProjectsModule } from "./modules/readme-projects/readme-projects.
       validate: (config: Record<string, unknown>) =>
         environmentSchema.parse(config),
     }),
+    AuditGovernanceModule,
     CatalogManifestsModule,
     DiscoveryModule,
     IssueMetadataModule,
