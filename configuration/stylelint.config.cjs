@@ -29,6 +29,22 @@ module.exports = {
         ],
       },
     ],
+    // Allow Tailwind @apply and custom at-rules in preludes
+    "at-rule-prelude-no-invalid": [
+      true,
+      {
+        ignoreAtRules: [
+          "tailwind",
+          "apply",
+          "layer",
+          "config",
+          "screen",
+          "variants",
+          "responsive",
+          "utility",
+        ],
+      },
+    ],
     // Allow component-specific class naming (e.g., .Button, .card-hover)
     "selector-class-pattern": null,
     // Allow Tailwind custom properties (e.g., --tw-ring-offset-shadow)
