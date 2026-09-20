@@ -81,11 +81,11 @@ export const pythonService = new PythonService(
 );
 
 /**
- * The booted `ConfigurationModule`, or `undefined` until something asks for
- * it. Held so repeated calls share one container rather than booting a fresh
- * one per example.
+ * The booted `ConfigurationModule` promise, or `undefined` until something
+ * asks for it. Held so repeated calls share one container rather than booting a
+ * fresh one per example or racing during concurrent initialization.
  */
-let configurationContext: INestApplicationContext | undefined;
+let configurationContextPromise: Promise<INestApplicationContext> | undefined;
 
 /**
  * Closes the container `getConfigurationService` booted, if it booted one.
@@ -94,8 +94,11 @@ let configurationContext: INestApplicationContext | undefined;
  * open with it, which a script that is expected to exit cannot afford.
  */
 export async function closeConfigurationService(): Promise<void> {
-  await configurationContext?.close();
-  configurationContext = undefined;
+  if (configurationContextPromise !== undefined) {
+    const context = await configurationContextPromise;
+    await context.close();
+    configurationContextPromise = undefined;
+  }
 }
 
 /**
@@ -112,12 +115,14 @@ export async function closeConfigurationService(): Promise<void> {
  * container for callers that never touch configuration at all.
  */
 export async function getConfigurationService(): Promise<ConfigurationService> {
-  configurationContext ??= await NestFactory.createApplicationContext(
+  configurationContextPromise ??= NestFactory.createApplicationContext(
     ConfigurationModule,
     { logger: false },
   );
 
-  return configurationContext.get(ConfigurationService);
+  const context = await configurationContextPromise;
+
+  return context.get(ConfigurationService);
 }
 
 /** Reads and rewrites codependix's own named anchor blocks. */

@@ -6,6 +6,10 @@ import { codependixConfigurationSchema } from "@codependix/configuration";
 import { describe, expect, it } from "vitest";
 
 import * as anchorPlacement from "./render/anchor-placement";
+import {
+  closeConfigurationService,
+  getConfigurationService,
+} from "./render/builders";
 import { collectDocuments, orderDocuments } from "./render/catalog";
 import * as configuration from "./render/configuration";
 import { deliverDocuments, renderDocument } from "./render/document";
@@ -117,6 +121,30 @@ describe("codependix examples", () => {
           markdown: { anchor: "example-nx", path: "README.md" },
         }),
       ).toBe("json `graph.json`, markdown `README.md` anchor `example-nx`");
+    });
+
+    it("shares one configuration service across concurrent callers", async () => {
+      expect.hasAssertions();
+
+      await closeConfigurationService();
+
+      const services = await Promise.all(
+        Array.from({ length: 8 }, async () => getConfigurationService()),
+      );
+
+      for (const service of services) {
+        expect(service).toBe(services[0]);
+      }
+
+      await closeConfigurationService();
+    });
+
+    it("handles closing the configuration service when none is open", async () => {
+      expect.hasAssertions();
+
+      await closeConfigurationService();
+
+      await expect(closeConfigurationService()).resolves.toBeUndefined();
     });
   });
 
