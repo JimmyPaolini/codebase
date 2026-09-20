@@ -190,6 +190,17 @@
         "cwd": "{projectRoot}"
       }
     },
+    "comply-code": {
+      "cache": false,
+      "dependsOn": [
+        "reconcile-pull-request-labels",
+        "validate-branch-name",
+        "validate-pull-request-body",
+        "validate-pull-request-release-significance",
+        "validate-pull-request-title"
+      ],
+      "executor": "nx:noop"
+    },
     "conformetry-generate": {
       "cache": false,
       "description": "Run the conformetry generate command from the workspace root",
@@ -432,17 +443,6 @@
       "options": {
         "cwd": "{workspaceRoot}"
       }
-    },
-    "comply-code": {
-      "cache": false,
-      "dependsOn": [
-        "reconcile-pull-request-labels",
-        "validate-branch-name",
-        "validate-pull-request-body",
-        "validate-pull-request-release-significance",
-        "validate-pull-request-title"
-      ],
-      "executor": "nx:noop"
     },
     "knip": {
       "cache": true,

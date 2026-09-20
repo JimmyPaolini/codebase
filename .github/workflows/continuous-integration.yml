@@ -118,16 +118,16 @@ jobs:
         if: steps.check-skip.outputs.skip != 'true'
         uses: ./.github/actions/setup-codebase
         with:
-          gitleaks: ${{ matrix.check.target == 'scan-security' && 'true' || 'false' }}
-          trivy: ${{ matrix.check.target == 'scan-security' && 'true' || 'false' }}
+          gitleaks: ${{ matrix.check.target == 'secure-code' && 'true' || 'false' }}
+          trivy: ${{ matrix.check.target == 'secure-code' && 'true' || 'false' }}
           python-dependencies: >-
             ${{ (matrix.check.target == 'build-projects' ||
-            matrix.check.target == 'judge-conventions') && 'false' || 'true' }}
-          uv: ${{ matrix.check.target == 'judge-conventions' && 'false' || 'true' }}
-          nx-cache: ${{ matrix.check.target == 'judge-conventions' && 'false' || 'true' }}
+            matrix.check.target == 'comply-code') && 'false' || 'true' }}
+          uv: ${{ matrix.check.target == 'comply-code' && 'false' || 'true' }}
+          nx-cache: ${{ matrix.check.target == 'comply-code' && 'false' || 'true' }}
           nx-graph-cache: >-
-            ${{ matrix.check.target == 'judge-conventions' && 'false' || 'true' }}
-          nx-shas: ${{ matrix.check.target == 'judge-conventions' && 'false' || 'true' }}
+            ${{ matrix.check.target == 'comply-code' && 'false' || 'true' }}
+          nx-shas: ${{ matrix.check.target == 'comply-code' && 'false' || 'true' }}
           eslint-cache: ${{ matrix.check.target == 'lint-code' && 'true' || 'false' }}
 
       - name: ${{ matrix.check.emoji }} ${{ matrix.check.name }}
@@ -144,8 +144,8 @@ jobs:
           GITHUB_EVENT_NAME: ${{ github.event_name }}
         run: |
           TARGET="${{ matrix.check.target }}"
-          if [[ "${TARGET}" == "judge-conventions" || "${TARGET}" == "scan-security" ]]; then
-            [[ "${TARGET}" == "scan-security" ]] && TARGET="scan-security-ci"
+          if [[ "${TARGET}" == "comply-code" || "${TARGET}" == "secure-code" ]]; then
+            [[ "${TARGET}" == "secure-code" ]] && TARGET="secure-code-ci"
             pnpm exec nx run codebase:${TARGET}
           elif [ "${TARGET}" == "test-code" ]; then
             pnpm exec nx affected --target=test-code \
