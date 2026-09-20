@@ -875,7 +875,7 @@
           }
         ],
         "options": {
-          "command": "squawk --config configuration/squawk.toml --exclude prefer-robust-stmts,ban-drop-table,require-concurrent-index-deletion,require-concurrent-index-creation,ban-char-field,prefer-bigint-over-smallint,constraint-missing-not-valid,adding-foreign-key-constraint,ban-drop-column,adding-required-field '{projectRoot}/**/*.sql'",
+          "command": "squawk --config configuration/squawk.toml --exclude prefer-robust-stmts,ban-drop-table,require-concurrent-index-deletion,require-concurrent-index-creation,ban-char-field,prefer-bigint-over-smallint,constraint-missing-not-valid,adding-foreign-key-constraint,ban-drop-column,adding-required-field,prefer-text-field '{projectRoot}/**/*.sql'",
           "cwd": "{workspaceRoot}"
         }
       }

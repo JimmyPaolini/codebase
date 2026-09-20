@@ -25,6 +25,6 @@ adding-field-with-default = "warn"
 prefer-robust-stmts = "warn"
 
 # Type recommendations
-prefer-text-field = "warn"
+prefer-text-field = "off"
 prefer-bigint-over-int = "warn"
 prefer-identity = "warn"

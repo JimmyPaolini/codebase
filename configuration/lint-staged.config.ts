@@ -24,7 +24,7 @@ import path from "node:path";
  * for memory does some work first; one killed for an over-long argument dies
  * instantly with no output at all. See `getStagedFilesFlags`.
  */
-const ANALYSIS_PARALLELISM = 8;
+const ANALYSIS_PARALLELISM = 4;
 
 /**
  * Renders staged paths as one workspace-relative `--files=` flag each.

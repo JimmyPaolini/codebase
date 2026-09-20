@@ -127,7 +127,7 @@ catalog:
   eslint-config-prettier: ^10.1.8
   eslint-plugin-better-max-params: ^1.0.0
   eslint-plugin-import-x: ^4.16.2
-  eslint-plugin-jsdoc: ^63.0.0
+  eslint-plugin-jsdoc: ^64.5.3
   eslint-plugin-jsonc: ^3.1.2
   eslint-plugin-jsx-a11y: ^6.10.2
   eslint-plugin-perfectionist: ^5.9.0
