@@ -28,6 +28,7 @@
         "parallel": false
       }
     },
+    "build-projects": {},
     "case-variants": {
       "cache": false,
       "description": "Validate an instance whose paths and contents use all four derived case variants, one of them overridden",

@@ -242,11 +242,15 @@ const workspaceConfiguration = {
   // only has to name what is committed but generated.
   excludeFrom: ["configuration/.codometerignore"],
   // Replaces the shared destination rather than adding to it: the repository
-  // writes badges and no report, because the pull request's change report is
-  // assembled from the per-project reports and has nothing to diff a
-  // repository-wide one against. The same counters as the shared JSON output,
-  // so the README badges keep reporting what they always have.
+  // writes badges and its report for pull request change diffs. The same
+  // counters as the shared JSON output, so the README badges keep reporting
+  // what they always have.
   outputs: [
+    {
+      custom: selectAllLabels(customStatistics),
+      path: "codometer-report.json",
+      type: "json",
+    },
     {
       custom: selectAllLabels(customStatistics),
       description:

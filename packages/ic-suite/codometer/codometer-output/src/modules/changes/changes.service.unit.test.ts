@@ -150,6 +150,9 @@ describe(ChangesService, () => {
       "applications/lexico/codometer-report.json": buildReport([
         buildMetricTarget({ limit: 200, name: "Client JS", value: 100 }),
       ]),
+      "codometer-report.json": buildReport([buildMetricTarget({ value: 300 })]),
+      "packages/ic-suite/codometer/codometer-cli/codometer-report.json":
+        buildReport([buildMetricTarget({ value: 75 })]),
       "packages/logger/codometer-report.json": buildReport([
         buildMetricTarget({ value: 50 }),
       ]),
@@ -165,6 +168,8 @@ describe(ChangesService, () => {
 
     expect(rows.map((row) => row.project)).toStrictEqual([
       "lexico",
+      "codebase",
+      "codometer-cli",
       "logger",
       "synchronization",
     ]);

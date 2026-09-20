@@ -11,6 +11,7 @@
     "type:package"
   ],
   "targets": {
+    "build-projects": {},
     "codometer": {},
     "dependency-cruiser": {},
     "deprecate-code": {},

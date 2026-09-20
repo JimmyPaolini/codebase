@@ -233,7 +233,10 @@ export class ChangesService {
 
   /** Derives the Nx project name from a report path. */
   private readProjectName(reportPath: string): string {
-    return path.basename(path.dirname(reportPath));
+    const directory = path.dirname(reportPath);
+    return directory === "." || directory === ""
+      ? "codebase"
+      : path.basename(directory);
   }
 
   /** Parses a codometer report, tolerating an absent or malformed file. */

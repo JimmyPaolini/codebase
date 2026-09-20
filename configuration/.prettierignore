@@ -33,6 +33,7 @@ yarn.lock
 # 👔 Conformetry example fixtures
 # Templates hold mustache where identifiers belong; instances are drifted on
 # purpose. Each example's own conformetry.config.ts is formatted normally.
+**/conformetry-templates/**
 **/packages/ic-suite/conformetry/conformetry-examples/examples/*/instances/**
 **/packages/ic-suite/conformetry/conformetry-examples/examples/*/templates/**
 
