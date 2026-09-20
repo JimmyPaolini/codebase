@@ -11,6 +11,7 @@ import { GeometryService } from "../geometry/geometry.service";
 
 import {
   BAND_REPEAT_COUNT,
+  FAMILY_SORT_KEYS,
   PAGE_STYLES,
   UNCLASSIFIED_FAMILY_LABEL,
 } from "./draw-index.constants";
@@ -113,6 +114,9 @@ export class DrawIndexService {
         if (a === null && b === null) return 0;
         if (a === null) return 1;
         if (b === null) return -1;
+        const rankA = FAMILY_SORT_KEYS[a] ?? Number.MAX_SAFE_INTEGER;
+        const rankB = FAMILY_SORT_KEYS[b] ?? Number.MAX_SAFE_INTEGER;
+        if (rankA !== rankB) return rankA - rankB;
         return a.localeCompare(b);
       })
       .map(([family, group]) => ({
@@ -171,7 +175,7 @@ export class DrawIndexService {
       .map(({ family, meanders }) => {
         const label = this.escape(this.label(family));
 
-        return `<li><a href="#${label}">${label}</a> <span>${meanders.length}</span></li>`;
+        return `<li><a href="families/${label}.html">${label}</a> <span>${meanders.length}</span></li>`;
       })
       .join("\n");
   }
@@ -193,6 +197,11 @@ export class DrawIndexService {
   /** Renders one family's own section: its heading, and every meander in it at its own size. */
   private renderSection({ family, meanders }: MeanderIndexGroup): string {
     const label = this.escape(this.label(family));
+
+    if (family === null) {
+      return this.renderUnclassifiedSection(meanders);
+    }
+
     const figures = meanders
       .map((meander) => this.renderFigure(meander))
       .join("\n");
@@ -206,34 +215,67 @@ ${figures}
 </section>`;
   }
 
+  /** Renders the unclassified section, grouped by shape and ordered by motif pattern. */
+  private renderUnclassifiedSection(meanders: readonly Meander[]): string {
+    const byShape = new Map<string, Meander[]>();
+    for (const meander of meanders) {
+      const shape = `${meander.rows}×${meander.columns}`;
+      const list = byShape.get(shape) ?? [];
+      list.push(meander);
+      byShape.set(shape, list);
+    }
+
+    const sortedShapes = [...byShape.entries()].toSorted((a, b) => {
+      const [rA, cA] = a[0].split("×").map(Number);
+      const [rB, cB] = b[0].split("×").map(Number);
+      if (rA !== rB) return (rA ?? 0) - (rB ?? 0);
+      return (cA ?? 0) - (cB ?? 0);
+    });
+
+    const sections = sortedShapes
+      .map(([shape, group]) => {
+        const sorted = group.toSorted((a, b) => a.code.localeCompare(b.code));
+        const figures = sorted
+          .map((meander) => this.renderFigure(meander))
+          .join("\n");
+
+        return `<section id="shape-${shape}">
+<h2>${shape}</h2>
+<p class="count">${sorted.length} meander${sorted.length === 1 ? "" : "s"}</p>
+<div class="grid">
+${figures}
+</div>
+</section>`;
+      })
+      .join("\n");
+
+    return `<section id="unclassified">
+<h2>unclassified</h2>
+<p class="count">${meanders.length} meander${meanders.length === 1 ? "" : "s"}</p>
+${sections}
+</section>`;
+  }
+
   // 🌎 Public Methods
 
-  /** Reads every committed meander and renders the page they make, together. */
-  async build(): Promise<string> {
+  /** Reads every committed meander and renders the pages they make, together. */
+  async build(): Promise<Record<string, string>> {
     return this.render(await this.databaseService.findAll());
   }
 
   /**
-   * Builds the whole page as a complete HTML document from an already-loaded
+   * Builds the index page and family pages as HTML documents from an already-loaded
    * set of rows.
-   *
-   * Pure and synchronous on purpose: it is what a test seeds a small,
-   * hand-built set of rows against, without paying for a database round
-   * trip to exercise the grouping, ordering, and escaping it is responsible
-   * for.
    */
-  render(meanders: readonly Meander[]): string {
+  render(meanders: readonly Meander[]): Record<string, string> {
     const groups = this.groupByFamily(meanders);
-    const sections = groups
-      .map((group) => this.renderSection(group))
-      .join("\n");
-
-    return `<!doctype html>
+    const pages: Record<string, string> = {
+      "index.html": `<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Meanderaw</title>
+<title>Meanderaw Index</title>
 <style>${PAGE_STYLES}</style>
 </head>
 <body>
@@ -242,9 +284,31 @@ ${figures}
 <nav><ul>
 ${this.renderContents(groups)}
 </ul></nav>
-${sections}
+</body>
+</html>
+`,
+    };
+
+    for (const group of groups) {
+      const label = this.label(group.family);
+      const filename = `families/${label}.html`;
+
+      pages[filename] = `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Meanderaw - ${this.escape(label)}</title>
+<style>${PAGE_STYLES}</style>
+</head>
+<body>
+<h1><a href="../index.html">Meanderaw</a> / ${this.escape(label)}</h1>
+${this.renderSection(group)}
 </body>
 </html>
 `;
+    }
+
+    return pages;
   }
 }

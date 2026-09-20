@@ -19,16 +19,17 @@ import { DrawCodeService } from "./draw-code.service";
 import { DrawEnumerationService } from "./draw-enumeration.service";
 import { DrawIndexService } from "./draw-index.service";
 import { DrawCommand } from "./draw.command";
-import { DEFAULT_INDEX_PATH } from "./draw.constants";
 
 import type { Meander } from "../database/entities/Meander.entity";
 import type { MeanderDriftReport } from "./draw-check.types";
 
-const { writeFileMock } = vi.hoisted(() => ({
+const { mkdirMock, writeFileMock } = vi.hoisted(() => ({
+  mkdirMock: vi.fn<() => Promise<void>>(),
   writeFileMock: vi.fn<() => Promise<void>>(),
 }));
 
 vi.mock("node:fs/promises", () => ({
+  mkdir: mkdirMock,
   writeFile: writeFileMock,
 }));
 
@@ -48,7 +49,7 @@ vi.mock("node:fs/promises", () => ({
  * touching the committed `output/index.html` a real write would clobber.
  */
 describe(DrawCommand, () => {
-  let build: Mock<() => Promise<string>>;
+  let build: Mock<() => Promise<Record<string, string>>>;
   let check: Mock<() => Promise<MeanderDriftReport>>;
   let command: DrawCommand;
   let draw: Mock<() => Promise<Meander>>;
@@ -56,7 +57,10 @@ describe(DrawCommand, () => {
   let sweep: Mock<() => Promise<number>>;
 
   beforeAll(async () => {
-    build = vi.fn<() => Promise<string>>().mockResolvedValue("<!doctype html>");
+    build = vi.fn<() => Promise<Record<string, string>>>().mockResolvedValue({
+      "families/snake.html": "<section></section>",
+      "index.html": "<!doctype html>",
+    });
     check = vi
       .fn<() => Promise<MeanderDriftReport>>()
       .mockResolvedValue(
@@ -108,6 +112,7 @@ describe(DrawCommand, () => {
     ingest.mockClear();
     sweep.mockClear();
     writeFileMock.mockClear();
+    mkdirMock.mockClear();
   });
 
   it("is defined", () => {
@@ -174,8 +179,12 @@ describe(DrawCommand, () => {
 
     expect(build).toHaveBeenCalledTimes(1);
     expect(writeFileMock).toHaveBeenCalledWith(
-      DEFAULT_INDEX_PATH,
+      expect.stringMatching(/output\/index\.html$/),
       "<!doctype html>",
+    );
+    expect(writeFileMock).toHaveBeenCalledWith(
+      expect.stringMatching(/output\/families\/snake\.html$/),
+      "<section></section>",
     );
 
     const [hardcoded] = ingest.mock.invocationCallOrder;

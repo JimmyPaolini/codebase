@@ -101,30 +101,37 @@ describe(DrawIndexService, () => {
     expect(service).toBeDefined();
   });
 
-  it("builds a page from the committed rows, grouped by family with a section for the unclassified ones", async () => {
+  it("builds pages from the committed rows, grouped by family with a section for the unclassified ones", async () => {
     await repository.save(record({ code: "snake-row", families: ["snake"] }));
     await repository.save(
       record({
         characteristics: ["dots"],
         code: "sample-row",
-        families: ["mosaic"],
+        families: ["whirl"],
       }),
     );
     await repository.save(record({ code: "unclassified-row", families: [] }));
 
-    const page = await service.build();
+    const pages = await service.build();
 
-    expect(page).toContain('<section id="snake">');
-    expect(page).toContain('<section id="mosaic">');
-    expect(page).toContain('<section id="unclassified">');
-    expect(page).toContain("<figcaption>2×1 · snake-row</figcaption>");
-    expect(page).toContain("(dots)");
-    expect(page.indexOf("<h2>snake</h2>")).toBeLessThan(
-      page.indexOf("<h2>mosaic</h2>"),
+    expect(pages["families/snake.html"]).toContain('<section id="snake">');
+    expect(pages["families/whirl.html"]).toContain('<section id="whirl">');
+    expect(pages["families/unclassified.html"]).toContain(
+      '<section id="unclassified">',
     );
-    expect(page.indexOf("<h2>mosaic</h2>")).toBeLessThan(
-      page.indexOf("<h2>unclassified</h2>"),
+    expect(pages["families/snake.html"]).toContain(
+      "<figcaption>2×1 · snake-row</figcaption>",
     );
-    expect(page).toContain('<path d="M0 0"/>');
+    expect(pages["families/whirl.html"]).toContain("(dots)");
+
+    const indexPage = pages["index.html"] ?? "";
+
+    expect(indexPage.indexOf("snake.html")).toBeLessThan(
+      indexPage.indexOf("whirl.html"),
+    );
+    expect(indexPage.indexOf("whirl.html")).toBeLessThan(
+      indexPage.indexOf("unclassified.html"),
+    );
+    expect(pages["families/snake.html"]).toContain('<path d="M0 0"/>');
   });
 });

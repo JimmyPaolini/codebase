@@ -25,8 +25,8 @@ import type { EnumeratedMeander, Environment } from "./enumeration.types";
  * outright: "Nothing here knows what a tile is called." So the
  * generalization this ticket asks for is not nine more enumerators. It is
  * running the one that exists across the whole row range the budget reaches,
- * and deciding family membership afterwards, by
- * `` rather than by which generator drew
+ * and deciding family membership afterwards, by its own structure
+ * rather than by which generator drew
  * something.
  *
  * **The budget is the lattice's, not the family's.**

@@ -193,23 +193,23 @@ export class CharacteristicsPathService {
       const isLoop = args.visited.has(nextNode);
       args.visited.add(nextNode);
 
-      const dir = this.getDirection(currentNode, nextNode, args.columns);
+      const direction = this.getDirection(currentNode, nextNode, args.columns);
       stepsSinceTurn =
-        previousDirection !== -1 && dir !== -1
+        previousDirection !== -1 && direction !== -1
           ? this.applyTurn(
-              (dir - previousDirection + 4) % 4,
+              (direction - previousDirection + 4) % 4,
               args.metrics,
               stepsSinceTurn,
             )
           : stepsSinceTurn + 1;
 
-      previousDirection = dir;
-      const prev = currentNode;
+      previousDirection = direction;
+      const previous = currentNode;
       currentNode = nextNode;
       nextNode = isLoop
         ? undefined
         : this.findNextNode(
-            { current: currentNode, previous: prev },
+            { current: currentNode, previous },
             args.adjacency,
             args.visited,
           );
