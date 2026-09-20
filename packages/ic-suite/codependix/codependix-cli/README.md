@@ -104,6 +104,17 @@ boot its container — is reported and does not stop the rest: `--write` either
 fully succeeds or names exactly which projects failed while still completing
 every other one.
 
+### Where the output goes
+
+Printing and delivering are separate. `--format` decides what reaches standard
+output; the destinations under `workspace` in the configuration and
+`--json-output`/`--markdown-output` decide what reaches a file.
+
+Markdown is the console default because it is the one rendering that reads in a
+terminal and pastes into an issue. `--format json` is for a machine reading
+standard output, so every diagnostic goes to standard error — keeping standard
+output clean and parseable as data.
+
 ## Packages
 
 | Package | Role |
