@@ -1,22 +1,24 @@
 name: 🦹 Continuous Compliance
 
-# External and repository compliance checks outside the codebase, such as
-# issue metadata (`type:*`, `scope:*`, and `source:*` labels) judged against
-# the issue body.
+# External and repository compliance checks outside the codebase:
+# 1. 🧑‍💼 Audit Issues: Issue metadata (`type:*`, `scope:*`, and `source:*` labels)
+#    and 3-tier hierarchy / release significance validation across open issues.
+# 2. 👮 Audit Governance: Repository governance (CODEOWNERS and workflow security).
 #
 # On `opened`, labels implied by the issue body are reconciled by `issue-labels`
 # in `tools/synchronization`. The metadata check is executed by `issue-metadata`
-# in `tools/validation`. Both run through Node.js directly without building an
-# Nx project graph.
+# in `tools/validation`. Governance rules are verified by `audit-governance` in
+# `tools/validation`. All run through Node.js directly without building an Nx
+# project graph.
 #
-# Mislabeled issues do not block creation on GitHub; this workflow fails the job
-# so the status is surfaced on the repository README badge.
+# Mislabeled issues or governance violations do not block creation on GitHub;
+# this workflow fails the job so the status is surfaced on the README badge.
 
 on:
   issues:
     types: [opened, edited, labeled, unlabeled]
   schedule:
-    - cron: 18 12 * * * # Daily 8:18am NYC (EDT: 12:18 UTC / EST: 13:18 UTC)
+    - cron: 18 12 * * 5 # Weekly Friday 8:18am NYC (EDT: 12:18 UTC / EST: 13:18 UTC)
   workflow_dispatch:
 
 permissions:
@@ -27,26 +29,27 @@ permissions:
 
 concurrency:
   # One group per run, so no run of this workflow ever waits behind another.
-  # A per-issue group with `cancel-in-progress: false` looked like it said
-  # exactly that and did not: GitHub keeps at most one *pending* run per group,
-  # so a third event cancels the queued second whatever the flag says. One
-  # `gh issue edit` adding a few labels fires several of the events above
-  # within seconds, which left 24 of the last 40 runs `cancelled` — which this
-  # workflow's badge renders red, reporting a queue rather than a bad issue.
-
-  # Running them all at once is safe because only one writes: the
-  # reconciliation step below is gated on `opened`, which fires once per issue.
-  # Every other run is a read-only check reading the issue's labels live rather
-  # than from its own event payload — see the audit step for why that matters.
   group: ${{ github.workflow }}-${{ github.run_id }}
   cancel-in-progress: false
 
 jobs:
-  audit-issues:
-    name: 👮 Audit Issues
+  continuous-compliance:
+    name: ${{ matrix.target.emoji }} ${{ matrix.target.name }}
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: ${{ matrix.target.timeout }}
     if: github.actor != 'dependabot[bot]'
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - id: audit-issues
+            name: Audit Issues
+            emoji: 🧑‍💼
+            timeout: 10
+          - id: audit-governance
+            name: Audit Governance
+            emoji: 👮
+            timeout: 10
 
     steps:
       - name: 📥 Checkout Repository
@@ -61,11 +64,11 @@ jobs:
           node-version-file: .nvmrc
           cache: pnpm
 
-      # The label reconciliation step and the metadata check both run their
-      # CLIs directly through node rather than through Nx, so those two
-      # projects and the workspace packages they import are all this needs.
-      # The trailing `...` on each filter resolves that transitively. Still no
-      # Nx cache, no uv, and no Homebrew: there is no project graph to build.
+      # The label reconciliation step and the audit checks run their CLIs
+      # directly through node rather than through Nx, so those two projects
+      # and the workspace packages they import are all this needs. The trailing
+      # `...` on each filter resolves that transitively. Still no Nx cache, no
+      # uv, and no Homebrew: there is no project graph to build.
       - name: 📚 Install Root Dependencies
         run: |
           CI=true pnpm install --frozen-lockfile --reporter=append-only \
@@ -76,7 +79,7 @@ jobs:
       # never adds a field the body didn't already have, and re-adding labels
       # on every edit would fight a human who removed one on purpose.
       - name: 🏷️ Reconcile Issue Labels
-        if: github.event.action == 'opened'
+        if: matrix.target.id == 'audit-issues' && github.event.action == 'opened'
         env:
           GH_TOKEN: ${{ github.token }}
           ISSUE_BODY: ${{ github.event.issue.body }}
@@ -87,19 +90,8 @@ jobs:
             tools/synchronization/src/main.ts issue-labels
 
       # Read live, by issue number, rather than out of this event's payload.
-      # `issue-labels` above adds one label per `gh issue edit`, so an issue
-      # opened with three labels fires three `labeled` events, each carrying
-      # the label set as it stood at that instant. Judging those partial
-      # snapshots would fail the check on issues that are correctly labeled.
-      # The queue used to hide that by cancelling the intermediate runs; now
-      # that every one of them runs, each has to read the settled state.
-      #
-      # `issue-metadata` already supports both: given a number it reads
-      # `gh issue view --json body,labels`, and given none it reads
-      # ISSUE_BODY and ISSUE_LABELS. ISSUE_NUMBER is still set because the
-      # remediation commands the report prints name it.
       - name: 🧾 Audit Single Issue Metadata
-        if: github.event.issue != null
+        if: matrix.target.id == 'audit-issues' && github.event.issue != null
         env:
           GH_TOKEN: ${{ github.token }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}
@@ -107,15 +99,19 @@ jobs:
           NODE_OPTIONS='' node --import @swc-node/register/esm-register \
             tools/validation/src/main.ts issue-metadata "$ISSUE_NUMBER"
 
+      # Sweeps and audits all open issues and hierarchy relationships on
+      # scheduled runs and manual dispatches.
       - name: 🧾 Audit All Open Issues Metadata
-        if: github.event.issue == null
+        if: matrix.target.id == 'audit-issues' && github.event.issue == null
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh issue list --state open --limit 200 \
-            --json number --jq '.[].number' | while read -r ISSUE_NUMBER; do
-            if [ -n "$ISSUE_NUMBER" ]; then
-              NODE_OPTIONS='' node --import @swc-node/register/esm-register \
-                tools/validation/src/main.ts issue-metadata "$ISSUE_NUMBER"
-            fi
-          done
+          NODE_OPTIONS='' node --import @swc-node/register/esm-register \
+            tools/validation/src/main.ts issue-metadata --all
+
+      # Audits repository governance (CODEOWNERS rules and workflow security).
+      - name: 👮 Audit Repository Governance
+        if: matrix.target.id == 'audit-governance'
+        run: |
+          NODE_OPTIONS='' node --import @swc-node/register/esm-register \
+            tools/validation/src/main.ts audit-governance
