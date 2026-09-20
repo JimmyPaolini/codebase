@@ -5,6 +5,8 @@ import { DataSource, type Repository } from "typeorm";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import { environmentSchema } from "../../constants";
+import { CharacteristicsPathService } from "../characteristics/characteristics-path.service";
+import { CharacteristicsShapeService } from "../characteristics/characteristics-shape.service";
 import { CharacteristicsService } from "../characteristics/characteristics.service";
 import { ConnectivityService } from "../characteristics/connectivity.service";
 import { CodeService } from "../code/code.service";
@@ -72,6 +74,8 @@ describe(DrawEnumerationService, () => {
         CodeService,
         CharacteristicsService,
         ConnectivityService,
+        CharacteristicsPathService,
+        CharacteristicsShapeService,
         DatabaseService,
         CodeService,
         EnumerationService,
@@ -135,7 +139,7 @@ describe(DrawEnumerationService, () => {
       );
 
       expect(new Set(addresses).size).toBe(rows.length);
-      expect(new Set(rows.map(({ code }) => code)).size).toBe(30_241);
+      expect(new Set(rows.map(({ code }) => code)).size).toBe(30_243);
     });
 
     it("records every row as enumerated rather than hardcoded", async () => {
@@ -167,7 +171,7 @@ describe(DrawEnumerationService, () => {
           counted.map(({ count, families }) => [families || "[]", count]),
         ),
       ).toStrictEqual({
-        "[]": 27409,
+        "[]": 30279,
       });
     });
 
@@ -176,15 +180,22 @@ describe(DrawEnumerationService, () => {
 
       expect(row).toMatchObject({
         columns: 2,
-        components: 2,
+        components: 1,
         cycles: 0,
         families: [],
-        freeEnds: 4,
+        freeEnds: 2,
 
-        characteristics: [],
+        characteristics: [
+          "isJunctionFree",
+          "endsAreLatticeNeighbours",
+          "endsOnBorderRules",
+          "isConnected",
+          "isReducible",
+          "isSingleArc",
+        ],
         inkTJunctions: 0,
         inkXJunctions: 0,
-        pitch: 2,
+        pitch: 1,
         provenance: "enumerated",
         rows: 3,
       });
