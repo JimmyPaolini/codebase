@@ -28,6 +28,12 @@
     "start": {
       "cache": false,
       "configurations": {
+        "audit-governance": {
+          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/validation/src/main.ts audit-governance"
+        },
+        "audit-issues": {
+          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/validation/src/main.ts issue-metadata --all"
+        },
         "catalog-manifests": {
           "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/validation/src/main.ts catalog-manifests"
         },
