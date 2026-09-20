@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.14.0](https://github.com/JimmyPaolini/codebase/compare/v2.13.1...v2.14.0) (2026-09-20)
+
+### ✨ Features
+
+* **deployments,documentation,dependencies:** ✨ unify continuous deployment and continuous compliance workflows ([#996](https://github.com/JimmyPaolini/codebase/issues/996)) ([1b303cb](https://github.com/JimmyPaolini/codebase/commit/1b303cb8f5bce440ab494a103e0f13ef3e67ce93)), closes [#992](https://github.com/JimmyPaolini/codebase/issues/992) [#991](https://github.com/JimmyPaolini/codebase/issues/991) [#967](https://github.com/JimmyPaolini/codebase/issues/967)
+
+### 🐛 Bug Fixes
+
+* **codometer:** 🐛 discover root and nested package reports in pr changes ([#985](https://github.com/JimmyPaolini/codebase/issues/985)) ([94b2cee](https://github.com/JimmyPaolini/codebase/commit/94b2ceeb4587ab6ce3bc56c4765455a4a786b758)), closes [#981](https://github.com/JimmyPaolini/codebase/issues/981)
+* **configuration:** 🐛 stop sharing nx cache across worktrees to prevent race conditions ([#990](https://github.com/JimmyPaolini/codebase/issues/990)) ([1cd8448](https://github.com/JimmyPaolini/codebase/commit/1cd8448294bfd8ab6b68b0159f682e8992a8614b)), closes [#960](https://github.com/JimmyPaolini/codebase/issues/960)
+
 ## [2.13.1](https://github.com/JimmyPaolini/codebase/compare/v2.13.0...v2.13.1) (2026-09-20)
 
 ## [2.13.0](https://github.com/JimmyPaolini/codebase/compare/v2.12.0...v2.13.0) (2026-09-20)
