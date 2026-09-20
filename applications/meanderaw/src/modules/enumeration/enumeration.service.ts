@@ -6,7 +6,7 @@ import { CodeService } from "../code/code.service";
 import { SWEEP_MINIMUM_ROWS } from "./enumeration.constants";
 import { TileEnumerationService } from "./tile-enumeration.service";
 
-import type { MeanderShape } from "../classification/classification.types";
+import type { MeanderShape } from "../database/database.types";
 import type { EnumeratedMeander, Environment } from "./enumeration.types";
 
 /**
@@ -26,7 +26,7 @@ import type { EnumeratedMeander, Environment } from "./enumeration.types";
  * generalization this ticket asks for is not nine more enumerators. It is
  * running the one that exists across the whole row range the budget reaches,
  * and deciding family membership afterwards, by
- * `ClassificationService` rather than by which generator drew
+ * `` rather than by which generator drew
  * something.
  *
  * **The budget is the lattice's, not the family's.**

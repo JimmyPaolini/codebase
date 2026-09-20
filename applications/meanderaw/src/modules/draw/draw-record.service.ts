@@ -1,14 +1,15 @@
+import * as crypto from "node:crypto";
+
 import { Inject, Injectable } from "@nestjs/common";
 
 import { CharacteristicsService } from "../characteristics/characteristics.service";
-import { ClassificationService } from "../classification/classification.service";
 import { CodeService } from "../code/code.service";
 import { DrawingService } from "../drawing/drawing.service";
 
-import type { MeanderShape } from "../classification/classification.types";
 import type {
   MeanderProvenance,
   MeanderRecord,
+  MeanderShape,
 } from "../database/database.types";
 
 /**
@@ -36,8 +37,6 @@ export class DrawRecordService {
   constructor(
     @Inject(CharacteristicsService)
     private readonly characteristicsService: CharacteristicsService,
-    @Inject(ClassificationService)
-    private readonly classificationService: ClassificationService,
     @Inject(CodeService)
     private readonly codeService: CodeService,
     @Inject(DrawingService)
@@ -64,21 +63,34 @@ export class DrawRecordService {
       this.characteristicsService.seamComponents(phase),
     );
     const characteristics = this.characteristicsService.compute(canonical);
-    const classification = this.classificationService.classify(
-      canonical,
-      characteristics,
-      shape,
+    const booleanKeys = (
+      Object.entries(characteristics) as [string, boolean | number][]
+    )
+      .filter(([_, value]) => typeof value === "boolean" && value)
+      .map(([key]) => key);
+
+    // We only keep numbers in the returned object (the booleans are moved to the array)
+    const numericCharacteristics = Object.fromEntries(
+      (Object.entries(characteristics) as [string, boolean | number][]).filter(
+        ([_, value]) => typeof value === "number",
+      ),
     );
 
+    const svg = this.drawingService.render(canonical);
+    // Node crypto API requires "hex" string
+    // cspell:ignore hex
+    const drawingHash = crypto.createHash("sha256").update(svg).digest("hex");
+
     return {
-      ...characteristics,
+      // type-coverage:ignore-next-line
+      ...(numericCharacteristics as unknown as MeanderRecord),
+      characteristics: booleanKeys,
       code: canonical.digits,
       columns,
-      family: classification.family ?? null,
+      drawingHash,
+      families: [],
       provenance,
       rows,
-      subFamily: classification.subFamily ?? null,
-      svg: this.drawingService.render(canonical),
     };
   }
 }

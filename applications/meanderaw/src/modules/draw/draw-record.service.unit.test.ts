@@ -7,8 +7,6 @@ import { CharacteristicsPathService } from "../characteristics/characteristics-p
 import { CharacteristicsShapeService } from "../characteristics/characteristics-shape.service";
 import { CharacteristicsService } from "../characteristics/characteristics.service";
 import { ConnectivityService } from "../characteristics/connectivity.service";
-import { ClassificationService } from "../classification/classification.service";
-import { SubFamilyService } from "../classification/sub-family.service";
 import { CodeService } from "../code/code.service";
 import { DrawingService } from "../drawing/drawing.service";
 import { GeometryService } from "../geometry/geometry.service";
@@ -37,13 +35,11 @@ describe(DrawRecordService, () => {
         CharacteristicsService,
         CharacteristicsPathService,
         CharacteristicsShapeService,
-        ClassificationService,
         ConnectivityService,
         CodeService,
         SymmetryService,
         DrawingService,
         GraphService,
-        SubFamilyService,
         TileService,
         SvgService,
       ],
@@ -64,42 +60,37 @@ describe(DrawRecordService, () => {
         "enumerated",
       );
 
-      expect({ ...record, svg: record.svg.slice(0, 4) }).toMatchInlineSnapshot(`
+      expect({ ...record, drawingHash: record.drawingHash.slice(0, 4) })
+        .toMatchInlineSnapshot(`
         {
+          "characteristics": [
+            "isJunctionFree",
+            "endsAreLatticeNeighbours",
+            "endsOnBorderRules",
+            "isConnected",
+            "isReducible",
+            "isSingleArc",
+          ],
           "code": "4488",
           "columns": 2,
           "componentCount": 1,
           "components": 1,
           "cornerCount": 0,
-          "crossesTheSeam": false,
           "cycleCount": 0,
           "cycles": 0,
           "density": 1,
           "dotCount": 0,
+          "drawingHash": "8fba",
           "edgeCount": 1,
           "embeddedOCount": 0,
           "embeddedUCount": 0,
-          "endsAreLatticeNeighbours": true,
-          "endsOnBorderRules": true,
-          "family": "mosaic",
+          "families": [],
           "freeEnds": 2,
-          "hasBranching": false,
-          "hasCrossing": false,
-          "hasDots": false,
-          "hasTJunctions": false,
-          "hasXJunctions": false,
           "horizontalDashCount": 0,
           "horizontalPointCount": 0,
           "inkPointCount": 2,
           "inkTJunctions": 0,
           "inkXJunctions": 0,
-          "isClosedLoop": false,
-          "isConnected": true,
-          "isFlipSymmetric": false,
-          "isJunctionFree": true,
-          "isMirrorSymmetric": false,
-          "isReducible": true,
-          "isSingleArc": true,
           "lCount": 0,
           "longestHorizontalRun": 0,
           "longestVerticalRun": 1,
@@ -109,17 +100,13 @@ describe(DrawRecordService, () => {
           "pitch": 1,
           "plusCount": 0,
           "provenance": "enumerated",
-          "reversesAtItsTightestTurn": false,
           "rows": 3,
           "seamComponents": 0,
           "seamCycles": 0,
           "seamTJunctions": 0,
           "seamXJunctions": 0,
           "shapeICount": 1,
-          "subFamily": "bars",
-          "svg": "<svg",
           "tCount": 0,
-          "turnsMonotonically": false,
           "uCount": 0,
           "verticalDashCount": 0,
           "verticalPointCount": 0,
@@ -128,14 +115,15 @@ describe(DrawRecordService, () => {
       `);
     });
 
-    it("records a null family and a null sub-family where a Code's structure earns neither", () => {
+    it("records empty families and specific characteristics where a Code's structure earns them", () => {
       const record = service.record(
         "2569a1",
         { columns: 2, rows: 4 },
         "hardcoded",
       );
 
-      expect(record).toMatchObject({ family: null, subFamily: null });
+      expect(record.families).toStrictEqual([]);
+      expect(record.characteristics).toContain("isJunctionFree");
     });
 
     it("records the provenance it was given rather than deriving one, since where a Code came from is no property of the Code", () => {

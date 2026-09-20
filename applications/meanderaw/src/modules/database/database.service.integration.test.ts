@@ -58,21 +58,45 @@ describe(DatabaseService, () => {
     overrides: Partial<MeanderRecord> & Pick<MeanderRecord, "code">,
   ): MeanderRecord => ({
     columns: 1,
+    componentCount: 0,
     components: 1,
+    cornerCount: 0,
+    cycleCount: 0,
     cycles: 0,
-    family: null,
+    density: 0,
+    dotCount: 0,
+    edgeCount: 0,
+    embeddedOCount: 0,
+    embeddedUCount: 0,
+    families: [],
     freeEnds: 0,
-    hasBranching: false,
-    hasCrossing: false,
+    horizontalDashCount: 0,
+    horizontalPointCount: 0,
+    inkPointCount: 0,
+    lCount: 0,
+    longestHorizontalRun: 0,
+    longestVerticalRun: 0,
+    oCount: 0,
+    plusCount: 0,
+    seamComponents: 0,
+    seamCycles: 0,
+    seamTJunctions: 0,
+    seamXJunctions: 0,
+    shapeICount: 0,
+    tCount: 0,
+    uCount: 0,
+    verticalDashCount: 0,
+    verticalPointCount: 0,
+    xCount: 0,
+
     inkTJunctions: 0,
     inkXJunctions: 0,
-    negativeTJunctions: 0,
-    negativeXJunctions: 0,
+
+    characteristics: [],
+    drawingHash: "hash",
     pitch: 1,
     provenance: "hardcoded",
     rows: 2,
-    subFamily: null,
-    svg: "<svg>fixture</svg>\n",
     ...overrides,
   });
 
@@ -98,21 +122,45 @@ describe(DatabaseService, () => {
       const saved = await service.save({
         code: "3c9a",
         columns: 2,
+        componentCount: 0,
         components: 1,
+        cornerCount: 0,
+        cycleCount: 0,
         cycles: 0,
-        family: "snake",
+        density: 0,
+        dotCount: 0,
+        edgeCount: 0,
+        embeddedOCount: 0,
+        embeddedUCount: 0,
+        families: ["snake"],
         freeEnds: 0,
-        hasBranching: true,
-        hasCrossing: false,
+        horizontalDashCount: 0,
+        horizontalPointCount: 0,
+        inkPointCount: 0,
+        lCount: 0,
+        longestHorizontalRun: 0,
+        longestVerticalRun: 0,
+        oCount: 0,
+        plusCount: 0,
+        seamComponents: 0,
+        seamCycles: 0,
+        seamTJunctions: 0,
+        seamXJunctions: 0,
+        shapeICount: 0,
+        tCount: 0,
+        uCount: 0,
+        verticalDashCount: 0,
+        verticalPointCount: 0,
+        xCount: 0,
+
         inkTJunctions: 1,
         inkXJunctions: 0,
-        negativeTJunctions: 0,
-        negativeXJunctions: 0,
+
+        characteristics: ["zigzag"],
+        drawingHash: "hash",
         pitch: 2,
         provenance: "hardcoded",
         rows: 3,
-        subFamily: "zigzag",
-        svg: "<svg>fixture</svg>\n",
       });
 
       const row = await repository.findOneByOrFail({ id: saved.id });
@@ -120,21 +168,44 @@ describe(DatabaseService, () => {
       expect(row).toMatchObject({
         code: "3c9a",
         columns: 2,
+        componentCount: 0,
         components: 1,
+        cornerCount: 0,
+        cycleCount: 0,
         cycles: 0,
-        family: "snake",
+        density: 0,
+        dotCount: 0,
+        edgeCount: 0,
+        embeddedOCount: 0,
+        embeddedUCount: 0,
+        families: ["snake"],
         freeEnds: 0,
-        hasBranching: true,
-        hasCrossing: false,
+        horizontalDashCount: 0,
+        horizontalPointCount: 0,
+        inkPointCount: 0,
+        lCount: 0,
+        longestHorizontalRun: 0,
+        longestVerticalRun: 0,
+        oCount: 0,
+        plusCount: 0,
+        seamComponents: 0,
+        seamCycles: 0,
+        seamTJunctions: 0,
+        seamXJunctions: 0,
+        shapeICount: 0,
+        tCount: 0,
+        uCount: 0,
+        verticalDashCount: 0,
+        verticalPointCount: 0,
+        xCount: 0,
+
         inkTJunctions: 1,
         inkXJunctions: 0,
-        negativeTJunctions: 0,
-        negativeXJunctions: 0,
+
+        drawingHash: "hash",
         pitch: 2,
         provenance: "hardcoded",
         rows: 3,
-        subFamily: "zigzag",
-        svg: "<svg>fixture</svg>\n",
       });
     });
 
@@ -154,12 +225,12 @@ describe(DatabaseService, () => {
     });
   });
 
-  describe("characteristic columns", () => {
-    it("is queryable by a boolean Characteristic column, per spec #813's acceptance criteria", async () => {
-      await service.save(record({ code: "crossing-row", hasCrossing: true }));
-      await service.save(record({ code: "plain-row" }));
+  describe("characteristic numeric columns", () => {
+    it("is queryable by a numeric Characteristic column, per spec #813's acceptance criteria", async () => {
+      await service.save(record({ code: "crossing-row", inkXJunctions: 1 }));
+      await service.save(record({ code: "plain-row", components: 2 }));
 
-      const crossingRows = await repository.findBy({ hasCrossing: true });
+      const crossingRows = await repository.findBy({ inkXJunctions: 1 });
 
       expect(crossingRows.map((row) => row.code)).toStrictEqual([
         "crossing-row",
@@ -170,12 +241,19 @@ describe(DatabaseService, () => {
   describe("family and subFamily columns", () => {
     it("persists a trusted family and subFamily alongside a row", async () => {
       const saved = await service.save(
-        record({ code: "trusted-row", family: "boxes", subFamily: "dots" }),
+        record({
+          characteristics: ["dots"],
+          code: "trusted-row",
+          families: ["boxes"],
+        }),
       );
 
       const row = await repository.findOneByOrFail({ id: saved.id });
 
-      expect(row).toMatchObject({ family: "boxes", subFamily: "dots" });
+      expect(row).toMatchObject({
+        characteristics: ["dots"],
+        families: ["boxes"],
+      });
     });
 
     it("leaves family and subFamily null when a row names neither", async () => {
@@ -183,8 +261,8 @@ describe(DatabaseService, () => {
 
       const row = await repository.findOneByOrFail({ id: saved.id });
 
-      expect(row.family).toBeNull();
-      expect(row.subFamily).toBeNull();
+      expect(row.families).toStrictEqual([]);
+      expect(row.characteristics).toStrictEqual([]);
     });
   });
 });

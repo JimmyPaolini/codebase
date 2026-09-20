@@ -1,7 +1,6 @@
 import { Module } from "@nestjs/common";
 
 import { CharacteristicsModule } from "../characteristics/characteristics.module";
-import { ClassificationModule } from "../classification/classification.module";
 import { CodeModule } from "../code/code.module";
 import { CorpusModule } from "../corpus/corpus.module";
 import { DatabaseModule } from "../database/database.module";
@@ -27,7 +26,7 @@ import { DrawCommand } from "./draw.command";
  * `CodeModule` and `DrawingModule` are the generic
  * decoder and renderer every family's Code is drawn through,
  * `CharacteristicsModule` measures that same Code,
- * `ClassificationModule` reads a family off those Characteristics,
+ * `` reads a family off those Characteristics,
  * `EnumerationModule` walks the space the sweep covers, and
  * `DatabaseModule` is the committed sqlite database all of it
  * persists to and `DrawIndexService` reads back from, and `GeometryModule`
@@ -58,7 +57,6 @@ import { DrawCommand } from "./draw.command";
     GeometryModule,
     CorpusModule,
     CharacteristicsModule,
-    ClassificationModule,
     DatabaseModule,
     CodeModule,
     EnumerationModule,

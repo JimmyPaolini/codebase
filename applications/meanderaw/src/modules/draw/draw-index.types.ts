@@ -1,6 +1,5 @@
 // 🏷️ Types
 
-import type { MeanderType } from "../classification/classification.types";
 import type { Meander } from "../database/entities/Meander.entity";
 
 /**
@@ -12,6 +11,6 @@ import type { Meander } from "../database/entities/Meander.entity";
  * defining combination — see `UNCLASSIFIED_FAMILY_LABEL`.
  */
 export interface MeanderIndexGroup {
-  readonly family: MeanderType | null;
+  readonly family: null | string;
   readonly meanders: readonly Meander[];
 }

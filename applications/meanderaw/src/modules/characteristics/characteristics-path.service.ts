@@ -60,14 +60,16 @@ export class CharacteristicsPathService {
 
   /** Finds the next node in the path. */
   private findNextNode(
-    current: string,
+    nodes: { current: string; previous: string | undefined },
     adjacency: Map<string, string[]>,
     visited: Set<string>,
   ): string | undefined {
-    const neighbors = this.getNeighbors(current, adjacency);
+    const neighbors = this.getNeighbors(nodes.current, adjacency);
     const unvisited = neighbors.find((n) => !visited.has(n));
     if (unvisited) return unvisited;
-    if (neighbors.length === 2) return neighbors[0];
+    if (neighbors.length === 2 && nodes.previous !== undefined) {
+      return neighbors.find((n) => n !== nodes.previous);
+    }
     return undefined;
   }
 
@@ -176,28 +178,41 @@ export class CharacteristicsPathService {
     startNode: string;
     visited: Set<string>;
   }): void {
-    const current = this.findStartNode(args.startNode, args.adjacency);
-    args.visited.add(current);
+    let currentNode = this.findStartNode(args.startNode, args.adjacency);
+    args.visited.add(currentNode);
 
     let previousDirection = -1;
     let stepsSinceTurn = 0;
-    let currentNode = current;
-    let nextNode = this.findNextNode(current, args.adjacency, args.visited);
+    let nextNode = this.findNextNode(
+      { current: currentNode, previous: undefined },
+      args.adjacency,
+      args.visited,
+    );
 
     while (nextNode) {
+      const isLoop = args.visited.has(nextNode);
       args.visited.add(nextNode);
-      const direction = this.getDirection(currentNode, nextNode, args.columns);
 
-      if (previousDirection !== -1 && direction !== -1) {
-        const turn = (direction - previousDirection + 4) % 4;
-        stepsSinceTurn = this.applyTurn(turn, args.metrics, stepsSinceTurn);
-      } else {
-        stepsSinceTurn += 1;
-      }
+      const dir = this.getDirection(currentNode, nextNode, args.columns);
+      stepsSinceTurn =
+        previousDirection !== -1 && dir !== -1
+          ? this.applyTurn(
+              (dir - previousDirection + 4) % 4,
+              args.metrics,
+              stepsSinceTurn,
+            )
+          : stepsSinceTurn + 1;
 
-      previousDirection = direction;
+      previousDirection = dir;
+      const prev = currentNode;
       currentNode = nextNode;
-      nextNode = this.findNextNode(currentNode, args.adjacency, args.visited);
+      nextNode = isLoop
+        ? undefined
+        : this.findNextNode(
+            { current: currentNode, previous: prev },
+            args.adjacency,
+            args.visited,
+          );
     }
   }
 

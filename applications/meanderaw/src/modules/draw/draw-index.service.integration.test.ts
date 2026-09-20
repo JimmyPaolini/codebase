@@ -55,21 +55,45 @@ describe(DrawIndexService, () => {
     overrides: Partial<MeanderRecord> & Pick<MeanderRecord, "code">,
   ): MeanderRecord => ({
     columns: 1,
+    componentCount: 0,
     components: 1,
+    cornerCount: 0,
+    cycleCount: 0,
     cycles: 0,
-    family: null,
+    density: 0,
+    dotCount: 0,
+    edgeCount: 0,
+    embeddedOCount: 0,
+    embeddedUCount: 0,
+    families: [],
     freeEnds: 0,
-    hasBranching: false,
-    hasCrossing: false,
+    horizontalDashCount: 0,
+    horizontalPointCount: 0,
+    inkPointCount: 0,
+    lCount: 0,
+    longestHorizontalRun: 0,
+    longestVerticalRun: 0,
+    oCount: 0,
+    plusCount: 0,
+    seamComponents: 0,
+    seamCycles: 0,
+    seamTJunctions: 0,
+    seamXJunctions: 0,
+    shapeICount: 0,
+    tCount: 0,
+    uCount: 0,
+    verticalDashCount: 0,
+    verticalPointCount: 0,
+    xCount: 0,
+
     inkTJunctions: 0,
     inkXJunctions: 0,
-    negativeTJunctions: 0,
-    negativeXJunctions: 0,
+
+    characteristics: [],
+    drawingHash: "hash",
     pitch: 1,
     provenance: "hardcoded",
     rows: 2,
-    subFamily: null,
-    svg: '<svg width="1" height="1"><path d="M0 0"/></svg>',
     ...overrides,
   });
 
@@ -78,15 +102,15 @@ describe(DrawIndexService, () => {
   });
 
   it("builds a page from the committed rows, grouped by family with a section for the unclassified ones", async () => {
-    await repository.save(record({ code: "snake-row", family: "snake" }));
+    await repository.save(record({ code: "snake-row", families: ["snake"] }));
     await repository.save(
       record({
+        characteristics: ["dots"],
         code: "sample-row",
-        family: "mosaic",
-        subFamily: "dots",
+        families: ["mosaic"],
       }),
     );
-    await repository.save(record({ code: "unclassified-row", family: null }));
+    await repository.save(record({ code: "unclassified-row", families: [] }));
 
     const page = await service.build();
 

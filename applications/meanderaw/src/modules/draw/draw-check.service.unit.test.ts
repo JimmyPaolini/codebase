@@ -50,19 +50,17 @@ describe(DrawCheckService, () => {
       columns: 1,
       components: 1,
       cycles: 0,
-      family: null,
+      families: [],
       freeEnds: 0,
-      hasBranching: false,
-      hasCrossing: false,
+
       inkTJunctions: 0,
       inkXJunctions: 0,
-      negativeTJunctions: 0,
-      negativeXJunctions: 0,
+
+      characteristics: [],
+      drawingHash: "hash",
       pitch: 1,
       provenance: "hardcoded",
       rows: 2,
-      subFamily: null,
-      svg: "<svg>fixture</svg>\n",
       ...overrides,
     });
 
@@ -107,14 +105,14 @@ describe(DrawCheckService, () => {
     it("reports a row present in both sides as changed, naming every column that disagrees", () => {
       const regeneratedRow = meander({
         code: "a",
-        family: "snake",
-        hasCrossing: true,
+        families: ["snake"],
+
         id: 1,
       });
       const committedRow = meander({
         code: "a",
-        family: "boxes",
-        hasCrossing: false,
+        families: ["boxes"],
+
         id: 2,
       });
 
@@ -124,7 +122,7 @@ describe(DrawCheckService, () => {
         {
           code: "a",
           columns: 1,
-          differences: ["family", "hasCrossing"],
+          differences: ["families"],
           rows: 2,
         },
       ]);
