@@ -433,7 +433,7 @@
         "cwd": "{workspaceRoot}"
       }
     },
-    "judge-conventions": {
+    "comply-code": {
       "cache": false,
       "dependsOn": [
         "reconcile-pull-request-labels",
@@ -710,12 +710,12 @@
         "cwd": "{projectRoot}"
       }
     },
-    "scan-security": {},
-    "scan-security-ci": {
+    "secure-code": {},
+    "secure-code-ci": {
       "cache": false,
       "executor": "nx:run-commands",
       "options": {
-        "command": "pnpm exec nx affected --target=scan-security --parallel=4 && if [ \"$GITHUB_EVENT_NAME\" = \"schedule\" ] || [ \"$GITHUB_EVENT_NAME\" = \"workflow_dispatch\" ]; then pnpm exec nx run codebase:gitleaks:ci; else pnpm exec nx run codebase:gitleaks:ci-incremental; fi",
+        "command": "pnpm exec nx affected --target=secure-code --parallel=4 && if [ \"$GITHUB_EVENT_NAME\" = \"schedule\" ] || [ \"$GITHUB_EVENT_NAME\" = \"workflow_dispatch\" ]; then pnpm exec nx run codebase:gitleaks:ci; else pnpm exec nx run codebase:gitleaks:ci-incremental; fi",
         "cwd": "{projectRoot}"
       }
     },
@@ -901,7 +901,7 @@
     },
     "trivy-config": {
       "cache": true,
-      "description": "Scan Terraform infrastructure code for misconfigurations using Trivy. Identical to what the Scan Security workflow runs, so a local run reproduces CI exactly. Requires trivy on PATH (the devcontainer installs it; otherwise `brew install trivy`).",
+      "description": "Scan Terraform infrastructure code for misconfigurations using Trivy. Identical to what the Secure Code workflow runs, so a local run reproduces CI exactly. Requires trivy on PATH (the devcontainer installs it; otherwise `brew install trivy`).",
       "executor": "nx:run-commands",
       "inputs": [
         "{workspaceRoot}/configuration/trivyignore",

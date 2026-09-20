@@ -256,15 +256,15 @@ The composite targets pick whichever set a project's `language:*` tag selects, s
 
 ### The Gates
 
-Five workflows run on every pull request. Each maps to targets you can run locally before pushing. GitHub shows each with an emoji prefix — 🧑‍🔧 Lint Codebase, 🧑‍🔬 Test Coverage, 🕵️ Scan Security, 👷 Make Projects, 🧑‍⚖️ Validate Conventions.
+Five workflows run on every pull request. Each maps to targets you can run locally before pushing. GitHub shows each with an emoji prefix — 🧑‍🔧 Lint Codebase, 🧑‍🔬 Test Coverage, 🕵️ Secure Code, 👷 Make Projects, 🧑‍⚖️ Comply Code.
 
 | Workflow             | Runs                                                                                                                     | Local equivalent                                  |
 | -------------------- | ------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------- |
 | Lint Codebase        | Format, lint, typecheck, type coverage, spelling, markdown, YAML, dead code, conformance, and the synchronization checks | `nx affected --target=lint-code`                  |
 | Test Coverage        | Unit, integration, and end-to-end tests with coverage thresholds                                                         | `nx affected --target=test-code`                  |
-| Scan Security        | Secrets, Python AST, dependency vulnerabilities, licenses, infrastructure misconfiguration                               | `nx affected --target=scan-security`              |
+| Secure Code        | Secrets, Python AST, dependency vulnerabilities, licenses, infrastructure misconfiguration                               | `nx affected --target=secure-code`              |
 | Make Projects        | Builds every buildable project and gates its declared bundle size                                                        | `nx affected --target=build-projects`             |
-| Validate Conventions | Branch name, pull request title, body, labels, assignees, and release significance                                       | See [Pull Request Process](#pull-request-process) |
+| Comply Code | Branch name, pull request title, body, labels, assignees, and release significance                                       | See [Pull Request Process](#pull-request-process) |
 
 🧑‍🏭 Make Codebase additionally builds the dev container image, but only when `.devcontainer/**` changes.
 
@@ -379,7 +379,7 @@ Validate before pushing:
 pnpm exec validate-branch-name -t "<branch-name>"
 ```
 
-Only `main` is exempt. Automated prefixes are also accepted: `copilot/*`, `dependabot/*`, `jimmypaolini/copilot/*`, `renovate/*`. Both the pre-push hook and 🧑‍⚖️ Validate Conventions reject anything else, so an unvalidated branch wastes the push. See [checkout-branch](.agents/skills/checkout-branch/SKILL.md) for deriving a name, and [rename-branch](.agents/skills/rename-branch/SKILL.md) for fixing one.
+Only `main` is exempt. Automated prefixes are also accepted: `copilot/*`, `dependabot/*`, `jimmypaolini/copilot/*`, `renovate/*`. Both the pre-push hook and 🧑‍⚖️ Comply Code reject anything else, so an unvalidated branch wastes the push. See [checkout-branch](.agents/skills/checkout-branch/SKILL.md) for deriving a name, and [rename-branch](.agents/skills/rename-branch/SKILL.md) for fixing one.
 
 ## Commit Guidelines
 
@@ -502,13 +502,13 @@ See [docs/agents/issue-tracker.md](docs/agents/issue-tracker.md) and [docs/agent
 
 1. **Push and open**: `git push -u origin <branch>`, then `gh pr create` and fill in the template. Do not use `--fill` — it substitutes the commit message for the body and drops the four required headings
 2. **Title** follows the commit format — `<type>(<scope>): <gitmoji> <subject>`, checked by the same commitlint configuration, so every commit rule applies
-3. **Description** must contain all four headings from [.github/PULL_REQUEST_TEMPLATE.md](.github/PULL_REQUEST_TEMPLATE.md) verbatim — 🌰 Summary, 📝 Details, 🧪 Testing, 🔗 Related. Validate Conventions greps for each and fails when one is missing
+3. **Description** must contain all four headings from [.github/PULL_REQUEST_TEMPLATE.md](.github/PULL_REQUEST_TEMPLATE.md) verbatim — 🌰 Summary, 📝 Details, 🧪 Testing, 🔗 Related. Comply Code greps for each and fails when one is missing
 4. **Labels and assignees** must agree with the title: exactly one `type:*` label matching the title's type, exactly the `scope:*` labels the title names and no extras, at least one assignee, and exactly one `source:*` label (`source:agent` or `source:human`) declaring who opened it. The `do-not-merge` label blocks the pull request while present
 5. **Automated checks**: the five workflows in [The Gates](#the-gates) must pass
 6. **Code review**: requires `@JimmyPaolini` approval ([CODEOWNERS](.github/CODEOWNERS))
 7. **Merge**: squash and merge, then delete the branch
 
-Validate Conventions creates any label missing from the vocabulary when a pull request is opened or reopened, so a fresh pull request already has the labels it needs. That vocabulary lives in [configuration/conventional.config.cjs](configuration/conventional.config.cjs) and is never hard-coded elsewhere.
+Comply Code creates any label missing from the vocabulary when a pull request is opened or reopened, so a fresh pull request already has the labels it needs. That vocabulary lives in [configuration/conventional.config.cjs](configuration/conventional.config.cjs) and is never hard-coded elsewhere.
 
 Merges go through a merge queue, and the check workflows run again on the queued merge commit — a pull request that was green on its own can still fail there once `main` has moved underneath it.
 

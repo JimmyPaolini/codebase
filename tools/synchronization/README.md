@@ -62,7 +62,7 @@ fork nor a developer's `lint-code` run has. It must not run in
 `lint-code`, and it must not wait for the default branch either — a change
 introducing a new scope needs that scope's label to exist before 🧾 Validate
 Pull Request Metadata runs on the very same pull request. So the one caller
-holding a token, [judge-conventions.yml](../../.github/workflows/judge-conventions.yml),
+holding a token, [comply-code.yml](../../.github/workflows/comply-code.yml),
 runs its `write` mode directly through `node` rather than through this Nx
 target, on `opened`/`reopened`, and nothing else names it.
 
@@ -132,7 +132,7 @@ which invocation:
   `nx affected` invocation, so a pull request and a commit both check drift.
 - The release workflow runs every derivation's `write` configuration through
   `nx run-many`, so one command still publishes everything.
-- [judge-conventions.yml](../../.github/workflows/judge-conventions.yml)
+- [comply-code.yml](../../.github/workflows/comply-code.yml)
   runs `pull-request-labels write` directly through `node`, bypassing Nx
   entirely, since it is the one caller with a token and needs no project graph.
 

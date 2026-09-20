@@ -60,10 +60,10 @@ jobs:
           - target: test-code
             name: Test
             emoji: 🧑‍🔬
-          - target: scan-security
+          - target: secure-code
             name: Secure
             emoji: 🕵️
-          - target: judge-conventions
+          - target: comply-code
             name: Comply
             emoji: 🧑‍⚖️
           - target: build-projects

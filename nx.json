@@ -769,7 +769,7 @@
         }
       }
     ],
-    "scan-security": {
+    "secure-code": {
       "cache": false,
       "dependsOn": [
         "bandit",
