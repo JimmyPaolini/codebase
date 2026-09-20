@@ -297,7 +297,7 @@ export const projectDefaults = {
  * code is purely the depth (and, where judged, breadth) verdict.
  * `nx run codebase:callidescope:write` passes `--write`, and the release
  * workflow runs it on main. That is the only configuration this target
- * carries now: `lint-codebase` does not depend on it, so no run of it ever
+ * carries now: `lint-code` does not depend on it, so no run of it ever
  * forwards `write` here, and `defaultConfiguration` is `write` for the same
  * reason — there is nothing else left to default to.
  *

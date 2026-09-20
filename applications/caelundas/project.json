@@ -29,8 +29,10 @@
       },
       "outputs": ["{options.outputPath}"]
     },
+    "build-projects": {},
     "codometer": {},
     "dependency-cruiser": {},
+    "deprecate-code": {},
     "download-ephemeris": {
       "cache": false,
       "description": "Download Swiss Ephemeris data files to data/ephemeris/",
@@ -40,9 +42,10 @@
         "cwd": "{projectRoot}"
       }
     },
+    "format-code": {},
+    "guard-code": {},
     "knip": {},
-    "lint-codebase": {},
-    "make-projects": {},
+    "lint-code": {},
     "markdown-lint": {},
     "oxfmt": {},
     "oxlint": {},
@@ -72,9 +75,10 @@
         "cwd": "{projectRoot}"
       }
     },
-    "test-coverage": {},
+    "test-code": {},
     "type-coverage": {},
     "typecheck": {},
+    "typecheck-code": {},
     "yaml-lint": {}
   }
 }

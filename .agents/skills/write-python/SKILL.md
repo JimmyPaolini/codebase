@@ -174,5 +174,5 @@ uv run vulture src/ .vulture_whitelist.py --min-confidence 80
 3. Add the project path to `members` in the root `pyproject.toml`
 4. Run `uv sync` from the repository root to update the shared `uv.lock` and `.venv`
 5. Add `ty` and `bandit` as dev dependencies: `uv add --dev --package <project> ty 'bandit[toml]'`
-6. Declare the leaf targets it needs (`ruff-format`, `ruff-lint`, `pyright`, `ty`, `pytest`, `vulture`) plus `lint-codebase` and `test-coverage` in `project.json`
-7. Verify: `nx run <project>:lint-codebase`
+6. Declare the leaf targets it needs (`ruff-format`, `ruff-lint`, `pyright`, `ty`, `pytest`, `vulture`) plus `lint-code` and `test-code` in `project.json`
+7. Verify: `nx run <project>:lint-code`

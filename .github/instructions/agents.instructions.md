@@ -639,8 +639,8 @@ Context: repositoryName=${repositoryName}, prNumber=${prNumber}, basePath=projec
 Output: projects/${repositoryName}/pr-${prNumber}/security-review.md
 
 Step 2: Test Coverage
-Agent: test-coverage
-Spec: .github/agents/test-coverage.agent.md
+Agent: test-code
+Spec: .github/agents/test-code.agent.md
 Context: repositoryName=${repositoryName}, prNumber=${prNumber}, basePath=projects/${repositoryName}/pr-${prNumber}
 Output: projects/${repositoryName}/pr-${prNumber}/coverage-report.md
 

@@ -66,6 +66,12 @@
   },
   "projectType": "application",
   "targets": {
+    "build-projects": {
+      "cache": false,
+      "dependsOn": ["codometer"],
+      "description": "Measure the repository and gate the limits it declares over itself. An nx:noop aggregator, the way every project's `build-projects` is. `dependsOn` names `codometer` alone rather than inheriting the targetDefault's `build`: the root project builds nothing, and this run measures source. It exists so 👷 Make Projects reaches the repository itself — the workflows under .github belong to no project, so without this nothing gates their comment budgets.",
+      "executor": "nx:noop"
+    },
     "callidescope": {
       "cache": true,
       "configurations": {
@@ -74,7 +80,7 @@
         }
       },
       "defaultConfiguration": "write",
-      "description": "Publish the workspace call-stack trace: every project's README block, the mermaid diagram, and the JSON report. The only configuration left is `write` \u2014 depth checking now runs through the inferred per-project `gate` target, scoped by `nx affected` in the Lint Codebase workflow and `configuration/lint-staged.config.ts`, so a pull request and a commit gate the projects a change actually touched rather than the whole workspace. This target still stays out of `lint-codebase`'s `dependsOn` for the reason it always did, unchanged by that split because `write` is exactly the configuration that remains: Nx forwards an explicit configuration down `dependsOn`, so a target reachable from there would take `write` from `lint-codebase --configuration=write` and publish the report from a branch. `defaultConfiguration` is `write`, the only configuration left, so a bare `nx run codebase:callidescope` does what `:write` does. Publishing did not fan out the way gating did: one JSON report and one set of README blocks are what the whole workspace needs, and computing either per project would mean rebuilding the same call graph many times for one merged artifact, where gating benefits from being scoped to what changed and publishing does not. Four traced call-graph roots carry no gate of their own and never will, because a gate is inferred onto an Nx project and none of them is one. `configuration/` carries its own `tsconfig.json` and so is traced, measuring depth 3; three fixture roots under `packages/ic-suite/codependix/codependix-examples/examples/` are the same case at depth 0. All four keep being traced and published here on the default branch, so a regression in any of them still lands in the report; it only stops failing a pull request. The workspace root is a fifth gap of a different kind and is not one of the four: `configuration/.callidescopeignore` drops it as a project, for the reason recorded there, so the loose maintenance scripts it once owned are traced by nothing at all \u2014 which is also why the root project is skipped from gate inference, its scope being the workspace itself. The README glob is an input because `write` splices into those files: without it, a hand-edited report replays a cached run.",
+      "description": "Publish the workspace call-stack trace: every project's README block, the mermaid diagram, and the JSON report. The only configuration left is `write` — depth checking now runs through the inferred per-project `gate` target, scoped by `nx affected` in the Lint Codebase workflow and `configuration/lint-staged.config.ts`, so a pull request and a commit gate the projects a change actually touched rather than the whole workspace. This target still stays out of `lint-code`'s `dependsOn` for the reason it always did, unchanged by that split because `write` is exactly the configuration that remains: Nx forwards an explicit configuration down `dependsOn`, so a target reachable from there would take `write` from `lint-code --configuration=write` and publish the report from a branch. `defaultConfiguration` is `write`, the only configuration left, so a bare `nx run codebase:callidescope` does what `:write` does. Publishing did not fan out the way gating did: one JSON report and one set of README blocks are what the whole workspace needs, and computing either per project would mean rebuilding the same call graph many times for one merged artifact, where gating benefits from being scoped to what changed and publishing does not. Four traced call-graph roots carry no gate of their own and never will, because a gate is inferred onto an Nx project and none of them is one. `configuration/` carries its own `tsconfig.json` and so is traced, measuring depth 3; three fixture roots under `packages/ic-suite/codependix/codependix-examples/examples/` are the same case at depth 0. All four keep being traced and published here on the default branch, so a regression in any of them still lands in the report; it only stops failing a pull request. The workspace root is a fifth gap of a different kind and is not one of the four: `configuration/.callidescopeignore` drops it as a project, for the reason recorded there, so the loose maintenance scripts it once owned are traced by nothing at all — which is also why the root project is skipped from gate inference, its scope being the workspace itself. The README glob is an input because `write` splices into those files: without it, a hand-edited report replays a cached run.",
       "executor": "nx:run-commands",
       "inputs": [
         "{workspaceRoot}/**/*.{cts,mts,ts,tsx}",
@@ -123,7 +129,7 @@
         }
       },
       "defaultConfiguration": "check",
-      "description": "Export every configured Nx, NestJS, and file-import dependency graph, and gate the rules those graphs are judged against. Two configurations and no third, mirroring `codebase:callidescope` and `codebase:codometer`: this target is absent from `lint-codebase`'s `dependsOn`, so no run of it ever forwards a configuration here, and `write` means publish on the default branch and nowhere else. `check` runs `--check boundaries`, which reads no destination and writes nothing \u2014 a broken boundary is caused by the branch and fixed by it, so it gates every pull request, exactly where the inferred per-project `gate` target checks call-stack depth. The command line also accepts `--check reports`, which is what a bare `--check` used to mean, and nothing runs it: a configured export moves with the workspace it describes and would fail every branch that changed a project graph rather than anything the branch itself did. The release workflow runs `write`, after `callidescope` and the module-graph synchronization have run, so a project's `## \ud83d\udd78\ufe0f Codependix` anchor reflects the same commit those write. The README glob is an input because `write` splices Markdown into anchor blocks placed by hand in those files.",
+      "description": "Export every configured Nx, NestJS, and file-import dependency graph, and gate the rules those graphs are judged against. Two configurations and no third, mirroring `codebase:callidescope` and `codebase:codometer`: this target is absent from `lint-code`'s `dependsOn`, so no run of it ever forwards a configuration here, and `write` means publish on the default branch and nowhere else. `check` runs `--check boundaries`, which reads no destination and writes nothing — a broken boundary is caused by the branch and fixed by it, so it gates every pull request, exactly where the inferred per-project `gate` target checks call-stack depth. The command line also accepts `--check reports`, which is what a bare `--check` used to mean, and nothing runs it: a configured export moves with the workspace it describes and would fail every branch that changed a project graph rather than anything the branch itself did. The release workflow runs `write`, after `callidescope` and the module-graph synchronization have run, so a project's `## 🕸️ Codependix` anchor reflects the same commit those write. The README glob is an input because `write` splices Markdown into anchor blocks placed by hand in those files.",
       "executor": "nx:run-commands",
       "inputs": [
         "{workspaceRoot}/**/*.{cts,mts,ts,tsx}",
@@ -148,7 +154,7 @@
       },
       "defaultConfiguration": "check",
       "dependsOn": [],
-      "description": "Measure the whole repository: `check` gates the limits it declares over itself, chiefly the 128-word comment budgets declared per language, and `write` writes its README.md statistics badges. The two flags name two findings on opposite sides of a pull request, the same split callidescope makes. `check` reads no output destination and writes nothing, which is what makes it safe on a branch \u2014 a breached budget is something the branch did. `write` passes `--output-markdown` with no path, since the workspace configuration already declares README.md as its markdown destination. Report staleness is deliberately not checked: those badges are written on main by the release workflow, so every branch would fail for being behind rather than for anything it did. `dependsOn` is written out as an empty list rather than left to the `codometer` targetDefault, which depends on `build`: a per-project run measures compiled output and must wait for it, while this one measures source and would otherwise wait on every build in the workspace \u2014 slow, and circular, since the tools it would be waiting for are measured by it. The two are deliberately different and must not be collapsed into one. `options.env.SWC_NODE_PROJECT` is written out for the same reason: the `codometer` targetDefault points it at `../../configuration/tsconfig.json`, relative to a per-project run's own `{projectRoot}` cwd, and this target already overrides `cwd` back to `{workspaceRoot}` — merging the targetDefault's `env` in unchanged would resolve two directories above the repository entirely. `@swc-node/register`'s ESM hook needs this pointed at a real tsconfig to load `codometer-cli` at all, since it resolves `SWC_NODE_PROJECT` as `<cwd>/tsconfig.json` with no upward search. This is also the only run that reaches the workflows under .github, which belong to no project, so no per-project run ever measures them.",
+      "description": "Measure the whole repository: `check` gates the limits it declares over itself, chiefly the 128-word comment budgets declared per language, and `write` writes its README.md statistics badges. The two flags name two findings on opposite sides of a pull request, the same split callidescope makes. `check` reads no output destination and writes nothing, which is what makes it safe on a branch — a breached budget is something the branch did. `write` passes `--output-markdown` with no path, since the workspace configuration already declares README.md as its markdown destination. Report staleness is deliberately not checked: those badges are written on main by the release workflow, so every branch would fail for being behind rather than for anything it did. `dependsOn` is written out as an empty list rather than left to the `codometer` targetDefault, which depends on `build`: a per-project run measures compiled output and must wait for it, while this one measures source and would otherwise wait on every build in the workspace — slow, and circular, since the tools it would be waiting for are measured by it. The two are deliberately different and must not be collapsed into one. `options.env.SWC_NODE_PROJECT` is written out for the same reason: the `codometer` targetDefault points it at `../../configuration/tsconfig.json`, relative to a per-project run's own `{projectRoot}` cwd, and this target already overrides `cwd` back to `{workspaceRoot}` — merging the targetDefault's `env` in unchanged would resolve two directories above the repository entirely. `@swc-node/register`'s ESM hook needs this pointed at a real tsconfig to load `codometer-cli` at all, since it resolves `SWC_NODE_PROJECT` as `<cwd>/tsconfig.json` with no upward search. This is also the only run that reaches the workflows under .github, which belong to no project, so no per-project run ever measures them.",
       "executor": "nx:run-commands",
       "inputs": [
         "{workspaceRoot}/**/*.{cjs,cts,js,json,jsx,mjs,mts,py,ts,tsx}",
@@ -184,6 +190,17 @@
         "cwd": "{projectRoot}"
       }
     },
+    "comply-code": {
+      "cache": false,
+      "dependsOn": [
+        "reconcile-pull-request-labels",
+        "validate-branch-name",
+        "validate-pull-request-body",
+        "validate-pull-request-release-significance",
+        "validate-pull-request-title"
+      ],
+      "executor": "nx:noop"
+    },
     "conformetry-generate": {
       "cache": false,
       "description": "Run the conformetry generate command from the workspace root",
@@ -193,6 +210,7 @@
         "cwd": "{workspaceRoot}"
       }
     },
+    "deprecate-code": {},
     "eslint": {
       "cache": true,
       "configurations": {
@@ -204,7 +222,7 @@
         }
       },
       "defaultConfiguration": "check",
-      "description": "Lint workspace root files with ESLint \u2014 config files, scripts, documentation, infrastructure, and every markdown file in the workspace. That trailing `**/*.md` is what gives `project-structure/folder-structure` reach over markdown paths, and it is a workspace-wide glob rather than a list of directories on purpose: an enumerated list only judges the directories somebody remembered to add, so it would not have caught openwiki/ \u2014 the undeclared directory that motivated the rule \u2014 and would not catch the next one. Markdown inside a project is judged twice, here and by that project's own eslint target, which costs a second and reports the same answer.",
+      "description": "Lint workspace root files with ESLint — config files, scripts, documentation, infrastructure, and every markdown file in the workspace. That trailing `**/*.md` is what gives `project-structure/folder-structure` reach over markdown paths, and it is a workspace-wide glob rather than a list of directories on purpose: an enumerated list only judges the directories somebody remembered to add, so it would not have caught openwiki/ — the undeclared directory that motivated the rule — and would not catch the next one. Markdown inside a project is judged twice, here and by that project's own eslint target, which costs a second and reports the same answer.",
       "executor": "nx:run-commands",
       "options": {
         "cwd": "{projectRoot}"
@@ -248,7 +266,7 @@
           "command": "fallow audit --config configuration/fallow.config.jsonc --format=pr-comment-github"
         }
       },
-      "description": "Fallow audit gate (new-only regression check on changed code) \u2014 advisory",
+      "description": "Fallow audit gate (new-only regression check on changed code) — advisory",
       "executor": "nx:run-commands",
       "inputs": [
         "{projectRoot}/**/*.{ts,tsx,js,jsx,mts,cts,mjs,cjs}",
@@ -280,7 +298,7 @@
         }
       },
       "defaultConfiguration": "check",
-      "description": "Fallow dead-code analysis (unused files, exports, types, dependencies, unresolved imports) \u2014 a `lint-codebase` gate beside `knip`, whose findings it deliberately mirrors: `configuration/fallow.config.jsonc` carries the same entry points, the same per-file report suppressions, and the same ignored dependencies as `configuration/knip.config.ts`, so a finding one reports the other reports too. The severities `knip` also fails on are `error` in that config; the rest stay `warn` and belong to `fallow-health` and `fallow-duplicates`, which are still advisory. The `write` configuration is identical to `check` because there is nothing to write: removing what this finds is `fallow-fix`, which stays manual-only.",
+      "description": "Fallow dead-code analysis (unused files, exports, types, dependencies, unresolved imports) — a `lint-code` gate beside `knip`, whose findings it deliberately mirrors: `configuration/fallow.config.jsonc` carries the same entry points, the same per-file report suppressions, and the same ignored dependencies as `configuration/knip.config.ts`, so a finding one reports the other reports too. The severities `knip` also fails on are `error` in that config; the rest stay `warn` and belong to `fallow-health` and `fallow-duplicates`, which are still advisory. The `write` configuration is identical to `check` because there is nothing to write: removing what this finds is `fallow-fix`, which stays manual-only.",
       "executor": "nx:run-commands",
       "inputs": [
         "{projectRoot}/**/*.{ts,tsx,js,jsx,mts,cts,mjs,cjs}",
@@ -328,7 +346,7 @@
         }
       },
       "defaultConfiguration": "check",
-      "description": "\u26a0\ufe0f  MANUAL-ONLY (write config): removes unused exports/deps from source files \u2014 never include in automated pipelines. Use check config for safe dry-run preview.",
+      "description": "⚠️  MANUAL-ONLY (write config): removes unused exports/deps from source files — never include in automated pipelines. Use check config for safe dry-run preview.",
       "executor": "nx:run-commands",
       "inputs": [
         "{projectRoot}/**/*.{ts,tsx,js,jsx,mts,cts,mjs,cjs}",
@@ -352,7 +370,7 @@
           "command": "fallow health --config configuration/fallow.config.jsonc --format=pr-comment-github || true"
         }
       },
-      "description": "Fallow code health analysis (complexity, hotspots, maintainability) \u2014 advisory",
+      "description": "Fallow code health analysis (complexity, hotspots, maintainability) — advisory",
       "executor": "nx:run-commands",
       "inputs": [
         "{projectRoot}/**/*.{ts,tsx,js,jsx,mts,cts,mjs,cjs}",
@@ -364,6 +382,7 @@
         "cwd": "{workspaceRoot}"
       }
     },
+    "format-code": {},
     "gitleaks": {
       "cache": true,
       "configurations": {
@@ -386,6 +405,7 @@
         "cwd": "{projectRoot}"
       }
     },
+    "guard-code": {},
     "install-skills": {
       "cache": false,
       "configurations": {
@@ -455,7 +475,7 @@
         "cwd": "{workspaceRoot}"
       }
     },
-    "lint-codebase": {},
+    "lint-code": {},
     "lint-staged": {
       "cache": false,
       "description": "Run lint-staged on staged files (invoked by the pre-commit git hook)",
@@ -464,12 +484,6 @@
         "command": "NODE_OPTIONS='--import=tsx' lint-staged --config configuration/lint-staged.config.ts --continue-on-error",
         "cwd": "{projectRoot}"
       }
-    },
-    "make-projects": {
-      "cache": false,
-      "dependsOn": ["codometer"],
-      "description": "Measure the repository and gate the limits it declares over itself. An nx:noop aggregator, the way every project's `make-projects` is. `dependsOn` names `codometer` alone rather than inheriting the targetDefault's `build`: the root project builds nothing, and this run measures source. It exists so \ud83d\udc77 Make Projects reaches the repository itself \u2014 the workflows under .github belong to no project, so without this nothing gates their comment budgets.",
-      "executor": "nx:noop"
     },
     "markdown-lint": {
       "cache": true,
@@ -482,7 +496,7 @@
         }
       },
       "defaultConfiguration": "check",
-      "description": "Lint markdown files in workspace root (agents, scripts, documentation, infrastructure). Reaches .agents/ so this repository's own skills are linted like any other documentation; the vendored skills in skills-lock.json are excluded per skill in the markdownlint configuration. The inputs enumerate exactly the globs the command lints, plus the markdownlint configuration and shared-globals \u2014 the latter carries pnpm-lock.yaml, so a markdownlint upgrade cannot replay a cached pass. The workspace-wide default input is deliberately absent: it resolves to {projectRoot}/**/* for the root project, which made every root-owned file the tool never reads invalidate this cache. The vendored-skills negations then drop the 59 skills markdownlint already ignores, so editing one of them no longer busts the cache for nothing.",
+      "description": "Lint markdown files in workspace root (agents, scripts, documentation, infrastructure). Reaches .agents/ so this repository's own skills are linted like any other documentation; the vendored skills in skills-lock.json are excluded per skill in the markdownlint configuration. The inputs enumerate exactly the globs the command lints, plus the markdownlint configuration and shared-globals — the latter carries pnpm-lock.yaml, so a markdownlint upgrade cannot replay a cached pass. The workspace-wide default input is deliberately absent: it resolves to {projectRoot}/**/* for the root project, which made every root-owned file the tool never reads invalidate this cache. The vendored-skills negations then drop the 59 skills markdownlint already ignores, so editing one of them no longer busts the cache for nothing.",
       "executor": "nx:run-commands",
       "inputs": [
         "{projectRoot}/*.md",
@@ -560,7 +574,7 @@
         }
       },
       "defaultConfiguration": "check",
-      "description": "Run Oxlint on workspace root files \u2014 config files, scripts, documentation, infrastructure, and the devcontainer sync scripts. That last path is named because the others hold no TypeScript at all today: `scripts/` went shell-only when the two dead root scripts were deleted, and oxlint exits non-zero when its paths match nothing, so a target covering only empty directories fails rather than passing vacuously. The devcontainer scripts are real TypeScript that nothing else here was linting.",
+      "description": "Run Oxlint on workspace root files — config files, scripts, documentation, infrastructure, and the devcontainer sync scripts. That last path is named because the others hold no TypeScript at all today: `scripts/` went shell-only when the two dead root scripts were deleted, and oxlint exits non-zero when its paths match nothing, so a target covering only empty directories fails rather than passing vacuously. The devcontainer scripts are real TypeScript that nothing else here was linting.",
       "executor": "nx:run-commands",
       "inputs": ["{workspaceRoot}/configuration/oxlint.config.ts", "default"],
       "options": {
@@ -688,7 +702,23 @@
         "cwd": "{projectRoot}"
       }
     },
-    "scan-security": {},
+    "reconcile-pull-request-labels": {
+      "cache": false,
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "if [ -n \"$PULL_REQUEST_NUMBER\" ]; then NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/synchronization/src/main.ts pull-request-labels write; else echo \"Skipping label reconciliation\"; fi",
+        "cwd": "{projectRoot}"
+      }
+    },
+    "secure-code": {},
+    "secure-code-ci": {
+      "cache": false,
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec nx affected --target=secure-code --parallel=4 && if [ \"$GITHUB_EVENT_NAME\" = \"schedule\" ] || [ \"$GITHUB_EVENT_NAME\" = \"workflow_dispatch\" ]; then pnpm exec nx run codebase:gitleaks:ci; else pnpm exec nx run codebase:gitleaks:ci-incremental; fi",
+        "cwd": "{projectRoot}"
+      }
+    },
     "sherif": {
       "cache": true,
       "configurations": {
@@ -712,7 +742,7 @@
     },
     "spell-check": {
       "cache": true,
-      "description": "Check spelling in every workspace root file no project owns (configuration, documentation, infrastructure, notepads, openwiki, planning, scripts, and the .agents, .devcontainer, .github, and .vscode directories). Reaches .agents/ so this repository's own skills are spell-checked like any other documentation; the vendored skills in skills-lock.json are excluded per skill in the cspell configuration. The inputs enumerate exactly the globs the command checks, plus the cspell configuration and dictionaries and shared-globals \u2014 the latter carries pnpm-lock.yaml, so a cspell upgrade cannot replay a cached pass. The workspace-wide default input is deliberately absent: it resolves to {projectRoot}/**/* for the root project, which made every root-owned file the tool never reads invalidate this cache. The vendored-skills negations then drop the 59 skills cspell already ignores, so editing one of them no longer busts the cache for nothing.",
+      "description": "Check spelling in every workspace root file no project owns (configuration, documentation, infrastructure, notepads, openwiki, planning, scripts, and the .agents, .devcontainer, .github, and .vscode directories). Reaches .agents/ so this repository's own skills are spell-checked like any other documentation; the vendored skills in skills-lock.json are excluded per skill in the cspell configuration. The inputs enumerate exactly the globs the command checks, plus the cspell configuration and dictionaries and shared-globals — the latter carries pnpm-lock.yaml, so a cspell upgrade cannot replay a cached pass. The workspace-wide default input is deliberately absent: it resolves to {projectRoot}/**/* for the root project, which made every root-owned file the tool never reads invalidate this cache. The vendored-skills negations then drop the 59 skills cspell already ignores, so editing one of them no longer busts the cache for nothing.",
       "executor": "nx:run-commands",
       "inputs": [
         "{projectRoot}/*.{ts,tsx,js,jsx,md,yaml,yml,json}",
@@ -871,7 +901,7 @@
     },
     "trivy-config": {
       "cache": true,
-      "description": "Scan Terraform infrastructure code for misconfigurations using Trivy. Identical to what the Scan Security workflow runs, so a local run reproduces CI exactly. Requires trivy on PATH (the devcontainer installs it; otherwise `brew install trivy`).",
+      "description": "Scan Terraform infrastructure code for misconfigurations using Trivy. Identical to what the Secure Code workflow runs, so a local run reproduces CI exactly. Requires trivy on PATH (the devcontainer installs it; otherwise `brew install trivy`).",
       "executor": "nx:run-commands",
       "inputs": [
         "{workspaceRoot}/configuration/trivyignore",
@@ -904,12 +934,37 @@
         "cwd": "{projectRoot}"
       }
     },
+    "typecheck-code": {},
     "validate-branch-name": {
       "cache": false,
       "description": "Validate the current branch name against the configured naming convention. The pre-push hook calls the binary directly to avoid a project graph build; this target is for manual use.",
       "executor": "nx:run-commands",
       "options": {
-        "command": "validate-branch-name",
+        "command": "if [ -n \"$BRANCH_NAME\" ]; then validate-branch-name -t \"$BRANCH_NAME\"; else validate-branch-name; fi",
+        "cwd": "{projectRoot}"
+      }
+    },
+    "validate-pull-request-body": {
+      "cache": false,
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "if [ -n \"$PULL_REQUEST_NUMBER\" ] && [ \"$GITHUB_ACTOR\" != \"dependabot[bot]\" ]; then gh pr view \"$PULL_REQUEST_NUMBER\" --json body -q .body > pull_request_body.md && NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/validation/src/main.ts pull-request-body pull_request_body.md && rm pull_request_body.md; else echo \"Skipping PR body validation\"; fi",
+        "cwd": "{projectRoot}"
+      }
+    },
+    "validate-pull-request-release-significance": {
+      "cache": false,
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "if [ -n \"$PULL_REQUEST_NUMBER\" ]; then NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/validation/src/main.ts pull-request-release-significance \"$PULL_REQUEST_NUMBER\"; else echo \"Skipping release significance\"; fi",
+        "cwd": "{projectRoot}"
+      }
+    },
+    "validate-pull-request-title": {
+      "cache": false,
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "if [ -n \"$PULL_REQUEST_TITLE\" ]; then echo \"$PULL_REQUEST_TITLE\" | commitlint --config configuration/commitlint.config.ts; else echo \"Skipping PR title validation\"; fi",
         "cwd": "{projectRoot}"
       }
     },

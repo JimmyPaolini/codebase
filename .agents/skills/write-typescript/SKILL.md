@@ -45,8 +45,8 @@ limit, JSDoc on public APIs.
 After TypeScript changes:
 
 ```bash
-pnpm exec nx run <project>:lint-codebase --configuration=write
-pnpm exec nx run <project>:lint-codebase --configuration=check
+pnpm exec nx run <project>:lint-code --configuration=write
+pnpm exec nx run <project>:lint-code --configuration=check
 ```
 
 ## Notes

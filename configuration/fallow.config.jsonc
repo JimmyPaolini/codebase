@@ -159,6 +159,7 @@
     // invokes its `tsc` binary directly; nothing imports it, and
     // typescript-eslint and @swc-node/register still require TypeScript 6.
     "typescript-7",
+    "validate-branch-name",
     // Imported by configuration/conformetry.config.ts to validate generator
     // inputs — root-level workspace configuration read by CLI tooling at
     // build/lint time, not code this repository ships or runs in production.
@@ -267,7 +268,7 @@
   ],
   "publicPackages": [],
   // The dead-code rules knip also gates on are errors, because
-  // `fallow-dead-code` is one of `lint-codebase`'s checks and a `warn` reports
+  // `fallow-dead-code` is one of `lint-code`'s checks and a `warn` reports
   // without failing — an advisory severity on a gating target is a check that
   // does nothing. Everything else stays advisory: cycles are dependency-cruiser's
   // gate, and coverage-gaps, prop-drilling, and thin-wrapper belong to
