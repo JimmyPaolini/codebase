@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.15.0](https://github.com/JimmyPaolini/codebase/compare/v2.14.0...v2.15.0) (2026-09-20)
+
+### ✨ Features
+
+* **validation:** ✨ add continuous compliance hierarchy and governance audits ([#1015](https://github.com/JimmyPaolini/codebase/issues/1015)) ([7d3f379](https://github.com/JimmyPaolini/codebase/commit/7d3f379cffa07b0fd2757f0344bf0765afada67d)), closes [#1005](https://github.com/JimmyPaolini/codebase/issues/1005) [#1006](https://github.com/JimmyPaolini/codebase/issues/1006) [#1007](https://github.com/JimmyPaolini/codebase/issues/1007) [#1008](https://github.com/JimmyPaolini/codebase/issues/1008) [#1009](https://github.com/JimmyPaolini/codebase/issues/1009) [#1004](https://github.com/JimmyPaolini/codebase/issues/1004)
+
 ## [2.14.0](https://github.com/JimmyPaolini/codebase/compare/v2.13.1...v2.14.0) (2026-09-20)
 
 ### ✨ Features

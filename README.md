@@ -1,4 +1,4 @@
-# Codebase v2.14.0
+# Codebase v2.15.0
 
 [![Nx](https://img.shields.io/badge/Nx-Codebase-143055?logo=nx)](https://nx.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Strict-3178C6?logo=typescript)](https://www.typescriptlang.org/)
@@ -409,15 +409,15 @@ Repository statistics measured by [codometer](packages/ic-suite/codometer/codome
 ### YAML
 
 ![YAML Files](https://img.shields.io/badge/YAML_Files-22-cb171e?style=flat-square)
-![YAML Lines](https://img.shields.io/badge/YAML_Lines-2779-e34c26?style=flat-square)
+![YAML Lines](https://img.shields.io/badge/YAML_Lines-2775-e34c26?style=flat-square)
 ![YAML Documents](https://img.shields.io/badge/YAML_Documents-22-f97316?style=flat-square)
-![YAML Mappings](https://img.shields.io/badge/YAML_Mappings-388-7c3aed?style=flat-square)
-![YAML Sequences](https://img.shields.io/badge/YAML_Sequences-86-8b5cf6?style=flat-square)
-![YAML Keys](https://img.shields.io/badge/YAML_Keys-1327-0284c7?style=flat-square)
-![YAML Scalars](https://img.shields.io/badge/YAML_Scalars-2661-16a34a?style=flat-square)
+![YAML Mappings](https://img.shields.io/badge/YAML_Mappings-393-7c3aed?style=flat-square)
+![YAML Sequences](https://img.shields.io/badge/YAML_Sequences-87-8b5cf6?style=flat-square)
+![YAML Keys](https://img.shields.io/badge/YAML_Keys-1342-0284c7?style=flat-square)
+![YAML Scalars](https://img.shields.io/badge/YAML_Scalars-2688-16a34a?style=flat-square)
 ![YAML Anchors](https://img.shields.io/badge/YAML_Anchors-0-059669?style=flat-square)
 ![YAML Aliases](https://img.shields.io/badge/YAML_Aliases-0-10b981?style=flat-square)
-![YAML Comments](https://img.shields.io/badge/YAML_Comments-491-64748b?style=flat-square)
+![YAML Comments](https://img.shields.io/badge/YAML_Comments-474-64748b?style=flat-square)
 ![YAML Max Depth](https://img.shields.io/badge/YAML_Max_Depth-8-ea580c?style=flat-square)
 
 ### TOML
@@ -558,13 +558,13 @@ The workspace's call graph, traced by [callidescope](packages/ic-suite/callidesc
 
 | Measure | Value |
 | --- | --- |
-| Callables | 4938 |
-| Files | 1405 |
-| Calls traced | 5491 |
-| Call stacks | 1294 |
+| Callables | 4976 |
+| Files | 1410 |
+| Calls traced | 5540 |
+| Call stacks | 1298 |
 | Deepest stack | 17 |
 | Stacks through recursion | 12 |
-| Unfollowable calls | 335 |
+| Unfollowable calls | 336 |
 
 ### Projects
 

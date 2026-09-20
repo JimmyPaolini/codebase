@@ -108,13 +108,13 @@ Call stacks traced through `tools/validation`, deepest first. Each frame shows w
 
 | Measure | Value |
 | --- | --- |
-| Callables | 163 |
-| Files | 47 |
-| Calls traced | 206 |
-| Call stacks | 7 |
+| Callables | 201 |
+| Files | 52 |
+| Calls traced | 255 |
+| Call stacks | 8 |
 | Deepest stack | 8 |
 | Stacks through recursion | 0 |
-| Unfollowable calls | 17 |
+| Unfollowable calls | 18 |
 
 ### Limits
 
@@ -127,7 +127,47 @@ What this project is judged against, as declared in its own `callidescope.config
 
 ### Call stacks (depth)
 
-**1. `PullRequestMetadataCommand.run`** — depth ≥ 8 · decorated-method
+**1. `AuditGovernanceCommand.run`** — depth 8 · decorated-method
+
+```text
+🚀 AuditGovernanceCommand.run(): Promise<void> [tools/validation/src/modules/audit-governance/audit-governance.command.ts:77]
+   ↳ Runs repository governance checks and reports findings.
+  └─> AuditGovernanceService.checkGovernance(workspaceRoot?: string): AuditGovernanceVerdict [tools/validation/src/modules/audit-governance/audit-governance.service.ts:272]
+     ↳ Runs the complete repository governance audit.
+    └─> AuditGovernanceService.checkWorkflows(workspaceRoot?: string): WorkflowVerdict [tools/validation/src/modules/audit-governance/audit-governance.service.ts:286]
+       ↳ Audits GitHub Actions workflow files for explicit permissions, timeouts, and naming.
+      └─> AuditGovernanceService.auditWorkflowContent(file: string, content: string, violations: WorkflowViolation[]): void [tools/validation/src/modules/audit-governance/audit-governance.service.ts:57]
+         ↳ Inspects workflow content lines for name, top-level permissions, and job timeouts.
+        └─> AuditGovernanceService.collectWorkflowJobViolations(…): void [tools/validation/src/modules/audit-governance/audit-governance.service.ts:84]
+           ↳ Scans workflow lines inside jobs section and verifies declarations.
+          └─> AuditGovernanceService.extractJobBlocks(lines: string[]): WorkflowJobDeclaration[] [tools/validation/src/modules/audit-governance/audit-governance.service.ts:142]
+             ↳ Extracts job declaration blocks from workflow lines.
+            └─> AuditGovernanceService.sliceJobsSection(lines: string[]): string[] [tools/validation/src/modules/audit-governance/audit-governance.service.ts:221]
+               ↳ Slices lines starting after the 'jobs:' section header.
+              └─> AuditGovernanceService.findIndex(…)(line: string): boolean [tools/validation/src/modules/audit-governance/audit-governance.service.ts:222]
+```
+
+**2. `IssueMetadataCommand.run`** — depth ≥ 8 · decorated-method
+
+```text
+🚀 IssueMetadataCommand.run(…): Promise<void> [tools/validation/src/modules/issue-metadata/issue-metadata.command.ts:308]
+   ↳ Checks the issue's metadata and exits 0 or 1 on the verdict.
+  └─> IssueMetadataCommand.runBulkAudit(reportLines: string[]): never | void [tools/validation/src/modules/issue-metadata/issue-metadata.command.ts:257]
+     ↳ Sweeps and validates all open issues and their hierarchy relationships.
+    └─> IssueMetadataService.checkBulkIssues(issues: readonly IssueSummary[]): BulkIssuesVerdict [tools/validation/src/modules/issue-metadata/issue-metadata.service.ts:279]
+       ↳ Validates metadata and hierarchy across a batch of open issues.
+      └─> IssueMetadataService.checkHierarchy(issues: readonly IssueSummary[]): readonly HierarchyViolation[] [tools/validation/src/modules/issue-metadata/issue-metadata.service.ts:321]
+         ↳ Checks issue hierarchy rules (release significance and max depth 3).
+        └─> IssueMetadataService.checkReleaseSignificanceViolation(…): void [tools/validation/src/modules/issue-metadata/issue-metadata.service.ts:44]
+           ↳ Checks if a sub-issue exceeds its parent's release level.
+          └─> IssueMetadataService.resolveIssueReleaseLevel(…): { readonly level: string; readonly rank: number; readonly type: string; } [tools/validation/src/modules/issue-metadata/issue-metadata.service.ts:485]
+             ↳ Resolves release level and rank from title, body, and labels.
+            └─> IssueMetadataService.resolveStandardReleaseLevel(…): { readonly level: string; readonly rank: number; readonly type: string; } [tools/validation/src/modules/issue-metadata/issue-metadata.service.ts:257]
+               ↳ Resolves non-breaking release level from type labels or title match.
+              └─> IssueMetadataService.find(…)(name: string): boolean [tools/validation/src/modules/issue-metadata/issue-metadata.service.ts:261]
+```
+
+**3. `PullRequestMetadataCommand.run`** — depth ≥ 8 · decorated-method
 
 ```text
 🚀 PullRequestMetadataCommand.run(passedParameters: string[]): Promise<void> [tools/validation/src/modules/pull-request-metadata/pull-request-metadata.command.ts:264]
@@ -147,25 +187,10 @@ What this project is judged against, as declared in its own `callidescope.config
                  ↳ Whether this value can be read by property name at all.
 ```
 
-**2. `IssueMetadataCommand.run`** — depth ≥ 7 · decorated-method
+<details>
+<summary>5 more call stacks</summary>
 
-```text
-🚀 IssueMetadataCommand.run(passedParameters: string[]): Promise<void> [tools/validation/src/modules/issue-metadata/issue-metadata.command.ts:257]
-   ↳ Checks the issue's metadata and exits 0 or 1 on the verdict.
-  └─> IssueMetadataCommand.resolveMetadata(reportLines: string[], passedParameters: string[]): IssueMetadataResolution [tools/validation/src/modules/issue-metadata/issue-metadata.command.ts:227]
-     ↳ Reads the metadata from wherever this invocation says it lives.
-    └─> IssueMetadataCommand.readEnvironmentMetadata(reportLines: string[]): IssueMetadataResolution [tools/validation/src/modules/issue-metadata/issue-metadata.command.ts:131]
-       ↳ Reads the metadata from the environment, the workflow mode.
-      └─> IssueMetadataService.resolveFromEnvironment(…): IssueMetadataResolution [tools/validation/src/modules/issue-metadata/issue-metadata.service.ts:311]
-         ↳ Reads the metadata out of the two environment documents.
-        └─> IssueMetadataService.readLabelNames(entries: unknown[]): string[] [tools/validation/src/modules/issue-metadata/issue-metadata.service.ts:209]
-           ↳ Every label name, with the nameless entries dropped.
-          └─> IssueMetadataService.map(…)(entry: unknown): string [tools/validation/src/modules/issue-metadata/issue-metadata.service.ts:211]
-            └─> IssueMetadataService.isRecord(value: unknown): value is Record<string, unknown> [tools/validation/src/modules/issue-metadata/issue-metadata.service.ts:204]
-               ↳ Whether this value can be read by property name at all.
-```
-
-**3. `PullRequestReleaseSignificanceCommand.run`** — depth 7 · decorated-method
+**4. `PullRequestReleaseSignificanceCommand.run`** — depth 7 · decorated-method
 
 ```text
 🚀 PullRequestReleaseSignificanceCommand.run(passedParameters: string[]): Promise<void> [tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.command.ts:212]
@@ -182,10 +207,7 @@ What this project is judged against, as declared in its own `callidescope.config
             └─> PullRequestReleaseSignificanceService.filter(…)(scope: string): boolean [tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.service.ts:266]
 ```
 
-<details>
-<summary>4 more call stacks</summary>
-
-**4. `CatalogManifestsCommand.run`** — depth 5 · decorated-method
+**5. `CatalogManifestsCommand.run`** — depth 5 · decorated-method
 
 ```text
 🚀 CatalogManifestsCommand.run(): Promise<void> [tools/validation/src/modules/catalog-manifests/catalog-manifests.command.ts:44]
@@ -198,7 +220,7 @@ What this project is judged against, as declared in its own `callidescope.config
         └─> CatalogManifestsService.some(…)(scope: string): boolean [tools/validation/src/modules/catalog-manifests/catalog-manifests.service.ts:38]
 ```
 
-**5. `PullRequestBodyCommand.run`** — depth 5 · decorated-method
+**6. `PullRequestBodyCommand.run`** — depth 5 · decorated-method
 
 ```text
 🚀 PullRequestBodyCommand.run(passedParameters: string[]): Promise<void> [tools/validation/src/modules/pull-request-body/pull-request-body.command.ts:123]
@@ -212,7 +234,7 @@ What this project is judged against, as declared in its own `callidescope.config
            ↳ The leading run of a prompt that a description has to still carry.
 ```
 
-**6. `LockfileCommand.run`** — depth 3 · decorated-method
+**7. `LockfileCommand.run`** — depth 3 · decorated-method
 
 ```text
 🚀 LockfileCommand.run(): Promise<void> [tools/validation/src/modules/lockfile/lockfile.command.ts:50]
@@ -223,7 +245,7 @@ What this project is judged against, as declared in its own `callidescope.config
        ↳ Runs one candidate pnpm, merging both of its streams.
 ```
 
-**7. `ReadmeProjectsCommand.run`** — depth 3 · decorated-method
+**8. `ReadmeProjectsCommand.run`** — depth 3 · decorated-method
 
 ```text
 🚀 ReadmeProjectsCommand.run(): Promise<void> [tools/validation/src/modules/readme-projects/readme-projects.command.ts:43]
@@ -240,39 +262,53 @@ What this project is judged against, as declared in its own `callidescope.config
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
+| `IssueMetadataCommand.run` | 9 | `IssueMetadataCommand.runBulkAudit`, `IssueMetadataCommand.resolveMetadata`, `IssueMetadataCommand.failWithMessage`, `IssueMetadataService.parseFormAnswers`, `IssueMetadataService.checkMetadata`, `IssueMetadataCommand.resolveIssueNumber`, `IssueMetadataCommand.reportFailures`, `IssueMetadataCommand.appendToReport`, `IssueMetadataCommand.mirrorToStepSummary` | `tools/validation/src/modules/issue-metadata/issue-metadata.command.ts:308` |
 | `PullRequestReleaseSignificanceCommand.run` | 9 | `PullRequestReleaseSignificanceCommand.resolvePullRequestNumber`, `PullRequestReleaseSignificanceCommand.readLivePullRequest`, `PullRequestReleaseSignificanceCommand.failWithMessage`, `PullRequestReleaseSignificanceService.parseConventionalSubject`, `PullRequestReleaseSignificanceService.readReleaseRules`, `PullRequestReleaseSignificanceService.checkSignificance`, `PullRequestReleaseSignificanceCommand.reportFailures`, `PullRequestReleaseSignificanceCommand.appendToReport`, `PullRequestReleaseSignificanceCommand.mirrorToStepSummary` | `tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.command.ts:212` |
-| `IssueMetadataCommand.run` | 8 | `IssueMetadataCommand.resolveMetadata`, `IssueMetadataCommand.failWithMessage`, `IssueMetadataService.parseFormAnswers`, `IssueMetadataService.checkMetadata`, `IssueMetadataCommand.resolveIssueNumber`, `IssueMetadataCommand.reportFailures`, `IssueMetadataCommand.appendToReport`, `IssueMetadataCommand.mirrorToStepSummary` | `tools/validation/src/modules/issue-metadata/issue-metadata.command.ts:257` |
 | `PullRequestMetadataCommand.run` | 8 | `PullRequestMetadataCommand.resolveMetadata`, `PullRequestMetadataCommand.failWithMessage`, `PullRequestMetadataService.parseTitle`, `PullRequestMetadataService.checkMetadata`, `PullRequestMetadataCommand.resolvePullRequestNumber`, `PullRequestMetadataCommand.reportFailures`, `PullRequestMetadataCommand.appendToReport`, `PullRequestMetadataCommand.mirrorToStepSummary` | `tools/validation/src/modules/pull-request-metadata/pull-request-metadata.command.ts:264` |
 
 <details>
-<summary>74 more callables</summary>
+<summary>92 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `IssueMetadataCommand.readLiveMetadata` | 5 | `IssueMetadataGithubService.isAvailable`, `IssueMetadataCommand.failWithUsageError`, `IssueMetadataGithubService.run`, `IssueMetadataGithubService.describeFailure`, `IssueMetadataService.resolveFromDocument` | `tools/validation/src/modules/issue-metadata/issue-metadata.command.ts:151` |
+| `IssueMetadataCommand.runBulkAudit` | 7 | `IssueMetadataGithubService.isAvailable`, `IssueMetadataCommand.failWithUsageError`, `IssueMetadataGithubService.listOpenIssues`, `IssueMetadataCommand.failWithMessage`, `IssueMetadataService.checkBulkIssues`, `IssueMetadataCommand.appendToReport`, `IssueMetadataCommand.mirrorToStepSummary` | `tools/validation/src/modules/issue-metadata/issue-metadata.command.ts:257` |
+| `IssueMetadataCommand.readLiveMetadata` | 5 | `IssueMetadataGithubService.isAvailable`, `IssueMetadataCommand.failWithUsageError`, `IssueMetadataGithubService.run`, `IssueMetadataGithubService.describeFailure`, `IssueMetadataService.resolveFromDocument` | `tools/validation/src/modules/issue-metadata/issue-metadata.command.ts:153` |
 | `PullRequestMetadataService.checkMetadata` | 5 | `PullRequestMetadataService.groupLabels`, `PullRequestMetadataService.checkTypeLabel`, `PullRequestMetadataService.checkScopeLabels`, `PullRequestMetadataService.record`, `PullRequestMetadataService.checkSourceLabel` | `tools/validation/src/modules/pull-request-metadata/pull-request-metadata.service.ts:213` |
 | `PullRequestMetadataCommand.readLiveMetadata` | 5 | `PullRequestMetadataGithubService.isAvailable`, `PullRequestMetadataCommand.failWithUsageError`, `PullRequestMetadataGithubService.run`, `PullRequestMetadataGithubService.describeFailure`, `PullRequestMetadataService.resolveFromDocument` | `tools/validation/src/modules/pull-request-metadata/pull-request-metadata.command.ts:154` |
 | `PullRequestReleaseSignificanceService.checkSignificance` | 5 | `PullRequestReleaseSignificanceService.significanceRank`, `PullRequestReleaseSignificanceService.findMostSignificantCommit`, `PullRequestReleaseSignificanceService.findMissingScopes`, `PullRequestReleaseSignificanceService.describeSignificanceFailure`, `PullRequestReleaseSignificanceService.describeMissingScopeFailures` | `tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.service.ts:205` |
 | `PullRequestReleaseSignificanceCommand.readLivePullRequest` | 5 | `PullRequestReleaseSignificanceGithubService.isAvailable`, `PullRequestReleaseSignificanceCommand.failWithUsageError`, `PullRequestReleaseSignificanceGithubService.run`, `PullRequestReleaseSignificanceGithubService.describeFailure`, `PullRequestReleaseSignificanceService.resolveFromDocument` | `tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.command.ts:114` |
-| `IssueMetadataService.checkMetadata` | 4 | `IssueMetadataService.groupLabels`, `IssueMetadataService.checkTypeLabel`, `IssueMetadataService.checkScopeLabels`, `IssueMetadataService.checkSourceLabel` | `tools/validation/src/modules/issue-metadata/issue-metadata.service.ts:230` |
+| `IssueMetadataService.checkBulkIssues` | 4 | `IssueMetadataService.parseFormAnswers`, `IssueMetadataService.checkMetadata`, `IssueMetadataService.map(…)`, `IssueMetadataService.checkHierarchy` | `tools/validation/src/modules/issue-metadata/issue-metadata.service.ts:279` |
+| `IssueMetadataService.checkMetadata` | 4 | `IssueMetadataService.groupLabels`, `IssueMetadataService.checkTypeLabel`, `IssueMetadataService.checkScopeLabels`, `IssueMetadataService.checkSourceLabel` | `tools/validation/src/modules/issue-metadata/issue-metadata.service.ts:362` |
 | `PullRequestBodyCommand.run` | 4 | `PullRequestBodyCommand.resolveBody`, `PullRequestBodyService.checkBody`, `PullRequestBodyService.extractTemplateComments`, `PullRequestBodyCommand.reportVerdict` | `tools/validation/src/modules/pull-request-body/pull-request-body.command.ts:123` |
-| `IssueMetadataService.checkTypeLabel` | 3 | `IssueMetadataService.checkTypeLabelPresence`, `IssueMetadataService.map(…)`, `IssueMetadataService.filter(…)` | `tools/validation/src/modules/issue-metadata/issue-metadata.service.ts:123` |
-| `IssueMetadataService.groupLabels` | 3 | `IssueMetadataService.filter(…)`, `IssueMetadataService.filter(…)`, `IssueMetadataService.filter(…)` | `tools/validation/src/modules/issue-metadata/issue-metadata.service.ts:256` |
-| `IssueMetadataService.resolveFromDocument` | 3 | `IssueMetadataService.describeError`, `IssueMetadataService.isRecord`, `IssueMetadataService.readLabelNames` | `tools/validation/src/modules/issue-metadata/issue-metadata.service.ts:285` |
-| `IssueMetadataCommand.resolveMetadata` | 3 | `IssueMetadataCommand.failWithUsageError`, `IssueMetadataCommand.readEnvironmentMetadata`, `IssueMetadataCommand.readLiveMetadata` | `tools/validation/src/modules/issue-metadata/issue-metadata.command.ts:227` |
+| `AuditGovernanceService.auditWorkflowContent` | 3 | `AuditGovernanceService.some(…)`, `AuditGovernanceService.some(…)`, `AuditGovernanceService.collectWorkflowJobViolations` | `tools/validation/src/modules/audit-governance/audit-governance.service.ts:57` |
+| `AuditGovernanceCommand.run` | 3 | `AuditGovernanceService.checkGovernance`, `AuditGovernanceCommand.reportCodeownersVerdict`, `AuditGovernanceCommand.reportWorkflowsVerdict` | `tools/validation/src/modules/audit-governance/audit-governance.command.ts:77` |
+| `IssueMetadataService.checkReleaseSignificanceViolation` | 3 | `IssueMetadataService.resolveIssueReleaseLevel`, `IssueMetadataService.map(…)`, `IssueMetadataService.map(…)` | `tools/validation/src/modules/issue-metadata/issue-metadata.service.ts:44` |
+| `IssueMetadataService.checkTypeLabel` | 3 | `IssueMetadataService.checkTypeLabelPresence`, `IssueMetadataService.map(…)`, `IssueMetadataService.filter(…)` | `tools/validation/src/modules/issue-metadata/issue-metadata.service.ts:128` |
+| `IssueMetadataService.checkHierarchy` | 3 | `IssueMetadataService.extractParentIssueNumber`, `IssueMetadataService.checkReleaseSignificanceViolation`, `IssueMetadataService.computeHierarchyDepth` | `tools/validation/src/modules/issue-metadata/issue-metadata.service.ts:321` |
+| `IssueMetadataService.groupLabels` | 3 | `IssueMetadataService.filter(…)`, `IssueMetadataService.filter(…)`, `IssueMetadataService.filter(…)` | `tools/validation/src/modules/issue-metadata/issue-metadata.service.ts:401` |
+| `IssueMetadataService.resolveFromDocument` | 3 | `IssueMetadataService.describeError`, `IssueMetadataService.isRecord`, `IssueMetadataService.readLabelNames` | `tools/validation/src/modules/issue-metadata/issue-metadata.service.ts:427` |
+| `IssueMetadataCommand.resolveMetadata` | 3 | `IssueMetadataCommand.failWithUsageError`, `IssueMetadataCommand.readEnvironmentMetadata`, `IssueMetadataCommand.readLiveMetadata` | `tools/validation/src/modules/issue-metadata/issue-metadata.command.ts:229` |
 | `PullRequestMetadataService.groupLabels` | 3 | `PullRequestMetadataService.filter(…)`, `PullRequestMetadataService.filter(…)`, `PullRequestMetadataService.filter(…)` | `tools/validation/src/modules/pull-request-metadata/pull-request-metadata.service.ts:254` |
 | `PullRequestMetadataService.resolveFromDocument` | 3 | `PullRequestMetadataService.describeError`, `PullRequestMetadataService.isRecord`, `PullRequestMetadataService.readNames` | `tools/validation/src/modules/pull-request-metadata/pull-request-metadata.service.ts:297` |
 | `PullRequestMetadataCommand.resolveMetadata` | 3 | `PullRequestMetadataCommand.failWithUsageError`, `PullRequestMetadataCommand.readEnvironmentMetadata`, `PullRequestMetadataCommand.readLiveMetadata` | `tools/validation/src/modules/pull-request-metadata/pull-request-metadata.command.ts:214` |
 | `ReadmeProjectsCommand.run` | 3 | `ReadmeProjectsService.resolveWorkspaceProjectPaths`, `ReadmeProjectsService.readRootReadme`, `ReadmeProjectsService.findUndocumentedProjectPaths` | `tools/validation/src/modules/readme-projects/readme-projects.command.ts:43` |
+| `AuditGovernanceService.collectWorkflowJobViolations` | 2 | `AuditGovernanceService.extractJobBlocks`, `AuditGovernanceService.evaluateJob` | `tools/validation/src/modules/audit-governance/audit-governance.service.ts:84` |
+| `AuditGovernanceService.extractJobBlocks` | 2 | `AuditGovernanceService.sliceJobsSection`, `AuditGovernanceService.applyJobLine` | `tools/validation/src/modules/audit-governance/audit-governance.service.ts:142` |
+| `AuditGovernanceService.parseCodeownersRule` | 2 | `AuditGovernanceService.map(…)`, `AuditGovernanceService.filter(…)` | `tools/validation/src/modules/audit-governance/audit-governance.service.ts:193` |
+| `AuditGovernanceService.checkCodeowners` | 2 | `AuditGovernanceService.find(…)`, `AuditGovernanceService.parseCodeownersLines` | `tools/validation/src/modules/audit-governance/audit-governance.service.ts:230` |
+| `AuditGovernanceService.checkGovernance` | 2 | `AuditGovernanceService.checkCodeowners`, `AuditGovernanceService.checkWorkflows` | `tools/validation/src/modules/audit-governance/audit-governance.service.ts:272` |
+| `AuditGovernanceService.checkWorkflows` | 2 | `AuditGovernanceService.filter(…)`, `AuditGovernanceService.auditWorkflowContent` | `tools/validation/src/modules/audit-governance/audit-governance.service.ts:286` |
 | `CatalogManifestsCommand.run` | 2 | `CatalogManifestsService.resolveWorkspaceManifestPaths`, `CatalogManifestsCommand.flatMap(…)` | `tools/validation/src/modules/catalog-manifests/catalog-manifests.command.ts:44` |
 | `CatalogManifestsCommand.flatMap(…)` | 2 | `CatalogManifestsService.validateManifestDependencies`, `CatalogManifestsService.readManifest` | `tools/validation/src/modules/catalog-manifests/catalog-manifests.command.ts:50` |
-| `IssueMetadataService.checkSourceLabel` | 2 | `IssueMetadataService.map(…)`, `IssueMetadataService.map(…)` | `tools/validation/src/modules/issue-metadata/issue-metadata.service.ts:88` |
-| `IssueMetadataService.readLabelNames` | 2 | `IssueMetadataService.filter(…)`, `IssueMetadataService.map(…)` | `tools/validation/src/modules/issue-metadata/issue-metadata.service.ts:209` |
-| `IssueMetadataService.resolveFromEnvironment` | 2 | `IssueMetadataService.describeError`, `IssueMetadataService.readLabelNames` | `tools/validation/src/modules/issue-metadata/issue-metadata.service.ts:311` |
-| `IssueMetadataCommand.failWithMessage` | 2 | `IssueMetadataCommand.appendToReport`, `IssueMetadataCommand.mirrorToStepSummary` | `tools/validation/src/modules/issue-metadata/issue-metadata.command.ts:77` |
-| `IssueMetadataCommand.failWithUsageError` | 2 | `IssueMetadataCommand.appendToReport`, `IssueMetadataCommand.mirrorToStepSummary` | `tools/validation/src/modules/issue-metadata/issue-metadata.command.ts:85` |
-| `IssueMetadataCommand.readEnvironmentMetadata` | 2 | `IssueMetadataCommand.failWithUsageError`, `IssueMetadataService.resolveFromEnvironment` | `tools/validation/src/modules/issue-metadata/issue-metadata.command.ts:131` |
-| `IssueMetadataCommand.reportFailures` | 2 | `IssueMetadataCommand.appendToReport`, `IssueMetadataCommand.mirrorToStepSummary` | `tools/validation/src/modules/issue-metadata/issue-metadata.command.ts:181` |
+| `IssueMetadataGithubService.listOpenIssues` | 2 | `IssueMetadataGithubService.run`, `IssueMetadataGithubService.describeFailure` | `tools/validation/src/modules/issue-metadata/issue-metadata-github.service.ts:65` |
+| `IssueMetadataService.checkSourceLabel` | 2 | `IssueMetadataService.map(…)`, `IssueMetadataService.map(…)` | `tools/validation/src/modules/issue-metadata/issue-metadata.service.ts:97` |
+| `IssueMetadataService.readLabelNames` | 2 | `IssueMetadataService.filter(…)`, `IssueMetadataService.map(…)` | `tools/validation/src/modules/issue-metadata/issue-metadata.service.ts:241` |
+| `IssueMetadataService.resolveFromEnvironment` | 2 | `IssueMetadataService.describeError`, `IssueMetadataService.readLabelNames` | `tools/validation/src/modules/issue-metadata/issue-metadata.service.ts:453` |
+| `IssueMetadataService.resolveIssueReleaseLevel` | 2 | `IssueMetadataService.hasBreakingMarker`, `IssueMetadataService.resolveStandardReleaseLevel` | `tools/validation/src/modules/issue-metadata/issue-metadata.service.ts:485` |
+| `IssueMetadataCommand.failWithMessage` | 2 | `IssueMetadataCommand.appendToReport`, `IssueMetadataCommand.mirrorToStepSummary` | `tools/validation/src/modules/issue-metadata/issue-metadata.command.ts:79` |
+| `IssueMetadataCommand.failWithUsageError` | 2 | `IssueMetadataCommand.appendToReport`, `IssueMetadataCommand.mirrorToStepSummary` | `tools/validation/src/modules/issue-metadata/issue-metadata.command.ts:87` |
+| `IssueMetadataCommand.readEnvironmentMetadata` | 2 | `IssueMetadataCommand.failWithUsageError`, `IssueMetadataService.resolveFromEnvironment` | `tools/validation/src/modules/issue-metadata/issue-metadata.command.ts:133` |
+| `IssueMetadataCommand.reportFailures` | 2 | `IssueMetadataCommand.appendToReport`, `IssueMetadataCommand.mirrorToStepSummary` | `tools/validation/src/modules/issue-metadata/issue-metadata.command.ts:183` |
 | `PullRequestBodyService.checkBody` | 2 | `PullRequestBodyService.findMissingHeadings`, `PullRequestBodyService.findUnfilledComments` | `tools/validation/src/modules/pull-request-body/pull-request-body.service.ts:50` |
 | `PullRequestBodyService.findMissingHeadings` | 2 | `PullRequestBodyService.map(…)`, `PullRequestBodyService.filter(…)` | `tools/validation/src/modules/pull-request-body/pull-request-body.service.ts:68` |
 | `PullRequestMetadataService.checkSourceLabel` | 2 | `PullRequestMetadataService.map(…)`, `PullRequestMetadataService.map(…)` | `tools/validation/src/modules/pull-request-metadata/pull-request-metadata.service.ts:93` |
@@ -292,13 +328,17 @@ What this project is judged against, as declared in its own `callidescope.config
 | `PullRequestReleaseSignificanceCommand.failWithMessage` | 2 | `PullRequestReleaseSignificanceCommand.appendToReport`, `PullRequestReleaseSignificanceCommand.mirrorToStepSummary` | `tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.command.ts:73` |
 | `PullRequestReleaseSignificanceCommand.failWithUsageError` | 2 | `PullRequestReleaseSignificanceCommand.appendToReport`, `PullRequestReleaseSignificanceCommand.mirrorToStepSummary` | `tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.command.ts:81` |
 | `PullRequestReleaseSignificanceCommand.reportFailures` | 2 | `PullRequestReleaseSignificanceCommand.appendToReport`, `PullRequestReleaseSignificanceCommand.mirrorToStepSummary` | `tools/validation/src/modules/pull-request-release-significance/pull-request-release-significance.command.ts:146` |
+| `AuditGovernanceService.parseCodeownersLines` | 1 | `AuditGovernanceService.parseCodeownersRule` | `tools/validation/src/modules/audit-governance/audit-governance.service.ts:172` |
+| `AuditGovernanceService.sliceJobsSection` | 1 | `AuditGovernanceService.findIndex(…)` | `tools/validation/src/modules/audit-governance/audit-governance.service.ts:221` |
 | `CatalogManifestsService.isInternalWorkspaceDependency` | 1 | `CatalogManifestsService.some(…)` | `tools/validation/src/modules/catalog-manifests/catalog-manifests.service.ts:37` |
 | `CatalogManifestsService.validateManifestDependencies` | 1 | `CatalogManifestsService.isInternalWorkspaceDependency` | `tools/validation/src/modules/catalog-manifests/catalog-manifests.service.ts:84` |
-| `IssueMetadataGithubService.describeFailure` | 1 | `IssueMetadataGithubService.filter(…)` | `tools/validation/src/modules/issue-metadata/issue-metadata-github.service.ts:47` |
-| `IssueMetadataGithubService.isAvailable` | 1 | `IssueMetadataGithubService.run` | `tools/validation/src/modules/issue-metadata/issue-metadata-github.service.ts:56` |
-| `IssueMetadataService.checkTypeLabelPresence` | 1 | `IssueMetadataService.map(…)` | `tools/validation/src/modules/issue-metadata/issue-metadata.service.ts:162` |
-| `IssueMetadataService.map(…)` | 1 | `IssueMetadataService.isRecord` | `tools/validation/src/modules/issue-metadata/issue-metadata.service.ts:211` |
-| `IssueMetadataService.parseFormAnswers` | 1 | `IssueMetadataService.extractFormField` | `tools/validation/src/modules/issue-metadata/issue-metadata.service.ts:274` |
+| `IssueMetadataGithubService.describeFailure` | 1 | `IssueMetadataGithubService.filter(…)` | `tools/validation/src/modules/issue-metadata/issue-metadata-github.service.ts:51` |
+| `IssueMetadataGithubService.isAvailable` | 1 | `IssueMetadataGithubService.run` | `tools/validation/src/modules/issue-metadata/issue-metadata-github.service.ts:60` |
+| `IssueMetadataService.checkTypeLabelPresence` | 1 | `IssueMetadataService.map(…)` | `tools/validation/src/modules/issue-metadata/issue-metadata.service.ts:163` |
+| `IssueMetadataService.computeHierarchyDepth` | 1 | `IssueMetadataService.extractParentIssueNumber` | `tools/validation/src/modules/issue-metadata/issue-metadata.service.ts:183` |
+| `IssueMetadataService.map(…)` | 1 | `IssueMetadataService.isRecord` | `tools/validation/src/modules/issue-metadata/issue-metadata.service.ts:243` |
+| `IssueMetadataService.resolveStandardReleaseLevel` | 1 | `IssueMetadataService.find(…)` | `tools/validation/src/modules/issue-metadata/issue-metadata.service.ts:257` |
+| `IssueMetadataService.parseFormAnswers` | 1 | `IssueMetadataService.extractFormField` | `tools/validation/src/modules/issue-metadata/issue-metadata.service.ts:416` |
 | `LockfileService.checkLockfile` | 1 | `LockfileService.runFrozenInstall` | `tools/validation/src/modules/lockfile/lockfile.service.ts:60` |
 | `LockfileCommand.run` | 1 | `LockfileService.checkLockfile` | `tools/validation/src/modules/lockfile/lockfile.command.ts:50` |
 | `PullRequestBodyService.extractTemplateComments` | 1 | `PullRequestBodyService.map(…)` | `tools/validation/src/modules/pull-request-body/pull-request-body.service.ts:61` |
@@ -349,6 +389,7 @@ graph LR
 <!-- codependix:start name="codependix-nestjs-modules" -->
 ```mermaid
 flowchart LR
+  AuditGovernanceModule
   CatalogManifestsModule
   ConfigModule([ConfigModule])
   DiscoveryModule
@@ -360,6 +401,7 @@ flowchart LR
   PullRequestMetadataModule
   PullRequestReleaseSignificanceModule
   ReadmeProjectsModule
+  MainModule --> AuditGovernanceModule
   MainModule --> CatalogManifestsModule
   MainModule --> DiscoveryModule
   MainModule --> IssueMetadataModule
@@ -387,6 +429,14 @@ graph LR
   file_src_main_module_ts["src/main.module.ts"]
   file_src_main_ts["src/main.ts"]
   file_src_main_unit_test_ts["src/main.unit.test.ts"]
+  file_src_modules_audit_governance_audit_governance_command_ts["src/modules/audit-governance/audit-governance.command.ts"]
+  file_src_modules_audit_governance_audit_governance_command_unit_test_ts["src/modules/audit-governance/audit-governance.command.unit.test.ts"]
+  file_src_modules_audit_governance_audit_governance_constants_ts["src/modules/audit-governance/audit-governance.constants.ts"]
+  file_src_modules_audit_governance_audit_governance_module_ts["src/modules/audit-governance/audit-governance.module.ts"]
+  file_src_modules_audit_governance_audit_governance_module_unit_test_ts["src/modules/audit-governance/audit-governance.module.unit.test.ts"]
+  file_src_modules_audit_governance_audit_governance_service_ts["src/modules/audit-governance/audit-governance.service.ts"]
+  file_src_modules_audit_governance_audit_governance_service_unit_test_ts["src/modules/audit-governance/audit-governance.service.unit.test.ts"]
+  file_src_modules_audit_governance_audit_governance_types_ts["src/modules/audit-governance/audit-governance.types.ts"]
   file_src_modules_catalog_manifests_catalog_manifests_command_ts["src/modules/catalog-manifests/catalog-manifests.command.ts"]
   file_src_modules_catalog_manifests_catalog_manifests_command_unit_test_ts["src/modules/catalog-manifests/catalog-manifests.command.unit.test.ts"]
   file_src_modules_catalog_manifests_catalog_manifests_constants_ts["src/modules/catalog-manifests/catalog-manifests.constants.ts"]
@@ -456,6 +506,7 @@ graph LR
   file_vitest_config_ts["vitest.config.ts"]
   file_src_main_end_to_end_test_ts --> file_src_constants_ts
   file_src_main_module_ts --> file_src_constants_ts
+  file_src_main_module_ts --> file_src_modules_audit_governance_audit_governance_module_ts
   file_src_main_module_ts --> file_src_modules_catalog_manifests_catalog_manifests_module_ts
   file_src_main_module_ts --> file_src_modules_issue_metadata_issue_metadata_module_ts
   file_src_main_module_ts --> file_src_modules_lockfile_lockfile_module_ts
@@ -464,6 +515,7 @@ graph LR
   file_src_main_module_ts --> file_src_modules_pull_request_release_significance_pull_request_release_significance_module_ts
   file_src_main_module_ts --> file_src_modules_readme_projects_readme_projects_module_ts
   file_src_main_ts --> file_src_main_module_ts
+  file_src_main_unit_test_ts --> file_src_modules_audit_governance_audit_governance_module_ts
   file_src_main_unit_test_ts --> file_src_modules_catalog_manifests_catalog_manifests_module_ts
   file_src_main_unit_test_ts --> file_src_modules_issue_metadata_issue_metadata_module_ts
   file_src_main_unit_test_ts --> file_src_modules_lockfile_lockfile_module_ts
@@ -471,6 +523,19 @@ graph LR
   file_src_main_unit_test_ts --> file_src_modules_pull_request_metadata_pull_request_metadata_module_ts
   file_src_main_unit_test_ts --> file_src_modules_pull_request_release_significance_pull_request_release_significance_module_ts
   file_src_main_unit_test_ts --> file_src_modules_readme_projects_readme_projects_module_ts
+  file_src_modules_audit_governance_audit_governance_command_ts --> file_src_modules_audit_governance_audit_governance_service_ts
+  file_src_modules_audit_governance_audit_governance_command_ts --> file_src_modules_audit_governance_audit_governance_types_ts
+  file_src_modules_audit_governance_audit_governance_command_unit_test_ts --> file_src_modules_audit_governance_audit_governance_command_ts
+  file_src_modules_audit_governance_audit_governance_command_unit_test_ts --> file_src_modules_audit_governance_audit_governance_service_ts
+  file_src_modules_audit_governance_audit_governance_command_unit_test_ts --> file_testing_mocks_ts
+  file_src_modules_audit_governance_audit_governance_module_ts --> file_src_modules_audit_governance_audit_governance_command_ts
+  file_src_modules_audit_governance_audit_governance_module_ts --> file_src_modules_audit_governance_audit_governance_service_ts
+  file_src_modules_audit_governance_audit_governance_module_unit_test_ts --> file_src_modules_audit_governance_audit_governance_command_ts
+  file_src_modules_audit_governance_audit_governance_module_unit_test_ts --> file_src_modules_audit_governance_audit_governance_module_ts
+  file_src_modules_audit_governance_audit_governance_module_unit_test_ts --> file_src_modules_audit_governance_audit_governance_service_ts
+  file_src_modules_audit_governance_audit_governance_service_ts --> file_src_modules_audit_governance_audit_governance_constants_ts
+  file_src_modules_audit_governance_audit_governance_service_ts --> file_src_modules_audit_governance_audit_governance_types_ts
+  file_src_modules_audit_governance_audit_governance_service_unit_test_ts --> file_src_modules_audit_governance_audit_governance_service_ts
   file_src_modules_catalog_manifests_catalog_manifests_command_ts --> file_src_modules_catalog_manifests_catalog_manifests_service_ts
   file_src_modules_catalog_manifests_catalog_manifests_command_unit_test_ts --> file_src_modules_catalog_manifests_catalog_manifests_command_ts
   file_src_modules_catalog_manifests_catalog_manifests_command_unit_test_ts --> file_src_modules_catalog_manifests_catalog_manifests_service_ts
@@ -610,36 +675,36 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-8386-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-270.68_kB-6b7280?style=flat-square)
-![Folders](https://img.shields.io/badge/Folders-10-4a4a4a?style=flat-square)
-![Source Files](https://img.shields.io/badge/Source_Files-76-3178c6?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-10065-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-317.95_kB-6b7280?style=flat-square)
+![Folders](https://img.shields.io/badge/Folders-11-4a4a4a?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-84-3178c6?style=flat-square)
 
 ### TypeScript
 
-![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-76-3178c6?style=flat-square)
-![Interfaces](https://img.shields.io/badge/Interfaces-22-0ea5e9?style=flat-square)
+![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-84-3178c6?style=flat-square)
+![Interfaces](https://img.shields.io/badge/Interfaces-32-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-0-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
-![Decorators](https://img.shields.io/badge/Decorators-32-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-206-6366f1?style=flat-square)
+![Decorators](https://img.shields.io/badge/Decorators-37-db2777?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-241-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-0-166534?style=flat-square)
 
 ### JavaScript
 
 ![JavaScript Files](https://img.shields.io/badge/JavaScript_Files-0-f7df1e?style=flat-square)
-![Test Files](https://img.shields.io/badge/Test_Files-27-10b981?style=flat-square)
+![Test Files](https://img.shields.io/badge/Test_Files-30-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-14-8b5cf6?style=flat-square)
-![Classes](https://img.shields.io/badge/Classes-25-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-462-16a34a?style=flat-square)
-![Methods](https://img.shields.io/badge/Methods-144-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-504-4ade80?style=flat-square)
-![Async Functions](https://img.shields.io/badge/Async_Functions-102-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-327-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-306-0284c7?style=flat-square)
-![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-115-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-307-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-746-475569?style=flat-square)
+![Classes](https://img.shields.io/badge/Classes-28-7c3aed?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-526-16a34a?style=flat-square)
+![Methods](https://img.shields.io/badge/Methods-180-15803d?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-593-4ade80?style=flat-square)
+![Async Functions](https://img.shields.io/badge/Async_Functions-113-059669?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-425-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-338-0284c7?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-139-ea580c?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-353-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-779-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python
@@ -660,16 +725,16 @@ graph LR
 ### JSON
 
 ![JSON Files](https://img.shields.io/badge/JSON_Files-3-a16207?style=flat-square)
-![JSON Lines](https://img.shields.io/badge/JSON_Lines-128-ca8a04?style=flat-square)
-![JSON Objects](https://img.shields.io/badge/JSON_Objects-37-7c3aed?style=flat-square)
+![JSON Lines](https://img.shields.io/badge/JSON_Lines-134-ca8a04?style=flat-square)
+![JSON Objects](https://img.shields.io/badge/JSON_Objects-39-7c3aed?style=flat-square)
 ![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-8-8b5cf6?style=flat-square)
-![JSON Properties](https://img.shields.io/badge/JSON_Properties-87-0284c7?style=flat-square)
-![JSON Strings](https://img.shields.io/badge/JSON_Strings-61-16a34a?style=flat-square)
+![JSON Properties](https://img.shields.io/badge/JSON_Properties-91-0284c7?style=flat-square)
+![JSON Strings](https://img.shields.io/badge/JSON_Strings-63-16a34a?style=flat-square)
 ![JSON Numbers](https://img.shields.io/badge/JSON_Numbers-1-059669?style=flat-square)
 ![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-6-0ea5e9?style=flat-square)
 ![JSON Nulls](https://img.shields.io/badge/JSON_Nulls-0-64748b?style=flat-square)
 ![JSON Items](https://img.shields.io/badge/JSON_Items-23-475569?style=flat-square)
-![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-113-dc2626?style=flat-square)
+![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-117-dc2626?style=flat-square)
 ![JSON Max Depth](https://img.shields.io/badge/JSON_Max_Depth-6-ea580c?style=flat-square)
 
 ### YAML
@@ -750,14 +815,14 @@ graph LR
 
 ### Conventions
 
-![Module Files](https://img.shields.io/badge/Module_Files-8-7c3aed?style=flat-square)
-![Service Files](https://img.shields.io/badge/Service_Files-10-0284c7?style=flat-square)
-![Command Files](https://img.shields.io/badge/Command_Files-7-16a34a?style=flat-square)
-![Constants Files](https://img.shields.io/badge/Constants_Files-7-ea580c?style=flat-square)
-![Types Files](https://img.shields.io/badge/Types_Files-7-db2777?style=flat-square)
+![Module Files](https://img.shields.io/badge/Module_Files-9-7c3aed?style=flat-square)
+![Service Files](https://img.shields.io/badge/Service_Files-11-0284c7?style=flat-square)
+![Command Files](https://img.shields.io/badge/Command_Files-8-16a34a?style=flat-square)
+![Constants Files](https://img.shields.io/badge/Constants_Files-8-ea580c?style=flat-square)
+![Types Files](https://img.shields.io/badge/Types_Files-8-db2777?style=flat-square)
 ![Utilities Files](https://img.shields.io/badge/Utilities_Files-0-0ea5e9?style=flat-square)
 ![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-0-059669?style=flat-square)
-![Unit Tests](https://img.shields.io/badge/Unit_Tests-26-ca8a04?style=flat-square)
+![Unit Tests](https://img.shields.io/badge/Unit_Tests-29-ca8a04?style=flat-square)
 ![Integration Tests](https://img.shields.io/badge/Integration_Tests-0-7c3aed?style=flat-square)
 ![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-1-0284c7?style=flat-square)
 ![CSS Comment Budget](https://img.shields.io/badge/CSS_Comment_Budget-0-16a34a?style=flat-square)
