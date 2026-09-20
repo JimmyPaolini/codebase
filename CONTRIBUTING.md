@@ -266,7 +266,7 @@ Five workflows run on every pull request. Each maps to targets you can run local
 | Make Projects | Builds every buildable project and gates its declared bundle size                                                        | `nx affected --target=build-projects`             |
 | Comply Code   | Branch name, pull request title, body, labels, assignees, and release significance                                       | See [Pull Request Process](#pull-request-process) |
 
-🧑‍🏭 Make Codebase additionally builds the dev container image, but only when `.devcontainer/**` changes.
+🚀 Continuous Deployment runs post-merge on `main` to build and verify workspace projects and the dev container image.
 
 ## Code Standards
 
@@ -486,7 +486,7 @@ gh issue create --template issue.yml
 
 Issue titles follow the same `<type>(<scope>): <gitmoji> <subject>` convention as commits. Unlike a pull request title this is not enforced, so a quick backlog-idea title is a normal shape for an issue. Labels are the `type:*` and `scope:*` labels matching the title, one `source:*` label, and a triage label — `status:needs-triage`, `status:needs-info`, `status:ready-for-agent`, `status:ready-for-human`, or `wontfix`. A sixth, `status:in-progress`, is applied once implementation begins rather than during triage.
 
-The Audit Issues workflow checks issue metadata on `opened`, `edited`, `labeled`, and `unlabeled`, and on `opened` first reconciles the labels a submitted form implies. It has its own README badge, so a red one there means an issue and nothing else.
+The Continuous Compliance workflow checks issue metadata on `opened`, `edited`, `labeled`, and `unlabeled`, and on `opened` first reconciles the labels a submitted form implies. It has its own README badge, so a red one there means an issue and nothing else.
 
 Planned work is filed in three layers — a spec, one parent issue per pull request beneath it, and one sub-issue per planned commit beneath that:
 

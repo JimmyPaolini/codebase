@@ -1,0 +1,163 @@
+name: 🦸 Continuous Deployment
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      verbose:
+        description: Enable verbose Nx logging
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: >-
+    ${{ github.workflow }}-${{ github.ref == 'refs/heads/main'
+    && github.sha || github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  continuous-deployment:
+    name: ${{ matrix.target.emoji }} ${{ matrix.target.name }}
+    runs-on: ubuntu-latest
+    timeout-minutes: ${{ matrix.target.timeout }}
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - id: build-codebase
+            name: Codebase
+            emoji: 👷
+            timeout: 12
+          - id: build-devcontainer
+            name: Devcontainer
+            emoji: 🧑‍🏭
+            timeout: 20
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: 🚦 Skip Conditionally
+        id: check-skip
+        run: |
+          TARGET_ID="${{ matrix.target.id }}"
+          EVENT_NAME="${{ github.event_name }}"
+
+          if [ "$TARGET_ID" = "build-devcontainer" ] && [ "$EVENT_NAME" = "push" ]; then
+            BEFORE_SHA="${{ github.event.before }}"
+            ZERO_SHA="0000000000000000000000000000000000000000"
+            if [ -n "$BEFORE_SHA" ] && [ "$BEFORE_SHA" != "$ZERO_SHA" ]; then
+              CHANGED_FILES=$(git diff --name-only "$BEFORE_SHA" \
+                "${{ github.sha }}" || true)
+            else
+              CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD || true)
+            fi
+
+            MATCH_PATTERN='^(\.devcontainer/|\.github/workflows/continuous-deployment\.yml)'
+            if ! echo "$CHANGED_FILES" | grep -qE "$MATCH_PATTERN"; then
+              echo "⏭️ No devcontainer changes detected; skipping devcontainer build."
+              echo "skip=true" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+          fi
+
+          echo "skip=false" >> "$GITHUB_OUTPUT"
+
+      # Codebase Build Steps
+      - name: 🕋 Setup Codebase
+        id: setup
+        if: >-
+          steps.check-skip.outputs.skip != 'true' &&
+          matrix.target.id == 'build-codebase'
+        uses: ./.github/actions/setup-codebase
+        with:
+          python-dependencies: "false"
+
+      - name: 👷 Build Codebase
+        if: >-
+          steps.check-skip.outputs.skip != 'true' &&
+          matrix.target.id == 'build-codebase'
+        env:
+          NX_VERBOSE_LOGGING: ${{ inputs.verbose || false }}
+        run: pnpm exec nx affected --target=build-projects
+
+      - name: 🧹 Cleanup Codebase
+        if: >-
+          always() &&
+          steps.check-skip.outputs.skip != 'true' &&
+          matrix.target.id == 'build-codebase'
+        uses: ./.github/actions/cleanup-codebase
+        with:
+          nx-cache-primary-key: ${{ steps.setup.outputs.nx-cache-primary-key }}
+
+      # Devcontainer Build & Publish Steps
+      - name: 🗂️ Setup Environment File
+        if: >-
+          steps.check-skip.outputs.skip != 'true' &&
+          matrix.target.id == 'build-devcontainer'
+        run: |
+          cp .env.default .env
+          echo "LOCAL_WORKSPACE_FOLDER=$GITHUB_WORKSPACE" >> .env
+
+      - name: 🔧 Set up Docker Buildx
+        if: >-
+          steps.check-skip.outputs.skip != 'true' &&
+          matrix.target.id == 'build-devcontainer'
+        uses: docker/setup-buildx-action@v4
+
+      - name: 🔐 Login to GitHub Container Registry
+        if: >-
+          steps.check-skip.outputs.skip != 'true' &&
+          matrix.target.id == 'build-devcontainer'
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🐳 Build Devcontainer Image
+        if: >-
+          steps.check-skip.outputs.skip != 'true' &&
+          matrix.target.id == 'build-devcontainer'
+        uses: devcontainers/ci@v0.3
+        with:
+          configFile: .devcontainer/cloud/devcontainer.json
+          imageName: ghcr.io/jimmypaolini/codebase-devcontainer
+          cacheFrom: |
+            ghcr.io/jimmypaolini/codebase-devcontainer:latest
+          push: filter
+          refFilterForPush: |
+            refs/heads/main
+          eventFilterForPush: |
+            push
+            workflow_dispatch
+          env: |
+            CI=true
+            GH_TOKEN=${{ secrets.GITHUB_TOKEN }}
+            GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🔬 Test Devcontainer Image
+        if: >-
+          steps.check-skip.outputs.skip != 'true' &&
+          matrix.target.id == 'build-devcontainer'
+        uses: devcontainers/ci@v0.3
+        with:
+          configFile: .devcontainer/cloud/devcontainer.json
+          imageName: ghcr.io/jimmypaolini/codebase-devcontainer
+          cacheFrom: |
+            ghcr.io/jimmypaolini/codebase-devcontainer:latest
+          push: never
+          env: |
+            CI=true
+            GH_TOKEN=${{ secrets.GITHUB_TOKEN }}
+            GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
+          runCmd: |
+            bash .devcontainer/scripts/test-devcontainer.sh

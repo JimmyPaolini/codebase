@@ -186,7 +186,7 @@ Exit code is `0` if all tests pass, `1` if any fail.
 
 ### Run tests in CI
 
-The `🧑‍🔧 Make Codebase` job in [`.github/workflows/make-codebase.yml`](../.github/workflows/make-codebase.yml) builds the container image and executes the test script inside it. It is scoped by `on.paths` to changes under `.devcontainer/**`.
+The `🧑‍🏭 Devcontainer` target in [`.github/workflows/continuous-deployment.yml`](../.github/workflows/continuous-deployment.yml) builds the container image and executes the test script inside it. It runs on pushes to `main` when `.devcontainer/**` changes.
 
 Pushes to `main` publish `ghcr.io/jimmypaolini/codebase-devcontainer:latest`, and that image is both the usable image and the build cache. This configuration is compose-based, and for compose configurations the devcontainer CLI bakes `BUILDKIT_INLINE_CACHE=1` into the feature build, so the published image carries its own layer metadata and the next run's `cacheFrom` resolves against it. Pull the image to run the devcontainer without building it.
 

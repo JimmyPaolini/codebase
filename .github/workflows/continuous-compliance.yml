@@ -1,23 +1,23 @@
-name: 👮 Audit Issues
+name: 🦹 Continuous Compliance
 
-# Issue metadata — the `type:*`, `scope:*`, and `source:*` labels an issue
-# carries, judged against the `issue.yml` body it came from. Not an Nx target,
-# so this workflow skips `setup-codebase` entirely: no cache, no uv, no
-# install.
+# External and repository compliance checks outside the codebase, such as
+# issue metadata (`type:*`, `scope:*`, and `source:*` labels) judged against
+# the issue body.
 #
-# On `opened`, the labels a submitted body implies are reconciled onto the
-# issue first by `issue-labels` in `tools/synchronization`; the metadata check
-# is a one-sided command in `tools/validation`. Both run through node rather
-# than Nx, so no project graph is built.
+# On `opened`, labels implied by the issue body are reconciled by `issue-labels`
+# in `tools/synchronization`. The metadata check is executed by `issue-metadata`
+# in `tools/validation`. Both run through Node.js directly without building an
+# Nx project graph.
 #
-# GitHub gates no issue creation the way it gates a merge, so a
-# failing check blocks nothing — the issue already exists by then. It fails
-# the job anyway: this workflow's README badge is the signal, so a
-# mislabeled issue shows up there rather than in a comment nobody reads.
+# Mislabeled issues do not block creation on GitHub; this workflow fails the job
+# so the status is surfaced on the repository README badge.
 
 on:
   issues:
     types: [opened, edited, labeled, unlabeled]
+  schedule:
+    - cron: 18 12 * * * # Daily 8:18am NYC (EDT: 12:18 UTC / EST: 13:18 UTC)
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -98,10 +98,24 @@ jobs:
       # `gh issue view --json body,labels`, and given none it reads
       # ISSUE_BODY and ISSUE_LABELS. ISSUE_NUMBER is still set because the
       # remediation commands the report prints name it.
-      - name: 🧾 Audit Issue Metadata
+      - name: 🧾 Audit Single Issue Metadata
+        if: github.event.issue != null
         env:
           GH_TOKEN: ${{ github.token }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}
         run: |
           NODE_OPTIONS='' node --import @swc-node/register/esm-register \
             tools/validation/src/main.ts issue-metadata "$ISSUE_NUMBER"
+
+      - name: 🧾 Audit All Open Issues Metadata
+        if: github.event.issue == null
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh issue list --state open --limit 200 \
+            --json number --jq '.[].number' | while read -r ISSUE_NUMBER; do
+            if [ -n "$ISSUE_NUMBER" ]; then
+              NODE_OPTIONS='' node --import @swc-node/register/esm-register \
+                tools/validation/src/main.ts issue-metadata "$ISSUE_NUMBER"
+            fi
+          done
