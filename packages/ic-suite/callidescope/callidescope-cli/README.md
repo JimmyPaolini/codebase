@@ -148,7 +148,7 @@ the report from a branch. `codebase:codometer` sits outside that list for the
 same reason. The depth gate is therefore named directly, alongside
 `lint-code` and inside the same `nx affected` invocation, in both places
 that gate: the
-[🧑‍💻 Lint Codebase](../../../../.github/workflows/lint-code.yml) workflow, so it
+[🧑‍🔧 Lint Codebase](../../../../.github/workflows/lint-code.yml) workflow, so it
 runs on every pull request, and
 [`configuration/lint-staged.config.ts`](../../../../configuration/lint-staged.config.ts),
 so it runs on every commit. Depth reads source and needs no build, which is

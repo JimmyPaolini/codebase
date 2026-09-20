@@ -50,7 +50,7 @@ jobs:
             emoji: 🧑‍🎨
           - target: lint-code
             name: Lint
-            emoji: 🧑‍💻
+            emoji: 🧑‍🔧
           - target: deprecate-code
             name: Deprecate
             emoji: 🧟

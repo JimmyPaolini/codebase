@@ -1,4 +1,4 @@
-name: 🧑‍🔧 Make Codebase
+name: 🧑‍🏭 Make Codebase
 
 # Its own workflow so GitHub's native `on.paths` does the filtering. This lived
 # as a job inside Make Projects for a while, gated by `dorny/paths-filter`,
@@ -30,7 +30,7 @@ concurrency:
 
 jobs:
   make-codebase:
-    name: 🧑‍🔧 Make Codebase
+    name: 🧑‍🏭 Make Codebase
     runs-on: ubuntu-latest
     # 20, measured rather than guessed. Both ends are known now that a cache
     # exists: a warm run is 3m39s (build 1m26s, every feature layer CACHED),

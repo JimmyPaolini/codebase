@@ -48,7 +48,7 @@ taxonomy the commands declare about themselves. Six of the seven — every one
 except `pull-request-labels` — are **derivations**: committed files derived
 from configuration a pull request can also change, so `check` runs on a pull
 request and `write` runs on the default branch's release. The
-[🧑‍💻 Lint Codebase](../../.github/workflows/lint-code.yml) workflow and
+[🧑‍🔧 Lint Codebase](../../.github/workflows/lint-code.yml) workflow and
 [`configuration/lint-staged.config.ts`](../../configuration/lint-staged.config.ts)
 each name every derivation target directly alongside `lint-code` in one
 `nx affected` invocation, rather than reaching them through
@@ -126,7 +126,7 @@ sources as `inputs`, so `nx affected` only reruns it when a file it actually
 reads has changed, and each caller decides for itself which targets belong in
 which invocation:
 
-- [🧑‍💻 Lint Codebase](../../.github/workflows/lint-code.yml) and
+- [🧑‍🔧 Lint Codebase](../../.github/workflows/lint-code.yml) and
   [`configuration/lint-staged.config.ts`](../../configuration/lint-staged.config.ts)
   each name every derivation target directly alongside `lint-code` in one
   `nx affected` invocation, so a pull request and a commit both check drift.

@@ -256,7 +256,7 @@ The composite targets pick whichever set a project's `language:*` tag selects, s
 
 ### The Gates
 
-Five workflows run on every pull request. Each maps to targets you can run locally before pushing. GitHub shows each with an emoji prefix — 🧑‍💻 Lint Codebase, 🧑‍🔬 Test Coverage, 🕵️ Scan Security, 👷 Make Projects, 🧑‍⚖️ Validate Conventions.
+Five workflows run on every pull request. Each maps to targets you can run locally before pushing. GitHub shows each with an emoji prefix — 🧑‍🔧 Lint Codebase, 🧑‍🔬 Test Coverage, 🕵️ Scan Security, 👷 Make Projects, 🧑‍⚖️ Validate Conventions.
 
 | Workflow             | Runs                                                                                                                     | Local equivalent                                  |
 | -------------------- | ------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------- |
@@ -266,7 +266,7 @@ Five workflows run on every pull request. Each maps to targets you can run local
 | Make Projects        | Builds every buildable project and gates its declared bundle size                                                        | `nx affected --target=build-projects`             |
 | Validate Conventions | Branch name, pull request title, body, labels, assignees, and release significance                                       | See [Pull Request Process](#pull-request-process) |
 
-🧑‍🔧 Make Codebase additionally builds the dev container image, but only when `.devcontainer/**` changes.
+🧑‍🏭 Make Codebase additionally builds the dev container image, but only when `.devcontainer/**` changes.
 
 ## Code Standards
 
