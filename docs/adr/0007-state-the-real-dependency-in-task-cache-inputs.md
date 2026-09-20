@@ -6,7 +6,7 @@ workspace. It once named `pnpm-lock.yaml`, `nx.json`, and
 `.github/workflows/*.yml`. Those changed on 100, 53, and 86 of every 100 commits
 to `main` respectively, and because a pull request is built from the merge
 commit, every branch inherited that churn. Every task in the workspace re-hashed
-on essentially every run, and 🧑‍💻 Lint Codebase never recorded a single cache
+on essentially every run, and 🧑‍🔧 Lint Codebase never recorded a single cache
 hit: it ran 475–520 tasks cold every time and took 5–9 minutes against a
 12-minute limit. Nothing failed. The work was simply repeated.
 

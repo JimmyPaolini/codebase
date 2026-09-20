@@ -186,7 +186,7 @@ _This project has no immediate Nx dependencies or dependents._
 ### Project
 
 ![Lines of Code](https://img.shields.io/badge/Lines_of_Code-4271-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-218.25_kB-6b7280?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-218.49_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-3-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-15-3178c6?style=flat-square)
 
@@ -235,16 +235,16 @@ _This project has no immediate Nx dependencies or dependents._
 ### JSON
 
 ![JSON Files](https://img.shields.io/badge/JSON_Files-3-a16207?style=flat-square)
-![JSON Lines](https://img.shields.io/badge/JSON_Lines-100-ca8a04?style=flat-square)
-![JSON Objects](https://img.shields.io/badge/JSON_Objects-39-7c3aed?style=flat-square)
+![JSON Lines](https://img.shields.io/badge/JSON_Lines-108-ca8a04?style=flat-square)
+![JSON Objects](https://img.shields.io/badge/JSON_Objects-46-7c3aed?style=flat-square)
 ![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-1-8b5cf6?style=flat-square)
-![JSON Properties](https://img.shields.io/badge/JSON_Properties-68-0284c7?style=flat-square)
+![JSON Properties](https://img.shields.io/badge/JSON_Properties-75-0284c7?style=flat-square)
 ![JSON Strings](https://img.shields.io/badge/JSON_Strings-34-16a34a?style=flat-square)
 ![JSON Numbers](https://img.shields.io/badge/JSON_Numbers-0-059669?style=flat-square)
 ![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-1-0ea5e9?style=flat-square)
 ![JSON Nulls](https://img.shields.io/badge/JSON_Nulls-0-64748b?style=flat-square)
 ![JSON Items](https://img.shields.io/badge/JSON_Items-4-475569?style=flat-square)
-![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-75-dc2626?style=flat-square)
+![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-82-dc2626?style=flat-square)
 ![JSON Max Depth](https://img.shields.io/badge/JSON_Max_Depth-6-ea580c?style=flat-square)
 
 ### YAML

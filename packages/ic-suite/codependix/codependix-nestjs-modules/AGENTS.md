@@ -68,7 +68,7 @@ Outputs structured JSON in production (`NODE_ENV=production`) and pretty-printed
 Always prefer running tasks through Nx rather than calling the underlying tools directly.
 
 ```bash
-nx run codependix-nestjs-modules:lint-codebase   # Every static check, in one graph
+nx run codependix-nestjs-modules:typecheck-code,lint-code,format-code,deprecate-code,guard-code   # Every static check, in one graph
 nx run codependix-nestjs-modules:typecheck       # tsc --noEmit
 nx run codependix-nestjs-modules:oxfmt           # Formatting
 nx run codependix-nestjs-modules:build           # Compile for publication
