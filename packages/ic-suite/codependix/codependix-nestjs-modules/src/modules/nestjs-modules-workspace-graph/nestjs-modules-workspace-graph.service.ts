@@ -82,8 +82,8 @@ export class NestjsModulesWorkspaceGraphService {
   ): NestjsModulesWorkspaceGraph {
     const moduleNames = this.sortNames(
       graphs.flatMap((graph) =>
-        graph.moduleNames.map((moduleName) =>
-          this.qualifyModuleName(graph.projectName, moduleName),
+        graph.nodes.map((node) =>
+          this.qualifyModuleName(graph.projectName, node.name),
         ),
       ),
     );

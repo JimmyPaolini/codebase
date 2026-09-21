@@ -229,7 +229,7 @@ describe(BoundaryCheckService, () => {
       ambientModuleNames: [],
       edges: [],
       isolatedModuleNames: [],
-      moduleNames: ["AppModule"],
+      nodes: [{ declaringFile: "src/app.module.ts", name: "AppModule" }],
       projectName: "a",
     });
 
@@ -259,7 +259,7 @@ describe(BoundaryCheckService, () => {
       ambientModuleNames: [],
       edges: [],
       isolatedModuleNames: [],
-      moduleNames: [],
+      nodes: [],
       projectName: "b",
     });
 

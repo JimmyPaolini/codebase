@@ -146,7 +146,7 @@ export async function exploreAll(
       const graph = await buildContainerGraph(segments);
 
       explorations.push({
-        moduleCount: graph.moduleNames.length,
+        moduleCount: graph.nodes.length,
         name,
         outcome: "explored",
       });

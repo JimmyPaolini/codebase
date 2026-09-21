@@ -1,3 +1,5 @@
+import path from "node:path";
+
 import { Injectable } from "@nestjs/common";
 
 import {
@@ -7,9 +9,11 @@ import {
   MODULE_GRAPH_UNCONNECTED,
 } from "./module-graph.constants";
 
+import type { NestjsSpelunkedTree } from "../nestjs-project/nestjs-project.types";
 import type {
   NestjsModuleGraph,
   NestjsModuleGraphEdge,
+  NestjsModuleGraphNode,
 } from "./module-graph.types";
 import type { SpelunkedTree } from "nestjs-spelunker";
 
@@ -42,31 +46,49 @@ export class ModuleGraphService {
 
   // 🔏 Private Methods
 
-  /** Walks the tree into the edges worth drawing and the modules they touch. */
-  private collectEdges(
-    tree: SpelunkedTree[],
+  /** Walks the tree into the edges worth drawing and the nodes they touch. */
+  private collectEdgesAndNodes(
+    tree: NestjsSpelunkedTree[],
     ambientModuleNames: Set<string>,
   ): {
     connectedModuleNames: Set<string>;
     edges: NestjsModuleGraphEdge[];
-    moduleNames: Set<string>;
+    nodes: NestjsModuleGraphNode[];
   } {
-    const moduleNames = new Set(tree.map((node) => node.name));
+    const nodes: NestjsModuleGraphNode[] = [];
     const connectedModuleNames = new Set<string>();
     const edges: NestjsModuleGraphEdge[] = [];
+
+    const addNode = (name: string, declaringFile: string): void => {
+      if (
+        !nodes.some(
+          (node) => node.name === name && node.declaringFile === declaringFile,
+        )
+      ) {
+        nodes.push({ declaringFile, name });
+      }
+    };
+
+    for (const node of tree) {
+      addNode(node.name, node.declaringFile ?? "");
+    }
 
     for (const node of tree) {
       for (const importedName of node.imports) {
         if (ambientModuleNames.has(importedName)) continue;
 
         edges.push({ source: node.name, target: importedName });
-        moduleNames.add(importedName);
         connectedModuleNames.add(node.name);
         connectedModuleNames.add(importedName);
+
+        const matchingTreeNode = tree.find(
+          (candidate) => candidate.name === importedName,
+        );
+        addNode(importedName, matchingTreeNode?.declaringFile ?? "");
       }
     }
 
-    return { connectedModuleNames, edges, moduleNames };
+    return { connectedModuleNames, edges, nodes };
   }
 
   /** Sorts edges by source then target so the rendered diagram never churns. */
@@ -77,6 +99,17 @@ export class ModuleGraphService {
     return (
       first.source.localeCompare(second.source) ||
       first.target.localeCompare(second.target)
+    );
+  }
+
+  /** Sorts nodes by name then declaring file so the graph is stable. */
+  private compareNodes(
+    first: NestjsModuleGraphNode,
+    second: NestjsModuleGraphNode,
+  ): number {
+    return (
+      first.name.localeCompare(second.name) ||
+      first.declaringFile.localeCompare(second.declaringFile)
     );
   }
 
@@ -133,39 +166,50 @@ export class ModuleGraphService {
   // 🌎 Public Methods
 
   /** Reduces an explored container to a Graph of its module imports. */
-  buildGraph(tree: SpelunkedTree[], projectName: string): NestjsModuleGraph {
+  buildGraph(
+    tree: NestjsSpelunkedTree[],
+    projectName: string,
+  ): NestjsModuleGraph {
     const ambientModuleNames = this.findAmbientModuleNames(tree);
-    const { connectedModuleNames, edges, moduleNames } = this.collectEdges(
+    const { connectedModuleNames, edges, nodes } = this.collectEdgesAndNodes(
       tree,
       ambientModuleNames,
     );
-    const sortedModuleNames = this.sortNames(moduleNames);
+    const sortedNodes = nodes.toSorted((first, second) =>
+      this.compareNodes(first, second),
+    );
+    const distinctModuleNames = this.sortNames(
+      new Set(sortedNodes.map((node) => node.name)),
+    );
 
     return {
       ambientModuleNames: this.sortNames(ambientModuleNames),
       edges: edges.toSorted((first, second) =>
         this.compareEdges(first, second),
       ),
-      isolatedModuleNames: sortedModuleNames.filter(
+      isolatedModuleNames: distinctModuleNames.filter(
         (moduleName) => !connectedModuleNames.has(moduleName),
       ),
-      moduleNames: sortedModuleNames,
+      nodes: sortedNodes,
       projectName,
     };
   }
 
+  /** Derives the project-relative folder a module belongs to from its declaring file. */
+  deriveModuleFolder(node: NestjsModuleGraphNode): string {
+    return path.posix.dirname(node.declaringFile.replaceAll("\\", "/"));
+  }
+
   /** Renders a module graph as a fenced mermaid diagram. */
   renderMermaid(graph: NestjsModuleGraph): string {
-    if (graph.moduleNames.length === 0) {
+    if (graph.nodes.length === 0) {
       return MODULE_GRAPH_UNCONNECTED;
     }
 
     const lines = [
       "```mermaid",
       MODULE_GRAPH_MERMAID_HEADER,
-      ...graph.moduleNames.map(
-        (moduleName) => `  ${this.renderNode(moduleName, graph)}`,
-      ),
+      ...graph.nodes.map((node) => `  ${this.renderNode(node.name, graph)}`),
       ...graph.edges.map((edge) => `  ${edge.source} --> ${edge.target}`),
       "```",
     ];

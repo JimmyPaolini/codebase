@@ -18,7 +18,10 @@ import {
   NESTJS_PROJECT_TAG,
 } from "./nestjs-project.constants";
 
-import type { NestjsProject } from "./nestjs-project.types";
+import type {
+  NestjsProject,
+  NestjsSpelunkedTree,
+} from "./nestjs-project.types";
 import type { DynamicModule, Type } from "@nestjs/common";
 import type { SpelunkedTree } from "nestjs-spelunker";
 
@@ -62,6 +65,40 @@ export class NestjsProjectService {
     );
 
     return SyntheticRootModule.forModules(loadedClasses.flat());
+  }
+
+  /**
+   * Discovers declaring files for every module in a project, relative to its
+   * root.
+   */
+  private async discoverModuleDeclaringFiles(
+    project: NestjsProject,
+  ): Promise<Map<string, string>> {
+    const moduleFiles = this.findModuleFiles(
+      path.join(project.absoluteRoot, "src"),
+    );
+
+    if (
+      project.rootModuleFile !== undefined &&
+      !moduleFiles.includes(project.rootModuleFile)
+    ) {
+      moduleFiles.push(project.rootModuleFile);
+    }
+
+    const declaringFiles = new Map<string, string>();
+
+    for (const file of moduleFiles) {
+      const relativePath = path
+        .relative(project.absoluteRoot, file)
+        .replaceAll("\\", "/");
+      const loadedClasses = await this.loadModuleClasses(file);
+
+      for (const moduleClass of loadedClasses) {
+        declaringFiles.set(moduleClass.name, relativePath);
+      }
+    }
+
+    return declaringFiles;
   }
 
   /** Finds every module definition file beneath a directory. */
@@ -150,12 +187,13 @@ export class NestjsProjectService {
   }
 
   /** Explores a project's container in preview mode and returns its tree. */
-  async exploreProject(project: NestjsProject): Promise<SpelunkedTree[]> {
+  async exploreProject(project: NestjsProject): Promise<NestjsSpelunkedTree[]> {
     const { rootModuleFile } = project;
     const rootModule =
       rootModuleFile === undefined
         ? await this.buildSyntheticRootModule(project)
         : await this.loadRootModule(rootModuleFile);
+    const declaringFiles = await this.discoverModuleDeclaringFiles(project);
 
     const application = await NestFactory.createApplicationContext(rootModule, {
       abortOnError: false,
@@ -163,8 +201,10 @@ export class NestjsProjectService {
       preview: true,
     });
 
+    let tree: SpelunkedTree[];
+
     try {
-      return SpelunkerModule.explore(application, {
+      tree = SpelunkerModule.explore(application, {
         ignoreImports: [
           ...NESTJS_PROJECT_IGNORED_MODULES,
           ...(rootModuleFile === undefined
@@ -178,6 +218,11 @@ export class NestjsProjectService {
       });
       await application.close();
     }
+
+    return tree.map((node) => ({
+      ...node,
+      declaringFile: declaringFiles.get(node.name),
+    }));
   }
 
   /** Reports whether a project's Nx tags mark it as a NestJS project. */

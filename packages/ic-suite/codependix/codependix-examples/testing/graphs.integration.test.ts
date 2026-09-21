@@ -121,8 +121,10 @@ describe("codependix example graphs", () => {
         "container",
       ]);
 
-      expect(graph.moduleNames).toContain("CatalogModule");
-      expect(graph.moduleNames).toContain("ConnectionModule");
+      const moduleNames = graph.nodes.map((node) => node.name);
+
+      expect(moduleNames).toContain("CatalogModule");
+      expect(moduleNames).toContain("ConnectionModule");
     });
 
     it("explores a rooted project outward from its own MainModule", async () => {
@@ -133,10 +135,25 @@ describe("codependix example graphs", () => {
         "rooted-application",
       ]);
 
-      expect(graph.moduleNames).toStrictEqual([
+      expect(graph.nodes.map((node) => node.name)).toStrictEqual([
         "CatalogModule",
         "InventoryModule",
         "MainModule",
+      ]);
+    });
+
+    it("carries project-relative declaring files on module nodes", async () => {
+      expect.hasAssertions();
+
+      const graph = await nestjsGraphs.buildContainerGraph([
+        "container-rooting",
+        "rooted-application",
+      ]);
+
+      expect(graph.nodes).toStrictEqual([
+        { declaringFile: "src/catalog.module.ts", name: "CatalogModule" },
+        { declaringFile: "src/inventory.module.ts", name: "InventoryModule" },
+        { declaringFile: "src/main.module.ts", name: "MainModule" },
       ]);
     });
 
@@ -148,8 +165,10 @@ describe("codependix example graphs", () => {
         "global-container",
       ]);
 
-      expect(graph.moduleNames).not.toContain("SyntheticRootModule");
-      expect(graph.moduleNames).not.toContain("ConfigModule");
+      const moduleNames = graph.nodes.map((node) => node.name);
+
+      expect(moduleNames).not.toContain("SyntheticRootModule");
+      expect(moduleNames).not.toContain("ConfigModule");
     });
 
     it("isolates one project's failure from every other project", async () => {
