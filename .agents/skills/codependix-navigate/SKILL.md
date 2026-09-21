@@ -1,120 +1,149 @@
 ---
 name: codependix-navigate
-description: Read a committed codependix dependency graph to answer a question about a codebase before changing it — what depends on this project, what a rename or a signature change would touch, which modules a NestJS container really wires together, or whether a file-level import cycle is real. Use when scoping the blast radius of a refactor, when tracing why a project pulls in something it should not, when checking whether a file is actually unused, or when reading an exported Nx Neighborhood, module graph, or import graph rather than producing one.
+description: Answer dependency navigation and architecture questions using codependix CLI commands or committed graphs. Use when finding dependency paths between projects, files, or NestJS modules, tracing blast radius, determining what touches or imports a file or package, choosing narrowing flags to minimize run costs, or reading committed README diagrams across packages without running commands.
 license: MIT
 ---
 
-# Reading a codependix graph
+# Navigating a codebase with codependix
 
-Codependix's exports are standing reference artifacts, not pass/fail reports.
-A repository that runs it has already answered "what depends on this" and
-committed the answer — usually as a Mermaid diagram in a readme, sometimes as
-JSON. Reading that is faster and more complete than re-deriving it by grepping
-for imports, and it is the right first move when scoping a refactor.
+Codependix builds and queries dependency graphs across Nx workspaces, NestJS
+containers, and file-level TypeScript and Python imports. When asking "how does X
+reach Y?", "what breaks if I change Z?", or "what does this package depend
+on?", use codependix commands to query relationships directly, or inspect
+committed graphs already on disk.
 
-Look for a `## 🕸️ Codependix` section, or for the marker pair
-`<!-- codependix:start name="..." -->`, in a project's readme. The workspace's
-own graph is exported once at the repository root.
+## Command first: querying dependency paths
 
-## Confirm it is current first
+Reach for `codependix path` to trace directed dependency paths between two
+nodes without parsing diagrams or grepping source files by hand.
 
-**A committed graph is only as fresh as the last `--write`.** Before trusting
-one to scope a change, run `codependix map --check` — it reports exactly which
-exports disagree with a freshly built graph and writes nothing. If the graph
-you are about to read is among them, `--write` first. The `codependix-export`
-skill covers both modes.
+```bash
+# How does project-a reach project-c?
+codependix path project-a project-c
 
-A graph that is stale in the direction that matters — an edge added since the
-last write — is the one way this reference misleads rather than merely lags.
+# How does one file import another?
+codependix path src/modules/auth/auth.service.ts src/modules/users/user.entity.ts
 
-## Four graphs, four different questions
+# What NestJS modules connect two modules in a container?
+codependix path AuthModule DatabaseModule
+```
 
-| Graph | Answers |
-| ----- | ------- |
-| Nx Neighborhood | What one project needs from the workspace, and who breaks if it changes |
-| Workspace graph | The whole repository's project-level dependency structure at once |
-| NestJS module graph | What a project's container actually wires together at runtime |
-| File import graph | Which of a project's own files import which others |
+### Path query flags and narrowing
 
-Pick by the scope of the question. A cross-project rename is a Neighborhood
-question; moving a file within a project is an import-graph question; "why does
-this service get that provider" is a module-graph question.
+Running across a full workspace can be expensive because it parses Nx projects,
+TypeScript ASTs, and container registrations across the entire monorepo. Use
+narrowing flags to scope the run and minimize execution time:
 
-## Nx Neighborhood: blast radius
+| Flag | Purpose |
+| ---- | ------- |
+| `-f, --format <format>` | Output format: `markdown` (default), `json`, or `mermaid` |
+| `--nx-projects` / `--no-nx-projects` | Toggle Nx workspace project dependency graph search |
+| `--file-imports` / `--no-file-imports` | Toggle internal file-level import graph search |
+| `--nestjs-modules` / `--no-nestjs-modules` | Toggle NestJS container module graph search |
+| `--projects <names>` | Comma-separated project names or globs to search across |
+| `-d, --directory <dir>` | Directory whose Nx workspace to read |
+| `--include <globs>` / `--exclude <globs>` | Override configured project inclusion or exclusion globs |
+| `--tags <tags>` | Comma-separated Nx project tags to filter by |
+| `--config <path>` | Path to a specific `codependix.config.ts` |
 
-A Neighborhood is deliberately **one hop in each direction** — what the project
-depends on, and what depends on it. It is not a transitive closure.
+### Path results
 
-- **`dependents` is the blast radius** of a breaking change to the project's
-  public surface: every project listed will need to compile against the new
-  shape. Their own dependents are one hop further out, in _their_
-  neighborhoods — walk outward project by project when the change is genuinely
-  breaking, rather than assuming the list is complete.
-- **`dependencies` is what the project is allowed to reach for.** A project
-  that needs something absent from this list needs a new dependency declared,
-  not just an import written.
-- An edge marked `implicit` was inferred by Nx from configuration rather than
-  read out of code, so grepping for an import will not find it.
+- **Path found**: Prints the shortest directed path connecting `<from>` to
+  `<to>` (for example `project-a → project-b → project-c`).
+- **No path**: Reports `_No path connects "<from>" to "<to>"._` (or an empty
+  list in JSON) and exits 0. A missing path is an answer, not an error.
 
-In the diagram, the highlighted node is the project the Neighborhood is
-centered on. Use the workspace graph instead when the question spans more than
-one project's surroundings.
+## When to read a committed diagram instead of running the CLI
 
-## File import graph: what a move or a rename touches
+Running the CLI builds graph representations from source files. Before running
+a command, check if the question is already answered by committed artifacts on
+disk:
 
-Edges are **only between files inside the same project**. An import of an
-external package, or of another workspace project, resolves outside the graph
-and is left out by design — that relationship lives in the Nx Neighborhood
-instead. So:
+1. **Every package in the monorepo commits its own graphs.** Look in any
+   project's `README.md` under the `## 🕸️ Codependix` section or between
+   `<!-- codependix:start name="..." -->` markers.
+2. **Immediate blast radius (1 hop):** The project's committed **Nx
+   Neighborhood** diagram lists all immediate `dependencies` (what it reaches)
+   and `dependents` (what breaks if its public API changes).
+3. **Internal file structure:** The project's committed **File import graph**
+   lists all file-to-file imports and isolated files within that project.
+4. **Container structure:** The project's committed **NestJS module graph**
+   lists wired container modules.
+5. **Whole-workspace structure:** The repository root `README.md` carries the
+   committed workspace graph.
 
-- **`isolatedFileNames` is not a dead-code list.** A file with no drawn edge in
-  either direction may be an entry point, a file consumed only by another
-  project, or a config file — all of which look identical to genuinely unused.
-  Treat it as a shortlist to check, never as a verdict.
-- **A cycle is real and worth acting on.** Walk the `edges` list: a path that
-  returns to its start is a genuine file-level import cycle in that project,
-  and unlike a project-level cycle nothing rejects it up front. These surface
-  at runtime as a partially-initialized module — an undefined import, or a
-  class that is not a constructor yet — long after the import was written.
-- Paths are project-relative, so a rename's fan-out is read directly off the
-  edges pointing at the old path.
+**Cost rule of thumb:**
 
-The Python import graph carries the same shape, parsed from `import` and
-`from ... import` statements rather than from a compiler program.
+- **Read README diagrams or JSON** for single-hop dependencies, immediate blast
+  radius, or local file layout (zero build cost, instant answer on disk).
+- **Run `codependix path`** for multi-hop transitive paths, cross-project
+  reachability, verifying unstaged changes, or generating machine-readable JSON.
 
-## NestJS module graph: what the container really wires
+## The four graph types and their questions
 
-Built by exploring the container in preview mode, so it reflects registration
-rather than a guess from source layout — including modules pulled in
-dynamically.
+| Graph | Scope | Answers |
+| ----- | ----- | ------- |
+| **Nx Neighborhood** | Project | What one project reaches (dependencies) and who breaks if it changes (dependents) |
+| **Workspace graph** | Workspace | High-level architectural layering and cross-package relationships |
+| **NestJS module graph** | Container | What modules the DI container wires together at runtime |
+| **File import graph** | Project files | File-to-file import relationships, cycles, and local refactoring fan-out |
 
-Two omissions to read past:
+## Interpreting graph artifacts
 
-- **A module every other module imports has its edges left out.** That is how
-  a genuinely global module shows up, and drawing all of its edges would bury
-  the structure. It is an inbound-edge count rather than a check for a global
-  decoration, so read it as "imported by everything here" — and the rule is
-  skipped entirely on a graph of fewer than four modules, where a hub would
-  qualify for being small rather than for being global. These modules are
-  listed in `ambientModuleNames` in the JSON and drawn with rounded corners in
-  the diagram; a graph looking sparser than the container feels is this, not a
-  missing edge.
-- **Modules NestJS creates internally to host a dynamic module's providers are
-  omitted** — the `forRoot`-style module a project declares stays, the private
-  module it builds underneath does not.
+### Nx Neighborhood: blast radius
 
-A module absent from the graph entirely was never registered, which is a real
-finding: a provider it exports is unavailable no matter what imports it.
+A Neighborhood covers **one hop in each direction** from the focal project
+(highlighted in diagrams):
 
-## Reading the JSON versus the diagram
+- **`dependents` is the blast radius** of a breaking change: every listed
+  project must build against the new shape. For breaking changes spanning
+  deeper layers, walk outward neighborhood by neighborhood or run `codependix
+  path`.
+- **`dependencies` is the allowed surface:** A project may only import what is
+  declared here.
+- Edges marked `implicit` are Nx workspace configuration dependencies rather
+  than code imports.
 
-The Mermaid block is for a human reading a readme; the JSON is what to reach
-for when the question needs a list traversed. Node identifiers in a diagram are
-sanitized from names and paths, so read the quoted label and never the
-identifier. Both come from the same build, so they never disagree — if they
-appear to, one of them was hand-edited, and the fix is `--write` (see the
-`codependix-triage` skill).
+### File import graph: refactoring and moves
 
-Every list in a codependix export is sorted, so comparing a project's committed
-graph against one written after a change shows exactly which edges the change
-added or removed, with no reordering noise in between.
+Edges are strictly **between files inside the same project**:
+
+- External packages and cross-project imports are excluded by design (they live
+  in the Nx Neighborhood).
+- **`isolatedFileNames` is a shortlist to investigate, not dead code.** An
+  isolated file may be an entry point, an external export, or a configuration
+  file.
+- **Cycles are real:** An import cycle within a project produces runtime
+  `undefined` bindings or initialization order bugs. Walk the cycle edges to
+  locate where to decouple.
+- Renaming a file? Edges pointing to the old relative path show the exact blast
+  radius.
+
+### NestJS module graph: DI container wiring
+
+Built by evaluating container modules:
+
+- **Global or ambient modules:** Modules imported by nearly all others (for
+  example core logging or configuration) have individual edges omitted to
+  reduce visual noise; they are listed under `ambientModuleNames` and drawn
+  with rounded corners.
+- **Dynamic wrapper modules:** Private internal host modules created by
+  `forRoot` or dynamic providers are collapsed into the declaring module.
+- A missing module was never registered in the container hierarchy, meaning
+  its exported providers are unavailable.
+
+## Confirming freshness before trusting committed graphs
+
+A committed graph reflects the repository state at the last `codependix map
+--write`. To check whether committed graphs are up to date:
+
+```bash
+# Check if any committed reports are stale without modifying files
+codependix map --check reports
+
+# Update all committed graphs across the workspace
+codependix map --write
+```
+
+If committed graphs are stale with respect to recent local edits, either
+re-run `codependix map --write` or use `codependix path` for real-time queries.
