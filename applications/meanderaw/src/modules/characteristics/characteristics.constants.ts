@@ -12,10 +12,12 @@ export const CHARACTERISTIC_SOURCES: Record<
   "pattern" | "walk"
 > = {
   // Graph
+  components: "walk",
   componentCount: "walk",
   cornerCount: "pattern",
   // Seam
   crossesTheSeam: "walk",
+  cycles: "walk",
   cycleCount: "walk",
   density: "pattern",
   // Digit histogram
@@ -27,6 +29,7 @@ export const CHARACTERISTIC_SOURCES: Record<
   // cspell:ignore Neighbours
   endsAreLatticeNeighbours: "walk",
   endsOnBorderRules: "walk",
+  freeEnds: "walk",
   hasBranching: "pattern",
   hasCrossing: "pattern",
   hasDots: "pattern",
@@ -49,9 +52,6 @@ export const CHARACTERISTIC_SOURCES: Record<
   isSingleArc: "walk",
   lCount: "pattern",
   // Runs
-  components: "walk",
-  cycles: "walk",
-  freeEnds: "pattern",
   longestHorizontalRun: "pattern",
   longestVerticalRun: "pattern",
   negativeTJunctions: "pattern",

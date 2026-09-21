@@ -124,6 +124,16 @@ describe(CharacteristicsService, () => {
       `);
     });
 
+    it("evaluates findFreeEnds when parsing nodes to numbers returns NaN", () => {
+      // Direct call to private method to hit the fallback to 0
+      const edges = [{ from: "NaN,NaN", to: "1,1", orientation: "vertical" as const }];
+      const result = (service as any).findFreeEnds(edges);
+      expect(result).toStrictEqual([
+        { column: 0, level: 0 },
+        { column: 1, level: 1 }
+      ]);
+    });
+
     it("reports no branching or crossing for a single bare point, which is one component of its own", () => {
       expect(service.compute(codeService.parse("0", 2, 1)))
         .toMatchInlineSnapshot(`

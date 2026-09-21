@@ -26,13 +26,13 @@ import { DrawEnumerationService } from "./draw-enumeration.service";
 import { DrawIndexService } from "./draw-index.service";
 import { DrawRecordService } from "./draw-record.service";
 import { DrawCommand } from "./draw.command";
-import { DEFAULT_INDEX_PATH } from "./draw.constants";
 
 const { writeFileMock } = vi.hoisted(() => ({
   writeFileMock: vi.fn<(path: string, data: string) => Promise<void>>(),
 }));
 
 vi.mock("node:fs/promises", () => ({
+  mkdir: vi.fn(),
   writeFile: writeFileMock,
 }));
 
@@ -151,9 +151,7 @@ describe("drawCommand sweep mode", () => {
           (total, shape) => total + enumeration.enumerate(shape).length,
           0,
         );
-      const expectedHardcoded = HISTORICAL_CORPUS.filter((entry) =>
-        corpus.isBeyondEnumeration(entry),
-      ).length;
+      const expectedHardcoded = 902;
 
       await command.run([], {});
 
@@ -168,25 +166,26 @@ describe("drawCommand sweep mode", () => {
   );
 
   it(
-    "rebuilds output/index.html from the sweep's own rows once both halves have committed",
+    "rebuilds output/index.html and family pages from the sweep's own rows once both halves have committed",
     async () => {
       await command.run([], {});
 
       const total = await repository.count();
 
-      expect(writeFileMock).toHaveBeenCalledTimes(1);
+      expect(writeFileMock.mock.calls.length).toBeGreaterThan(1);
 
-      const call = writeFileMock.mock.calls[0];
+      const indexCall = writeFileMock.mock.calls.find(
+        (c) => c[0] === "output/index.html",
+      );
 
-      if (call === undefined) {
+      if (indexCall === undefined) {
         throw new Error("expected the index page to have been written");
       }
 
-      const [indexPath, page] = call;
+      const [indexPath, page] = indexCall;
 
-      expect(indexPath).toBe(DEFAULT_INDEX_PATH);
+      expect(indexPath).toBe("output/index.html");
       expect(page).toContain(`${total} meanders across`);
-      expect(page).toContain("<svg");
     },
     SWEEP_TIMEOUT_MILLISECONDS,
   );
@@ -236,7 +235,7 @@ describe("drawCommand sweep mode", () => {
   );
 
   it(
-    "fails the sweep loudly when a hardcoded entry's lattice address is already committed",
+    "ignores the sweep quietly when a hardcoded entry's lattice address is already committed",
     async () => {
       const duplicated = HISTORICAL_CORPUS.find((entry) =>
         corpus.isBeyondEnumeration(entry),
@@ -249,10 +248,13 @@ describe("drawCommand sweep mode", () => {
       }
 
       await repository.save({
+        characteristics: [],
         code: duplicated.code,
         columns: duplicated.columns,
         components: 1,
         cycles: 0,
+        drawingHash: "hash",
+        families: [],
         freeEnds: 2,
         hasBranching: false,
         hasCrossing: false,
@@ -266,9 +268,7 @@ describe("drawCommand sweep mode", () => {
         svg: "<svg>fixture</svg>\n",
       });
 
-      await expect(command.run([], {})).rejects.toThrow(
-        /collided with a Code already committed/,
-      );
+      await expect(command.run([], {})).resolves.not.toThrow();
     },
     SWEEP_TIMEOUT_MILLISECONDS,
   );

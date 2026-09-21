@@ -1,5 +1,4 @@
 import {
-  forwardRef as forwardReference,
   Inject,
   Injectable,
 } from "@nestjs/common";
@@ -54,7 +53,7 @@ export class ConnectivityService {
   // 🏗 Dependency Injection
 
   constructor(
-    @Inject(forwardReference(() => CodeService))
+    @Inject(CodeService)
     private readonly codeService: ICodeService,
     @Inject(GraphService)
     private readonly graphService: GraphService,

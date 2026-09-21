@@ -36,6 +36,19 @@ export const BAND_REPEAT_COUNT = 6;
  */
 export const UNCLASSIFIED_FAMILY_LABEL = "unclassified";
 
+/** Sort order for each family on the index page. */
+export const FAMILY_SORT_KEYS: Record<string, number> = {
+  boxes: 1,
+  branch: 2,
+  chain: 3,
+  cross: 4,
+  negative: 5,
+  parallel: 6,
+  snake: 7,
+  swirl: 8,
+  whirl: 9,
+};
+
 /**
  * The page's own stylesheet, held here rather than inline in
  * `DrawIndexService` so the service's own methods stay about assembling rows

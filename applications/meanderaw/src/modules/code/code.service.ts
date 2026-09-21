@@ -147,7 +147,7 @@ export class CodeService {
    * `undefined` bit somewhere downstream.
    */
   parse(code: string, rows: number, columns: number): ParsedCode {
-    const levels = rows - 1;
+    const levels = Math.max(0, rows - 1);
 
     if (code.length !== levels * columns) {
       throw new InvalidCodeLengthError(code, rows, columns);

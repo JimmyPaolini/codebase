@@ -26,7 +26,6 @@ import { DrawCommand } from "./draw.command";
  * `CodeModule` and `DrawingModule` are the generic
  * decoder and renderer every family's Code is drawn through,
  * `CharacteristicsModule` measures that same Code,
- * `` reads a family off those Characteristics,
  * `EnumerationModule` walks the space the sweep covers, and
  * `DatabaseModule` is the committed sqlite database all of it
  * persists to and `DrawIndexService` reads back from, and `GeometryModule`

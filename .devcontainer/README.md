@@ -52,7 +52,7 @@ Two named configurations are provided. Select the appropriate one when opening i
 
 Two named configs live side-by-side, each edited directly. Common fields are kept in sync by the `sync-devcontainer-configuration` script.
 
-```
+```text
 .devcontainer/
 ├── local/
 │   └── devcontainer.json      ← Primary: DooD (source of truth for common fields)

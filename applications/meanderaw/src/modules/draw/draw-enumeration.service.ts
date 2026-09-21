@@ -24,7 +24,7 @@ import type { MeanderRecord, MeanderShape } from "../database/database.types";
  * defining combination is written with a null family, exactly as spec #813
  * asks — enumeration produces every structurally distinct repeat within
  * budget, and membership is decided afterwards by
- * `` rather than before by a generator.
+ * `DrawIndexService` rather than before by a generator.
  */
 @Injectable()
 export class DrawEnumerationService {

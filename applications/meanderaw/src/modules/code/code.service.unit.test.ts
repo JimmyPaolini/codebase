@@ -40,6 +40,43 @@ describe(CodeService, () => {
     expect(service).toBeDefined();
   });
 
+  describe("directionsAt", () => {
+    it("returns bare point if level is below 0", () => {
+      const parsed = service.parse("36c9", 3, 2);
+      expect(service.directionsAt(parsed, -1, 0)).toStrictEqual(BARE);
+    });
+
+    it("returns bare point if level is beyond maximum levels", () => {
+      const parsed = service.parse("36c9", 3, 2);
+      expect(service.directionsAt(parsed, 2, 0)).toStrictEqual(BARE);
+    });
+
+    it("returns bare point if column is below 0", () => {
+      const parsed = service.parse("36c9", 3, 2);
+      expect(service.directionsAt(parsed, 0, -1)).toStrictEqual(BARE);
+    });
+
+    it("returns bare point if column is beyond maximum columns", () => {
+      const parsed = service.parse("36c9", 3, 2);
+      expect(service.directionsAt(parsed, 0, 2)).toStrictEqual(BARE);
+    });
+
+    it("returns decoded directions if within bounds", () => {
+      const parsed = service.parse("36c9", 3, 2);
+      // '3' = 0011 -> south, east, wait... let's check parse output. 
+      // Actually decode(3) = { east: true, north: false, south: false, west: true }
+      // Because 3 = 0x3 = 0011. bits are east=1, north=2, west=4, south=8. Wait no...
+      // TileService.decode is what we want.
+      expect(service.directionsAt(parsed, 0, 0)).toStrictEqual({ east: true, north: false, south: false, west: true });
+    });
+  });
+
+  describe("reduceToUnit", () => {
+    it("returns unmodified code if it has 0 columns", () => {
+      expect(service.reduceToUnit({ columns: 0, digits: "", levels: 1, rows: 2 })).toEqual({ columns: 0, digits: "", levels: 1, rows: 2 });
+    });
+  });
+
   describe("parse", () => {
     it("reads a Code at the shape it was given, carrying the interior level count beside it", () => {
       expect(service.parse("36c9", 3, 2)).toStrictEqual({
@@ -166,6 +203,32 @@ describe(CodeService, () => {
       expect(service.spellCanonical(buildTile(["e.", "e.", ".."]))).not.toBe(
         service.spellCanonical(buildTile(["e.", ".e", ".."])),
       );
+    });
+  });
+
+  describe("directionsAt", () => {
+    it("returns empty directions when levels are out of bounds", () => {
+      // 1 rows implies 0 levels
+      expect(service.directionsAt({ digits: "0", levels: 0, columns: 1, rows: 1 }, 0, 0)).toStrictEqual({ east: false, north: false, south: false, west: false });
+    });
+
+    it("returns empty directions when columns are out of bounds", () => {
+      const code = service.parse("0", 2, 1); // 2 rows = 1 level
+      expect(service.directionsAt(code, 0, -1)).toStrictEqual({ east: false, north: false, south: false, west: false });
+      expect(service.directionsAt(code, 0, 1)).toStrictEqual({ east: false, north: false, south: false, west: false });
+    });
+    
+    it("handles out of bounds indices when array lookup fails but coordinates are within limits", () => {
+      // Create an artificial code object with mismatched digits vs dimensions
+      const code = {
+        digits: "f",
+        columns: 2,
+        levels: 1,
+        rows: 2
+      };
+      
+      // The length is 1, but we ask for [0 * 2 + 1] = [1]
+      expect(service.directionsAt(code, 0, 1)).toStrictEqual({ east: false, north: false, south: false, west: false });
     });
   });
 

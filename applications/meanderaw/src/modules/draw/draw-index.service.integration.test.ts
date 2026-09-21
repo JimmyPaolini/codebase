@@ -3,9 +3,17 @@ import { getRepositoryToken, TypeOrmModule } from "@nestjs/typeorm";
 import { DataSource, type Repository } from "typeorm";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
+import { CodeService } from "../code/code.service";
 import { DatabaseService } from "../database/database.service";
 import { Meander } from "../database/entities/Meander.entity";
+import { DrawingService } from "../drawing/drawing.service";
 import { GeometryService } from "../geometry/geometry.service";
+
+import { SvgService } from "../svg/svg.service";
+import { SymmetryModule } from "../symmetry/symmetry.module";
+import { SymmetryService } from "../symmetry/symmetry.service";
+
+import { TileService } from "../tile/tile.service";
 
 import { DrawIndexService } from "./draw-index.service";
 
@@ -38,7 +46,16 @@ describe(DrawIndexService, () => {
         }),
         TypeOrmModule.forFeature([Meander]),
       ],
-      providers: [DrawIndexService, GeometryService, DatabaseService],
+      providers: [
+        DrawIndexService,
+        CodeService,
+        DrawingService,
+        GeometryService,
+        DatabaseService,
+        SymmetryService,
+        SvgService,
+        TileService,
+      ],
     }).compile();
 
     service = await module.resolve(DrawIndexService);
@@ -47,7 +64,9 @@ describe(DrawIndexService, () => {
   });
 
   afterAll(async () => {
-    await dataSource.destroy();
+    if (dataSource) {
+      await dataSource.destroy();
+    }
   });
 
   /** Every field besides `code` a fixture row does not care about, defaulted so a case only spells out what it means to test. */
@@ -101,30 +120,44 @@ describe(DrawIndexService, () => {
     expect(service).toBeDefined();
   });
 
-  it("builds a page from the committed rows, grouped by family with a section for the unclassified ones", async () => {
-    await repository.save(record({ code: "snake-row", families: ["snake"] }));
+  it("builds pages from the committed rows, grouped by family with a section for the unclassified ones", async () => {
+    await repository.save(
+      record({
+        code: "0".repeat(1), // levels = 2 - 1 = 1, columns = 1 => 1 character
+        families: ["snake"],
+      }),
+    );
     await repository.save(
       record({
         characteristics: ["dots"],
-        code: "sample-row",
-        families: ["mosaic"],
+        code: "1".repeat(1),
+        families: ["whirl"],
       }),
     );
-    await repository.save(record({ code: "unclassified-row", families: [] }));
-
-    const page = await service.build();
-
-    expect(page).toContain('<section id="snake">');
-    expect(page).toContain('<section id="mosaic">');
-    expect(page).toContain('<section id="unclassified">');
-    expect(page).toContain("<figcaption>2×1 · snake-row</figcaption>");
-    expect(page).toContain("(dots)");
-    expect(page.indexOf("<h2>snake</h2>")).toBeLessThan(
-      page.indexOf("<h2>mosaic</h2>"),
+    await repository.save(
+      record({ code: "2".repeat(1), families: [] }),
     );
-    expect(page.indexOf("<h2>mosaic</h2>")).toBeLessThan(
-      page.indexOf("<h2>unclassified</h2>"),
+
+    const pages = await service.build();
+
+    expect(pages["families/snake.html"]).toContain('<section id="snake">');
+    expect(pages["families/whirl.html"]).toContain('<section id="whirl">');
+    expect(pages["families/unclassified.html"]).toContain(
+      '<section id="unclassified">',
     );
-    expect(page).toContain('<path d="M0 0"/>');
+    expect(pages["families/snake.html"]).toContain(
+      "<figcaption>2×1 · 0</figcaption>",
+    );
+    expect(pages["families/whirl.html"]).toContain("(dots)");
+
+    const indexPage = pages["index.html"] ?? "";
+
+    expect(indexPage.indexOf("snake.html")).toBeLessThan(
+      indexPage.indexOf("whirl.html"),
+    );
+    expect(indexPage.indexOf("whirl.html")).toBeLessThan(
+      indexPage.indexOf("unclassified.html"),
+    );
+    expect(pages["families/snake.html"]).toContain('<path d="M7.5 37.5H7.5"');
   });
 });

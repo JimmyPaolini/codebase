@@ -1,15 +1,5 @@
 // ♟️ Constants
 
-/**
- * Where the sweep writes the static index page, relative to the project root
- * every Nx target already runs from — the same convention
- * `DEFAULT_DATABASE_PATH` follows for the database it sits beside. The two
- * are the sweep's only committed artifacts now that the per-family SVG tree
- * is retired: one holds every meander's row, the other is a page built from
- * them.
- */
-export const DEFAULT_INDEX_PATH = "output/index.html";
-
 // 🚨 Errors
 
 /**
