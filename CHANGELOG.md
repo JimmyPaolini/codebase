@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.16.0](https://github.com/JimmyPaolini/codebase/compare/v2.15.0...v2.16.0) (2026-09-21)
+
+### ✨ Features
+
+* **meanderaw:** ✨ implement canonical phase for meanders ([#1011](https://github.com/JimmyPaolini/codebase/issues/1011)) ([c3215f6](https://github.com/JimmyPaolini/codebase/commit/c3215f651c746172d46ca6972023d5e92b5c708a)), closes [#859](https://github.com/JimmyPaolini/codebase/issues/859)
+* **meanderaw:** ✨ measure characteristics ([#1010](https://github.com/JimmyPaolini/codebase/issues/1010)) ([20fabe6](https://github.com/JimmyPaolini/codebase/commit/20fabe623bb69136c798b75c2ede47e8d703a6a3)), closes [#859](https://github.com/JimmyPaolini/codebase/issues/859)
+* **meanderaw:** ✨ store families as an open set and drop charter columns ([#1012](https://github.com/JimmyPaolini/codebase/issues/1012)) ([6755608](https://github.com/JimmyPaolini/codebase/commit/6755608a8e8e8c885d679b16d819853da8d81f5c)), closes [#859](https://github.com/JimmyPaolini/codebase/issues/859)
+
+### ♻️ Code Refactoring
+
+* **meanderaw:** ♻️ remove module forward references and restore coverage ([#1013](https://github.com/JimmyPaolini/codebase/issues/1013)) ([b0ffba1](https://github.com/JimmyPaolini/codebase/commit/b0ffba1a5562fff298f5cdbc831f9f2e4baf4b4b)), closes [#859](https://github.com/JimmyPaolini/codebase/issues/859)
+
 ## [2.15.0](https://github.com/JimmyPaolini/codebase/compare/v2.14.0...v2.15.0) (2026-09-20)
 
 ### ✨ Features
