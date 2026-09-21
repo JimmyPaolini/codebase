@@ -5,6 +5,7 @@ import { DataSource, type Repository } from "typeorm";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import { environmentSchema } from "../../constants";
+import { CharacteristicsFamilyService } from "../characteristics/characteristics-family.service";
 import { CharacteristicsPathService } from "../characteristics/characteristics-path.service";
 import { CharacteristicsShapeService } from "../characteristics/characteristics-shape.service";
 import { CharacteristicsService } from "../characteristics/characteristics.service";
@@ -73,6 +74,7 @@ describe(DrawEnumerationService, () => {
         GeometryService,
         CodeService,
         CharacteristicsService,
+        CharacteristicsFamilyService,
         ConnectivityService,
         CharacteristicsPathService,
         CharacteristicsShapeService,
@@ -159,7 +161,7 @@ describe(DrawEnumerationService, () => {
     // `boxes`, tried first (the 14 meanders earning both are counted below);
     // `swirl` and `whirl` need 25 and 20 edges at four rows, over the
     // budget of 16, so no shape the sweep walks admits one.
-    it("leaves all meanders without families since rules are removed", async () => {
+    it("assigns formalized meander families to enumerated meanders", async () => {
       const counted = await repository
         .createQueryBuilder("meander")
         .select("meander.families", "families")
@@ -172,7 +174,11 @@ describe(DrawEnumerationService, () => {
           counted.map(({ count, families }) => [families || "[]", count]),
         ),
       ).toStrictEqual({
-        "[]": 30279,
+        "[]": 30223,
+        bars: 14,
+        dots: 14,
+        lines: 14,
+        mesh: 14,
       });
     });
 
@@ -184,7 +190,7 @@ describe(DrawEnumerationService, () => {
         columns: 2,
         components: 1,
         cycles: 0,
-        families: [],
+        families: ["bars"],
         freeEnds: 2,
 
         // cspell:ignore Neighbours

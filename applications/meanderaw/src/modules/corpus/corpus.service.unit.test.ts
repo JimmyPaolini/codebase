@@ -90,6 +90,7 @@ describe(CorpusService, () => {
     vi.mocked(codeService.tile).mockReturnValue(tile);
     vi.mocked(drawingService.render).mockReturnValue("<svg>fixture</svg>\n");
     vi.mocked(characteristicsService.compute).mockReturnValue(characteristics);
+    vi.mocked(characteristicsService.classifyFamilies).mockReturnValue([]);
     vi.mocked(enumerationService.isAdmitted).mockReturnValue(false);
     vi.mocked(databaseService.findOneByLattice).mockResolvedValue(null);
     vi.mocked(databaseService.save).mockResolvedValue(savedMeander);

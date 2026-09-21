@@ -121,6 +121,12 @@ export class CorpusService {
         return existing;
       }
 
+      const evaluatedFamilies =
+        this.characteristicsService.classifyFamilies(canonical);
+      const families = [
+        ...new Set([...entry.filedUnder, ...evaluatedFamilies]),
+      ];
+
       return await this.databaseService.save({
         // type-coverage:ignore-next-line
         ...(numericCharacteristics as unknown as MeanderRecord),
@@ -128,7 +134,7 @@ export class CorpusService {
         code: this.codeService.format(canonical),
         columns,
         drawingHash,
-        families: [...entry.filedUnder],
+        families,
         lattice: canonical.digits,
         pitch: columns,
         provenance: "hardcoded" as const,
