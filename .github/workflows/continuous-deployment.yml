@@ -12,13 +12,15 @@ on:
         default: false
 
 permissions:
-  contents: read
+  contents: write
   packages: write
+  issues: write
+  pull-requests: write
 
+# Never cancel a deployment/release run. Concurrency is scoped per-ref so
+# releases on main queue sequentially without colliding.
 concurrency:
-  group: >-
-    ${{ github.workflow }}-${{ github.ref == 'refs/heads/main'
-    && github.sha || github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
@@ -38,15 +40,24 @@ jobs:
             name: Devcontainer
             emoji: 🧑‍🏭
             timeout: 20
+          - id: push-releases
+            name: Releases
+            emoji: 🦸
+            timeout: 24
 
     steps:
       - name: 📥 Checkout Repository
         uses: actions/checkout@v7
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - name: 🚦 Skip Conditionally
         id: check-skip
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          SHA: ${{ github.sha }}
         run: |
           TARGET_ID="${{ matrix.target.id }}"
           EVENT_NAME="${{ github.event_name }}"
@@ -66,6 +77,17 @@ jobs:
               echo "⏭️ No devcontainer changes detected; skipping devcontainer build."
               echo "skip=true" >> "$GITHUB_OUTPUT"
               exit 0
+            fi
+          fi
+
+          if [ "$TARGET_ID" = "push-releases" ]; then
+            tip="$(gh api "repos/$REPOSITORY/commits/main" --jq .sha)"
+            if [ "$tip" != "$SHA" ]; then
+              echo "⏭️ $SHA superseded by $tip, whose run releases instead"
+              echo "skip=true" >> "$GITHUB_OUTPUT"
+              exit 0
+            else
+              echo "🦸 $SHA holds main's tip, releasing"
             fi
           fi
 
@@ -161,3 +183,87 @@ jobs:
             GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
           runCmd: |
             bash .devcontainer/scripts/test-devcontainer.sh
+
+      # Release Steps
+      - name: 🕋 Setup Codebase for Release
+        if: >-
+          steps.check-skip.outputs.skip != 'true' &&
+          matrix.target.id == 'push-releases'
+        uses: ./.github/actions/setup-codebase
+        with:
+          nx-shas: "false"
+
+      - name: 🔐 Import GPG Key
+        if: >-
+          steps.check-skip.outputs.skip != 'true' &&
+          matrix.target.id == 'push-releases'
+        uses: crazy-max/ghaction-import-gpg@v7
+        with:
+          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.GPG_PASSPHRASE }}
+          git_user_signingkey: true
+          git_commit_gpgsign: true
+
+      - name: 🔎 Check Commit Signing Configuration
+        if: >-
+          steps.check-skip.outputs.skip != 'true' &&
+          matrix.target.id == 'push-releases'
+        run: bash scripts/git/check-commit-signing-configuration.sh
+
+      - name: 👷 Build Projects
+        if: >-
+          steps.check-skip.outputs.skip != 'true' &&
+          matrix.target.id == 'push-releases'
+        run: pnpm exec nx run-many --target=build
+
+      - name: 🔭 Trace Calls
+        if: >-
+          steps.check-skip.outputs.skip != 'true' &&
+          matrix.target.id == 'push-releases'
+        run: pnpm exec nx run codebase:callidescope:write
+
+      - name: 🕸️ Graph Dependencies
+        if: >-
+          steps.check-skip.outputs.skip != 'true' &&
+          matrix.target.id == 'push-releases'
+        run: pnpm exec nx run codebase:codependix:write
+
+      - name: 👔 Inventory Generators
+        if: >-
+          steps.check-skip.outputs.skip != 'true' &&
+          matrix.target.id == 'push-releases'
+        run: |
+          pnpm exec nx run-many \
+            --target=conformetry-generators \
+            --configuration=write
+
+      - name: 🔗 Synchronize
+        if: >-
+          steps.check-skip.outputs.skip != 'true' &&
+          matrix.target.id == 'push-releases'
+        run: |
+          pnpm exec nx run-many \
+            --target=conventional-config \
+            --target=devcontainer-configuration \
+            --target=pull-request-template \
+            --target=skill-exclusions \
+            --configuration=write
+
+      - name: 📊 Measure Code
+        if: >-
+          steps.check-skip.outputs.skip != 'true' &&
+          matrix.target.id == 'push-releases'
+        run: |
+          pnpm exec nx run-many --target=codometer --configuration=write \
+            --exclude=codebase
+          pnpm exec nx run codebase:codometer:write
+
+      - name: 🦸 Push Releases
+        if: >-
+          steps.check-skip.outputs.skip != 'true' &&
+          matrix.target.id == 'push-releases'
+        env:
+          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+          GIT_COMMITTER_EMAIL: jimmypaolini@gmail.com
+          GIT_COMMITTER_NAME: Jimmy Paolini
+        run: pnpm semantic-release
