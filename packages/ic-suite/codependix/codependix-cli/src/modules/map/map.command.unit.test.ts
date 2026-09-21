@@ -217,9 +217,9 @@ describe(MapCommand, () => {
   describe("an empty project selection", () => {
     // Nothing else catches it: --check boundaries judges every project
     // regardless of include, so the gate stays green while exports go silent.
-    it("warns when no include glob selects a project", async () => {
-      vi.mocked(runContextService.build).mockResolvedValue(
-        buildContextWithInclude([]),
+    it("warns when no project was selected", async () => {
+      vi.mocked(codependixService.run).mockResolvedValue(
+        buildMapRun({ failures: [], results: [] }),
       );
 
       await run({ write: true });
@@ -231,7 +231,20 @@ describe(MapCommand, () => {
       );
     });
 
-    it("stays quiet when an include glob selects something", async () => {
+    it("stays quiet when projects were selected", async () => {
+      vi.mocked(codependixService.run).mockResolvedValue(
+        buildMapRun({
+          failures: [],
+          results: [
+            {
+              isCurrent: true,
+              projectName: "atlas-service",
+              stalePaths: [],
+            },
+          ],
+        }),
+      );
+
       await run({ write: true });
 
       expect(loggerService.warn).not.toHaveBeenCalled();
@@ -244,9 +257,6 @@ describe(MapCommand, () => {
         checksReports: false,
         writes: false,
       });
-      vi.mocked(runContextService.build).mockResolvedValue(
-        buildContextWithInclude([]),
-      );
 
       await run({ check: "boundaries" });
 

@@ -72,8 +72,8 @@ export class ReportingService {
    * regardless of `include`, so a workspace whose exports have gone silent
    * still has a green gate.
    */
-  reportEmptySelection(include: string[]): void {
-    if (include.length > 0) return;
+  reportEmptySelection(projectCount: number): void {
+    if (projectCount > 0) return;
 
     this.logger.warn("🕸️ Selected no project to export", undefined, {
       hint: "name the projects that participate in the configuration's include list",

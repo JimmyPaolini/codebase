@@ -102,14 +102,14 @@ describe(ReportingService, () => {
   });
 
   describe("reportEmptySelection", () => {
-    it("stays quiet when include names at least one glob", () => {
-      service.reportEmptySelection(["packages/*"]);
+    it("stays quiet when at least one project was selected", () => {
+      service.reportEmptySelection(1);
 
       expect(loggerService.warn).not.toHaveBeenCalled();
     });
 
-    it("warns when include is empty", () => {
-      service.reportEmptySelection([]);
+    it("warns when no project was selected", () => {
+      service.reportEmptySelection(0);
 
       expect(loggerService.warn).toHaveBeenCalledWith(
         "🕸️ Selected no project to export",
