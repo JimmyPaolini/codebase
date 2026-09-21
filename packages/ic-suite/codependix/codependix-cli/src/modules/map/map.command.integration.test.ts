@@ -21,6 +21,8 @@ import {
   vi,
 } from "vitest";
 
+import { LoggerService } from "@codebase/logger";
+
 import { MainModule } from "../../main.module";
 
 import { MapCommand } from "./map.command";
@@ -61,26 +63,35 @@ describe("map command", () => {
     let originalWorkingDirectory: string;
 
     /** Runs the map command with the process rooted at the fixture tree. */
-    async function run(
-      options: MapCommandOptions,
-    ): Promise<{ exitCode: number }> {
+    async function run(options: MapCommandOptions): Promise<{
+      exitCode: number;
+      loggedErrors: unknown[][];
+      loggedWarns: unknown[][];
+    }> {
       process.chdir(workingDirectory);
       process.exitCode = 0;
 
       const module = await Test.createTestingModule({
         imports: [MainModule],
       }).compile();
+      const logger = await module.resolve(LoggerService);
+      const errorSpy = vi.spyOn(logger, "error");
+      const warnSpy = vi.spyOn(logger, "warn");
       const command = module.get(MapCommand, { strict: false });
 
       await command.run([], options);
 
       const exitCode = process.exitCode;
+      const loggedErrors = [...errorSpy.mock.calls];
+      const loggedWarns = [...warnSpy.mock.calls];
 
       process.exitCode = 0;
       process.chdir(originalWorkingDirectory);
 
       return {
         exitCode: typeof exitCode === "string" ? Number(exitCode) : exitCode,
+        loggedErrors,
+        loggedWarns,
       };
     }
 

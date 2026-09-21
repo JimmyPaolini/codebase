@@ -191,6 +191,36 @@ describe(ReportingService, () => {
         { projects: ["codependix-nx"] },
       );
     });
+
+    it("deduplicates stale projects appearing across multiple graph types", () => {
+      const passed = service.reportOutcome({
+        failures: [],
+        results: [
+          {
+            isCurrent: false,
+            projectName: "atlas-service",
+            stalePaths: ["README.md"],
+          },
+          {
+            isCurrent: false,
+            projectName: "atlas-service",
+            stalePaths: ["codependix-imports-graph.json"],
+          },
+          {
+            isCurrent: false,
+            projectName: "atlas-core",
+            stalePaths: ["README.md"],
+          },
+        ],
+      });
+
+      expect(passed).toBe(false);
+      expect(loggerService.error).toHaveBeenCalledWith(
+        "🕸️ Found stale codependix exports",
+        undefined,
+        { projects: ["atlas-service", "atlas-core"] },
+      );
+    });
   });
 
   describe("reportPassOutcomes", () => {

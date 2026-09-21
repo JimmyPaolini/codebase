@@ -110,7 +110,13 @@ export class ReportingService {
    * regardless of an earlier one's failure.
    */
   reportOutcome(outcome: GraphRunOutcome): boolean {
-    const staleProjects = outcome.results.filter((result) => !result.isCurrent);
+    const staleProjects = [
+      ...new Set(
+        outcome.results
+          .filter((result) => !result.isCurrent)
+          .map((result) => result.projectName),
+      ),
+    ];
 
     if (outcome.failures.length > 0) {
       this.logger.error("💥 Failed running codependix", undefined, {
@@ -120,7 +126,7 @@ export class ReportingService {
 
     if (staleProjects.length > 0) {
       this.logger.error("🕸️ Found stale codependix exports", undefined, {
-        projects: staleProjects.map((result) => result.projectName),
+        projects: staleProjects,
       });
     }
 
