@@ -39,6 +39,63 @@ Dependency graphs exported by [codependix](https://github.com/JimmyPaolini/codeb
 
 <!-- CALL_STACKS_START -->
 
+### Nx Neighborhood
+
+<!-- codependix:start name="codependix-nx-projects" -->
+```mermaid
+graph LR
+  callidescope_cli["callidescope-cli"]
+  callidescope_configuration["callidescope-configuration"]
+  callidescope_core["callidescope-core"]
+  callidescope_examples["callidescope-examples"]
+  callidescope_graph["callidescope-graph"]
+  callidescope_nx["callidescope-nx"]
+  callidescope_output["callidescope-output"]
+  callidescope_cli --> callidescope_core
+  callidescope_configuration --> callidescope_core
+  callidescope_examples --> callidescope_core
+  callidescope_graph --> callidescope_core
+  callidescope_nx --> callidescope_core
+  callidescope_output --> callidescope_core
+  classDef subject fill:#7c3aed,color:#fff,stroke:#4c1d95,stroke-width:2px
+  class callidescope_core subject
+```
+<!-- codependix:end name="codependix-nx-projects" -->
+
+### NestJS Module Graph
+
+<!-- codependix:start name="codependix-nestjs-modules" -->
+```mermaid
+flowchart LR
+  CallidescopeCoreModule
+```
+<!-- codependix:end name="codependix-nestjs-modules" -->
+
+### File Imports
+
+<!-- codependix:start name="codependix-file-imports" -->
+```mermaid
+graph LR
+  file_callidescope_config_ts["callidescope.config.ts"]
+  file_codependix_config_ts["codependix.config.ts"]
+  file_codometer_config_ts["codometer.config.ts"]
+  file_eslint_config_ts["eslint.config.ts"]
+  file_src_index_ts["src/index.ts"]
+  file_src_index_unit_test_ts["src/index.unit.test.ts"]
+  file_src_modules_callidescope_core_callidescope_core_constants_ts["src/modules/callidescope-core/callidescope-core.constants.ts"]
+  file_src_modules_callidescope_core_callidescope_core_module_ts["src/modules/callidescope-core/callidescope-core.module.ts"]
+  file_src_modules_callidescope_core_callidescope_core_service_ts["src/modules/callidescope-core/callidescope-core.service.ts"]
+  file_src_modules_callidescope_core_callidescope_core_service_unit_test_ts["src/modules/callidescope-core/callidescope-core.service.unit.test.ts"]
+  file_src_modules_callidescope_core_callidescope_core_types_ts["src/modules/callidescope-core/callidescope-core.types.ts"]
+  file_testing_mocks_ts["testing/mocks.ts"]
+  file_testing_setup_ts["testing/setup.ts"]
+  file_vitest_config_ts["vitest.config.ts"]
+  file_src_index_unit_test_ts --> file_src_index_ts
+  file_src_modules_callidescope_core_callidescope_core_module_ts --> file_src_modules_callidescope_core_callidescope_core_service_ts
+  file_src_modules_callidescope_core_callidescope_core_service_unit_test_ts --> file_src_modules_callidescope_core_callidescope_core_service_ts
+```
+<!-- codependix:end name="codependix-file-imports" -->
+
 ## 🔭 Callidescope
 
 Call stacks traced through `packages/ic-suite/callidescope/callidescope-core`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.

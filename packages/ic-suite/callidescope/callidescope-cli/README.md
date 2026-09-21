@@ -1287,6 +1287,255 @@ Dependency graphs exported by [codependix](https://github.com/JimmyPaolini/codeb
 
 <!-- CODE_STATISTICS_START -->
 
+### Nx Neighborhood
+
+<!-- codependix:start name="codependix-nx-projects" -->
+```mermaid
+graph LR
+  callidescope_cli["callidescope-cli"]
+  callidescope_configuration["callidescope-configuration"]
+  callidescope_core["callidescope-core"]
+  callidescope_examples["callidescope-examples"]
+  callidescope_graph["callidescope-graph"]
+  callidescope_nx["callidescope-nx"]
+  callidescope_output["callidescope-output"]
+  logger["logger"]
+  callidescope_cli --> callidescope_configuration
+  callidescope_cli --> callidescope_core
+  callidescope_cli --> callidescope_graph
+  callidescope_cli --> callidescope_output
+  callidescope_cli --> logger
+  callidescope_examples -.-> callidescope_cli
+  callidescope_nx --> callidescope_cli
+  classDef subject fill:#7c3aed,color:#fff,stroke:#4c1d95,stroke-width:2px
+  class callidescope_cli subject
+```
+
+_Dashed edges are dependencies Nx inferred from configuration rather than from code._
+<!-- codependix:end name="codependix-nx-projects" -->
+
+### NestJS Module Graph
+
+<!-- codependix:start name="codependix-nestjs-modules" -->
+```mermaid
+flowchart LR
+  AddressLookupModule
+  AddressReportModule
+  BreadthModule
+  CallablesModule
+  CallidescopeModule
+  ClassesModule
+  ConfigModule([ConfigModule])
+  ConfigurationFileModule
+  ConfigurationModule
+  DepthModule
+  DiscoveryModule
+  DocumentationModule
+  EdgesModule
+  EntriesModule
+  FlagResolutionModule
+  GraphModule
+  InputModule
+  LimitsModule
+  LoggerModule([LoggerModule])
+  MainModule
+  OutputJsonModule
+  OutputMarkdownModule
+  ProgramModule
+  ProjectReportsModule
+  ReportFindingsModule
+  ReportModule
+  RunPlanModule
+  SignaturesModule
+  WorkspaceModule
+  WriteDestinationsModule
+  AddressLookupModule --> CallablesModule
+  AddressLookupModule --> CallidescopeModule
+  AddressLookupModule --> ConfigurationModule
+  AddressReportModule --> ReportModule
+  BreadthModule --> AddressLookupModule
+  BreadthModule --> AddressReportModule
+  BreadthModule --> ConfigurationModule
+  BreadthModule --> GraphModule
+  CallablesModule --> ProgramModule
+  CallablesModule --> WorkspaceModule
+  CallidescopeModule --> CallablesModule
+  CallidescopeModule --> ClassesModule
+  CallidescopeModule --> ConfigurationModule
+  CallidescopeModule --> EdgesModule
+  CallidescopeModule --> EntriesModule
+  CallidescopeModule --> GraphModule
+  CallidescopeModule --> OutputJsonModule
+  CallidescopeModule --> OutputMarkdownModule
+  CallidescopeModule --> ProgramModule
+  CallidescopeModule --> ProjectReportsModule
+  CallidescopeModule --> ReportFindingsModule
+  CallidescopeModule --> ReportModule
+  CallidescopeModule --> WorkspaceModule
+  CallidescopeModule --> WriteDestinationsModule
+  ConfigurationModule --> ConfigurationFileModule
+  ConfigurationModule --> InputModule
+  ConfigurationModule --> RunPlanModule
+  DepthModule --> AddressLookupModule
+  DepthModule --> AddressReportModule
+  DepthModule --> ConfigurationModule
+  DepthModule --> GraphModule
+  EdgesModule --> CallablesModule
+  EdgesModule --> ClassesModule
+  EdgesModule --> ProgramModule
+  EdgesModule --> WorkspaceModule
+  EntriesModule --> CallablesModule
+  GraphModule --> DocumentationModule
+  GraphModule --> EdgesModule
+  GraphModule --> SignaturesModule
+  LimitsModule --> ConfigurationModule
+  LimitsModule --> WorkspaceModule
+  MainModule --> BreadthModule
+  MainModule --> CallidescopeModule
+  MainModule --> ConfigurationModule
+  MainModule --> DepthModule
+  MainModule --> DiscoveryModule
+  MainModule --> LimitsModule
+  ProgramModule --> WorkspaceModule
+  ProjectReportsModule --> GraphModule
+  ProjectReportsModule --> SignaturesModule
+  RunPlanModule --> FlagResolutionModule
+  WriteDestinationsModule --> OutputJsonModule
+  WriteDestinationsModule --> OutputMarkdownModule
+  WriteDestinationsModule --> ReportModule
+```
+
+_Rounded modules are global: every module can inject them, so their edges are left out._
+<!-- codependix:end name="codependix-nestjs-modules" -->
+
+### File Imports
+
+<!-- codependix:start name="codependix-file-imports" -->
+```mermaid
+graph LR
+  file_callidescope_config_ts["callidescope.config.ts"]
+  file_codependix_config_ts["codependix.config.ts"]
+  file_codometer_config_ts["codometer.config.ts"]
+  file_eslint_config_ts["eslint.config.ts"]
+  file_src_constants_ts["src/constants.ts"]
+  file_src_index_ts["src/index.ts"]
+  file_src_main_end_to_end_test_ts["src/main.end-to-end.test.ts"]
+  file_src_main_module_ts["src/main.module.ts"]
+  file_src_main_ts["src/main.ts"]
+  file_src_modules_address_lookup_address_lookup_constants_ts["src/modules/address-lookup/address-lookup.constants.ts"]
+  file_src_modules_address_lookup_address_lookup_constants_unit_test_ts["src/modules/address-lookup/address-lookup.constants.unit.test.ts"]
+  file_src_modules_address_lookup_address_lookup_module_ts["src/modules/address-lookup/address-lookup.module.ts"]
+  file_src_modules_address_lookup_address_lookup_service_ts["src/modules/address-lookup/address-lookup.service.ts"]
+  file_src_modules_address_lookup_address_lookup_service_unit_test_ts["src/modules/address-lookup/address-lookup.service.unit.test.ts"]
+  file_src_modules_address_lookup_address_lookup_types_ts["src/modules/address-lookup/address-lookup.types.ts"]
+  file_src_modules_breadth_breadth_command_ts["src/modules/breadth/breadth.command.ts"]
+  file_src_modules_breadth_breadth_command_unit_test_ts["src/modules/breadth/breadth.command.unit.test.ts"]
+  file_src_modules_breadth_breadth_constants_ts["src/modules/breadth/breadth.constants.ts"]
+  file_src_modules_breadth_breadth_module_ts["src/modules/breadth/breadth.module.ts"]
+  file_src_modules_breadth_breadth_types_ts["src/modules/breadth/breadth.types.ts"]
+  file_src_modules_callidescope_callidescope_command_ts["src/modules/callidescope/callidescope.command.ts"]
+  file_src_modules_callidescope_callidescope_command_unit_test_ts["src/modules/callidescope/callidescope.command.unit.test.ts"]
+  file_src_modules_callidescope_callidescope_constants_ts["src/modules/callidescope/callidescope.constants.ts"]
+  file_src_modules_callidescope_callidescope_module_ts["src/modules/callidescope/callidescope.module.ts"]
+  file_src_modules_callidescope_callidescope_service_integration_test_ts["src/modules/callidescope/callidescope.service.integration.test.ts"]
+  file_src_modules_callidescope_callidescope_service_ts["src/modules/callidescope/callidescope.service.ts"]
+  file_src_modules_callidescope_callidescope_service_unit_test_ts["src/modules/callidescope/callidescope.service.unit.test.ts"]
+  file_src_modules_callidescope_callidescope_types_ts["src/modules/callidescope/callidescope.types.ts"]
+  file_src_modules_depth_depth_command_ts["src/modules/depth/depth.command.ts"]
+  file_src_modules_depth_depth_command_unit_test_ts["src/modules/depth/depth.command.unit.test.ts"]
+  file_src_modules_depth_depth_constants_ts["src/modules/depth/depth.constants.ts"]
+  file_src_modules_depth_depth_module_ts["src/modules/depth/depth.module.ts"]
+  file_src_modules_depth_depth_types_ts["src/modules/depth/depth.types.ts"]
+  file_src_modules_limits_limits_command_ts["src/modules/limits/limits.command.ts"]
+  file_src_modules_limits_limits_command_unit_test_ts["src/modules/limits/limits.command.unit.test.ts"]
+  file_src_modules_limits_limits_constants_ts["src/modules/limits/limits.constants.ts"]
+  file_src_modules_limits_limits_module_ts["src/modules/limits/limits.module.ts"]
+  file_src_modules_limits_limits_service_ts["src/modules/limits/limits.service.ts"]
+  file_src_modules_limits_limits_service_unit_test_ts["src/modules/limits/limits.service.unit.test.ts"]
+  file_src_modules_limits_limits_types_ts["src/modules/limits/limits.types.ts"]
+  file_src_modules_limits_render_limits_service_ts["src/modules/limits/render-limits.service.ts"]
+  file_src_modules_limits_render_limits_service_unit_test_ts["src/modules/limits/render-limits.service.unit.test.ts"]
+  file_src_repl_ts["src/repl.ts"]
+  file_src_repl_unit_test_ts["src/repl.unit.test.ts"]
+  file_testing_mocks_ts["testing/mocks.ts"]
+  file_testing_modules_ts["testing/modules.ts"]
+  file_testing_programs_ts["testing/programs.ts"]
+  file_testing_setup_ts["testing/setup.ts"]
+  file_vitest_config_ts["vitest.config.ts"]
+  file_src_main_end_to_end_test_ts --> file_src_constants_ts
+  file_src_main_module_ts --> file_src_constants_ts
+  file_src_main_module_ts --> file_src_modules_breadth_breadth_module_ts
+  file_src_main_module_ts --> file_src_modules_callidescope_callidescope_module_ts
+  file_src_main_module_ts --> file_src_modules_depth_depth_module_ts
+  file_src_main_module_ts --> file_src_modules_limits_limits_module_ts
+  file_src_main_ts --> file_src_main_module_ts
+  file_src_modules_address_lookup_address_lookup_constants_unit_test_ts --> file_src_modules_address_lookup_address_lookup_constants_ts
+  file_src_modules_address_lookup_address_lookup_module_ts --> file_src_modules_address_lookup_address_lookup_service_ts
+  file_src_modules_address_lookup_address_lookup_module_ts --> file_src_modules_callidescope_callidescope_module_ts
+  file_src_modules_address_lookup_address_lookup_service_ts --> file_src_modules_address_lookup_address_lookup_constants_ts
+  file_src_modules_address_lookup_address_lookup_service_ts --> file_src_modules_address_lookup_address_lookup_types_ts
+  file_src_modules_address_lookup_address_lookup_service_ts --> file_src_modules_callidescope_callidescope_service_ts
+  file_src_modules_address_lookup_address_lookup_service_unit_test_ts --> file_src_modules_address_lookup_address_lookup_service_ts
+  file_src_modules_address_lookup_address_lookup_service_unit_test_ts --> file_src_modules_callidescope_callidescope_service_ts
+  file_src_modules_address_lookup_address_lookup_service_unit_test_ts --> file_src_modules_callidescope_callidescope_types_ts
+  file_src_modules_address_lookup_address_lookup_types_ts --> file_src_modules_callidescope_callidescope_types_ts
+  file_src_modules_breadth_breadth_command_ts --> file_src_modules_address_lookup_address_lookup_constants_ts
+  file_src_modules_breadth_breadth_command_ts --> file_src_modules_address_lookup_address_lookup_service_ts
+  file_src_modules_breadth_breadth_command_ts --> file_src_modules_address_lookup_address_lookup_types_ts
+  file_src_modules_breadth_breadth_command_ts --> file_src_modules_callidescope_callidescope_constants_ts
+  file_src_modules_breadth_breadth_command_unit_test_ts --> file_src_modules_address_lookup_address_lookup_service_ts
+  file_src_modules_breadth_breadth_command_unit_test_ts --> file_src_modules_address_lookup_address_lookup_types_ts
+  file_src_modules_breadth_breadth_command_unit_test_ts --> file_src_modules_breadth_breadth_command_ts
+  file_src_modules_breadth_breadth_command_unit_test_ts --> file_testing_mocks_ts
+  file_src_modules_breadth_breadth_module_ts --> file_src_modules_address_lookup_address_lookup_module_ts
+  file_src_modules_breadth_breadth_module_ts --> file_src_modules_breadth_breadth_command_ts
+  file_src_modules_callidescope_callidescope_command_ts --> file_src_modules_address_lookup_address_lookup_constants_ts
+  file_src_modules_callidescope_callidescope_command_ts --> file_src_modules_callidescope_callidescope_constants_ts
+  file_src_modules_callidescope_callidescope_command_ts --> file_src_modules_callidescope_callidescope_service_ts
+  file_src_modules_callidescope_callidescope_command_unit_test_ts --> file_src_modules_callidescope_callidescope_command_ts
+  file_src_modules_callidescope_callidescope_command_unit_test_ts --> file_src_modules_callidescope_callidescope_constants_ts
+  file_src_modules_callidescope_callidescope_command_unit_test_ts --> file_src_modules_callidescope_callidescope_service_ts
+  file_src_modules_callidescope_callidescope_command_unit_test_ts --> file_testing_mocks_ts
+  file_src_modules_callidescope_callidescope_constants_ts --> file_src_modules_address_lookup_address_lookup_constants_ts
+  file_src_modules_callidescope_callidescope_module_ts --> file_src_modules_callidescope_callidescope_command_ts
+  file_src_modules_callidescope_callidescope_module_ts --> file_src_modules_callidescope_callidescope_service_ts
+  file_src_modules_callidescope_callidescope_service_integration_test_ts --> file_src_modules_callidescope_callidescope_service_ts
+  file_src_modules_callidescope_callidescope_service_integration_test_ts --> file_testing_modules_ts
+  file_src_modules_callidescope_callidescope_service_ts --> file_src_modules_callidescope_callidescope_constants_ts
+  file_src_modules_callidescope_callidescope_service_ts --> file_src_modules_callidescope_callidescope_types_ts
+  file_src_modules_callidescope_callidescope_service_unit_test_ts --> file_src_modules_callidescope_callidescope_service_ts
+  file_src_modules_callidescope_callidescope_service_unit_test_ts --> file_testing_modules_ts
+  file_src_modules_callidescope_callidescope_service_unit_test_ts --> file_testing_programs_ts
+  file_src_modules_depth_depth_command_ts --> file_src_modules_address_lookup_address_lookup_constants_ts
+  file_src_modules_depth_depth_command_ts --> file_src_modules_address_lookup_address_lookup_service_ts
+  file_src_modules_depth_depth_command_ts --> file_src_modules_address_lookup_address_lookup_types_ts
+  file_src_modules_depth_depth_command_ts --> file_src_modules_callidescope_callidescope_constants_ts
+  file_src_modules_depth_depth_command_unit_test_ts --> file_src_modules_address_lookup_address_lookup_service_ts
+  file_src_modules_depth_depth_command_unit_test_ts --> file_src_modules_address_lookup_address_lookup_types_ts
+  file_src_modules_depth_depth_command_unit_test_ts --> file_src_modules_callidescope_callidescope_types_ts
+  file_src_modules_depth_depth_command_unit_test_ts --> file_src_modules_depth_depth_command_ts
+  file_src_modules_depth_depth_module_ts --> file_src_modules_address_lookup_address_lookup_module_ts
+  file_src_modules_depth_depth_module_ts --> file_src_modules_depth_depth_command_ts
+  file_src_modules_limits_limits_command_ts --> file_src_modules_callidescope_callidescope_constants_ts
+  file_src_modules_limits_limits_command_ts --> file_src_modules_limits_limits_service_ts
+  file_src_modules_limits_limits_command_ts --> file_src_modules_limits_limits_types_ts
+  file_src_modules_limits_limits_command_ts --> file_src_modules_limits_render_limits_service_ts
+  file_src_modules_limits_limits_command_unit_test_ts --> file_src_modules_limits_limits_command_ts
+  file_src_modules_limits_limits_command_unit_test_ts --> file_src_modules_limits_limits_service_ts
+  file_src_modules_limits_limits_command_unit_test_ts --> file_src_modules_limits_render_limits_service_ts
+  file_src_modules_limits_limits_module_ts --> file_src_modules_limits_limits_command_ts
+  file_src_modules_limits_limits_module_ts --> file_src_modules_limits_limits_service_ts
+  file_src_modules_limits_limits_module_ts --> file_src_modules_limits_render_limits_service_ts
+  file_src_modules_limits_limits_service_ts --> file_src_modules_limits_limits_types_ts
+  file_src_modules_limits_limits_service_unit_test_ts --> file_src_modules_limits_limits_service_ts
+  file_src_modules_limits_render_limits_service_ts --> file_src_modules_limits_limits_constants_ts
+  file_src_modules_limits_render_limits_service_ts --> file_src_modules_limits_limits_types_ts
+  file_src_modules_limits_render_limits_service_unit_test_ts --> file_src_modules_limits_limits_types_ts
+  file_src_modules_limits_render_limits_service_unit_test_ts --> file_src_modules_limits_render_limits_service_ts
+  file_src_repl_ts --> file_src_main_module_ts
+```
+<!-- codependix:end name="codependix-file-imports" -->
+
 ## ⏲️ Codometer
 
 ### Project

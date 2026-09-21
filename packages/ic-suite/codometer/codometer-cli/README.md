@@ -857,6 +857,183 @@ Dependency graphs exported by [codependix](https://github.com/JimmyPaolini/codeb
 
 <!-- CODE_STATISTICS_START -->
 
+### Nx Neighborhood
+
+<!-- codependix:start name="codependix-nx-projects" -->
+```mermaid
+graph LR
+  codometer_cli["codometer-cli"]
+  codometer_configuration["codometer-configuration"]
+  codometer_core["codometer-core"]
+  codometer_examples["codometer-examples"]
+  codometer_measurement["codometer-measurement"]
+  codometer_output["codometer-output"]
+  logger["logger"]
+  codometer_cli --> codometer_configuration
+  codometer_cli --> codometer_core
+  codometer_cli --> codometer_measurement
+  codometer_cli --> codometer_output
+  codometer_cli --> logger
+  codometer_examples -.-> codometer_cli
+  classDef subject fill:#7c3aed,color:#fff,stroke:#4c1d95,stroke-width:2px
+  class codometer_cli subject
+```
+
+_Dashed edges are dependencies Nx inferred from configuration rather than from code._
+<!-- codependix:end name="codependix-nx-projects" -->
+
+### NestJS Module Graph
+
+<!-- codependix:start name="codependix-nestjs-modules" -->
+```mermaid
+flowchart LR
+  ChangesModule
+  CommentsModule
+  ConfigModule([ConfigModule])
+  ConfigurationListingModule
+  ConfigurationModule
+  CssModule
+  CustomizationModule
+  DeliveryModule
+  DestinationsModule
+  DiscoveryModule
+  DocumentsModule
+  HclModule
+  InputsModule
+  JsonModule
+  JupyterModule
+  LanguagesModule
+  LimitsModule
+  LoggerModule([LoggerModule])
+  MainModule
+  MarkdownModule
+  MeasureModule
+  PythonModule
+  RenderModule
+  ReportModule
+  ShellModule
+  SizeModule
+  SqlModule
+  TomlModule
+  TypescriptModule
+  YamlModule
+  ChangesModule --> ChangesModule
+  ChangesModule --> ConfigurationModule
+  ChangesModule --> DocumentsModule
+  ChangesModule --> RenderModule
+  ConfigurationListingModule --> ConfigurationModule
+  ConfigurationListingModule --> DiscoveryModule
+  ConfigurationModule --> ConfigurationListingModule
+  ConfigurationModule --> ConfigurationModule
+  DeliveryModule --> JsonModule
+  DeliveryModule --> MarkdownModule
+  JupyterModule --> JsonModule
+  JupyterModule --> MarkdownModule
+  JupyterModule --> PythonModule
+  LanguagesModule --> CommentsModule
+  LanguagesModule --> CssModule
+  LanguagesModule --> HclModule
+  LanguagesModule --> JsonModule
+  LanguagesModule --> JupyterModule
+  LanguagesModule --> MarkdownModule
+  LanguagesModule --> PythonModule
+  LanguagesModule --> ShellModule
+  LanguagesModule --> SqlModule
+  LanguagesModule --> TomlModule
+  LanguagesModule --> TypescriptModule
+  LanguagesModule --> YamlModule
+  MainModule --> ChangesModule
+  MainModule --> ConfigurationModule
+  MainModule --> ConfigurationModule
+  MainModule --> DiscoveryModule
+  MainModule --> DiscoveryModule
+  MainModule --> JsonModule
+  MainModule --> MarkdownModule
+  MainModule --> MeasureModule
+  MeasureModule --> ConfigurationModule
+  MeasureModule --> ConfigurationModule
+  MeasureModule --> CustomizationModule
+  MeasureModule --> DeliveryModule
+  MeasureModule --> DestinationsModule
+  MeasureModule --> DiscoveryModule
+  MeasureModule --> InputsModule
+  MeasureModule --> LanguagesModule
+  MeasureModule --> LimitsModule
+  MeasureModule --> MeasureModule
+  MeasureModule --> ReportModule
+  MeasureModule --> SizeModule
+  TypescriptModule --> CommentsModule
+```
+
+_Rounded modules are global: every module can inject them, so their edges are left out._
+<!-- codependix:end name="codependix-nestjs-modules" -->
+
+### File Imports
+
+<!-- codependix:start name="codependix-file-imports" -->
+```mermaid
+graph LR
+  file_callidescope_config_ts["callidescope.config.ts"]
+  file_codependix_config_ts["codependix.config.ts"]
+  file_codometer_config_ts["codometer.config.ts"]
+  file_eslint_config_ts["eslint.config.ts"]
+  file_src_constants_ts["src/constants.ts"]
+  file_src_index_ts["src/index.ts"]
+  file_src_main_end_to_end_test_ts["src/main.end-to-end.test.ts"]
+  file_src_main_module_ts["src/main.module.ts"]
+  file_src_main_ts["src/main.ts"]
+  file_src_main_utilities_ts["src/main.utilities.ts"]
+  file_src_main_utilities_unit_test_ts["src/main.utilities.unit.test.ts"]
+  file_src_modules_changes_changes_command_ts["src/modules/changes/changes.command.ts"]
+  file_src_modules_changes_changes_command_unit_test_ts["src/modules/changes/changes.command.unit.test.ts"]
+  file_src_modules_changes_changes_constants_ts["src/modules/changes/changes.constants.ts"]
+  file_src_modules_changes_changes_module_ts["src/modules/changes/changes.module.ts"]
+  file_src_modules_changes_changes_types_ts["src/modules/changes/changes.types.ts"]
+  file_src_modules_configuration_configuration_command_ts["src/modules/configuration/configuration.command.ts"]
+  file_src_modules_configuration_configuration_command_unit_test_ts["src/modules/configuration/configuration.command.unit.test.ts"]
+  file_src_modules_configuration_configuration_constants_ts["src/modules/configuration/configuration.constants.ts"]
+  file_src_modules_configuration_configuration_module_ts["src/modules/configuration/configuration.module.ts"]
+  file_src_modules_configuration_configuration_types_ts["src/modules/configuration/configuration.types.ts"]
+  file_src_modules_measure_measure_command_integration_test_ts["src/modules/measure/measure.command.integration.test.ts"]
+  file_src_modules_measure_measure_command_ts["src/modules/measure/measure.command.ts"]
+  file_src_modules_measure_measure_command_unit_test_ts["src/modules/measure/measure.command.unit.test.ts"]
+  file_src_modules_measure_measure_constants_ts["src/modules/measure/measure.constants.ts"]
+  file_src_modules_measure_measure_module_ts["src/modules/measure/measure.module.ts"]
+  file_src_modules_measure_measure_types_ts["src/modules/measure/measure.types.ts"]
+  file_src_repl_ts["src/repl.ts"]
+  file_src_repl_unit_test_ts["src/repl.unit.test.ts"]
+  file_testing_fixture_tree_ts["testing/fixture-tree.ts"]
+  file_testing_mocks_ts["testing/mocks.ts"]
+  file_testing_setup_ts["testing/setup.ts"]
+  file_testing_target_tree_ts["testing/target-tree.ts"]
+  file_vitest_config_ts["vitest.config.ts"]
+  file_src_main_end_to_end_test_ts --> file_src_constants_ts
+  file_src_main_end_to_end_test_ts --> file_testing_fixture_tree_ts
+  file_src_main_module_ts --> file_src_constants_ts
+  file_src_main_module_ts --> file_src_modules_changes_changes_module_ts
+  file_src_main_module_ts --> file_src_modules_configuration_configuration_module_ts
+  file_src_main_module_ts --> file_src_modules_measure_measure_module_ts
+  file_src_main_ts --> file_src_main_module_ts
+  file_src_main_ts --> file_src_main_utilities_ts
+  file_src_main_utilities_unit_test_ts --> file_src_main_utilities_ts
+  file_src_modules_changes_changes_command_ts --> file_src_modules_changes_changes_types_ts
+  file_src_modules_changes_changes_command_unit_test_ts --> file_src_modules_changes_changes_command_ts
+  file_src_modules_changes_changes_module_ts --> file_src_modules_changes_changes_command_ts
+  file_src_modules_configuration_configuration_command_ts --> file_src_modules_configuration_configuration_constants_ts
+  file_src_modules_configuration_configuration_command_ts --> file_src_modules_configuration_configuration_types_ts
+  file_src_modules_configuration_configuration_command_unit_test_ts --> file_src_modules_configuration_configuration_command_ts
+  file_src_modules_configuration_configuration_module_ts --> file_src_modules_configuration_configuration_command_ts
+  file_src_modules_measure_measure_command_integration_test_ts --> file_src_main_module_ts
+  file_src_modules_measure_measure_command_integration_test_ts --> file_src_modules_measure_measure_command_ts
+  file_src_modules_measure_measure_command_integration_test_ts --> file_testing_fixture_tree_ts
+  file_src_modules_measure_measure_command_ts --> file_src_modules_measure_measure_types_ts
+  file_src_modules_measure_measure_command_unit_test_ts --> file_src_modules_measure_measure_command_ts
+  file_src_modules_measure_measure_command_unit_test_ts --> file_testing_mocks_ts
+  file_src_modules_measure_measure_module_ts --> file_src_modules_measure_measure_command_ts
+  file_src_repl_ts --> file_src_main_module_ts
+```
+<!-- codependix:end name="codependix-file-imports" -->
+
 ## ⏲️ Codometer Output
 
 ### Project

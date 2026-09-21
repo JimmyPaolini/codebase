@@ -162,6 +162,143 @@ Dependency graphs exported by [codependix](https://github.com/JimmyPaolini/codeb
 
 <!-- CODE_STATISTICS_START -->
 
+### Nx Neighborhood
+
+<!-- codependix:start name="codependix-nx-projects" -->
+```mermaid
+graph LR
+  conformetry_cli["conformetry-cli"]
+  conformetry_configuration["conformetry-configuration"]
+  conformetry_core["conformetry-core"]
+  conformetry_examples["conformetry-examples"]
+  conformetry_languages["conformetry-languages"]
+  conformetry_nx["conformetry-nx"]
+  conformetry_validation["conformetry-validation"]
+  conformetry_cli --> conformetry_validation
+  conformetry_examples --> conformetry_validation
+  conformetry_nx --> conformetry_validation
+  conformetry_validation --> conformetry_configuration
+  conformetry_validation --> conformetry_core
+  conformetry_validation --> conformetry_languages
+  classDef subject fill:#7c3aed,color:#fff,stroke:#4c1d95,stroke-width:2px
+  class conformetry_validation subject
+```
+<!-- codependix:end name="codependix-nx-projects" -->
+
+### NestJS Module Graph
+
+<!-- codependix:start name="codependix-nestjs-modules" -->
+```mermaid
+flowchart LR
+  ConfigurationModule
+  DifferencesModule
+  FilesModule
+  InputModule
+  InstanceDiscoveryModule
+  InstanceGroupModule
+  JsonModule
+  JupyterModule
+  LanguagesModule
+  MarkdownModule
+  PythonModule
+  RenderingModule
+  RunnerModule
+  ScoringModule
+  TemplateDiscoveryModule
+  TextModule
+  TypescriptModule
+  ValidationModule
+  ConfigurationModule --> InputModule
+  ConfigurationModule --> InstanceDiscoveryModule
+  ConfigurationModule --> InstanceGroupModule
+  ConfigurationModule --> RenderingModule
+  ConfigurationModule --> TemplateDiscoveryModule
+  FilesModule --> ConfigurationModule
+  FilesModule --> DifferencesModule
+  InstanceDiscoveryModule --> InstanceGroupModule
+  InstanceDiscoveryModule --> RenderingModule
+  InstanceDiscoveryModule --> TemplateDiscoveryModule
+  JsonModule --> ScoringModule
+  JupyterModule --> JsonModule
+  JupyterModule --> MarkdownModule
+  JupyterModule --> PythonModule
+  LanguagesModule --> JsonModule
+  LanguagesModule --> JupyterModule
+  LanguagesModule --> MarkdownModule
+  LanguagesModule --> PythonModule
+  LanguagesModule --> TextModule
+  LanguagesModule --> TypescriptModule
+  MarkdownModule --> ScoringModule
+  PythonModule --> DifferencesModule
+  PythonModule --> ScoringModule
+  TemplateDiscoveryModule --> RenderingModule
+  TypescriptModule --> ScoringModule
+  ValidationModule --> ConfigurationModule
+  ValidationModule --> FilesModule
+  ValidationModule --> LanguagesModule
+  ValidationModule --> RunnerModule
+  ValidationModule --> ScoringModule
+```
+<!-- codependix:end name="codependix-nestjs-modules" -->
+
+### File Imports
+
+<!-- codependix:start name="codependix-file-imports" -->
+```mermaid
+graph LR
+  file_callidescope_config_ts["callidescope.config.ts"]
+  file_codependix_config_ts["codependix.config.ts"]
+  file_codometer_config_ts["codometer.config.ts"]
+  file_eslint_config_ts["eslint.config.ts"]
+  file_src_index_ts["src/index.ts"]
+  file_src_modules_runner_runner_constants_ts["src/modules/runner/runner.constants.ts"]
+  file_src_modules_runner_runner_module_ts["src/modules/runner/runner.module.ts"]
+  file_src_modules_runner_runner_module_unit_test_ts["src/modules/runner/runner.module.unit.test.ts"]
+  file_src_modules_runner_runner_service_ts["src/modules/runner/runner.service.ts"]
+  file_src_modules_runner_runner_service_unit_test_ts["src/modules/runner/runner.service.unit.test.ts"]
+  file_src_modules_runner_runner_types_ts["src/modules/runner/runner.types.ts"]
+  file_src_modules_validation_validation_deduplication_service_ts["src/modules/validation/validation-deduplication.service.ts"]
+  file_src_modules_validation_validation_deduplication_service_unit_test_ts["src/modules/validation/validation-deduplication.service.unit.test.ts"]
+  file_src_modules_validation_validation_findings_service_ts["src/modules/validation/validation-findings.service.ts"]
+  file_src_modules_validation_validation_findings_service_unit_test_ts["src/modules/validation/validation-findings.service.unit.test.ts"]
+  file_src_modules_validation_validation_scoring_service_ts["src/modules/validation/validation-scoring.service.ts"]
+  file_src_modules_validation_validation_scoring_service_unit_test_ts["src/modules/validation/validation-scoring.service.unit.test.ts"]
+  file_src_modules_validation_validation_constants_ts["src/modules/validation/validation.constants.ts"]
+  file_src_modules_validation_validation_module_ts["src/modules/validation/validation.module.ts"]
+  file_src_modules_validation_validation_service_ts["src/modules/validation/validation.service.ts"]
+  file_src_modules_validation_validation_service_unit_test_ts["src/modules/validation/validation.service.unit.test.ts"]
+  file_src_modules_validation_validation_types_ts["src/modules/validation/validation.types.ts"]
+  file_testing_mocks_ts["testing/mocks.ts"]
+  file_testing_setup_ts["testing/setup.ts"]
+  file_vitest_config_ts["vitest.config.ts"]
+  file_src_modules_runner_runner_module_ts --> file_src_modules_runner_runner_service_ts
+  file_src_modules_runner_runner_module_unit_test_ts --> file_src_modules_runner_runner_module_ts
+  file_src_modules_runner_runner_module_unit_test_ts --> file_src_modules_runner_runner_service_ts
+  file_src_modules_runner_runner_service_ts --> file_src_modules_runner_runner_types_ts
+  file_src_modules_runner_runner_service_unit_test_ts --> file_src_modules_runner_runner_service_ts
+  file_src_modules_validation_validation_deduplication_service_ts --> file_src_modules_validation_validation_constants_ts
+  file_src_modules_validation_validation_deduplication_service_ts --> file_src_modules_validation_validation_types_ts
+  file_src_modules_validation_validation_deduplication_service_unit_test_ts --> file_src_modules_validation_validation_deduplication_service_ts
+  file_src_modules_validation_validation_deduplication_service_unit_test_ts --> file_src_modules_validation_validation_types_ts
+  file_src_modules_validation_validation_findings_service_unit_test_ts --> file_src_modules_validation_validation_findings_service_ts
+  file_src_modules_validation_validation_scoring_service_ts --> file_src_modules_validation_validation_constants_ts
+  file_src_modules_validation_validation_scoring_service_ts --> file_src_modules_validation_validation_types_ts
+  file_src_modules_validation_validation_scoring_service_unit_test_ts --> file_src_modules_validation_validation_scoring_service_ts
+  file_src_modules_validation_validation_module_ts --> file_src_modules_runner_runner_module_ts
+  file_src_modules_validation_validation_module_ts --> file_src_modules_validation_validation_deduplication_service_ts
+  file_src_modules_validation_validation_module_ts --> file_src_modules_validation_validation_findings_service_ts
+  file_src_modules_validation_validation_module_ts --> file_src_modules_validation_validation_scoring_service_ts
+  file_src_modules_validation_validation_module_ts --> file_src_modules_validation_validation_service_ts
+  file_src_modules_validation_validation_service_ts --> file_src_modules_runner_runner_service_ts
+  file_src_modules_validation_validation_service_ts --> file_src_modules_validation_validation_deduplication_service_ts
+  file_src_modules_validation_validation_service_ts --> file_src_modules_validation_validation_findings_service_ts
+  file_src_modules_validation_validation_service_ts --> file_src_modules_validation_validation_scoring_service_ts
+  file_src_modules_validation_validation_service_ts --> file_src_modules_validation_validation_types_ts
+  file_src_modules_validation_validation_service_unit_test_ts --> file_src_modules_validation_validation_module_ts
+  file_src_modules_validation_validation_service_unit_test_ts --> file_src_modules_validation_validation_service_ts
+```
+<!-- codependix:end name="codependix-file-imports" -->
+
 ## ⏲️ Codometer
 
 ### Project

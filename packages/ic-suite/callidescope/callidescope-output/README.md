@@ -167,6 +167,215 @@ Dependency graphs exported by [codependix](https://github.com/JimmyPaolini/codeb
 
 <!-- CODE_STATISTICS_START -->
 
+### Nx Neighborhood
+
+<!-- codependix:start name="codependix-nx-projects" -->
+```mermaid
+graph LR
+  callidescope_cli["callidescope-cli"]
+  callidescope_configuration["callidescope-configuration"]
+  callidescope_core["callidescope-core"]
+  callidescope_graph["callidescope-graph"]
+  callidescope_nx["callidescope-nx"]
+  callidescope_output["callidescope-output"]
+  logger["logger"]
+  callidescope_cli --> callidescope_output
+  callidescope_nx --> callidescope_output
+  callidescope_output --> callidescope_configuration
+  callidescope_output --> callidescope_core
+  callidescope_output --> callidescope_graph
+  callidescope_output --> logger
+  classDef subject fill:#7c3aed,color:#fff,stroke:#4c1d95,stroke-width:2px
+  class callidescope_output subject
+```
+<!-- codependix:end name="codependix-nx-projects" -->
+
+### NestJS Module Graph
+
+<!-- codependix:start name="codependix-nestjs-modules" -->
+```mermaid
+flowchart LR
+  AddressReportModule
+  CallablesModule
+  ClassesModule
+  DocumentationModule
+  EdgesModule
+  GraphModule
+  LoggerModule([LoggerModule])
+  OutputJsonModule
+  OutputMarkdownModule
+  ProgramModule
+  ProjectReportsModule
+  ReportFindingsModule
+  ReportModule
+  SignaturesModule
+  WorkspaceModule
+  WriteDestinationsModule
+  AddressReportModule --> ReportModule
+  CallablesModule --> ProgramModule
+  CallablesModule --> WorkspaceModule
+  EdgesModule --> CallablesModule
+  EdgesModule --> ClassesModule
+  EdgesModule --> ProgramModule
+  EdgesModule --> WorkspaceModule
+  GraphModule --> DocumentationModule
+  GraphModule --> EdgesModule
+  GraphModule --> SignaturesModule
+  ProgramModule --> WorkspaceModule
+  ProjectReportsModule --> GraphModule
+  ProjectReportsModule --> SignaturesModule
+  WriteDestinationsModule --> OutputJsonModule
+  WriteDestinationsModule --> OutputMarkdownModule
+  WriteDestinationsModule --> ReportModule
+```
+
+_Rounded modules are global: every module can inject them, so their edges are left out._
+<!-- codependix:end name="codependix-nestjs-modules" -->
+
+### File Imports
+
+<!-- codependix:start name="codependix-file-imports" -->
+```mermaid
+graph LR
+  file_callidescope_config_ts["callidescope.config.ts"]
+  file_codependix_config_ts["codependix.config.ts"]
+  file_codometer_config_ts["codometer.config.ts"]
+  file_eslint_config_ts["eslint.config.ts"]
+  file_src_index_ts["src/index.ts"]
+  file_src_modules_address_report_address_report_constants_ts["src/modules/address-report/address-report.constants.ts"]
+  file_src_modules_address_report_address_report_module_ts["src/modules/address-report/address-report.module.ts"]
+  file_src_modules_address_report_address_report_service_ts["src/modules/address-report/address-report.service.ts"]
+  file_src_modules_address_report_address_report_service_unit_test_ts["src/modules/address-report/address-report.service.unit.test.ts"]
+  file_src_modules_address_report_address_report_types_ts["src/modules/address-report/address-report.types.ts"]
+  file_src_modules_output_json_output_json_constants_ts["src/modules/output-json/output-json.constants.ts"]
+  file_src_modules_output_json_output_json_module_ts["src/modules/output-json/output-json.module.ts"]
+  file_src_modules_output_json_output_json_service_ts["src/modules/output-json/output-json.service.ts"]
+  file_src_modules_output_json_output_json_service_unit_test_ts["src/modules/output-json/output-json.service.unit.test.ts"]
+  file_src_modules_output_json_output_json_types_ts["src/modules/output-json/output-json.types.ts"]
+  file_src_modules_output_markdown_output_markdown_constants_ts["src/modules/output-markdown/output-markdown.constants.ts"]
+  file_src_modules_output_markdown_output_markdown_module_ts["src/modules/output-markdown/output-markdown.module.ts"]
+  file_src_modules_output_markdown_output_markdown_service_ts["src/modules/output-markdown/output-markdown.service.ts"]
+  file_src_modules_output_markdown_output_markdown_service_unit_test_ts["src/modules/output-markdown/output-markdown.service.unit.test.ts"]
+  file_src_modules_output_markdown_output_markdown_types_ts["src/modules/output-markdown/output-markdown.types.ts"]
+  file_src_modules_project_reports_project_reports_constants_ts["src/modules/project-reports/project-reports.constants.ts"]
+  file_src_modules_project_reports_project_reports_module_ts["src/modules/project-reports/project-reports.module.ts"]
+  file_src_modules_project_reports_project_reports_service_ts["src/modules/project-reports/project-reports.service.ts"]
+  file_src_modules_project_reports_project_reports_service_unit_test_ts["src/modules/project-reports/project-reports.service.unit.test.ts"]
+  file_src_modules_project_reports_project_reports_types_ts["src/modules/project-reports/project-reports.types.ts"]
+  file_src_modules_report_findings_report_findings_constants_ts["src/modules/report-findings/report-findings.constants.ts"]
+  file_src_modules_report_findings_report_findings_module_ts["src/modules/report-findings/report-findings.module.ts"]
+  file_src_modules_report_findings_report_findings_service_ts["src/modules/report-findings/report-findings.service.ts"]
+  file_src_modules_report_findings_report_findings_service_unit_test_ts["src/modules/report-findings/report-findings.service.unit.test.ts"]
+  file_src_modules_report_findings_report_findings_types_ts["src/modules/report-findings/report-findings.types.ts"]
+  file_src_modules_report_markdown_report_service_ts["src/modules/report/markdown-report.service.ts"]
+  file_src_modules_report_markdown_report_service_unit_test_ts["src/modules/report/markdown-report.service.unit.test.ts"]
+  file_src_modules_report_mermaid_report_service_ts["src/modules/report/mermaid-report.service.ts"]
+  file_src_modules_report_mermaid_report_service_unit_test_ts["src/modules/report/mermaid-report.service.unit.test.ts"]
+  file_src_modules_report_report_constants_ts["src/modules/report/report.constants.ts"]
+  file_src_modules_report_report_module_ts["src/modules/report/report.module.ts"]
+  file_src_modules_report_report_service_ts["src/modules/report/report.service.ts"]
+  file_src_modules_report_report_service_unit_test_ts["src/modules/report/report.service.unit.test.ts"]
+  file_src_modules_report_report_types_ts["src/modules/report/report.types.ts"]
+  file_src_modules_report_workspace_report_service_ts["src/modules/report/workspace-report.service.ts"]
+  file_src_modules_report_workspace_report_service_unit_test_ts["src/modules/report/workspace-report.service.unit.test.ts"]
+  file_src_modules_write_destinations_write_destinations_constants_ts["src/modules/write-destinations/write-destinations.constants.ts"]
+  file_src_modules_write_destinations_write_destinations_module_ts["src/modules/write-destinations/write-destinations.module.ts"]
+  file_src_modules_write_destinations_write_destinations_service_ts["src/modules/write-destinations/write-destinations.service.ts"]
+  file_src_modules_write_destinations_write_destinations_service_unit_test_ts["src/modules/write-destinations/write-destinations.service.unit.test.ts"]
+  file_src_modules_write_destinations_write_destinations_types_ts["src/modules/write-destinations/write-destinations.types.ts"]
+  file_testing_mocks_ts["testing/mocks.ts"]
+  file_testing_modules_ts["testing/modules.ts"]
+  file_testing_setup_ts["testing/setup.ts"]
+  file_vitest_config_ts["vitest.config.ts"]
+  file_src_modules_address_report_address_report_module_ts --> file_src_modules_address_report_address_report_service_ts
+  file_src_modules_address_report_address_report_module_ts --> file_src_modules_report_report_module_ts
+  file_src_modules_address_report_address_report_service_ts --> file_src_modules_address_report_address_report_types_ts
+  file_src_modules_address_report_address_report_service_ts --> file_src_modules_report_mermaid_report_service_ts
+  file_src_modules_address_report_address_report_service_ts --> file_src_modules_report_report_service_ts
+  file_src_modules_address_report_address_report_service_ts --> file_src_modules_report_report_types_ts
+  file_src_modules_address_report_address_report_service_unit_test_ts --> file_src_modules_address_report_address_report_service_ts
+  file_src_modules_address_report_address_report_service_unit_test_ts --> file_src_modules_report_mermaid_report_service_ts
+  file_src_modules_address_report_address_report_service_unit_test_ts --> file_src_modules_report_report_service_ts
+  file_src_modules_address_report_address_report_service_unit_test_ts --> file_testing_mocks_ts
+  file_src_modules_output_json_output_json_module_ts --> file_src_modules_output_json_output_json_service_ts
+  file_src_modules_output_json_output_json_service_ts --> file_src_modules_output_json_output_json_types_ts
+  file_src_modules_output_json_output_json_service_unit_test_ts --> file_src_modules_output_json_output_json_service_ts
+  file_src_modules_output_json_output_json_service_unit_test_ts --> file_testing_mocks_ts
+  file_src_modules_output_json_output_json_service_unit_test_ts --> file_testing_modules_ts
+  file_src_modules_output_markdown_output_markdown_module_ts --> file_src_modules_output_markdown_output_markdown_service_ts
+  file_src_modules_output_markdown_output_markdown_service_ts --> file_src_modules_output_markdown_output_markdown_constants_ts
+  file_src_modules_output_markdown_output_markdown_service_ts --> file_src_modules_output_markdown_output_markdown_types_ts
+  file_src_modules_output_markdown_output_markdown_service_unit_test_ts --> file_src_modules_output_markdown_output_markdown_constants_ts
+  file_src_modules_output_markdown_output_markdown_service_unit_test_ts --> file_src_modules_output_markdown_output_markdown_service_ts
+  file_src_modules_output_markdown_output_markdown_service_unit_test_ts --> file_testing_mocks_ts
+  file_src_modules_output_markdown_output_markdown_service_unit_test_ts --> file_testing_modules_ts
+  file_src_modules_project_reports_project_reports_module_ts --> file_src_modules_project_reports_project_reports_service_ts
+  file_src_modules_project_reports_project_reports_service_ts --> file_src_modules_project_reports_project_reports_constants_ts
+  file_src_modules_project_reports_project_reports_service_ts --> file_src_modules_project_reports_project_reports_types_ts
+  file_src_modules_project_reports_project_reports_service_unit_test_ts --> file_src_modules_project_reports_project_reports_service_ts
+  file_src_modules_project_reports_project_reports_service_unit_test_ts --> file_src_modules_project_reports_project_reports_types_ts
+  file_src_modules_project_reports_project_reports_service_unit_test_ts --> file_testing_mocks_ts
+  file_src_modules_project_reports_project_reports_service_unit_test_ts --> file_testing_modules_ts
+  file_src_modules_report_findings_report_findings_module_ts --> file_src_modules_report_findings_report_findings_service_ts
+  file_src_modules_report_findings_report_findings_service_ts --> file_src_modules_report_findings_report_findings_types_ts
+  file_src_modules_report_findings_report_findings_service_unit_test_ts --> file_src_modules_report_findings_report_findings_service_ts
+  file_src_modules_report_findings_report_findings_service_unit_test_ts --> file_src_modules_report_findings_report_findings_types_ts
+  file_src_modules_report_findings_report_findings_service_unit_test_ts --> file_testing_mocks_ts
+  file_src_modules_report_markdown_report_service_ts --> file_src_modules_report_mermaid_report_service_ts
+  file_src_modules_report_markdown_report_service_ts --> file_src_modules_report_report_constants_ts
+  file_src_modules_report_markdown_report_service_ts --> file_src_modules_report_report_service_ts
+  file_src_modules_report_markdown_report_service_ts --> file_src_modules_report_report_types_ts
+  file_src_modules_report_markdown_report_service_ts --> file_src_modules_report_workspace_report_service_ts
+  file_src_modules_report_markdown_report_service_unit_test_ts --> file_src_modules_report_markdown_report_service_ts
+  file_src_modules_report_markdown_report_service_unit_test_ts --> file_src_modules_report_report_constants_ts
+  file_src_modules_report_markdown_report_service_unit_test_ts --> file_testing_mocks_ts
+  file_src_modules_report_markdown_report_service_unit_test_ts --> file_testing_modules_ts
+  file_src_modules_report_mermaid_report_service_ts --> file_src_modules_report_report_constants_ts
+  file_src_modules_report_mermaid_report_service_ts --> file_src_modules_report_report_types_ts
+  file_src_modules_report_mermaid_report_service_unit_test_ts --> file_src_modules_report_mermaid_report_service_ts
+  file_src_modules_report_mermaid_report_service_unit_test_ts --> file_src_modules_report_report_constants_ts
+  file_src_modules_report_mermaid_report_service_unit_test_ts --> file_testing_mocks_ts
+  file_src_modules_report_mermaid_report_service_unit_test_ts --> file_testing_modules_ts
+  file_src_modules_report_report_module_ts --> file_src_modules_report_markdown_report_service_ts
+  file_src_modules_report_report_module_ts --> file_src_modules_report_mermaid_report_service_ts
+  file_src_modules_report_report_module_ts --> file_src_modules_report_report_service_ts
+  file_src_modules_report_report_module_ts --> file_src_modules_report_workspace_report_service_ts
+  file_src_modules_report_report_service_ts --> file_src_modules_report_report_constants_ts
+  file_src_modules_report_report_service_unit_test_ts --> file_src_modules_report_report_service_ts
+  file_src_modules_report_report_service_unit_test_ts --> file_testing_mocks_ts
+  file_src_modules_report_report_service_unit_test_ts --> file_testing_modules_ts
+  file_src_modules_report_report_types_ts --> file_src_modules_project_reports_project_reports_types_ts
+  file_src_modules_report_workspace_report_service_ts --> file_src_modules_report_report_constants_ts
+  file_src_modules_report_workspace_report_service_ts --> file_src_modules_report_report_types_ts
+  file_src_modules_report_workspace_report_service_unit_test_ts --> file_src_modules_report_report_constants_ts
+  file_src_modules_report_workspace_report_service_unit_test_ts --> file_src_modules_report_workspace_report_service_ts
+  file_src_modules_report_workspace_report_service_unit_test_ts --> file_testing_mocks_ts
+  file_src_modules_report_workspace_report_service_unit_test_ts --> file_testing_modules_ts
+  file_src_modules_write_destinations_write_destinations_module_ts --> file_src_modules_output_json_output_json_module_ts
+  file_src_modules_write_destinations_write_destinations_module_ts --> file_src_modules_output_markdown_output_markdown_module_ts
+  file_src_modules_write_destinations_write_destinations_module_ts --> file_src_modules_report_report_module_ts
+  file_src_modules_write_destinations_write_destinations_module_ts --> file_src_modules_write_destinations_write_destinations_service_ts
+  file_src_modules_write_destinations_write_destinations_service_ts --> file_src_modules_output_json_output_json_service_ts
+  file_src_modules_write_destinations_write_destinations_service_ts --> file_src_modules_output_markdown_output_markdown_service_ts
+  file_src_modules_write_destinations_write_destinations_service_ts --> file_src_modules_report_markdown_report_service_ts
+  file_src_modules_write_destinations_write_destinations_service_ts --> file_src_modules_write_destinations_write_destinations_constants_ts
+  file_src_modules_write_destinations_write_destinations_service_ts --> file_src_modules_write_destinations_write_destinations_types_ts
+  file_src_modules_write_destinations_write_destinations_service_unit_test_ts --> file_src_modules_output_json_output_json_service_ts
+  file_src_modules_write_destinations_write_destinations_service_unit_test_ts --> file_src_modules_output_markdown_output_markdown_service_ts
+  file_src_modules_write_destinations_write_destinations_service_unit_test_ts --> file_src_modules_report_markdown_report_service_ts
+  file_src_modules_write_destinations_write_destinations_service_unit_test_ts --> file_src_modules_report_mermaid_report_service_ts
+  file_src_modules_write_destinations_write_destinations_service_unit_test_ts --> file_src_modules_report_report_service_ts
+  file_src_modules_write_destinations_write_destinations_service_unit_test_ts --> file_src_modules_report_workspace_report_service_ts
+  file_src_modules_write_destinations_write_destinations_service_unit_test_ts --> file_src_modules_write_destinations_write_destinations_service_ts
+  file_src_modules_write_destinations_write_destinations_service_unit_test_ts --> file_src_modules_write_destinations_write_destinations_types_ts
+  file_src_modules_write_destinations_write_destinations_service_unit_test_ts --> file_testing_mocks_ts
+  file_testing_modules_ts --> file_src_modules_output_json_output_json_module_ts
+  file_testing_modules_ts --> file_src_modules_output_markdown_output_markdown_module_ts
+  file_testing_modules_ts --> file_src_modules_project_reports_project_reports_module_ts
+  file_testing_modules_ts --> file_src_modules_report_report_module_ts
+```
+<!-- codependix:end name="codependix-file-imports" -->
+
 ## ⏲️ Codometer
 
 ### Project

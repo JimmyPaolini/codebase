@@ -272,6 +272,43 @@ Dependency graphs exported by [codependix](https://github.com/JimmyPaolini/codeb
 
 <!-- CODE_STATISTICS_START -->
 
+### Nx Neighborhood
+
+<!-- codependix:start name="codependix-nx-projects" -->
+```mermaid
+graph LR
+  conformetry_cli["conformetry-cli"]
+  conformetry_configuration["conformetry-configuration"]
+  conformetry_examples["conformetry-examples"]
+  conformetry_generation["conformetry-generation"]
+  conformetry_nx["conformetry-nx"]
+  conformetry_output["conformetry-output"]
+  conformetry_validation["conformetry-validation"]
+  conformetry_examples -.-> conformetry_cli
+  conformetry_examples --> conformetry_configuration
+  conformetry_examples --> conformetry_generation
+  conformetry_examples --> conformetry_nx
+  conformetry_examples --> conformetry_output
+  conformetry_examples --> conformetry_validation
+  classDef subject fill:#7c3aed,color:#fff,stroke:#4c1d95,stroke-width:2px
+  class conformetry_examples subject
+```
+
+_Dashed edges are dependencies Nx inferred from configuration rather than from code._
+<!-- codependix:end name="codependix-nx-projects" -->
+
+### NestJS Module Graph
+
+<!-- codependix:start name="codependix-nestjs-modules" -->
+_This project defines no NestJS modules to graph._
+<!-- codependix:end name="codependix-nestjs-modules" -->
+
+### File Imports
+
+<!-- codependix:start name="codependix-file-imports" -->
+_This project has no internal file imports._
+<!-- codependix:end name="codependix-file-imports" -->
+
 ## ⏲️ Codometer
 
 ### Project

@@ -847,6 +847,194 @@ Dependency graphs exported by [codependix](https://github.com/JimmyPaolini/codeb
 
 <!-- CODE_STATISTICS_START -->
 
+### Nx Neighborhood
+
+<!-- codependix:start name="codependix-nx-projects" -->
+```mermaid
+graph LR
+  conformetry_cli["conformetry-cli"]
+  conformetry_configuration["conformetry-configuration"]
+  conformetry_core["conformetry-core"]
+  conformetry_examples["conformetry-examples"]
+  conformetry_generation["conformetry-generation"]
+  conformetry_output["conformetry-output"]
+  conformetry_validation["conformetry-validation"]
+  logger["logger"]
+  conformetry_cli --> conformetry_configuration
+  conformetry_cli --> conformetry_core
+  conformetry_cli --> conformetry_generation
+  conformetry_cli --> conformetry_output
+  conformetry_cli --> conformetry_validation
+  conformetry_cli --> logger
+  conformetry_examples -.-> conformetry_cli
+  classDef subject fill:#7c3aed,color:#fff,stroke:#4c1d95,stroke-width:2px
+  class conformetry_cli subject
+```
+
+_Dashed edges are dependencies Nx inferred from configuration rather than from code._
+<!-- codependix:end name="codependix-nx-projects" -->
+
+### NestJS Module Graph
+
+<!-- codependix:start name="codependix-nestjs-modules" -->
+```mermaid
+flowchart LR
+  ConfigModule([ConfigModule])
+  ConfigurationModule
+  DifferencesModule
+  DiscoveryModule
+  FilesModule
+  GenerateModule
+  GenerationModule
+  InputModule
+  InstanceDiscoveryModule
+  InstanceGroupModule
+  InstancesModule
+  InventoryModule
+  JsonModule
+  JupyterModule
+  LanguagesModule
+  LoggerModule([LoggerModule])
+  MainModule
+  MarkdownModule
+  PythonModule
+  RenderingModule
+  ReportingModule
+  RunnerModule
+  ScoringModule
+  TemplateDiscoveryModule
+  TemplatesModule
+  TextModule
+  TypescriptModule
+  ValidateModule
+  ValidationModule
+  ConfigurationModule --> InputModule
+  ConfigurationModule --> InstanceDiscoveryModule
+  ConfigurationModule --> InstanceGroupModule
+  ConfigurationModule --> RenderingModule
+  ConfigurationModule --> TemplateDiscoveryModule
+  FilesModule --> ConfigurationModule
+  FilesModule --> DifferencesModule
+  GenerateModule --> ConfigurationModule
+  GenerateModule --> GenerationModule
+  GenerationModule --> ConfigurationModule
+  InstanceDiscoveryModule --> InstanceGroupModule
+  InstanceDiscoveryModule --> RenderingModule
+  InstanceDiscoveryModule --> TemplateDiscoveryModule
+  InstancesModule --> ConfigurationModule
+  InstancesModule --> InventoryModule
+  JsonModule --> ScoringModule
+  JupyterModule --> JsonModule
+  JupyterModule --> MarkdownModule
+  JupyterModule --> PythonModule
+  LanguagesModule --> JsonModule
+  LanguagesModule --> JupyterModule
+  LanguagesModule --> MarkdownModule
+  LanguagesModule --> PythonModule
+  LanguagesModule --> TextModule
+  LanguagesModule --> TypescriptModule
+  MainModule --> DiscoveryModule
+  MainModule --> GenerateModule
+  MainModule --> InstancesModule
+  MainModule --> TemplatesModule
+  MainModule --> ValidateModule
+  MarkdownModule --> ScoringModule
+  PythonModule --> DifferencesModule
+  PythonModule --> ScoringModule
+  ReportingModule --> ScoringModule
+  TemplateDiscoveryModule --> RenderingModule
+  TemplatesModule --> ConfigurationModule
+  TemplatesModule --> InventoryModule
+  TypescriptModule --> ScoringModule
+  ValidateModule --> ConfigurationModule
+  ValidateModule --> ReportingModule
+  ValidateModule --> ValidationModule
+  ValidationModule --> ConfigurationModule
+  ValidationModule --> FilesModule
+  ValidationModule --> LanguagesModule
+  ValidationModule --> RunnerModule
+  ValidationModule --> ScoringModule
+```
+
+_Rounded modules are global: every module can inject them, so their edges are left out._
+<!-- codependix:end name="codependix-nestjs-modules" -->
+
+### File Imports
+
+<!-- codependix:start name="codependix-file-imports" -->
+```mermaid
+graph LR
+  file_callidescope_config_ts["callidescope.config.ts"]
+  file_codependix_config_ts["codependix.config.ts"]
+  file_codometer_config_ts["codometer.config.ts"]
+  file_eslint_config_ts["eslint.config.ts"]
+  file_src_constants_ts["src/constants.ts"]
+  file_src_index_ts["src/index.ts"]
+  file_src_main_end_to_end_test_ts["src/main.end-to-end.test.ts"]
+  file_src_main_integration_test_ts["src/main.integration.test.ts"]
+  file_src_main_module_ts["src/main.module.ts"]
+  file_src_main_ts["src/main.ts"]
+  file_src_main_unit_test_ts["src/main.unit.test.ts"]
+  file_src_modules_generate_generate_command_ts["src/modules/generate/generate.command.ts"]
+  file_src_modules_generate_generate_command_unit_test_ts["src/modules/generate/generate.command.unit.test.ts"]
+  file_src_modules_generate_generate_constants_ts["src/modules/generate/generate.constants.ts"]
+  file_src_modules_generate_generate_module_ts["src/modules/generate/generate.module.ts"]
+  file_src_modules_generate_generate_types_ts["src/modules/generate/generate.types.ts"]
+  file_src_modules_instances_instances_command_ts["src/modules/instances/instances.command.ts"]
+  file_src_modules_instances_instances_command_unit_test_ts["src/modules/instances/instances.command.unit.test.ts"]
+  file_src_modules_instances_instances_constants_ts["src/modules/instances/instances.constants.ts"]
+  file_src_modules_instances_instances_module_ts["src/modules/instances/instances.module.ts"]
+  file_src_modules_instances_instances_types_ts["src/modules/instances/instances.types.ts"]
+  file_src_modules_templates_templates_command_ts["src/modules/templates/templates.command.ts"]
+  file_src_modules_templates_templates_command_unit_test_ts["src/modules/templates/templates.command.unit.test.ts"]
+  file_src_modules_templates_templates_constants_ts["src/modules/templates/templates.constants.ts"]
+  file_src_modules_templates_templates_module_ts["src/modules/templates/templates.module.ts"]
+  file_src_modules_templates_templates_types_ts["src/modules/templates/templates.types.ts"]
+  file_src_modules_validate_validate_command_ts["src/modules/validate/validate.command.ts"]
+  file_src_modules_validate_validate_command_unit_test_ts["src/modules/validate/validate.command.unit.test.ts"]
+  file_src_modules_validate_validate_constants_ts["src/modules/validate/validate.constants.ts"]
+  file_src_modules_validate_validate_module_ts["src/modules/validate/validate.module.ts"]
+  file_src_modules_validate_validate_types_ts["src/modules/validate/validate.types.ts"]
+  file_src_repl_ts["src/repl.ts"]
+  file_src_repl_unit_test_ts["src/repl.unit.test.ts"]
+  file_testing_mocks_ts["testing/mocks.ts"]
+  file_testing_setup_ts["testing/setup.ts"]
+  file_vitest_config_ts["vitest.config.ts"]
+  file_src_main_end_to_end_test_ts --> file_src_constants_ts
+  file_src_main_integration_test_ts --> file_src_main_module_ts
+  file_src_main_integration_test_ts --> file_src_modules_generate_generate_command_ts
+  file_src_main_integration_test_ts --> file_src_modules_instances_instances_command_ts
+  file_src_main_integration_test_ts --> file_src_modules_templates_templates_command_ts
+  file_src_main_integration_test_ts --> file_src_modules_validate_validate_command_ts
+  file_src_main_module_ts --> file_src_constants_ts
+  file_src_main_module_ts --> file_src_modules_generate_generate_module_ts
+  file_src_main_module_ts --> file_src_modules_instances_instances_module_ts
+  file_src_main_module_ts --> file_src_modules_templates_templates_module_ts
+  file_src_main_module_ts --> file_src_modules_validate_validate_module_ts
+  file_src_main_ts --> file_src_main_module_ts
+  file_src_modules_generate_generate_command_ts --> file_src_constants_ts
+  file_src_modules_generate_generate_command_ts --> file_src_modules_generate_generate_constants_ts
+  file_src_modules_generate_generate_command_ts --> file_src_modules_generate_generate_types_ts
+  file_src_modules_generate_generate_command_unit_test_ts --> file_src_modules_generate_generate_command_ts
+  file_src_modules_generate_generate_module_ts --> file_src_modules_generate_generate_command_ts
+  file_src_modules_instances_instances_command_ts --> file_src_constants_ts
+  file_src_modules_instances_instances_command_ts --> file_src_modules_instances_instances_constants_ts
+  file_src_modules_instances_instances_command_ts --> file_src_modules_instances_instances_types_ts
+  file_src_modules_instances_instances_command_unit_test_ts --> file_src_modules_instances_instances_command_ts
+  file_src_modules_instances_instances_module_ts --> file_src_modules_instances_instances_command_ts
+  file_src_modules_templates_templates_command_ts --> file_src_constants_ts
+  file_src_modules_templates_templates_command_ts --> file_src_modules_templates_templates_constants_ts
+  file_src_modules_templates_templates_command_ts --> file_src_modules_templates_templates_types_ts
+  file_src_modules_templates_templates_command_unit_test_ts --> file_src_modules_templates_templates_command_ts
+  file_src_modules_templates_templates_module_ts --> file_src_modules_templates_templates_command_ts
+  file_src_modules_validate_validate_command_ts --> file_src_constants_ts
+  file_src_modules_validate_validate_command_ts --> file_src_modules_validate_validate_types_ts
+  file_src_modules_validate_validate_command_unit_test_ts --> file_src_modules_validate_validate_command_ts
+  file_src_modules_validate_validate_module_ts --> file_src_modules_validate_validate_command_ts
+  file_src_repl_ts --> file_src_main_module_ts
+```
+<!-- codependix:end name="codependix-file-imports" -->
+
 ## ⏲️ Codometer
 
 ### Project

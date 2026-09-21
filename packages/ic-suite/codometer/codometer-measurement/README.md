@@ -26,6 +26,228 @@ Dependency graphs exported by [codependix](https://github.com/JimmyPaolini/codeb
 
 <!-- CALL_STACKS_START -->
 
+### Nx Neighborhood
+
+<!-- codependix:start name="codependix-nx-projects" -->
+```mermaid
+graph LR
+  codometer_cli["codometer-cli"]
+  codometer_configuration["codometer-configuration"]
+  codometer_core["codometer-core"]
+  codometer_languages["codometer-languages"]
+  codometer_measurement["codometer-measurement"]
+  codometer_output["codometer-output"]
+  logger["logger"]
+  codometer_cli --> codometer_measurement
+  codometer_measurement --> codometer_configuration
+  codometer_measurement --> codometer_core
+  codometer_measurement --> codometer_languages
+  codometer_measurement --> logger
+  codometer_output --> codometer_measurement
+  classDef subject fill:#7c3aed,color:#fff,stroke:#4c1d95,stroke-width:2px
+  class codometer_measurement subject
+```
+<!-- codependix:end name="codependix-nx-projects" -->
+
+### NestJS Module Graph
+
+<!-- codependix:start name="codependix-nestjs-modules" -->
+```mermaid
+flowchart LR
+  CommentsModule
+  ConfigurationModule
+  CssModule
+  CustomizationModule
+  DiscoveryModule
+  HclModule
+  InputsModule
+  JsonModule
+  JupyterModule
+  LanguagesModule
+  LimitsModule
+  LoggerModule([LoggerModule])
+  MarkdownModule
+  MeasureModule
+  PythonModule
+  ShellModule
+  SizeModule
+  SqlModule
+  TomlModule
+  TypescriptModule
+  YamlModule
+  JupyterModule --> JsonModule
+  JupyterModule --> MarkdownModule
+  JupyterModule --> PythonModule
+  LanguagesModule --> CommentsModule
+  LanguagesModule --> CssModule
+  LanguagesModule --> HclModule
+  LanguagesModule --> JsonModule
+  LanguagesModule --> JupyterModule
+  LanguagesModule --> MarkdownModule
+  LanguagesModule --> PythonModule
+  LanguagesModule --> ShellModule
+  LanguagesModule --> SqlModule
+  LanguagesModule --> TomlModule
+  LanguagesModule --> TypescriptModule
+  LanguagesModule --> YamlModule
+  MeasureModule --> ConfigurationModule
+  MeasureModule --> CustomizationModule
+  MeasureModule --> DiscoveryModule
+  MeasureModule --> InputsModule
+  MeasureModule --> LanguagesModule
+  MeasureModule --> LimitsModule
+  MeasureModule --> SizeModule
+  TypescriptModule --> CommentsModule
+```
+
+_Rounded modules are global: every module can inject them, so their edges are left out._
+<!-- codependix:end name="codependix-nestjs-modules" -->
+
+### File Imports
+
+<!-- codependix:start name="codependix-file-imports" -->
+```mermaid
+graph LR
+  file_callidescope_config_ts["callidescope.config.ts"]
+  file_codependix_config_ts["codependix.config.ts"]
+  file_codometer_config_ts["codometer.config.ts"]
+  file_eslint_config_ts["eslint.config.ts"]
+  file_src_index_ts["src/index.ts"]
+  file_src_modules_customization_customization_constants_ts["src/modules/customization/customization.constants.ts"]
+  file_src_modules_customization_customization_module_ts["src/modules/customization/customization.module.ts"]
+  file_src_modules_customization_customization_module_unit_test_ts["src/modules/customization/customization.module.unit.test.ts"]
+  file_src_modules_customization_customization_service_ts["src/modules/customization/customization.service.ts"]
+  file_src_modules_customization_customization_service_unit_test_ts["src/modules/customization/customization.service.unit.test.ts"]
+  file_src_modules_customization_customization_types_ts["src/modules/customization/customization.types.ts"]
+  file_src_modules_discovery_discovery_constants_ts["src/modules/discovery/discovery.constants.ts"]
+  file_src_modules_discovery_discovery_module_ts["src/modules/discovery/discovery.module.ts"]
+  file_src_modules_discovery_discovery_service_integration_test_ts["src/modules/discovery/discovery.service.integration.test.ts"]
+  file_src_modules_discovery_discovery_service_ts["src/modules/discovery/discovery.service.ts"]
+  file_src_modules_discovery_discovery_service_unit_test_ts["src/modules/discovery/discovery.service.unit.test.ts"]
+  file_src_modules_discovery_discovery_types_ts["src/modules/discovery/discovery.types.ts"]
+  file_src_modules_discovery_ignore_rules_service_ts["src/modules/discovery/ignore-rules.service.ts"]
+  file_src_modules_discovery_ignore_rules_service_unit_test_ts["src/modules/discovery/ignore-rules.service.unit.test.ts"]
+  file_src_modules_discovery_ignore_rules_types_ts["src/modules/discovery/ignore-rules.types.ts"]
+  file_src_modules_inputs_inputs_constants_ts["src/modules/inputs/inputs.constants.ts"]
+  file_src_modules_inputs_inputs_module_ts["src/modules/inputs/inputs.module.ts"]
+  file_src_modules_inputs_inputs_service_integration_test_ts["src/modules/inputs/inputs.service.integration.test.ts"]
+  file_src_modules_inputs_inputs_service_ts["src/modules/inputs/inputs.service.ts"]
+  file_src_modules_inputs_inputs_service_unit_test_ts["src/modules/inputs/inputs.service.unit.test.ts"]
+  file_src_modules_inputs_inputs_types_ts["src/modules/inputs/inputs.types.ts"]
+  file_src_modules_limits_limits_constants_ts["src/modules/limits/limits.constants.ts"]
+  file_src_modules_limits_limits_module_ts["src/modules/limits/limits.module.ts"]
+  file_src_modules_limits_limits_service_integration_test_ts["src/modules/limits/limits.service.integration.test.ts"]
+  file_src_modules_limits_limits_service_ts["src/modules/limits/limits.service.ts"]
+  file_src_modules_limits_limits_service_unit_test_ts["src/modules/limits/limits.service.unit.test.ts"]
+  file_src_modules_limits_limits_types_ts["src/modules/limits/limits.types.ts"]
+  file_src_modules_limits_metric_index_service_ts["src/modules/limits/metric-index.service.ts"]
+  file_src_modules_limits_metric_index_service_unit_test_ts["src/modules/limits/metric-index.service.unit.test.ts"]
+  file_src_modules_measure_measure_constants_ts["src/modules/measure/measure.constants.ts"]
+  file_src_modules_measure_measure_module_ts["src/modules/measure/measure.module.ts"]
+  file_src_modules_measure_measure_service_ts["src/modules/measure/measure.service.ts"]
+  file_src_modules_measure_measure_service_unit_test_ts["src/modules/measure/measure.service.unit.test.ts"]
+  file_src_modules_measure_measure_types_ts["src/modules/measure/measure.types.ts"]
+  file_src_modules_size_size_constants_ts["src/modules/size/size.constants.ts"]
+  file_src_modules_size_size_module_ts["src/modules/size/size.module.ts"]
+  file_src_modules_size_size_module_unit_test_ts["src/modules/size/size.module.unit.test.ts"]
+  file_src_modules_size_size_service_integration_test_ts["src/modules/size/size.service.integration.test.ts"]
+  file_src_modules_size_size_service_ts["src/modules/size/size.service.ts"]
+  file_src_modules_size_size_service_unit_test_ts["src/modules/size/size.service.unit.test.ts"]
+  file_src_modules_size_size_types_ts["src/modules/size/size.types.ts"]
+  file_testing_fixture_tree_ts["testing/fixture-tree.ts"]
+  file_testing_input_tree_ts["testing/input-tree.ts"]
+  file_testing_mocks_ts["testing/mocks.ts"]
+  file_testing_setup_ts["testing/setup.ts"]
+  file_testing_target_tree_ts["testing/target-tree.ts"]
+  file_vitest_config_ts["vitest.config.ts"]
+  file_src_modules_customization_customization_module_ts --> file_src_modules_customization_customization_service_ts
+  file_src_modules_customization_customization_module_unit_test_ts --> file_src_modules_customization_customization_module_ts
+  file_src_modules_customization_customization_module_unit_test_ts --> file_src_modules_customization_customization_service_ts
+  file_src_modules_customization_customization_service_ts --> file_src_modules_customization_customization_types_ts
+  file_src_modules_customization_customization_service_unit_test_ts --> file_src_modules_customization_customization_service_ts
+  file_src_modules_discovery_discovery_module_ts --> file_src_modules_discovery_discovery_service_ts
+  file_src_modules_discovery_discovery_module_ts --> file_src_modules_discovery_ignore_rules_service_ts
+  file_src_modules_discovery_discovery_service_integration_test_ts --> file_src_modules_discovery_discovery_service_ts
+  file_src_modules_discovery_discovery_service_integration_test_ts --> file_src_modules_discovery_discovery_types_ts
+  file_src_modules_discovery_discovery_service_integration_test_ts --> file_src_modules_discovery_ignore_rules_service_ts
+  file_src_modules_discovery_discovery_service_integration_test_ts --> file_testing_fixture_tree_ts
+  file_src_modules_discovery_discovery_service_ts --> file_src_modules_discovery_discovery_constants_ts
+  file_src_modules_discovery_discovery_service_ts --> file_src_modules_discovery_discovery_types_ts
+  file_src_modules_discovery_discovery_service_ts --> file_src_modules_discovery_ignore_rules_service_ts
+  file_src_modules_discovery_discovery_service_ts --> file_src_modules_discovery_ignore_rules_types_ts
+  file_src_modules_discovery_discovery_service_unit_test_ts --> file_src_modules_discovery_discovery_service_ts
+  file_src_modules_discovery_discovery_service_unit_test_ts --> file_src_modules_discovery_discovery_types_ts
+  file_src_modules_discovery_discovery_service_unit_test_ts --> file_src_modules_discovery_ignore_rules_service_ts
+  file_src_modules_discovery_discovery_types_ts --> file_src_modules_discovery_ignore_rules_types_ts
+  file_src_modules_discovery_ignore_rules_service_ts --> file_src_modules_discovery_ignore_rules_types_ts
+  file_src_modules_discovery_ignore_rules_service_unit_test_ts --> file_src_modules_discovery_ignore_rules_service_ts
+  file_src_modules_discovery_ignore_rules_service_unit_test_ts --> file_src_modules_discovery_ignore_rules_types_ts
+  file_src_modules_inputs_inputs_module_ts --> file_src_modules_inputs_inputs_service_ts
+  file_src_modules_inputs_inputs_service_integration_test_ts --> file_src_modules_inputs_inputs_service_ts
+  file_src_modules_inputs_inputs_service_integration_test_ts --> file_testing_input_tree_ts
+  file_src_modules_inputs_inputs_service_ts --> file_src_modules_inputs_inputs_constants_ts
+  file_src_modules_inputs_inputs_service_ts --> file_src_modules_inputs_inputs_types_ts
+  file_src_modules_inputs_inputs_service_unit_test_ts --> file_src_modules_inputs_inputs_constants_ts
+  file_src_modules_inputs_inputs_service_unit_test_ts --> file_src_modules_inputs_inputs_service_ts
+  file_src_modules_limits_limits_module_ts --> file_src_modules_limits_limits_service_ts
+  file_src_modules_limits_limits_module_ts --> file_src_modules_limits_metric_index_service_ts
+  file_src_modules_limits_limits_service_integration_test_ts --> file_src_modules_limits_limits_service_ts
+  file_src_modules_limits_limits_service_integration_test_ts --> file_src_modules_limits_limits_types_ts
+  file_src_modules_limits_limits_service_integration_test_ts --> file_src_modules_limits_metric_index_service_ts
+  file_src_modules_limits_limits_service_integration_test_ts --> file_testing_fixture_tree_ts
+  file_src_modules_limits_limits_service_integration_test_ts --> file_testing_mocks_ts
+  file_src_modules_limits_limits_service_ts --> file_src_modules_limits_limits_constants_ts
+  file_src_modules_limits_limits_service_ts --> file_src_modules_limits_limits_types_ts
+  file_src_modules_limits_limits_service_unit_test_ts --> file_src_modules_limits_limits_service_ts
+  file_src_modules_limits_limits_service_unit_test_ts --> file_src_modules_limits_limits_types_ts
+  file_src_modules_limits_limits_service_unit_test_ts --> file_src_modules_limits_metric_index_service_ts
+  file_src_modules_limits_limits_service_unit_test_ts --> file_testing_mocks_ts
+  file_src_modules_limits_limits_types_ts --> file_src_modules_size_size_types_ts
+  file_src_modules_limits_metric_index_service_ts --> file_src_modules_limits_limits_constants_ts
+  file_src_modules_limits_metric_index_service_ts --> file_src_modules_limits_limits_types_ts
+  file_src_modules_limits_metric_index_service_unit_test_ts --> file_src_modules_limits_limits_types_ts
+  file_src_modules_limits_metric_index_service_unit_test_ts --> file_src_modules_limits_metric_index_service_ts
+  file_src_modules_limits_metric_index_service_unit_test_ts --> file_testing_mocks_ts
+  file_src_modules_measure_measure_module_ts --> file_src_modules_customization_customization_module_ts
+  file_src_modules_measure_measure_module_ts --> file_src_modules_discovery_discovery_module_ts
+  file_src_modules_measure_measure_module_ts --> file_src_modules_inputs_inputs_module_ts
+  file_src_modules_measure_measure_module_ts --> file_src_modules_limits_limits_module_ts
+  file_src_modules_measure_measure_module_ts --> file_src_modules_measure_measure_service_ts
+  file_src_modules_measure_measure_module_ts --> file_src_modules_size_size_module_ts
+  file_src_modules_measure_measure_service_ts --> file_src_modules_customization_customization_service_ts
+  file_src_modules_measure_measure_service_ts --> file_src_modules_discovery_discovery_service_ts
+  file_src_modules_measure_measure_service_ts --> file_src_modules_inputs_inputs_service_ts
+  file_src_modules_measure_measure_service_ts --> file_src_modules_limits_limits_service_ts
+  file_src_modules_measure_measure_service_ts --> file_src_modules_limits_limits_types_ts
+  file_src_modules_measure_measure_service_ts --> file_src_modules_limits_metric_index_service_ts
+  file_src_modules_measure_measure_service_ts --> file_src_modules_measure_measure_constants_ts
+  file_src_modules_measure_measure_service_ts --> file_src_modules_measure_measure_types_ts
+  file_src_modules_measure_measure_service_ts --> file_src_modules_size_size_service_ts
+  file_src_modules_measure_measure_service_unit_test_ts --> file_src_modules_customization_customization_service_ts
+  file_src_modules_measure_measure_service_unit_test_ts --> file_src_modules_discovery_discovery_service_ts
+  file_src_modules_measure_measure_service_unit_test_ts --> file_src_modules_discovery_discovery_types_ts
+  file_src_modules_measure_measure_service_unit_test_ts --> file_src_modules_inputs_inputs_service_ts
+  file_src_modules_measure_measure_service_unit_test_ts --> file_src_modules_limits_limits_service_ts
+  file_src_modules_measure_measure_service_unit_test_ts --> file_src_modules_limits_metric_index_service_ts
+  file_src_modules_measure_measure_service_unit_test_ts --> file_src_modules_measure_measure_service_ts
+  file_src_modules_measure_measure_service_unit_test_ts --> file_src_modules_size_size_service_ts
+  file_src_modules_measure_measure_service_unit_test_ts --> file_testing_mocks_ts
+  file_src_modules_measure_measure_types_ts --> file_src_modules_discovery_discovery_types_ts
+  file_src_modules_measure_measure_types_ts --> file_src_modules_limits_limits_types_ts
+  file_src_modules_measure_measure_types_ts --> file_src_modules_size_size_types_ts
+  file_src_modules_size_size_module_ts --> file_src_modules_size_size_service_ts
+  file_src_modules_size_size_module_unit_test_ts --> file_src_modules_size_size_module_ts
+  file_src_modules_size_size_module_unit_test_ts --> file_src_modules_size_size_service_ts
+  file_src_modules_size_size_service_integration_test_ts --> file_src_modules_size_size_constants_ts
+  file_src_modules_size_size_service_integration_test_ts --> file_src_modules_size_size_service_ts
+  file_src_modules_size_size_service_integration_test_ts --> file_testing_target_tree_ts
+  file_src_modules_size_size_service_ts --> file_src_modules_size_size_constants_ts
+  file_src_modules_size_size_service_ts --> file_src_modules_size_size_types_ts
+  file_src_modules_size_size_service_unit_test_ts --> file_src_modules_size_size_constants_ts
+  file_src_modules_size_size_service_unit_test_ts --> file_src_modules_size_size_service_ts
+```
+<!-- codependix:end name="codependix-file-imports" -->
+
 ## 🔭 Callidescope
 
 Call stacks traced through `packages/ic-suite/codometer/codometer-measurement`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
