@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.18.0](https://github.com/JimmyPaolini/codebase/compare/v2.17.0...v2.18.0) (2026-09-21)
+
+### ✨ Features
+
+* **validation:** ✨ validate pull request body sections are non-empty ([#1050](https://github.com/JimmyPaolini/codebase/issues/1050)) ([7ea5295](https://github.com/JimmyPaolini/codebase/commit/7ea52958ca50ec4c26e5fc4b4ef0d2aa13e8c2d9))
+
 ## [2.17.0](https://github.com/JimmyPaolini/codebase/compare/v2.16.0...v2.17.0) (2026-09-21)
 
 ### ✨ Features

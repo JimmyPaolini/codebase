@@ -1,4 +1,4 @@
-# Codebase v2.17.0
+# Codebase v2.18.0
 
 [![Nx](https://img.shields.io/badge/Nx-Codebase-143055?logo=nx)](https://nx.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Strict-3178C6?logo=typescript)](https://www.typescriptlang.org/)
@@ -558,9 +558,9 @@ The workspace's call graph, traced by [callidescope](packages/ic-suite/callidesc
 
 | Measure | Value |
 | --- | --- |
-| Callables | 5027 |
+| Callables | 5033 |
 | Files | 1414 |
-| Calls traced | 5617 |
+| Calls traced | 5623 |
 | Call stacks | 1300 |
 | Deepest stack | 17 |
 | Stacks through recursion | 12 |
