@@ -3,13 +3,16 @@ name: 🦹 Continuous Compliance
 # External and repository compliance checks:
 # 1. 🧑‍💼 Audit Issues: Issue metadata, hierarchy, and release significance.
 # 2. 👮 Audit Governance: Repository governance and workflow security.
-# 3. 🧑‍⚖️ Comply: Pull request title, body, branch name, and labels.
+# 3. 🧑‍⚖️ Comply: Pull request metadata and commit message conventions.
 #
 # Label reconciliation runs through `tools/synchronization`, and compliance
 # validation runs through `tools/validation`. All checks execute directly via
 # Node.js without building an Nx project graph.
 
 on:
+  push:
+    branches:
+      - main
   issues:
     types: [opened, edited, labeled, unlabeled]
   pull_request:
@@ -36,7 +39,7 @@ permissions:
 concurrency:
   group: >-
     ${{ github.workflow }}-${{ github.event_name == 'pull_request'
-    && github.head_ref || github.run_id }}
+    && github.head_ref || (github.ref == 'refs/heads/main' && github.sha || github.run_id) }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
@@ -79,6 +82,12 @@ jobs:
 
           if [ "$EVENT_NAME" = "pull_request" ] && [ "$TARGET" != "comply-code" ]; then
             echo "⏭️ Skipping $TARGET on pull_request event."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if [ "$EVENT_NAME" = "push" ] && [ "$TARGET" = "audit-issues" ]; then
+            echo "⏭️ Skipping $TARGET on push event."
             echo "skip=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
@@ -240,3 +249,13 @@ jobs:
           NODE_OPTIONS='' node --import @swc-node/register/esm-register \
             tools/validation/src/main.ts pull-request-release-significance \
             "$PULL_REQUEST_NUMBER"
+
+      # Validates that the latest commit on main follows Conventional Commits.
+      - name: 🏷️ Validate Commit Message
+        if: >-
+          steps.check-skip.outputs.skip != 'true' &&
+          matrix.target.id == 'comply-code' &&
+          github.event_name == 'push'
+        run: |
+          git log -1 --pretty=%B | \
+            npx commitlint --config configuration/commitlint.config.ts
