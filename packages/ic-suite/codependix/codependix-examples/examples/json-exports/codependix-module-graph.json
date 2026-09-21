@@ -11,10 +11,19 @@
     }
   ],
   "isolatedModuleNames": [],
-  "moduleNames": [
-    "AtlasServiceModule",
-    "CatalogModule",
-    "InventoryModule"
+  "nodes": [
+    {
+      "declaringFile": "src/atlas-service.module.ts",
+      "name": "AtlasServiceModule"
+    },
+    {
+      "declaringFile": "src/catalog.module.ts",
+      "name": "CatalogModule"
+    },
+    {
+      "declaringFile": "src/inventory.module.ts",
+      "name": "InventoryModule"
+    }
   ],
   "projectName": "atlas-service"
 }
