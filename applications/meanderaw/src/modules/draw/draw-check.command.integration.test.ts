@@ -136,19 +136,17 @@ describe("drawCommand --check mode", () => {
         columns: 999,
         components: 1,
         cycles: 0,
-        family: null,
+        families: [],
         freeEnds: 0,
-        hasBranching: false,
-        hasCrossing: false,
+
         inkTJunctions: 0,
         inkXJunctions: 0,
-        negativeTJunctions: 0,
-        negativeXJunctions: 0,
+
+        characteristics: [],
+        drawingHash: "hash",
         pitch: 999,
         provenance: "hardcoded",
         rows: 999,
-        subFamily: null,
-        svg: "<svg>fixture</svg>\n",
       });
 
       await expect(command.run([], { check: true })).rejects.toThrow(
@@ -181,19 +179,17 @@ describe("drawCommand --check mode", () => {
         columns: entry.columns,
         components: 1,
         cycles: 0,
-        family: null,
+        families: [],
         freeEnds: 0,
-        hasBranching: false,
-        hasCrossing: false,
+
         inkTJunctions: 0,
         inkXJunctions: 0,
-        negativeTJunctions: 0,
-        negativeXJunctions: 0,
+
+        characteristics: [],
+        drawingHash: "hash",
         pitch: entry.columns,
         provenance: "hardcoded",
         rows: entry.rows,
-        subFamily: null,
-        svg: "<svg>deliberately wrong</svg>\n",
       });
 
       await expect(command.run([], { check: true })).rejects.toThrow(

@@ -4,7 +4,6 @@ import { getRepositoryToken, TypeOrmModule } from "@nestjs/typeorm";
 
 import { environmentSchema } from "../../constants";
 import { CharacteristicsModule } from "../characteristics/characteristics.module";
-import { ClassificationModule } from "../classification/classification.module";
 import { CodeModule } from "../code/code.module";
 import { CorpusService } from "../corpus/corpus.service";
 import { DatabaseService } from "../database/database.service";
@@ -61,7 +60,6 @@ import { DrawRecordService } from "./draw-record.service";
         environmentSchema.parse(config),
     }),
     CharacteristicsModule,
-    ClassificationModule,
     CodeModule,
     EnumerationModule,
     DrawingModule,

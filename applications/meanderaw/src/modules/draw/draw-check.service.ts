@@ -62,9 +62,17 @@ export class DrawCheckService {
     regeneratedRow: Meander,
     committedRow: Meander,
   ): string[] {
-    return MEANDER_DRIFT_COMPARISON_COLUMNS.filter(
-      (column) => regeneratedRow[column] !== committedRow[column],
-    );
+    return MEANDER_DRIFT_COMPARISON_COLUMNS.filter((column) => {
+      const regenerated = regeneratedRow[column];
+      const committed = committedRow[column];
+      if (Array.isArray(regenerated) && Array.isArray(committed)) {
+        return (
+          regenerated.length !== committed.length ||
+          regenerated.some((value, index) => value !== committed[index])
+        );
+      }
+      return regenerated !== committed;
+    });
   }
 
   /** Every committed row the regenerated sweep no longer finds at its address. */

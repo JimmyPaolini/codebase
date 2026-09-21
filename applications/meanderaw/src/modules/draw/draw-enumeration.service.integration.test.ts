@@ -7,8 +7,6 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { environmentSchema } from "../../constants";
 import { CharacteristicsService } from "../characteristics/characteristics.service";
 import { ConnectivityService } from "../characteristics/connectivity.service";
-import { ClassificationService } from "../classification/classification.service";
-import { SubFamilyService } from "../classification/sub-family.service";
 import { CodeService } from "../code/code.service";
 import { DatabaseService } from "../database/database.service";
 import { Meander } from "../database/entities/Meander.entity";
@@ -73,14 +71,12 @@ describe(DrawEnumerationService, () => {
         GeometryService,
         CodeService,
         CharacteristicsService,
-        ClassificationService,
         ConnectivityService,
         DatabaseService,
         CodeService,
         EnumerationService,
         DrawingService,
         GraphService,
-        SubFamilyService,
         SymmetryService,
         TileService,
         TileEnumerationService,
@@ -158,49 +154,21 @@ describe(DrawEnumerationService, () => {
     // `boxes`, tried first (the 14 meanders earning both are counted below);
     // `swirl` and `whirl` need 25 and 20 edges at four rows, over the
     // budget of 16, so no shape the sweep walks admits one.
-    it("classifies each meander into a family by its own structure, leaving 3,656 of them in none", async () => {
+    it("leaves all meanders without families since rules are removed", async () => {
       const counted = await repository
         .createQueryBuilder("meander")
-        .select("meander.family", "family")
+        .select("meander.families", "families")
         .addSelect("COUNT(*)", "count")
-        .groupBy("meander.family")
-        .getRawMany<{ count: number; family: null | string }>();
+        .groupBy("meander.families")
+        .getRawMany<{ count: number; families: string }>();
 
       expect(
         Object.fromEntries(
-          counted.map(({ count, family }) => [family ?? "unclaimed", count]),
+          counted.map(({ count, families }) => [families || "[]", count]),
         ),
       ).toStrictEqual({
-        boxes: 17,
-        branch: 1456,
-        cross: 1195,
-        mosaic: 131,
-        negative: 23_735,
-        parallel: 88,
-        snake: 1,
-        unclaimed: 3656,
+        "[]": 27409,
       });
-    });
-
-    // 🎯 A sub-family is earned beside a family rather than in place of one —
-    // ADR 0007's own finding, here over the enumerated space rather than over
-    // the swept corpus. 152 meanders sit in one of the eight named regions,
-    // and only 131 of them are recorded `mosaic`: the other 21 are claimed by
-    // a family whose rule is tried first and keep the region's name anyway.
-    it("names the region of the unit space a meander sits in, whatever family claims it", async () => {
-      await expect(
-        repository
-          .createQueryBuilder("meander")
-          .where("meander.subFamily IS NOT NULL")
-          .getCount(),
-      ).resolves.toBe(152);
-      await expect(
-        repository
-          .createQueryBuilder("meander")
-          .where("meander.subFamily IS NOT NULL")
-          .andWhere("meander.family != :mosaic", { mosaic: "mosaic" })
-          .getCount(),
-      ).resolves.toBe(21);
     });
 
     it("records a meander's Characteristics beside its family, so a structural question is answerable without re-deriving one", async () => {
@@ -210,18 +178,17 @@ describe(DrawEnumerationService, () => {
         columns: 2,
         components: 2,
         cycles: 0,
-        family: "parallel",
+        families: [],
         freeEnds: 4,
-        hasBranching: false,
-        hasCrossing: false,
+
+        characteristics: [],
         inkTJunctions: 0,
         inkXJunctions: 0,
         pitch: 2,
         provenance: "enumerated",
         rows: 3,
-        subFamily: "bars",
       });
-      expect(row.svg).toContain("<svg");
+      expect(row.drawingHash).toBeDefined();
     });
   });
 });

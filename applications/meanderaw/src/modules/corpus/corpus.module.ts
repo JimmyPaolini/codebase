@@ -1,7 +1,6 @@
 import { Module } from "@nestjs/common";
 
 import { CharacteristicsModule } from "../characteristics/characteristics.module";
-import { ClassificationModule } from "../classification/classification.module";
 import { CodeModule } from "../code/code.module";
 import { DatabaseModule } from "../database/database.module";
 import { DrawingModule } from "../drawing/drawing.module";
@@ -18,7 +17,7 @@ import { CorpusService } from "./corpus.service";
  * run over extracted constants instead of one command-line Code — plus the
  * enumeration, which decides which entries are beyond the sweep's reach and
  * so have to be preserved at all, and the classification, whose
- * `SubFamilyService` names an ingested tile exactly as it names an
+ * `` names an ingested tile exactly as it names an
  * enumerated one.
  */
 @Module({
@@ -26,7 +25,6 @@ import { CorpusService } from "./corpus.service";
   exports: [CorpusService],
   imports: [
     CharacteristicsModule,
-    ClassificationModule,
     CodeModule,
     DatabaseModule,
     DrawingModule,

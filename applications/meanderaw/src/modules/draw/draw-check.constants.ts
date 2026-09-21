@@ -35,18 +35,14 @@ export const DRAW_CHECK_SWEEP_CONNECTION_NAME = "draw-check-sweep";
 export const MEANDER_DRIFT_COMPARISON_COLUMNS = [
   "components",
   "cycles",
-  "family",
+  "characteristics",
+  "families",
   "freeEnds",
-  "hasBranching",
-  "hasCrossing",
   "inkTJunctions",
   "inkXJunctions",
-  "negativeTJunctions",
-  "negativeXJunctions",
   "pitch",
   "provenance",
-  "subFamily",
-  "svg",
+  "drawingHash",
 ] as const satisfies readonly (keyof MeanderRecord)[];
 
 /**

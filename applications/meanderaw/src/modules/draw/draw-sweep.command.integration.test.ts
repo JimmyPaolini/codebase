@@ -9,7 +9,6 @@ import { LoggerService } from "@codebase/logger";
 
 import { environmentSchema } from "../../constants";
 import { CharacteristicsModule } from "../characteristics/characteristics.module";
-import { ClassificationModule } from "../classification/classification.module";
 import { CodeModule } from "../code/code.module";
 import { CORPUS_FAMILIES } from "../corpus/corpus.constants";
 import { CorpusService } from "../corpus/corpus.service";
@@ -106,7 +105,6 @@ describe("drawCommand sweep mode", () => {
         TypeOrmModule.forFeature([Meander]),
         GeometryModule,
         CharacteristicsModule,
-        ClassificationModule,
         CodeModule,
         EnumerationModule,
         DrawingModule,
@@ -230,7 +228,9 @@ describe("drawCommand sweep mode", () => {
       const filed = new Set<string>(CORPUS_FAMILIES);
 
       expect(rows.length).toBeGreaterThan(0);
-      expect(rows.every((row) => filed.has(row.family ?? ""))).toBe(true);
+      expect(rows.every((row) => row.families.every((f) => filed.has(f)))).toBe(
+        true,
+      );
     },
     SWEEP_TIMEOUT_MILLISECONDS,
   );

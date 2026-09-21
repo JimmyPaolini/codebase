@@ -10,8 +10,6 @@ import { CharacteristicsPathService } from "../characteristics/characteristics-p
 import { CharacteristicsShapeService } from "../characteristics/characteristics-shape.service";
 import { CharacteristicsService } from "../characteristics/characteristics.service";
 import { ConnectivityService } from "../characteristics/connectivity.service";
-import { ClassificationService } from "../classification/classification.service";
-import { SubFamilyService } from "../classification/sub-family.service";
 import { CodeModule } from "../code/code.module";
 import { CorpusService } from "../corpus/corpus.service";
 import { DatabaseService } from "../database/database.service";
@@ -71,11 +69,9 @@ describe("drawCommand --code mode", () => {
         CharacteristicsService,
         CharacteristicsPathService,
         CharacteristicsShapeService,
-        ClassificationService,
         ConnectivityService,
         DatabaseService,
         GraphService,
-        SubFamilyService,
         TileService,
         SvgService,
         {
@@ -121,17 +117,13 @@ describe("drawCommand --code mode", () => {
     expect(rows[0]).toMatchObject({
       code: "3c9a",
       columns: 2,
-      hasBranching: false,
-      hasCrossing: false,
       inkTJunctions: 0,
       inkXJunctions: 0,
-      negativeTJunctions: 0,
-      negativeXJunctions: 0,
       pitch: 2,
       provenance: "hardcoded",
       rows: 3,
     });
-    expect(rows[0]?.svg).toContain("<svg");
+    expect(rows[0]?.drawingHash).toBeDefined();
   });
 
   it("populates a row's Characteristics from its Code, for a code with a three-armed ink junction", async () => {
@@ -145,13 +137,10 @@ describe("drawCommand --code mode", () => {
 
     expect(rows).toHaveLength(1);
     expect(rows[0]).toMatchObject({
+      characteristics: expect.arrayContaining(["hasBranching"]) as string[],
       code: "e",
-      hasBranching: true,
-      hasCrossing: false,
       inkTJunctions: 1,
       inkXJunctions: 0,
-      negativeTJunctions: 0,
-      negativeXJunctions: 0,
     });
   });
 

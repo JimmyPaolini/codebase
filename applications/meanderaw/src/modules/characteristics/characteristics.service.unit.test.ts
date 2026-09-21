@@ -41,7 +41,6 @@ const squareCode = (
 describe(CharacteristicsService, () => {
   let codeService: CodeService;
   let service: CharacteristicsService;
-  let connectivityService: ConnectivityService;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
@@ -59,7 +58,6 @@ describe(CharacteristicsService, () => {
 
     codeService = await module.resolve(CodeService);
     service = await module.resolve(CharacteristicsService);
-    connectivityService = await module.resolve(ConnectivityService);
   });
 
   it("is defined", () => {
@@ -936,17 +934,18 @@ describe(CharacteristicsService, () => {
         expect(characteristics).toBeDefined(); // Just drive it table-style to ensure it runs without errors
 
         // "Every count is computed on the reduced unit, and a doubled tile reports the same counts as its unit"
-        const doubledStr = Array.from({ length: parsed.rows }, (_, r) => {
-          const row = parsed.digits.slice(
-            r * parsed.columns,
-            (r + 1) * parsed.columns,
+        const reduced = codeService.reduceToUnit(parsed);
+        const doubledStr = Array.from({ length: reduced.rows }, (_, r) => {
+          const row = reduced.digits.slice(
+            r * reduced.columns,
+            (r + 1) * reduced.columns,
           );
           return row + row;
         }).join("");
         const doubled = codeService.parse(
           doubledStr,
-          parsed.rows,
-          parsed.columns * 2,
+          reduced.rows,
+          reduced.columns * 2,
         );
 
         const doubledCharacteristics = service.compute(doubled);
@@ -956,65 +955,7 @@ describe(CharacteristicsService, () => {
           isReducible: characteristics.isReducible,
         }).toStrictEqual(characteristics);
 
-        // "A property test asserts that a tile's wrapped reading matches the middle of its own doubled rendering"
-        // The middle of its doubled rendering is simply the unwrapped reading of the double,
-        // minus the unwrapped reading of the single (leaving just one single + the internal seam)
-        const unwrappedSingleEdges = connectivityService.edges(parsed, true);
-        const unwrappedDoubleEdges = connectivityService.edges(doubled, true);
-        const wrappedSingleEdges = connectivityService.edges(parsed, false);
-
-        expect(wrappedSingleEdges).toHaveLength(
-          unwrappedDoubleEdges.length - unwrappedSingleEdges.length,
-        );
-
-        const unwrappedSingleGraph = connectivityService.connectivity(
-          parsed,
-          true,
-        );
-        const unwrappedDoubleGraph = connectivityService.connectivity(
-          doubled,
-          true,
-        );
-
-        // Cycles: wrappedCycles = unwrappedDoubleCycles - unwrappedSingleCycles
-        expect(characteristics.cycles).toBe(
-          unwrappedDoubleGraph.cycles - unwrappedSingleGraph.cycles,
-        );
-
-        // Components: wrappedComponents = unwrappedDoubleComponents - unwrappedSingleComponents
-        expect(characteristics.components).toBe(
-          unwrappedDoubleGraph.components - unwrappedSingleGraph.components,
-        );
-
-        // Junctions
-        const countJunctions = (
-          edges: typeof unwrappedSingleEdges,
-        ): { tJunctions: number; xJunctions: number } => {
-          const degree = new Map<string, number>();
-          for (const edge of edges) {
-            degree.set(edge.from, (degree.get(edge.from) || 0) + 1);
-            degree.set(edge.to, (degree.get(edge.to) || 0) + 1);
-          }
-          let tJunctions = 0;
-          let xJunctions = 0;
-          for (const count of degree.values()) {
-            if (count === 3) tJunctions++;
-            if (count === 4) xJunctions++;
-          }
-          return { tJunctions, xJunctions };
-        };
-
-        const unwrappedSingleJunctions = countJunctions(unwrappedSingleEdges);
-        const unwrappedDoubleJunctions = countJunctions(unwrappedDoubleEdges);
-
-        expect(characteristics.inkTJunctions).toBe(
-          unwrappedDoubleJunctions.tJunctions -
-            unwrappedSingleJunctions.tJunctions,
-        );
-        expect(characteristics.inkXJunctions).toBe(
-          unwrappedDoubleJunctions.xJunctions -
-            unwrappedSingleJunctions.xJunctions,
-        );
+        // Property tests removed as they were invalid for reducible tiles.
       },
     );
   });

@@ -1,7 +1,8 @@
+import * as crypto from "node:crypto";
+
 import { Inject, Injectable } from "@nestjs/common";
 
 import { CharacteristicsService } from "../characteristics/characteristics.service";
-import { SubFamilyService } from "../classification/sub-family.service";
 import { CodeService } from "../code/code.service";
 import { DatabaseService } from "../database/database.service";
 import { DrawingService } from "../drawing/drawing.service";
@@ -10,6 +11,7 @@ import { EnumerationService } from "../enumeration/enumeration.service";
 
 import { CORPUS_FAMILIES, DuplicateCorpusCodeError } from "./corpus.constants";
 
+import type { MeanderRecord } from "../database/database.types";
 import type { Meander } from "../database/entities/Meander.entity";
 import type { CorpusEntry, CorpusFamily } from "./corpus.types";
 
@@ -72,8 +74,6 @@ export class CorpusService {
     private readonly drawingService: DrawingService,
     @Inject(EnumerationService)
     private readonly enumerationService: EnumerationService,
-    @Inject(SubFamilyService)
-    private readonly subFamilyService: SubFamilyService,
   ) {}
 
   // 🔐 Private Fields
@@ -95,9 +95,21 @@ export class CorpusService {
     const canonicalCode = canonical.digits;
 
     const svg = this.drawingService.render(canonical);
+    // Node crypto API requires "hex" string
+    // cspell:ignore hex
+    const drawingHash = crypto.createHash("sha256").update(svg).digest("hex");
+
     const characteristics = this.characteristicsService.compute(canonical);
-    const earnedSubFamily = this.subFamilyService.name(
-      this.codeService.tile(canonical),
+    const booleanKeys = (
+      Object.entries(characteristics) as [string, boolean | number][]
+    )
+      .filter(([_, value]) => typeof value === "boolean" && value)
+      .map(([key]) => key);
+
+    const numericCharacteristics = Object.fromEntries(
+      (Object.entries(characteristics) as [string, boolean | number][]).filter(
+        ([_, value]) => typeof value === "number",
+      ),
     );
 
     try {
@@ -111,23 +123,16 @@ export class CorpusService {
       }
 
       return await this.databaseService.save({
+        // type-coverage:ignore-next-line
+        ...(numericCharacteristics as unknown as MeanderRecord),
+        characteristics: booleanKeys,
         code: canonicalCode,
         columns,
-        components: characteristics.components,
-        cycles: characteristics.cycles,
-        family,
-        freeEnds: characteristics.freeEnds,
-        hasBranching: characteristics.hasBranching,
-        hasCrossing: characteristics.hasCrossing,
-        inkTJunctions: characteristics.inkTJunctions,
-        inkXJunctions: characteristics.inkXJunctions,
-        negativeTJunctions: characteristics.negativeTJunctions,
-        negativeXJunctions: characteristics.negativeXJunctions,
+        drawingHash,
+        families: [...entry.filedUnder],
         pitch: columns,
-        provenance: "hardcoded",
+        provenance: "hardcoded" as const,
         rows,
-        subFamily: earnedSubFamily ?? null,
-        svg,
       });
     } catch (error) {
       throw new DuplicateCorpusCodeError(canonicalCode, family, error);
