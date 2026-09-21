@@ -10,7 +10,7 @@ each one.
 
 ```bash
 nx run validation:start:pull-request-metadata     # labels and assignees against the title
-nx run validation:start:pull-request-body         # the four headings and no unfilled template comment
+nx run validation:start:pull-request-body         # the four headings, non-empty sections, and no unfilled template comment
 nx run validation:start:catalog-manifests         # catalog:/workspace:* in every manifest
 nx run validation:start:lockfile                  # pnpm-lock.yaml against the manifests
 ```
@@ -40,7 +40,7 @@ authentication checks stay in shell — see [AGENTS.md](AGENTS.md).
 | Check | Answers |
 | ----- | ------- |
 | `pull-request-metadata` | Do a pull request's labels and assignees agree with its title? |
-| `pull-request-body` | Does a pull request description carry all four headings with no template comment left unfilled? |
+| `pull-request-body` | Does a pull request description carry all four headings with non-empty sections and no template comment left unfilled? |
 | `catalog-manifests` | Does every workspace manifest pin externals as `catalog:` and internals as `workspace:*`? |
 | `lockfile` | Is `pnpm-lock.yaml` in sync with the manifests? |
 
@@ -65,8 +65,9 @@ is more useful than a parse error.
 
 ### `pull-request-body`
 
-Checks that all four template headings are present and that no `<!-- … -->`
-prompt from [.github/PULL_REQUEST_TEMPLATE.md](../../.github/PULL_REQUEST_TEMPLATE.md)
+Checks that all four template headings are present, that each section contains
+actual content, and that no `<!-- … -->` prompt from
+[.github/PULL_REQUEST_TEMPLATE.md](../../.github/PULL_REQUEST_TEMPLATE.md)
 survives unfilled. The comments are read from the template at runtime rather
 than listed here, so adding a prompt to the template starts it being checked
 with no code change.

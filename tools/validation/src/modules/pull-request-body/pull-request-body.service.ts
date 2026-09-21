@@ -33,6 +33,20 @@ export class PullRequestBodyService {
   // 🔏 Private Methods
 
   /**
+   * Cleans section text by removing HTML comments and empty markdown list markers.
+   */
+  private cleanSectionContent(content: string): string {
+    const withoutComments = content.replaceAll(TEMPLATE_COMMENT_PATTERN, "");
+
+    return withoutComments
+      .split("\n")
+      .map((line) => line.trim())
+      .filter((line) => !/^([-*+]|\d+[.)])(\s*\[[ xX]?\])?\s*$/u.test(line))
+      .join("\n")
+      .trim();
+  }
+
+  /**
    * The leading run of a prompt that a description has to still carry.
    *
    * Newlines are collapsed so a prompt wrapped across lines in the template is
@@ -46,12 +60,13 @@ export class PullRequestBodyService {
 
   // 🌎 Public Methods
 
-  /** Both lists of failures, from one description and the template's prompts. */
+  /** The three lists of failures, from one description and the template's prompts. */
   public checkBody(options: {
     readonly body: string;
     readonly templateComments: readonly string[];
   }): BodyVerdict {
     return {
+      emptySections: this.findEmptySections(options.body),
       missingHeadings: this.findMissingHeadings(options.body),
       unfilledComments: this.findUnfilledComments(options),
     };
@@ -62,6 +77,43 @@ export class PullRequestBodyService {
     return [
       ...readFileSync(templatePath, "utf8").matchAll(TEMPLATE_COMMENT_PATTERN),
     ].map((match) => match[0]);
+  }
+
+  /** Every required heading whose section does not carry content. */
+  public findEmptySections(body: string): string[] {
+    const lines = body.split("\n");
+    const sectionContents = new Map<string, string[]>();
+    let currentHeading: string | undefined;
+
+    for (const rawLine of lines) {
+      const trimmedLine = rawLine.trimEnd();
+
+      if (
+        REQUIRED_HEADINGS.includes(trimmedLine) ||
+        /^#{1,2}\s+/u.test(trimmedLine)
+      ) {
+        if (REQUIRED_HEADINGS.includes(trimmedLine)) {
+          currentHeading = trimmedLine;
+          sectionContents.set(currentHeading, []);
+        } else {
+          currentHeading = undefined;
+        }
+      } else if (currentHeading !== undefined) {
+        sectionContents.get(currentHeading)?.push(rawLine);
+      }
+    }
+
+    return REQUIRED_HEADINGS.filter((heading) => {
+      const contentLines = sectionContents.get(heading);
+
+      if (contentLines === undefined) {
+        return false;
+      }
+
+      const content = contentLines.join("\n");
+
+      return this.cleanSectionContent(content) === "";
+    });
   }
 
   /** Every required heading the description does not carry. */

@@ -177,6 +177,36 @@ describe(PullRequestBodyCommand, () => {
     );
   });
 
+  it("reports an empty section alone", async () => {
+    expect.hasAssertions();
+
+    const bodyWithEmptySection = [
+      "## 🌰 Summary",
+      "",
+      "Moves four checks into a validation application.",
+      "",
+      "## 📝 Details",
+      "",
+      "## 🧪 Testing",
+      "",
+      "1. Run the suite",
+      "",
+      "## 🔗 Related",
+      "",
+      "- Issue 120",
+    ].join("\n");
+
+    process.env[PULL_REQUEST_BODY_VARIABLE] = bodyWithEmptySection;
+
+    await expect(runCommand()).resolves.toBe(true);
+    expect(reportLines).toStrictEqual([
+      "❌ Empty required sections: 📝 Details",
+      "",
+      "PR description must include: ## 🌰 Summary, ## 📝 Details, ## 🧪 Testing, ## 🔗 Related, with every template comment replaced by real content.",
+      "See: .github/PULL_REQUEST_TEMPLATE.md",
+    ]);
+  });
+
   it("reports a surviving prompt alone", async () => {
     expect.hasAssertions();
 
@@ -211,13 +241,24 @@ describe(PullRequestBodyCommand, () => {
     ]);
   });
 
-  it("names all four prompts when handed the raw template", async () => {
+  it("reports empty sections and all four prompts when handed the raw template", async () => {
     expect.hasAssertions();
 
     process.env[PULL_REQUEST_BODY_VARIABLE] = templateBody;
 
     await expect(runCommand()).resolves.toBe(true);
-    expect(reportLines).toHaveLength(8);
+    expect(reportLines).toStrictEqual([
+      "❌ Empty required sections: 🌰 Summary 📝 Details 🧪 Testing 🔗 Related",
+      "",
+      "❌ Unfilled template comments remain:",
+      "- <!-- Brief description of what this PR does (1-2 sentences) -->",
+      "- <!-- List of specific changes made -->",
+      "- <!-- How to manually verify these changes work correctly -->",
+      "- <!-- Link any relevant documentation or related resources -->",
+      "",
+      "PR description must include: ## 🌰 Summary, ## 📝 Details, ## 🧪 Testing, ## 🔗 Related, with every template comment replaced by real content.",
+      "See: .github/PULL_REQUEST_TEMPLATE.md",
+    ]);
   });
 
   it("reads the description from a path argument", async () => {

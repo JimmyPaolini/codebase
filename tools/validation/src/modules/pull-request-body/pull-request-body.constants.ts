@@ -40,8 +40,9 @@ export const BODY_VALID_MESSAGE = "✅ All required sections present";
 /** Said when there is no description to check at all. */
 export const BODY_MISSING_MESSAGE = "❌ Unable to determine Pull Request Body";
 
-/** How the two failure lists are introduced. */
+/** How the three failure lists are introduced. */
 export const MISSING_HEADINGS_MESSAGE = "❌ Missing required sections:";
+export const EMPTY_SECTIONS_MESSAGE = "❌ Empty required sections:";
 export const UNFILLED_COMMENTS_MESSAGE =
   "❌ Unfilled template comments remain:";
 
