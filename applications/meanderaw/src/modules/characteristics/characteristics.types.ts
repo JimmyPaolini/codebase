@@ -1,5 +1,3 @@
-// cspell:ignore Neighbours
-
 // 🏷️ Types
 
 /**
@@ -26,7 +24,7 @@ export interface Characteristics extends Connectivity {
   readonly embeddedOCount: number;
   // Embedded unit shapes
   readonly embeddedUCount: number;
-  readonly endsAreLatticeNeighbours: boolean;
+  readonly endsAreLatticeNeighbors: boolean;
   readonly endsOnBorderRules: boolean;
   readonly hasBranching: boolean;
   readonly hasCrossing: boolean;

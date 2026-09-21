@@ -36,7 +36,6 @@ describe(DrawIndexService, () => {
     edgeCount: 0,
     embeddedOCount: 0,
     embeddedUCount: 0,
-    // cspell:ignore Neighbours
 
     families: [],
     freeEnds: 0,
@@ -110,8 +109,10 @@ describe(DrawIndexService, () => {
   describe("render", () => {
     it("handles an empty corpus", () => {
       const pages = service.render([]);
+
       expect(pages["index.html"]).toContain("0 meanders across 0 families.");
     });
+
     it("embeds every meander's own SVG rather than linking to a file", () => {
       const pages = service.render([
         meander({ code: "a", drawingHash: "hash", families: ["snake"], id: 1 }),
@@ -208,14 +209,15 @@ describe(DrawIndexService, () => {
 
     it("sorts multiple null families effectively", () => {
       const pages = service.render([
-        meander({ code: "a", families: [], id: 1, columns: 2, rows: 2 }),
-        meander({ code: "b", families: [], id: 2, columns: 1, rows: 3 }),
-        meander({ code: "c", families: [], id: 3, columns: 1, rows: 2 }),
+        meander({ code: "a", columns: 2, families: [], id: 1, rows: 2 }),
+        meander({ code: "b", columns: 1, families: [], id: 2, rows: 3 }),
+        meander({ code: "c", columns: 1, families: [], id: 3, rows: 2 }),
       ]);
+
       expect(pages["families/unclassified.html"]).toContain("3 meanders");
-      
+
       const unclassified = pages["families/unclassified.html"] ?? "";
-      
+
       const shallowNarrow = unclassified.indexOf("2×1");
       const shallowWide = unclassified.indexOf("2×2");
       const deepNarrow = unclassified.indexOf("3×1");
@@ -226,13 +228,14 @@ describe(DrawIndexService, () => {
 
     it("sorts null/null combinations", () => {
       const pages = service.render([
-        meander({ code: "a", families: [], id: 1, columns: 2, rows: 2 }),
-        meander({ code: "b", families: [], id: 2, columns: 2, rows: 2 }),
+        meander({ code: "a", columns: 2, families: [], id: 1, rows: 2 }),
+        meander({ code: "b", columns: 2, families: [], id: 2, rows: 2 }),
       ]);
+
       expect(pages["families/unclassified.html"]).toContain("2 meanders");
     });
 
-    it("sorts unrecognised families alphabetically when missing from FAMILY_SORT_KEYS", () => {
+    it("sorts unrecognized families alphabetically when missing from FAMILY_SORT_KEYS", () => {
       const pages = service.render([
         meander({ code: "a", families: ["zeta"], id: 1 }),
         meander({ code: "b", families: ["alpha"], id: 2 }),

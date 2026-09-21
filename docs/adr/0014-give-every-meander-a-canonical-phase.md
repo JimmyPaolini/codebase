@@ -3,6 +3,7 @@
 ## Context
 
 A `meanderaw` Code is a row-major string of direction bits representing the points on a lattice. A cyclic rotation of its columns represents the same band cut at a different place (a phase shift). Previously, the application accepted any valid phase, which resulted in two visible issues:
+
 1. Some tiles could carry a stranded fragment at their left edge, where another phase would have drawn them whole.
 2. The exact same shape could be stored multiple times in the database under different phases. For example, the `whirl` meander was stored once as itself and once as its 4-column-shifted variant (filed under `snake`).
 
