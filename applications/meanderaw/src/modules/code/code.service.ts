@@ -72,6 +72,21 @@ export class CodeService {
   // 🌎 Public Methods
 
   /**
+   * Checks if a column span repeats exactly to fill the Code.
+   */
+  private isRepeatingUnit(code: ParsedCode, width: number): boolean {
+    const { columns, digits, levels } = code;
+    for (let level = 0; level < levels; level += 1) {
+      const row = digits.slice(level * columns, (level + 1) * columns);
+      const piece = row.slice(0, width);
+      if (piece.repeat(columns / width) !== row) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /**
    * The four direction bits the point at `(level, column)` carries, read off
    * the single character at `level * columns + column`.
    *
@@ -115,6 +130,39 @@ export class CodeService {
     }
 
     return { columns, digits: code, levels, rows };
+  }
+
+  /**
+   * Reduces a Code to its smallest repeating unit by finding the smallest
+   * column span that divides the Code's columns and repeats exactly to fill them.
+   */
+  reduceToUnit(code: ParsedCode): ParsedCode {
+    const { columns, digits, levels, rows } = code;
+
+    for (let width = 1; width <= columns; width += 1) {
+      if (columns % width !== 0) {
+        continue;
+      }
+
+      if (this.isRepeatingUnit(code, width)) {
+        let reducedDigits = "";
+        for (let level = 0; level < levels; level += 1) {
+          reducedDigits += digits.slice(
+            level * columns,
+            level * columns + width,
+          );
+        }
+
+        return {
+          columns: width,
+          digits: reducedDigits,
+          levels,
+          rows,
+        };
+      }
+    }
+
+    return code;
   }
 
   /**

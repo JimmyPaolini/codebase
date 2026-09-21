@@ -1,6 +1,10 @@
+// cspell:ignore Neighbours
+
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
+import { CharacteristicsPathService } from "../characteristics/characteristics-path.service";
+import { CharacteristicsShapeService } from "../characteristics/characteristics-shape.service";
 import { CharacteristicsService } from "../characteristics/characteristics.service";
 import { ConnectivityService } from "../characteristics/connectivity.service";
 import { ClassificationService } from "../classification/classification.service";
@@ -31,6 +35,8 @@ describe(DrawRecordService, () => {
         DrawRecordService,
         GeometryService,
         CharacteristicsService,
+        CharacteristicsPathService,
+        CharacteristicsShapeService,
         ClassificationService,
         ConnectivityService,
         CodeService,
@@ -58,25 +64,68 @@ describe(DrawRecordService, () => {
         "enumerated",
       );
 
-      expect({ ...record, svg: record.svg.slice(0, 4) }).toStrictEqual({
-        code: "4488",
-        columns: 2,
-        components: 2,
-        cycles: 0,
-        family: "parallel",
-        freeEnds: 4,
-        hasBranching: false,
-        hasCrossing: false,
-        inkTJunctions: 0,
-        inkXJunctions: 0,
-        negativeTJunctions: 0,
-        negativeXJunctions: 0,
-        pitch: 2,
-        provenance: "enumerated",
-        rows: 3,
-        subFamily: "bars",
-        svg: "<svg",
-      });
+      expect({ ...record, svg: record.svg.slice(0, 4) }).toMatchInlineSnapshot(`
+        {
+          "code": "4488",
+          "columns": 2,
+          "componentCount": 1,
+          "components": 1,
+          "cornerCount": 0,
+          "crossesTheSeam": false,
+          "cycleCount": 0,
+          "cycles": 0,
+          "density": 1,
+          "dotCount": 0,
+          "edgeCount": 1,
+          "embeddedOCount": 0,
+          "embeddedUCount": 0,
+          "endsAreLatticeNeighbours": true,
+          "endsOnBorderRules": true,
+          "family": "mosaic",
+          "freeEnds": 2,
+          "hasBranching": false,
+          "hasCrossing": false,
+          "hasDots": false,
+          "hasTJunctions": false,
+          "hasXJunctions": false,
+          "horizontalDashCount": 0,
+          "horizontalPointCount": 0,
+          "inkPointCount": 2,
+          "inkTJunctions": 0,
+          "inkXJunctions": 0,
+          "isClosedLoop": false,
+          "isConnected": true,
+          "isFlipSymmetric": false,
+          "isJunctionFree": true,
+          "isMirrorSymmetric": false,
+          "isReducible": true,
+          "isSingleArc": true,
+          "lCount": 0,
+          "longestHorizontalRun": 0,
+          "longestVerticalRun": 1,
+          "negativeTJunctions": 0,
+          "negativeXJunctions": 0,
+          "oCount": 0,
+          "pitch": 1,
+          "plusCount": 0,
+          "provenance": "enumerated",
+          "reversesAtItsTightestTurn": false,
+          "rows": 3,
+          "seamComponents": 0,
+          "seamCycles": 0,
+          "seamTJunctions": 0,
+          "seamXJunctions": 0,
+          "shapeICount": 1,
+          "subFamily": "bars",
+          "svg": "<svg",
+          "tCount": 0,
+          "turnsMonotonically": false,
+          "uCount": 0,
+          "verticalDashCount": 0,
+          "verticalPointCount": 0,
+          "xCount": 0,
+        }
+      `);
     });
 
     it("records a null family and a null sub-family where a Code's structure earns neither", () => {

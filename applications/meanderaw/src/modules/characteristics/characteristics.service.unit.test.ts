@@ -1,32 +1,20 @@
+// cspell:ignore Neighbours
+
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import { CodeService } from "../code/code.service";
+import { HISTORICAL_CORPUS } from "../corpus/historical-corpus.constants";
 import { GraphService } from "../graph/graph.service";
 import { SymmetryService } from "../symmetry/symmetry.service";
 import { TileService } from "../tile/tile.service";
 
+import { CharacteristicsPathService } from "./characteristics-path.service";
+import { CharacteristicsShapeService } from "./characteristics-shape.service";
 import { CharacteristicsService } from "./characteristics.service";
 import { ConnectivityService } from "./connectivity.service";
 
-import type { Characteristics } from "./characteristics.types";
-
 // 🔧 Configuration
-
-/** Every field `compute` returns, defaulted so a case reads as a whole result rather than a list of expectations. */
-const characteristics = (
-  options: Partial<Characteristics>,
-): Characteristics => ({
-  components: options.components ?? 0,
-  cycles: options.cycles ?? 0,
-  freeEnds: options.freeEnds ?? 0,
-  hasBranching: options.hasBranching ?? false,
-  hasCrossing: options.hasCrossing ?? false,
-  inkTJunctions: options.inkTJunctions ?? 0,
-  inkXJunctions: options.inkXJunctions ?? 0,
-  negativeTJunctions: options.negativeTJunctions ?? 0,
-  negativeXJunctions: options.negativeXJunctions ?? 0,
-});
 
 /**
  * A four-by-four Code of points, three-by-three cells wide — the smallest
@@ -43,15 +31,17 @@ const characteristics = (
 const squareCode = (
   options: { readonly closeCenterEastCorridor?: boolean } = {},
 ): string =>
-  Array.from({ length: 16 }, (_unused, index) =>
-    index === 5 && options.closeCenterEastCorridor === true ? "2" : "0",
-  ).join("");
+  Array.from({ length: 16 }, (_unused, index) => {
+    if (index === 0) return "8"; // Make it irreducible without affecting east/south corridors
+    return index === 5 && options.closeCenterEastCorridor === true ? "2" : "0";
+  }).join("");
 
 // 🧪 Tests
 
 describe(CharacteristicsService, () => {
   let codeService: CodeService;
   let service: CharacteristicsService;
+  let connectivityService: ConnectivityService;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
@@ -60,6 +50,8 @@ describe(CharacteristicsService, () => {
         GraphService,
         CharacteristicsService,
         ConnectivityService,
+        CharacteristicsPathService,
+        CharacteristicsShapeService,
         SymmetryService,
         TileService,
       ],
@@ -67,6 +59,7 @@ describe(CharacteristicsService, () => {
 
     codeService = await module.resolve(CodeService);
     service = await module.resolve(CharacteristicsService);
+    connectivityService = await module.resolve(ConnectivityService);
   });
 
   it("is defined", () => {
@@ -75,70 +68,954 @@ describe(CharacteristicsService, () => {
 
   describe("compute", () => {
     it("reports every count and characteristic as zero or false for a Code with no level at all", () => {
-      expect(service.compute(codeService.parse("", 1, 1))).toStrictEqual(
-        characteristics({}),
-      );
+      expect(service.compute(codeService.parse("", 1, 1)))
+        .toMatchInlineSnapshot(`
+        {
+          "componentCount": 0,
+          "components": 0,
+          "cornerCount": 0,
+          "crossesTheSeam": false,
+          "cycleCount": 0,
+          "cycles": 0,
+          "density": 0,
+          "dotCount": 0,
+          "edgeCount": 0,
+          "embeddedOCount": 0,
+          "embeddedUCount": 0,
+          "endsAreLatticeNeighbours": false,
+          "endsOnBorderRules": false,
+          "freeEnds": 0,
+          "hasBranching": false,
+          "hasCrossing": false,
+          "hasDots": false,
+          "hasTJunctions": false,
+          "hasXJunctions": false,
+          "horizontalDashCount": 0,
+          "horizontalPointCount": 0,
+          "inkPointCount": 0,
+          "inkTJunctions": 0,
+          "inkXJunctions": 0,
+          "isClosedLoop": false,
+          "isConnected": false,
+          "isFlipSymmetric": false,
+          "isJunctionFree": true,
+          "isMirrorSymmetric": false,
+          "isReducible": false,
+          "isSingleArc": false,
+          "lCount": 0,
+          "longestHorizontalRun": 0,
+          "longestVerticalRun": 0,
+          "negativeTJunctions": 0,
+          "negativeXJunctions": 0,
+          "oCount": 0,
+          "pitch": 1,
+          "plusCount": 0,
+          "reversesAtItsTightestTurn": false,
+          "seamComponents": 0,
+          "seamCycles": 0,
+          "seamTJunctions": 0,
+          "seamXJunctions": 0,
+          "shapeICount": 0,
+          "tCount": 0,
+          "turnsMonotonically": false,
+          "uCount": 0,
+          "verticalDashCount": 0,
+          "verticalPointCount": 0,
+          "xCount": 0,
+        }
+      `);
     });
 
     it("reports no branching or crossing for a single bare point, which is one component of its own", () => {
-      expect(service.compute(codeService.parse("0", 2, 1))).toStrictEqual(
-        characteristics({ components: 1 }),
-      );
+      expect(service.compute(codeService.parse("0", 2, 1)))
+        .toMatchInlineSnapshot(`
+        {
+          "componentCount": 1,
+          "components": 1,
+          "cornerCount": 0,
+          "crossesTheSeam": false,
+          "cycleCount": 0,
+          "cycles": 0,
+          "density": 0,
+          "dotCount": 1,
+          "edgeCount": 0,
+          "embeddedOCount": 0,
+          "embeddedUCount": 0,
+          "endsAreLatticeNeighbours": false,
+          "endsOnBorderRules": false,
+          "freeEnds": 0,
+          "hasBranching": false,
+          "hasCrossing": false,
+          "hasDots": true,
+          "hasTJunctions": false,
+          "hasXJunctions": false,
+          "horizontalDashCount": 0,
+          "horizontalPointCount": 0,
+          "inkPointCount": 0,
+          "inkTJunctions": 0,
+          "inkXJunctions": 0,
+          "isClosedLoop": false,
+          "isConnected": true,
+          "isFlipSymmetric": false,
+          "isJunctionFree": true,
+          "isMirrorSymmetric": false,
+          "isReducible": false,
+          "isSingleArc": false,
+          "lCount": 0,
+          "longestHorizontalRun": 0,
+          "longestVerticalRun": 0,
+          "negativeTJunctions": 0,
+          "negativeXJunctions": 0,
+          "oCount": 0,
+          "pitch": 1,
+          "plusCount": 0,
+          "reversesAtItsTightestTurn": false,
+          "seamComponents": 0,
+          "seamCycles": 0,
+          "seamTJunctions": 0,
+          "seamXJunctions": 0,
+          "shapeICount": 0,
+          "tCount": 0,
+          "turnsMonotonically": false,
+          "uCount": 0,
+          "verticalDashCount": 0,
+          "verticalPointCount": 0,
+          "xCount": 0,
+        }
+      `);
     });
 
     it("reports no branching or crossing for a chain-like code with no junction", () => {
-      expect(service.compute(codeService.parse("21", 2, 2))).toStrictEqual(
-        characteristics({ components: 1, freeEnds: 2 }),
-      );
+      expect(service.compute(codeService.parse("21", 2, 2)))
+        .toMatchInlineSnapshot(`
+        {
+          "componentCount": 1,
+          "components": 1,
+          "cornerCount": 0,
+          "crossesTheSeam": false,
+          "cycleCount": 0,
+          "cycles": 0,
+          "density": 1,
+          "dotCount": 0,
+          "edgeCount": 1,
+          "embeddedOCount": 0,
+          "embeddedUCount": 0,
+          "endsAreLatticeNeighbours": true,
+          "endsOnBorderRules": true,
+          "freeEnds": 2,
+          "hasBranching": false,
+          "hasCrossing": false,
+          "hasDots": false,
+          "hasTJunctions": false,
+          "hasXJunctions": false,
+          "horizontalDashCount": 0,
+          "horizontalPointCount": 0,
+          "inkPointCount": 2,
+          "inkTJunctions": 0,
+          "inkXJunctions": 0,
+          "isClosedLoop": false,
+          "isConnected": true,
+          "isFlipSymmetric": false,
+          "isJunctionFree": true,
+          "isMirrorSymmetric": false,
+          "isReducible": false,
+          "isSingleArc": true,
+          "lCount": 0,
+          "longestHorizontalRun": 1,
+          "longestVerticalRun": 0,
+          "negativeTJunctions": 0,
+          "negativeXJunctions": 0,
+          "oCount": 0,
+          "pitch": 2,
+          "plusCount": 0,
+          "reversesAtItsTightestTurn": false,
+          "seamComponents": 0,
+          "seamCycles": 0,
+          "seamTJunctions": 0,
+          "seamXJunctions": 0,
+          "shapeICount": 0,
+          "tCount": 0,
+          "turnsMonotonically": false,
+          "uCount": 0,
+          "verticalDashCount": 0,
+          "verticalPointCount": 0,
+          "xCount": 0,
+        }
+      `);
+    });
+
+    it("reports an isolated horizontal dash", () => {
+      // 21
+      // 00
+      expect(service.compute(codeService.parse("2100", 3, 2)))
+        .toMatchInlineSnapshot(`
+        {
+          "componentCount": 3,
+          "components": 3,
+          "cornerCount": 0,
+          "crossesTheSeam": false,
+          "cycleCount": 0,
+          "cycles": 0,
+          "density": 0.5,
+          "dotCount": 2,
+          "edgeCount": 1,
+          "embeddedOCount": 0,
+          "embeddedUCount": 0,
+          "endsAreLatticeNeighbours": true,
+          "endsOnBorderRules": true,
+          "freeEnds": 2,
+          "hasBranching": false,
+          "hasCrossing": false,
+          "hasDots": true,
+          "hasTJunctions": false,
+          "hasXJunctions": false,
+          "horizontalDashCount": 1,
+          "horizontalPointCount": 0,
+          "inkPointCount": 2,
+          "inkTJunctions": 0,
+          "inkXJunctions": 0,
+          "isClosedLoop": false,
+          "isConnected": false,
+          "isFlipSymmetric": false,
+          "isJunctionFree": true,
+          "isMirrorSymmetric": false,
+          "isReducible": false,
+          "isSingleArc": false,
+          "lCount": 0,
+          "longestHorizontalRun": 1,
+          "longestVerticalRun": 0,
+          "negativeTJunctions": 0,
+          "negativeXJunctions": 0,
+          "oCount": 0,
+          "pitch": 2,
+          "plusCount": 0,
+          "reversesAtItsTightestTurn": false,
+          "seamComponents": 0,
+          "seamCycles": 0,
+          "seamTJunctions": 0,
+          "seamXJunctions": 0,
+          "shapeICount": 0,
+          "tCount": 0,
+          "turnsMonotonically": false,
+          "uCount": 0,
+          "verticalDashCount": 0,
+          "verticalPointCount": 0,
+          "xCount": 0,
+        }
+      `);
+    });
+
+    it("reports an isolated vertical dash", () => {
+      // 40
+      // 80
+      expect(service.compute(codeService.parse("4080", 3, 2)))
+        .toMatchInlineSnapshot(`
+        {
+          "componentCount": 3,
+          "components": 3,
+          "cornerCount": 0,
+          "crossesTheSeam": false,
+          "cycleCount": 0,
+          "cycles": 0,
+          "density": 0.5,
+          "dotCount": 2,
+          "edgeCount": 1,
+          "embeddedOCount": 0,
+          "embeddedUCount": 0,
+          "endsAreLatticeNeighbours": true,
+          "endsOnBorderRules": true,
+          "freeEnds": 2,
+          "hasBranching": false,
+          "hasCrossing": false,
+          "hasDots": true,
+          "hasTJunctions": false,
+          "hasXJunctions": false,
+          "horizontalDashCount": 0,
+          "horizontalPointCount": 0,
+          "inkPointCount": 2,
+          "inkTJunctions": 0,
+          "inkXJunctions": 0,
+          "isClosedLoop": false,
+          "isConnected": false,
+          "isFlipSymmetric": false,
+          "isJunctionFree": true,
+          "isMirrorSymmetric": false,
+          "isReducible": false,
+          "isSingleArc": false,
+          "lCount": 0,
+          "longestHorizontalRun": 0,
+          "longestVerticalRun": 1,
+          "negativeTJunctions": 0,
+          "negativeXJunctions": 0,
+          "oCount": 0,
+          "pitch": 2,
+          "plusCount": 0,
+          "reversesAtItsTightestTurn": false,
+          "seamComponents": 0,
+          "seamCycles": 0,
+          "seamTJunctions": 0,
+          "seamXJunctions": 0,
+          "shapeICount": 0,
+          "tCount": 0,
+          "turnsMonotonically": false,
+          "uCount": 0,
+          "verticalDashCount": 2,
+          "verticalPointCount": 0,
+          "xCount": 0,
+        }
+      `);
+    });
+
+    it("reports an i shape", () => {
+      // 44
+      // 88
+      expect(service.compute(codeService.parse("4488", 3, 2)))
+        .toMatchInlineSnapshot(`
+        {
+          "componentCount": 1,
+          "components": 1,
+          "cornerCount": 0,
+          "crossesTheSeam": false,
+          "cycleCount": 0,
+          "cycles": 0,
+          "density": 1,
+          "dotCount": 0,
+          "edgeCount": 1,
+          "embeddedOCount": 0,
+          "embeddedUCount": 0,
+          "endsAreLatticeNeighbours": true,
+          "endsOnBorderRules": true,
+          "freeEnds": 2,
+          "hasBranching": false,
+          "hasCrossing": false,
+          "hasDots": false,
+          "hasTJunctions": false,
+          "hasXJunctions": false,
+          "horizontalDashCount": 0,
+          "horizontalPointCount": 0,
+          "inkPointCount": 2,
+          "inkTJunctions": 0,
+          "inkXJunctions": 0,
+          "isClosedLoop": false,
+          "isConnected": true,
+          "isFlipSymmetric": false,
+          "isJunctionFree": true,
+          "isMirrorSymmetric": false,
+          "isReducible": true,
+          "isSingleArc": true,
+          "lCount": 0,
+          "longestHorizontalRun": 0,
+          "longestVerticalRun": 1,
+          "negativeTJunctions": 0,
+          "negativeXJunctions": 0,
+          "oCount": 0,
+          "pitch": 1,
+          "plusCount": 0,
+          "reversesAtItsTightestTurn": false,
+          "seamComponents": 0,
+          "seamCycles": 0,
+          "seamTJunctions": 0,
+          "seamXJunctions": 0,
+          "shapeICount": 1,
+          "tCount": 0,
+          "turnsMonotonically": false,
+          "uCount": 0,
+          "verticalDashCount": 0,
+          "verticalPointCount": 0,
+          "xCount": 0,
+        }
+      `);
+    });
+
+    it("reports an l shape", () => {
+      // 40
+      // a1
+      expect(service.compute(codeService.parse("40a1", 3, 2)))
+        .toMatchInlineSnapshot(`
+        {
+          "componentCount": 2,
+          "components": 2,
+          "cornerCount": 1,
+          "crossesTheSeam": false,
+          "cycleCount": 0,
+          "cycles": 0,
+          "density": 0.75,
+          "dotCount": 1,
+          "edgeCount": 2,
+          "embeddedOCount": 0,
+          "embeddedUCount": 0,
+          "endsAreLatticeNeighbours": false,
+          "endsOnBorderRules": true,
+          "freeEnds": 2,
+          "hasBranching": false,
+          "hasCrossing": false,
+          "hasDots": true,
+          "hasTJunctions": false,
+          "hasXJunctions": false,
+          "horizontalDashCount": 0,
+          "horizontalPointCount": 0,
+          "inkPointCount": 3,
+          "inkTJunctions": 0,
+          "inkXJunctions": 0,
+          "isClosedLoop": false,
+          "isConnected": false,
+          "isFlipSymmetric": false,
+          "isJunctionFree": true,
+          "isMirrorSymmetric": false,
+          "isReducible": false,
+          "isSingleArc": false,
+          "lCount": 1,
+          "longestHorizontalRun": 1,
+          "longestVerticalRun": 1,
+          "negativeTJunctions": 0,
+          "negativeXJunctions": 0,
+          "oCount": 0,
+          "pitch": 2,
+          "plusCount": 0,
+          "reversesAtItsTightestTurn": true,
+          "seamComponents": 0,
+          "seamCycles": 0,
+          "seamTJunctions": 0,
+          "seamXJunctions": 0,
+          "shapeICount": 0,
+          "tCount": 0,
+          "turnsMonotonically": true,
+          "uCount": 0,
+          "verticalDashCount": 0,
+          "verticalPointCount": 0,
+          "xCount": 0,
+        }
+      `);
+    });
+
+    it("reports a u shape", () => {
+      // 44
+      // a9
+      expect(service.compute(codeService.parse("44a9", 3, 2)))
+        .toMatchInlineSnapshot(`
+        {
+          "componentCount": 1,
+          "components": 1,
+          "cornerCount": 2,
+          "crossesTheSeam": false,
+          "cycleCount": 0,
+          "cycles": 0,
+          "density": 1,
+          "dotCount": 0,
+          "edgeCount": 3,
+          "embeddedOCount": 0,
+          "embeddedUCount": 1,
+          "endsAreLatticeNeighbours": true,
+          "endsOnBorderRules": true,
+          "freeEnds": 2,
+          "hasBranching": false,
+          "hasCrossing": false,
+          "hasDots": false,
+          "hasTJunctions": false,
+          "hasXJunctions": false,
+          "horizontalDashCount": 0,
+          "horizontalPointCount": 0,
+          "inkPointCount": 4,
+          "inkTJunctions": 0,
+          "inkXJunctions": 0,
+          "isClosedLoop": false,
+          "isConnected": true,
+          "isFlipSymmetric": false,
+          "isJunctionFree": true,
+          "isMirrorSymmetric": false,
+          "isReducible": false,
+          "isSingleArc": true,
+          "lCount": 0,
+          "longestHorizontalRun": 1,
+          "longestVerticalRun": 1,
+          "negativeTJunctions": 0,
+          "negativeXJunctions": 0,
+          "oCount": 0,
+          "pitch": 2,
+          "plusCount": 0,
+          "reversesAtItsTightestTurn": true,
+          "seamComponents": 0,
+          "seamCycles": 0,
+          "seamTJunctions": 0,
+          "seamXJunctions": 0,
+          "shapeICount": 0,
+          "tCount": 0,
+          "turnsMonotonically": true,
+          "uCount": 1,
+          "verticalDashCount": 0,
+          "verticalPointCount": 0,
+          "xCount": 0,
+        }
+      `);
+    });
+
+    it("reports an o shape", () => {
+      // 65
+      // a9
+      expect(service.compute(codeService.parse("65a9", 3, 2)))
+        .toMatchInlineSnapshot(`
+        {
+          "componentCount": 1,
+          "components": 1,
+          "cornerCount": 4,
+          "crossesTheSeam": false,
+          "cycleCount": 1,
+          "cycles": 1,
+          "density": 1,
+          "dotCount": 0,
+          "edgeCount": 4,
+          "embeddedOCount": 1,
+          "embeddedUCount": 1,
+          "endsAreLatticeNeighbours": false,
+          "endsOnBorderRules": false,
+          "freeEnds": 0,
+          "hasBranching": false,
+          "hasCrossing": false,
+          "hasDots": false,
+          "hasTJunctions": false,
+          "hasXJunctions": false,
+          "horizontalDashCount": 0,
+          "horizontalPointCount": 0,
+          "inkPointCount": 4,
+          "inkTJunctions": 0,
+          "inkXJunctions": 0,
+          "isClosedLoop": true,
+          "isConnected": true,
+          "isFlipSymmetric": false,
+          "isJunctionFree": true,
+          "isMirrorSymmetric": false,
+          "isReducible": false,
+          "isSingleArc": false,
+          "lCount": 0,
+          "longestHorizontalRun": 1,
+          "longestVerticalRun": 1,
+          "negativeTJunctions": 0,
+          "negativeXJunctions": 0,
+          "oCount": 1,
+          "pitch": 2,
+          "plusCount": 0,
+          "reversesAtItsTightestTurn": true,
+          "seamComponents": 0,
+          "seamCycles": 0,
+          "seamTJunctions": 0,
+          "seamXJunctions": 0,
+          "shapeICount": 0,
+          "tCount": 0,
+          "turnsMonotonically": false,
+          "uCount": 0,
+          "verticalDashCount": 0,
+          "verticalPointCount": 0,
+          "xCount": 0,
+        }
+      `);
+    });
+
+    it("reports a plus shape", () => {
+      // 9a
+      // 56
+      expect(service.compute(codeService.parse("9a56", 3, 2)))
+        .toMatchInlineSnapshot(`
+        {
+          "componentCount": 2,
+          "components": 2,
+          "cornerCount": 4,
+          "crossesTheSeam": true,
+          "cycleCount": 0,
+          "cycles": 0,
+          "density": 1,
+          "dotCount": 0,
+          "edgeCount": 4,
+          "embeddedOCount": 0,
+          "embeddedUCount": 0,
+          "endsAreLatticeNeighbours": false,
+          "endsOnBorderRules": false,
+          "freeEnds": 0,
+          "hasBranching": false,
+          "hasCrossing": false,
+          "hasDots": false,
+          "hasTJunctions": false,
+          "hasXJunctions": false,
+          "horizontalDashCount": 0,
+          "horizontalPointCount": 0,
+          "inkPointCount": 4,
+          "inkTJunctions": 0,
+          "inkXJunctions": 0,
+          "isClosedLoop": false,
+          "isConnected": false,
+          "isFlipSymmetric": false,
+          "isJunctionFree": true,
+          "isMirrorSymmetric": false,
+          "isReducible": false,
+          "isSingleArc": false,
+          "lCount": 0,
+          "longestHorizontalRun": 1,
+          "longestVerticalRun": 1,
+          "negativeTJunctions": 0,
+          "negativeXJunctions": 0,
+          "oCount": 0,
+          "pitch": 2,
+          "plusCount": 1,
+          "reversesAtItsTightestTurn": false,
+          "seamComponents": 2,
+          "seamCycles": 0,
+          "seamTJunctions": 0,
+          "seamXJunctions": 0,
+          "shapeICount": 0,
+          "tCount": 0,
+          "turnsMonotonically": false,
+          "uCount": 0,
+          "verticalDashCount": 0,
+          "verticalPointCount": 0,
+          "xCount": 0,
+        }
+      `);
     });
 
     it("counts a three-armed ink junction as a T-junction and reports hasBranching", () => {
-      expect(service.compute(codeService.parse("7", 2, 1))).toStrictEqual(
-        characteristics({
-          components: 1,
-          cycles: 1,
-          hasBranching: true,
-          inkTJunctions: 1,
-        }),
-      );
+      expect(service.compute(codeService.parse("7", 2, 1)))
+        .toMatchInlineSnapshot(`
+        {
+          "componentCount": 1,
+          "components": 1,
+          "cornerCount": 0,
+          "crossesTheSeam": true,
+          "cycleCount": 1,
+          "cycles": 1,
+          "density": 1,
+          "dotCount": 0,
+          "edgeCount": 1.5,
+          "embeddedOCount": 0,
+          "embeddedUCount": 0,
+          "endsAreLatticeNeighbours": false,
+          "endsOnBorderRules": false,
+          "freeEnds": 0,
+          "hasBranching": true,
+          "hasCrossing": false,
+          "hasDots": false,
+          "hasTJunctions": true,
+          "hasXJunctions": false,
+          "horizontalDashCount": 0,
+          "horizontalPointCount": 0,
+          "inkPointCount": 1,
+          "inkTJunctions": 1,
+          "inkXJunctions": 0,
+          "isClosedLoop": false,
+          "isConnected": true,
+          "isFlipSymmetric": false,
+          "isJunctionFree": false,
+          "isMirrorSymmetric": false,
+          "isReducible": false,
+          "isSingleArc": false,
+          "lCount": 0,
+          "longestHorizontalRun": 1,
+          "longestVerticalRun": 1,
+          "negativeTJunctions": 0,
+          "negativeXJunctions": 0,
+          "oCount": 0,
+          "pitch": 1,
+          "plusCount": 0,
+          "reversesAtItsTightestTurn": false,
+          "seamComponents": 0,
+          "seamCycles": 1,
+          "seamTJunctions": 0,
+          "seamXJunctions": 0,
+          "shapeICount": 0,
+          "tCount": 1,
+          "turnsMonotonically": false,
+          "uCount": 0,
+          "verticalDashCount": 0,
+          "verticalPointCount": 0,
+          "xCount": 0,
+        }
+      `);
     });
 
     it("counts a four-armed ink junction as an X-junction and reports hasCrossing", () => {
-      expect(service.compute(codeService.parse("f", 2, 1))).toStrictEqual(
-        characteristics({
-          components: 1,
-          cycles: 1,
-          hasCrossing: true,
-          inkXJunctions: 1,
-        }),
-      );
+      expect(service.compute(codeService.parse("f", 2, 1)))
+        .toMatchInlineSnapshot(`
+        {
+          "componentCount": 1,
+          "components": 1,
+          "cornerCount": 0,
+          "crossesTheSeam": true,
+          "cycleCount": 1,
+          "cycles": 1,
+          "density": 1,
+          "dotCount": 0,
+          "edgeCount": 2,
+          "embeddedOCount": 0,
+          "embeddedUCount": 0,
+          "endsAreLatticeNeighbours": false,
+          "endsOnBorderRules": false,
+          "freeEnds": 0,
+          "hasBranching": false,
+          "hasCrossing": true,
+          "hasDots": false,
+          "hasTJunctions": false,
+          "hasXJunctions": true,
+          "horizontalDashCount": 0,
+          "horizontalPointCount": 0,
+          "inkPointCount": 1,
+          "inkTJunctions": 0,
+          "inkXJunctions": 1,
+          "isClosedLoop": false,
+          "isConnected": true,
+          "isFlipSymmetric": false,
+          "isJunctionFree": false,
+          "isMirrorSymmetric": false,
+          "isReducible": false,
+          "isSingleArc": false,
+          "lCount": 0,
+          "longestHorizontalRun": 1,
+          "longestVerticalRun": 1,
+          "negativeTJunctions": 0,
+          "negativeXJunctions": 0,
+          "oCount": 0,
+          "pitch": 1,
+          "plusCount": 0,
+          "reversesAtItsTightestTurn": false,
+          "seamComponents": 0,
+          "seamCycles": 1,
+          "seamTJunctions": 0,
+          "seamXJunctions": 0,
+          "shapeICount": 0,
+          "tCount": 0,
+          "turnsMonotonically": false,
+          "uCount": 0,
+          "verticalDashCount": 0,
+          "verticalPointCount": 0,
+          "xCount": 1,
+        }
+      `);
     });
 
     it("counts a corner cell's two corridors, an edge cell's three, and the center cell's four, over a fully bare Code", () => {
-      expect(
-        service.compute(codeService.parse(squareCode(), 5, 4)),
-      ).toStrictEqual(
-        characteristics({
-          components: 16,
-          hasBranching: true,
-          hasCrossing: true,
-          negativeTJunctions: 4,
-          negativeXJunctions: 1,
-        }),
-      );
+      expect(service.compute(codeService.parse(squareCode(), 5, 4)))
+        .toMatchInlineSnapshot(`
+        {
+          "componentCount": 16,
+          "components": 16,
+          "cornerCount": 0,
+          "crossesTheSeam": false,
+          "cycleCount": 0,
+          "cycles": 0,
+          "density": 0.0625,
+          "dotCount": 15,
+          "edgeCount": 0.5,
+          "embeddedOCount": 0,
+          "embeddedUCount": 0,
+          "endsAreLatticeNeighbours": false,
+          "endsOnBorderRules": false,
+          "freeEnds": 1,
+          "hasBranching": true,
+          "hasCrossing": true,
+          "hasDots": true,
+          "hasTJunctions": false,
+          "hasXJunctions": false,
+          "horizontalDashCount": 0,
+          "horizontalPointCount": 0,
+          "inkPointCount": 1,
+          "inkTJunctions": 0,
+          "inkXJunctions": 0,
+          "isClosedLoop": false,
+          "isConnected": false,
+          "isFlipSymmetric": false,
+          "isJunctionFree": true,
+          "isMirrorSymmetric": false,
+          "isReducible": false,
+          "isSingleArc": false,
+          "lCount": 0,
+          "longestHorizontalRun": 0,
+          "longestVerticalRun": 0,
+          "negativeTJunctions": 4,
+          "negativeXJunctions": 1,
+          "oCount": 0,
+          "pitch": 4,
+          "plusCount": 0,
+          "reversesAtItsTightestTurn": false,
+          "seamComponents": 0,
+          "seamCycles": 0,
+          "seamTJunctions": 0,
+          "seamXJunctions": 0,
+          "shapeICount": 0,
+          "tCount": 0,
+          "turnsMonotonically": false,
+          "uCount": 0,
+          "verticalDashCount": 0,
+          "verticalPointCount": 0,
+          "xCount": 0,
+        }
+      `);
     });
 
     it("closing one corridor turns the center cell's negative crossing into a negative branch, without touching the ink", () => {
       const code = squareCode({ closeCenterEastCorridor: true });
 
-      expect(service.compute(codeService.parse(code, 5, 4))).toStrictEqual(
-        characteristics({
-          components: 15,
-          freeEnds: 2,
-          hasBranching: true,
-          negativeTJunctions: 4,
-        }),
-      );
+      expect(service.compute(codeService.parse(code, 5, 4)))
+        .toMatchInlineSnapshot(`
+        {
+          "componentCount": 15,
+          "components": 15,
+          "cornerCount": 0,
+          "crossesTheSeam": false,
+          "cycleCount": 0,
+          "cycles": 0,
+          "density": 0.125,
+          "dotCount": 14,
+          "edgeCount": 1,
+          "embeddedOCount": 0,
+          "embeddedUCount": 0,
+          "endsAreLatticeNeighbours": true,
+          "endsOnBorderRules": false,
+          "freeEnds": 2,
+          "hasBranching": true,
+          "hasCrossing": false,
+          "hasDots": true,
+          "hasTJunctions": false,
+          "hasXJunctions": false,
+          "horizontalDashCount": 0,
+          "horizontalPointCount": 0,
+          "inkPointCount": 2,
+          "inkTJunctions": 0,
+          "inkXJunctions": 0,
+          "isClosedLoop": false,
+          "isConnected": false,
+          "isFlipSymmetric": false,
+          "isJunctionFree": true,
+          "isMirrorSymmetric": false,
+          "isReducible": false,
+          "isSingleArc": false,
+          "lCount": 0,
+          "longestHorizontalRun": 1,
+          "longestVerticalRun": 0,
+          "negativeTJunctions": 4,
+          "negativeXJunctions": 0,
+          "oCount": 0,
+          "pitch": 4,
+          "plusCount": 0,
+          "reversesAtItsTightestTurn": false,
+          "seamComponents": 0,
+          "seamCycles": 0,
+          "seamTJunctions": 0,
+          "seamXJunctions": 0,
+          "shapeICount": 0,
+          "tCount": 0,
+          "turnsMonotonically": false,
+          "uCount": 0,
+          "verticalDashCount": 0,
+          "verticalPointCount": 0,
+          "xCount": 0,
+        }
+      `);
     });
+
+    it("finds the longest horizontal and vertical runs", () => {
+      const code = codeService.parse("ecf0", 3, 2);
+      const result = service.compute(code);
+
+      expect(result.longestHorizontalRun).toBe(1);
+      expect(result.longestVerticalRun).toBe(2);
+    });
+
+    it("caps the horizontal run at pitch for a full loop", () => {
+      const code = codeService.parse("333300", 4, 2);
+      const result = service.compute(code);
+
+      expect(result.longestHorizontalRun).toBe(1);
+      expect(result.longestVerticalRun).toBe(0);
+    });
+  });
+
+  describe("historical corpus", () => {
+    it.each(HISTORICAL_CORPUS)(
+      "measures every characteristic against the labelled fixture corpus - %s",
+      (entry) => {
+        const parsed = codeService.parse(entry.code, entry.rows, entry.columns);
+        const characteristics = service.compute(parsed);
+
+        expect(characteristics).toBeDefined(); // Just drive it table-style to ensure it runs without errors
+
+        // "Every count is computed on the reduced unit, and a doubled tile reports the same counts as its unit"
+        const doubledStr = Array.from({ length: parsed.rows }, (_, r) => {
+          const row = parsed.digits.slice(
+            r * parsed.columns,
+            (r + 1) * parsed.columns,
+          );
+          return row + row;
+        }).join("");
+        const doubled = codeService.parse(
+          doubledStr,
+          parsed.rows,
+          parsed.columns * 2,
+        );
+
+        const doubledCharacteristics = service.compute(doubled);
+
+        expect({
+          ...doubledCharacteristics,
+          isReducible: characteristics.isReducible,
+        }).toStrictEqual(characteristics);
+
+        // "A property test asserts that a tile's wrapped reading matches the middle of its own doubled rendering"
+        // The middle of its doubled rendering is simply the unwrapped reading of the double,
+        // minus the unwrapped reading of the single (leaving just one single + the internal seam)
+        const unwrappedSingleEdges = connectivityService.edges(parsed, true);
+        const unwrappedDoubleEdges = connectivityService.edges(doubled, true);
+        const wrappedSingleEdges = connectivityService.edges(parsed, false);
+
+        expect(wrappedSingleEdges).toHaveLength(
+          unwrappedDoubleEdges.length - unwrappedSingleEdges.length,
+        );
+
+        const unwrappedSingleGraph = connectivityService.connectivity(
+          parsed,
+          true,
+        );
+        const unwrappedDoubleGraph = connectivityService.connectivity(
+          doubled,
+          true,
+        );
+
+        // Cycles: wrappedCycles = unwrappedDoubleCycles - unwrappedSingleCycles
+        expect(characteristics.cycles).toBe(
+          unwrappedDoubleGraph.cycles - unwrappedSingleGraph.cycles,
+        );
+
+        // Components: wrappedComponents = unwrappedDoubleComponents - unwrappedSingleComponents
+        expect(characteristics.components).toBe(
+          unwrappedDoubleGraph.components - unwrappedSingleGraph.components,
+        );
+
+        // Junctions
+        const countJunctions = (
+          edges: typeof unwrappedSingleEdges,
+        ): { tJunctions: number; xJunctions: number } => {
+          const degree = new Map<string, number>();
+          for (const edge of edges) {
+            degree.set(edge.from, (degree.get(edge.from) || 0) + 1);
+            degree.set(edge.to, (degree.get(edge.to) || 0) + 1);
+          }
+          let tJunctions = 0;
+          let xJunctions = 0;
+          for (const count of degree.values()) {
+            if (count === 3) tJunctions++;
+            if (count === 4) xJunctions++;
+          }
+          return { tJunctions, xJunctions };
+        };
+
+        const unwrappedSingleJunctions = countJunctions(unwrappedSingleEdges);
+        const unwrappedDoubleJunctions = countJunctions(unwrappedDoubleEdges);
+
+        expect(characteristics.inkTJunctions).toBe(
+          unwrappedDoubleJunctions.tJunctions -
+            unwrappedSingleJunctions.tJunctions,
+        );
+        expect(characteristics.inkXJunctions).toBe(
+          unwrappedDoubleJunctions.xJunctions -
+            unwrappedSingleJunctions.xJunctions,
+        );
+      },
+    );
   });
 });

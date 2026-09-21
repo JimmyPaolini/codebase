@@ -80,34 +80,6 @@ export class ConnectivityService {
     };
   }
 
-  /**
-   * Every edge the Code holds, each once, named by the two points it joins.
-   *
-   * An eastward edge wraps around the Code's own column span and a southward
-   * one stops at the last level — see this service's own doc comment for why
-   * the two directions differ.
-   */
-  private edges(code: ParsedCode): CodeEdge[] {
-    const { columns, levels } = code;
-    const edges: CodeEdge[] = [];
-
-    for (let level = 0; level < levels; level += 1) {
-      for (let column = 0; column < columns; column += 1) {
-        const from = this.key(level, column);
-
-        if (this.joinsEast(code, level, column)) {
-          edges.push({ from, to: this.key(level, (column + 1) % columns) });
-        }
-
-        if (this.joinsSouth(code, level, column)) {
-          edges.push({ from, to: this.key(level + 1, column) });
-        }
-      }
-    }
-
-    return edges;
-  }
-
   /** How many of the Code's points are incident to exactly one edge, counting a self-loop's single point as incident twice. */
   private freeEnds(edges: readonly CodeEdge[]): number {
     const incidences = new Map<string, number>();
@@ -121,18 +93,6 @@ export class ConnectivityService {
     }
 
     return [...incidences.values()].filter((count) => count === 1).length;
-  }
-
-  /** Whether the eastward edge leaving `column` is claimed by either of its two ends. */
-  private joinsEast(code: ParsedCode, level: number, column: number): boolean {
-    const point = this.codeService.directionsAt(code, level, column);
-    const eastward = this.codeService.directionsAt(
-      code,
-      level,
-      (column + 1) % code.columns,
-    );
-
-    return point.east || eastward.west;
   }
 
   /** Whether the southward edge leaving `(level, column)` is claimed by either of its two ends, reading past the last level as absent. */
@@ -161,8 +121,6 @@ export class ConnectivityService {
     ).flat();
   }
 
-  // 🌎 Public Methods
-
   /**
    * How many pieces one repeat's ink falls into, how many independent loops
    * it closes, and how many of its points terminate.
@@ -172,8 +130,8 @@ export class ConnectivityService {
    * satisfies, reported as a count here because a family is told from another
    * by how many loops it closes rather than only by whether it closes one.
    */
-  connectivity(code: ParsedCode): Connectivity {
-    const edges = this.edges(code);
+  connectivity(code: ParsedCode, unwrapped = false): Connectivity {
+    const edges = this.edges(code, unwrapped);
     const adjacency = this.adjacency(code, edges);
     const components = this.graphService.components(adjacency);
 
@@ -182,5 +140,50 @@ export class ConnectivityService {
       cycles: edges.length - adjacency.nodes.length + components,
       freeEnds: this.freeEnds(edges),
     };
+  }
+
+  /**
+   * Every edge the Code holds, each once, named by the two points it joins.
+   *
+   * An eastward edge wraps around the Code's own column span and a southward
+   * one stops at the last level — see this service's own doc comment for why
+   * the two directions differ.
+   */
+  edges(code: ParsedCode, unwrapped: boolean): CodeEdge[] {
+    const { columns, levels } = code;
+    const edges: CodeEdge[] = [];
+
+    for (let level = 0; level < levels; level += 1) {
+      for (let column = 0; column < columns; column += 1) {
+        const from = this.key(level, column);
+
+        if (
+          this.joinsEast(code, level, column) &&
+          (!unwrapped || column !== columns - 1)
+        ) {
+          edges.push({ from, to: this.key(level, (column + 1) % columns) });
+        }
+
+        if (this.joinsSouth(code, level, column)) {
+          edges.push({ from, to: this.key(level + 1, column) });
+        }
+      }
+    }
+
+    return edges;
+  }
+
+  // 🌎 Public Methods
+
+  /** Whether the eastward edge leaving `column` is claimed by either of its two ends. */
+  joinsEast(code: ParsedCode, level: number, column: number): boolean {
+    const point = this.codeService.directionsAt(code, level, column);
+    const eastward = this.codeService.directionsAt(
+      code,
+      level,
+      (column + 1) % code.columns,
+    );
+
+    return point.east || eastward.west;
   }
 }
