@@ -2,12 +2,9 @@
 
 /**
  * Every fact `CharacteristicsService.compute` derives directly from a
- * Code: the four raw junction counts spec #813 asks every
- * meander row to record, the two boolean Characteristics built from them,
+ * Code: the raw ink junction counts, the boolean Characteristics built from them,
  * and the three {@link Connectivity} counts that say what shape the
- * ink is as a graph. See `CharacteristicsService`'s own doc comment
- * for why `hasBranching` and `hasCrossing` each read both the ink and the
- * negative count rather than the ink count alone.
+ * ink is as a graph.
  */
 export interface Characteristics extends Connectivity {
   // Graph
@@ -55,8 +52,6 @@ export interface Characteristics extends Connectivity {
   readonly longestHorizontalRun: number;
   readonly longestVerticalRun: number;
 
-  readonly negativeTJunctions: number;
-  readonly negativeXJunctions: number;
   readonly oCount: number;
   readonly pitch: number;
 

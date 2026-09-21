@@ -52,8 +52,6 @@ export const CHARACTERISTIC_SOURCES: Record<
   // Runs
   longestHorizontalRun: "pattern",
   longestVerticalRun: "pattern",
-  negativeTJunctions: "pattern",
-  negativeXJunctions: "pattern",
   oCount: "pattern",
   pitch: "pattern",
   plusCount: "pattern",

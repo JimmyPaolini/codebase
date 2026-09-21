@@ -13,28 +13,6 @@ import { CharacteristicsShapeService } from "./characteristics-shape.service";
 import { CharacteristicsService } from "./characteristics.service";
 import { ConnectivityService } from "./connectivity.service";
 
-// 🔧 Configuration
-
-/**
- * A four-by-four Code of points, three-by-three cells wide — the smallest
- * square that gives one cell (the center) all four neighboring cells, and
- * so a chance to reach negative degree 4. Every point is bare except the
- * center, whose `east` bit `closeCenterEastCorridor` can set — closing the
- * one corridor shared between the center cell and the cell above it.
- *
- * With every point bare, every corridor is open by construction: a corner
- * cell has two neighboring cells, an edge cell three, and the center cell
- * all four, which is exactly what a plain count of lattice position predicts
- * with no ink drawn anywhere to close one.
- */
-const squareCode = (
-  options: { readonly closeCenterEastCorridor?: boolean } = {},
-): string =>
-  Array.from({ length: 16 }, (_unused, index) => {
-    if (index === 0) return "8"; // Make it irreducible without affecting east/south corridors
-    return index === 5 && options.closeCenterEastCorridor === true ? "2" : "0";
-  }).join("");
-
 // 🧪 Tests
 
 describe(CharacteristicsService, () => {
@@ -103,8 +81,6 @@ describe(CharacteristicsService, () => {
             "lCount": 0,
             "longestHorizontalRun": 0,
             "longestVerticalRun": 0,
-            "negativeTJunctions": 0,
-            "negativeXJunctions": 0,
             "oCount": 0,
             "pitch": 1,
             "plusCount": 0,
@@ -175,8 +151,6 @@ describe(CharacteristicsService, () => {
             "lCount": 0,
             "longestHorizontalRun": 0,
             "longestVerticalRun": 0,
-            "negativeTJunctions": 0,
-            "negativeXJunctions": 0,
             "oCount": 0,
             "pitch": 1,
             "plusCount": 0,
@@ -234,8 +208,6 @@ describe(CharacteristicsService, () => {
             "lCount": 0,
             "longestHorizontalRun": 1,
             "longestVerticalRun": 0,
-            "negativeTJunctions": 0,
-            "negativeXJunctions": 0,
             "oCount": 0,
             "pitch": 2,
             "plusCount": 0,
@@ -295,8 +267,6 @@ describe(CharacteristicsService, () => {
             "lCount": 0,
             "longestHorizontalRun": 1,
             "longestVerticalRun": 0,
-            "negativeTJunctions": 0,
-            "negativeXJunctions": 0,
             "oCount": 0,
             "pitch": 2,
             "plusCount": 0,
@@ -356,8 +326,6 @@ describe(CharacteristicsService, () => {
             "lCount": 0,
             "longestHorizontalRun": 0,
             "longestVerticalRun": 1,
-            "negativeTJunctions": 0,
-            "negativeXJunctions": 0,
             "oCount": 0,
             "pitch": 2,
             "plusCount": 0,
@@ -417,8 +385,6 @@ describe(CharacteristicsService, () => {
             "lCount": 0,
             "longestHorizontalRun": 0,
             "longestVerticalRun": 1,
-            "negativeTJunctions": 0,
-            "negativeXJunctions": 0,
             "oCount": 0,
             "pitch": 1,
             "plusCount": 0,
@@ -478,8 +444,6 @@ describe(CharacteristicsService, () => {
             "lCount": 1,
             "longestHorizontalRun": 1,
             "longestVerticalRun": 1,
-            "negativeTJunctions": 0,
-            "negativeXJunctions": 0,
             "oCount": 0,
             "pitch": 2,
             "plusCount": 0,
@@ -539,8 +503,6 @@ describe(CharacteristicsService, () => {
             "lCount": 0,
             "longestHorizontalRun": 1,
             "longestVerticalRun": 1,
-            "negativeTJunctions": 0,
-            "negativeXJunctions": 0,
             "oCount": 0,
             "pitch": 2,
             "plusCount": 0,
@@ -600,8 +562,6 @@ describe(CharacteristicsService, () => {
             "lCount": 0,
             "longestHorizontalRun": 1,
             "longestVerticalRun": 1,
-            "negativeTJunctions": 0,
-            "negativeXJunctions": 0,
             "oCount": 1,
             "pitch": 2,
             "plusCount": 0,
@@ -661,8 +621,6 @@ describe(CharacteristicsService, () => {
             "lCount": 0,
             "longestHorizontalRun": 1,
             "longestVerticalRun": 1,
-            "negativeTJunctions": 0,
-            "negativeXJunctions": 0,
             "oCount": 0,
             "pitch": 2,
             "plusCount": 1,
@@ -720,8 +678,6 @@ describe(CharacteristicsService, () => {
             "lCount": 0,
             "longestHorizontalRun": 1,
             "longestVerticalRun": 1,
-            "negativeTJunctions": 0,
-            "negativeXJunctions": 0,
             "oCount": 0,
             "pitch": 1,
             "plusCount": 0,
@@ -779,8 +735,6 @@ describe(CharacteristicsService, () => {
             "lCount": 0,
             "longestHorizontalRun": 1,
             "longestVerticalRun": 1,
-            "negativeTJunctions": 0,
-            "negativeXJunctions": 0,
             "oCount": 0,
             "pitch": 1,
             "plusCount": 0,
@@ -796,126 +750,6 @@ describe(CharacteristicsService, () => {
             "verticalDashCount": 0,
             "verticalPointCount": 0,
             "xCount": 1,
-          }
-        `);
-    });
-
-    it("counts a corner cell's two corridors, an edge cell's three, and the center cell's four, over a fully bare Code", () => {
-      expect(service.compute(codeService.parse(squareCode(), 4, 4)))
-        .toMatchInlineSnapshot(`
-          {
-            "componentCount": 16,
-            "components": 16,
-            "cornerCount": 0,
-            "crossesTheSeam": false,
-            "cycleCount": 0,
-            "cycles": 0,
-            "density": 0.0625,
-            "dotCount": 15,
-            "edgeCount": 0.5,
-            "embeddedOCount": 0,
-            "embeddedUCount": 0,
-            "endsAreLatticeNeighbors": false,
-            "endsOnBorderRules": false,
-            "freeEnds": 1,
-            "hasBranching": true,
-            "hasCrossing": true,
-            "hasDots": true,
-            "hasTJunctions": false,
-            "hasXJunctions": false,
-            "horizontalDashCount": 0,
-            "horizontalPointCount": 0,
-            "inkPointCount": 1,
-            "inkTJunctions": 0,
-            "inkXJunctions": 0,
-            "isClosedLoop": false,
-            "isConnected": false,
-            "isFlipSymmetric": false,
-            "isJunctionFree": true,
-            "isMirrorSymmetric": false,
-            "isReducible": false,
-            "isSingleArc": false,
-            "lCount": 0,
-            "longestHorizontalRun": 0,
-            "longestVerticalRun": 0,
-            "negativeTJunctions": 4,
-            "negativeXJunctions": 1,
-            "oCount": 0,
-            "pitch": 4,
-            "plusCount": 0,
-            "reversesAtItsTightestTurn": false,
-            "seamComponents": 0,
-            "seamCycles": 0,
-            "seamTJunctions": 0,
-            "seamXJunctions": 0,
-            "shapeICount": 0,
-            "tCount": 0,
-            "turnsMonotonically": false,
-            "uCount": 0,
-            "verticalDashCount": 0,
-            "verticalPointCount": 0,
-            "xCount": 0,
-          }
-        `);
-    });
-
-    it("closing one corridor turns the center cell's negative crossing into a negative branch, without touching the ink", () => {
-      const code = squareCode({ closeCenterEastCorridor: true });
-
-      expect(service.compute(codeService.parse(code, 4, 4)))
-        .toMatchInlineSnapshot(`
-          {
-            "componentCount": 15,
-            "components": 15,
-            "cornerCount": 0,
-            "crossesTheSeam": false,
-            "cycleCount": 0,
-            "cycles": 0,
-            "density": 0.125,
-            "dotCount": 14,
-            "edgeCount": 1,
-            "embeddedOCount": 0,
-            "embeddedUCount": 0,
-            "endsAreLatticeNeighbors": true,
-            "endsOnBorderRules": false,
-            "freeEnds": 2,
-            "hasBranching": true,
-            "hasCrossing": false,
-            "hasDots": true,
-            "hasTJunctions": false,
-            "hasXJunctions": false,
-            "horizontalDashCount": 0,
-            "horizontalPointCount": 0,
-            "inkPointCount": 2,
-            "inkTJunctions": 0,
-            "inkXJunctions": 0,
-            "isClosedLoop": false,
-            "isConnected": false,
-            "isFlipSymmetric": false,
-            "isJunctionFree": true,
-            "isMirrorSymmetric": false,
-            "isReducible": false,
-            "isSingleArc": false,
-            "lCount": 0,
-            "longestHorizontalRun": 1,
-            "longestVerticalRun": 0,
-            "negativeTJunctions": 4,
-            "negativeXJunctions": 0,
-            "oCount": 0,
-            "pitch": 4,
-            "plusCount": 0,
-            "reversesAtItsTightestTurn": false,
-            "seamComponents": 0,
-            "seamCycles": 0,
-            "seamTJunctions": 0,
-            "seamXJunctions": 0,
-            "shapeICount": 0,
-            "tCount": 0,
-            "turnsMonotonically": false,
-            "uCount": 0,
-            "verticalDashCount": 0,
-            "verticalPointCount": 0,
-            "xCount": 0,
           }
         `);
     });

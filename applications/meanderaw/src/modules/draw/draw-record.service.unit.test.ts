@@ -97,8 +97,6 @@ describe(DrawRecordService, () => {
             "lattice": "4488",
             "longestHorizontalRun": 0,
             "longestVerticalRun": 1,
-            "negativeTJunctions": 0,
-            "negativeXJunctions": 0,
             "oCount": 0,
             "pitch": 2,
             "plusCount": 0,

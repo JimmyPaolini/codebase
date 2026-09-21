@@ -17,40 +17,22 @@ import type {
   MutableHistogram,
 } from "./characteristics.types";
 
-/** * Computes the raw junction counts and boolean Characteristics spec #813
+/**
+ * Computes the raw ink junction counts and boolean Characteristics spec #813
  * asks every meander row to record, directly from a Code,
  * point by point — over the Code `CodeService.parse` already reads, with
- * no SVG and no rendering step anywhere in between. A retired reader did
- * the same two counts off a *rendered* SVG document, by rebuilding a
- * lattice from its path data; nothing reads a drawing now.
+ * no SVG and no rendering step anywhere in between.
+ *
  * **Ink junctions** need no adjacency lookup: a Code spells all four direction
  * bits out at every point rather than leaving north and west to be derived
  * from a neighbor (see `CodeService`'s own doc comment), so a
  * point's ink degree is simply how many of its own four bits are set.
- * **Negative (white-space) junctions** are still counted over the dual grid
- * of cells — a cell bounded by four lattice points has a corridor to a neighboring cell
- * wherever the ink edge between them is absent — but bounded by the Code's
- * own extent rather than a rendered canvas's: a cell on the Code's
- * own edge has fewer than four possible corridors, cropped relative to
- * where the Code itself stops rather than to a border rule a renderer draws
- * beyond it.
- * **`hasBranching` and `hasCrossing`** read *both* counts rather than the
- * ink count alone. Ink-only would read `false` across the whole historical
- * corpus, because a finished drawing never actually violates the charter's no-branching and
- * no-crossing invariants in its ink — two sub-families of `mosaic` "cross"
- * only in the negative space, and nowhere else — so a Characteristic meant
- * to flag that structure has to look at both.
+ *
+ * **`hasBranching` and `hasCrossing`** read the ink junction counts.
+ *
  * **Components, cycles, and free ends** are delegated whole to
  * `ConnectivityService`, which reads the same Code as a graph rather
- * than point by point. They are Characteristics for the same reason the
- * junction counts are: no charter invariant fixes them, and they are what
- * tells one family's structure from another's where the junction counts
- * agree. Measured over the committed corpus, a `snake` repeat is one piece
- * closing one loop with nothing terminating, a `boxes` repeat one piece
- * closing none with two ends, and a `parallel` repeat one piece per strand
- * plus one, each with two ends — three readings the junction counts call
- * identically and this one separates. `ClassificationService` is
- * where that separation is written down.
+ * than point by point.
  */
 @Injectable()
 export class CharacteristicsService {
@@ -138,54 +120,6 @@ export class CharacteristicsService {
     return freeEnds;
   }
 
-  /** Whether the cell at `(row, column)` has an open corridor east, into `(row, column + 1)`. */
-  private hasEastCorridor(
-    code: CodeObject,
-    row: number,
-    column: number,
-  ): boolean {
-    const cellColumns = code.columns - 1;
-
-    return (
-      column < cellColumns - 1 &&
-      !this.codeService.directionsAt(code, row, column + 1).south
-    );
-  }
-
-  /** Whether the cell at `(row, column)` has an open corridor north, into `(row - 1, column)`. */
-  private hasNorthCorridor(
-    code: CodeObject,
-    row: number,
-    column: number,
-  ): boolean {
-    return row > 0 && !this.codeService.directionsAt(code, row, column).east;
-  }
-
-  /** Whether the cell at `(row, column)` has an open corridor south, into `(row + 1, column)`. */
-  private hasSouthCorridor(
-    code: CodeObject,
-    row: number,
-    column: number,
-  ): boolean {
-    const cellRows = code.rows - 1;
-
-    return (
-      row < cellRows - 1 &&
-      !this.codeService.directionsAt(code, row + 1, column).east
-    );
-  }
-
-  /** Whether the cell at `(row, column)` has an open corridor west, into `(row, column - 1)`. */
-  private hasWestCorridor(
-    code: CodeObject,
-    row: number,
-    column: number,
-  ): boolean {
-    return (
-      column > 0 && !this.codeService.directionsAt(code, row, column).south
-    );
-  }
-
   /** How many of a point's four direction bits are set, read directly off the digit rather than derived from a neighbor's edge. */
   private inkDegree(point: Directions): number {
     return [point.east, point.north, point.south, point.west].filter(Boolean)
@@ -248,27 +182,6 @@ export class CharacteristicsService {
     }
 
     return maximumRun;
-  }
-
-  /**
-   * How many of a cell's up to four corridors to a neighboring cell are
-   * open, where the cell bounded by grid points `(row, column)`,
-   * `(row, column + 1)`, `(row + 1, column)`, and
-   * `(row + 1, column + 1)` is bounded rather than crossing off the
-   * Code's own extent, which is where a rendered canvas's edge used to be
-   * read off instead.
-   */
-  private negativeDegree(
-    code: CodeObject,
-    row: number,
-    column: number,
-  ): number {
-    return [
-      this.hasEastCorridor(code, row, column),
-      this.hasNorthCorridor(code, row, column),
-      this.hasSouthCorridor(code, row, column),
-      this.hasWestCorridor(code, row, column),
-    ].filter(Boolean).length;
   }
 
   /** Records one degree as a three-armed junction, a four-armed one, or neither. */
@@ -359,33 +272,16 @@ export class CharacteristicsService {
     return counts;
   }
 
-  /** The negative T-junction and X-junction counts over every cell of the lattice's dual. */
-  private tallyNegative(code: CodeObject): JunctionCounts {
-    const cellRows = code.rows - 1;
-    const cellColumns = code.columns - 1;
-    const counts: JunctionCounts = { tJunctions: 0, xJunctions: 0 };
-
-    for (let row = 0; row < cellRows; row += 1) {
-      for (let column = 0; column < cellColumns; column += 1) {
-        this.tally(counts, this.negativeDegree(code, row, column));
-      }
-    }
-
-    return counts;
-  }
-
   // 🌎 Public Methods
 
   /** Evaluates formalized family memberships for a Code. */
   public classifyFamilies(code: CodeObject): string[] {
     return this.familyService.classify(code);
   }
-
   /** Computes every characteristic for a given code. */
   public compute(code: CodeObject): Characteristics {
     const reduced = this.codeService.reduceToUnit(code);
     const ink = this.tallyInk(reduced);
-    const negative = this.tallyNegative(reduced);
 
     const wrappedGraph = this.meanderConnectivityService.connectivity(
       reduced,
@@ -428,8 +324,8 @@ export class CharacteristicsService {
       cycleCount: wrappedGraph.cycles,
       endsAreLatticeNeighbors,
       endsOnBorderRules,
-      hasBranching: ink.tJunctions > 0 || negative.tJunctions > 0,
-      hasCrossing: ink.xJunctions > 0 || negative.xJunctions > 0,
+      hasBranching: ink.tJunctions > 0,
+      hasCrossing: ink.xJunctions > 0,
       inkTJunctions: ink.tJunctions,
       inkXJunctions: ink.xJunctions,
       isClosedLoop:
@@ -448,8 +344,6 @@ export class CharacteristicsService {
         histogram.isJunctionFree,
       longestHorizontalRun: this.longestHorizontalRun(reduced),
       longestVerticalRun: this.longestVerticalRun(reduced),
-      negativeTJunctions: negative.tJunctions,
-      negativeXJunctions: negative.xJunctions,
       pitch: reduced.columns,
       reversesAtItsTightestTurn: pathProps.reversesAtItsTightestTurn,
       seamComponents: unwrappedGraph.components - wrappedGraph.components,
