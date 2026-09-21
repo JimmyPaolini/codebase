@@ -92,7 +92,7 @@ export class DrawRecordService {
       code: this.codeService.format(canonical),
       columns: canonical.columns,
       drawingHash,
-      families: [],
+      families: this.characteristicsService.classifyFamilies(canonical),
       lattice: canonical.digits,
       pitch: canonical.columns,
       provenance,

@@ -1,6 +1,7 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
+import { CharacteristicsFamilyService } from "../characteristics/characteristics-family.service";
 import { CharacteristicsPathService } from "../characteristics/characteristics-path.service";
 import { CharacteristicsShapeService } from "../characteristics/characteristics-shape.service";
 import { CharacteristicsService } from "../characteristics/characteristics.service";
@@ -31,6 +32,7 @@ describe(DrawRecordService, () => {
         DrawRecordService,
         GeometryService,
         CharacteristicsService,
+        CharacteristicsFamilyService,
         CharacteristicsPathService,
         CharacteristicsShapeService,
         ConnectivityService,
@@ -82,7 +84,9 @@ describe(DrawRecordService, () => {
             "edgeCount": 1,
             "embeddedOCount": 0,
             "embeddedUCount": 0,
-            "families": [],
+            "families": [
+              "bars",
+            ],
             "freeEnds": 2,
             "horizontalDashCount": 0,
             "horizontalPointCount": 0,
@@ -113,6 +117,18 @@ describe(DrawRecordService, () => {
             "xCount": 0,
           }
         `);
+    });
+
+    it("records earned families for lines, dots, and mesh codes", () => {
+      expect(
+        service.record("3333", { columns: 2, rows: 3 }, "enumerated").families,
+      ).toStrictEqual(["lines"]);
+      expect(
+        service.record("0000", { columns: 2, rows: 3 }, "enumerated").families,
+      ).toStrictEqual(["dots"]);
+      expect(
+        service.record("77bb", { columns: 2, rows: 3 }, "enumerated").families,
+      ).toStrictEqual(["mesh"]);
     });
 
     it("records empty families and specific characteristics where a Code's structure earns them", () => {

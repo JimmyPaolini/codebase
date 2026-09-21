@@ -3,6 +3,7 @@ import { Module } from "@nestjs/common";
 import { CodeModule } from "../code/code.module";
 import { GraphModule } from "../graph/graph.module";
 
+import { CharacteristicsFamilyService } from "./characteristics-family.service";
 import { CharacteristicsPathService } from "./characteristics-path.service";
 import { CharacteristicsShapeService } from "./characteristics-shape.service";
 import { CharacteristicsService } from "./characteristics.service";
@@ -24,9 +25,14 @@ import { ConnectivityService } from "./connectivity.service";
  */
 @Module({
   controllers: [],
-  exports: [CharacteristicsService, ConnectivityService],
+  exports: [
+    CharacteristicsFamilyService,
+    CharacteristicsService,
+    ConnectivityService,
+  ],
   imports: [CodeModule, GraphModule],
   providers: [
+    CharacteristicsFamilyService,
     CharacteristicsPathService,
     CharacteristicsShapeService,
     CharacteristicsService,

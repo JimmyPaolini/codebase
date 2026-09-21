@@ -225,11 +225,22 @@ describe("drawCommand sweep mode", () => {
       const rows = await repository.findBy({ provenance: "hardcoded" });
 
       const filed = new Set<string>(CORPUS_FAMILIES);
+      const validFamilies = new Set<string>([
+        ...CORPUS_FAMILIES,
+        "bars",
+        "dots",
+        "lines",
+        "mesh",
+      ]);
 
       expect(rows.length).toBeGreaterThan(0);
-      expect(rows.every((row) => row.families.every((f) => filed.has(f)))).toBe(
-        true,
-      );
+      expect(
+        rows.every(
+          (row) =>
+            row.families.some((f) => filed.has(f)) &&
+            row.families.every((f) => validFamilies.has(f)),
+        ),
+      ).toBe(true);
     },
     SWEEP_TIMEOUT_MILLISECONDS,
   );

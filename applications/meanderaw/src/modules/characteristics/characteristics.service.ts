@@ -6,6 +6,7 @@ import {
 
 import { CodeService } from "../code/code.service";
 
+import { CharacteristicsFamilyService } from "./characteristics-family.service";
 import { CharacteristicsPathService } from "./characteristics-path.service";
 import { CharacteristicsShapeService } from "./characteristics-shape.service";
 import { ConnectivityService } from "./connectivity.service";
@@ -63,6 +64,8 @@ export class CharacteristicsService {
   constructor(
     @Inject(forwardReference(() => CodeService))
     private readonly codeService: ICodeService,
+    @Inject(CharacteristicsFamilyService)
+    private readonly familyService: CharacteristicsFamilyService,
     @Inject(ConnectivityService)
     private readonly meanderConnectivityService: ConnectivityService,
     @Inject(CharacteristicsPathService)
@@ -380,6 +383,11 @@ export class CharacteristicsService {
     }
 
     return counts;
+  }
+
+  /** Evaluates formalized family memberships for a Code. */
+  public classifyFamilies(code: ParsedCode): string[] {
+    return this.familyService.classify(code);
   }
 
   /** Computes every characteristic for a given code. */

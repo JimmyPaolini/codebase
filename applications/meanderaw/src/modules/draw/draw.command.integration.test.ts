@@ -6,6 +6,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { LoggerService } from "@codebase/logger";
 
+import { CharacteristicsFamilyService } from "../characteristics/characteristics-family.service";
 import { CharacteristicsPathService } from "../characteristics/characteristics-path.service";
 import { CharacteristicsShapeService } from "../characteristics/characteristics-shape.service";
 import { CharacteristicsService } from "../characteristics/characteristics.service";
@@ -67,6 +68,7 @@ describe("drawCommand --code mode", () => {
         },
         GeometryService,
         CharacteristicsService,
+        CharacteristicsFamilyService,
         CharacteristicsPathService,
         CharacteristicsShapeService,
         ConnectivityService,

@@ -7,6 +7,7 @@ import { GraphService } from "../graph/graph.service";
 import { SymmetryService } from "../symmetry/symmetry.service";
 import { TileService } from "../tile/tile.service";
 
+import { CharacteristicsFamilyService } from "./characteristics-family.service";
 import { CharacteristicsPathService } from "./characteristics-path.service";
 import { CharacteristicsShapeService } from "./characteristics-shape.service";
 import { CharacteristicsService } from "./characteristics.service";
@@ -46,6 +47,7 @@ describe(CharacteristicsService, () => {
         CodeService,
         GraphService,
         CharacteristicsService,
+        CharacteristicsFamilyService,
         ConnectivityService,
         CharacteristicsPathService,
         CharacteristicsShapeService,
@@ -932,6 +934,18 @@ describe(CharacteristicsService, () => {
 
       expect(result.longestHorizontalRun).toBe(1);
       expect(result.longestVerticalRun).toBe(0);
+    });
+  });
+
+  describe("classifyFamilies", () => {
+    it("delegates family classification to CharacteristicsFamilyService", () => {
+      const linesCode = codeService.parse("3333", 3, 2);
+
+      expect(service.classifyFamilies(linesCode)).toStrictEqual(["lines"]);
+
+      const dotsCode = codeService.parse("0000", 3, 2);
+
+      expect(service.classifyFamilies(dotsCode)).toStrictEqual(["dots"]);
     });
   });
 
