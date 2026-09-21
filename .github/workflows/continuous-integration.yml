@@ -9,11 +9,6 @@ on:
       - opened
       - reopened
       - synchronize
-      - edited
-      - labeled
-      - unlabeled
-      - assigned
-      - unassigned
   merge_group:
   workflow_dispatch:
     inputs:
@@ -63,9 +58,6 @@ jobs:
           - target: secure-code
             name: Secure
             emoji: 🕵️
-          - target: comply-code
-            name: Comply
-            emoji: 🧑‍⚖️
           - target: build-projects
             name: Build
             emoji: 👷
@@ -77,21 +69,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           HEAD_BRANCH: ${{ github.head_ref }}
           EVENT_NAME: ${{ github.event_name }}
-          EVENT_ACTION: ${{ github.event.action }}
-          TARGET: ${{ matrix.check.target }}
         run: |
-          if [ "$EVENT_NAME" = "pull_request" ] && [ "$TARGET" != "judge-conventions" ]; then
-            case "$EVENT_ACTION" in
-              opened|reopened|synchronize)
-                ;;
-              *)
-                echo "⏭️ Skipping $TARGET on PR $EVENT_ACTION event."
-                echo "skip=true" >> "$GITHUB_OUTPUT"
-                exit 0
-                ;;
-            esac
-          fi
-
           if [ "$EVENT_NAME" = "pull_request" ]; then
             RUNS_ENDPOINT="repos/${{ github.repository }}/actions"
             RUNS_ENDPOINT="${RUNS_ENDPOINT}/workflows/continuous-integration.yml"
@@ -121,13 +99,11 @@ jobs:
           gitleaks: ${{ matrix.check.target == 'secure-code' && 'true' || 'false' }}
           trivy: ${{ matrix.check.target == 'secure-code' && 'true' || 'false' }}
           python-dependencies: >-
-            ${{ (matrix.check.target == 'build-projects' ||
-            matrix.check.target == 'comply-code') && 'false' || 'true' }}
-          uv: ${{ matrix.check.target == 'comply-code' && 'false' || 'true' }}
-          nx-cache: ${{ matrix.check.target == 'comply-code' && 'false' || 'true' }}
-          nx-graph-cache: >-
-            ${{ matrix.check.target == 'comply-code' && 'false' || 'true' }}
-          nx-shas: ${{ matrix.check.target == 'comply-code' && 'false' || 'true' }}
+            ${{ matrix.check.target != 'build-projects' && 'true' || 'false' }}
+          uv: "true"
+          nx-cache: "true"
+          nx-graph-cache: "true"
+          nx-shas: "true"
           eslint-cache: ${{ matrix.check.target == 'lint-code' && 'true' || 'false' }}
 
       - name: ${{ matrix.check.emoji }} ${{ matrix.check.name }}
@@ -136,17 +112,10 @@ jobs:
         continue-on-error: ${{ matrix.check.target == 'build-projects' }}
         env:
           NX_VERBOSE_LOGGING: ${{ inputs.verbose || false }}
-          BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
-          PULL_REQUEST_TITLE: ${{ github.event.pull_request.title }}
-          PULL_REQUEST_NUMBER: ${{ github.event.pull_request.number }}
-          GH_TOKEN: ${{ github.token }}
-          GITHUB_ACTOR: ${{ github.actor }}
-          GITHUB_EVENT_NAME: ${{ github.event_name }}
         run: |
           TARGET="${{ matrix.check.target }}"
-          if [[ "${TARGET}" == "comply-code" || "${TARGET}" == "secure-code" ]]; then
-            [[ "${TARGET}" == "secure-code" ]] && TARGET="secure-code-ci"
-            pnpm exec nx run codebase:${TARGET}
+          if [ "${TARGET}" == "secure-code" ]; then
+            pnpm exec nx run codebase:secure-code-ci
           elif [ "${TARGET}" == "test-code" ]; then
             pnpm exec nx affected --target=test-code \
               --configuration=coverage --parallel=4
@@ -176,7 +145,6 @@ jobs:
         if: always() && steps.check-skip.outputs.skip != 'true'
         uses: ./.github/actions/cleanup-codebase
         with:
-          nx-cache: >-
-            ${{ matrix.check.target == 'judge-conventions' && 'false' || 'true' }}
+          nx-cache: "true"
           nx-cache-primary-key: ${{ steps.setup.outputs.nx-cache-primary-key }}
           eslint-cache: ${{ matrix.check.target == 'lint-code' && 'true' || 'false' }}
