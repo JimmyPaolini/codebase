@@ -309,7 +309,7 @@ graph LR
 ```
 <!-- codependix:end name="codependix-file-imports" -->
 
-<!-- CALL_STACKS_START -->
+<!-- callidescope:start -->
 
 ## 🔭 Callidescope
 
@@ -514,9 +514,9 @@ What this project is judged against, as declared in its own `callidescope.config
 | `MapCommand.parseWrite` | 1 | `ConfigurationService.parseFlagOption` | `packages/ic-suite/codependix/codependix-cli/src/modules/map/map.command.ts:355` |
 
 </details>
-<!-- CALL_STACKS_END -->
+<!-- callidescope:end -->
 
-<!-- CODE_STATISTICS_START -->
+<!-- codometer:start -->
 
 ## ⏲️ Codometer
 
@@ -730,4 +730,4 @@ What this project is judged against, as declared in its own `callidescope.config
 ![Inline Code](https://img.shields.io/badge/Inline_Code-78-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-0-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-0-a16207?style=flat-square)
-<!-- CODE_STATISTICS_END -->
+<!-- codometer:end -->

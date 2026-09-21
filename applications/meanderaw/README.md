@@ -1996,7 +1996,7 @@ likeness. Every figure in this section is the expected value of an assertion.
 
 This project was generated from the [nestjs-command-project](../../configuration/conformetry-templates/nestjs-command-project) conformetry template.
 
-<!-- CALL_STACKS_START -->
+<!-- callidescope:start -->
 
 ## 🔭 Callidescope
 
@@ -2004,13 +2004,13 @@ Call stacks traced through `applications/meanderaw`, deepest first. Each frame s
 
 | Measure | Value |
 | --- | --- |
-| Callables | 235 |
+| Callables | 240 |
 | Files | 83 |
-| Calls traced | 288 |
+| Calls traced | 297 |
 | Call stacks | 8 |
 | Deepest stack | 16 |
 | Stacks through recursion | 0 |
-| Unfollowable calls | 14 |
+| Unfollowable calls | 15 |
 
 ### Limits
 
@@ -2026,7 +2026,7 @@ What this project is judged against, as declared in its own `callidescope.config
 **1. `DrawCommand.run`** — depth ≥ 16 · decorated-method
 
 ```text
-🚀 DrawCommand.run(_passedParameters: string[], options: DrawCommandOptions): Promise<void> [applications/meanderaw/src/modules/draw/draw.command.ts:225]
+🚀 DrawCommand.run(_passedParameters: string[], options: DrawCommandOptions): Promise<void> [applications/meanderaw/src/modules/draw/draw.command.ts:229]
    ↳ Checks for drift when `--check` is given, sweeps every meander into the database when no Code is named, or draws the…
   └─> DrawCheckService.check(): Promise<MeanderDriftReport> [applications/meanderaw/src/modules/draw/draw-check.service.ts:162]
      ↳ Regenerates the whole corpus into a throwaway database, diffs it against the committed one, and throws {@link…
@@ -2060,7 +2060,7 @@ What this project is judged against, as declared in its own `callidescope.config
 **2. `CodeService.spellCanonical`** — depth 8 · orphan-root
 
 ```text
-🚀 CodeService.spellCanonical(tile: Tile): string [applications/meanderaw/src/modules/code/code.service.ts:261]
+🚀 CodeService.spellCanonical(tile: Tile, repeats?: number): string [applications/meanderaw/src/modules/code/code.service.ts:323]
    ↳ The Code every tile in a symmetry class shares: {@link spell} of the one member `SymmetryService.canonicalTile` picks.
   └─> SymmetryService.canonicalTile(tile: Tile): Tile [applications/meanderaw/src/modules/symmetry/symmetry.service.ts:174]
      ↳ The one tile of a symmetry class the corpus draws.
@@ -2097,13 +2097,13 @@ What this project is judged against, as declared in its own `callidescope.config
 **4. `CodeService.tile`** — depth 5 · orphan-root
 
 ```text
-🚀 CodeService.tile(code: ParsedCode): Tile [applications/meanderaw/src/modules/code/code.service.ts:276]
+🚀 CodeService.tile(code: ParsedCode): Tile [applications/meanderaw/src/modules/code/code.service.ts:338]
    ↳ The tile a Code names, as the tile vocabulary rather than a point at a time — {@link spell} read backwards.
-  └─> CodeService.from(…)(_level: unknown, level: number): Directions[] [applications/meanderaw/src/modules/code/code.service.ts:281]
-    └─> CodeService.from(…)(_column: unknown, column: number): Directions [applications/meanderaw/src/modules/code/code.service.ts:282]
-      └─> CodeService.directionsAt(code: ParsedCode, level: number, column: number): Directions [applications/meanderaw/src/modules/code/code.service.ts:129]
+  └─> CodeService.from(…)(_level: unknown, level: number): Directions[] [applications/meanderaw/src/modules/code/code.service.ts:343]
+    └─> CodeService.from(…)(_column: unknown, column: number): Directions [applications/meanderaw/src/modules/code/code.service.ts:344]
+      └─> CodeService.directionsAt(code: ParsedCode, level: number, column: number): Directions [applications/meanderaw/src/modules/code/code.service.ts:182]
          ↳ The four direction bits the point at `(level, column)` carries, read off the single character at `level * columns +…
-        └─> CodeService.decode(value: number): Directions [applications/meanderaw/src/modules/code/code.service.ts:63]
+        └─> CodeService.decode(value: number): Directions [applications/meanderaw/src/modules/code/code.service.ts:65]
            ↳ One digit's four direction bits, worth `8` north, `4` south, `2` east, `1` west.
 ```
 
@@ -2122,11 +2122,11 @@ What this project is judged against, as declared in its own `callidescope.config
 **6. `CodeService.anonymous`** — depth 4 · orphan-root
 
 ```text
-🚀 CodeService.anonymous(c: ParsedCode): ParsedCode[] [applications/meanderaw/src/modules/code/code.service.ts:98]
-  └─> CodeService.from(…)(_: unknown, index: number): ParsedCode [applications/meanderaw/src/modules/code/code.service.ts:99]
-    └─> CodeService.rotate(code: ParsedCode, shift: number): ParsedCode [applications/meanderaw/src/modules/code/code.service.ts:212]
+🚀 CodeService.anonymous(c: ParsedCode): ParsedCode[] [applications/meanderaw/src/modules/code/code.service.ts:151]
+  └─> CodeService.from(…)(_: unknown, index: number): ParsedCode [applications/meanderaw/src/modules/code/code.service.ts:152]
+    └─> CodeService.rotate(code: ParsedCode, shift: number): ParsedCode [applications/meanderaw/src/modules/code/code.service.ts:277]
        ↳ The Code shifted `shift` columns west, wrapping each level around its own span — the same band cut at a different place.
-      └─> CodeService.from(…)(_unused: unknown, level: number): string [applications/meanderaw/src/modules/code/code.service.ts:215]
+      └─> CodeService.from(…)(_unused: unknown, level: number): string [applications/meanderaw/src/modules/code/code.service.ts:280]
 ```
 
 **7. `TileEnumerationService.isMatching`** — depth 3 · orphan-root
@@ -2156,35 +2156,36 @@ What this project is judged against, as declared in its own `callidescope.config
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
 | `CharacteristicsService.compute` | 14 | `CodeService.reduceToUnit`, `CharacteristicsService.tallyInk`, `CharacteristicsService.tallyNegative`, `ConnectivityService.connectivity`, `ConnectivityService.edges`, `CharacteristicsService.countJunctions`, `CharacteristicsService.tallyHistogram`, `CharacteristicsShapeService.tallyUnitShapes`, `CharacteristicsService.findFreeEnds`, `CharacteristicsService.every(…)`, `CharacteristicsService.checkEndsAreLatticeNeighbors`, `CharacteristicsPathService.analyzePaths`, `CharacteristicsService.longestHorizontalRun`, `CharacteristicsService.longestVerticalRun` | `applications/meanderaw/src/modules/characteristics/characteristics.service.ts:386` |
-| `CorpusService.ingestOne` | 11 | `CodeService.parse`, `CorpusService.canonicalPhase(…)`, `CodeService.canonicalPhase`, `DrawingService.render`, `CharacteristicsService.compute`, `CorpusService.map(…)`, `CorpusService.filter(…)`, `CorpusService.filter(…)`, `DatabaseService.findOneByLattice`, `DatabaseService.save`, `DuplicateCorpusCodeError.constructor` | `applications/meanderaw/src/modules/corpus/corpus.service.ts:86` |
-| `DrawRecordService.record` | 8 | `CodeService.parse`, `DrawRecordService.canonicalPhase(…)`, `CodeService.canonicalPhase`, `CharacteristicsService.compute`, `DrawRecordService.map(…)`, `DrawRecordService.filter(…)`, `DrawRecordService.filter(…)`, `DrawingService.render` | `applications/meanderaw/src/modules/draw/draw-record.service.ts:55` |
+| `CorpusService.ingestOne` | 12 | `CodeService.parse`, `CorpusService.canonicalPhase(…)`, `CodeService.canonicalPhase`, `DrawingService.render`, `CharacteristicsService.compute`, `CorpusService.map(…)`, `CorpusService.filter(…)`, `CorpusService.filter(…)`, `DatabaseService.findOneByLattice`, `DatabaseService.save`, `CodeService.format`, `DuplicateCorpusCodeError.constructor` | `applications/meanderaw/src/modules/corpus/corpus.service.ts:86` |
+| `DrawRecordService.record` | 9 | `CodeService.parse`, `DrawRecordService.canonicalPhase(…)`, `CodeService.canonicalPhase`, `CharacteristicsService.compute`, `DrawRecordService.map(…)`, `DrawRecordService.filter(…)`, `DrawRecordService.filter(…)`, `DrawingService.render`, `CodeService.format` | `applications/meanderaw/src/modules/draw/draw-record.service.ts:54` |
 
 <details>
-<summary>130 more callables</summary>
+<summary>133 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
 | `TileEnumerationService.enumerate` | 7 | `TileEnumerationService.isAdmitted`, `OversizedTileError.constructor`, `TileEnumerationService.edges`, `TileService.blankEdges`, `TileEnumerationService.assign`, `TileEnumerationService.map(…)`, `TileEnumerationService.toSorted(…)` | `applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:184` |
-| `DrawingService.render` | 5 | `GeometryService.compute`, `DrawingService.codeSegments`, `GeometryService.borderPath`, `SvgService.render`, `DrawingService.format` | `applications/meanderaw/src/modules/drawing/drawing.service.ts:116` |
+| `DrawingService.render` | 5 | `GeometryService.compute`, `DrawingService.codeSegments`, `GeometryService.borderPath`, `SvgService.render`, `DrawingService.format` | `applications/meanderaw/src/modules/drawing/drawing.service.ts:123` |
 | `DrawCheckService.check` | 5 | `DrawEnumerationService.sweep`, `CorpusService.ingest`, `DrawCheckService.diff`, `DrawCheckService.hasDrift`, `MeanderDriftDetectedError.constructor` | `applications/meanderaw/src/modules/draw/draw-check.service.ts:162` |
 | `DrawIndexService.renderBand` | 5 | `GeometryService.compute`, `DrawIndexService.format`, `CodeService.parse`, `DrawingService.render`, `DrawIndexService.renderRepeats` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:153` |
 | `DrawIndexService.render` | 5 | `DrawIndexService.groupByFamily`, `DrawIndexService.renderContents`, `DrawIndexService.label`, `DrawIndexService.escape`, `DrawIndexService.renderSection` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:276` |
 | `SymmetryService.transform` | 4 | `TileService.edges`, `TileService.blankEdges`, `SymmetryService.place`, `TileService.build` | `applications/meanderaw/src/modules/symmetry/symmetry.service.ts:145` |
 | `ConnectivityService.connectivity` | 4 | `ConnectivityService.edges`, `ConnectivityService.adjacency`, `GraphService.components`, `ConnectivityService.freeEnds` | `applications/meanderaw/src/modules/characteristics/connectivity.service.ts:134` |
-| `CharacteristicsPathService.traceSinglePath` | 4 | `CharacteristicsPathService.findStartNode`, `CharacteristicsPathService.findNextNode`, `CharacteristicsPathService.advancePath`, `CharacteristicsPathService.checkFinalLoopTurn` | `applications/meanderaw/src/modules/characteristics/characteristics-path.service.ts:247` |
+| `CharacteristicsPathService.traceSinglePath` | 4 | `CharacteristicsPathService.findStartNode`, `CharacteristicsPathService.findNextNode`, `CharacteristicsPathService.advancePath`, `CharacteristicsPathService.checkFinalLoopTurn` | `applications/meanderaw/src/modules/characteristics/characteristics-path.service.ts:223` |
 | `CharacteristicsService.negativeDegree` | 4 | `CharacteristicsService.hasEastCorridor`, `CharacteristicsService.hasNorthCorridor`, `CharacteristicsService.hasSouthCorridor`, `CharacteristicsService.hasWestCorridor` | `applications/meanderaw/src/modules/characteristics/characteristics.service.ts:265` |
 | `TileEnumerationService.assign` | 4 | `TileEnumerationService.edges`, `TileEnumerationService.record`, `TileEnumerationService.set`, `TileEnumerationService.clear` | `applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:113` |
 | `DrawIndexService.renderSection` | 4 | `DrawIndexService.escape`, `DrawIndexService.label`, `DrawIndexService.renderUnclassifiedSection`, `DrawIndexService.map(…)` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:198` |
+| `CodeService.parse` | 3 | `CodeService.parseFormatted`, `CodeService.parseBare`, `InvalidCodeFormatError.constructor` | `applications/meanderaw/src/modules/code/code.service.ts:216` |
 | `ConnectivityService.edges` | 3 | `ConnectivityService.key`, `ConnectivityService.joinsEast`, `ConnectivityService.joinsSouth` | `applications/meanderaw/src/modules/characteristics/connectivity.service.ts:153` |
 | `CharacteristicsPathService.advancePath` | 3 | `CharacteristicsPathService.getDirection`, `CharacteristicsPathService.applyTurn`, `CharacteristicsPathService.findNextNode` | `applications/meanderaw/src/modules/characteristics/characteristics-path.service.ts:24` |
-| `CharacteristicsPathService.findNextNode` | 3 | `CharacteristicsPathService.getNeighbors`, `CharacteristicsPathService.find(…)`, `CharacteristicsPathService.find(…)` | `applications/meanderaw/src/modules/characteristics/characteristics-path.service.ts:139` |
-| `CharacteristicsPathService.analyzePaths` | 3 | `ConnectivityService.edges`, `CharacteristicsPathService.buildAdjacencyGraph`, `CharacteristicsPathService.tracePaths` | `applications/meanderaw/src/modules/characteristics/characteristics-path.service.ts:305` |
+| `CharacteristicsPathService.findNextNode` | 3 | `CharacteristicsPathService.getNeighbors`, `CharacteristicsPathService.find(…)`, `CharacteristicsPathService.find(…)` | `applications/meanderaw/src/modules/characteristics/characteristics-path.service.ts:115` |
+| `CharacteristicsPathService.analyzePaths` | 3 | `ConnectivityService.edges`, `CharacteristicsPathService.buildAdjacencyGraph`, `CharacteristicsPathService.tracePaths` | `applications/meanderaw/src/modules/characteristics/characteristics-path.service.ts:281` |
 | `CharacteristicsService.tallyInk` | 3 | `CharacteristicsService.tally`, `CharacteristicsService.inkDegree`, `CodeService.directionsAt` | `applications/meanderaw/src/modules/characteristics/characteristics.service.ts:355` |
 | `TileEnumerationService.record` | 3 | `TileService.build`, `SymmetryService.canonicalTile`, `SymmetryService.edgeKey` | `applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:148` |
 | `MeanderDriftDetectedError.describe` | 3 | `MeanderDriftDetectedError.map(…)`, `MeanderDriftDetectedError.map(…)`, `MeanderDriftDetectedError.map(…)` | `applications/meanderaw/src/modules/draw/draw-check.constants.ts:72` |
 | `DrawCheckService.diff` | 3 | `DrawCheckService.index`, `DrawCheckService.findNewAndChanged`, `DrawCheckService.findMissing` | `applications/meanderaw/src/modules/draw/draw-check.service.ts:204` |
-| `DrawCommand.sweep` | 3 | `DrawEnumerationService.sweep`, `CorpusService.ingest`, `DrawIndexService.build` | `applications/meanderaw/src/modules/draw/draw.command.ts:134` |
-| `DrawCommand.run` | 3 | `DrawCheckService.check`, `DrawCommand.sweep`, `DrawCommand.runCodeDrawing` | `applications/meanderaw/src/modules/draw/draw.command.ts:225` |
+| `DrawCommand.sweep` | 3 | `DrawEnumerationService.sweep`, `CorpusService.ingest`, `DrawIndexService.build` | `applications/meanderaw/src/modules/draw/draw.command.ts:138` |
+| `DrawCommand.run` | 3 | `DrawCheckService.check`, `DrawCommand.sweep`, `DrawCommand.runCodeDrawing` | `applications/meanderaw/src/modules/draw/draw.command.ts:229` |
 | `TileService.assertPointAgrees` | 2 | `MalformedTileError.constructor`, `TileService.assertPointJoinsBelow` | `applications/meanderaw/src/modules/tile/tile.service.ts:50` |
 | `TileService.assertWellFormed` | 2 | `MalformedTileError.constructor`, `TileService.assertPointAgrees` | `applications/meanderaw/src/modules/tile/tile.service.ts:120` |
 | `TileService.from(…)` | 2 | `TileService.horizontal`, `TileService.vertical` | `applications/meanderaw/src/modules/tile/tile.service.ts:168` |
@@ -2194,17 +2195,18 @@ What this project is judged against, as declared in its own `callidescope.config
 | `SymmetryService.canonicalTile` | 2 | `SymmetryService.signature`, `SymmetryService.orbit` | `applications/meanderaw/src/modules/symmetry/symmetry.service.ts:174` |
 | `SymmetryService.edgeKey` | 2 | `TileService.edges`, `SymmetryService.flatMap(…)` | `applications/meanderaw/src/modules/symmetry/symmetry.service.ts:202` |
 | `SymmetryService.variants` | 2 | `SymmetryService.orbit`, `SymmetryService.edgeKey` | `applications/meanderaw/src/modules/symmetry/symmetry.service.ts:219` |
-| `CodeService.parse` | 2 | `InvalidCodeLengthError.constructor`, `InvalidCodeCharacterError.constructor` | `applications/meanderaw/src/modules/code/code.service.ts:149` |
-| `CodeService.spellCanonical` | 2 | `CodeService.spell`, `SymmetryService.canonicalTile` | `applications/meanderaw/src/modules/code/code.service.ts:261` |
+| `CodeService.validateDigits` | 2 | `InvalidCodeLengthError.constructor`, `InvalidCodeCharacterError.constructor` | `applications/meanderaw/src/modules/code/code.service.ts:127` |
+| `CodeService.spell` | 2 | `CodeService.flatMap(…)`, `CodeService.format` | `applications/meanderaw/src/modules/code/code.service.ts:295` |
+| `CodeService.spellCanonical` | 2 | `CodeService.spell`, `SymmetryService.canonicalTile` | `applications/meanderaw/src/modules/code/code.service.ts:323` |
 | `ConnectivityService.freeEnds` | 2 | `ConnectivityService.bump`, `ConnectivityService.filter(…)` | `applications/meanderaw/src/modules/characteristics/connectivity.service.ts:85` |
 | `CharacteristicsShapeService.tallyUnitShapes` | 2 | `CharacteristicsShapeService.tallyIsolatedShapes`, `CharacteristicsShapeService.tallyEmbeddedShapes` | `applications/meanderaw/src/modules/characteristics/characteristics-shape.service.ts:97` |
 | `CharacteristicsService.tallyNegative` | 2 | `CharacteristicsService.tally`, `CharacteristicsService.negativeDegree` | `applications/meanderaw/src/modules/characteristics/characteristics.service.ts:371` |
 | `DrawingService.codeSegments` | 2 | `DrawingService.pointSegments`, `CodeService.directionsAt` | `applications/meanderaw/src/modules/drawing/drawing.service.ts:54` |
-| `DrawingService.pointSegments` | 2 | `DrawingService.format`, `DrawingService.isBare` | `applications/meanderaw/src/modules/drawing/drawing.service.ts:86` |
+| `DrawingService.pointSegments` | 2 | `DrawingService.format`, `DrawingService.isBare` | `applications/meanderaw/src/modules/drawing/drawing.service.ts:93` |
 | `TileEnumerationService.set` | 2 | `TileEnumerationService.address`, `TileService.mark` | `applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:160` |
 | `EnumerationService.enumerate` | 2 | `EnumerationService.map(…)`, `TileEnumerationService.enumerate` | `applications/meanderaw/src/modules/enumeration/enumeration.service.ts:101` |
 | `EnumerationService.shapes` | 2 | `EnumerationService.isAdmitted`, `TileEnumerationService.maximumColumns` | `applications/meanderaw/src/modules/enumeration/enumeration.service.ts:132` |
-| `CorpusService.ingest` | 2 | `CorpusService.filter(…)`, `CorpusService.ingestOne` | `applications/meanderaw/src/modules/corpus/corpus.service.ts:154` |
+| `CorpusService.ingest` | 2 | `CorpusService.filter(…)`, `CorpusService.ingestOne` | `applications/meanderaw/src/modules/corpus/corpus.service.ts:159` |
 | `DrawEnumerationService.persist` | 2 | `DatabaseService.saveAll`, `DrawEnumerationService.records` | `applications/meanderaw/src/modules/draw/draw-enumeration.service.ts:60` |
 | `DrawEnumerationService.records` | 2 | `DrawEnumerationService.map(…)`, `EnumerationService.enumerate` | `applications/meanderaw/src/modules/draw/draw-enumeration.service.ts:71` |
 | `DrawEnumerationService.sweep` | 2 | `DrawEnumerationService.persist`, `EnumerationService.shapes` | `applications/meanderaw/src/modules/draw/draw-enumeration.service.ts:80` |
@@ -2216,7 +2218,7 @@ What this project is judged against, as declared in its own `callidescope.config
 | `DrawIndexService.renderUnclassifiedSection` | 2 | `DrawIndexService.toSorted(…)`, `DrawIndexService.map(…)` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:219` |
 | `DrawIndexService.map(…)` | 2 | `DrawIndexService.toSorted(…)`, `DrawIndexService.map(…)` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:242` |
 | `DrawIndexService.build` | 2 | `DrawIndexService.render`, `DatabaseService.findAll` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:268` |
-| `DrawCommand.runCodeDrawing` | 2 | `IncompleteCodeDrawingError.constructor`, `DrawCodeService.draw` | `applications/meanderaw/src/modules/draw/draw.command.ts:103` |
+| `DrawCommand.runCodeDrawing` | 2 | `IncompleteCodeDrawingError.constructor`, `DrawCodeService.draw` | `applications/meanderaw/src/modules/draw/draw.command.ts:104` |
 | `TileService.assertPointJoinsBelow` | 1 | `MalformedTileError.constructor` | `applications/meanderaw/src/modules/tile/tile.service.ts:72` |
 | `TileService.blankEdges` | 1 | `TileService.grid` | `applications/meanderaw/src/modules/tile/tile.service.ts:143` |
 | `TileService.grid` | 1 | `TileService.from(…)` | `applications/meanderaw/src/modules/tile/tile.service.ts:145` |
@@ -2231,16 +2233,17 @@ What this project is judged against, as declared in its own `callidescope.config
 | `SymmetryService.flatMap(…)` | 1 | `SymmetryService.map(…)` | `applications/meanderaw/src/modules/symmetry/symmetry.service.ts:138` |
 | `SymmetryService.map(…)` | 1 | `SymmetryService.rank` | `applications/meanderaw/src/modules/symmetry/symmetry.service.ts:138` |
 | `SymmetryService.flatMap(…)` | 1 | `SymmetryService.map(…)` | `applications/meanderaw/src/modules/symmetry/symmetry.service.ts:206` |
-| `CodeService.anonymous` | 1 | `CodeService.from(…)` | `applications/meanderaw/src/modules/code/code.service.ts:98` |
-| `CodeService.from(…)` | 1 | `CodeService.rotate` | `applications/meanderaw/src/modules/code/code.service.ts:99` |
-| `CodeService.directionsAt` | 1 | `CodeService.decode` | `applications/meanderaw/src/modules/code/code.service.ts:129` |
-| `CodeService.reduceToUnit` | 1 | `CodeService.isRepeatingUnit` | `applications/meanderaw/src/modules/code/code.service.ts:169` |
-| `CodeService.rotate` | 1 | `CodeService.from(…)` | `applications/meanderaw/src/modules/code/code.service.ts:212` |
-| `CodeService.spell` | 1 | `CodeService.flatMap(…)` | `applications/meanderaw/src/modules/code/code.service.ts:235` |
-| `CodeService.flatMap(…)` | 1 | `CodeService.map(…)` | `applications/meanderaw/src/modules/code/code.service.ts:237` |
-| `CodeService.tile` | 1 | `CodeService.from(…)` | `applications/meanderaw/src/modules/code/code.service.ts:276` |
-| `CodeService.from(…)` | 1 | `CodeService.from(…)` | `applications/meanderaw/src/modules/code/code.service.ts:281` |
-| `CodeService.from(…)` | 1 | `CodeService.directionsAt` | `applications/meanderaw/src/modules/code/code.service.ts:282` |
+| `CodeService.parseBare` | 1 | `CodeService.validateDigits` | `applications/meanderaw/src/modules/code/code.service.ts:90` |
+| `CodeService.parseFormatted` | 1 | `CodeService.validateDigits` | `applications/meanderaw/src/modules/code/code.service.ts:103` |
+| `CodeService.anonymous` | 1 | `CodeService.from(…)` | `applications/meanderaw/src/modules/code/code.service.ts:151` |
+| `CodeService.from(…)` | 1 | `CodeService.rotate` | `applications/meanderaw/src/modules/code/code.service.ts:152` |
+| `CodeService.directionsAt` | 1 | `CodeService.decode` | `applications/meanderaw/src/modules/code/code.service.ts:182` |
+| `CodeService.reduceToUnit` | 1 | `CodeService.isRepeatingUnit` | `applications/meanderaw/src/modules/code/code.service.ts:233` |
+| `CodeService.rotate` | 1 | `CodeService.from(…)` | `applications/meanderaw/src/modules/code/code.service.ts:277` |
+| `CodeService.flatMap(…)` | 1 | `CodeService.map(…)` | `applications/meanderaw/src/modules/code/code.service.ts:297` |
+| `CodeService.tile` | 1 | `CodeService.from(…)` | `applications/meanderaw/src/modules/code/code.service.ts:338` |
+| `CodeService.from(…)` | 1 | `CodeService.from(…)` | `applications/meanderaw/src/modules/code/code.service.ts:343` |
+| `CodeService.from(…)` | 1 | `CodeService.directionsAt` | `applications/meanderaw/src/modules/code/code.service.ts:344` |
 | `GraphService.components` | 1 | `GraphService.walk` | `applications/meanderaw/src/modules/graph/graph.service.ts:67` |
 | `ConnectivityService.adjacency` | 1 | `ConnectivityService.nodes` | `applications/meanderaw/src/modules/characteristics/connectivity.service.ts:66` |
 | `ConnectivityService.joinsSouth` | 1 | `CodeService.directionsAt` | `applications/meanderaw/src/modules/characteristics/connectivity.service.ts:100` |
@@ -2248,10 +2251,10 @@ What this project is judged against, as declared in its own `callidescope.config
 | `ConnectivityService.from(…)` | 1 | `ConnectivityService.from(…)` | `applications/meanderaw/src/modules/characteristics/connectivity.service.ts:118` |
 | `ConnectivityService.from(…)` | 1 | `ConnectivityService.key` | `applications/meanderaw/src/modules/characteristics/connectivity.service.ts:119` |
 | `ConnectivityService.joinsEast` | 1 | `CodeService.directionsAt` | `applications/meanderaw/src/modules/characteristics/connectivity.service.ts:180` |
-| `CharacteristicsPathService.checkFinalLoopTurn` | 1 | `CharacteristicsPathService.applyTurn` | `applications/meanderaw/src/modules/characteristics/characteristics-path.service.ts:113` |
-| `CharacteristicsPathService.findStartNode` | 1 | `CharacteristicsPathService.getNeighbors` | `applications/meanderaw/src/modules/characteristics/characteristics-path.service.ts:154` |
-| `CharacteristicsPathService.getDirection` | 1 | `CharacteristicsPathService.parseKey` | `applications/meanderaw/src/modules/characteristics/characteristics-path.service.ts:180` |
-| `CharacteristicsPathService.tracePaths` | 1 | `CharacteristicsPathService.traceSinglePath` | `applications/meanderaw/src/modules/characteristics/characteristics-path.service.ts:213` |
+| `CharacteristicsPathService.checkFinalLoopTurn` | 1 | `CharacteristicsPathService.applyTurn` | `applications/meanderaw/src/modules/characteristics/characteristics-path.service.ts:89` |
+| `CharacteristicsPathService.findStartNode` | 1 | `CharacteristicsPathService.getNeighbors` | `applications/meanderaw/src/modules/characteristics/characteristics-path.service.ts:130` |
+| `CharacteristicsPathService.getDirection` | 1 | `CharacteristicsPathService.parseKey` | `applications/meanderaw/src/modules/characteristics/characteristics-path.service.ts:156` |
+| `CharacteristicsPathService.tracePaths` | 1 | `CharacteristicsPathService.traceSinglePath` | `applications/meanderaw/src/modules/characteristics/characteristics-path.service.ts:189` |
 | `CharacteristicsService.hasEastCorridor` | 1 | `CodeService.directionsAt` | `applications/meanderaw/src/modules/characteristics/characteristics.service.ts:144` |
 | `CharacteristicsService.hasNorthCorridor` | 1 | `CodeService.directionsAt` | `applications/meanderaw/src/modules/characteristics/characteristics.service.ts:158` |
 | `CharacteristicsService.hasSouthCorridor` | 1 | `CodeService.directionsAt` | `applications/meanderaw/src/modules/characteristics/characteristics.service.ts:169` |
@@ -2263,15 +2266,15 @@ What this project is judged against, as declared in its own `callidescope.config
 | `DatabaseService.saveAll` | 1 | `DatabaseService.transaction(…)` | `applications/meanderaw/src/modules/database/database.service.ts:98` |
 | `GeometryService.borderPath` | 1 | `GeometryService.formatCoordinate` | `applications/meanderaw/src/modules/geometry/geometry.service.ts:41` |
 | `SvgService.render` | 1 | `SvgService.map(…)` | `applications/meanderaw/src/modules/svg/svg.service.ts:27` |
-| `DrawingService.format` | 1 | `GeometryService.formatCoordinate` | `applications/meanderaw/src/modules/drawing/drawing.service.ts:76` |
+| `DrawingService.format` | 1 | `GeometryService.formatCoordinate` | `applications/meanderaw/src/modules/drawing/drawing.service.ts:83` |
 | `TileEnumerationService.clear` | 1 | `TileEnumerationService.address` | `applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:129` |
 | `TileEnumerationService.isAdmitted` | 1 | `TileEnumerationService.edges` | `applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:215` |
 | `TileEnumerationService.isMatching` | 1 | `TileService.incidentEdges` | `applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:235` |
 | `EnumerationService.map(…)` | 1 | `CodeService.spell` | `applications/meanderaw/src/modules/enumeration/enumeration.service.ts:104` |
 | `EnumerationService.isAdmitted` | 1 | `TileEnumerationService.isAdmitted` | `applications/meanderaw/src/modules/enumeration/enumeration.service.ts:112` |
 | `CorpusService.canonicalPhase(…)` | 1 | `CharacteristicsService.seamComponents` | `applications/meanderaw/src/modules/corpus/corpus.service.ts:92` |
-| `CorpusService.filter(…)` | 1 | `CorpusService.isBeyondEnumeration` | `applications/meanderaw/src/modules/corpus/corpus.service.ts:155` |
-| `CorpusService.isBeyondEnumeration` | 1 | `EnumerationService.isAdmitted` | `applications/meanderaw/src/modules/corpus/corpus.service.ts:177` |
+| `CorpusService.filter(…)` | 1 | `CorpusService.isBeyondEnumeration` | `applications/meanderaw/src/modules/corpus/corpus.service.ts:160` |
+| `CorpusService.isBeyondEnumeration` | 1 | `EnumerationService.isAdmitted` | `applications/meanderaw/src/modules/corpus/corpus.service.ts:182` |
 | `MeanderDriftDetectedError.constructor` | 1 | `MeanderDriftDetectedError.describe` | `applications/meanderaw/src/modules/draw/draw-check.constants.ts:66` |
 | `MeanderDriftDetectedError.map(…)` | 1 | `MeanderDriftDetectedError.describeNew` | `applications/meanderaw/src/modules/draw/draw-check.constants.ts:78` |
 | `MeanderDriftDetectedError.map(…)` | 1 | `MeanderDriftDetectedError.describeMissing` | `applications/meanderaw/src/modules/draw/draw-check.constants.ts:81` |
@@ -2279,7 +2282,7 @@ What this project is judged against, as declared in its own `callidescope.config
 | `MeanderDriftDetectedError.describeChanged` | 1 | `MeanderDriftDetectedError.describeKey` | `applications/meanderaw/src/modules/draw/draw-check.constants.ts:91` |
 | `MeanderDriftDetectedError.describeMissing` | 1 | `MeanderDriftDetectedError.describeKey` | `applications/meanderaw/src/modules/draw/draw-check.constants.ts:101` |
 | `MeanderDriftDetectedError.describeNew` | 1 | `MeanderDriftDetectedError.describeKey` | `applications/meanderaw/src/modules/draw/draw-check.constants.ts:106` |
-| `DrawRecordService.canonicalPhase(…)` | 1 | `CharacteristicsService.seamComponents` | `applications/meanderaw/src/modules/draw/draw-record.service.ts:62` |
+| `DrawRecordService.canonicalPhase(…)` | 1 | `CharacteristicsService.seamComponents` | `applications/meanderaw/src/modules/draw/draw-record.service.ts:66` |
 | `DrawEnumerationService.map(…)` | 1 | `DrawRecordService.record` | `applications/meanderaw/src/modules/draw/draw-enumeration.service.ts:74` |
 | `DrawCheckService.differingColumns` | 1 | `DrawCheckService.filter(…)` | `applications/meanderaw/src/modules/draw/draw-check.service.ts:61` |
 | `DrawCheckService.filter(…)` | 1 | `DrawCheckService.some(…)` | `applications/meanderaw/src/modules/draw/draw-check.service.ts:65` |
@@ -2296,7 +2299,7 @@ What this project is judged against, as declared in its own `callidescope.config
 | `DrawIndexService.map(…)` | 1 | `DrawIndexService.renderFigure` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:245` |
 
 </details>
-<!-- CALL_STACKS_END -->
+<!-- callidescope:end -->
 
 ## 🕸️ Codependix
 
@@ -2763,6 +2766,7 @@ graph LR
   file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_graph_graph_service_ts
   file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_svg_svg_service_ts
   file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_tile_tile_service_ts
+  file_src_modules_draw_draw_command_ts --> file_src_modules_code_code_constants_ts
   file_src_modules_draw_draw_command_ts --> file_src_modules_corpus_corpus_service_ts
   file_src_modules_draw_draw_command_ts --> file_src_modules_corpus_historical_corpus_constants_ts
   file_src_modules_draw_draw_command_ts --> file_src_modules_draw_draw_check_service_ts
@@ -2874,7 +2878,7 @@ graph LR
 ```
 <!-- codependix:end name="codependix-file-imports" -->
 
-<!-- CODE_STATISTICS_START -->
+<!-- codometer:start -->
 
 ## ⏲️ Codometer
 
@@ -3088,4 +3092,4 @@ graph LR
 ![Inline Code](https://img.shields.io/badge/Inline_Code-118-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-0-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-0-a16207?style=flat-square)
-<!-- CODE_STATISTICS_END -->
+<!-- codometer:end -->

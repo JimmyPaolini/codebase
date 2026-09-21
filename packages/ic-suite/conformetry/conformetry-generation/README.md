@@ -88,7 +88,7 @@ MIT — see [LICENSE](../../../../LICENSE).
 
 This project was generated from the [nestjs-service-project](../../../../configuration/conformetry-templates/nestjs-service-project) conformetry template.
 
-<!-- CALL_STACKS_START -->
+<!-- callidescope:start -->
 
 ## 🔭 Callidescope
 
@@ -110,7 +110,7 @@ What this project is judged against, as declared in its own `callidescope.config
 
 | Limit | Value |
 | --- | --- |
-| `maximumDepth` | 7 |
+| `maximumDepth` | 8 |
 | `maximumBreadth` | 4 |
 
 ### Call stacks (depth)
@@ -127,7 +127,7 @@ What this project is judged against, as declared in its own `callidescope.config
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
 | `GenerationService.runGenerator` | 4 | `GenerationService.resolveAdapters`, `GenerationService.normalizeInputs`, `GenerationService.buildSubstitutions`, `GenerationService.renderDirectory` | `packages/ic-suite/conformetry/conformetry-generation/src/modules/generation/generation.service.ts:190` |
-| `GenerationService.renderDirectory` | 2 | `RenderingService.renderPath`, `GenerationService.renderFile` | `packages/ic-suite/conformetry/conformetry-generation/src/modules/generation/generation.service.ts:104` |
+| `GenerationService.renderDirectory` | 2 | `ConfigurationService.renderPath`, `GenerationService.renderFile` | `packages/ic-suite/conformetry/conformetry-generation/src/modules/generation/generation.service.ts:104` |
 | `GenerationService.listDirectory` | 1 | `GenerationService.map(…)` | `packages/ic-suite/conformetry/conformetry-generation/src/modules/generation/generation.service.ts:38` |
 
 <details>
@@ -135,11 +135,11 @@ What this project is judged against, as declared in its own `callidescope.config
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `GenerationService.buildSubstitutions` | 1 | `RenderingService.buildNameSubstitutions` | `packages/ic-suite/conformetry/conformetry-generation/src/modules/generation/generation.service.ts:74` |
-| `GenerationService.renderFile` | 1 | `RenderingService.renderContent` | `packages/ic-suite/conformetry/conformetry-generation/src/modules/generation/generation.service.ts:153` |
+| `GenerationService.buildSubstitutions` | 1 | `ConfigurationService.buildNameSubstitutions` | `packages/ic-suite/conformetry/conformetry-generation/src/modules/generation/generation.service.ts:74` |
+| `GenerationService.renderFile` | 1 | `ConfigurationService.renderContent` | `packages/ic-suite/conformetry/conformetry-generation/src/modules/generation/generation.service.ts:153` |
 
 </details>
-<!-- CALL_STACKS_END -->
+<!-- callidescope:end -->
 
 ## 🕸️ Codependix
 
@@ -216,7 +216,7 @@ graph LR
 ```
 <!-- codependix:end name="codependix-file-imports" -->
 
-<!-- CODE_STATISTICS_START -->
+<!-- codometer:start -->
 
 ## ⏲️ Codometer
 
@@ -430,4 +430,4 @@ graph LR
 ![Inline Code](https://img.shields.io/badge/Inline_Code-73-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-0-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-0-a16207?style=flat-square)
-<!-- CODE_STATISTICS_END -->
+<!-- codometer:end -->

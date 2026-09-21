@@ -1,4 +1,4 @@
-<!-- CALL_STACKS_START -->
+<!-- callidescope:start -->
 
 # 🔭 Callidescope
 
@@ -177,4 +177,4 @@
 | --- | --- | --- | --- |
 | `GatedLeafService.read` | 3 | `GatedLeafService.parse`, `GatedLeafService.normalize`, `GatedLeafService.finish` | `packages/ic-suite/callidescope/callidescope-examples/examples/gated-leaf/gated-leaf.ts:40` |
 
-<!-- CALL_STACKS_END -->
+<!-- callidescope:end -->

@@ -142,7 +142,10 @@ describe(PathQueryService, () => {
       ambientModuleNames: [],
       edges: [{ source: "AppModule", target: "CoreModule" }],
       isolatedModuleNames: [],
-      moduleNames: ["AppModule", "CoreModule"],
+      nodes: [
+        { declaringFile: "src/app.module.ts", name: "AppModule" },
+        { declaringFile: "src/core.module.ts", name: "CoreModule" },
+      ],
       projectName: "package-a",
     });
   });

@@ -3,8 +3,8 @@ import type { CodometerConfiguration } from "@codometer/configuration";
 /**
  * Two configured destinations, spliced with the default markers.
  *
- * The badge block is written between `CODE_STATISTICS_START` and
- * `CODE_STATISTICS_END`, and the block is **appended** when the markers are
+ * The badge block is written between `<!-- codometer:start -->` and
+ * `<!-- codometer:end -->`, and the block is **appended** when the markers are
  * absent — so the destination file needs nothing in it beforehand, and is
  * created outright when it does not exist. Both halves are worth trying: run
  * this twice and the second run rewrites the block in place rather than

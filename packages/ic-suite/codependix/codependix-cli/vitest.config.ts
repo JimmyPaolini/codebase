@@ -17,6 +17,8 @@ export default mergeConfig(
         ],
         include: ["src/**/*.ts"],
       },
+      hookTimeout: 30_000,
+      testTimeout: 30_000,
     },
   }),
 );

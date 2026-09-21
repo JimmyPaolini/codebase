@@ -29,7 +29,7 @@ nx run callidescope-output:vitest
 
 This project was generated from the [nestjs-service-project](../../../../configuration/conformetry-templates/nestjs-service-project) conformetry template.
 
-<!-- CALL_STACKS_START -->
+<!-- callidescope:start -->
 
 ## 🔭 Callidescope
 
@@ -159,7 +159,7 @@ What this project is judged against, as declared in its own `callidescope.config
 | `WriteDestinationsService.syncProjectDestinations` | 1 | `WriteDestinationsService.syncProjectSections` | `packages/ic-suite/callidescope/callidescope-output/src/modules/write-destinations/write-destinations.service.ts:53` |
 
 </details>
-<!-- CALL_STACKS_END -->
+<!-- callidescope:end -->
 
 ## 🕸️ Codependix
 
@@ -374,7 +374,7 @@ graph LR
 ```
 <!-- codependix:end name="codependix-file-imports" -->
 
-<!-- CODE_STATISTICS_START -->
+<!-- codometer:start -->
 
 ## ⏲️ Codometer
 
@@ -588,4 +588,4 @@ graph LR
 ![Inline Code](https://img.shields.io/badge/Inline_Code-73-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-0-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-0-a16207?style=flat-square)
-<!-- CODE_STATISTICS_END -->
+<!-- codometer:end -->

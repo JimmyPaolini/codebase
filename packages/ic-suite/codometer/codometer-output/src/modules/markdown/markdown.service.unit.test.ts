@@ -58,9 +58,9 @@ function buildDestination(
   return {
     custom: DEFAULT_CUSTOM_STATISTICS,
     description: undefined,
-    endMarker: "<!-- CODE_STATISTICS_END -->",
+    endMarker: "<!-- codometer:end -->",
     path: markdownPath,
-    startMarker: "<!-- CODE_STATISTICS_START -->",
+    startMarker: "<!-- codometer:start -->",
     type: "markdown",
     write: undefined,
     ...overrides,
@@ -624,7 +624,7 @@ describe(MarkdownService, () => {
 
     writeFileSync(
       readmePath,
-      "# Project\n\n<!-- CODE_STATISTICS_START -->\nold\n<!-- CODE_STATISTICS_END -->\n",
+      "# Project\n\n<!-- codometer:start -->\nold\n<!-- codometer:end -->\n",
       "utf8",
     );
 
@@ -638,8 +638,8 @@ describe(MarkdownService, () => {
 
     const written = readFileSync(readmePath, "utf8");
 
-    expect(written).toContain("<!-- CODE_STATISTICS_START -->");
-    expect(written).toContain("<!-- CODE_STATISTICS_END -->");
+    expect(written).toContain("<!-- codometer:start -->");
+    expect(written).toContain("<!-- codometer:end -->");
     expect(written).toContain("![Lines of Code]");
     expect(written).not.toContain("\nold\n");
     expect(loggerService.info).toHaveBeenCalledWith(
@@ -702,11 +702,11 @@ describe(MarkdownService, () => {
 
     const written = readFileSync(readmePath, "utf8");
 
-    expect(written).toContain("<!-- CODE_STATISTICS_START -->");
+    expect(written).toContain("<!-- codometer:start -->");
     expect(written).toContain("![Source Files]");
-    expect(written.trimEnd()).toContain("<!-- CODE_STATISTICS_END -->");
+    expect(written.trimEnd()).toContain("<!-- codometer:end -->");
     expect(written.indexOf("# Project")).toBeLessThan(
-      written.indexOf("<!-- CODE_STATISTICS_START -->"),
+      written.indexOf("<!-- codometer:start -->"),
     );
     expect(loggerService.info).toHaveBeenCalledWith(
       "📝 Wrote the markdown badges",
@@ -734,7 +734,7 @@ describe(MarkdownService, () => {
     });
 
     expect(readFileSync(readmePath, "utf8")).toContain(
-      "# Project\n\n<!-- CODE_STATISTICS_START -->",
+      "# Project\n\n<!-- codometer:start -->",
     );
   });
 
@@ -751,7 +751,7 @@ describe(MarkdownService, () => {
       targets: [],
     });
 
-    expect(readFileSync(readmePath, "utf8").startsWith("<!-- CODE_")).toBe(
+    expect(readFileSync(readmePath, "utf8").startsWith("<!-- codometer:")).toBe(
       true,
     );
   });
@@ -836,7 +836,7 @@ describe(MarkdownService, () => {
 
     writeFileSync(
       readmePath,
-      `# Project\n\n<!-- CODE_STATISTICS_START -->\n\n${block}\n<!-- CODE_STATISTICS_END -->\n`,
+      `# Project\n\n<!-- codometer:start -->\n\n${block}\n<!-- codometer:end -->\n`,
       "utf8",
     );
 
@@ -858,7 +858,7 @@ describe(MarkdownService, () => {
 
     writeFileSync(
       readmePath,
-      "# Project\n\n<!-- CODE_STATISTICS_START -->\nstale\n<!-- CODE_STATISTICS_END -->\n",
+      "# Project\n\n<!-- codometer:start -->\nstale\n<!-- codometer:end -->\n",
       "utf8",
     );
 
@@ -890,7 +890,7 @@ describe(MarkdownService, () => {
 
     const written = readFileSync(readmePath, "utf8");
 
-    expect(written).toContain("<!-- CODE_STATISTICS_START -->");
+    expect(written).toContain("<!-- codometer:start -->");
   });
 
   it("splices the block between configured custom markers", () => {
@@ -920,7 +920,7 @@ describe(MarkdownService, () => {
 
     expect(written).toContain("<!-- stats:start -->");
     expect(written).not.toContain("\nold\n");
-    expect(written).not.toContain("CODE_STATISTICS_START");
+    expect(written).not.toContain("codometer:start");
     expect(
       service.sync({
         check: true,
@@ -954,7 +954,7 @@ describe(MarkdownService, () => {
     const written = readFileSync(markdownPath, "utf8");
 
     expect(written).toContain("Counted by hand.\n\nLines: 31");
-    expect(written).toContain("<!-- CODE_STATISTICS_START -->");
+    expect(written).toContain("<!-- codometer:start -->");
     expect(written).not.toContain("img.shields.io");
   });
 
@@ -1015,7 +1015,7 @@ describe(MarkdownService, () => {
 
     expect(isCurrent).toBe(true);
     expect(readFileSync(chosenPath, "utf8")).toContain(
-      "<!-- CODE_STATISTICS_START -->",
+      "<!-- codometer:start -->",
     );
   });
 
@@ -1081,7 +1081,7 @@ describe(MarkdownService, () => {
       document.startsWith("## ⏲️ Codometer\n\nRepository statistics.\n\n"),
     ).toBe(true);
     expect(document).toContain("![Lines of Code]");
-    expect(document).not.toContain("<!-- CODE_STATISTICS_START -->");
+    expect(document).not.toContain("<!-- codometer:start -->");
   });
 
   it("renders a document with no description when none was configured", () => {
@@ -1105,8 +1105,8 @@ describe(MarkdownService, () => {
       targets: [],
     });
 
-    expect(block.startsWith("<!-- CODE_STATISTICS_START -->")).toBe(true);
-    expect(block.endsWith("<!-- CODE_STATISTICS_END -->")).toBe(true);
+    expect(block.startsWith("<!-- codometer:start -->")).toBe(true);
+    expect(block.endsWith("<!-- codometer:end -->")).toBe(true);
     expect(block).toContain("![Lines of Code]");
   });
 

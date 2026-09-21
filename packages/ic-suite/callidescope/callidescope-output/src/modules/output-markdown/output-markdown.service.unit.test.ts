@@ -26,12 +26,12 @@ function buildDestination(
 ): ResolvedCallidescopeMarkdownOutputConfiguration {
   return {
     description: undefined,
-    endMarker: "<!-- CALL_STACKS_END -->",
+    endMarker: "<!-- callidescope:end -->",
     heading: "# 🔭 Callidescope",
     path: filePath,
     previewCount: 3,
     render: undefined,
-    startMarker: "<!-- CALL_STACKS_START -->",
+    startMarker: "<!-- callidescope:start -->",
     writeBlock: undefined,
     ...overrides,
   };
@@ -72,7 +72,7 @@ describe(OutputMarkdownService, () => {
         content: "body",
         destination: buildDestination(""),
       }),
-    ).toBe("<!-- CALL_STACKS_START -->\n\nbody\n<!-- CALL_STACKS_END -->");
+    ).toBe("<!-- callidescope:start -->\n\nbody\n<!-- callidescope:end -->");
   });
 
   // 📄 Splicing
@@ -82,7 +82,7 @@ describe(OutputMarkdownService, () => {
 
     await writeFile(
       filePath,
-      "# Title\n\n<!-- CALL_STACKS_START -->\n\nold\n<!-- CALL_STACKS_END -->\n\nAfter.\n",
+      "# Title\n\n<!-- callidescope:start -->\n\nold\n<!-- callidescope:end -->\n\nAfter.\n",
       "utf8",
     );
     subject.syncAnchoredBlock({
@@ -116,7 +116,7 @@ describe(OutputMarkdownService, () => {
     });
 
     await expect(readFile(filePath, "utf8")).resolves.toContain(
-      "<!-- CALL_STACKS_START -->",
+      "<!-- callidescope:start -->",
     );
     expect(subjectLogger.info).toHaveBeenCalledWith(
       "🔭 Wrote a report",
@@ -130,7 +130,7 @@ describe(OutputMarkdownService, () => {
 
     await writeFile(
       filePath,
-      "# Title\n\n<!-- CALL_STACKS_START -->\n\norphaned\n\nAfter.\n",
+      "# Title\n\n<!-- callidescope:start -->\n\norphaned\n\nAfter.\n",
       "utf8",
     );
     subject.syncAnchoredBlock({
@@ -144,7 +144,7 @@ describe(OutputMarkdownService, () => {
 
     expect(written).toContain("new");
     expect(written).not.toContain("orphaned");
-    expect(written).toContain("<!-- CALL_STACKS_END -->");
+    expect(written).toContain("<!-- callidescope:end -->");
   });
 
   it("keeps another anchored block intact when repairing a missing end marker", async () => {
@@ -152,7 +152,7 @@ describe(OutputMarkdownService, () => {
 
     await writeFile(
       filePath,
-      "<!-- CALL_STACKS_START -->\n\norphaned\n\n<!-- CODE_STATISTICS_START -->\n\nstats\n<!-- CODE_STATISTICS_END -->\n",
+      "<!-- callidescope:start -->\n\norphaned\n\n<!-- codometer:start -->\n\nstats\n<!-- codometer:end -->\n",
       "utf8",
     );
     subject.syncAnchoredBlock({
@@ -166,9 +166,9 @@ describe(OutputMarkdownService, () => {
 
     expect(written).not.toContain("orphaned");
     expect(written).toContain("new");
-    expect(written).toContain("<!-- CODE_STATISTICS_START -->");
+    expect(written).toContain("<!-- codometer:start -->");
     expect(written).toContain("stats");
-    expect(written).toContain("<!-- CODE_STATISTICS_END -->");
+    expect(written).toContain("<!-- codometer:end -->");
   });
 
   it("does not double the blank line before what follows a repaired block", async () => {
@@ -176,7 +176,7 @@ describe(OutputMarkdownService, () => {
 
     await writeFile(
       filePath,
-      "<!-- CALL_STACKS_START -->\n\norphaned\n\n<!-- CODE_STATISTICS_START -->\n\nstats\n<!-- CODE_STATISTICS_END -->\n",
+      "<!-- callidescope:start -->\n\norphaned\n\n<!-- codometer:start -->\n\nstats\n<!-- codometer:end -->\n",
       "utf8",
     );
     subject.syncAnchoredBlock({
@@ -236,7 +236,7 @@ describe(OutputMarkdownService, () => {
 
     await writeFile(
       filePath,
-      "<!-- CALL_STACKS_START -->\n\nold\n<!-- CALL_STACKS_END -->\n",
+      "<!-- callidescope:start -->\n\nold\n<!-- callidescope:end -->\n",
       "utf8",
     );
     subject.syncAnchoredBlock({
@@ -294,7 +294,7 @@ describe(OutputMarkdownService, () => {
 
     await writeFile(
       filePath,
-      "<!-- CALL_STACKS_START -->\n\nstale\n<!-- CALL_STACKS_END -->\n",
+      "<!-- callidescope:start -->\n\nstale\n<!-- callidescope:end -->\n",
       "utf8",
     );
 
@@ -313,7 +313,7 @@ describe(OutputMarkdownService, () => {
 
     await writeFile(
       filePath,
-      "<!-- CALL_STACKS_START -->\n\norphaned\n",
+      "<!-- callidescope:start -->\n\norphaned\n",
       "utf8",
     );
 
@@ -408,7 +408,7 @@ describe(OutputMarkdownService, () => {
     });
 
     await expect(readFile(filePath, "utf8")).resolves.toContain(
-      "<!-- CALL_STACKS_START -->",
+      "<!-- callidescope:start -->",
     );
   });
 
@@ -482,7 +482,9 @@ describe(OutputMarkdownService, () => {
       result,
     });
 
-    expect(markers).toBe("<!-- CALL_STACKS_START -->|<!-- CALL_STACKS_END -->");
+    expect(markers).toBe(
+      "<!-- callidescope:start -->|<!-- callidescope:end -->",
+    );
   });
 
   it("lets a configured writer redirect to another path", async () => {
@@ -499,7 +501,7 @@ describe(OutputMarkdownService, () => {
     });
 
     await expect(readFile(override, "utf8")).resolves.toContain(
-      "<!-- CALL_STACKS_START -->",
+      "<!-- callidescope:start -->",
     );
   });
 });

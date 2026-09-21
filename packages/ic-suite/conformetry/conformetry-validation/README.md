@@ -93,7 +93,7 @@ MIT — see [LICENSE](../../../../LICENSE).
 
 This project was generated from the [nestjs-service-project](../../../../configuration/conformetry-templates/nestjs-service-project) conformetry template.
 
-<!-- CALL_STACKS_START -->
+<!-- callidescope:start -->
 
 ## 🔭 Callidescope
 
@@ -115,7 +115,7 @@ What this project is judged against, as declared in its own `callidescope.config
 
 | Limit | Value |
 | --- | --- |
-| `maximumDepth` | 12 |
+| `maximumDepth` | 13 |
 | `maximumBreadth` | 10 |
 
 ### Call stacks (depth)
@@ -126,8 +126,8 @@ None.
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `ValidationService.validate` | 10 | `InstanceDiscoveryService.matchInstances`, `ValidationService.selectValidators`, `LanguagesService.resolveValidators`, `ValidationService.readTemplateExtensions`, `ValidationService.map(…)`, `ValidationScoringService.scoreInstances`, `ValidationDeduplicationService.deduplicate`, `ValidationFindingsService.buildUnmatchedResults`, `ValidationService.map(…)`, `ValidationService.every(…)` | `packages/ic-suite/conformetry/conformetry-validation/src/modules/validation/validation.service.ts:136` |
-| `ValidationService.validateInstance` | 6 | `InstanceDiscoveryService.prepareDocuments`, `ValidationService.flatMap(…)`, `FilesService.checkInstanceFiles`, `ValidationService.map(…)`, `ValidationService.flatMap(…)`, `ValidationService.reduce(…)` | `packages/ic-suite/conformetry/conformetry-validation/src/modules/validation/validation.service.ts:87` |
+| `ValidationService.validate` | 10 | `ConfigurationService.matchInstances`, `ValidationService.selectValidators`, `LanguagesService.resolveValidators`, `ValidationService.readTemplateExtensions`, `ValidationService.map(…)`, `ValidationScoringService.scoreInstances`, `ValidationDeduplicationService.deduplicate`, `ValidationFindingsService.buildUnmatchedResults`, `ValidationService.map(…)`, `ValidationService.every(…)` | `packages/ic-suite/conformetry/conformetry-validation/src/modules/validation/validation.service.ts:136` |
+| `ValidationService.validateInstance` | 6 | `ConfigurationService.prepareDocuments`, `ValidationService.flatMap(…)`, `FilesService.checkInstanceFiles`, `ValidationService.map(…)`, `ValidationService.flatMap(…)`, `ValidationService.reduce(…)` | `packages/ic-suite/conformetry/conformetry-validation/src/modules/validation/validation.service.ts:87` |
 | `RunnerService.runValidator` | 4 | `RunnerService.map(…)`, `RunnerService.filter(…)`, `RunnerService.filter(…)`, `RunnerService.reduce(…)` | `packages/ic-suite/conformetry/conformetry-validation/src/modules/runner/runner.service.ts:81` |
 
 <details>
@@ -151,10 +151,10 @@ None.
 | `ValidationService.flatMap(…)` | 1 | `ValidationService.map(…)` | `packages/ic-suite/conformetry/conformetry-validation/src/modules/validation/validation.service.ts:53` |
 | `ValidationService.selectValidators` | 1 | `ValidationService.filter(…)` | `packages/ic-suite/conformetry/conformetry-validation/src/modules/validation/validation.service.ts:63` |
 | `ValidationService.map(…)` | 1 | `RunnerService.runValidator` | `packages/ic-suite/conformetry/conformetry-validation/src/modules/validation/validation.service.ts:100` |
-| `ValidationService.map(…)` | 1 | `ValidationService.validateInstance` | `packages/ic-suite/conformetry/conformetry-validation/src/modules/validation/validation.service.ts:149` |
+| `ValidationService.map(…)` | 1 | `ValidationService.validateInstance` | `packages/ic-suite/conformetry/conformetry-validation/src/modules/validation/validation.service.ts:147` |
 
 </details>
-<!-- CALL_STACKS_END -->
+<!-- callidescope:end -->
 
 ## 🕸️ Codependix
 
@@ -297,7 +297,7 @@ graph LR
 ```
 <!-- codependix:end name="codependix-file-imports" -->
 
-<!-- CODE_STATISTICS_START -->
+<!-- codometer:start -->
 
 ## ⏲️ Codometer
 
@@ -511,4 +511,4 @@ graph LR
 ![Inline Code](https://img.shields.io/badge/Inline_Code-73-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-0-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-0-a16207?style=flat-square)
-<!-- CODE_STATISTICS_END -->
+<!-- codometer:end -->

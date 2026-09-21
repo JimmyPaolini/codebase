@@ -261,7 +261,7 @@ MIT — see [LICENSE](../../../../LICENSE).
 
 This project was generated from the [nestjs-service-project](../../../../configuration/conformetry-templates/nestjs-service-project) conformetry template.
 
-<!-- CALL_STACKS_START -->
+<!-- callidescope:start -->
 
 ## 🔭 Callidescope
 
@@ -269,9 +269,9 @@ Call stacks traced through `packages/ic-suite/conformetry/conformetry-configurat
 
 | Measure | Value |
 | --- | --- |
-| Callables | 147 |
-| Files | 33 |
-| Calls traced | 131 |
+| Callables | 167 |
+| Files | 36 |
+| Calls traced | 151 |
 | Call stacks | 5 |
 | Deepest stack | 10 |
 | Stacks through recursion | 0 |
@@ -283,7 +283,7 @@ What this project is judged against, as declared in its own `callidescope.config
 
 | Limit | Value |
 | --- | --- |
-| `maximumDepth` | 13 |
+| `maximumDepth` | 14 |
 | `maximumBreadth` | 5 |
 
 ### Call stacks (depth)
@@ -376,20 +376,20 @@ What this project is judged against, as declared in its own `callidescope.config
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
 | `InstanceDiscoveryMatchingService.matchInstances` | 5 | `InstanceDiscoveryMatchingService.buildSubstitutions`, `InstanceDiscoveryMatchingService.matchTemplates`, `InstanceDiscoveryMatchingService.filter(…)`, `InstanceDiscoveryMatchingService.map(…)`, `InstanceDiscoveryMatchingService.map(…)` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/instance-discovery/instance-discovery-matching.service.ts:93` |
-| `ConfigurationService.loadConformetryConfiguration` | 4 | `ConfigurationService.resolveConfigurationPath`, `UnknownConfigurationFileTypeError.constructor`, `ConfigurationService.loadConfigurationModule`, `ConfigurationService.map(…)` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/configuration/configuration.service.ts:169` |
 | `InputPromptingService.promptForInput` | 4 | `InputPromptingService.assertCanPrompt`, `InputSchemaService.readEnumValues`, `InputPromptingService.map(…)`, `InputSchemaService.readPromptMessage` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/input/input-prompting.service.ts:90` |
+| `InputService.resolveInputs` | 4 | `InputSchemaService.readPropertyNames`, `InputSchemaService.describeInput`, `InputService.acceptProvidedValue`, `InputService.resolveMissingValue` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/input/input.service.ts:53` |
 
 <details>
-<summary>71 more callables</summary>
+<summary>91 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `InputService.resolveInputs` | 4 | `InputSchemaService.readPropertyNames`, `InputSchemaService.describeInput`, `InputService.acceptProvidedValue`, `InputService.resolveMissingValue` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/input/input.service.ts:53` |
 | `InputService.resolveMissingValue` | 4 | `InputPromptingService.isAtTerminal`, `missingInputError`, `InputPromptingService.promptForInput`, `InputSchemaService.validateValue` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/input/input.service.ts:94` |
 | `InstanceDiscoveryLocatingService.findInstances` | 4 | `InstanceDiscoveryLocatingService.resolveGlobSuffix`, `InstanceDiscoveryLocatingService.resolveNameStem`, `InstanceDiscoveryLocatingService.map(…)`, `InstanceDiscoveryLocatingService.toSorted(…)` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/instance-discovery/instance-discovery-locating.service.ts:121` |
 | `InstanceDiscoveryService.resolveInventoriedInstances` | 4 | `InstanceDiscoveryService.takeInventory`, `InstanceDiscoveryService.map(…)`, `InstanceDiscoveryService.filter(…)`, `InstanceDiscoveryService.map(…)` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:191` |
 | `InstanceDiscoveryService.resolveInventoriedTemplates` | 4 | `InstanceDiscoveryService.takeInventory`, `InstanceDiscoveryService.filter(…)`, `InstanceDiscoveryService.map(…)`, `InstanceDiscoveryService.filter(…)` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:216` |
 | `InstanceDiscoveryService.takeInventory` | 4 | `TemplateDiscoveryService.collectTemplates`, `InstanceDiscoveryService.flatMap(…)`, `InstanceDiscoveryService.findInstances`, `InstanceDiscoveryService.map(…)` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:255` |
+| `ConfigurationService.loadConformetryConfiguration` | 4 | `ConfigurationService.resolveConfigurationPath`, `UnknownConfigurationFileTypeError.constructor`, `ConfigurationService.loadConfigurationModule`, `ConfigurationService.map(…)` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/configuration/configuration.service.ts:243` |
 | `assertNoCollisions` | 3 | `findDuplicates`, `findUnusableNames`, `findReservedNames` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/configuration/configuration.utilities.ts:28` |
 | `findReservedNames` | 3 | `map(…)`, `filter(…)`, `map(…)` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/configuration/configuration.utilities.ts:97` |
 | `findUnusableNames` | 3 | `map(…)`, `filter(…)`, `map(…)` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/configuration/configuration.utilities.ts:112` |
@@ -408,9 +408,6 @@ What this project is judged against, as declared in its own `callidescope.config
 | `TemplateDiscoveryService.prepareDocument` | 2 | `TemplateDiscoveryService.resolveInstanceFilePath`, `RenderingService.renderContent` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:153` |
 | `InstanceDiscoveryService.flatMap(…)` | 2 | `InstanceDiscoveryService.flatMap(…)`, `InstanceDiscoveryService.readWorkspaceGroups` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:265` |
 | `missingInputError` | 1 | `InputError.constructor` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/input/input.constants.ts:65` |
-| `ConfigurationService.loadConfigurationModule` | 1 | `ConfigurationService.loadJsonConfiguration` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/configuration/configuration.service.ts:96` |
-| `ConfigurationService.resolveConfigurationPath` | 1 | `ConfigurationService.findWorkspaceRoot` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/configuration/configuration.service.ts:135` |
-| `ConfigurationService.map(…)` | 1 | `ConfigurationService.applyGeneratorDefaults` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/configuration/configuration.service.ts:185` |
 | `InputOptionsService.resolvePropertyName` | 1 | `InputOptionsService.find(…)` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/input/input-options.service.ts:104` |
 | `InputOptionsService.collectGeneratorInputs` | 1 | `InputOptionsService.collectOneInput` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/input/input-options.service.ts:124` |
 | `InputSchemaService.readSchemaProperty` | 1 | `InputSchemaService.find(…)` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/input/input-schema.service.ts:26` |
@@ -425,8 +422,6 @@ What this project is judged against, as declared in its own `callidescope.config
 | `InputService.acceptProvidedValue` | 1 | `InputSchemaService.validateValue` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/input/input.service.ts:39` |
 | `InputService.parseThresholdOption` | 1 | `InputService.parseOptionalOption` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/input/input.service.ts:161` |
 | `InputService.resolveInputsFromValues` | 1 | `InputService.resolveInputs` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/input/input.service.ts:195` |
-| `InstanceDiscoveryLocatingService.resolveGlobSuffix` | 1 | `InstanceDiscoveryLocatingService.map(…)` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/instance-discovery/instance-discovery-locating.service.ts:73` |
-| `InstanceDiscoveryLocatingService.map(…)` | 1 | `InstanceDiscoveryLocatingService.deriveLocationSubstitutions` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/instance-discovery/instance-discovery-locating.service.ts:162` |
 | `MissingSubstitutionError.constructor` | 1 | `MissingSubstitutionError.map(…)` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/rendering/rendering.constants.ts:31` |
 | `RenderingService.collectInterpolatedNames` | 1 | `RenderingService.walk` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/rendering/rendering.service.ts:61` |
 | `RenderingService.renderContent` | 1 | `RenderingService.assertEverySubstitutionSupplied` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/rendering/rendering.service.ts:115` |
@@ -437,6 +432,8 @@ What this project is judged against, as declared in its own `callidescope.config
 | `TemplateDiscoveryService.countMatchingFiles` | 1 | `TemplateDiscoveryService.filter(…)` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:121` |
 | `TemplateDiscoveryService.filter(…)` | 1 | `TemplateDiscoveryService.resolveInstanceFilePath` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:130` |
 | `TemplateDiscoveryService.resolveInstanceFilePath` | 1 | `RenderingService.renderPath` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:179` |
+| `InstanceDiscoveryLocatingService.resolveGlobSuffix` | 1 | `InstanceDiscoveryLocatingService.map(…)` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/instance-discovery/instance-discovery-locating.service.ts:73` |
+| `InstanceDiscoveryLocatingService.map(…)` | 1 | `InstanceDiscoveryLocatingService.deriveLocationSubstitutions` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/instance-discovery/instance-discovery-locating.service.ts:162` |
 | `InstanceDiscoveryMatchingService.buildSubstitutions` | 1 | `RenderingService.buildNameSubstitutions` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/instance-discovery/instance-discovery-matching.service.ts:72` |
 | `InstanceDiscoveryMatchingService.map(…)` | 1 | `TemplateDiscoveryService.countMatchingFiles` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/instance-discovery/instance-discovery-matching.service.ts:160` |
 | `InstanceDiscoveryMatchingService.toSorted(…)` | 1 | `InstanceDiscoveryMatchingService.compareMatches` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/instance-discovery/instance-discovery-matching.service.ts:180` |
@@ -455,9 +452,32 @@ What this project is judged against, as declared in its own `callidescope.config
 | `InstanceDiscoveryService.map(…)` | 1 | `InstanceDiscoveryService.flatMap(…)` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:228` |
 | `InstanceDiscoveryService.flatMap(…)` | 1 | `InstanceDiscoveryService.find(…)` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:229` |
 | `InstanceDiscoveryService.map(…)` | 1 | `InstanceDiscoveryService.weighInstance` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:277` |
+| `ConfigurationService.loadConfigurationModule` | 1 | `ConfigurationService.loadJsonConfiguration` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/configuration/configuration.service.ts:135` |
+| `ConfigurationService.resolveConfigurationPath` | 1 | `ConfigurationService.findWorkspaceRoot` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/configuration/configuration.service.ts:174` |
+| `ConfigurationService.buildNameSubstitutions` | 1 | `RenderingService.buildNameSubstitutions` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/configuration/configuration.service.ts:202` |
+| `ConfigurationService.collectTemplate` | 1 | `TemplateDiscoveryService.collectTemplate` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/configuration/configuration.service.ts:207` |
+| `ConfigurationService.collectTemplates` | 1 | `TemplateDiscoveryService.collectTemplates` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/configuration/configuration.service.ts:214` |
+| `ConfigurationService.findInstances` | 1 | `InstanceDiscoveryService.findInstances` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/configuration/configuration.service.ts:222` |
+| `ConfigurationService.isAtTerminal` | 1 | `InputPromptingService.isAtTerminal` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/configuration/configuration.service.ts:227` |
+| `ConfigurationService.isProjectScoped` | 1 | `InstanceGroupService.isProjectScoped` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/configuration/configuration.service.ts:232` |
+| `ConfigurationService.map(…)` | 1 | `ConfigurationService.applyGeneratorDefaults` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/configuration/configuration.service.ts:259` |
+| `ConfigurationService.matchInstances` | 1 | `InstanceDiscoveryService.matchInstances` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/configuration/configuration.service.ts:263` |
+| `ConfigurationService.parseCommaDelimitedOption` | 1 | `InputService.parseCommaDelimitedOption` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/configuration/configuration.service.ts:271` |
+| `ConfigurationService.parseOptionalOption` | 1 | `InputService.parseOptionalOption` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/configuration/configuration.service.ts:278` |
+| `ConfigurationService.parseThresholdOption` | 1 | `InputService.parseThresholdOption` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/configuration/configuration.service.ts:283` |
+| `ConfigurationService.prepareDocuments` | 1 | `InstanceDiscoveryService.prepareDocuments` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/configuration/configuration.service.ts:291` |
+| `ConfigurationService.promptForTemplate` | 1 | `InputPromptingService.promptForTemplate` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/configuration/configuration.service.ts:298` |
+| `ConfigurationService.promptForTemplates` | 1 | `InputPromptingService.promptForTemplates` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/configuration/configuration.service.ts:305` |
+| `ConfigurationService.readWorkspaceGroups` | 1 | `InstanceDiscoveryService.readWorkspaceGroups` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/configuration/configuration.service.ts:312` |
+| `ConfigurationService.renderContent` | 1 | `RenderingService.renderContent` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/configuration/configuration.service.ts:319` |
+| `ConfigurationService.renderPath` | 1 | `RenderingService.renderPath` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/configuration/configuration.service.ts:326` |
+| `ConfigurationService.resolveGeneratorInputs` | 1 | `InputService.resolveGeneratorInputs` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/configuration/configuration.service.ts:333` |
+| `ConfigurationService.resolveInstanceFiles` | 1 | `InstanceDiscoveryService.resolveInstanceFiles` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/configuration/configuration.service.ts:340` |
+| `ConfigurationService.resolveInventoriedInstances` | 1 | `InstanceDiscoveryService.resolveInventoriedInstances` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/configuration/configuration.service.ts:345` |
+| `ConfigurationService.resolveInventoriedTemplates` | 1 | `InstanceDiscoveryService.resolveInventoriedTemplates` | `packages/ic-suite/conformetry/conformetry-configuration/src/modules/configuration/configuration.service.ts:352` |
 
 </details>
-<!-- CALL_STACKS_END -->
+<!-- callidescope:end -->
 
 ## 🕸️ Codependix
 
@@ -681,7 +701,7 @@ graph LR
 ```
 <!-- codependix:end name="codependix-file-imports" -->
 
-<!-- CODE_STATISTICS_START -->
+<!-- codometer:start -->
 
 ## ⏲️ Codometer
 
@@ -895,4 +915,4 @@ graph LR
 ![Inline Code](https://img.shields.io/badge/Inline_Code-73-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-0-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-0-a16207?style=flat-square)
-<!-- CODE_STATISTICS_END -->
+<!-- codometer:end -->

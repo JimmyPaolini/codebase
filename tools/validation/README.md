@@ -100,7 +100,7 @@ nx run validation:vitest
 
 This project was generated from the [nestjs-command-project](../../configuration/conformetry-templates/nestjs-command-project) conformetry template.
 
-<!-- CALL_STACKS_START -->
+<!-- callidescope:start -->
 
 ## 🔭 Callidescope
 
@@ -365,7 +365,7 @@ What this project is judged against, as declared in its own `callidescope.config
 | `ReadmeProjectsService.resolveWorkspaceProjectPaths` | 1 | `ReadmeProjectsService.findProjectPaths` | `tools/validation/src/modules/readme-projects/readme-projects.service.ts:82` |
 
 </details>
-<!-- CALL_STACKS_END -->
+<!-- callidescope:end -->
 
 ## 🕸️ Codependix
 
@@ -669,7 +669,7 @@ graph LR
 ```
 <!-- codependix:end name="codependix-file-imports" -->
 
-<!-- CODE_STATISTICS_START -->
+<!-- codometer:start -->
 
 ## ⏲️ Codometer
 
@@ -879,4 +879,4 @@ graph LR
 ![Inline Code](https://img.shields.io/badge/Inline_Code-94-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-0-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-0-a16207?style=flat-square)
-<!-- CODE_STATISTICS_END -->
+<!-- codometer:end -->

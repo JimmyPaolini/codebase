@@ -31,6 +31,7 @@ import type {
   CombinedPathResults,
   PathFormat,
   PathQueryArguments,
+  PathQueryResult,
   PathReportArguments,
 } from "./path-query.types";
 import type { GraphRunContext } from "@codependix/boundaries";
@@ -103,7 +104,7 @@ export class PathQueryService {
     nodes: readonly string[] | undefined,
     edges: readonly { source: string; target: string }[],
   ): boolean {
-    if (nodes?.includes(node) ?? false) {
+    if (nodes?.includes(node) === true) {
       return true;
     }
 
@@ -194,28 +195,38 @@ export class PathQueryService {
 
     for (const graphType of CODEPENDIX_GRAPH_TYPES) {
       const entry = results[graphType];
-      if (entry === undefined) continue;
-
-      const pathNodes = entry.path;
-      if (pathNodes === null || pathNodes.length === 0) {
-        sections.push(buildNoPathMessage(entry.from, entry.to));
-        continue;
+      if (entry !== undefined) {
+        sections.push(this.renderMermaidSection(entry));
       }
-
-      const lines = [
-        "```mermaid",
-        PATH_MERMAID_HEADER,
-        ...pathNodes.map((node) => `  ${this.toMermaidId(node)}["${node}"]`),
-        ...pathNodes.slice(0, -1).map((node, index) => {
-          const next = pathNodes[index + 1] ?? "";
-          return `  ${this.toMermaidId(node)} --> ${this.toMermaidId(next)}`;
-        }),
-        "```",
-      ];
-      sections.push(lines.join("\n"));
     }
 
     return sections.join("\n\n");
+  }
+
+  /** Renders a single path entry as a Mermaid diagram block or no-path message. */
+  private renderMermaidSection(entry: PathQueryResult): string {
+    const pathNodes = entry.path;
+    if (pathNodes === null || pathNodes.length === 0) {
+      return buildNoPathMessage(entry.from, entry.to);
+    }
+
+    const lines = [
+      "```mermaid",
+      PATH_MERMAID_HEADER,
+      ...pathNodes.map((node) => `  ${this.toMermaidId(node)}["${node}"]`),
+    ];
+    for (let index = 0; index + 1 < pathNodes.length; index++) {
+      const source = pathNodes[index];
+      const target = pathNodes[index + 1];
+      if (source !== undefined && target !== undefined) {
+        lines.push(
+          `  ${this.toMermaidId(source)} --> ${this.toMermaidId(target)}`,
+        );
+      }
+    }
+    lines.push("```");
+
+    return lines.join("\n");
   }
 
   /** Runs deterministic breadth-first search to find the shortest path. */
@@ -226,14 +237,10 @@ export class PathQueryService {
   ): null | string[] {
     const queue: [string, string[]][] = [[from, [from]]];
     const visited = new Set<string>([from]);
+    let currentEntry = queue.shift();
 
-    while (queue.length > 0) {
-      const entry = queue.shift();
-      if (!entry) {
-        break;
-      }
-
-      const [current, path] = entry;
+    while (currentEntry !== undefined) {
+      const [current, path] = currentEntry;
       if (current === to) {
         return path;
       }
@@ -244,6 +251,8 @@ export class PathQueryService {
           queue.push([neighbor, [...path, neighbor]]);
         }
       }
+
+      currentEntry = queue.shift();
     }
 
     return null;

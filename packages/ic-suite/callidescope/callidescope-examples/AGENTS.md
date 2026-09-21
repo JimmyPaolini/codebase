@@ -100,8 +100,8 @@ callidescope-examples/
   project boundary), which `gated-leaf` already supplied.
 - **Its guide carries a generated block.** It declares a `write.markdown` of
   its own pointing at `README.md` under a `## 🔭 Callidescope` heading, and it
-  is scoped, so its `README.md` holds one between `<!-- CALL_STACKS_START -->`
-  and `<!-- CALL_STACKS_END -->`. Do not hand-edit inside those anchors —
+  is scoped, so its `README.md` holds one between `<!-- callidescope:start -->`
+  and `<!-- callidescope:end -->`. Do not hand-edit inside those anchors —
   regenerate.
 - **`src/` is a requirement, not a leftover.** The `module-bootstrap` and
   `exported-function` entry-point rules key on the literal paths `src/main.ts`

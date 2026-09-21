@@ -55,9 +55,9 @@ function buildMode(overrides: Partial<RunMode> = {}): RunMode {
 const markdownDestination: ResolvedMarkdownDestination = {
   custom: [],
   description: undefined,
-  endMarker: "<!-- CODE_STATISTICS_END -->",
+  endMarker: "<!-- codometer:end -->",
   path: "README.md",
-  startMarker: "<!-- CODE_STATISTICS_START -->",
+  startMarker: "<!-- codometer:start -->",
   type: "markdown",
   write: undefined,
 };

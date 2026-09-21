@@ -103,7 +103,7 @@ MIT — see [LICENSE](../../LICENSE).
 
 This project was generated from the [nestjs-command-project](../../configuration/conformetry-templates/nestjs-command-project) conformetry template.
 
-<!-- CALL_STACKS_START -->
+<!-- callidescope:start -->
 
 ## 🔭 Callidescope
 
@@ -932,7 +932,7 @@ What this project is judged against, as declared in its own `callidescope.config
 | `LexicoIngestionCommand.promptForMissingOptions` | 1 | `LexicoIngestionCommand.promptOption` | `applications/lexico-ingestion/src/modules/lexico-ingestion/lexico-ingestion.command.ts:96` |
 
 </details>
-<!-- CALL_STACKS_END -->
+<!-- callidescope:end -->
 
 ## 🕸️ Codependix
 
@@ -1488,7 +1488,7 @@ graph LR
 ```
 <!-- codependix:end name="codependix-file-imports" -->
 
-<!-- CODE_STATISTICS_START -->
+<!-- codometer:start -->
 
 ## ⏲️ Codometer
 
@@ -1702,4 +1702,4 @@ graph LR
 ![Inline Code](https://img.shields.io/badge/Inline_Code-104-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-3-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-4-a16207?style=flat-square)
-<!-- CODE_STATISTICS_END -->
+<!-- codometer:end -->

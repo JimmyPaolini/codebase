@@ -8,7 +8,8 @@
  * end — has to stop being replaced: at another block's own territory,
  * never past it.
  */
-export const FOREIGN_ANCHOR_PATTERN = /<!--\s*[A-Z0-9_]+_START\s*-->/;
+export const FOREIGN_ANCHOR_PATTERN =
+  /<!--\s*(?:[A-Za-z0-9_-]+:start|[A-Z0-9_]+_START)\b/i;
 
 // 🚨 Errors
 

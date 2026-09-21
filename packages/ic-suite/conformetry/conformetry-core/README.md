@@ -115,7 +115,7 @@ MIT — see [LICENSE](../../../../LICENSE).
 
 This project was generated from the [nestjs-service-project](../../../../configuration/conformetry-templates/nestjs-service-project) conformetry template.
 
-<!-- CALL_STACKS_START -->
+<!-- callidescope:start -->
 
 ## 🔭 Callidescope
 
@@ -123,7 +123,7 @@ Call stacks traced through `packages/ic-suite/conformetry/conformetry-core`, dee
 
 | Measure | Value |
 | --- | --- |
-| Callables | 0 |
+| Callables | 1 |
 | Files | 10 |
 | Calls traced | 0 |
 | Call stacks | 0 |
@@ -147,7 +147,7 @@ None.
 ### Breadth
 
 None.
-<!-- CALL_STACKS_END -->
+<!-- callidescope:end -->
 
 ## 🕸️ Codependix
 
@@ -208,7 +208,7 @@ graph LR
 ```
 <!-- codependix:end name="codependix-file-imports" -->
 
-<!-- CODE_STATISTICS_START -->
+<!-- codometer:start -->
 
 ## ⏲️ Codometer
 
@@ -422,4 +422,4 @@ graph LR
 ![Inline Code](https://img.shields.io/badge/Inline_Code-74-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-0-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-0-a16207?style=flat-square)
-<!-- CODE_STATISTICS_END -->
+<!-- codometer:end -->
