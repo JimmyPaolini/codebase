@@ -1,4 +1,3 @@
-// cspell:ignore Neighbours
 // ♟️ Constants
 
 import type { Characteristics } from "./characteristics.types";
@@ -12,13 +11,13 @@ export const CHARACTERISTIC_SOURCES: Record<
   "pattern" | "walk"
 > = {
   // Graph
-  components: "walk",
   componentCount: "walk",
+  components: "walk",
   cornerCount: "pattern",
   // Seam
   crossesTheSeam: "walk",
-  cycles: "walk",
   cycleCount: "walk",
+  cycles: "walk",
   density: "pattern",
   // Digit histogram
   dotCount: "pattern",
@@ -26,8 +25,7 @@ export const CHARACTERISTIC_SOURCES: Record<
   embeddedOCount: "pattern",
   // Embedded unit shapes
   embeddedUCount: "pattern",
-  // cspell:ignore Neighbours
-  endsAreLatticeNeighbours: "walk",
+  endsAreLatticeNeighbors: "walk",
   endsOnBorderRules: "walk",
   freeEnds: "walk",
   hasBranching: "pattern",

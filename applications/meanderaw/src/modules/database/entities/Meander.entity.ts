@@ -1,5 +1,3 @@
-// cspell:ignore Neighbours
-
 import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
 
 import { MEANDER_PROVENANCES } from "../database.constants";

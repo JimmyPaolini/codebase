@@ -187,7 +187,7 @@ describe(DrawEnumerationService, () => {
 
         characteristics: [
           "isJunctionFree",
-          "endsAreLatticeNeighbours",
+          "endsAreLatticeNeighbors",
           "endsOnBorderRules",
           "isConnected",
           "isReducible",

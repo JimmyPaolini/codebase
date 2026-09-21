@@ -43,66 +43,39 @@ describe(CodeService, () => {
   describe("directionsAt", () => {
     it("returns bare point if level is below 0", () => {
       const parsed = service.parse("36c9", 3, 2);
+
       expect(service.directionsAt(parsed, -1, 0)).toStrictEqual(BARE);
     });
 
     it("returns bare point if level is beyond maximum levels", () => {
       const parsed = service.parse("36c9", 3, 2);
+
       expect(service.directionsAt(parsed, 2, 0)).toStrictEqual(BARE);
     });
 
     it("returns bare point if column is below 0", () => {
       const parsed = service.parse("36c9", 3, 2);
+
       expect(service.directionsAt(parsed, 0, -1)).toStrictEqual(BARE);
     });
 
     it("returns bare point if column is beyond maximum columns", () => {
       const parsed = service.parse("36c9", 3, 2);
+
       expect(service.directionsAt(parsed, 0, 2)).toStrictEqual(BARE);
     });
 
     it("returns decoded directions if within bounds", () => {
       const parsed = service.parse("36c9", 3, 2);
-      // '3' = 0011 -> south, east, wait... let's check parse output. 
-      // Actually decode(3) = { east: true, north: false, south: false, west: true }
-      // Because 3 = 0x3 = 0011. bits are east=1, north=2, west=4, south=8. Wait no...
-      // TileService.decode is what we want.
-      expect(service.directionsAt(parsed, 0, 0)).toStrictEqual({ east: true, north: false, south: false, west: true });
-    });
-  });
 
-  describe("reduceToUnit", () => {
-    it("returns unmodified code if it has 0 columns", () => {
-      expect(service.reduceToUnit({ columns: 0, digits: "", levels: 1, rows: 2 })).toEqual({ columns: 0, digits: "", levels: 1, rows: 2 });
-    });
-  });
-
-  describe("parse", () => {
-    it("reads a Code at the shape it was given, carrying the interior level count beside it", () => {
-      expect(service.parse("36c9", 3, 2)).toStrictEqual({
-        columns: 2,
-        digits: "36c9",
-        levels: 2,
-        rows: 3,
+      expect(service.directionsAt(parsed, 0, 0)).toStrictEqual({
+        east: true,
+        north: false,
+        south: false,
+        west: true,
       });
     });
 
-    it("refuses a Code whose length disagrees with the rows and columns it was handed", () => {
-      expect(() => service.parse("36c", 3, 2)).toThrow(InvalidCodeLengthError);
-    });
-
-    it("refuses a character outside the hexadecimal alphabet rather than reading it as a bit pattern", () => {
-      expect(() => service.parse("36cz", 3, 2)).toThrow(
-        InvalidCodeCharacterError,
-      );
-    });
-
-    it("accepts an upper-case digit, since a Code names the same point either way", () => {
-      expect(service.parse("36CA", 3, 2).digits).toBe("36CA");
-    });
-  });
-
-  describe("directionsAt", () => {
     it.each([
       ["0", BARE],
       ["3", { ...BARE, east: true, west: true }],
@@ -139,6 +112,113 @@ describe(CodeService, () => {
         ).toStrictEqual(BARE);
       },
     );
+
+    it("returns empty directions when levels are out of bounds", () => {
+      // 1 rows implies 0 levels
+      expect(
+        service.directionsAt(
+          { columns: 1, digits: "0", levels: 0, rows: 1 },
+          0,
+          0,
+        ),
+      ).toStrictEqual({ east: false, north: false, south: false, west: false });
+    });
+
+    it("returns empty directions when columns are out of bounds", () => {
+      const code = service.parse("0", 2, 1); // 2 rows = 1 level
+
+      expect(service.directionsAt(code, 0, -1)).toStrictEqual({
+        east: false,
+        north: false,
+        south: false,
+        west: false,
+      });
+      expect(service.directionsAt(code, 0, 1)).toStrictEqual({
+        east: false,
+        north: false,
+        south: false,
+        west: false,
+      });
+    });
+
+    it("handles out of bounds indices when array lookup fails but coordinates are within limits", () => {
+      // Create an artificial code object with mismatched digits vs dimensions
+      const code = {
+        columns: 2,
+        digits: "f",
+        levels: 1,
+        rows: 2,
+      };
+
+      // The length is 1, but we ask for [0 * 2 + 1] = [1]
+      expect(service.directionsAt(code, 0, 1)).toStrictEqual({
+        east: false,
+        north: false,
+        south: false,
+        west: false,
+      });
+    });
+  });
+
+  describe("reduceToUnit", () => {
+    it("returns unmodified code if it has 0 columns", () => {
+      expect(
+        service.reduceToUnit({ columns: 0, digits: "", levels: 1, rows: 2 }),
+      ).toStrictEqual({ columns: 0, digits: "", levels: 1, rows: 2 });
+    });
+
+    it("finds the smallest repeating sub-tile", () => {
+      const code = service.parse("3366cc99", 5, 2);
+
+      expect(service.reduceToUnit(code)).toStrictEqual({
+        columns: 1,
+        digits: "36c9",
+        levels: 4,
+        rows: 5,
+      });
+    });
+
+    it("returns the original Code if it is not repeating", () => {
+      const code = service.parse("36c9", 5, 1);
+
+      expect(service.reduceToUnit(code)).toStrictEqual(code);
+    });
+
+    it("reduces across multiple repeating pieces", () => {
+      const code = service.parse("36369c9c", 3, 4);
+
+      expect(service.reduceToUnit(code)).toStrictEqual({
+        columns: 2,
+        digits: "369c",
+        levels: 2,
+        rows: 3,
+      });
+    });
+  });
+
+  describe("parse", () => {
+    it("reads a Code at the shape it was given, carrying the interior level count beside it", () => {
+      expect(service.parse("36c9", 3, 2)).toStrictEqual({
+        columns: 2,
+        digits: "36c9",
+        levels: 2,
+        rows: 3,
+      });
+    });
+
+    it("refuses a Code whose length disagrees with the rows and columns it was handed", () => {
+      expect(() => service.parse("36c", 3, 2)).toThrow(InvalidCodeLengthError);
+    });
+
+    it("refuses a character outside the hexadecimal alphabet rather than reading it as a bit pattern", () => {
+      expect(() => service.parse("36cz", 3, 2)).toThrow(
+        InvalidCodeCharacterError,
+      );
+    });
+
+    it("accepts an upper-case digit, since a Code names the same point either way", () => {
+      expect(service.parse("36CA", 3, 2).digits).toBe("36CA");
+    });
   });
 
   describe("spell", () => {
@@ -203,62 +283,6 @@ describe(CodeService, () => {
       expect(service.spellCanonical(buildTile(["e.", "e.", ".."]))).not.toBe(
         service.spellCanonical(buildTile(["e.", ".e", ".."])),
       );
-    });
-  });
-
-  describe("directionsAt", () => {
-    it("returns empty directions when levels are out of bounds", () => {
-      // 1 rows implies 0 levels
-      expect(service.directionsAt({ digits: "0", levels: 0, columns: 1, rows: 1 }, 0, 0)).toStrictEqual({ east: false, north: false, south: false, west: false });
-    });
-
-    it("returns empty directions when columns are out of bounds", () => {
-      const code = service.parse("0", 2, 1); // 2 rows = 1 level
-      expect(service.directionsAt(code, 0, -1)).toStrictEqual({ east: false, north: false, south: false, west: false });
-      expect(service.directionsAt(code, 0, 1)).toStrictEqual({ east: false, north: false, south: false, west: false });
-    });
-    
-    it("handles out of bounds indices when array lookup fails but coordinates are within limits", () => {
-      // Create an artificial code object with mismatched digits vs dimensions
-      const code = {
-        digits: "f",
-        columns: 2,
-        levels: 1,
-        rows: 2
-      };
-      
-      // The length is 1, but we ask for [0 * 2 + 1] = [1]
-      expect(service.directionsAt(code, 0, 1)).toStrictEqual({ east: false, north: false, south: false, west: false });
-    });
-  });
-
-  describe("reduce", () => {
-    it("finds the smallest repeating sub-tile", () => {
-      const code = service.parse("3366cc99", 5, 2);
-
-      expect(service.reduceToUnit(code)).toStrictEqual({
-        columns: 1,
-        digits: "36c9",
-        levels: 4,
-        rows: 5,
-      });
-    });
-
-    it("returns the original Code if it is not repeating", () => {
-      const code = service.parse("36c9", 5, 1);
-
-      expect(service.reduceToUnit(code)).toStrictEqual(code);
-    });
-
-    it("reduces across multiple repeating pieces", () => {
-      const code = service.parse("36369c9c", 3, 4);
-
-      expect(service.reduceToUnit(code)).toStrictEqual({
-        columns: 2,
-        digits: "369c",
-        levels: 2,
-        rows: 3,
-      });
     });
   });
 

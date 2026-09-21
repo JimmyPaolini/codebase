@@ -229,11 +229,11 @@ ${figures}
       const partsA = a[0].split("×");
       const rA = Number(partsA[0]);
       const cA = Number(partsA[1]);
-      
+
       const partsB = b[0].split("×");
       const rB = Number(partsB[0]);
       const cB = Number(partsB[1]);
-      
+
       if (rA !== rB) return rA - rB;
       return cA - cB;
     });

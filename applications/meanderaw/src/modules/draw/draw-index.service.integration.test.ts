@@ -8,11 +8,8 @@ import { DatabaseService } from "../database/database.service";
 import { Meander } from "../database/entities/Meander.entity";
 import { DrawingService } from "../drawing/drawing.service";
 import { GeometryService } from "../geometry/geometry.service";
-
 import { SvgService } from "../svg/svg.service";
-import { SymmetryModule } from "../symmetry/symmetry.module";
 import { SymmetryService } from "../symmetry/symmetry.service";
-
 import { TileService } from "../tile/tile.service";
 
 import { DrawIndexService } from "./draw-index.service";
@@ -64,9 +61,7 @@ describe(DrawIndexService, () => {
   });
 
   afterAll(async () => {
-    if (dataSource) {
-      await dataSource.destroy();
-    }
+    await dataSource.destroy();
   });
 
   /** Every field besides `code` a fixture row does not care about, defaulted so a case only spells out what it means to test. */
@@ -134,9 +129,7 @@ describe(DrawIndexService, () => {
         families: ["whirl"],
       }),
     );
-    await repository.save(
-      record({ code: "2".repeat(1), families: [] }),
-    );
+    await repository.save(record({ code: "2".repeat(1), families: [] }));
 
     const pages = await service.build();
 
