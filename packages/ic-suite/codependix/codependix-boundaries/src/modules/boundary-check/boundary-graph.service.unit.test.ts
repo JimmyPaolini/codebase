@@ -79,19 +79,33 @@ describe(BoundaryGraphService, () => {
     });
   });
 
-  it("gives a NestJS module a name and nothing else", () => {
+  it("gives a NestJS module its name, declaring file, and project", () => {
     const graph = service.buildNestjsGraph({
       ambientModuleNames: [],
       edges: [{ source: "MapModule", target: "DeliveryModule" }],
       isolatedModuleNames: [],
-      moduleNames: ["DeliveryModule", "MapModule"],
+      nodes: [
+        { declaringFile: "src/delivery.module.ts", name: "DeliveryModule" },
+        { declaringFile: "src/map.module.ts", name: "MapModule" },
+      ],
       projectName: "codependix-cli",
     });
 
     expect(graph).toStrictEqual({
       edges: [{ source: "MapModule", target: "DeliveryModule" }],
       level: "nestjsModules",
-      nodes: [{ id: "DeliveryModule" }, { id: "MapModule" }],
+      nodes: [
+        {
+          id: "DeliveryModule",
+          path: "src/delivery.module.ts",
+          project: "codependix-cli",
+        },
+        {
+          id: "MapModule",
+          path: "src/map.module.ts",
+          project: "codependix-cli",
+        },
+      ],
       scope: "codependix-cli",
     });
   });

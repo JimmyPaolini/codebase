@@ -157,10 +157,10 @@ export const LIMIT_VALUE_PATTERN = /^(\d+(?:\.\d+)?)\s*([a-z]*)$/i;
 export const DEFAULT_JSON_INDENTATION = 2;
 
 /** Closing marker of the generated badge block. */
-export const DEFAULT_MARKDOWN_END_MARKER = "<!-- CODE_STATISTICS_END -->";
+export const DEFAULT_MARKDOWN_END_MARKER = "<!-- codometer:end -->";
 
 /** Opening marker of the generated badge block. */
-export const DEFAULT_MARKDOWN_START_MARKER = "<!-- CODE_STATISTICS_START -->";
+export const DEFAULT_MARKDOWN_START_MARKER = "<!-- codometer:start -->";
 
 /**
  * Interpreter used for Python analysis when a configuration names none.

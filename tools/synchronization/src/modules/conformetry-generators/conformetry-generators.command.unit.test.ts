@@ -113,12 +113,12 @@ describe(ConformetryGeneratorsCommand, () => {
     {
       agentsContent: [
         "# Header",
-        "<!-- conformetry-generators-table start -->",
+        "<!-- conformetry:start -->",
         "| Template | Description |",
         "| -------- | ----------- |",
         "| `alpha` | first |",
         "| `beta` | second |",
-        "<!-- conformetry-generators-table end -->",
+        "<!-- conformetry:end -->",
       ].join("\n"),
       expectedLogMessage: "📇 Verified the conformetry generators table",
       generators: [
@@ -128,12 +128,12 @@ describe(ConformetryGeneratorsCommand, () => {
       modeArguments: ["check"],
       readmeContent: [
         "# Header",
-        "<!-- conformetry-generators-table start -->",
+        "<!-- conformetry:start -->",
         "| Template | Description |",
         "| -------- | ----------- |",
         "| `alpha` | first |",
         "| `beta` | second |",
-        "<!-- conformetry-generators-table end -->",
+        "<!-- conformetry:end -->",
       ].join("\n"),
       scenarioName:
         "passes check mode when generated table matches every target file",
@@ -141,22 +141,22 @@ describe(ConformetryGeneratorsCommand, () => {
     {
       agentsContent: [
         "# Header",
-        "<!-- conformetry-generators-table start -->",
+        "<!-- conformetry:start -->",
         "| Template | Description |",
         "| -------- | ----------- |",
         "| `alpha` | first |",
-        "<!-- conformetry-generators-table end -->",
+        "<!-- conformetry:end -->",
       ].join("\n"),
       expectedLogMessage: "📇 Verified the conformetry generators table",
       generators: [{ description: "first", name: "alpha" }],
       modeArguments: [],
       readmeContent: [
         "# Header",
-        "<!-- conformetry-generators-table start -->",
+        "<!-- conformetry:start -->",
         "| Template | Description |",
         "| -------- | ----------- |",
         "| `alpha` | first |",
-        "<!-- conformetry-generators-table end -->",
+        "<!-- conformetry:end -->",
       ].join("\n"),
       scenarioName: "defaults to check mode when no mode is provided",
     },
@@ -188,9 +188,9 @@ describe(ConformetryGeneratorsCommand, () => {
     currentConformetryConfiguration = [{ description: "first", name: "alpha" }];
     const staleContent = [
       "# Header",
-      "<!-- conformetry-generators-table start -->",
+      "<!-- conformetry:start -->",
       "stale",
-      "<!-- conformetry-generators-table end -->",
+      "<!-- conformetry:end -->",
     ].join("\n");
     fileContents.set(agentsFile, staleContent);
     fileContents.set(readmeFile, staleContent);
@@ -223,9 +223,9 @@ describe(ConformetryGeneratorsCommand, () => {
       agentsFile,
       [
         "# Header",
-        "<!-- conformetry-generators-table start -->",
+        "<!-- conformetry:start -->",
         "",
-        "<!-- conformetry-generators-table end -->",
+        "<!-- conformetry:end -->",
       ].join("\n"),
     );
 
@@ -271,11 +271,11 @@ describe(ConformetryGeneratorsCommand, () => {
           readmeFile,
           [
             "# Header",
-            "<!-- conformetry-generators-table start -->",
+            "<!-- conformetry:start -->",
             "| Template | Description |",
             "| -------- | ----------- |",
             "| `stale` | mismatch |",
-            "<!-- conformetry-generators-table end -->",
+            "<!-- conformetry:end -->",
           ].join("\n"),
         );
       },

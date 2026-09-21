@@ -52,20 +52,20 @@ describe(DrawCheckService, () => {
     overrides: Partial<Meander> & Pick<Meander, "id">,
   ): Meander =>
     createMock<Meander>({
+      characteristics: [],
       code: "code",
       columns: 1,
       components: 1,
       cycles: 0,
+      drawingHash: "hash",
       families: [],
       freeEnds: 0,
-
       inkTJunctions: 0,
       inkXJunctions: 0,
-
-      characteristics: [],
-      drawingHash: "hash",
+      lattice: "0",
       pitch: 1,
       provenance: "hardcoded",
+      repeats: 1,
       rows: 2,
       ...overrides,
     });

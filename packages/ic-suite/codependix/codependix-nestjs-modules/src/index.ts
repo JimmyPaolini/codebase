@@ -10,6 +10,7 @@ export { ModuleGraphService } from "./modules/module-graph/module-graph.service"
 export type {
   NestjsModuleGraph,
   NestjsModuleGraphEdge,
+  NestjsModuleGraphNode,
 } from "./modules/module-graph/module-graph.types";
 export {
   NESTJS_MODULES_WORKSPACE_GRAPH_MERMAID_HEADER,
@@ -31,4 +32,7 @@ export {
 } from "./modules/nestjs-project/nestjs-project.constants";
 export { NestjsProjectModule } from "./modules/nestjs-project/nestjs-project.module";
 export { NestjsProjectService } from "./modules/nestjs-project/nestjs-project.service";
-export type { NestjsProject } from "./modules/nestjs-project/nestjs-project.types";
+export type {
+  NestjsProject,
+  NestjsSpelunkedTree,
+} from "./modules/nestjs-project/nestjs-project.types";

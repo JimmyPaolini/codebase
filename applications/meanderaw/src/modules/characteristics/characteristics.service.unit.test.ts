@@ -7,6 +7,7 @@ import { GraphService } from "../graph/graph.service";
 import { SymmetryService } from "../symmetry/symmetry.service";
 import { TileService } from "../tile/tile.service";
 
+import { CharacteristicsFamilyService } from "./characteristics-family.service";
 import { CharacteristicsPathService } from "./characteristics-path.service";
 import { CharacteristicsShapeService } from "./characteristics-shape.service";
 import { CharacteristicsService } from "./characteristics.service";
@@ -46,6 +47,7 @@ describe(CharacteristicsService, () => {
         CodeService,
         GraphService,
         CharacteristicsService,
+        CharacteristicsFamilyService,
         ConnectivityService,
         CharacteristicsPathService,
         CharacteristicsShapeService,
@@ -120,6 +122,19 @@ describe(CharacteristicsService, () => {
             "xCount": 0,
           }
         `);
+    });
+
+    it("evaluates findFreeEnds when parsing nodes to numbers returns NaN", () => {
+      // Direct call to private method to hit the fallback to 0
+      const edges = [
+        { from: "NaN,NaN", orientation: "vertical" as const, to: "1,1" },
+      ];
+      const result = (service as any).findFreeEnds(edges);
+
+      expect(result).toStrictEqual([
+        { column: 0, level: 0 },
+        { column: 1, level: 1 },
+      ]);
     });
 
     it("reports no branching or crossing for a single bare point, which is one component of its own", () => {
@@ -919,6 +934,18 @@ describe(CharacteristicsService, () => {
 
       expect(result.longestHorizontalRun).toBe(1);
       expect(result.longestVerticalRun).toBe(0);
+    });
+  });
+
+  describe("classifyFamilies", () => {
+    it("delegates family classification to CharacteristicsFamilyService", () => {
+      const linesCode = codeService.parse("3333", 3, 2);
+
+      expect(service.classifyFamilies(linesCode)).toStrictEqual(["lines"]);
+
+      const dotsCode = codeService.parse("0000", 3, 2);
+
+      expect(service.classifyFamilies(dotsCode)).toStrictEqual(["dots"]);
     });
   });
 

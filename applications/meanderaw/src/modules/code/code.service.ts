@@ -3,8 +3,10 @@ import { Inject, Injectable } from "@nestjs/common";
 import { SymmetryService } from "../symmetry/symmetry.service";
 
 import {
+  CODE_FORMAT_PATTERN,
   HEXADECIMAL_DIGIT_PATTERN,
   InvalidCodeCharacterError,
+  InvalidCodeFormatError,
   InvalidCodeLengthError,
 } from "./code.constants";
 
@@ -69,8 +71,6 @@ export class CodeService {
     };
   }
 
-  // 🌎 Public Methods
-
   /**
    * Checks if a column span repeats exactly to fill the Code.
    */
@@ -85,6 +85,59 @@ export class CodeService {
     }
     return true;
   }
+
+  /** Parses bare hexadecimal digits with explicit dimensions into a `ParsedCode`. */
+  private parseBare(code: string, rows: number, columns: number): ParsedCode {
+    this.validateDigits(code, rows, columns);
+
+    return {
+      columns,
+      digits: code.toLowerCase(),
+      levels: Math.max(0, rows - 1),
+      repeats: 1,
+      rows,
+    };
+  }
+
+  /** Parses a self-contained code string match into a `ParsedCode`. */
+  private parseFormatted(match: RegExpExecArray): ParsedCode {
+    const {
+      columns: rawColumns = "",
+      digits: rawDigits = "",
+      repeats: rawRepeats = "1",
+      rows: rawRows = "",
+    } = match.groups ?? {};
+    const parsedColumns = Number.parseInt(rawColumns, 10);
+    const parsedRows = Number.parseInt(rawRows, 10);
+    const repeats = Number.parseInt(rawRepeats, 10);
+    const digits = rawDigits.toLowerCase();
+
+    this.validateDigits(digits, parsedRows, parsedColumns);
+
+    return {
+      columns: parsedColumns,
+      digits,
+      levels: Math.max(0, parsedRows - 1),
+      repeats,
+      rows: parsedRows,
+    };
+  }
+
+  /** Validates that digits match expected length for the shape and are valid hexadecimal. */
+  private validateDigits(digits: string, rows: number, columns: number): void {
+    const levels = Math.max(0, rows - 1);
+    if (digits.length !== levels * columns) {
+      throw new InvalidCodeLengthError(digits, rows, columns);
+    }
+
+    for (const character of digits) {
+      if (!HEXADECIMAL_DIGIT_PATTERN.test(character)) {
+        throw new InvalidCodeCharacterError(character, digits);
+      }
+    }
+  }
+
+  // 🌎 Public Methods
 
   /**
    * The canonical phase of a Code is the one that minimizes seamComponents,
@@ -139,27 +192,38 @@ export class CodeService {
   }
 
   /**
-   * Reads `code` at the given shape, refusing a length that disagrees with
-   * `rows` and `columns` or a character outside the hexadecimal alphabet.
-   *
-   * Every character is checked here rather than where it is read, so a
-   * malformed Code fails once at the boundary instead of producing an
-   * `undefined` bit somewhere downstream.
+   * Formats a `ParsedCode` into the self-contained Code string in the format
+   * `{columns}x{rows}y{digits}` (or `{columns}x{rows}y{digits}r{repeats}` when `repeats > 1`),
+   * with 2-digit zero-padding on `columns`, `rows`, and `repeats`.
    */
-  parse(code: string, rows: number, columns: number): ParsedCode {
-    const levels = Math.max(0, rows - 1);
+  format(code: ParsedCode): string {
+    const columns = String(code.columns).padStart(2, "0");
+    const rows = String(code.rows).padStart(2, "0");
+    const repeatSuffix =
+      code.repeats > 1 ? `r${String(code.repeats).padStart(2, "0")}` : "";
 
-    if (code.length !== levels * columns) {
-      throw new InvalidCodeLengthError(code, rows, columns);
+    return `${columns}x${rows}y${code.digits.toLowerCase()}${repeatSuffix}`;
+  }
+
+  /**
+   * Reads `code`, either as a self-contained string formatted as
+   * `{columns}x{rows}y{digits}r{repeats}` or as bare hexadecimal digits at the given
+   * `rows` and `columns`.
+   *
+   * Refuses a length that disagrees with `rows` and `columns` or a character
+   * outside the hexadecimal alphabet.
+   */
+  parse(code: string, rows?: number, columns?: number): ParsedCode {
+    const match = CODE_FORMAT_PATTERN.exec(code);
+    if (match !== null) {
+      return this.parseFormatted(match);
     }
 
-    for (const character of code) {
-      if (!HEXADECIMAL_DIGIT_PATTERN.test(character)) {
-        throw new InvalidCodeCharacterError(character, code);
-      }
+    if (rows !== undefined && columns !== undefined) {
+      return this.parseBare(code, rows, columns);
     }
 
-    return { columns, digits: code, levels, rows };
+    throw new InvalidCodeFormatError(code);
   }
 
   /**
@@ -167,7 +231,7 @@ export class CodeService {
    * column span that divides the Code's columns and repeats exactly to fill them.
    */
   reduceToUnit(code: ParsedCode): ParsedCode {
-    const { columns, digits, levels, rows } = code;
+    const { columns, digits, levels, repeats, rows } = code;
 
     for (let width = 1; width <= columns; width += 1) {
       if (columns % width !== 0) {
@@ -187,6 +251,7 @@ export class CodeService {
           columns: width,
           digits: reducedDigits,
           levels,
+          repeats,
           rows,
         };
       }
@@ -222,18 +287,13 @@ export class CodeService {
   }
 
   /**
-   * Names a tile by its own points: one hexadecimal character each, in
-   * reading order, worth `8` for `north`, `4` for `south`, `2` for `east`
-   * and `1` for `west`.
-   *
-   * It names a tile completely — the points determine every edge, since each
-   * one owns its `east` and its `south` — so two tiles of one shape share a
-   * string only when they are the same tile. It does *not* name the shape:
-   * a Code carries no row count and no column span of its own, which is why
-   * both travel beside it everywhere one is stored or read.
+   * Names a tile as a self-contained Code string in the format
+   * `{columns}x{rows}y{digits}r{repeats}`: one hexadecimal character per point,
+   * in reading order, worth `8` for `north`, `4` for `south`, `2` for `east`
+   * and `1` for `west`, with 2-digit zero-padding on columns, rows, and repeats.
    */
-  spell(tile: Tile): string {
-    return tile.points
+  spell(tile: Tile, repeats = 1): string {
+    const digits = tile.points
       .flatMap((row) =>
         row.map((point) =>
           (
@@ -245,21 +305,23 @@ export class CodeService {
         ),
       )
       .join("");
+
+    return this.format({
+      columns: tile.columns,
+      digits,
+      levels: Math.max(0, tile.rows - 1),
+      repeats,
+      rows: tile.rows,
+    });
   }
 
   /**
    * The Code every tile in a symmetry class shares: {@link spell} of the one
    * member `SymmetryService.canonicalTile` picks. Two tiles draw the
    * same pattern exactly when their canonical Codes match.
-   *
-   * It is not the deduplication key the enumeration folds on. That key has
-   * to be readable by `TileEnumerationService`, which sits upstream of this
-   * service, and `SymmetryService.edgeKey` separates two classes of
-   * one shape exactly as this does — so how a Code is spelled stays a
-   * question this module answers alone.
    */
-  spellCanonical(tile: Tile): string {
-    return this.spell(this.symmetryService.canonicalTile(tile));
+  spellCanonical(tile: Tile, repeats = 1): string {
+    return this.spell(this.symmetryService.canonicalTile(tile), repeats);
   }
 
   /**

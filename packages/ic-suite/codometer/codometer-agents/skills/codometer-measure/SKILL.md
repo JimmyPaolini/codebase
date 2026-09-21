@@ -139,8 +139,8 @@ Two file sinks — `--output-json [path]` and `--output-markdown [path]` —
 neither of which implies the other or implies printing.
 
 `--output-markdown` writes into a file somebody else may have written the rest
-of. The block sits between two markers, named `CODE_STATISTICS_START` /
-`CODE_STATISTICS_END` unless the configuration renames them; it is spliced
+of. The block sits between two markers, named `<!-- codometer:start -->` /
+`<!-- codometer:end -->` unless the configuration renames them; it is spliced
 between them when they are there, appended with them when they are not, and
 the file is created when it does not exist.
 

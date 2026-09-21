@@ -9,6 +9,7 @@ import {
   ConfigurationService,
 } from "@codependix/configuration";
 import {
+  FileImportsWorkspaceGraphService,
   PythonImportGraphService,
   PythonImportParserService,
   PythonProjectService,
@@ -19,13 +20,18 @@ import {
 } from "@codependix/file-imports";
 import {
   ModuleGraphService,
+  NestjsModulesWorkspaceGraphService,
   NestjsProjectService,
 } from "@codependix/nestjs-modules";
 import {
   NeighborhoodService,
   WorkspaceGraphService,
 } from "@codependix/nx-projects";
-import { AnchorsService, DeliveryService } from "@codependix/output";
+import {
+  AnchorsService,
+  DeliveryService,
+  PathQueryService,
+} from "@codependix/output";
 import { NestFactory } from "@nestjs/core";
 
 import { LoggerService } from "@codebase/logger";
@@ -139,3 +145,22 @@ export const boundariesService = new BoundariesService(
 
 /** Renders boundary violations into the lines a run prints. */
 export const boundaryReportService = new BoundaryReportService();
+
+/** Combines project-level file imports into a workspace graph. */
+export const fileImportsWorkspaceGraphService =
+  new FileImportsWorkspaceGraphService();
+
+/** Combines NestJS module graphs into a workspace graph. */
+export const nestjsModulesWorkspaceGraphService =
+  new NestjsModulesWorkspaceGraphService();
+
+/** Finds shortest paths across codependix graph levels and renders results. */
+export const pathQueryService = new PathQueryService(
+  fileImportsWorkspaceGraphService,
+  moduleGraphService,
+  nestjsModulesWorkspaceGraphService,
+  nestjsProjectService,
+  pythonService,
+  typescriptService,
+  workspaceGraphService,
+);

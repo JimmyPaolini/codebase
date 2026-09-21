@@ -127,7 +127,7 @@ graph LR
 ```
 <!-- codependix:end name="codependix-file-imports" -->
 
-<!-- CALL_STACKS_START -->
+<!-- callidescope:start -->
 
 ## 🔭 Callidescope
 
@@ -210,9 +210,9 @@ What this project is judged against, as declared in its own `callidescope.config
 | `ConfigurationService.touchesFiles` | 1 | `FlagResolutionService.touchesFiles` | `packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:395` |
 
 </details>
-<!-- CALL_STACKS_END -->
+<!-- callidescope:end -->
 
-<!-- CODE_STATISTICS_START -->
+<!-- codometer:start -->
 
 ## ⏲️ Codometer
 
@@ -426,4 +426,4 @@ What this project is judged against, as declared in its own `callidescope.config
 ![Inline Code](https://img.shields.io/badge/Inline_Code-73-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-0-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-0-a16207?style=flat-square)
-<!-- CODE_STATISTICS_END -->
+<!-- codometer:end -->

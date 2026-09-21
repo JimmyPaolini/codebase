@@ -147,7 +147,7 @@ graph LR
 ```
 <!-- codependix:end name="codependix-file-imports" -->
 
-<!-- CALL_STACKS_START -->
+<!-- callidescope:start -->
 
 ## 🔭 Callidescope
 
@@ -244,9 +244,9 @@ None.
 | `TypescriptService.renderMermaid` | 1 | `TypescriptImportGraphService.renderMermaid` | `packages/ic-suite/codependix/codependix-file-imports/src/modules/typescript/typescript.service.ts:64` |
 
 </details>
-<!-- CALL_STACKS_END -->
+<!-- callidescope:end -->
 
-<!-- CODE_STATISTICS_START -->
+<!-- codometer:start -->
 
 ## ⏲️ Codometer
 
@@ -460,4 +460,4 @@ None.
 ![Inline Code](https://img.shields.io/badge/Inline_Code-73-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-0-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-0-a16207?style=flat-square)
-<!-- CODE_STATISTICS_END -->
+<!-- codometer:end -->

@@ -1,6 +1,7 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
+import { CharacteristicsFamilyService } from "../characteristics/characteristics-family.service";
 import { CharacteristicsPathService } from "../characteristics/characteristics-path.service";
 import { CharacteristicsShapeService } from "../characteristics/characteristics-shape.service";
 import { CharacteristicsService } from "../characteristics/characteristics.service";
@@ -31,6 +32,7 @@ describe(DrawRecordService, () => {
         DrawRecordService,
         GeometryService,
         CharacteristicsService,
+        CharacteristicsFamilyService,
         CharacteristicsPathService,
         CharacteristicsShapeService,
         ConnectivityService,
@@ -60,57 +62,73 @@ describe(DrawRecordService, () => {
 
       expect({ ...record, drawingHash: record.drawingHash.slice(0, 4) })
         .toMatchInlineSnapshot(`
-        {
-          "characteristics": [
-            "isJunctionFree",
-            "endsAreLatticeNeighbors",
-            "endsOnBorderRules",
-            "isConnected",
-            "isReducible",
-            "isSingleArc",
-          ],
-          "code": "4488",
-          "columns": 2,
-          "componentCount": 1,
-          "components": 1,
-          "cornerCount": 0,
-          "cycleCount": 0,
-          "cycles": 0,
-          "density": 1,
-          "dotCount": 0,
-          "drawingHash": "8fba",
-          "edgeCount": 1,
-          "embeddedOCount": 0,
-          "embeddedUCount": 0,
-          "families": [],
-          "freeEnds": 2,
-          "horizontalDashCount": 0,
-          "horizontalPointCount": 0,
-          "inkPointCount": 2,
-          "inkTJunctions": 0,
-          "inkXJunctions": 0,
-          "lCount": 0,
-          "longestHorizontalRun": 0,
-          "longestVerticalRun": 1,
-          "negativeTJunctions": 0,
-          "negativeXJunctions": 0,
-          "oCount": 0,
-          "pitch": 1,
-          "plusCount": 0,
-          "provenance": "enumerated",
-          "rows": 3,
-          "seamComponents": 0,
-          "seamCycles": 0,
-          "seamTJunctions": 0,
-          "seamXJunctions": 0,
-          "shapeICount": 1,
-          "tCount": 0,
-          "uCount": 0,
-          "verticalDashCount": 0,
-          "verticalPointCount": 0,
-          "xCount": 0,
-        }
-      `);
+          {
+            "characteristics": [
+              "isJunctionFree",
+              "endsAreLatticeNeighbors",
+              "endsOnBorderRules",
+              "isConnected",
+              "isReducible",
+              "isSingleArc",
+            ],
+            "code": "02x03y4488",
+            "columns": 2,
+            "componentCount": 1,
+            "components": 1,
+            "cornerCount": 0,
+            "cycleCount": 0,
+            "cycles": 0,
+            "density": 1,
+            "dotCount": 0,
+            "drawingHash": "8fba",
+            "edgeCount": 1,
+            "embeddedOCount": 0,
+            "embeddedUCount": 0,
+            "families": [
+              "bars",
+            ],
+            "freeEnds": 2,
+            "horizontalDashCount": 0,
+            "horizontalPointCount": 0,
+            "inkPointCount": 2,
+            "inkTJunctions": 0,
+            "inkXJunctions": 0,
+            "lCount": 0,
+            "lattice": "4488",
+            "longestHorizontalRun": 0,
+            "longestVerticalRun": 1,
+            "negativeTJunctions": 0,
+            "negativeXJunctions": 0,
+            "oCount": 0,
+            "pitch": 2,
+            "plusCount": 0,
+            "provenance": "enumerated",
+            "repeats": 1,
+            "rows": 3,
+            "seamComponents": 0,
+            "seamCycles": 0,
+            "seamTJunctions": 0,
+            "seamXJunctions": 0,
+            "shapeICount": 1,
+            "tCount": 0,
+            "uCount": 0,
+            "verticalDashCount": 0,
+            "verticalPointCount": 0,
+            "xCount": 0,
+          }
+        `);
+    });
+
+    it("records earned families for lines, dots, and mesh codes", () => {
+      expect(
+        service.record("3333", { columns: 2, rows: 3 }, "enumerated").families,
+      ).toStrictEqual(["lines"]);
+      expect(
+        service.record("0000", { columns: 2, rows: 3 }, "enumerated").families,
+      ).toStrictEqual(["dots"]);
+      expect(
+        service.record("77bb", { columns: 2, rows: 3 }, "enumerated").families,
+      ).toStrictEqual(["mesh"]);
     });
 
     it("records empty families and specific characteristics where a Code's structure earns them", () => {

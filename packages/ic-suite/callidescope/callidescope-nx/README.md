@@ -355,6 +355,7 @@ flowchart LR
   ReportFindingsModule
   ReportModule
   RunConfigurationModule
+  RunPlanModule
   SignaturesModule
   WorkspaceModule
   WriteDestinationsModule
@@ -382,8 +383,8 @@ flowchart LR
   CallidescopeModule --> WorkspaceModule
   CallidescopeModule --> WriteDestinationsModule
   ConfigurationModule --> ConfigurationFileModule
-  ConfigurationModule --> FlagResolutionModule
   ConfigurationModule --> InputModule
+  ConfigurationModule --> RunPlanModule
   EdgesModule --> CallablesModule
   EdgesModule --> ClassesModule
   EdgesModule --> ProgramModule
@@ -407,6 +408,7 @@ flowchart LR
   ProjectReportsModule --> SignaturesModule
   RunConfigurationModule --> ConfigurationModule
   RunConfigurationModule --> OptionsModule
+  RunPlanModule --> FlagResolutionModule
   WriteDestinationsModule --> OutputJsonModule
   WriteDestinationsModule --> OutputMarkdownModule
   WriteDestinationsModule --> ReportModule
@@ -567,7 +569,7 @@ graph LR
 ```
 <!-- codependix:end name="codependix-file-imports" -->
 
-<!-- CODE_STATISTICS_START -->
+<!-- codometer:start -->
 
 ## ⏲️ Codometer
 
@@ -781,9 +783,9 @@ graph LR
 ![Inline Code](https://img.shields.io/badge/Inline_Code-105-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-0-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-0-a16207?style=flat-square)
-<!-- CODE_STATISTICS_END -->
+<!-- codometer:end -->
 
-<!-- CALL_STACKS_START -->
+<!-- callidescope:start -->
 
 ## 🔭 Callidescope
 
@@ -1034,4 +1036,4 @@ What this project is judged against, as declared in its own `callidescope.config
 | `depthExecutor` | 1 | `runAddressExecutor` | `packages/ic-suite/callidescope/callidescope-nx/src/executors/depth/executor.ts:15` |
 
 </details>
-<!-- CALL_STACKS_END -->
+<!-- callidescope:end -->

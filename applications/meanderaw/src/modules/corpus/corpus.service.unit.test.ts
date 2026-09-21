@@ -74,17 +74,23 @@ describe(CorpusService, () => {
 
   beforeEach(() => {
     vi.mocked(codeService.parse).mockImplementation((code, rows, columns) => ({
-      columns,
+      columns: columns ?? 1,
       digits: code,
-      levels: rows - 1,
-      rows,
+      levels: (rows ?? 2) - 1,
+      repeats: 1,
+      rows: rows ?? 2,
     }));
+    vi.mocked(codeService.format).mockImplementation(
+      (code) =>
+        `${String(code.columns).padStart(2, "0")}x${String(code.rows).padStart(2, "0")}y${code.digits}${code.repeats > 1 ? `r${String(code.repeats).padStart(2, "0")}` : ""}`,
+    );
     vi.mocked(codeService.canonicalPhase).mockImplementation(
       (parsed) => parsed,
     );
     vi.mocked(codeService.tile).mockReturnValue(tile);
     vi.mocked(drawingService.render).mockReturnValue("<svg>fixture</svg>\n");
     vi.mocked(characteristicsService.compute).mockReturnValue(characteristics);
+    vi.mocked(characteristicsService.classifyFamilies).mockReturnValue([]);
     vi.mocked(enumerationService.isAdmitted).mockReturnValue(false);
     vi.mocked(databaseService.findOneByLattice).mockResolvedValue(null);
     vi.mocked(databaseService.save).mockResolvedValue(savedMeander);
@@ -131,7 +137,7 @@ describe(CorpusService, () => {
 
       expect(databaseService.save).toHaveBeenCalledWith(
         expect.objectContaining({
-          code: "3",
+          code: "03x04y3",
           columns: 3,
           components: 1,
           cycles: 0,
@@ -144,8 +150,10 @@ describe(CorpusService, () => {
           characteristics: [],
           drawingHash:
             "8fa0825a9fafc5c9cc0fa1377d44f9c63d0113001d1fe09388da64ebb410dd7d",
+          lattice: "3",
           pitch: 3,
           provenance: "hardcoded",
+          repeats: 1,
           rows: 4,
         }),
       );
@@ -179,7 +187,7 @@ describe(CorpusService, () => {
       ]);
 
       expect(
-        vi.mocked(databaseService.save).mock.calls.map(([row]) => row.code),
+        vi.mocked(databaseService.save).mock.calls.map(([row]) => row.lattice),
       ).toStrictEqual(["6", "5"]);
     });
 

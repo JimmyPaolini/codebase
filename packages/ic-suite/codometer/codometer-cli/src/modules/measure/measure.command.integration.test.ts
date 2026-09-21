@@ -231,7 +231,7 @@ describe("measure command over a fixture directory", () => {
   });
 
   it("spliced the badge block into the file it was pointed at", () => {
-    expect(firstReadme).toContain("<!-- CODE_STATISTICS_START -->");
+    expect(firstReadme).toContain("<!-- codometer:start -->");
     expect(firstReadme).toContain("![Lines of Code]");
     expect(firstReadme).not.toContain("\nold\n");
   });

@@ -61,11 +61,10 @@ export interface BoundaryGraph {
  * One node in a graph, with whatever a level knows about it.
  *
  * One shape for three vocabularies: an Nx project has a name, a root, and
- * tags; a file has a project-relative path; a NestJS module has only a class
- * name, since `NestjsModuleGraph` carries no file path at all. Every field
- * beyond `id` is therefore optional, and a selector naming one a level does
- * not carry matches nothing there rather than everything — see
- * `BoundarySelectorService`.
+ * tags; a file has a project-relative path and project; a NestJS module has a
+ * class name, declaring file path, and project. Every field beyond `id` is
+ * therefore optional, and a selector naming one a level does not carry
+ * matches nothing there rather than everything — see `BoundarySelectorService`.
  *
  * No `kind` field: the graph already states its `level`, and a second field
  * saying the same thing is a second thing that can be wrong.

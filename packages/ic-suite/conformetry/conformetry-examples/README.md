@@ -295,19 +295,19 @@ graph LR
 _Dashed edges are dependencies Nx inferred from configuration rather than from code._
 <!-- codependix:end name="codependix-nx-projects" -->
 
-### File Imports
-
-<!-- codependix:start name="codependix-file-imports" -->
-_This project has no internal file imports._
-<!-- codependix:end name="codependix-file-imports" -->
-
 ### NestJS Module Graph
 
 <!-- codependix:start name="codependix-nestjs-modules" -->
 _This project defines no NestJS modules to graph._
 <!-- codependix:end name="codependix-nestjs-modules" -->
 
-<!-- CODE_STATISTICS_START -->
+### File Imports
+
+<!-- codependix:start name="codependix-file-imports" -->
+_This project has no internal file imports._
+<!-- codependix:end name="codependix-file-imports" -->
+
+<!-- codometer:start -->
 
 ## ⏲️ Codometer
 
@@ -517,9 +517,9 @@ _This project defines no NestJS modules to graph._
 ![Inline Code](https://img.shields.io/badge/Inline_Code-307-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-2-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-0-a16207?style=flat-square)
-<!-- CODE_STATISTICS_END -->
+<!-- codometer:end -->
 
-<!-- CALL_STACKS_START -->
+<!-- callidescope:start -->
 
 ## 🔭 Callidescope
 
@@ -590,4 +590,4 @@ What this project is judged against. `declared` is the number in this project's 
 ### Possibly misplaced
 
 None.
-<!-- CALL_STACKS_END -->
+<!-- callidescope:end -->

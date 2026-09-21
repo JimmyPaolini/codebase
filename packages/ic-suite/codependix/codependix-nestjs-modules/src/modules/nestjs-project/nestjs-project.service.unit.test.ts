@@ -243,7 +243,12 @@ describe(NestjsProjectService, () => {
         buildProject("testing/main.module.ts"),
       );
 
-      expect(tree).toStrictEqual(exploredTree);
+      expect(tree).toStrictEqual([
+        {
+          ...exploredTree[0],
+          declaringFile: "testing/main.module.ts",
+        },
+      ]);
       expect(exploredRootModules[0]).toBe(MainModule);
       expect(exploredRootModules[0]).toHaveProperty("name", "MainModule");
     });
@@ -299,6 +304,33 @@ describe(NestjsProjectService, () => {
       workspaceFileEntries.add("module-graph.service.ts");
       workspaceFileEntries.add("module-graph.module.ts");
     }
+
+    it("attaches declaring files to explored library modules", async () => {
+      mockApplicationContext();
+      mockPackageTree();
+      exploredTree = [
+        {
+          controllers: [],
+          exports: [],
+          imports: [],
+          name: "ModuleGraphModule",
+          providers: {},
+        },
+      ];
+
+      const tree = await service.exploreProject(buildProject(undefined));
+
+      expect(tree).toStrictEqual([
+        {
+          controllers: [],
+          declaringFile: "src/modules/module-graph/module-graph.module.ts",
+          exports: [],
+          imports: [],
+          name: "ModuleGraphModule",
+          providers: {},
+        },
+      ]);
+    });
 
     it("roots a library package in a synthetic module built from its own", async () => {
       mockApplicationContext();

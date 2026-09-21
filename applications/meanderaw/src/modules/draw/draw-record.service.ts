@@ -9,7 +9,6 @@ import { DrawingService } from "../drawing/drawing.service";
 import type {
   MeanderProvenance,
   MeanderRecord,
-  MeanderShape,
 } from "../database/database.types";
 
 /**
@@ -54,12 +53,17 @@ export class DrawRecordService {
   /** The row one Code describes at one shape, every field of it derived from that Code alone. */
   record(
     code: string,
-    shape: MeanderShape,
-    provenance: MeanderProvenance,
+    shape: {
+      columns?: number | undefined;
+      repeats?: number | undefined;
+      rows?: number | undefined;
+    } = {},
+    provenance: MeanderProvenance = "hardcoded",
   ): MeanderRecord {
-    const { columns, rows } = shape;
-    const parsed = this.codeService.parse(code, rows, columns);
-    const canonical = this.codeService.canonicalPhase(parsed, (phase) =>
+    const parsed = this.codeService.parse(code, shape.rows, shape.columns);
+    const repeats = shape.repeats ?? parsed.repeats;
+    const withRepeats = { ...parsed, repeats };
+    const canonical = this.codeService.canonicalPhase(withRepeats, (phase) =>
       this.characteristicsService.seamComponents(phase),
     );
     const characteristics = this.characteristicsService.compute(canonical);
@@ -85,12 +89,15 @@ export class DrawRecordService {
       // type-coverage:ignore-next-line
       ...(numericCharacteristics as unknown as MeanderRecord),
       characteristics: booleanKeys,
-      code: canonical.digits,
-      columns,
+      code: this.codeService.format(canonical),
+      columns: canonical.columns,
       drawingHash,
-      families: [],
+      families: this.characteristicsService.classifyFamilies(canonical),
+      lattice: canonical.digits,
+      pitch: canonical.columns,
       provenance,
-      rows,
+      repeats: canonical.repeats,
+      rows: canonical.rows,
     };
   }
 }

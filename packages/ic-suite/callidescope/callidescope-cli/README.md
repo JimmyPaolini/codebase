@@ -607,7 +607,7 @@ MIT — see [LICENSE](../../../../LICENSE).
 
 This project was generated from the [nestjs-command-project](../../../../configuration/conformetry-templates/nestjs-command-project) conformetry template.
 
-<!-- CALL_STACKS_START -->
+<!-- callidescope:start -->
 
 ## 🔭 Callidescope
 
@@ -1279,7 +1279,7 @@ What this project is judged against, as declared in its own `callidescope.config
 | `LimitsCommand.parseConfig` | 1 | `ConfigurationService.parseOptionalOption` | `packages/ic-suite/callidescope/callidescope-cli/src/modules/limits/limits.command.ts:70` |
 
 </details>
-<!-- CALL_STACKS_END -->
+<!-- callidescope:end -->
 
 ## 🕸️ Codependix
 
@@ -1343,6 +1343,7 @@ flowchart LR
   ProjectReportsModule
   ReportFindingsModule
   ReportModule
+  RunPlanModule
   SignaturesModule
   WorkspaceModule
   WriteDestinationsModule
@@ -1371,8 +1372,8 @@ flowchart LR
   CallidescopeModule --> WorkspaceModule
   CallidescopeModule --> WriteDestinationsModule
   ConfigurationModule --> ConfigurationFileModule
-  ConfigurationModule --> FlagResolutionModule
   ConfigurationModule --> InputModule
+  ConfigurationModule --> RunPlanModule
   DepthModule --> AddressLookupModule
   DepthModule --> AddressReportModule
   DepthModule --> ConfigurationModule
@@ -1396,6 +1397,7 @@ flowchart LR
   ProgramModule --> WorkspaceModule
   ProjectReportsModule --> GraphModule
   ProjectReportsModule --> SignaturesModule
+  RunPlanModule --> FlagResolutionModule
   WriteDestinationsModule --> OutputJsonModule
   WriteDestinationsModule --> OutputMarkdownModule
   WriteDestinationsModule --> ReportModule
@@ -1532,7 +1534,7 @@ graph LR
 ```
 <!-- codependix:end name="codependix-file-imports" -->
 
-<!-- CODE_STATISTICS_START -->
+<!-- codometer:start -->
 
 ## ⏲️ Codometer
 
@@ -1746,4 +1748,4 @@ graph LR
 ![Inline Code](https://img.shields.io/badge/Inline_Code-80-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-0-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-0-a16207?style=flat-square)
-<!-- CODE_STATISTICS_END -->
+<!-- codometer:end -->

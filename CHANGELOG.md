@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.17.0](https://github.com/JimmyPaolini/codebase/compare/v2.16.0...v2.17.0) (2026-09-21)
+
+### ✨ Features
+
+* **codependix:** ✨ add a path command that reports how one node reaches another ([#1018](https://github.com/JimmyPaolini/codebase/issues/1018)) ([f7a1170](https://github.com/JimmyPaolini/codebase/commit/f7a11706a0e8f1559d880d021c6ee8dc9f569133)), closes [#924](https://github.com/JimmyPaolini/codebase/issues/924) [#904](https://github.com/JimmyPaolini/codebase/issues/904)
+* **codependix:** ✨ give a nestjs module node its declaring file ([#1017](https://github.com/JimmyPaolini/codebase/issues/1017)) ([0f6736c](https://github.com/JimmyPaolini/codebase/commit/0f6736c14e3c1b83e1a644b2f94b6c93c5451320)), closes [#938](https://github.com/JimmyPaolini/codebase/issues/938) [#938](https://github.com/JimmyPaolini/codebase/issues/938) [#940](https://github.com/JimmyPaolini/codebase/issues/940) [#939](https://github.com/JimmyPaolini/codebase/issues/939) [#941](https://github.com/JimmyPaolini/codebase/issues/941) [#926](https://github.com/JimmyPaolini/codebase/issues/926) [#938](https://github.com/JimmyPaolini/codebase/issues/938) [#939](https://github.com/JimmyPaolini/codebase/issues/939) [#940](https://github.com/JimmyPaolini/codebase/issues/940) [#941](https://github.com/JimmyPaolini/codebase/issues/941) [#904](https://github.com/JimmyPaolini/codebase/issues/904)
+* **codependix:** ✨ report stale exports by destination, anchor, and difference ([#1019](https://github.com/JimmyPaolini/codebase/issues/1019)) ([487cb80](https://github.com/JimmyPaolini/codebase/commit/487cb80cd6b8730bbedc21d7e7d1b263bb0613ff)), closes [#925](https://github.com/JimmyPaolini/codebase/issues/925) [#904](https://github.com/JimmyPaolini/codebase/issues/904)
+* **deployments,documentation:** ✨ combine push releases into continuous deployment workflow ([#1021](https://github.com/JimmyPaolini/codebase/issues/1021)) ([2282c9b](https://github.com/JimmyPaolini/codebase/commit/2282c9b4ae14de9432dabb31212feec6063c78c0)), closes [#996](https://github.com/JimmyPaolini/codebase/issues/996) [#991](https://github.com/JimmyPaolini/codebase/issues/991)
+* **deployments:** ✨ validate commit message and governance on push to main ([#1024](https://github.com/JimmyPaolini/codebase/issues/1024)) ([9b1b2ef](https://github.com/JimmyPaolini/codebase/commit/9b1b2ef36787103d6cecb7a315862672faf1dc98))
+* **meanderaw:** ✨ bake dimensions and repeats into meander codes ([#1022](https://github.com/JimmyPaolini/codebase/issues/1022)) ([9ea2c80](https://github.com/JimmyPaolini/codebase/commit/9ea2c804e0c0f430721ca970e41bc9eb722a09ca)), closes [#1013](https://github.com/JimmyPaolini/codebase/issues/1013)
+* **meanderaw:** ✨ formalize lines, bars, mesh, and dots meander families ([#1047](https://github.com/JimmyPaolini/codebase/issues/1047)) ([e5e786d](https://github.com/JimmyPaolini/codebase/commit/e5e786d6f51f0f9c2da12f969c99b7b91e256f6b))
+
+### 📝 Documentation
+
+* **callidescope,codometer,conformetry:** 📝 remove orphaned codependix anchor blocks ([#1016](https://github.com/JimmyPaolini/codebase/issues/1016)) ([dadd4e3](https://github.com/JimmyPaolini/codebase/commit/dadd4e34e1394b1dc22884cfcc4e9c7b86f32279)), closes [#923](https://github.com/JimmyPaolini/codebase/issues/923) [#904](https://github.com/JimmyPaolini/codebase/issues/904)
+* **codependix:** 📝 rewrite the navigate skill to drive the command line ([#1020](https://github.com/JimmyPaolini/codebase/issues/1020)) ([2d2a6e1](https://github.com/JimmyPaolini/codebase/commit/2d2a6e1ea752e3c45ea3362b673e7475548bcd45)), closes [#927](https://github.com/JimmyPaolini/codebase/issues/927) [#904](https://github.com/JimmyPaolini/codebase/issues/904)
+
+### ♻️ Code Refactoring
+
+* **ic-suite:** ♻️ unify markdown anchor markers across ic-suite toolchains ([#1026](https://github.com/JimmyPaolini/codebase/issues/1026)) ([d89e544](https://github.com/JimmyPaolini/codebase/commit/d89e5448255fda29210dc1106b9478dd2ff1c095)), closes [#904](https://github.com/JimmyPaolini/codebase/issues/904)
+
 ## [2.16.0](https://github.com/JimmyPaolini/codebase/compare/v2.15.0...v2.16.0) (2026-09-21)
 
 ### ✨ Features

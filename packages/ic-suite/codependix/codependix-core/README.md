@@ -44,21 +44,29 @@ graph LR
   file_eslint_config_ts["eslint.config.ts"]
   file_src_index_ts["src/index.ts"]
   file_src_index_unit_test_ts["src/index.unit.test.ts"]
-  file_src_lib_results_types_ts["src/lib/results.types.ts"]
-  file_src_lib_run_types_ts["src/lib/run.types.ts"]
+  file_src_modules_codependix_core_codependix_core_constants_ts["src/modules/codependix-core/codependix-core.constants.ts"]
+  file_src_modules_codependix_core_codependix_core_module_ts["src/modules/codependix-core/codependix-core.module.ts"]
+  file_src_modules_codependix_core_codependix_core_service_ts["src/modules/codependix-core/codependix-core.service.ts"]
+  file_src_modules_codependix_core_codependix_core_service_unit_test_ts["src/modules/codependix-core/codependix-core.service.unit.test.ts"]
+  file_src_modules_codependix_core_codependix_core_types_ts["src/modules/codependix-core/codependix-core.types.ts"]
   file_testing_mocks_ts["testing/mocks.ts"]
   file_testing_setup_ts["testing/setup.ts"]
   file_vitest_config_ts["vitest.config.ts"]
   file_src_index_unit_test_ts --> file_src_index_ts
+  file_src_modules_codependix_core_codependix_core_module_ts --> file_src_modules_codependix_core_codependix_core_service_ts
+  file_src_modules_codependix_core_codependix_core_service_unit_test_ts --> file_src_modules_codependix_core_codependix_core_service_ts
 ```
 <!-- codependix:end name="codependix-file-imports" -->
 
-<!-- CALL_STACKS_START -->
+<!-- callidescope:start -->
 
 ### NestJS Module Graph
 
 <!-- codependix:start name="codependix-nestjs-modules" -->
-_This project defines no NestJS modules to graph._
+```mermaid
+flowchart LR
+  CodependixCoreModule
+```
 <!-- codependix:end name="codependix-nestjs-modules" -->
 
 ## 🔭 Callidescope
@@ -67,8 +75,8 @@ Call stacks traced through `packages/ic-suite/codependix/codependix-core`, deepe
 
 | Measure | Value |
 | --- | --- |
-| Callables | 0 |
-| Files | 8 |
+| Callables | 1 |
+| Files | 10 |
 | Calls traced | 0 |
 | Call stacks | 0 |
 | Deepest stack | 0 |
@@ -91,4 +99,4 @@ None.
 ### Breadth
 
 None.
-<!-- CALL_STACKS_END -->
+<!-- callidescope:end -->

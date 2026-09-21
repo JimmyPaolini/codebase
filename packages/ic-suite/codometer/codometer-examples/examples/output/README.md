@@ -73,8 +73,8 @@ would write a file the command line never asked for.
 
 ## One markdown sink, not two
 
-`--output-markdown` splices the block between `CODE_STATISTICS_START` and
-`CODE_STATISTICS_END` unless a configuration renames them. It is **appended
+`--output-markdown` splices the block between `<!-- codometer:start -->` and
+`<!-- codometer:end -->` unless a configuration renames them. It is **appended
 with its markers when they are absent** and the **file is created when it does
 not exist**, so a destination needs nothing in it beforehand; a second run
 rewrites the block in place rather than appending another. A README somebody

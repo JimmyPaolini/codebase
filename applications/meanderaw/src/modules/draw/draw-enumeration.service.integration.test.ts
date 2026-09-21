@@ -5,6 +5,7 @@ import { DataSource, type Repository } from "typeorm";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import { environmentSchema } from "../../constants";
+import { CharacteristicsFamilyService } from "../characteristics/characteristics-family.service";
 import { CharacteristicsPathService } from "../characteristics/characteristics-path.service";
 import { CharacteristicsShapeService } from "../characteristics/characteristics-shape.service";
 import { CharacteristicsService } from "../characteristics/characteristics.service";
@@ -73,6 +74,7 @@ describe(DrawEnumerationService, () => {
         GeometryService,
         CodeService,
         CharacteristicsService,
+        CharacteristicsFamilyService,
         ConnectivityService,
         CharacteristicsPathService,
         CharacteristicsShapeService,
@@ -127,19 +129,20 @@ describe(DrawEnumerationService, () => {
     // not by its shape, so the four characters `0000` are two inked dots
     // over two columns of a three-row band and also four down one column of
     // a five-row band. Uniqueness is asserted over the address rather than
-    // over the Code for exactly that reason, and the Code count is asserted
+    // over the lattice for exactly that reason, and the lattice count is asserted
     // beside it so that the gap between them cannot close silently.
     it("writes no two rows sharing a lattice address, though 33 Codes are shared across shapes", async () => {
       const rows = await repository.find({
-        select: { code: true, columns: true, rows: true },
+        select: { code: true, columns: true, lattice: true, rows: true },
       });
       const addresses = rows.map(
-        ({ code, columns, rows: bandRows }) =>
-          `${bandRows}r${columns}c-${code}`,
+        ({ columns, lattice, rows: bandRows }) =>
+          `${bandRows}r${columns}c-${lattice}`,
       );
 
       expect(new Set(addresses).size).toBe(rows.length);
-      expect(new Set(rows.map(({ code }) => code)).size).toBe(30_243);
+      expect(new Set(rows.map(({ lattice }) => lattice)).size).toBe(30_243);
+      expect(new Set(rows.map(({ code }) => code)).size).toBe(30_279);
     });
 
     it("records every row as enumerated rather than hardcoded", async () => {
@@ -158,7 +161,7 @@ describe(DrawEnumerationService, () => {
     // `boxes`, tried first (the 14 meanders earning both are counted below);
     // `swirl` and `whirl` need 25 and 20 edges at four rows, over the
     // budget of 16, so no shape the sweep walks admits one.
-    it("leaves all meanders without families since rules are removed", async () => {
+    it("assigns formalized meander families to enumerated meanders", async () => {
       const counted = await repository
         .createQueryBuilder("meander")
         .select("meander.families", "families")
@@ -171,20 +174,26 @@ describe(DrawEnumerationService, () => {
           counted.map(({ count, families }) => [families || "[]", count]),
         ),
       ).toStrictEqual({
-        "[]": 30279,
+        "[]": 30223,
+        bars: 14,
+        dots: 14,
+        lines: 14,
+        mesh: 14,
       });
     });
 
     it("records a meander's Characteristics beside its family, so a structural question is answerable without re-deriving one", async () => {
-      const row = await repository.findOneByOrFail({ code: "4488" });
+      const row = await repository.findOneByOrFail({ lattice: "4488" });
 
       expect(row).toMatchObject({
+        code: "02x03y4488",
         columns: 2,
         components: 1,
         cycles: 0,
-        families: [],
+        families: ["bars"],
         freeEnds: 2,
 
+        // cspell:ignore Neighbours
         characteristics: [
           "isJunctionFree",
           "endsAreLatticeNeighbors",
@@ -195,8 +204,10 @@ describe(DrawEnumerationService, () => {
         ],
         inkTJunctions: 0,
         inkXJunctions: 0,
-        pitch: 1,
+        lattice: "4488",
+        pitch: 2,
         provenance: "enumerated",
+        repeats: 1,
         rows: 3,
       });
       expect(row.drawingHash).toBeDefined();

@@ -11,4 +11,6 @@ export type {
   ProjectRunResult,
   RunMode,
   RunModeSelection,
+  StaleExport,
+  StaleExportDifference,
 } from "./modules/codependix-core/codependix-core.types";

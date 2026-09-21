@@ -131,8 +131,7 @@ graph LR
 ```
 <!-- codependix:end name="codependix-file-imports" -->
 
-<!-- CALL_STACKS_START -->
-
+<!-- callidescope:start -->
 ## 🔭 Callidescope
 
 Call stacks traced through `packages/ic-suite/conformetry/conformetry-output`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
@@ -194,4 +193,4 @@ None.
 | `ReportingService.flatMap(…)` | 1 | `ReportingService.formatFileResult` | `packages/ic-suite/conformetry/conformetry-output/src/modules/reporting/reporting.service.ts:274` |
 
 </details>
-<!-- CALL_STACKS_END -->
+<!-- callidescope:end -->

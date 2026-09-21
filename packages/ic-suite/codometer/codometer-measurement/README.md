@@ -106,6 +106,8 @@ _Rounded modules are global: every module can inject them, so their edges are le
 <!-- codependix:start name="codependix-file-imports" -->
 ```mermaid
 graph LR
+  file_callidescope_config_ts["callidescope.config.ts"]
+  file_codependix_config_ts["codependix.config.ts"]
   file_codometer_config_ts["codometer.config.ts"]
   file_eslint_config_ts["eslint.config.ts"]
   file_src_index_ts["src/index.ts"]
@@ -244,8 +246,7 @@ graph LR
 ```
 <!-- codependix:end name="codependix-file-imports" -->
 
-<!-- CALL_STACKS_START -->
-
+<!-- callidescope:start -->
 ## 🔭 Callidescope
 
 Call stacks traced through `packages/ic-suite/codometer/codometer-measurement`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
@@ -332,4 +333,4 @@ None.
 | `MeasureService.readLimitFailures` | 1 | `MeasureService.map(…)` | `packages/ic-suite/codometer/codometer-measurement/src/modules/measure/measure.service.ts:282` |
 
 </details>
-<!-- CALL_STACKS_END -->
+<!-- callidescope:end -->

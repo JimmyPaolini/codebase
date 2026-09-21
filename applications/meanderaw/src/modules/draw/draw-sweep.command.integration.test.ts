@@ -225,11 +225,22 @@ describe("drawCommand sweep mode", () => {
       const rows = await repository.findBy({ provenance: "hardcoded" });
 
       const filed = new Set<string>(CORPUS_FAMILIES);
+      const validFamilies = new Set<string>([
+        ...CORPUS_FAMILIES,
+        "bars",
+        "dots",
+        "lines",
+        "mesh",
+      ]);
 
       expect(rows.length).toBeGreaterThan(0);
-      expect(rows.every((row) => row.families.every((f) => filed.has(f)))).toBe(
-        true,
-      );
+      expect(
+        rows.every(
+          (row) =>
+            row.families.some((f) => filed.has(f)) &&
+            row.families.every((f) => validFamilies.has(f)),
+        ),
+      ).toBe(true);
     },
     SWEEP_TIMEOUT_MILLISECONDS,
   );
@@ -249,7 +260,7 @@ describe("drawCommand sweep mode", () => {
 
       await repository.save({
         characteristics: [],
-        code: duplicated.code,
+        code: `${String(duplicated.columns).padStart(2, "0")}x${String(duplicated.rows).padStart(2, "0")}y${duplicated.code}`,
         columns: duplicated.columns,
         components: 1,
         cycles: 0,
@@ -260,10 +271,12 @@ describe("drawCommand sweep mode", () => {
         hasCrossing: false,
         inkTJunctions: 0,
         inkXJunctions: 0,
+        lattice: duplicated.code,
         negativeTJunctions: 0,
         negativeXJunctions: 0,
         pitch: duplicated.columns,
         provenance: "enumerated",
+        repeats: 1,
         rows: duplicated.rows,
         svg: "<svg>fixture</svg>\n",
       });

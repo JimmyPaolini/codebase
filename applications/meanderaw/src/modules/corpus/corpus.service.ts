@@ -92,7 +92,6 @@ export class CorpusService {
     const canonical = this.codeService.canonicalPhase(parsed, (phase) =>
       this.characteristicsService.seamComponents(phase),
     );
-    const canonicalCode = canonical.digits;
 
     const svg = this.drawingService.render(canonical);
     // Node crypto API requires "hex" string
@@ -114,7 +113,7 @@ export class CorpusService {
 
     try {
       const existing = await this.databaseService.findOneByLattice(
-        canonicalCode,
+        canonical.digits,
         rows,
         columns,
       );
@@ -122,20 +121,32 @@ export class CorpusService {
         return existing;
       }
 
+      const evaluatedFamilies =
+        this.characteristicsService.classifyFamilies(canonical);
+      const families = [
+        ...new Set([...entry.filedUnder, ...evaluatedFamilies]),
+      ];
+
       return await this.databaseService.save({
         // type-coverage:ignore-next-line
         ...(numericCharacteristics as unknown as MeanderRecord),
         characteristics: booleanKeys,
-        code: canonicalCode,
+        code: this.codeService.format(canonical),
         columns,
         drawingHash,
-        families: [...entry.filedUnder],
+        families,
+        lattice: canonical.digits,
         pitch: columns,
         provenance: "hardcoded" as const,
+        repeats: canonical.repeats,
         rows,
       });
     } catch (error) {
-      throw new DuplicateCorpusCodeError(canonicalCode, family, error);
+      throw new DuplicateCorpusCodeError(
+        this.codeService.format(canonical),
+        family,
+        error,
+      );
     }
   }
 

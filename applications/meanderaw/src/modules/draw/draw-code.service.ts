@@ -41,10 +41,14 @@ export class DrawCodeService {
 
   /** Decodes, renders, measures, classifies, and persists the one meander `options` names. */
   async draw(options: CodeDrawingOptions): Promise<Meander> {
-    const { code, columns, rows } = options;
+    const { code, columns, repeats, rows } = options;
 
     return this.databaseService.save(
-      this.drawRecordService.record(code, { columns, rows }, "hardcoded"),
+      this.drawRecordService.record(
+        code,
+        { columns, repeats, rows },
+        "hardcoded",
+      ),
     );
   }
 }

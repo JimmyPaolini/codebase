@@ -26,7 +26,7 @@ describe(NestjsModulesWorkspaceGraphService, () => {
         ambientModuleNames: [],
         edges: [],
         isolatedModuleNames: ["AppModule"],
-        moduleNames: ["AppModule"],
+        nodes: [{ declaringFile: "src/app.module.ts", name: "AppModule" }],
         projectName: "codependix-cli",
       };
 
@@ -42,14 +42,14 @@ describe(NestjsModulesWorkspaceGraphService, () => {
         ambientModuleNames: [],
         edges: [],
         isolatedModuleNames: ["AppModule"],
-        moduleNames: ["AppModule"],
+        nodes: [{ declaringFile: "src/app.module.ts", name: "AppModule" }],
         projectName: "codependix-cli",
       };
       const second: NestjsModuleGraph = {
         ambientModuleNames: [],
         edges: [],
         isolatedModuleNames: ["AppModule"],
-        moduleNames: ["AppModule"],
+        nodes: [{ declaringFile: "src/app.module.ts", name: "AppModule" }],
         projectName: "codometer-cli",
       };
 
@@ -66,14 +66,20 @@ describe(NestjsModulesWorkspaceGraphService, () => {
         ambientModuleNames: [],
         edges: [{ source: "MainModule", target: "LoggerModule" }],
         isolatedModuleNames: [],
-        moduleNames: ["LoggerModule", "MainModule"],
+        nodes: [
+          { declaringFile: "src/logger.module.ts", name: "LoggerModule" },
+          { declaringFile: "src/main.module.ts", name: "MainModule" },
+        ],
         projectName: "codependix-cli",
       };
       const second: NestjsModuleGraph = {
         ambientModuleNames: [],
         edges: [{ source: "MainModule", target: "ChangesModule" }],
         isolatedModuleNames: [],
-        moduleNames: ["ChangesModule", "MainModule"],
+        nodes: [
+          { declaringFile: "src/changes.module.ts", name: "ChangesModule" },
+          { declaringFile: "src/main.module.ts", name: "MainModule" },
+        ],
         projectName: "codometer-cli",
       };
 
@@ -99,7 +105,11 @@ describe(NestjsModulesWorkspaceGraphService, () => {
           { source: "MainModule", target: "ChangesModule" },
         ],
         isolatedModuleNames: [],
-        moduleNames: ["ChangesModule", "LoggerModule", "MainModule"],
+        nodes: [
+          { declaringFile: "src/changes.module.ts", name: "ChangesModule" },
+          { declaringFile: "src/logger.module.ts", name: "LoggerModule" },
+          { declaringFile: "src/main.module.ts", name: "MainModule" },
+        ],
         projectName: "codependix-cli",
       };
 
@@ -124,7 +134,10 @@ describe(NestjsModulesWorkspaceGraphService, () => {
         ambientModuleNames: [],
         edges: [{ source: "MainModule", target: "LoggerModule" }],
         isolatedModuleNames: [],
-        moduleNames: ["LoggerModule", "MainModule"],
+        nodes: [
+          { declaringFile: "src/logger.module.ts", name: "LoggerModule" },
+          { declaringFile: "src/main.module.ts", name: "MainModule" },
+        ],
         projectName: "codependix-cli",
       };
 

@@ -43,6 +43,7 @@ the reproduction that produces that exact message is in
 | A graph came out emptier than the code looks | [`ambient-modules`](examples/ambient-modules) for a rounded module with no edges; [`typescript-resolution`](examples/typescript-resolution) and [`python-scanner`](examples/python-scanner) for the statements deliberately not walked |
 | A project produced no graph at all | [`configuration-resolution`](examples/configuration-resolution) — check `include`/`exclude` and whether a per-project override replaced the default |
 | A NestJS module you expected is missing | [`container-rooting`](examples/container-rooting) — a rooted project is explored from `MainModule` outward, so a module nothing imports is absent |
+| Path query: shortest connecting path between two nodes | [`path-queries`](examples/path-queries) — how `codependix path <from> <to>` finds connecting paths across graph levels |
 
 ## Before changing a graph builder
 

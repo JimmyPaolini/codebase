@@ -194,12 +194,12 @@ describe(EnumerationService, () => {
     // symmetry class the walk happened to reach first.
     it("spells each one by its Code, at the shape it was enumerated at", () => {
       expect(service.enumerate({ columns: 1, rows: 3 })).toStrictEqual([
-        { code: "00", columns: 1, rows: 3 },
-        { code: "48", columns: 1, rows: 3 },
-        { code: "03", columns: 1, rows: 3 },
-        { code: "4b", columns: 1, rows: 3 },
-        { code: "33", columns: 1, rows: 3 },
-        { code: "7b", columns: 1, rows: 3 },
+        { code: "01x03y00", columns: 1, rows: 3 },
+        { code: "01x03y48", columns: 1, rows: 3 },
+        { code: "01x03y03", columns: 1, rows: 3 },
+        { code: "01x03y4b", columns: 1, rows: 3 },
+        { code: "01x03y33", columns: 1, rows: 3 },
+        { code: "01x03y7b", columns: 1, rows: 3 },
       ]);
     });
 

@@ -79,7 +79,7 @@ _This project has no immediate Nx dependencies or dependents._
 _This project has no internal file imports._
 <!-- codependix:end name="codependix-file-imports" -->
 
-<!-- CODE_STATISTICS_START -->
+<!-- codometer:start -->
 
 ## ⏲️ Codometer
 
@@ -289,4 +289,4 @@ _This project has no internal file imports._
 ![Inline Code](https://img.shields.io/badge/Inline_Code-277-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-0-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-0-a16207?style=flat-square)
-<!-- CODE_STATISTICS_END -->
+<!-- codometer:end -->

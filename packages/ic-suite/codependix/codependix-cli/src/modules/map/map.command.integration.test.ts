@@ -21,6 +21,8 @@ import {
   vi,
 } from "vitest";
 
+import { LoggerService } from "@codebase/logger";
+
 import { MainModule } from "../../main.module";
 
 import { MapCommand } from "./map.command";
@@ -61,11 +63,16 @@ describe("map command", () => {
     let originalWorkingDirectory: string;
 
     /** Runs the map command with the process rooted at the fixture tree. */
-    async function run(
-      options: MapCommandOptions,
-    ): Promise<{ exitCode: number }> {
+    async function run(options: MapCommandOptions): Promise<{
+      exitCode: number;
+      loggedErrors: unknown[][];
+      loggedWarns: unknown[][];
+    }> {
       process.chdir(workingDirectory);
       process.exitCode = 0;
+
+      const errorSpy = vi.spyOn(LoggerService.prototype, "error");
+      const warnSpy = vi.spyOn(LoggerService.prototype, "warn");
 
       const module = await Test.createTestingModule({
         imports: [MainModule],
@@ -75,12 +82,19 @@ describe("map command", () => {
       await command.run([], options);
 
       const exitCode = process.exitCode;
+      const loggedErrors = [...errorSpy.mock.calls];
+      const loggedWarns = [...warnSpy.mock.calls];
+
+      errorSpy.mockRestore();
+      warnSpy.mockRestore();
 
       process.exitCode = 0;
       process.chdir(originalWorkingDirectory);
 
       return {
         exitCode: typeof exitCode === "string" ? Number(exitCode) : exitCode,
+        loggedErrors,
+        loggedWarns,
       };
     }
 
@@ -251,12 +265,27 @@ describe("map command", () => {
 
       writeFileSync(ownGraphPath, JSON.stringify({ drifted: true }));
 
-      const { exitCode } = await run({
+      const { exitCode, loggedErrors } = await run({
         check: "reports",
         directory: workingDirectory,
       });
 
       expect(exitCode).toBe(1);
+      expect(loggedErrors).toContainEqual([
+        "🕸️ Found stale codependix exports",
+        undefined,
+        {
+          exports: [
+            {
+              anchor: undefined,
+              difference: "graph",
+              path: "own-neighborhood.json",
+              project: "project-with-own-file",
+            },
+          ],
+          projects: ["project-with-own-file"],
+        },
+      ]);
 
       // Restore what --write produced, so later tests in this file are not
       // affected by this test's drift.
@@ -272,9 +301,11 @@ describe("map command", () => {
     /** Runs the map command with the process rooted at the fixture tree. */
     async function run(
       options: MapCommandOptions,
-    ): Promise<{ exitCode: number }> {
+    ): Promise<{ exitCode: number; loggedWarns: unknown[][] }> {
       process.chdir(workingDirectory);
       process.exitCode = 0;
+
+      const warnSpy = vi.spyOn(LoggerService.prototype, "warn");
 
       const module = await Test.createTestingModule({
         imports: [MainModule],
@@ -284,12 +315,16 @@ describe("map command", () => {
       await command.run([], options);
 
       const exitCode = process.exitCode;
+      const loggedWarns = [...warnSpy.mock.calls];
+
+      warnSpy.mockRestore();
 
       process.exitCode = 0;
       process.chdir(originalWorkingDirectory);
 
       return {
         exitCode: typeof exitCode === "string" ? Number(exitCode) : exitCode,
+        loggedWarns,
       };
     }
 
@@ -346,19 +381,29 @@ describe("map command", () => {
     });
 
     it("still writes every graph type's export when no flag overrides or toggles anything", async () => {
-      const { exitCode } = await run({
+      const { exitCode, loggedWarns } = await run({
         directory: workingDirectory,
         write: true,
       });
 
       expect(exitCode).toBe(0);
       expect(existsSync(widgetGraphPath)).toBe(true);
+
+      const emptySelectionWarn = loggedWarns.find((call) =>
+        call.some(
+          (arg) =>
+            typeof arg === "string" &&
+            arg.includes("Selected no project to export"),
+        ),
+      );
+
+      expect(emptySelectionWarn).toBeUndefined();
     });
 
     it("overrides include for the run, narrowing away the only project it declared", async () => {
       rmSync(widgetGraphPath, { force: true });
 
-      const { exitCode } = await run({
+      const { exitCode, loggedWarns } = await run({
         directory: workingDirectory,
         include: ["packages/nonexistent"],
         write: true,
@@ -366,6 +411,16 @@ describe("map command", () => {
 
       expect(exitCode).toBe(0);
       expect(existsSync(widgetGraphPath)).toBe(false);
+
+      const emptySelectionWarn = loggedWarns.find((call) =>
+        call.some(
+          (arg) =>
+            typeof arg === "string" &&
+            arg.includes("Selected no project to export"),
+        ),
+      );
+
+      expect(emptySelectionWarn).toBeDefined();
     });
 
     it("refuses to override exclude, which the fixture configuration never declared", async () => {

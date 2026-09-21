@@ -72,8 +72,8 @@ export class ReportingService {
    * regardless of `include`, so a workspace whose exports have gone silent
    * still has a green gate.
    */
-  reportEmptySelection(include: string[]): void {
-    if (include.length > 0) return;
+  reportEmptySelection(projectCount: number): void {
+    if (projectCount > 0) return;
 
     this.logger.warn("🕸️ Selected no project to export", undefined, {
       hint: "name the projects that participate in the configuration's include list",
@@ -110,7 +110,10 @@ export class ReportingService {
    * regardless of an earlier one's failure.
    */
   reportOutcome(outcome: GraphRunOutcome): boolean {
-    const staleProjects = outcome.results.filter((result) => !result.isCurrent);
+    const staleResults = outcome.results.filter((result) => !result.isCurrent);
+    const staleProjects = [
+      ...new Set(staleResults.map((result) => result.projectName)),
+    ];
 
     if (outcome.failures.length > 0) {
       this.logger.error("💥 Failed running codependix", undefined, {
@@ -119,8 +122,25 @@ export class ReportingService {
     }
 
     if (staleProjects.length > 0) {
+      const staleExports = [
+        ...new Map(
+          staleResults.flatMap((result) =>
+            result.staleExports.map((stale) => [
+              `${result.projectName}:${stale.path}:${stale.anchor ?? ""}`,
+              {
+                ...(stale.anchor !== undefined && { anchor: stale.anchor }),
+                difference: stale.difference,
+                path: stale.path,
+                project: result.projectName,
+              },
+            ]),
+          ),
+        ).values(),
+      ];
+
       this.logger.error("🕸️ Found stale codependix exports", undefined, {
-        projects: staleProjects.map((result) => result.projectName),
+        exports: staleExports,
+        projects: staleProjects,
       });
     }
 

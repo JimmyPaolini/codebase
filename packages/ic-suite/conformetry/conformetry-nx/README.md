@@ -132,7 +132,7 @@ MIT — see [LICENSE](../../../../LICENSE).
 
 This project was generated from the [nestjs-service-project](../../../../configuration/conformetry-templates/nestjs-service-project) conformetry template.
 
-<!-- CALL_STACKS_START -->
+<!-- callidescope:start -->
 
 ## 🔭 Callidescope
 
@@ -140,11 +140,11 @@ Call stacks traced through `packages/ic-suite/conformetry/conformetry-nx`, deepe
 
 | Measure | Value |
 | --- | --- |
-| Callables | 113 |
+| Callables | 114 |
 | Files | 45 |
-| Calls traced | 136 |
+| Calls traced | 137 |
 | Call stacks | 8 |
-| Deepest stack | 14 |
+| Deepest stack | 15 |
 | Stacks through recursion | 0 |
 | Unfollowable calls | 1 |
 
@@ -154,51 +154,53 @@ What this project is judged against, as declared in its own `callidescope.config
 
 | Limit | Value |
 | --- | --- |
-| `maximumDepth` | 14 |
+| `maximumDepth` | 15 |
 | `maximumBreadth` | 9 |
 
 ### Call stacks (depth)
 
-**1. `validateExecutor`** — depth ≥ 14 · orphan-root
+**1. `validateExecutor`** — depth ≥ 15 · orphan-root
 
 ```text
 🚀 validateExecutor(…): Promise<{ success: boolean; }> [packages/ic-suite/conformetry/conformetry-nx/src/executors/validate/executor.ts:16]
    ↳ Validates one project's instances against their conformetry templates.
-  └─> PluginService.runValidation(args: RunValidationArguments): Promise<RunValidationResult> [packages/ic-suite/conformetry/conformetry-nx/src/modules/plugin/plugin.service.ts:395]
+  └─> PluginService.runValidation(args: RunValidationArguments): Promise<RunValidationResult> [packages/ic-suite/conformetry/conformetry-nx/src/modules/plugin/plugin.service.ts:391]
      ↳ Validates one project's instances and renders the report.
     └─> ValidationService.validate(args: RunValidationArguments): RunValidationResult [packages/ic-suite/conformetry/conformetry-validation/src/modules/validation/validation.service.ts:136]
        ↳ Validates every instance and returns the differences found.
-      └─> InstanceDiscoveryService.matchInstances(…): ResolvedInstances [packages/ic-suite/conformetry/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:95]
+      └─> ConfigurationService.matchInstances(…): ResolvedInstances [packages/ic-suite/conformetry/conformetry-configuration/src/modules/configuration/configuration.service.ts:263]
          ↳ Resolves every instance to the template, or templates, that explain it.
-        └─> InstanceDiscoveryMatchingService.matchInstances(…): ResolvedInstances [packages/ic-suite/conformetry/conformetry-configuration/src/modules/instance-discovery/instance-discovery-matching.service.ts:93]
-           ↳ Resolves every instance to the template — or templates — that explain it.
-          └─> InstanceDiscoveryMatchingService.matchTemplates(…): TemplateMatch[] [packages/ic-suite/conformetry/conformetry-configuration/src/modules/instance-discovery/instance-discovery-matching.service.ts:154]
-             ↳ Weighs every template that shares at least one file with the instance, best-first.
-            └─> InstanceDiscoveryMatchingService.map(…)(…): { matchedFileCount: number; matchRatio: number; template: TemplateDefinition; } [packages/ic-suite/conformetry/conformetry-configuration/src/modules/instance-discovery/instance-discovery-matching.service.ts:160]
-              └─> TemplateDiscoveryService.countMatchingFiles(…): number [packages/ic-suite/conformetry/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:121]
-                 ↳ Counts how many of a template's files the instance path already has.
-                └─> TemplateDiscoveryService.filter(…)(templateFilePath: string): boolean [packages/ic-suite/conformetry/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:130]
-                  └─> TemplateDiscoveryService.resolveInstanceFilePath(…): string [packages/ic-suite/conformetry/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:179]
-                     ↳ Maps a template file path to the instance file path it governs.
-                    └─> RenderingService.renderPath(…): string [packages/ic-suite/conformetry/conformetry-configuration/src/modules/rendering/rendering.service.ts:142]
-                       ↳ Renders a template path with mustache, the same way contents are rendered.
-                      └─> RenderingService.assertEverySubstitutionSupplied(…): void [packages/ic-suite/conformetry/conformetry-configuration/src/modules/rendering/rendering.service.ts:35]
-                         ↳ Refuses to render a template asking for a value nobody supplied.
-                        └─> RenderingService.collectInterpolatedNames(template: string): string[] [packages/ic-suite/conformetry/conformetry-configuration/src/modules/rendering/rendering.service.ts:61]
-                           ↳ Every placeholder a template interpolates, deduplicated.
-                          └─> RenderingService.walk(spans: TemplateSpans): void [packages/ic-suite/conformetry/conformetry-configuration/src/modules/rendering/rendering.service.ts:63]
+        └─> InstanceDiscoveryService.matchInstances(…): ResolvedInstances [packages/ic-suite/conformetry/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:95]
+           ↳ Resolves every instance to the template, or templates, that explain it.
+          └─> InstanceDiscoveryMatchingService.matchInstances(…): ResolvedInstances [packages/ic-suite/conformetry/conformetry-configuration/src/modules/instance-discovery/instance-discovery-matching.service.ts:93]
+             ↳ Resolves every instance to the template — or templates — that explain it.
+            └─> InstanceDiscoveryMatchingService.matchTemplates(…): TemplateMatch[] [packages/ic-suite/conformetry/conformetry-configuration/src/modules/instance-discovery/instance-discovery-matching.service.ts:154]
+               ↳ Weighs every template that shares at least one file with the instance, best-first.
+              └─> InstanceDiscoveryMatchingService.map(…)(…): { matchedFileCount: number; matchRatio: number; template: TemplateDefinition; } [packages/ic-suite/conformetry/conformetry-configuration/src/modules/instance-discovery/instance-discovery-matching.service.ts:160]
+                └─> TemplateDiscoveryService.countMatchingFiles(…): number [packages/ic-suite/conformetry/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:121]
+                   ↳ Counts how many of a template's files the instance path already has.
+                  └─> TemplateDiscoveryService.filter(…)(templateFilePath: string): boolean [packages/ic-suite/conformetry/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:130]
+                    └─> TemplateDiscoveryService.resolveInstanceFilePath(…): string [packages/ic-suite/conformetry/conformetry-configuration/src/modules/template-discovery/template-discovery.service.ts:179]
+                       ↳ Maps a template file path to the instance file path it governs.
+                      └─> RenderingService.renderPath(…): string [packages/ic-suite/conformetry/conformetry-configuration/src/modules/rendering/rendering.service.ts:142]
+                         ↳ Renders a template path with mustache, the same way contents are rendered.
+                        └─> RenderingService.assertEverySubstitutionSupplied(…): void [packages/ic-suite/conformetry/conformetry-configuration/src/modules/rendering/rendering.service.ts:35]
+                           ↳ Refuses to render a template asking for a value nobody supplied.
+                          └─> RenderingService.collectInterpolatedNames(template: string): string[] [packages/ic-suite/conformetry/conformetry-configuration/src/modules/rendering/rendering.service.ts:61]
+                             ↳ Every placeholder a template interpolates, deduplicated.
+                            └─> RenderingService.walk(spans: TemplateSpans): void [packages/ic-suite/conformetry/conformetry-configuration/src/modules/rendering/rendering.service.ts:63]
 ```
 
-**2. `runConformetryGenerator`** — depth ≥ 13 · exported-function
+**2. `runConformetryGenerator`** — depth ≥ 14 · exported-function
 
 ```text
 🚀 runConformetryGenerator(…): Promise<string[]> [packages/ic-suite/conformetry/conformetry-nx/src/index.ts:93]
    ↳ Runs one configured generator against an Nx tree.
-  └─> PluginService.runGenerator(args: RunGeneratorArguments): Promise<string[]> [packages/ic-suite/conformetry/conformetry-nx/src/modules/plugin/plugin.service.ts:334]
+  └─> PluginService.runGenerator(args: RunGeneratorArguments): Promise<string[]> [packages/ic-suite/conformetry/conformetry-nx/src/modules/plugin/plugin.service.ts:330]
      ↳ Runs one configured generator against an Nx tree.
-    └─> PluginService.assertPluginInSync(args: { configurationPath: string; workspaceRoot: string; }): Promise<void> [packages/ic-suite/conformetry/conformetry-nx/src/modules/plugin/plugin.service.ts:122]
+    └─> PluginService.assertPluginInSync(args: { configurationPath: string; workspaceRoot: string; }): Promise<void> [packages/ic-suite/conformetry/conformetry-nx/src/modules/plugin/plugin.service.ts:118]
        ↳ Fails fast when the plugin would run against a stale or broken setup.
-      └─> PluginService.assertEmittedPluginCurrent(args: { configurationPath: string; workspaceRoot: string; }): Promise<void> [packages/ic-suite/conformetry/conformetry-nx/src/modules/plugin/plugin.service.ts:88]
+      └─> PluginService.assertEmittedPluginCurrent(args: { configurationPath: string; workspaceRoot: string; }): Promise<void> [packages/ic-suite/conformetry/conformetry-nx/src/modules/plugin/plugin.service.ts:84]
          ↳ Fails when the emitted Nx plugin no longer matches the configuration. `generators.json` and its schemas are derived…
         └─> GeneratorService.emitPlugin(args: EmitPluginArguments): Promise<EmittedFile[]> [packages/ic-suite/conformetry/conformetry-nx/src/modules/generator/generator.service.ts:212]
            ↳ Returns every file the consumer's generator plugin consists of.
@@ -213,11 +215,13 @@ What this project is judged against, as declared in its own `callidescope.config
                        ↳ Returns whether a group applies to a project.
                       └─> ScopeService.isProjectGroup(group: ConformetryInstanceGroup): boolean [packages/ic-suite/conformetry/conformetry-nx/src/modules/scope/scope.service.ts:39]
                          ↳ Whether a group locates its instances by project tag.
-                        └─> InstanceGroupService.isProjectScoped(group: ConformetryInstanceGroup): boolean [packages/ic-suite/conformetry/conformetry-configuration/src/modules/configuration/instance-group.service.ts:41]
+                        └─> ConfigurationService.isProjectScoped(group: ConformetryInstanceGroup): boolean [packages/ic-suite/conformetry/conformetry-configuration/src/modules/configuration/configuration.service.ts:232]
                            ↳ Whether a group locates its instances inside the hosts its tags select.
+                          └─> InstanceGroupService.isProjectScoped(group: ConformetryInstanceGroup): boolean [packages/ic-suite/conformetry/conformetry-configuration/src/modules/instance-group/instance-group.service.ts:42]
+                             ↳ Whether a group locates its instances inside the hosts its tags select.
 ```
 
-**3. `runBootstrapCli`** — depth ≥ 11 · orphan-root
+**3. `runBootstrapCli`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 runBootstrapCli(workspaceRoot: string): Promise<void> [packages/ic-suite/conformetry/conformetry-nx/src/modules/generator/bootstrap.utilities.ts:74]
@@ -237,14 +241,16 @@ What this project is judged against, as declared in its own `callidescope.config
                    ↳ Returns whether a group applies to a project.
                   └─> ScopeService.isProjectGroup(group: ConformetryInstanceGroup): boolean [packages/ic-suite/conformetry/conformetry-nx/src/modules/scope/scope.service.ts:39]
                      ↳ Whether a group locates its instances by project tag.
-                    └─> InstanceGroupService.isProjectScoped(group: ConformetryInstanceGroup): boolean [packages/ic-suite/conformetry/conformetry-configuration/src/modules/configuration/instance-group.service.ts:41]
+                    └─> ConfigurationService.isProjectScoped(group: ConformetryInstanceGroup): boolean [packages/ic-suite/conformetry/conformetry-configuration/src/modules/configuration/configuration.service.ts:232]
                        ↳ Whether a group locates its instances inside the hosts its tags select.
+                      └─> InstanceGroupService.isProjectScoped(group: ConformetryInstanceGroup): boolean [packages/ic-suite/conformetry/conformetry-configuration/src/modules/instance-group/instance-group.service.ts:42]
+                         ↳ Whether a group locates its instances inside the hosts its tags select.
 ```
 
 <details>
 <summary>5 more call stacks</summary>
 
-**4. `syncGenerator`** — depth ≥ 10 · orphan-root
+**4. `syncGenerator`** — depth ≥ 11 · orphan-root
 
 ```text
 🚀 syncGenerator(…): Promise<{ outOfSyncMessage: string; }> [packages/ic-suite/conformetry/conformetry-nx/src/generators/sync/generator.ts:26]
@@ -262,26 +268,30 @@ What this project is judged against, as declared in its own `callidescope.config
                  ↳ Returns whether a group applies to a project.
                 └─> ScopeService.isProjectGroup(group: ConformetryInstanceGroup): boolean [packages/ic-suite/conformetry/conformetry-nx/src/modules/scope/scope.service.ts:39]
                    ↳ Whether a group locates its instances by project tag.
-                  └─> InstanceGroupService.isProjectScoped(group: ConformetryInstanceGroup): boolean [packages/ic-suite/conformetry/conformetry-configuration/src/modules/configuration/instance-group.service.ts:41]
+                  └─> ConfigurationService.isProjectScoped(group: ConformetryInstanceGroup): boolean [packages/ic-suite/conformetry/conformetry-configuration/src/modules/configuration/configuration.service.ts:232]
                      ↳ Whether a group locates its instances inside the hosts its tags select.
+                    └─> InstanceGroupService.isProjectScoped(group: ConformetryInstanceGroup): boolean [packages/ic-suite/conformetry/conformetry-configuration/src/modules/instance-group/instance-group.service.ts:42]
+                       ↳ Whether a group locates its instances inside the hosts its tags select.
 ```
 
-**5. `anonymous`** — depth ≥ 8 · orphan-root
+**5. `anonymous`** — depth ≥ 9 · orphan-root
 
 ```text
 🚀 anonymous(…): Promise<CreateNodesResultArray> [packages/ic-suite/conformetry/conformetry-nx/src/index.ts:49]
-  └─> PluginService.inferTargets(args: InferTargetsArguments): Promise<Map<string, InferredTargets>> [packages/ic-suite/conformetry/conformetry-nx/src/modules/plugin/plugin.service.ts:269]
+  └─> PluginService.inferTargets(args: InferTargetsArguments): Promise<Map<string, InferredTargets>> [packages/ic-suite/conformetry/conformetry-nx/src/modules/plugin/plugin.service.ts:265]
      ↳ Infers a validation target onto every project that holds at least one instance.
-    └─> InstancesService.findProjectInstances(args: FindProjectInstancesArguments): Promise<Instance[]> [packages/ic-suite/conformetry/conformetry-nx/src/modules/instances/instances.service.ts:72]
+    └─> InstancesService.findProjectInstances(args: FindProjectInstancesArguments): Promise<Instance[]> [packages/ic-suite/conformetry/conformetry-nx/src/modules/instances/instances.service.ts:68]
        ↳ Expands every instance group that applies to a project, keeping only the instances that live inside it.
-      └─> InstancesService.flatMap(…)(this: undefined, group: ConformetryInstanceGroup): Instance[] [packages/ic-suite/conformetry/conformetry-nx/src/modules/instances/instances.service.ts:88]
-        └─> InstanceDiscoveryService.findInstances(args: FindInstancesArguments): Instance[] [packages/ic-suite/conformetry/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:90]
+      └─> InstancesService.flatMap(…)(this: undefined, group: ConformetryInstanceGroup): Instance[] [packages/ic-suite/conformetry/conformetry-nx/src/modules/instances/instances.service.ts:84]
+        └─> ConfigurationService.findInstances(args: FindInstancesArguments): Instance[] [packages/ic-suite/conformetry/conformetry-configuration/src/modules/configuration/configuration.service.ts:222]
            ↳ Expands instance globs into the instances that exist.
-          └─> InstanceDiscoveryLocatingService.findInstances(args: FindInstancesArguments): Instance[] [packages/ic-suite/conformetry/conformetry-configuration/src/modules/instance-discovery/instance-discovery-locating.service.ts:121]
-             ↳ Expands every pattern and returns one instance per distinct path, name, and scope kind.
-            └─> InstanceDiscoveryLocatingService.resolveGlobSuffix(pattern: string): string [packages/ic-suite/conformetry/conformetry-configuration/src/modules/instance-discovery/instance-discovery-locating.service.ts:73]
-               ↳ Returns the literal filename suffix a pattern ends with, such as `.service.ts` for `**\/*.service.ts`, or `""` when the…
-              └─> InstanceDiscoveryLocatingService.map(…)(character: string): number [packages/ic-suite/conformetry/conformetry-configuration/src/modules/instance-discovery/instance-discovery-locating.service.ts:76]
+          └─> InstanceDiscoveryService.findInstances(args: FindInstancesArguments): Instance[] [packages/ic-suite/conformetry/conformetry-configuration/src/modules/instance-discovery/instance-discovery.service.ts:90]
+             ↳ Expands instance globs into the instances that exist.
+            └─> InstanceDiscoveryLocatingService.findInstances(args: FindInstancesArguments): Instance[] [packages/ic-suite/conformetry/conformetry-configuration/src/modules/instance-discovery/instance-discovery-locating.service.ts:121]
+               ↳ Expands every pattern and returns one instance per distinct path, name, and scope kind.
+              └─> InstanceDiscoveryLocatingService.resolveGlobSuffix(pattern: string): string [packages/ic-suite/conformetry/conformetry-configuration/src/modules/instance-discovery/instance-discovery-locating.service.ts:73]
+                 ↳ Returns the literal filename suffix a pattern ends with, such as `.service.ts` for `**\/*.service.ts`, or `""` when the…
+                └─> InstanceDiscoveryLocatingService.map(…)(character: string): number [packages/ic-suite/conformetry/conformetry-configuration/src/modules/instance-discovery/instance-discovery-locating.service.ts:76]
 ```
 
 **6. `AdapterService.listDirectory`** — depth 3 · orphan-root
@@ -318,7 +328,7 @@ What this project is judged against, as declared in its own `callidescope.config
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `PluginService.runGenerator` | 9 | `PluginService.resolveOptions`, `PluginService.assertPluginInSync`, `ConfigurationService.loadConformetryConfiguration`, `PluginService.find(…)`, `PluginService.map(…)`, `AdapterService.createAdapters`, `OptionsService.resolveGeneratorInputs`, `GenerationService.runGenerator`, `PathsService.resolveGenerationPath` | `packages/ic-suite/conformetry/conformetry-nx/src/modules/plugin/plugin.service.ts:334` |
+| `PluginService.runGenerator` | 9 | `PluginService.resolveOptions`, `PluginService.assertPluginInSync`, `ConfigurationService.loadConformetryConfiguration`, `PluginService.find(…)`, `PluginService.map(…)`, `AdapterService.createAdapters`, `OptionsService.resolveGeneratorInputs`, `GenerationService.runGenerator`, `PathsService.resolveGenerationPath` | `packages/ic-suite/conformetry/conformetry-nx/src/modules/plugin/plugin.service.ts:330` |
 | `bootstrapPlugin` | 9 | `resolveGeneratorService`, `resolveOptionsService`, `resolveProjectsService`, `GeneratorService.emitPlugin`, `OptionsService.resolveConfigurationPath`, `readNxConfiguration`, `ProjectsService.listWorkspaceProjects`, `writePlugin`, `linkPlugin` | `packages/ic-suite/conformetry/conformetry-nx/src/modules/generator/bootstrap.utilities.ts:39` |
 | `syncGenerator` | 7 | `resolveGeneratorService`, `resolveOptionsService`, `resolveProjectsService`, `GeneratorService.emitPlugin`, `OptionsService.resolveConfigurationPath`, `readNxConfiguration`, `ProjectsService.listWorkspaceProjects` | `packages/ic-suite/conformetry/conformetry-nx/src/generators/sync/generator.ts:26` |
 
@@ -328,18 +338,18 @@ What this project is judged against, as declared in its own `callidescope.config
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
 | `GeneratorService.emitPlugin` | 6 | `ConfigurationService.loadConformetryConfiguration`, `GeneratorService.toSorted(…)`, `GeneratorService.buildGeneratorsManifest`, `GeneratorService.map(…)`, `GeneratorService.map(…)`, `GeneratorService.stringify` | `packages/ic-suite/conformetry/conformetry-nx/src/modules/generator/generator.service.ts:212` |
-| `PluginService.runValidation` | 6 | `PluginService.resolveOptions`, `PluginService.assertPluginInSync`, `ValidationService.validate`, `InstancesService.findProjectInstances`, `PluginService.resolveTemplates`, `ReportingService.formatReport` | `packages/ic-suite/conformetry/conformetry-nx/src/modules/plugin/plugin.service.ts:395` |
-| `InstancesService.findProjectInstances` | 5 | `ConfigurationService.loadConformetryConfiguration`, `InstancesService.filter(…)`, `InstancesService.flatMap(…)`, `InstancesService.flatMap(…)`, `InstancesService.flatMap(…)` | `packages/ic-suite/conformetry/conformetry-nx/src/modules/instances/instances.service.ts:72` |
-| `PathsService.resolveGenerationPath` | 5 | `PathsService.resolveNewProjectPath`, `InstancesService.findProjectInstances`, `PathsService.requireModulePath`, `PathsService.resolveScopedDirectory`, `PathsService.resolveModuleParentPath` | `packages/ic-suite/conformetry/conformetry-nx/src/modules/paths/paths.service.ts:209` |
-| `PluginService.inferTargets` | 5 | `PluginService.resolveOptions`, `PluginService.resolveTemplateInputs`, `PluginService.filter(…)`, `ProjectsService.readProjectScope`, `InstancesService.findProjectInstances` | `packages/ic-suite/conformetry/conformetry-nx/src/modules/plugin/plugin.service.ts:269` |
+| `InstancesService.findProjectInstances` | 6 | `ConfigurationService.loadConformetryConfiguration`, `InstancesService.filter(…)`, `InstancesService.flatMap(…)`, `InstancesService.flatMap(…)`, `InstancesService.flatMap(…)`, `InstancesService.filter(…)` | `packages/ic-suite/conformetry/conformetry-nx/src/modules/instances/instances.service.ts:68` |
+| `PluginService.runValidation` | 6 | `PluginService.resolveOptions`, `PluginService.assertPluginInSync`, `ValidationService.validate`, `InstancesService.findProjectInstances`, `PluginService.resolveTemplates`, `ReportingService.formatReport` | `packages/ic-suite/conformetry/conformetry-nx/src/modules/plugin/plugin.service.ts:391` |
+| `PathsService.resolveGenerationPath` | 5 | `PathsService.resolveNewProjectPath`, `InstancesService.findProjectInstances`, `PathsService.requireModulePath`, `PathsService.resolveScopedDirectory`, `PathsService.resolveModuleParentPath` | `packages/ic-suite/conformetry/conformetry-nx/src/modules/paths/paths.service.ts:213` |
+| `PluginService.inferTargets` | 5 | `PluginService.resolveOptions`, `PluginService.resolveTemplateInputs`, `PluginService.filter(…)`, `ProjectsService.readProjectScope`, `InstancesService.findProjectInstances` | `packages/ic-suite/conformetry/conformetry-nx/src/modules/plugin/plugin.service.ts:265` |
 | `ScopeService.resolveScopedProjectNames` | 4 | `ScopeService.filter(…)`, `ScopeService.toSorted(…)`, `ScopeService.map(…)`, `ScopeService.filter(…)` | `packages/ic-suite/conformetry/conformetry-nx/src/modules/scope/scope.service.ts:134` |
 | `ProjectsService.listWorkspaceProjects` | 4 | `ProjectsService.toSorted(…)`, `ProjectsService.map(…)`, `ProjectsService.listProjectConfigurationFiles`, `ProjectsService.readIgnoredPaths` | `packages/ic-suite/conformetry/conformetry-nx/src/modules/projects/projects.service.ts:118` |
 | `anonymous` | 4 | `resolvePluginService`, `PluginService.inferTargets`, `filter(…)`, `map(…)` | `packages/ic-suite/conformetry/conformetry-nx/src/index.ts:49` |
 | `ScopeService.resolveGroup` | 3 | `ScopeService.matchesProject`, `ScopeService.isProjectGroup`, `ScopeService.map(…)` | `packages/ic-suite/conformetry/conformetry-nx/src/modules/scope/scope.service.ts:74` |
 | `AdapterService.listDirectory` | 3 | `AdapterService.resolveTreePath`, `AdapterService.map(…)`, `AdapterService.map(…)` | `packages/ic-suite/conformetry/conformetry-nx/src/modules/adapter/adapter.service.ts:42` |
-| `PathsService.resolveScopedDirectory` | 3 | `ConfigurationService.loadConformetryConfiguration`, `PathsService.find(…)`, `ScopeService.resolveScopedDirectory` | `packages/ic-suite/conformetry/conformetry-nx/src/modules/paths/paths.service.ts:156` |
-| `PluginService.resolveOptions` | 3 | `OptionsService.resolveConfigurationPath`, `PluginService.readNxConfiguration`, `OptionsService.resolvePluginOptions` | `packages/ic-suite/conformetry/conformetry-nx/src/modules/plugin/plugin.service.ts:193` |
-| `PluginService.resolveTemplateInputs` | 3 | `ConfigurationService.loadConformetryConfiguration`, `PluginService.map(…)`, `PluginService.map(…)` | `packages/ic-suite/conformetry/conformetry-nx/src/modules/plugin/plugin.service.ts:223` |
+| `PathsService.resolveScopedDirectory` | 3 | `ConfigurationService.loadConformetryConfiguration`, `PathsService.find(…)`, `ScopeService.resolveScopedDirectory` | `packages/ic-suite/conformetry/conformetry-nx/src/modules/paths/paths.service.ts:160` |
+| `PluginService.resolveOptions` | 3 | `OptionsService.resolveConfigurationPath`, `PluginService.readNxConfiguration`, `OptionsService.resolvePluginOptions` | `packages/ic-suite/conformetry/conformetry-nx/src/modules/plugin/plugin.service.ts:189` |
+| `PluginService.resolveTemplateInputs` | 3 | `ConfigurationService.loadConformetryConfiguration`, `PluginService.map(…)`, `PluginService.map(…)` | `packages/ic-suite/conformetry/conformetry-nx/src/modules/plugin/plugin.service.ts:219` |
 | `ScopeService.matchesProject` | 2 | `ScopeService.isProjectGroup`, `ScopeService.some(…)` | `packages/ic-suite/conformetry/conformetry-nx/src/modules/scope/scope.service.ts:52` |
 | `ScopeService.resolveScopedDirectory` | 2 | `ScopeService.find(…)`, `ScopeService.findIndex(…)` | `packages/ic-suite/conformetry/conformetry-nx/src/modules/scope/scope.service.ts:108` |
 | `GeneratorService.buildSchema` | 2 | `GeneratorService.stringify`, `GeneratorService.buildSchemaProperties` | `packages/ic-suite/conformetry/conformetry-nx/src/modules/generator/generator.service.ts:122` |
@@ -348,12 +358,12 @@ What this project is judged against, as declared in its own `callidescope.config
 | `OptionsService.resolveConfigurationPath` | 2 | `OptionsService.readRegisteredConfigurationPath`, `OptionsService.find(…)` | `packages/ic-suite/conformetry/conformetry-nx/src/modules/options/options.service.ts:98` |
 | `ProjectsService.readIgnoredPaths` | 2 | `ProjectsService.filter(…)`, `ProjectsService.map(…)` | `packages/ic-suite/conformetry/conformetry-nx/src/modules/projects/projects.service.ts:97` |
 | `ProjectsService.readProjectScope` | 2 | `ProjectsService.isUnknownArray`, `ProjectsService.filter(…)` | `packages/ic-suite/conformetry/conformetry-nx/src/modules/projects/projects.service.ts:134` |
-| `PluginService.assertEmittedPluginCurrent` | 2 | `GeneratorService.emitPlugin`, `ProjectsService.listWorkspaceProjects` | `packages/ic-suite/conformetry/conformetry-nx/src/modules/plugin/plugin.service.ts:88` |
-| `PluginService.assertPluginInSync` | 2 | `PluginService.assertTemplatesExist`, `PluginService.assertEmittedPluginCurrent` | `packages/ic-suite/conformetry/conformetry-nx/src/modules/plugin/plugin.service.ts:122` |
-| `PluginService.resolveTemplates` | 2 | `ConfigurationService.loadConformetryConfiguration`, `PluginService.map(…)` | `packages/ic-suite/conformetry/conformetry-nx/src/modules/plugin/plugin.service.ts:240` |
+| `PluginService.assertEmittedPluginCurrent` | 2 | `GeneratorService.emitPlugin`, `ProjectsService.listWorkspaceProjects` | `packages/ic-suite/conformetry/conformetry-nx/src/modules/plugin/plugin.service.ts:84` |
+| `PluginService.assertPluginInSync` | 2 | `PluginService.assertTemplatesExist`, `PluginService.assertEmittedPluginCurrent` | `packages/ic-suite/conformetry/conformetry-nx/src/modules/plugin/plugin.service.ts:118` |
+| `PluginService.resolveTemplates` | 2 | `ConfigurationService.loadConformetryConfiguration`, `PluginService.map(…)` | `packages/ic-suite/conformetry/conformetry-nx/src/modules/plugin/plugin.service.ts:236` |
 | `runConformetryGenerator` | 2 | `resolvePluginService`, `PluginService.runGenerator` | `packages/ic-suite/conformetry/conformetry-nx/src/index.ts:93` |
 | `validateExecutor` | 2 | `resolvePluginService`, `PluginService.runValidation` | `packages/ic-suite/conformetry/conformetry-nx/src/executors/validate/executor.ts:16` |
-| `ScopeService.isProjectGroup` | 1 | `InstanceGroupService.isProjectScoped` | `packages/ic-suite/conformetry/conformetry-nx/src/modules/scope/scope.service.ts:39` |
+| `ScopeService.isProjectGroup` | 1 | `ConfigurationService.isProjectScoped` | `packages/ic-suite/conformetry/conformetry-nx/src/modules/scope/scope.service.ts:39` |
 | `ScopeService.find(…)` | 1 | `ScopeService.isProjectGroup` | `packages/ic-suite/conformetry/conformetry-nx/src/modules/scope/scope.service.ts:111` |
 | `ScopeService.filter(…)` | 1 | `ScopeService.isProjectGroup` | `packages/ic-suite/conformetry/conformetry-nx/src/modules/scope/scope.service.ts:138` |
 | `ScopeService.filter(…)` | 1 | `ScopeService.some(…)` | `packages/ic-suite/conformetry/conformetry-nx/src/modules/scope/scope.service.ts:147` |
@@ -365,17 +375,17 @@ What this project is judged against, as declared in its own `callidescope.config
 | `AdapterService.listDirectory` | 1 | `AdapterService.listDirectory` | `packages/ic-suite/conformetry/conformetry-nx/src/modules/adapter/adapter.service.ts:114` |
 | `AdapterService.readFile` | 1 | `AdapterService.readFile` | `packages/ic-suite/conformetry/conformetry-nx/src/modules/adapter/adapter.service.ts:124` |
 | `AdapterService.writeFile` | 1 | `AdapterService.resolveTreePath` | `packages/ic-suite/conformetry/conformetry-nx/src/modules/adapter/adapter.service.ts:131` |
-| `InstancesService.flatMap(…)` | 1 | `ScopeService.resolveGroup` | `packages/ic-suite/conformetry/conformetry-nx/src/modules/instances/instances.service.ts:83` |
-| `InstancesService.flatMap(…)` | 1 | `InstanceDiscoveryService.findInstances` | `packages/ic-suite/conformetry/conformetry-nx/src/modules/instances/instances.service.ts:88` |
-| `InstancesService.filter(…)` | 1 | `InstancesService.isInsideProject` | `packages/ic-suite/conformetry/conformetry-nx/src/modules/instances/instances.service.ts:100` |
+| `InstancesService.flatMap(…)` | 1 | `ScopeService.resolveGroup` | `packages/ic-suite/conformetry/conformetry-nx/src/modules/instances/instances.service.ts:79` |
+| `InstancesService.flatMap(…)` | 1 | `ConfigurationService.findInstances` | `packages/ic-suite/conformetry/conformetry-nx/src/modules/instances/instances.service.ts:84` |
+| `InstancesService.filter(…)` | 1 | `InstancesService.isInsideProject` | `packages/ic-suite/conformetry/conformetry-nx/src/modules/instances/instances.service.ts:96` |
 | `OptionsService.resolvePluginOptions` | 1 | `OptionsService.readString` | `packages/ic-suite/conformetry/conformetry-nx/src/modules/options/options.service.ts:147` |
 | `PathsService.requireModulePath` | 1 | `PathsService.resolveModulePath` | `packages/ic-suite/conformetry/conformetry-nx/src/modules/paths/paths.service.ts:54` |
 | `PathsService.resolveModuleParentPath` | 1 | `PathsService.toSorted(…)` | `packages/ic-suite/conformetry/conformetry-nx/src/modules/paths/paths.service.ts:83` |
-| `PathsService.resolveModulePath` | 1 | `PathsService.find(…)` | `packages/ic-suite/conformetry/conformetry-nx/src/modules/paths/paths.service.ts:115` |
-| `PathsService.resolveNewProjectPath` | 1 | `PathsService.resolveTypeDirectoryPath` | `packages/ic-suite/conformetry/conformetry-nx/src/modules/paths/paths.service.ts:133` |
+| `PathsService.resolveModulePath` | 1 | `PathsService.find(…)` | `packages/ic-suite/conformetry/conformetry-nx/src/modules/paths/paths.service.ts:119` |
+| `PathsService.resolveNewProjectPath` | 1 | `PathsService.resolveTypeDirectoryPath` | `packages/ic-suite/conformetry/conformetry-nx/src/modules/paths/paths.service.ts:137` |
 | `ProjectsService.map(…)` | 1 | `ProjectsService.readProjectScope` | `packages/ic-suite/conformetry/conformetry-nx/src/modules/projects/projects.service.ts:124` |
-| `PluginService.assertTemplatesExist` | 1 | `ConfigurationService.loadConformetryConfiguration` | `packages/ic-suite/conformetry/conformetry-nx/src/modules/plugin/plugin.service.ts:138` |
-| `PluginService.map(…)` | 1 | `TemplateDiscoveryService.collectTemplate` | `packages/ic-suite/conformetry/conformetry-nx/src/modules/plugin/plugin.service.ts:249` |
+| `PluginService.assertTemplatesExist` | 1 | `ConfigurationService.loadConformetryConfiguration` | `packages/ic-suite/conformetry/conformetry-nx/src/modules/plugin/plugin.service.ts:134` |
+| `PluginService.map(…)` | 1 | `ConfigurationService.collectTemplate` | `packages/ic-suite/conformetry/conformetry-nx/src/modules/plugin/plugin.service.ts:245` |
 | `resolveGeneratorService` | 1 | `resolvePluginContext` | `packages/ic-suite/conformetry/conformetry-nx/src/modules/plugin/plugin-context.utilities.ts:18` |
 | `resolveOptionsService` | 1 | `resolvePluginContext` | `packages/ic-suite/conformetry/conformetry-nx/src/modules/plugin/plugin-context.utilities.ts:25` |
 | `resolvePluginService` | 1 | `resolvePluginContext` | `packages/ic-suite/conformetry/conformetry-nx/src/modules/plugin/plugin-context.utilities.ts:32` |
@@ -384,7 +394,7 @@ What this project is judged against, as declared in its own `callidescope.config
 | `linkPlugin` | 1 | `leadsTo` | `packages/ic-suite/conformetry/conformetry-nx/src/modules/generator/bootstrap.utilities.ts:116` |
 
 </details>
-<!-- CALL_STACKS_END -->
+<!-- callidescope:end -->
 
 ## 🕸️ Codependix
 
@@ -424,7 +434,9 @@ flowchart LR
   FilesModule
   GenerationModule
   GeneratorModule
+  InputModule
   InstanceDiscoveryModule
+  InstanceGroupModule
   InstancesModule
   JsonModule
   JupyterModule
@@ -446,16 +458,20 @@ flowchart LR
   TextModule
   TypescriptModule
   ValidationModule
+  ConfigurationModule --> InputModule
+  ConfigurationModule --> InstanceDiscoveryModule
+  ConfigurationModule --> InstanceGroupModule
+  ConfigurationModule --> RenderingModule
+  ConfigurationModule --> TemplateDiscoveryModule
+  FilesModule --> ConfigurationModule
   FilesModule --> DifferencesModule
-  FilesModule --> InstanceDiscoveryModule
-  GenerationModule --> RenderingModule
+  GenerationModule --> ConfigurationModule
   GeneratorModule --> ConfigurationModule
   GeneratorModule --> ScopeModule
-  InstanceDiscoveryModule --> ConfigurationModule
+  InstanceDiscoveryModule --> InstanceGroupModule
   InstanceDiscoveryModule --> RenderingModule
   InstanceDiscoveryModule --> TemplateDiscoveryModule
   InstancesModule --> ConfigurationModule
-  InstancesModule --> InstanceDiscoveryModule
   InstancesModule --> ScopeModule
   JsonModule --> ScoringModule
   JupyterModule --> JsonModule
@@ -477,14 +493,12 @@ flowchart LR
   PluginModule --> ConfigurationModule
   PluginModule --> GenerationModule
   PluginModule --> GeneratorModule
-  PluginModule --> InstanceDiscoveryModule
   PluginModule --> InstancesModule
   PluginModule --> OptionsModule
   PluginModule --> PathsModule
   PluginModule --> ProjectsModule
   PluginModule --> ReportingModule
   PluginModule --> ScopeModule
-  PluginModule --> TemplateDiscoveryModule
   PluginModule --> ValidationModule
   PythonModule --> DifferencesModule
   PythonModule --> ScoringModule
@@ -492,8 +506,8 @@ flowchart LR
   ScopeModule --> ConfigurationModule
   TemplateDiscoveryModule --> RenderingModule
   TypescriptModule --> ScoringModule
+  ValidationModule --> ConfigurationModule
   ValidationModule --> FilesModule
-  ValidationModule --> InstanceDiscoveryModule
   ValidationModule --> LanguagesModule
   ValidationModule --> RunnerModule
   ValidationModule --> ScoringModule
@@ -680,7 +694,7 @@ graph LR
 ```
 <!-- codependix:end name="codependix-file-imports" -->
 
-<!-- CODE_STATISTICS_START -->
+<!-- codometer:start -->
 
 ## ⏲️ Codometer
 
@@ -894,4 +908,4 @@ graph LR
 ![Inline Code](https://img.shields.io/badge/Inline_Code-73-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-0-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-0-a16207?style=flat-square)
-<!-- CODE_STATISTICS_END -->
+<!-- codometer:end -->

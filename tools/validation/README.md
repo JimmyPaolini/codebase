@@ -100,7 +100,7 @@ nx run validation:vitest
 
 This project was generated from the [nestjs-command-project](../../configuration/conformetry-templates/nestjs-command-project) conformetry template.
 
-<!-- CALL_STACKS_START -->
+<!-- callidescope:start -->
 
 ## 🔭 Callidescope
 
@@ -365,7 +365,7 @@ What this project is judged against, as declared in its own `callidescope.config
 | `ReadmeProjectsService.resolveWorkspaceProjectPaths` | 1 | `ReadmeProjectsService.findProjectPaths` | `tools/validation/src/modules/readme-projects/readme-projects.service.ts:82` |
 
 </details>
-<!-- CALL_STACKS_END -->
+<!-- callidescope:end -->
 
 ## 🕸️ Codependix
 
@@ -669,14 +669,14 @@ graph LR
 ```
 <!-- codependix:end name="codependix-file-imports" -->
 
-<!-- CODE_STATISTICS_START -->
+<!-- codometer:start -->
 
 ## ⏲️ Codometer
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-10065-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-317.95_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-10347-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-325.74_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-11-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-84-3178c6?style=flat-square)
 
@@ -696,11 +696,11 @@ graph LR
 ![Test Files](https://img.shields.io/badge/Test_Files-30-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-14-8b5cf6?style=flat-square)
 ![Classes](https://img.shields.io/badge/Classes-28-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-526-16a34a?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-541-16a34a?style=flat-square)
 ![Methods](https://img.shields.io/badge/Methods-180-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-593-4ade80?style=flat-square)
-![Async Functions](https://img.shields.io/badge/Async_Functions-113-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-425-dc2626?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-603-4ade80?style=flat-square)
+![Async Functions](https://img.shields.io/badge/Async_Functions-118-059669?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-433-dc2626?style=flat-square)
 ![Imports](https://img.shields.io/badge/Imports-338-0284c7?style=flat-square)
 ![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-139-ea580c?style=flat-square)
 ![Comments](https://img.shields.io/badge/Comments-353-64748b?style=flat-square)
@@ -879,4 +879,4 @@ graph LR
 ![Inline Code](https://img.shields.io/badge/Inline_Code-94-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-0-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-0-a16207?style=flat-square)
-<!-- CODE_STATISTICS_END -->
+<!-- codometer:end -->

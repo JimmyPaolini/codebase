@@ -184,7 +184,7 @@ MIT — see [LICENSE](../../LICENSE).
 
 This project was generated from the [nestjs-command-project](../../configuration/conformetry-templates/nestjs-command-project) conformetry template.
 
-<!-- CALL_STACKS_START -->
+<!-- callidescope:start -->
 
 ## 🔭 Callidescope
 
@@ -508,7 +508,7 @@ What this project is judged against, as declared in its own `callidescope.config
 | `SynchronizationMarkersService.replaceContent` | 1 | `SynchronizationMarkersService.locateMarkers` | `tools/synchronization/src/modules/synchronization/synchronization-markers.service.ts:65` |
 
 </details>
-<!-- CALL_STACKS_END -->
+<!-- callidescope:end -->
 
 ## 🕸️ Codependix
 
@@ -848,14 +848,14 @@ graph LR
 ```
 <!-- codependix:end name="codependix-file-imports" -->
 
-<!-- CODE_STATISTICS_START -->
+<!-- codometer:start -->
 
 ## ⏲️ Codometer
 
 ### Project
 
 ![Lines of Code](https://img.shields.io/badge/Lines_of_Code-9621-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-318.43_kB-6b7280?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-318.16_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-12-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-82-3178c6?style=flat-square)
 
@@ -1058,4 +1058,4 @@ graph LR
 ![Inline Code](https://img.shields.io/badge/Inline_Code-89-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-0-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-0-a16207?style=flat-square)
-<!-- CODE_STATISTICS_END -->
+<!-- codometer:end -->

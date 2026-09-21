@@ -353,6 +353,18 @@ describe(PullRequestReleaseSignificanceCommand, () => {
       expect(appendFileSync).not.toHaveBeenCalled();
     });
 
+    it("writes nothing when the variable is empty", async () => {
+      expect.hasAssertions();
+
+      process.env[STEP_SUMMARY_VARIABLE] = "";
+      vi.mocked(githubService.run).mockReturnValue(
+        succeeded(pullRequestDocument({ title: "feat(lexico): add a page" })),
+      );
+
+      await expect(runCommand(["7"])).resolves.toBe(false);
+      expect(appendFileSync).not.toHaveBeenCalled();
+    });
+
     it("cannot turn a passing pull request into a failing one", async () => {
       expect.hasAssertions();
 

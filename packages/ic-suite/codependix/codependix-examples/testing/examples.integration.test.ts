@@ -14,6 +14,7 @@ import { collectDocuments, orderDocuments } from "./render/catalog";
 import * as configuration from "./render/configuration";
 import { deliverDocuments, renderDocument } from "./render/document";
 import * as exportDelivery from "./render/export-delivery";
+import * as pathQueries from "./render/path-queries";
 import { EXAMPLES_DIRECTORY } from "./render/paths";
 import { EXAMPLE_ORDER } from "./render/reading-order";
 import { run, selectMode, USAGE_MESSAGE } from "./render/run";
@@ -260,6 +261,30 @@ describe("codependix examples", () => {
     });
   });
 
+  describe("path queries", () => {
+    it("builds the path queries example document with four sections", async () => {
+      expect.hasAssertions();
+
+      const documents = await pathQueries.buildPathQueriesDocuments();
+
+      expect(documents).toHaveLength(1);
+      expect(documents[0]?.id).toBe("path-queries");
+      expect(documents[0]?.sections).toHaveLength(4);
+    });
+
+    it("includes connecting path and no-path sections", async () => {
+      expect.hasAssertions();
+
+      const [document] = await pathQueries.buildPathQueriesDocuments();
+      const headings = document?.sections.map((section) => section.heading);
+
+      expect(headings).toContain("Nx projects: connecting path found");
+      expect(headings).toContain("Nx projects: no connecting path");
+      expect(headings).toContain("Structured JSON format");
+      expect(headings).toContain("Mermaid diagram format");
+    });
+  });
+
   describe("the examples are all documented", () => {
     // `orderDocuments` already refuses a document missing from the reading
     // order, but nothing checked the other direction: an example the package
@@ -281,7 +306,7 @@ describe("codependix examples", () => {
   });
 
   describe("the committed examples", () => {
-    it("collects all sixteen examples, in reading order", async () => {
+    it("collects all seventeen examples, in reading order", async () => {
       expect.hasAssertions();
 
       const documents = await collectDocuments();
@@ -375,7 +400,7 @@ describe("codependix examples", () => {
       });
 
       expect(outcome.stalePaths).toStrictEqual([]);
-      expect(outcome.writtenCount).toBe(21);
+      expect(outcome.writtenCount).toBe(22);
     });
 
     it("reports every example as stale when nothing has been written", async () => {
@@ -406,7 +431,7 @@ describe("codependix examples", () => {
       expect.hasAssertions();
       await expect(run(["--check"])).resolves.toStrictEqual({
         exitCode: 0,
-        lines: ["🕸️ Rendered 21 codependix example files."],
+        lines: ["🕸️ Rendered 22 codependix example files."],
       });
     });
 
@@ -419,7 +444,7 @@ describe("codependix examples", () => {
       );
 
       expect(outcome.exitCode).toBe(1);
-      expect(outcome.lines[0]).toContain("21 stale codependix example(s)");
+      expect(outcome.lines[0]).toContain("22 stale codependix example(s)");
     });
 
     it("writes every example into a directory that does not exist yet", async () => {

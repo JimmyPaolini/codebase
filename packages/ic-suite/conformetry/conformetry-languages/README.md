@@ -87,7 +87,7 @@ MIT — see [LICENSE](../../../../LICENSE).
 
 This project was generated from the [nestjs-service-project](../../../../configuration/conformetry-templates/nestjs-service-project) conformetry template.
 
-<!-- CALL_STACKS_START -->
+<!-- callidescope:start -->
 
 ## 🔭 Callidescope
 
@@ -317,7 +317,7 @@ What this project is judged against, as declared in its own `callidescope.config
 | `TypescriptTreeService.compareChild` | 5 | `TypescriptNodesService.readKey`, `TypescriptTreeService.filter(…)`, `TypescriptTreeService.filter(…)`, `TypescriptTreeService.buildError`, `TypescriptTreeService.compareBestCandidate` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/typescript/typescript-tree.service.ts:88` |
 | `LanguagesService.resolveValidators` | 5 | `LanguagesService.filter(…)`, `LanguagesService.claimingLanguages`, `LanguagesService.flatMap(…)`, `LanguagesService.filter(…)`, `LanguagesService.widenFallback` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/languages/languages.service.ts:95` |
 | `JsonComparisonService.map(…)` | 4 | `JsonComparisonService.formatPath`, `JsonComparisonService.countNodes`, `JsonComparisonService.buildError`, `JsonComparisonService.compare` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:165` |
-| `FilesService.checkInstanceFiles` | 3 | `InstanceDiscoveryService.resolveInstanceFiles`, `FilesService.buildMissingDifference`, `FilesService.countExpectedFiles` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/files/files.service.ts:96` |
+| `FilesService.checkInstanceFiles` | 3 | `ConfigurationService.resolveInstanceFiles`, `FilesService.buildMissingDifference`, `FilesService.countExpectedFiles` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/files/files.service.ts:96` |
 | `JsonComparisonService.countNodes` | 3 | `JsonComparisonService.reduce(…)`, `JsonComparisonService.isJsonObject`, `JsonComparisonService.reduce(…)` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/json/json-comparison.service.ts:208` |
 | `JupyterNotebookService.pairCells` | 3 | `JupyterNotebookService.groupSourcesByKind`, `JupyterNotebookService.readCellKind`, `JupyterNotebookService.readCellSource` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/jupyter/jupyter-notebook.service.ts:82` |
 | `MarkdownTreeService.compareLeaf` | 3 | `MarkdownTreeService.findCandidates`, `MarkdownNodesService.countSubtree`, `MarkdownTreeService.buildError` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/markdown/markdown-tree.service.ts:115` |
@@ -397,7 +397,7 @@ What this project is judged against, as declared in its own `callidescope.config
 | `LanguagesService.filter(…)` | 1 | `LanguagesService.some(…)` | `packages/ic-suite/conformetry/conformetry-languages/src/modules/languages/languages.service.ts:98` |
 
 </details>
-<!-- CALL_STACKS_END -->
+<!-- callidescope:end -->
 
 ## 🕸️ Codependix
 
@@ -430,7 +430,9 @@ flowchart LR
   ConfigurationModule
   DifferencesModule
   FilesModule
+  InputModule
   InstanceDiscoveryModule
+  InstanceGroupModule
   JsonModule
   JupyterModule
   LanguagesModule
@@ -441,9 +443,14 @@ flowchart LR
   TemplateDiscoveryModule
   TextModule
   TypescriptModule
+  ConfigurationModule --> InputModule
+  ConfigurationModule --> InstanceDiscoveryModule
+  ConfigurationModule --> InstanceGroupModule
+  ConfigurationModule --> RenderingModule
+  ConfigurationModule --> TemplateDiscoveryModule
+  FilesModule --> ConfigurationModule
   FilesModule --> DifferencesModule
-  FilesModule --> InstanceDiscoveryModule
-  InstanceDiscoveryModule --> ConfigurationModule
+  InstanceDiscoveryModule --> InstanceGroupModule
   InstanceDiscoveryModule --> RenderingModule
   InstanceDiscoveryModule --> TemplateDiscoveryModule
   JsonModule --> ScoringModule
@@ -716,7 +723,7 @@ graph LR
 ```
 <!-- codependix:end name="codependix-file-imports" -->
 
-<!-- CODE_STATISTICS_START -->
+<!-- codometer:start -->
 
 ## ⏲️ Codometer
 
@@ -930,4 +937,4 @@ graph LR
 ![Inline Code](https://img.shields.io/badge/Inline_Code-73-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-0-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-0-a16207?style=flat-square)
-<!-- CODE_STATISTICS_END -->
+<!-- codometer:end -->

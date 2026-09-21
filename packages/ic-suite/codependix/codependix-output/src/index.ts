@@ -28,5 +28,21 @@ export type {
   NxNeighborhoodExport,
   NxWorkspaceGraphExport,
 } from "./modules/graph-run/graph-run.types";
+export {
+  buildNoPathMessage,
+  FORMAT_MERMAID,
+  PATH_ARROW,
+  PATH_FORMAT_NAMES,
+  PATH_MERMAID_HEADER,
+} from "./modules/path-query/path-query.constants";
+export { PathQueryModule } from "./modules/path-query/path-query.module";
+export { PathQueryService } from "./modules/path-query/path-query.service";
+export type {
+  CombinedPathResults,
+  PathFormat,
+  PathQueryArguments,
+  PathQueryResult,
+  PathReportArguments,
+} from "./modules/path-query/path-query.types";
 export { ReportingModule } from "./modules/reporting/reporting.module";
 export { ReportingService } from "./modules/reporting/reporting.service";

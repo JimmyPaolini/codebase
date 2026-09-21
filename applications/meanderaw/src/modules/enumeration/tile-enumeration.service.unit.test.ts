@@ -258,9 +258,9 @@ describe(TileEnumerationService, () => {
       // `lines` is the single column's wrapped rule on every level, so `3`
       // — east and west — throughout; `dashes` alternates the anchor `2`
       // with the point `1` it reaches across a two-column tile.
-      expect(singleColumn).toContain("00000");
-      expect(singleColumn).toContain("33333");
-      expect(twoColumn).toContain("21212121");
+      expect(singleColumn).toContain("01x06y00000");
+      expect(singleColumn).toContain("01x06y33333");
+      expect(twoColumn).toContain("02x05y21212121");
     });
 
     it("finds only the dot and the line at the smallest tile there is", () => {
@@ -272,9 +272,9 @@ describe(TileEnumerationService, () => {
       // the wrapped rule, and a southward edge over the lower two levels —
       // the last being the representative its own top-to-bottom mirror
       // folds onto.
-      expect(identifiers).toContain("000");
-      expect(identifiers).toContain("333");
-      expect(identifiers).toContain("048");
+      expect(identifiers).toContain("01x04y000");
+      expect(identifiers).toContain("01x04y333");
+      expect(identifiers).toContain("01x04y048");
     });
 
     it.each(ADMITTED_SHAPES)(

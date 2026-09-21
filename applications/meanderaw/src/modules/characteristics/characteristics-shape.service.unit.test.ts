@@ -13,6 +13,7 @@ describe(CharacteristicsShapeService, () => {
     columns: 2,
     digits: "",
     levels: 2,
+    repeats: 1,
     rows: 3,
     ...overrides,
   });

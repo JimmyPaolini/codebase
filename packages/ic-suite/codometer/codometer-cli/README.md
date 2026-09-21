@@ -438,7 +438,7 @@ declared no such input renders no such group, which is why the whole-repository
 report carries only its own `Repository Size`.
 
 Spliced, the badges sit between two markers,
-named `CODE_STATISTICS_START` and `CODE_STATISTICS_END` unless a configuration
+named `<!-- codometer:start -->` and `<!-- codometer:end -->` unless a configuration
 renames them — as this example does, so that documenting the markers does not
 make this document splice its own badges into the example:
 
@@ -612,7 +612,7 @@ MIT — see [LICENSE](../../LICENSE).
 
 This project was generated from the [nestjs-command-project](../../configuration/conformetry-templates/nestjs-command-project) conformetry template.
 
-<!-- CALL_STACKS_START -->
+<!-- callidescope:start -->
 
 ## 🔭 Callidescope
 
@@ -628,7 +628,7 @@ Call stacks traced through `packages/ic-suite/codometer/codometer-cli`, deepest 
 | Stacks through recursion | 0 |
 | Unfollowable calls | 3 |
 
-### Callidescope Limits
+### Limits
 
 What this project is judged against, as declared in its own `callidescope.config.ts`.
 
@@ -695,7 +695,7 @@ What this project is judged against, as declared in its own `callidescope.config
                      ↳ Reads a limit's value, in decimal units when it was written as a string.
                     └─> ConfigurationResolverService.parseLimitValueText(metric: string, text: string): number [packages/ic-suite/codometer/codometer-configuration/src/modules/configuration/configuration-resolver.service.ts:114]
                        ↳ Reads a limit written as a string, unit and all.
-                      └─> InvalidLimitValueError.constructor(metric: string, value: string): InvalidLimitValueError [packages/ic-suite/codometer/codometer-core/src/lib/errors.constants.ts:35]
+                      └─> InvalidLimitValueError.constructor(metric: string, value: string): InvalidLimitValueError [packages/ic-suite/codometer/codometer-core/src/modules/codometer-core/codometer-core.constants.ts:35]
 ```
 
 **3. `ChangesCommand.run`** — depth ≥ 11 · decorated-method
@@ -703,16 +703,16 @@ What this project is judged against, as declared in its own `callidescope.config
 ```text
 🚀 ChangesCommand.run(_passedParameters: string[], options: ChangesCommandOptions): Promise<void> [packages/ic-suite/codometer/codometer-cli/src/modules/changes/changes.command.ts:97]
    ↳ Diffs every project's report against the baseline, and emits the result.
-  └─> ChangesService.collect(args: CollectRowsArguments): MetricCollection [packages/ic-suite/codometer/codometer-output/src/modules/changes/changes.service.ts:289]
+  └─> ChangesService.collect(args: CollectRowsArguments): MetricCollection [packages/ic-suite/codometer/codometer-output/src/modules/changes/changes.service.ts:292]
      ↳ Joins every current report to the baseline snapshot.
-    └─> ChangesService.map(…)(reportPath: string): MetricCollection [packages/ic-suite/codometer/codometer-output/src/modules/changes/changes.service.ts:290]
+    └─> ChangesService.map(…)(reportPath: string): MetricCollection [packages/ic-suite/codometer/codometer-output/src/modules/changes/changes.service.ts:293]
       └─> ChangesService.collectProjectRows(args: CollectProjectRowsArguments): MetricCollection [packages/ic-suite/codometer/codometer-output/src/modules/changes/changes.service.ts:110]
          ↳ Joins one project's current report to its baseline.
         └─> ChangesService.readBaseline(args: CollectProjectRowsArguments): Map<string, ReportMetric> [packages/ic-suite/codometer/codometer-output/src/modules/changes/changes.service.ts:154]
            ↳ Reads a baseline report into a name-to-metric lookup.
-          └─> ChangesService.readReport(workingDirectory: string, reportPath: string): ProjectReport [packages/ic-suite/codometer/codometer-output/src/modules/changes/changes.service.ts:240]
+          └─> ChangesService.readReport(workingDirectory: string, reportPath: string): ProjectReport [packages/ic-suite/codometer/codometer-output/src/modules/changes/changes.service.ts:243]
              ↳ Parses a codometer report, tolerating an absent or malformed file.
-            └─> ChangesService.flatMap(…)(…): ReportMetric[] [packages/ic-suite/codometer/codometer-output/src/modules/changes/changes.service.ts:256]
+            └─> ChangesService.flatMap(…)(…): ReportMetric[] [packages/ic-suite/codometer/codometer-output/src/modules/changes/changes.service.ts:259]
               └─> ChangesService.readMetrics(target: ReportTarget): ReportMetric[] [packages/ic-suite/codometer/codometer-output/src/modules/changes/changes.service.ts:222]
                  ↳ Pulls every metric a target produced out of the report.
                 └─> ChangesService.map(…)(…): { breach: MetricSeverity | undefined; empty: boolean; label: string; limit: number | undefined; name: string; unit: "bytes" | null; value: number; } [packages/ic-suite/codometer/codometer-output/src/modules/changes/changes.service.ts:223]
@@ -849,11 +849,11 @@ What this project is judged against, as declared in its own `callidescope.config
 | `main` | 1 | `withDefaultCommand` | `packages/ic-suite/codometer/codometer-cli/src/main.ts:26` |
 
 </details>
-<!-- CALL_STACKS_END -->
+<!-- callidescope:end -->
 
 ## 🕸️ Codependix
 
-Dependency graphs exported by [codependix](https://github.com/JimmyPaolini/codebase/tree/main/packages/codependix-cli), regenerated by `nx run codebase:codependix:write`.
+Dependency graphs exported by [codependix](https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/codependix/codependix-cli), regenerated by `nx run codebase:codependix:write`.
 
 ### Nx Neighborhood
 
@@ -888,6 +888,7 @@ flowchart LR
   ChangesModule
   CommentsModule
   ConfigModule([ConfigModule])
+  ConfigurationListingModule
   ConfigurationModule
   CssModule
   CustomizationModule
@@ -896,7 +897,6 @@ flowchart LR
   DiscoveryModule
   DocumentsModule
   HclModule
-  InputModule
   InputsModule
   JsonModule
   JupyterModule
@@ -916,12 +916,13 @@ flowchart LR
   TypescriptModule
   YamlModule
   ChangesModule --> ChangesModule
+  ChangesModule --> ConfigurationModule
   ChangesModule --> DocumentsModule
-  ChangesModule --> InputModule
   ChangesModule --> RenderModule
+  ConfigurationListingModule --> ConfigurationModule
+  ConfigurationListingModule --> DiscoveryModule
+  ConfigurationModule --> ConfigurationListingModule
   ConfigurationModule --> ConfigurationModule
-  ConfigurationModule --> DiscoveryModule
-  ConfigurationModule --> InputModule
   DeliveryModule --> JsonModule
   DeliveryModule --> MarkdownModule
   JupyterModule --> JsonModule
@@ -944,7 +945,6 @@ flowchart LR
   MainModule --> ConfigurationModule
   MainModule --> DiscoveryModule
   MainModule --> DiscoveryModule
-  MainModule --> InputModule
   MainModule --> JsonModule
   MainModule --> MarkdownModule
   MainModule --> MeasureModule
@@ -954,7 +954,6 @@ flowchart LR
   MeasureModule --> DeliveryModule
   MeasureModule --> DestinationsModule
   MeasureModule --> DiscoveryModule
-  MeasureModule --> InputModule
   MeasureModule --> InputsModule
   MeasureModule --> LanguagesModule
   MeasureModule --> LimitsModule
@@ -992,14 +991,11 @@ graph LR
   file_src_modules_configuration_configuration_command_unit_test_ts["src/modules/configuration/configuration.command.unit.test.ts"]
   file_src_modules_configuration_configuration_constants_ts["src/modules/configuration/configuration.constants.ts"]
   file_src_modules_configuration_configuration_module_ts["src/modules/configuration/configuration.module.ts"]
-  file_src_modules_configuration_configuration_service_ts["src/modules/configuration/configuration.service.ts"]
-  file_src_modules_configuration_configuration_service_unit_test_ts["src/modules/configuration/configuration.service.unit.test.ts"]
   file_src_modules_configuration_configuration_types_ts["src/modules/configuration/configuration.types.ts"]
-  file_src_modules_configuration_render_configuration_service_ts["src/modules/configuration/render-configuration.service.ts"]
-  file_src_modules_configuration_render_configuration_service_unit_test_ts["src/modules/configuration/render-configuration.service.unit.test.ts"]
   file_src_modules_measure_measure_command_integration_test_ts["src/modules/measure/measure.command.integration.test.ts"]
   file_src_modules_measure_measure_command_ts["src/modules/measure/measure.command.ts"]
   file_src_modules_measure_measure_command_unit_test_ts["src/modules/measure/measure.command.unit.test.ts"]
+  file_src_modules_measure_measure_constants_ts["src/modules/measure/measure.constants.ts"]
   file_src_modules_measure_measure_module_ts["src/modules/measure/measure.module.ts"]
   file_src_modules_measure_measure_types_ts["src/modules/measure/measure.types.ts"]
   file_src_repl_ts["src/repl.ts"]
@@ -1022,22 +1018,9 @@ graph LR
   file_src_modules_changes_changes_command_unit_test_ts --> file_src_modules_changes_changes_command_ts
   file_src_modules_changes_changes_module_ts --> file_src_modules_changes_changes_command_ts
   file_src_modules_configuration_configuration_command_ts --> file_src_modules_configuration_configuration_constants_ts
-  file_src_modules_configuration_configuration_command_ts --> file_src_modules_configuration_configuration_service_ts
   file_src_modules_configuration_configuration_command_ts --> file_src_modules_configuration_configuration_types_ts
-  file_src_modules_configuration_configuration_command_ts --> file_src_modules_configuration_render_configuration_service_ts
   file_src_modules_configuration_configuration_command_unit_test_ts --> file_src_modules_configuration_configuration_command_ts
-  file_src_modules_configuration_configuration_command_unit_test_ts --> file_src_modules_configuration_configuration_service_ts
-  file_src_modules_configuration_configuration_command_unit_test_ts --> file_src_modules_configuration_render_configuration_service_ts
   file_src_modules_configuration_configuration_module_ts --> file_src_modules_configuration_configuration_command_ts
-  file_src_modules_configuration_configuration_module_ts --> file_src_modules_configuration_configuration_service_ts
-  file_src_modules_configuration_configuration_module_ts --> file_src_modules_configuration_render_configuration_service_ts
-  file_src_modules_configuration_configuration_service_ts --> file_src_modules_configuration_configuration_constants_ts
-  file_src_modules_configuration_configuration_service_ts --> file_src_modules_configuration_configuration_types_ts
-  file_src_modules_configuration_configuration_service_unit_test_ts --> file_src_modules_configuration_configuration_service_ts
-  file_src_modules_configuration_render_configuration_service_ts --> file_src_modules_configuration_configuration_constants_ts
-  file_src_modules_configuration_render_configuration_service_ts --> file_src_modules_configuration_configuration_types_ts
-  file_src_modules_configuration_render_configuration_service_unit_test_ts --> file_src_modules_configuration_configuration_types_ts
-  file_src_modules_configuration_render_configuration_service_unit_test_ts --> file_src_modules_configuration_render_configuration_service_ts
   file_src_modules_measure_measure_command_integration_test_ts --> file_src_main_module_ts
   file_src_modules_measure_measure_command_integration_test_ts --> file_src_modules_measure_measure_command_ts
   file_src_modules_measure_measure_command_integration_test_ts --> file_testing_fixture_tree_ts
@@ -1049,7 +1032,7 @@ graph LR
 ```
 <!-- codependix:end name="codependix-file-imports" -->
 
-<!-- CODE_STATISTICS_START -->
+<!-- codometer:start -->
 
 ## ⏲️ Codometer Output
 
@@ -1263,4 +1246,4 @@ graph LR
 ![Inline Code](https://img.shields.io/badge/Inline_Code-78-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-0-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-0-a16207?style=flat-square)
-<!-- CODE_STATISTICS_END -->
+<!-- codometer:end -->

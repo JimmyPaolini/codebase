@@ -84,11 +84,13 @@ describe(DrawIndexService, () => {
     horizontalDashCount: 0,
     horizontalPointCount: 0,
     inkPointCount: 0,
+    lattice: "0",
     lCount: 0,
     longestHorizontalRun: 0,
     longestVerticalRun: 0,
     oCount: 0,
     plusCount: 0,
+    repeats: 1,
     seamComponents: 0,
     seamCycles: 0,
     seamTJunctions: 0,
@@ -118,18 +120,22 @@ describe(DrawIndexService, () => {
   it("builds pages from the committed rows, grouped by family with a section for the unclassified ones", async () => {
     await repository.save(
       record({
-        code: "0".repeat(1), // levels = 2 - 1 = 1, columns = 1 => 1 character
+        code: "01x02y0",
         families: ["snake"],
+        lattice: "0",
       }),
     );
     await repository.save(
       record({
         characteristics: ["dots"],
-        code: "1".repeat(1),
+        code: "01x02y1",
         families: ["whirl"],
+        lattice: "1",
       }),
     );
-    await repository.save(record({ code: "2".repeat(1), families: [] }));
+    await repository.save(
+      record({ code: "01x02y2", families: [], lattice: "2" }),
+    );
 
     const pages = await service.build();
 
@@ -139,7 +145,7 @@ describe(DrawIndexService, () => {
       '<section id="unclassified">',
     );
     expect(pages["families/snake.html"]).toContain(
-      "<figcaption>2×1 · 0</figcaption>",
+      "<figcaption>2×1 · 01x02y0</figcaption>",
     );
     expect(pages["families/whirl.html"]).toContain("(dots)");
 

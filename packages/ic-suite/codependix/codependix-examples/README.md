@@ -1,6 +1,6 @@
 # 🕸️ Codependix Examples
 
-**Sixteen small subjects built to be graphed, so every graph codependix draws
+**Seventeen small subjects built to be graphed, so every graph codependix draws
 has somewhere to point.**
 
 Codependix draws dependency graphs at four levels — the Nx Neighborhood, the
@@ -63,6 +63,7 @@ renderer chains them with, declared once in
 | [`check-and-write`](examples/check-and-write) | What each `--check` name gates, what drift is reported as, and the four command lines refused outright |
 | [`boundary-rules`](examples/boundary-rules) | The three rule kinds, judged by the real evaluator — including the implicit edge no lint rule can see |
 | [`refusals`](examples/refusals) | Every refusal, with the reproduction that produces it |
+| [`path-queries`](examples/path-queries) | How `codependix path` traces shortest connecting paths across graph levels in Markdown, JSON, and Mermaid |
 | [`json-exports`](examples/json-exports) | Every graph's JSON shape, and the two workspace rules switched off for these files |
 | [`workspace-drift`](examples/workspace-drift) | Why this repository gates no pull request on `codependix map --check` |
 
@@ -248,6 +249,7 @@ graph LR
   file_testing_setup_ts["testing/setup.ts"]
   file_vitest_config_ts["vitest.config.ts"]
   file_testing_examples_integration_test_ts --> file_testing_render_anchor_placement_ts
+  file_testing_examples_integration_test_ts --> file_testing_render_builders_ts
   file_testing_examples_integration_test_ts --> file_testing_render_catalog_ts
   file_testing_examples_integration_test_ts --> file_testing_render_configuration_ts
   file_testing_examples_integration_test_ts --> file_testing_render_document_ts
@@ -327,7 +329,7 @@ graph LR
 _This project defines no NestJS modules to graph._
 <!-- codependix:end name="codependix-nestjs-modules" -->
 
-<!-- CODE_STATISTICS_START -->
+<!-- codometer:start -->
 
 ## ⏲️ Codometer
 
@@ -537,4 +539,4 @@ _This project defines no NestJS modules to graph._
 ![Inline Code](https://img.shields.io/badge/Inline_Code-391-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-0-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-0-a16207?style=flat-square)
-<!-- CODE_STATISTICS_END -->
+<!-- codometer:end -->

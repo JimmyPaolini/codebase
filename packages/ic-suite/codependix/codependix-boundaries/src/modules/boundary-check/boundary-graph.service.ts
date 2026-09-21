@@ -26,8 +26,8 @@ import type { NxProject, WorkspaceGraph } from "@codependix/nx-projects";
  *
  * What each level knows differs, and the node shape says so: an Nx project
  * carries tags and a root, a file carries its project-relative path and the
- * project it belongs to, and a NestJS module carries only its class name —
- * `NestjsModuleGraph` has no file path to give.
+ * project it belongs to, and a NestJS module carries its class name, declaring
+ * file path, and project name.
  */
 @Injectable()
 export class BoundaryGraphService {
@@ -71,17 +71,18 @@ export class BoundaryGraphService {
   /**
    * Adapts one project's NestJS module graph.
    *
-   * Nodes carry a name and nothing else, which is the level's real
-   * constraint rather than an omission here: `SpelunkerModule.explore`
-   * reports class names, so a name glob is the only selector a rule can use
-   * at this level until `codependix-nestjs-modules` learns each module's declaring
-   * file.
+   * Nodes carry a name, their project-relative declaring file path, and the
+   * project name they belong to.
    */
   public buildNestjsGraph(graph: NestjsModuleGraph): BoundaryGraph {
     return {
       edges: graph.edges,
       level: "nestjsModules",
-      nodes: graph.moduleNames.map((moduleName) => ({ id: moduleName })),
+      nodes: graph.nodes.map((node) => ({
+        id: node.name,
+        path: node.declaringFile,
+        project: graph.projectName,
+      })),
       scope: graph.projectName,
     };
   }

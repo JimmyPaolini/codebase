@@ -1,4 +1,4 @@
-# Codebase v2.16.0
+# Codebase v2.17.0
 
 [![Nx](https://img.shields.io/badge/Nx-Codebase-143055?logo=nx)](https://nx.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Strict-3178C6?logo=typescript)](https://www.typescriptlang.org/)
@@ -159,7 +159,7 @@ Other important files include [CHANGELOG.md](CHANGELOG.md) and [SECURITY.md](.gi
 
 Template-driven code generation and conformance validation, templates synced from [configuration/conformetry.config.ts](configuration/conformetry.config.ts) by `nx run synchronization:conformetry-generators:write`.
 
-<!-- conformetry-generators-table start -->
+<!-- conformetry:start -->
 | Template | Description |
 | -------- | ----------- |
 | `jupyter-notebook-application` | A standalone Python application template with a Jupyter notebook entry point, pytest/pyright/ruff tooling, and a shared uv workspace venv |
@@ -172,7 +172,7 @@ Template-driven code generation and conformance validation, templates synced fro
 | `nestjs-service-file` | A service and unit test file template for an existing NestJS module, without the surrounding module files |
 | `nestjs-service-module` | A plain service module template — module, service, constants, types, and unit test — for an existing NestJS project |
 | `react-component` | A React component and test file template for an existing React project |
-<!-- conformetry-generators-table end -->
+<!-- conformetry:end -->
 
 ## 🕸️ Codependix
 
@@ -336,7 +336,7 @@ graph LR
 _Dashed edges are dependencies Nx inferred from configuration rather than from code._
 <!-- codependix:end name="codependix-nx-projects" -->
 
-<!-- CODE_STATISTICS_START -->
+<!-- codometer:start -->
 
 ## ⏲️ Codometer
 
@@ -345,7 +345,7 @@ Repository statistics measured by [codometer](packages/ic-suite/codometer/codome
 ### Repository
 
 ![Lines of Code](https://img.shields.io/badge/Lines_of_Code-5954-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-2.06_MB-6b7280?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-2.05_MB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-74-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-24-3178c6?style=flat-square)
 
@@ -408,16 +408,16 @@ Repository statistics measured by [codometer](packages/ic-suite/codometer/codome
 
 ### YAML
 
-![YAML Files](https://img.shields.io/badge/YAML_Files-22-cb171e?style=flat-square)
-![YAML Lines](https://img.shields.io/badge/YAML_Lines-2774-e34c26?style=flat-square)
-![YAML Documents](https://img.shields.io/badge/YAML_Documents-22-f97316?style=flat-square)
-![YAML Mappings](https://img.shields.io/badge/YAML_Mappings-392-7c3aed?style=flat-square)
-![YAML Sequences](https://img.shields.io/badge/YAML_Sequences-87-8b5cf6?style=flat-square)
-![YAML Keys](https://img.shields.io/badge/YAML_Keys-1341-0284c7?style=flat-square)
-![YAML Scalars](https://img.shields.io/badge/YAML_Scalars-2687-16a34a?style=flat-square)
+![YAML Files](https://img.shields.io/badge/YAML_Files-21-cb171e?style=flat-square)
+![YAML Lines](https://img.shields.io/badge/YAML_Lines-2780-e34c26?style=flat-square)
+![YAML Documents](https://img.shields.io/badge/YAML_Documents-21-f97316?style=flat-square)
+![YAML Mappings](https://img.shields.io/badge/YAML_Mappings-395-7c3aed?style=flat-square)
+![YAML Sequences](https://img.shields.io/badge/YAML_Sequences-86-8b5cf6?style=flat-square)
+![YAML Keys](https://img.shields.io/badge/YAML_Keys-1362-0284c7?style=flat-square)
+![YAML Scalars](https://img.shields.io/badge/YAML_Scalars-2735-16a34a?style=flat-square)
 ![YAML Anchors](https://img.shields.io/badge/YAML_Anchors-0-059669?style=flat-square)
 ![YAML Aliases](https://img.shields.io/badge/YAML_Aliases-0-10b981?style=flat-square)
-![YAML Comments](https://img.shields.io/badge/YAML_Comments-474-64748b?style=flat-square)
+![YAML Comments](https://img.shields.io/badge/YAML_Comments-386-64748b?style=flat-square)
 ![YAML Max Depth](https://img.shields.io/badge/YAML_Max_Depth-8-ea580c?style=flat-square)
 
 ### TOML
@@ -432,15 +432,15 @@ Repository statistics measured by [codometer](packages/ic-suite/codometer/codome
 
 ### Shell
 
-![Shell Files](https://img.shields.io/badge/Shell_Files-36-89e051?style=flat-square)
-![Shell Lines](https://img.shields.io/badge/Shell_Lines-2505-4eaa25?style=flat-square)
+![Shell Files](https://img.shields.io/badge/Shell_Files-35-89e051?style=flat-square)
+![Shell Lines](https://img.shields.io/badge/Shell_Lines-2496-4eaa25?style=flat-square)
 ![Shell Functions](https://img.shields.io/badge/Shell_Functions-23-16a34a?style=flat-square)
-![Shell Variables](https://img.shields.io/badge/Shell_Variables-226-0284c7?style=flat-square)
+![Shell Variables](https://img.shields.io/badge/Shell_Variables-224-0284c7?style=flat-square)
 ![Shell Exports](https://img.shields.io/badge/Shell_Exports-12-ea580c?style=flat-square)
-![Shell Conditionals](https://img.shields.io/badge/Shell_Conditionals-171-7c3aed?style=flat-square)
+![Shell Conditionals](https://img.shields.io/badge/Shell_Conditionals-170-7c3aed?style=flat-square)
 ![Shell Loops](https://img.shields.io/badge/Shell_Loops-17-8b5cf6?style=flat-square)
-![Shell Pipelines](https://img.shields.io/badge/Shell_Pipelines-104-059669?style=flat-square)
-![Shebangs](https://img.shields.io/badge/Shebangs-36-6b7280?style=flat-square)
+![Shell Pipelines](https://img.shields.io/badge/Shell_Pipelines-103-059669?style=flat-square)
+![Shebangs](https://img.shields.io/badge/Shebangs-35-6b7280?style=flat-square)
 ![Shell Comments](https://img.shields.io/badge/Shell_Comments-548-64748b?style=flat-square)
 ![Shell Comment Lines](https://img.shields.io/badge/Shell_Comment_Lines-548-475569?style=flat-square)
 
@@ -545,12 +545,12 @@ Repository statistics measured by [codometer](packages/ic-suite/codometer/codome
 ![Links](https://img.shields.io/badge/Links-663-059669?style=flat-square)
 ![Images](https://img.shields.io/badge/Images-22-10b981?style=flat-square)
 ![Code Blocks](https://img.shields.io/badge/Code_Blocks-395-dc2626?style=flat-square)
-![Inline Code](https://img.shields.io/badge/Inline_Code-10150-ef4444?style=flat-square)
+![Inline Code](https://img.shields.io/badge/Inline_Code-10151-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-20-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-28-a16207?style=flat-square)
-<!-- CODE_STATISTICS_END -->
+<!-- codometer:end -->
 
-<!-- CALL_STACKS_START -->
+<!-- callidescope:start -->
 
 ## 🔭 Callidescope
 
@@ -558,13 +558,13 @@ The workspace's call graph, traced by [callidescope](packages/ic-suite/callidesc
 
 | Measure | Value |
 | --- | --- |
-| Callables | 4964 |
-| Files | 1405 |
-| Calls traced | 5534 |
-| Call stacks | 1282 |
+| Callables | 5027 |
+| Files | 1414 |
+| Calls traced | 5617 |
+| Call stacks | 1300 |
 | Deepest stack | 17 |
 | Stacks through recursion | 12 |
-| Unfollowable calls | 334 |
+| Unfollowable calls | 336 |
 
 ### Projects
 
@@ -595,7 +595,7 @@ The workspace's call graph, traced by [callidescope](packages/ic-suite/callidesc
 | `packages/ic-suite/codependix/codependix-nx-projects` | 0 | 4 | 4 | 8 |
 | `packages/ic-suite/conformetry/conformetry-configuration` | 10 | 14 | 4 | 5 |
 | `packages/ic-suite/codependix/codependix-configuration` | 2 | 7 | 5 | 4 |
-| `packages/ic-suite/codependix/codependix-nestjs-modules` | 0 | 5 | 5 | 5 |
+| `packages/ic-suite/codependix/codependix-nestjs-modules` | 0 | 5 | 5 | 7 |
 | `packages/ic-suite/callidescope/callidescope-graph` | 5 | 11 | 6 | 8 |
 | `packages/ic-suite/codometer/codometer-configuration` | 3 | 9 | 6 | 4 |
 | `packages/ic-suite/codometer/codometer-languages` | 5 | 11 | 6 | 12 |
@@ -624,8 +624,10 @@ The workspace's call graph, traced by [callidescope](packages/ic-suite/callidesc
 
 None.
 
-### Callables over the breadth limit (0)
+### Callables over the breadth limit (1)
 
-None.
+| Callable | Breadth | Calls directly | Location |
+| --- | --- | --- | --- |
+| `ModuleGraphService.buildGraph` | 7 | `ModuleGraphService.findAmbientModuleNames`, `ModuleGraphService.collectEdgesAndNodes`, `ModuleGraphService.toSorted(…)`, `ModuleGraphService.sortNames`, `ModuleGraphService.map(…)`, `ModuleGraphService.toSorted(…)`, `ModuleGraphService.filter(…)` | `packages/ic-suite/codependix/codependix-nestjs-modules/src/modules/module-graph/module-graph.service.ts:169` |
 
-<!-- CALL_STACKS_END -->
+<!-- callidescope:end -->
