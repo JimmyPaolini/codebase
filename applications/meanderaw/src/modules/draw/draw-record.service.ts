@@ -60,22 +60,25 @@ export class DrawRecordService {
   ): MeanderRecord {
     const { columns, rows } = shape;
     const parsed = this.codeService.parse(code, rows, columns);
-    const characteristics = this.characteristicsService.compute(parsed);
+    const canonical = this.codeService.canonicalPhase(parsed, (phase) =>
+      this.characteristicsService.seamComponents(phase),
+    );
+    const characteristics = this.characteristicsService.compute(canonical);
     const classification = this.classificationService.classify(
-      parsed,
+      canonical,
       characteristics,
       shape,
     );
 
     return {
       ...characteristics,
-      code,
+      code: canonical.digits,
       columns,
       family: classification.family ?? null,
       provenance,
       rows,
       subFamily: classification.subFamily ?? null,
-      svg: this.drawingService.render(parsed),
+      svg: this.drawingService.render(canonical),
     };
   }
 }

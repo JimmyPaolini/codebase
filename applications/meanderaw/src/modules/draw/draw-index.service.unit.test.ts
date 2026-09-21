@@ -34,6 +34,7 @@ describe(DrawIndexService, () => {
     edgeCount: 0,
     embeddedOCount: 0,
     embeddedUCount: 0,
+    // cspell:ignore Neighbours
     endsAreLatticeNeighbours: false,
     endsOnBorderRules: false,
     family: null,

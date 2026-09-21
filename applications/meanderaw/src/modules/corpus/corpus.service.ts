@@ -89,15 +89,29 @@ export class CorpusService {
   ): Promise<Meander> {
     const { code, columns, rows } = entry;
     const parsed = this.codeService.parse(code, rows, columns);
-    const svg = this.drawingService.render(parsed);
-    const characteristics = this.characteristicsService.compute(parsed);
+    const canonical = this.codeService.canonicalPhase(parsed, (phase) =>
+      this.characteristicsService.seamComponents(phase),
+    );
+    const canonicalCode = canonical.digits;
+
+    const svg = this.drawingService.render(canonical);
+    const characteristics = this.characteristicsService.compute(canonical);
     const earnedSubFamily = this.subFamilyService.name(
-      this.codeService.tile(parsed),
+      this.codeService.tile(canonical),
     );
 
     try {
+      const existing = await this.databaseService.findOneByLattice(
+        canonicalCode,
+        rows,
+        columns,
+      );
+      if (existing) {
+        return existing;
+      }
+
       return await this.databaseService.save({
-        code,
+        code: canonicalCode,
         columns,
         components: characteristics.components,
         cycles: characteristics.cycles,
@@ -116,7 +130,7 @@ export class CorpusService {
         svg,
       });
     } catch (error) {
-      throw new DuplicateCorpusCodeError(code, family, error);
+      throw new DuplicateCorpusCodeError(canonicalCode, family, error);
     }
   }
 
