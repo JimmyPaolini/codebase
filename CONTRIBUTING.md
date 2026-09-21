@@ -518,7 +518,7 @@ See [create-pull-request](.agents/skills/create-pull-request/SKILL.md) and [upda
 
 ## Release Process
 
-Releases use [semantic-release](https://semantic-release.gitbook.io/), fully automated on merge to `main` by the 🦸 Push Releases workflow. Versioning is fixed — the whole codebase shares one version — and nothing is published to a package registry.
+Releases use [semantic-release](https://semantic-release.gitbook.io/), fully automated on merge to `main` by the 🦸 Continuous Deployment workflow (`push-releases` target). Versioning is fixed — the whole codebase shares one version — and nothing is published to a package registry.
 
 **Version bumps**, from `releaseRules` in [release.config.cjs](release.config.cjs):
 
@@ -537,7 +537,7 @@ Releases use [semantic-release](https://semantic-release.gitbook.io/), fully aut
 pnpm semantic-release:dry-run
 ```
 
-Never hand-edit `CHANGELOG.md` or bump a version manually. A green Push Releases run does not by itself mean a release happened — most runs are correctly no-ops.
+Never hand-edit `CHANGELOG.md` or bump a version manually. A green Continuous Deployment run does not by itself mean a release happened — most runs are correctly no-ops.
 
 ## Code Ownership
 

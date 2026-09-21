@@ -1,36 +1,43 @@
 name: 🦹 Continuous Compliance
 
-# External and repository compliance checks outside the codebase:
-# 1. 🧑‍💼 Audit Issues: Issue metadata (`type:*`, `scope:*`, and `source:*` labels)
-#    and 3-tier hierarchy / release significance validation across open issues.
-# 2. 👮 Audit Governance: Repository governance (CODEOWNERS and workflow security).
+# External and repository compliance checks:
+# 1. 🧑‍💼 Audit Issues: Issue metadata, hierarchy, and release significance.
+# 2. 👮 Audit Governance: Repository governance and workflow security.
+# 3. 🧑‍⚖️ Comply: Pull request title, body, branch name, and labels.
 #
-# On `opened`, labels implied by the issue body are reconciled by `issue-labels`
-# in `tools/synchronization`. The metadata check is executed by `issue-metadata`
-# in `tools/validation`. Governance rules are verified by `audit-governance` in
-# `tools/validation`. All run through Node.js directly without building an Nx
-# project graph.
-#
-# Mislabeled issues or governance violations do not block creation on GitHub;
-# this workflow fails the job so the status is surfaced on the README badge.
+# Label reconciliation runs through `tools/synchronization`, and compliance
+# validation runs through `tools/validation`. All checks execute directly via
+# Node.js without building an Nx project graph.
 
 on:
   issues:
     types: [opened, edited, labeled, unlabeled]
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - edited
+      - labeled
+      - unlabeled
+      - assigned
+      - unassigned
   schedule:
     - cron: 18 12 * * 5 # Weekly Friday 8:18am NYC (EDT: 12:18 UTC / EST: 13:18 UTC)
   workflow_dispatch:
 
 permissions:
   contents: read
-  # Label creation and updates are issues-scoped endpoints, which is what the
-  # label reconciliation step below writes through.
+  # Label creation and updates are issues-scoped and pull-requests-scoped
+  # endpoints, which is what the label reconciliation steps below write through.
   issues: write
+  pull-requests: write
 
 concurrency:
-  # One group per run, so no run of this workflow ever waits behind another.
-  group: ${{ github.workflow }}-${{ github.run_id }}
-  cancel-in-progress: false
+  group: >-
+    ${{ github.workflow }}-${{ github.event_name == 'pull_request'
+    && github.head_ref || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   continuous-compliance:
@@ -50,26 +57,69 @@ jobs:
             name: Audit Governance
             emoji: 👮
             timeout: 10
+          - id: comply-code
+            name: Comply
+            emoji: 🧑‍⚖️
+            timeout: 10
 
     steps:
+      - name: 🚦 Skip Conditionally
+        id: check-skip
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_BRANCH: ${{ github.head_ref }}
+          EVENT_NAME: ${{ github.event_name }}
+          TARGET: ${{ matrix.target.id }}
+        run: |
+          if [ "$EVENT_NAME" = "issues" ] && [ "$TARGET" != "audit-issues" ]; then
+            echo "⏭️ Skipping $TARGET on issues event."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if [ "$EVENT_NAME" = "pull_request" ] && [ "$TARGET" != "comply-code" ]; then
+            echo "⏭️ Skipping $TARGET on pull_request event."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if [ "$EVENT_NAME" = "pull_request" ]; then
+            RUNS_ENDPOINT="repos/${{ github.repository }}/actions"
+            RUNS_ENDPOINT="${RUNS_ENDPOINT}/workflows/continuous-compliance.yml"
+            LATEST_RUN_ID="$(gh api \
+              "${RUNS_ENDPOINT}/runs?event=pull_request&branch=${HEAD_BRANCH}&per_page=1" \
+              --jq '.workflow_runs[0].id')"
+            if [ -n "$LATEST_RUN_ID" ] && [ "$LATEST_RUN_ID" != "${{ github.run_id }}" ]; then
+              echo "⏭️ Run ${LATEST_RUN_ID} is newer for this pull request."
+              echo "skip=true" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+          fi
+
+          echo "skip=false" >> "$GITHUB_OUTPUT"
+
       - name: 📥 Checkout Repository
+        if: steps.check-skip.outputs.skip != 'true'
         uses: actions/checkout@v7
 
       - name: 📦 Setup pnpm
+        if: steps.check-skip.outputs.skip != 'true'
         uses: ./.github/actions/setup-pnpm
 
       - name: 🟢 Setup node
+        if: steps.check-skip.outputs.skip != 'true'
         uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
           cache: pnpm
 
-      # The label reconciliation step and the audit checks run their CLIs
-      # directly through node rather than through Nx, so those two projects
+      # The label reconciliation steps and audit checks run their CLIs
+      # directly through node rather than through Nx, so those projects
       # and the workspace packages they import are all this needs. The trailing
       # `...` on each filter resolves that transitively. Still no Nx cache, no
       # uv, and no Homebrew: there is no project graph to build.
       - name: 📚 Install Root Dependencies
+        if: steps.check-skip.outputs.skip != 'true'
         run: |
           CI=true pnpm install --frozen-lockfile --reporter=append-only \
             --filter . --filter synchronization... --filter validation... \
@@ -79,7 +129,10 @@ jobs:
       # never adds a field the body didn't already have, and re-adding labels
       # on every edit would fight a human who removed one on purpose.
       - name: 🏷️ Reconcile Issue Labels
-        if: matrix.target.id == 'audit-issues' && github.event.action == 'opened'
+        if: >-
+          steps.check-skip.outputs.skip != 'true' &&
+          matrix.target.id == 'audit-issues' &&
+          github.event.action == 'opened'
         env:
           GH_TOKEN: ${{ github.token }}
           ISSUE_BODY: ${{ github.event.issue.body }}
@@ -91,7 +144,10 @@ jobs:
 
       # Read live, by issue number, rather than out of this event's payload.
       - name: 🧾 Audit Single Issue Metadata
-        if: matrix.target.id == 'audit-issues' && github.event.issue != null
+        if: >-
+          steps.check-skip.outputs.skip != 'true' &&
+          matrix.target.id == 'audit-issues' &&
+          github.event.issue != null
         env:
           GH_TOKEN: ${{ github.token }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}
@@ -102,7 +158,10 @@ jobs:
       # Sweeps and audits all open issues and hierarchy relationships on
       # scheduled runs and manual dispatches.
       - name: 🧾 Audit All Open Issues Metadata
-        if: matrix.target.id == 'audit-issues' && github.event.issue == null
+        if: >-
+          steps.check-skip.outputs.skip != 'true' &&
+          matrix.target.id == 'audit-issues' &&
+          github.event.issue == null
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -111,7 +170,73 @@ jobs:
 
       # Audits repository governance (CODEOWNERS rules and workflow security).
       - name: 👮 Audit Repository Governance
-        if: matrix.target.id == 'audit-governance'
+        if: steps.check-skip.outputs.skip != 'true' && matrix.target.id == 'audit-governance'
         run: |
           NODE_OPTIONS='' node --import @swc-node/register/esm-register \
             tools/validation/src/main.ts audit-governance
+
+      # Only on pull request opened or synchronize — syncs labels from PR title.
+      - name: 🏷️ Reconcile Pull Request Labels
+        if: >-
+          steps.check-skip.outputs.skip != 'true' &&
+          matrix.target.id == 'comply-code' &&
+          github.event.pull_request != null
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PULL_REQUEST_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          NODE_OPTIONS='' node --import @swc-node/register/esm-register \
+            tools/synchronization/src/main.ts pull-request-labels write
+
+      # Validates that the pull request branch name conforms to Conventional Commits.
+      - name: 🌿 Validate Branch Name
+        if: >-
+          steps.check-skip.outputs.skip != 'true' &&
+          matrix.target.id == 'comply-code' &&
+          github.event.pull_request != null
+        env:
+          BRANCH_NAME: ${{ github.head_ref }}
+        run: |
+          npx validate-branch-name -t "$BRANCH_NAME"
+
+      # Validates that the pull request title follows Conventional Commits format.
+      - name: 🏷️ Validate Pull Request Title
+        if: >-
+          steps.check-skip.outputs.skip != 'true' &&
+          matrix.target.id == 'comply-code' &&
+          github.event.pull_request != null
+        env:
+          PULL_REQUEST_TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          echo "$PULL_REQUEST_TITLE" | \
+            npx commitlint --config configuration/commitlint.config.ts
+
+      # Validates pull request body against required template sections.
+      - name: 📝 Validate Pull Request Body
+        if: >-
+          steps.check-skip.outputs.skip != 'true' &&
+          matrix.target.id == 'comply-code' &&
+          github.event.pull_request != null &&
+          github.actor != 'dependabot[bot]'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PULL_REQUEST_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          gh pr view "$PULL_REQUEST_NUMBER" --json body -q .body > pull_request_body.md
+          NODE_OPTIONS='' node --import @swc-node/register/esm-register \
+            tools/validation/src/main.ts pull-request-body pull_request_body.md
+          rm pull_request_body.md
+
+      # Validates that PR title release significance matches or exceeds commits.
+      - name: 🚦 Validate Release Significance
+        if: >-
+          steps.check-skip.outputs.skip != 'true' &&
+          matrix.target.id == 'comply-code' &&
+          github.event.pull_request != null
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PULL_REQUEST_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          NODE_OPTIONS='' node --import @swc-node/register/esm-register \
+            tools/validation/src/main.ts pull-request-release-significance \
+            "$PULL_REQUEST_NUMBER"
