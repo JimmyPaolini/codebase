@@ -1,5 +1,7 @@
 // 🏷️ Types
 
+import type { SpelunkedTree } from "nestjs-spelunker";
+
 /** A workspace project tagged `framework:nestjs`. */
 export interface NestjsProject {
   /** Absolute path of the project directory. */
@@ -13,4 +15,9 @@ export interface NestjsProject {
    * synthetic module built from every module the package defines.
    */
   readonly rootModuleFile: string | undefined;
+}
+
+/** A node in an explored NestJS container, carrying its declaring file. */
+export interface NestjsSpelunkedTree extends SpelunkedTree {
+  readonly declaringFile?: string | undefined;
 }

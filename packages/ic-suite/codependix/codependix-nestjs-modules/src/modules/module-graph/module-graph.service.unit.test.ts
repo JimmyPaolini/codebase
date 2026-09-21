@@ -3,11 +3,22 @@ import { beforeAll, describe, expect, it } from "vitest";
 
 import { ModuleGraphService } from "./module-graph.service";
 
-import type { SpelunkedTree } from "nestjs-spelunker";
+import type { NestjsSpelunkedTree } from "../nestjs-project/nestjs-project.types";
 
 /** Builds a spelunked tree node with sensible defaults for a test. */
-function buildNode(name: string, imports: string[] = []): SpelunkedTree {
-  return { controllers: [], exports: [], imports, name, providers: {} };
+function buildNode(
+  name: string,
+  imports: string[] = [],
+  declaringFile?: string,
+): NestjsSpelunkedTree {
+  return {
+    controllers: [],
+    declaringFile,
+    exports: [],
+    imports,
+    name,
+    providers: {},
+  };
 }
 
 describe(ModuleGraphService, () => {
@@ -32,8 +43,50 @@ describe(ModuleGraphService, () => {
         "caelundas",
       );
 
-      expect(graph.moduleNames).toStrictEqual(["LoggerModule", "MainModule"]);
+      expect(graph.nodes).toStrictEqual([
+        { declaringFile: "", name: "LoggerModule" },
+        { declaringFile: "", name: "MainModule" },
+      ]);
       expect(graph.projectName).toBe("caelundas");
+    });
+
+    it("carries the declaring file on each module node", () => {
+      const graph = service.buildGraph(
+        [
+          buildNode("MainModule", ["LoggerModule"], "src/main.module.ts"),
+          buildNode("LoggerModule", [], "src/modules/logger/logger.module.ts"),
+        ],
+        "caelundas",
+      );
+
+      expect(graph.nodes).toStrictEqual([
+        {
+          declaringFile: "src/modules/logger/logger.module.ts",
+          name: "LoggerModule",
+        },
+        { declaringFile: "src/main.module.ts", name: "MainModule" },
+      ]);
+    });
+
+    it("keeps two same-named classes in different declaring files as distinct nodes", () => {
+      const graph = service.buildGraph(
+        [
+          buildNode("UserModule", [], "packages/auth/src/user.module.ts"),
+          buildNode("UserModule", [], "packages/billing/src/user.module.ts"),
+        ],
+        "caelundas",
+      );
+
+      expect(graph.nodes).toStrictEqual([
+        {
+          declaringFile: "packages/auth/src/user.module.ts",
+          name: "UserModule",
+        },
+        {
+          declaringFile: "packages/billing/src/user.module.ts",
+          name: "UserModule",
+        },
+      ]);
     });
 
     it("draws an edge for every import", () => {
@@ -137,6 +190,35 @@ describe(ModuleGraphService, () => {
       );
 
       expect(graph.edges).toStrictEqual([]);
+    });
+  });
+
+  describe("deriveModuleFolder", () => {
+    it("derives the folder containing the declaring file", () => {
+      expect(
+        service.deriveModuleFolder({
+          declaringFile: "src/modules/catalog/catalog.module.ts",
+          name: "CatalogModule",
+        }),
+      ).toBe("src/modules/catalog");
+    });
+
+    it("handles a root-level declaring file", () => {
+      expect(
+        service.deriveModuleFolder({
+          declaringFile: "src/main.module.ts",
+          name: "MainModule",
+        }),
+      ).toBe("src");
+    });
+
+    it("handles an empty declaring file", () => {
+      expect(
+        service.deriveModuleFolder({
+          declaringFile: "",
+          name: "DynamicModule",
+        }),
+      ).toBe(".");
     });
   });
 
