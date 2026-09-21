@@ -1,5 +1,3 @@
-// cspell:ignore Neighbours
-
 import {
   forwardRef as forwardReference,
   Inject,
@@ -81,7 +79,7 @@ export class CharacteristicsService {
 
   /** Internal helper method. */
   /** Checks if two free ends are adjacent on the lattice (wrapping considered). */
-  private checkEndsAreLatticeNeighbours(
+  private checkEndsAreLatticeNeighbors(
     freeEnds: { column: number; level: number }[],
     columns: number,
   ): boolean {
@@ -89,8 +87,8 @@ export class CharacteristicsService {
     const first = freeEnds[0];
     const second = freeEnds[1];
     if (!first || !second) return false;
-    const { column: c1 = 0, level: l1 = 0 } = first;
-    const { column: c2 = 0, level: l2 = 0 } = second;
+    const { column: c1, level: l1 } = first;
+    const { column: c2, level: l2 } = second;
     const columnDiff = Math.abs(c1 - c2);
     const minimumColumnDiff = Math.min(columnDiff, columns - columnDiff);
     const levelDiff = Math.abs(l1 - l2);
@@ -129,13 +127,13 @@ export class CharacteristicsService {
     for (const [node, d] of degree.entries()) {
       if (d === 1) {
         const parts = node.split(",");
-        const levelStr = parts[0];
-        const columnStr = parts[1];
-        const level = Number(levelStr);
-        const column = Number(columnStr);
-        freeEnds.push({ 
-          column: Number.isNaN(column) ? 0 : column, 
-          level: Number.isNaN(level) ? 0 : level 
+        const levelString = parts[0];
+        const columnString = parts[1];
+        const level = Number(levelString);
+        const column = Number(columnString);
+        freeEnds.push({
+          column: Number.isNaN(column) ? 0 : column,
+          level: Number.isNaN(level) ? 0 : level,
         });
       }
     }
@@ -411,9 +409,9 @@ export class CharacteristicsService {
     const endsOnBorderRules =
       freeEndsList.length === 2 &&
       freeEndsList.every(
-        (end) => end && (end.level === 0 || end.level === reduced.levels - 1),
+        (end) => end.level === 0 || end.level === reduced.levels - 1,
       );
-    const endsAreLatticeNeighbours = this.checkEndsAreLatticeNeighbours(
+    const endsAreLatticeNeighbors = this.checkEndsAreLatticeNeighbors(
       freeEndsList,
       reduced.columns,
     );
@@ -429,7 +427,7 @@ export class CharacteristicsService {
       componentCount: wrappedGraph.components,
       crossesTheSeam: wrappedEdges.length > unwrappedEdges.length,
       cycleCount: wrappedGraph.cycles,
-      endsAreLatticeNeighbours,
+      endsAreLatticeNeighbors,
       endsOnBorderRules,
       hasBranching: ink.tJunctions > 0 || negative.tJunctions > 0,
       hasCrossing: ink.xJunctions > 0 || negative.xJunctions > 0,

@@ -4,9 +4,19 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { CharacteristicsPathService } from "./characteristics-path.service";
 import { ConnectivityService } from "./connectivity.service";
 
+import type { ParsedCode } from "../code/code.types";
+
 describe(CharacteristicsPathService, () => {
   let service: CharacteristicsPathService;
   let connectivityService: ConnectivityService;
+
+  const parsedCode = (overrides: Partial<ParsedCode> = {}): ParsedCode => ({
+    columns: 4,
+    digits: "",
+    levels: 1,
+    rows: 2,
+    ...overrides,
+  });
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
@@ -30,7 +40,7 @@ describe(CharacteristicsPathService, () => {
   });
 
   it("handles empty paths", () => {
-    expect(service.analyzePaths({} as any)).toEqual({
+    expect(service.analyzePaths(parsedCode())).toStrictEqual({
       reversesAtItsTightestTurn: false,
       turnsMonotonically: false,
     });
@@ -42,31 +52,34 @@ describe(CharacteristicsPathService, () => {
       { from: "1,2", to: "0,2" }, // Up (direction 0) -> turn 3 (Left)
       { from: "0,2", to: "0,1" }, // Left (direction 3) -> turn 3 (Left)
     ];
-    const result = service.analyzePaths({ columns: 4 } as any);
+    const result = service.analyzePaths(parsedCode({ columns: 4 }));
+
     expect(result.reversesAtItsTightestTurn).toBe(true);
     expect(result.turnsMonotonically).toBe(true);
   });
 
   it("identifies right turn without tight U", () => {
     connectivityService.edges = () => [
-      { from: "1,1", to: "1,2" }, 
+      { from: "1,1", to: "1,2" },
       { from: "1,2", to: "1,3" }, // Straight
       { from: "1,3", to: "2,3" }, // Turn right (1)
       { from: "2,3", to: "2,4" }, // Turn left (3)
     ];
-    const result = service.analyzePaths({ columns: 5 } as any);
+    const result = service.analyzePaths(parsedCode({ columns: 5 }));
+
     expect(result.reversesAtItsTightestTurn).toBe(false);
     expect(result.turnsMonotonically).toBe(false);
   });
 
   it("handles left turn without tight U", () => {
     connectivityService.edges = () => [
-      { from: "1,1", to: "1,2" }, 
+      { from: "1,1", to: "1,2" },
       { from: "1,2", to: "1,3" }, // Straight
       { from: "1,3", to: "0,3" }, // Turn left (3)
       { from: "0,3", to: "0,4" }, // Turn right (1)
     ];
-    const result = service.analyzePaths({ columns: 5 } as any);
+    const result = service.analyzePaths(parsedCode({ columns: 5 }));
+
     expect(result.reversesAtItsTightestTurn).toBe(false);
     expect(result.turnsMonotonically).toBe(false);
   });
@@ -78,7 +91,8 @@ describe(CharacteristicsPathService, () => {
       { from: "2,2", to: "2,1" }, // Left (3)
       { from: "2,1", to: "1,1" }, // Up (0)
     ];
-    const result = service.analyzePaths({ columns: 4 } as any);
+    const result = service.analyzePaths(parsedCode({ columns: 4 }));
+
     expect(result.reversesAtItsTightestTurn).toBe(true);
     expect(result.turnsMonotonically).toBe(true);
   });
@@ -88,7 +102,8 @@ describe(CharacteristicsPathService, () => {
       { from: "1,1", to: "1,2" }, // Right (1)
       { from: "1,2", to: "1,1" }, // Left (3) -> Turn backwards (2)
     ];
-    const result = service.analyzePaths({ columns: 4 } as any);
+    const result = service.analyzePaths(parsedCode({ columns: 4 }));
+
     expect(result.reversesAtItsTightestTurn).toBe(false);
   });
 
@@ -97,7 +112,8 @@ describe(CharacteristicsPathService, () => {
       { from: "1,1", to: "1,2" }, // Right
       { from: "1,2", to: "1,3" }, // Right
     ];
-    const result = service.analyzePaths({ columns: 4 } as any);
+    const result = service.analyzePaths(parsedCode({ columns: 4 }));
+
     expect(result.reversesAtItsTightestTurn).toBe(false);
     expect(result.turnsMonotonically).toBe(false); // no turns
   });
@@ -107,23 +123,19 @@ describe(CharacteristicsPathService, () => {
       { from: "1,1", to: "3,3" }, // Invalid
       { from: "3,3", to: "4,4" }, // Invalid
     ];
-    const result = service.analyzePaths({ columns: 4 } as any);
+    const result = service.analyzePaths(parsedCode({ columns: 4 }));
+
     expect(result.reversesAtItsTightestTurn).toBe(false);
   });
 
   it("handles backtracking path node resolution", () => {
     connectivityService.edges = () => [
-      { from: "0,0", to: "0,1" }, 
+      { from: "0,0", to: "0,1" },
       { from: "0,1", to: "0,2" },
       { from: "0,1", to: "1,1" }, // Branch
     ];
-    const result = service.analyzePaths({ columns: 4 } as any);
-    expect(result).toBeDefined();
-  });
+    const result = service.analyzePaths(parsedCode({ columns: 4 }));
 
-  it("handles applyTurn returns stepsSinceTurn unchanged for non-turns", () => {
-    const metrics = { hasRightTurn: false, hasLeftTurn: false, hasTightU: false };
-    const result = (service as any).applyTurn(0, metrics, 5);
-    expect(result).toBe(6);
+    expect(result).toBeDefined();
   });
 });

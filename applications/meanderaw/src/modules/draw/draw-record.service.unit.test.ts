@@ -1,5 +1,3 @@
-// cspell:ignore Neighbours
-
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
@@ -65,7 +63,7 @@ describe(DrawRecordService, () => {
         {
           "characteristics": [
             "isJunctionFree",
-            "endsAreLatticeNeighbours",
+            "endsAreLatticeNeighbors",
             "endsOnBorderRules",
             "isConnected",
             "isReducible",

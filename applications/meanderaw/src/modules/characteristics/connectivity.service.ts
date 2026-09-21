@@ -1,7 +1,4 @@
-import {
-  Inject,
-  Injectable,
-} from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 
 import { CodeService } from "../code/code.service";
 import { GraphService } from "../graph/graph.service";

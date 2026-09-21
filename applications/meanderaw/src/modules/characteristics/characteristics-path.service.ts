@@ -14,6 +14,63 @@ export class CharacteristicsPathService {
     private readonly meanderConnectivityService: ConnectivityService,
   ) {}
 
+  // 🔐 Private Fields
+
+  // 🔑 Public Fields
+
+  // 🔏 Private Methods
+
+  /** Advances one step along the path and updates tracking state. */
+  private advancePath(args: {
+    adjacency: Map<string, string[]>;
+    columns: number;
+    currentNode: string;
+    metrics: {
+      hasLeftTurn: boolean;
+      hasRightTurn: boolean;
+      hasTightU: boolean;
+    };
+    nextNode: string;
+    previousDirection: number;
+    stepsSinceTurn: number;
+    visited: Set<string>;
+  }): {
+    currentNode: string;
+    direction: number;
+    nextNode: string | undefined;
+    stepsSinceTurn: number;
+  } {
+    const loopDetected = args.visited.has(args.nextNode);
+    args.visited.add(args.nextNode);
+
+    const direction = this.getDirection(
+      args.currentNode,
+      args.nextNode,
+      args.columns,
+    );
+
+    const stepsSinceTurn =
+      args.previousDirection !== -1 && direction !== -1
+        ? this.applyTurn(
+            (direction - args.previousDirection + 4) % 4,
+            args.metrics,
+            args.stepsSinceTurn,
+          )
+        : args.stepsSinceTurn + 1;
+
+    const previous = args.currentNode;
+    const currentNode = args.nextNode;
+    const nextNode = loopDetected
+      ? undefined
+      : this.findNextNode(
+          { current: currentNode, previous },
+          args.adjacency,
+          args.visited,
+        );
+
+    return { currentNode, direction, nextNode, stepsSinceTurn };
+  }
+
   /** Applies a turn to the metrics. */
   private applyTurn(
     turn: number,
@@ -38,12 +95,6 @@ export class CharacteristicsPathService {
     return stepsSinceTurn;
   }
 
-  // 🔐 Private Fields
-
-  // 🔑 Public Fields
-
-  // 🔏 Private Methods
-
   /** Builds an adjacency list from the given edges. */
   private buildAdjacencyGraph(
     edges: { from: string; to: string }[],
@@ -56,6 +107,32 @@ export class CharacteristicsPathService {
       adjacency.get(to)?.push(from);
     }
     return adjacency;
+  }
+
+  /** Checks for loop closure turns. */
+  private checkFinalLoopTurn(args: {
+    currentNode: string;
+    initialDirection: number;
+    initialNode: string;
+    metrics: {
+      hasLeftTurn: boolean;
+      hasRightTurn: boolean;
+      hasTightU: boolean;
+    };
+    previousDirection: number;
+    stepsSinceTurn: number;
+  }): void {
+    if (
+      args.previousDirection !== -1 &&
+      args.currentNode === args.initialNode &&
+      args.initialDirection !== -1
+    ) {
+      this.applyTurn(
+        (args.initialDirection - args.previousDirection + 4) % 4,
+        args.metrics,
+        args.stepsSinceTurn,
+      );
+    }
   }
 
   /** Finds the next node in the path. */
@@ -188,48 +265,36 @@ export class CharacteristicsPathService {
       args.adjacency,
       args.visited,
     );
-    
+
     const initialNode = currentNode;
     let initialDirection = -1;
 
     while (nextNode) {
-      const loopDetected = args.visited.has(nextNode);
-      args.visited.add(nextNode);
-
-      const direction = this.getDirection(currentNode, nextNode, args.columns);
-      if (initialDirection === -1) {
-        initialDirection = direction;
-      }
-
-      stepsSinceTurn =
-        previousDirection !== -1 && direction !== -1
-          ? this.applyTurn(
-              (direction - previousDirection + 4) % 4,
-              args.metrics,
-              stepsSinceTurn,
-            )
-          : stepsSinceTurn + 1;
-
-      previousDirection = direction;
-      const previous = currentNode;
-      currentNode = nextNode;
-      nextNode = loopDetected
-        ? undefined
-        : this.findNextNode(
-            { current: currentNode, previous },
-            args.adjacency,
-            args.visited,
-          );
+      const step = this.advancePath({
+        adjacency: args.adjacency,
+        columns: args.columns,
+        currentNode,
+        metrics: args.metrics,
+        nextNode,
+        previousDirection,
+        stepsSinceTurn,
+        visited: args.visited,
+      });
+      if (initialDirection === -1) initialDirection = step.direction;
+      previousDirection = step.direction;
+      stepsSinceTurn = step.stepsSinceTurn;
+      currentNode = step.currentNode;
+      nextNode = step.nextNode;
     }
-    
-    // For loops, calculate turn from final node back to start node if connected
-    if (previousDirection !== -1 && currentNode === initialNode && initialDirection !== -1) {
-       this.applyTurn(
-         (initialDirection - previousDirection + 4) % 4,
-         args.metrics,
-         stepsSinceTurn
-       );
-    }
+
+    this.checkFinalLoopTurn({
+      currentNode,
+      initialDirection,
+      initialNode,
+      metrics: args.metrics,
+      previousDirection,
+      stepsSinceTurn,
+    });
   }
 
   // 🌎 Public Methods

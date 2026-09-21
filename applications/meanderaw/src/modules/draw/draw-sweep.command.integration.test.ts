@@ -32,7 +32,7 @@ const { writeFileMock } = vi.hoisted(() => ({
 }));
 
 vi.mock("node:fs/promises", () => ({
-  mkdir: vi.fn(),
+  mkdir: vi.fn<() => Promise<void>>(),
   writeFile: writeFileMock,
 }));
 

@@ -1663,11 +1663,11 @@ Three findings, and the middle one was overruled and then reinstated:
    tree; the tree was chosen, and has since been unchosen — the family is a forest of two
    or three pieces rather than one connected piece with `nodes − 1` steps.
 2. **It reads less as a meander, and the reason is countable — and this is the finding the
-   fix was made to honour.** Closing the loops closes the ends: the one-rail figure has
+   fix was made to honor.** Closing the loops closes the ends: the one-rail figure has
    twelve free ends, one lattice point per column with a single arm of ink, and the
    two-rail figure has none. A meander reads as a line that runs somewhere; a figure in
    which every stroke is enclosed and nothing terminates reads more like a grille. That
-   judgement was overruled by a measurement — with one border open, three of this family's
+   judgment was overruled by a measurement — with one border open, three of this family's
    names drew one pattern, and a family identifiable only by which border it carries is
    worse than a family that reads as a ladder — and then it turned out not to be a choice
    between the two. A rule inset by one lattice row identifies the band without touching

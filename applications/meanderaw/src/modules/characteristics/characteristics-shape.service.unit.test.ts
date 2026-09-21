@@ -3,8 +3,19 @@ import { beforeAll, describe, expect, it } from "vitest";
 
 import { CharacteristicsShapeService } from "./characteristics-shape.service";
 
+import type { ParsedCode } from "../code/code.types";
+import type { UnitShapeCounts } from "./characteristics.types";
+
 describe(CharacteristicsShapeService, () => {
   let service: CharacteristicsShapeService;
+
+  const parsedCode = (overrides: Partial<ParsedCode> = {}): ParsedCode => ({
+    columns: 2,
+    digits: "",
+    levels: 2,
+    rows: 3,
+    ...overrides,
+  });
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
@@ -19,18 +30,20 @@ describe(CharacteristicsShapeService, () => {
   });
 
   it("tallies missing digit string fallbacks", () => {
-    // Intentionally omit digits so the ?? "0" fallback is triggered
-    const result = service.tallyUnitShapes({
-      columns: 2,
-      digits: [],
-      levels: 2,
-    } as any);
+    // Intentionally empty digits so the ?? "0" fallback is triggered
+    const result = service.tallyUnitShapes(
+      parsedCode({
+        columns: 2,
+        digits: "",
+        levels: 2,
+      }),
+    );
 
     expect(result.horizontalDashCount).toBe(0);
   });
 
   it("tallies all isolated shapes", () => {
-    const tests = [
+    const tests: { code: string; field: keyof UnitShapeCounts }[] = [
       { code: "9a56", field: "plusCount" },
       { code: "0021", field: "horizontalDashCount" },
       { code: "2100", field: "horizontalDashCount" },
@@ -51,49 +64,67 @@ describe(CharacteristicsShapeService, () => {
 
     for (const t of tests) {
       // 2 columns, 2 levels -> length 4 string
-      const result = service.tallyUnitShapes({
-        columns: 2,
-        digits: t.code.split(""),
-        levels: 2,
-      } as any);
-      expect((result as any)[t.field]).toBeGreaterThan(0);
+      const result = service.tallyUnitShapes(
+        parsedCode({
+          columns: 2,
+          digits: t.code,
+          levels: 2,
+        }),
+      );
+
+      expect(result[t.field]).toBeGreaterThan(0);
     }
   });
 
   it("tallies embedded shapes", () => {
-    const result = service.tallyUnitShapes({
-      columns: 2,
-      digits: ["6", "5", "a", "9"], // O shape
-      levels: 2,
-    } as any);
+    const result = service.tallyUnitShapes(
+      parsedCode({
+        columns: 2,
+        digits: "65a9", // O shape
+        levels: 2,
+      }),
+    );
+
     expect(result.embeddedOCount).toBeGreaterThan(0);
 
-    const result2 = service.tallyUnitShapes({
-      columns: 2,
-      digits: ["4", "4", "a", "9"], // U shape variants
-      levels: 2,
-    } as any);
+    const result2 = service.tallyUnitShapes(
+      parsedCode({
+        columns: 2,
+        digits: "44a9", // U shape variants
+        levels: 2,
+      }),
+    );
+
     expect(result2.embeddedUCount).toBeGreaterThan(0);
 
-    const result3 = service.tallyUnitShapes({
-      columns: 2,
-      digits: ["6", "5", "8", "8"], 
-      levels: 2,
-    } as any);
+    const result3 = service.tallyUnitShapes(
+      parsedCode({
+        columns: 2,
+        digits: "6588",
+        levels: 2,
+      }),
+    );
+
     expect(result3.embeddedUCount).toBeGreaterThan(0);
 
-    const result4 = service.tallyUnitShapes({
-      columns: 2,
-      digits: ["6", "1", "a", "1"], 
-      levels: 2,
-    } as any);
+    const result4 = service.tallyUnitShapes(
+      parsedCode({
+        columns: 2,
+        digits: "61a1",
+        levels: 2,
+      }),
+    );
+
     expect(result4.embeddedUCount).toBeGreaterThan(0);
 
-    const result5 = service.tallyUnitShapes({
-      columns: 2,
-      digits: ["2", "5", "2", "9"], 
-      levels: 2,
-    } as any);
+    const result5 = service.tallyUnitShapes(
+      parsedCode({
+        columns: 2,
+        digits: "2529",
+        levels: 2,
+      }),
+    );
+
     expect(result5.embeddedUCount).toBeGreaterThan(0);
   });
 });
