@@ -27,5 +27,6 @@ export interface ParsedCode {
   readonly columns: number;
   readonly digits: string;
   readonly levels: number;
+  readonly repeats: number;
   readonly rows: number;
 }

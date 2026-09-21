@@ -61,7 +61,17 @@ describe(DrawCodeService, () => {
 
       expect(drawRecordService.record).toHaveBeenCalledWith(
         "2",
-        { columns: 3, rows: 4 },
+        { columns: 3, repeats: undefined, rows: 4 },
+        "hardcoded",
+      );
+    });
+
+    it("supports drawing with self-contained code without explicit rows and columns", async () => {
+      await service.draw({ code: "03x04y2" });
+
+      expect(drawRecordService.record).toHaveBeenCalledWith(
+        "03x04y2",
+        { columns: undefined, repeats: undefined, rows: undefined },
         "hardcoded",
       );
     });

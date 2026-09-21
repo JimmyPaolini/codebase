@@ -46,6 +46,7 @@ describe(DrawIndexService, () => {
     inkTJunctions: 0,
     inkXJunctions: 0,
 
+    lattice: "3c9a",
     lCount: 0,
     longestHorizontalRun: 0,
     longestVerticalRun: 0,
@@ -54,6 +55,7 @@ describe(DrawIndexService, () => {
     pitch: 1,
     plusCount: 0,
     provenance: "hardcoded",
+    repeats: 1,
 
     characteristics: [],
     drawingHash: "hash",

@@ -202,6 +202,17 @@ describe(DrawCommand, () => {
     expect(writeFileMock).not.toHaveBeenCalled();
   });
 
+  it("draws a self-contained formatted Code without requiring --rows and --columns", async () => {
+    await command.run([], { code: "02x03y3c9a" });
+
+    expect(draw).toHaveBeenCalledWith({
+      code: "02x03y3c9a",
+      columns: undefined,
+      rows: undefined,
+    });
+    expect(sweep).not.toHaveBeenCalled();
+  });
+
   it("refuses a Code given without both --rows and --columns", async () => {
     await expect(command.run([], { code: "0", rows: 2 })).rejects.toThrow(
       /needs both --rows and --columns/,

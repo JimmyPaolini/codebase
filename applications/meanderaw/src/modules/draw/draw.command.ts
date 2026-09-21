@@ -6,6 +6,7 @@ import { Command, CommandRunner, Option } from "nest-commander";
 
 import { LoggerService } from "@codebase/logger";
 
+import { CODE_FORMAT_PATTERN } from "../code/code.constants";
 import { CorpusService } from "../corpus/corpus.service";
 import { HISTORICAL_CORPUS } from "../corpus/historical-corpus.constants";
 
@@ -105,7 +106,10 @@ export class DrawCommand extends CommandRunner {
     rows: number | undefined,
     columns: number | undefined,
   ): Promise<void> {
-    if (rows === undefined || columns === undefined) {
+    if (
+      !CODE_FORMAT_PATTERN.test(code) &&
+      (rows === undefined || columns === undefined)
+    ) {
       throw new IncompleteCodeDrawingError();
     }
 

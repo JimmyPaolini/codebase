@@ -115,15 +115,34 @@ describe("drawCommand --code mode", () => {
 
     expect(rows).toHaveLength(1);
     expect(rows[0]).toMatchObject({
-      code: "3c9a",
+      code: "02x03y3c9a",
       columns: 2,
       inkTJunctions: 0,
       inkXJunctions: 0,
+      lattice: "3c9a",
       pitch: 2,
       provenance: "hardcoded",
+      repeats: 1,
       rows: 3,
     });
     expect(rows[0]?.drawingHash).toBeDefined();
+  });
+
+  it("writes a self-contained formatted code directly without requiring --rows and --columns", async () => {
+    await command.run([], {
+      code: "02x03y3c9a",
+    });
+
+    const rows = await repository.find();
+
+    expect(rows).toHaveLength(1);
+    expect(rows[0]).toMatchObject({
+      code: "02x03y3c9a",
+      columns: 2,
+      lattice: "3c9a",
+      repeats: 1,
+      rows: 3,
+    });
   });
 
   it("populates a row's Characteristics from its Code, for a code with a three-armed ink junction", async () => {
@@ -138,9 +157,11 @@ describe("drawCommand --code mode", () => {
     expect(rows).toHaveLength(1);
     expect(rows[0]).toMatchObject({
       characteristics: expect.arrayContaining(["hasBranching"]) as string[],
-      code: "e",
+      code: "01x02ye",
       inkTJunctions: 1,
       inkXJunctions: 0,
+      lattice: "e",
+      repeats: 1,
     });
   });
 

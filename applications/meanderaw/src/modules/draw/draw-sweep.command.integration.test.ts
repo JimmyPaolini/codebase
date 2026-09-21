@@ -249,7 +249,7 @@ describe("drawCommand sweep mode", () => {
 
       await repository.save({
         characteristics: [],
-        code: duplicated.code,
+        code: `${String(duplicated.columns).padStart(2, "0")}x${String(duplicated.rows).padStart(2, "0")}y${duplicated.code}`,
         columns: duplicated.columns,
         components: 1,
         cycles: 0,
@@ -260,10 +260,12 @@ describe("drawCommand sweep mode", () => {
         hasCrossing: false,
         inkTJunctions: 0,
         inkXJunctions: 0,
+        lattice: duplicated.code,
         negativeTJunctions: 0,
         negativeXJunctions: 0,
         pitch: duplicated.columns,
         provenance: "enumerated",
+        repeats: 1,
         rows: duplicated.rows,
         svg: "<svg>fixture</svg>\n",
       });
