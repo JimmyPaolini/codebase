@@ -886,6 +886,7 @@ flowchart LR
   GenerationModule
   InputModule
   InstanceDiscoveryModule
+  InstanceGroupModule
   InstancesModule
   InventoryModule
   JsonModule
@@ -905,18 +906,20 @@ flowchart LR
   TypescriptModule
   ValidateModule
   ValidationModule
+  ConfigurationModule --> InputModule
+  ConfigurationModule --> InstanceDiscoveryModule
+  ConfigurationModule --> InstanceGroupModule
+  ConfigurationModule --> RenderingModule
+  ConfigurationModule --> TemplateDiscoveryModule
+  FilesModule --> ConfigurationModule
   FilesModule --> DifferencesModule
-  FilesModule --> InstanceDiscoveryModule
   GenerateModule --> ConfigurationModule
   GenerateModule --> GenerationModule
-  GenerateModule --> InputModule
-  GenerationModule --> RenderingModule
-  InstanceDiscoveryModule --> ConfigurationModule
+  GenerationModule --> ConfigurationModule
+  InstanceDiscoveryModule --> InstanceGroupModule
   InstanceDiscoveryModule --> RenderingModule
   InstanceDiscoveryModule --> TemplateDiscoveryModule
   InstancesModule --> ConfigurationModule
-  InstancesModule --> InputModule
-  InstancesModule --> InstanceDiscoveryModule
   InstancesModule --> InventoryModule
   JsonModule --> ScoringModule
   JupyterModule --> JsonModule
@@ -939,18 +942,13 @@ flowchart LR
   ReportingModule --> ScoringModule
   TemplateDiscoveryModule --> RenderingModule
   TemplatesModule --> ConfigurationModule
-  TemplatesModule --> InputModule
-  TemplatesModule --> InstanceDiscoveryModule
   TemplatesModule --> InventoryModule
   TypescriptModule --> ScoringModule
   ValidateModule --> ConfigurationModule
-  ValidateModule --> InputModule
-  ValidateModule --> InstanceDiscoveryModule
   ValidateModule --> ReportingModule
-  ValidateModule --> TemplateDiscoveryModule
   ValidateModule --> ValidationModule
+  ValidationModule --> ConfigurationModule
   ValidationModule --> FilesModule
-  ValidationModule --> InstanceDiscoveryModule
   ValidationModule --> LanguagesModule
   ValidationModule --> RunnerModule
   ValidationModule --> ScoringModule

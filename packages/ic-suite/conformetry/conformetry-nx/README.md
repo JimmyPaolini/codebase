@@ -424,7 +424,9 @@ flowchart LR
   FilesModule
   GenerationModule
   GeneratorModule
+  InputModule
   InstanceDiscoveryModule
+  InstanceGroupModule
   InstancesModule
   JsonModule
   JupyterModule
@@ -446,16 +448,20 @@ flowchart LR
   TextModule
   TypescriptModule
   ValidationModule
+  ConfigurationModule --> InputModule
+  ConfigurationModule --> InstanceDiscoveryModule
+  ConfigurationModule --> InstanceGroupModule
+  ConfigurationModule --> RenderingModule
+  ConfigurationModule --> TemplateDiscoveryModule
+  FilesModule --> ConfigurationModule
   FilesModule --> DifferencesModule
-  FilesModule --> InstanceDiscoveryModule
-  GenerationModule --> RenderingModule
+  GenerationModule --> ConfigurationModule
   GeneratorModule --> ConfigurationModule
   GeneratorModule --> ScopeModule
-  InstanceDiscoveryModule --> ConfigurationModule
+  InstanceDiscoveryModule --> InstanceGroupModule
   InstanceDiscoveryModule --> RenderingModule
   InstanceDiscoveryModule --> TemplateDiscoveryModule
   InstancesModule --> ConfigurationModule
-  InstancesModule --> InstanceDiscoveryModule
   InstancesModule --> ScopeModule
   JsonModule --> ScoringModule
   JupyterModule --> JsonModule
@@ -477,14 +483,12 @@ flowchart LR
   PluginModule --> ConfigurationModule
   PluginModule --> GenerationModule
   PluginModule --> GeneratorModule
-  PluginModule --> InstanceDiscoveryModule
   PluginModule --> InstancesModule
   PluginModule --> OptionsModule
   PluginModule --> PathsModule
   PluginModule --> ProjectsModule
   PluginModule --> ReportingModule
   PluginModule --> ScopeModule
-  PluginModule --> TemplateDiscoveryModule
   PluginModule --> ValidationModule
   PythonModule --> DifferencesModule
   PythonModule --> ScoringModule
@@ -492,8 +496,8 @@ flowchart LR
   ScopeModule --> ConfigurationModule
   TemplateDiscoveryModule --> RenderingModule
   TypescriptModule --> ScoringModule
+  ValidationModule --> ConfigurationModule
   ValidationModule --> FilesModule
-  ValidationModule --> InstanceDiscoveryModule
   ValidationModule --> LanguagesModule
   ValidationModule --> RunnerModule
   ValidationModule --> ScoringModule

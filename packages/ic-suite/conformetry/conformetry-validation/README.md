@@ -191,7 +191,9 @@ flowchart LR
   ConfigurationModule
   DifferencesModule
   FilesModule
+  InputModule
   InstanceDiscoveryModule
+  InstanceGroupModule
   JsonModule
   JupyterModule
   LanguagesModule
@@ -204,9 +206,14 @@ flowchart LR
   TextModule
   TypescriptModule
   ValidationModule
+  ConfigurationModule --> InputModule
+  ConfigurationModule --> InstanceDiscoveryModule
+  ConfigurationModule --> InstanceGroupModule
+  ConfigurationModule --> RenderingModule
+  ConfigurationModule --> TemplateDiscoveryModule
+  FilesModule --> ConfigurationModule
   FilesModule --> DifferencesModule
-  FilesModule --> InstanceDiscoveryModule
-  InstanceDiscoveryModule --> ConfigurationModule
+  InstanceDiscoveryModule --> InstanceGroupModule
   InstanceDiscoveryModule --> RenderingModule
   InstanceDiscoveryModule --> TemplateDiscoveryModule
   JsonModule --> ScoringModule
@@ -224,8 +231,8 @@ flowchart LR
   PythonModule --> ScoringModule
   TemplateDiscoveryModule --> RenderingModule
   TypescriptModule --> ScoringModule
+  ValidationModule --> ConfigurationModule
   ValidationModule --> FilesModule
-  ValidationModule --> InstanceDiscoveryModule
   ValidationModule --> LanguagesModule
   ValidationModule --> RunnerModule
   ValidationModule --> ScoringModule

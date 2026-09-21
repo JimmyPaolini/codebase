@@ -295,17 +295,17 @@ graph LR
 _Dashed edges are dependencies Nx inferred from configuration rather than from code._
 <!-- codependix:end name="codependix-nx-projects" -->
 
-### File Imports
-
-<!-- codependix:start name="codependix-file-imports" -->
-_This project has no internal file imports._
-<!-- codependix:end name="codependix-file-imports" -->
-
 ### NestJS Module Graph
 
 <!-- codependix:start name="codependix-nestjs-modules" -->
 _This project defines no NestJS modules to graph._
 <!-- codependix:end name="codependix-nestjs-modules" -->
+
+### File Imports
+
+<!-- codependix:start name="codependix-file-imports" -->
+_This project has no internal file imports._
+<!-- codependix:end name="codependix-file-imports" -->
 
 <!-- CODE_STATISTICS_START -->
 

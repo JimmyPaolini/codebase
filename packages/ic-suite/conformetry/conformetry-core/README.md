@@ -177,7 +177,10 @@ graph LR
 ### NestJS Module Graph
 
 <!-- codependix:start name="codependix-nestjs-modules" -->
-_This project defines no NestJS modules to graph._
+```mermaid
+flowchart LR
+  ConformetryCoreModule
+```
 <!-- codependix:end name="codependix-nestjs-modules" -->
 
 ### File Imports
@@ -191,15 +194,17 @@ graph LR
   file_eslint_config_ts["eslint.config.ts"]
   file_src_index_ts["src/index.ts"]
   file_src_index_unit_test_ts["src/index.unit.test.ts"]
-  file_src_lib_differences_types_ts["src/lib/differences.types.ts"]
-  file_src_lib_inventory_types_ts["src/lib/inventory.types.ts"]
-  file_src_lib_runner_types_ts["src/lib/runner.types.ts"]
-  file_src_lib_scoring_types_ts["src/lib/scoring.types.ts"]
+  file_src_modules_conformetry_core_conformetry_core_constants_ts["src/modules/conformetry-core/conformetry-core.constants.ts"]
+  file_src_modules_conformetry_core_conformetry_core_module_ts["src/modules/conformetry-core/conformetry-core.module.ts"]
+  file_src_modules_conformetry_core_conformetry_core_service_ts["src/modules/conformetry-core/conformetry-core.service.ts"]
+  file_src_modules_conformetry_core_conformetry_core_service_unit_test_ts["src/modules/conformetry-core/conformetry-core.service.unit.test.ts"]
+  file_src_modules_conformetry_core_conformetry_core_types_ts["src/modules/conformetry-core/conformetry-core.types.ts"]
   file_testing_mocks_ts["testing/mocks.ts"]
   file_testing_setup_ts["testing/setup.ts"]
   file_vitest_config_ts["vitest.config.ts"]
   file_src_index_unit_test_ts --> file_src_index_ts
-  file_src_lib_runner_types_ts --> file_src_lib_differences_types_ts
+  file_src_modules_conformetry_core_conformetry_core_module_ts --> file_src_modules_conformetry_core_conformetry_core_service_ts
+  file_src_modules_conformetry_core_conformetry_core_service_unit_test_ts --> file_src_modules_conformetry_core_conformetry_core_service_ts
 ```
 <!-- codependix:end name="codependix-file-imports" -->
 

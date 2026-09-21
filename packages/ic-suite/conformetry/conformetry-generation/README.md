@@ -169,9 +169,23 @@ graph LR
 <!-- codependix:start name="codependix-nestjs-modules" -->
 ```mermaid
 flowchart LR
+  ConfigurationModule
   GenerationModule
+  InputModule
+  InstanceDiscoveryModule
+  InstanceGroupModule
   RenderingModule
-  GenerationModule --> RenderingModule
+  TemplateDiscoveryModule
+  ConfigurationModule --> InputModule
+  ConfigurationModule --> InstanceDiscoveryModule
+  ConfigurationModule --> InstanceGroupModule
+  ConfigurationModule --> RenderingModule
+  ConfigurationModule --> TemplateDiscoveryModule
+  GenerationModule --> ConfigurationModule
+  InstanceDiscoveryModule --> InstanceGroupModule
+  InstanceDiscoveryModule --> RenderingModule
+  InstanceDiscoveryModule --> TemplateDiscoveryModule
+  TemplateDiscoveryModule --> RenderingModule
 ```
 <!-- codependix:end name="codependix-nestjs-modules" -->
 

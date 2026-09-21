@@ -430,7 +430,9 @@ flowchart LR
   ConfigurationModule
   DifferencesModule
   FilesModule
+  InputModule
   InstanceDiscoveryModule
+  InstanceGroupModule
   JsonModule
   JupyterModule
   LanguagesModule
@@ -441,9 +443,14 @@ flowchart LR
   TemplateDiscoveryModule
   TextModule
   TypescriptModule
+  ConfigurationModule --> InputModule
+  ConfigurationModule --> InstanceDiscoveryModule
+  ConfigurationModule --> InstanceGroupModule
+  ConfigurationModule --> RenderingModule
+  ConfigurationModule --> TemplateDiscoveryModule
+  FilesModule --> ConfigurationModule
   FilesModule --> DifferencesModule
-  FilesModule --> InstanceDiscoveryModule
-  InstanceDiscoveryModule --> ConfigurationModule
+  InstanceDiscoveryModule --> InstanceGroupModule
   InstanceDiscoveryModule --> RenderingModule
   InstanceDiscoveryModule --> TemplateDiscoveryModule
   JsonModule --> ScoringModule

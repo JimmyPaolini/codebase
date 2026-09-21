@@ -184,14 +184,19 @@ graph LR
 ```mermaid
 flowchart LR
   ChangesModule
+  ConfigurationListingModule
+  ConfigurationModule
   DeliveryModule
   DestinationsModule
+  DiscoveryModule
   DocumentsModule
   JsonModule
   LoggerModule([LoggerModule])
   MarkdownModule
   RenderModule
   ReportModule
+  ConfigurationListingModule --> ConfigurationModule
+  ConfigurationListingModule --> DiscoveryModule
   DeliveryModule --> JsonModule
   DeliveryModule --> MarkdownModule
 ```
@@ -215,6 +220,13 @@ graph LR
   file_src_modules_changes_changes_service_ts["src/modules/changes/changes.service.ts"]
   file_src_modules_changes_changes_service_unit_test_ts["src/modules/changes/changes.service.unit.test.ts"]
   file_src_modules_changes_changes_types_ts["src/modules/changes/changes.types.ts"]
+  file_src_modules_configuration_listing_configuration_listing_constants_ts["src/modules/configuration-listing/configuration-listing.constants.ts"]
+  file_src_modules_configuration_listing_configuration_listing_module_ts["src/modules/configuration-listing/configuration-listing.module.ts"]
+  file_src_modules_configuration_listing_configuration_listing_service_ts["src/modules/configuration-listing/configuration-listing.service.ts"]
+  file_src_modules_configuration_listing_configuration_listing_service_unit_test_ts["src/modules/configuration-listing/configuration-listing.service.unit.test.ts"]
+  file_src_modules_configuration_listing_configuration_listing_types_ts["src/modules/configuration-listing/configuration-listing.types.ts"]
+  file_src_modules_configuration_listing_render_configuration_service_ts["src/modules/configuration-listing/render-configuration.service.ts"]
+  file_src_modules_configuration_listing_render_configuration_service_unit_test_ts["src/modules/configuration-listing/render-configuration.service.unit.test.ts"]
   file_src_modules_delivery_delivery_constants_ts["src/modules/delivery/delivery.constants.ts"]
   file_src_modules_delivery_delivery_module_ts["src/modules/delivery/delivery.module.ts"]
   file_src_modules_delivery_delivery_service_ts["src/modules/delivery/delivery.service.ts"]
@@ -269,6 +281,16 @@ graph LR
   file_src_modules_changes_changes_service_unit_test_ts --> file_src_modules_changes_changes_service_ts
   file_src_modules_changes_changes_service_unit_test_ts --> file_src_modules_changes_changes_types_ts
   file_src_modules_changes_changes_types_ts --> file_src_modules_changes_changes_constants_ts
+  file_src_modules_configuration_listing_configuration_listing_module_ts --> file_src_modules_configuration_listing_configuration_listing_service_ts
+  file_src_modules_configuration_listing_configuration_listing_module_ts --> file_src_modules_configuration_listing_render_configuration_service_ts
+  file_src_modules_configuration_listing_configuration_listing_service_ts --> file_src_modules_configuration_listing_configuration_listing_constants_ts
+  file_src_modules_configuration_listing_configuration_listing_service_ts --> file_src_modules_configuration_listing_configuration_listing_types_ts
+  file_src_modules_configuration_listing_configuration_listing_service_ts --> file_src_modules_render_render_utilities_ts
+  file_src_modules_configuration_listing_configuration_listing_service_unit_test_ts --> file_src_modules_configuration_listing_configuration_listing_service_ts
+  file_src_modules_configuration_listing_render_configuration_service_ts --> file_src_modules_configuration_listing_configuration_listing_constants_ts
+  file_src_modules_configuration_listing_render_configuration_service_ts --> file_src_modules_configuration_listing_configuration_listing_types_ts
+  file_src_modules_configuration_listing_render_configuration_service_unit_test_ts --> file_src_modules_configuration_listing_configuration_listing_types_ts
+  file_src_modules_configuration_listing_render_configuration_service_unit_test_ts --> file_src_modules_configuration_listing_render_configuration_service_ts
   file_src_modules_delivery_delivery_constants_ts --> file_src_modules_destinations_destinations_types_ts
   file_src_modules_delivery_delivery_module_ts --> file_src_modules_delivery_delivery_service_ts
   file_src_modules_delivery_delivery_module_ts --> file_src_modules_json_json_module_ts
