@@ -133,11 +133,7 @@ export class CorpusService {
         code: this.codeService.format(canonical),
         columns,
         drawingHash,
-<<<<<<< HEAD
-        families,
-=======
         family: entityFamily,
->>>>>>> 088f6e73e (refactor(meanderaw): ♻️ update Meander entity and DrawRecordService to single family (#1045))
         lattice: canonical.digits,
         pitch: columns,
         provenance: "hardcoded" as const,

@@ -77,11 +77,8 @@ describe(DrawEnumerationService, () => {
         CodeService,
         MatrixService,
         CharacteristicsService,
-<<<<<<< HEAD
         CharacteristicsFamilyService,
-=======
         ClassificationService,
->>>>>>> 088f6e73e (refactor(meanderaw): ♻️ update Meander entity and DrawRecordService to single family (#1045))
         ConnectivityService,
         CharacteristicsPathService,
         CharacteristicsShapeService,

@@ -88,13 +88,7 @@ describe(DrawRecordService, () => {
             "edgeCount": 1,
             "embeddedOCount": 0,
             "embeddedUCount": 0,
-<<<<<<< HEAD
-            "families": [
-              "bars",
-            ],
-=======
             "family": "unclassified",
->>>>>>> 088f6e73e (refactor(meanderaw): ♻️ update Meander entity and DrawRecordService to single family (#1045))
             "freeEnds": 2,
             "horizontalDashCount": 0,
             "horizontalPointCount": 0,
@@ -125,14 +119,14 @@ describe(DrawRecordService, () => {
         `);
     });
 
-    it("records unclassified family and specific characteristics where a Code's structure earns them", () => {
+    it("records family and specific characteristics where a Code's structure earns them", () => {
       const record = service.record(
         "2569a1",
         { columns: 2, rows: 3 },
         "hardcoded",
       );
 
-      expect(record.family).toBe("unclassified");
+      expect(record.family).toBe("boxes");
       expect(record.characteristics).toContain("isJunctionFree");
     });
 

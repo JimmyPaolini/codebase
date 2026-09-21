@@ -244,5 +244,115 @@ describe(ClassificationService, () => {
 
       expect(service.classify(characteristics, shape)).toBe("boxes");
     });
+
+    it("verifies hierarchical precedence from parallel through snake", () => {
+      // 1. parallel takes precedence when bundle conditions are satisfied
+      const bundle = createMockCharacteristics({
+        components: 3,
+        cycles: 0,
+        freeEnds: 6,
+        inkTJunctions: 0,
+        inkXJunctions: 0,
+        pitch: 4,
+      });
+
+      expect(service.classify(bundle, { columns: 4, rows: 4 })).toBe(
+        "parallel",
+      );
+
+      // 2. cross takes precedence over branch when inkXJunctions > 0 and inkTJunctions === 0
+      const cross = createMockCharacteristics({
+        inkTJunctions: 0,
+        inkXJunctions: 1,
+      });
+
+      expect(service.classify(cross, { columns: 5, rows: 6 })).toBe("cross");
+
+      // 3. branch takes precedence over boxes/whirl/swirl/chain/snake when inkTJunctions > 0
+      const branch = createMockCharacteristics({
+        cycles: 0,
+        inkTJunctions: 1,
+        inkXJunctions: 0,
+        pitch: 3,
+      });
+
+      expect(service.classify(branch, { columns: 3, rows: 4 })).toBe("branch");
+    });
+
+    it("evaluates chain rule matches directly", () => {
+      const rows = 4;
+      const pitch = rows - 1;
+      const characteristics = createMockCharacteristics({
+        components: 1,
+        cycles: 0,
+        freeEnds: 2,
+        inkTJunctions: 0,
+        inkXJunctions: 0,
+        isSingleArc: true,
+        pitch,
+      });
+      const structure = {
+        characteristics,
+        columns: pitch,
+        rows,
+      };
+      const chainRule = service.rules().find((r) => r.name === "chain");
+
+      expect(chainRule?.matches(structure)).toBe(true);
+    });
+
+    it("tests individual branch conditions for isBundle, isArc, and isClosedLoop", () => {
+      const oddPitchBundle = createMockCharacteristics({
+        components: 2,
+        cycles: 0,
+        freeEnds: 4,
+        inkTJunctions: 0,
+        inkXJunctions: 0,
+        pitch: 3,
+      });
+
+      expect(service.classify(oddPitchBundle, { columns: 3, rows: 4 })).toBe(
+        "unclassified",
+      );
+
+      const cycleBundle = createMockCharacteristics({
+        components: 3,
+        cycles: 1,
+        freeEnds: 6,
+        inkTJunctions: 0,
+        inkXJunctions: 0,
+        pitch: 4,
+      });
+
+      expect(service.classify(cycleBundle, { columns: 4, rows: 4 })).toBe(
+        "unclassified",
+      );
+
+      const wrongEndsArc = createMockCharacteristics({
+        components: 1,
+        cycles: 0,
+        freeEnds: 1,
+        inkTJunctions: 0,
+        inkXJunctions: 0,
+        pitch: 3,
+      });
+
+      expect(service.classify(wrongEndsArc, { columns: 3, rows: 4 })).toBe(
+        "unclassified",
+      );
+
+      const notClosedLoop = createMockCharacteristics({
+        components: 1,
+        cycles: 0,
+        freeEnds: 0,
+        inkTJunctions: 0,
+        inkXJunctions: 0,
+        pitch: 3,
+      });
+
+      expect(service.classify(notClosedLoop, { columns: 3, rows: 4 })).toBe(
+        "unclassified",
+      );
+    });
   });
 });
