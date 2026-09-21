@@ -3,11 +3,7 @@ import {
   RunContextService,
 } from "@codependix/boundaries";
 import { ConfigurationService } from "@codependix/configuration";
-import {
-  PathQueryService,
-  PathReportService,
-  ReportingService,
-} from "@codependix/output";
+import { PathQueryService, ReportingService } from "@codependix/output";
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
@@ -22,7 +18,6 @@ describe(PathCommand, () => {
   let configurationService: ConfigurationService;
   let loggerService: LoggerService;
   let pathQueryService: PathQueryService;
-  let pathReportService: PathReportService;
   let reportingService: ReportingService;
   let runContextService: RunContextService;
 
@@ -43,10 +38,6 @@ describe(PathCommand, () => {
           useValue: createMock<PathQueryService>(),
         },
         {
-          provide: PathReportService,
-          useValue: createMock<PathReportService>(),
-        },
-        {
           provide: ReportingService,
           useValue: createMock<ReportingService>(),
         },
@@ -64,15 +55,39 @@ describe(PathCommand, () => {
     configurationService = createMock<ConfigurationService>();
     loggerService = createMock<LoggerService>();
     pathQueryService = createMock<PathQueryService>();
-    pathReportService = new PathReportService();
     reportingService = createMock<ReportingService>();
     runContextService = createMock<RunContextService>();
+
+    pathQueryService.resolveFormat = vi
+      .fn<typeof pathQueryService.resolveFormat>()
+      .mockImplementation((fmt: string | undefined) => {
+        if (fmt === "invalid-fmt") {
+          return {
+            errors: [
+              '--format does not accept "invalid-fmt". It takes one of "json" and "markdown" and "mermaid", as in "--format markdown".',
+            ],
+            format: "markdown",
+          };
+        }
+        if (fmt === "json" || fmt === "mermaid") {
+          return {
+            errors: [],
+            format: fmt,
+          };
+        }
+        return {
+          errors: [],
+          format: "markdown",
+        };
+      });
+    pathQueryService.render = vi
+      .fn<typeof pathQueryService.render>()
+      .mockReturnValue("### Nx Neighborhood\n\n`app` → `lib`");
 
     command = new PathCommand(
       configurationService,
       loggerService,
       pathQueryService,
-      pathReportService,
       reportingService,
       runContextService,
     );
@@ -99,10 +114,6 @@ describe(PathCommand, () => {
         {
           provide: PathQueryService,
           useValue: createMock<PathQueryService>(),
-        },
-        {
-          provide: PathReportService,
-          useValue: createMock<PathReportService>(),
         },
         {
           provide: ReportingService,

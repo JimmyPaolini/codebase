@@ -3,7 +3,6 @@ import { describe, expect, it } from "vitest";
 
 import { PathQueryModule } from "./path-query.module";
 import { PathQueryService } from "./path-query.service";
-import { PathReportService } from "./path-report.service";
 
 describe(PathQueryModule, () => {
   it("compiles the module and resolves its providers", async () => {
@@ -12,6 +11,5 @@ describe(PathQueryModule, () => {
     }).compile();
 
     expect(module.get(PathQueryService)).toBeInstanceOf(PathQueryService);
-    expect(module.get(PathReportService)).toBeInstanceOf(PathReportService);
   });
 });

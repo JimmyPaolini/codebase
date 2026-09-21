@@ -1,3 +1,4 @@
+import { CODEPENDIX_GRAPH_TYPES } from "@codependix/configuration";
 import {
   FileImportsWorkspaceGraphService,
   PythonService,
@@ -11,18 +12,32 @@ import {
 import { WorkspaceGraphService } from "@codependix/nx-projects";
 import { Injectable } from "@nestjs/common";
 
+import {
+  FORMAT_JSON,
+  FORMAT_MARKDOWN,
+  GRAPH_TYPE_MARKDOWN_SUBHEADINGS,
+} from "../combined-output/combined-output.constants";
+import { JSON_INDENTATION } from "../delivery/delivery.constants";
+
+import {
+  buildNoPathMessage,
+  FORMAT_MERMAID,
+  PATH_ARROW,
+  PATH_FORMAT_NAMES,
+  PATH_MERMAID_HEADER,
+} from "./path-query.constants";
+
 import type {
   CombinedPathResults,
+  PathFormat,
   PathQueryArguments,
+  PathReportArguments,
 } from "./path-query.types";
 import type { GraphRunContext } from "@codependix/boundaries";
 import type { NestjsModuleGraph } from "@codependix/nestjs-modules";
 
 /**
- * Searches for a connecting path between two nodes in codependix graphs.
- *
- * Runs a deterministic breadth-first search (BFS) over the directed edges of
- * each active graph level to find the shortest connecting path.
+ * Searches for connecting paths between two nodes in codependix graphs and renders results.
  */
 @Injectable()
 export class PathQueryService {
@@ -153,6 +168,56 @@ export class PathQueryService {
     });
   }
 
+  /** Renders every active graph type's path as Markdown text. */
+  private renderMarkdown(results: CombinedPathResults): string {
+    const sections: string[] = [];
+
+    for (const graphType of CODEPENDIX_GRAPH_TYPES) {
+      const entry = results[graphType];
+      if (entry === undefined) continue;
+
+      const heading = `### ${GRAPH_TYPE_MARKDOWN_SUBHEADINGS[graphType]}`;
+      const body =
+        entry.path === null || entry.path.length === 0
+          ? buildNoPathMessage(entry.from, entry.to)
+          : entry.path.map((node) => `\`${node}\``).join(PATH_ARROW);
+
+      sections.push(`${heading}\n\n${body}`);
+    }
+
+    return sections.join("\n\n");
+  }
+
+  /** Renders every active graph type's path as a Mermaid diagram. */
+  private renderMermaid(results: CombinedPathResults): string {
+    const sections: string[] = [];
+
+    for (const graphType of CODEPENDIX_GRAPH_TYPES) {
+      const entry = results[graphType];
+      if (entry === undefined) continue;
+
+      const pathNodes = entry.path;
+      if (pathNodes === null || pathNodes.length === 0) {
+        sections.push(buildNoPathMessage(entry.from, entry.to));
+        continue;
+      }
+
+      const lines = [
+        "```mermaid",
+        PATH_MERMAID_HEADER,
+        ...pathNodes.map((node) => `  ${this.toMermaidId(node)}["${node}"]`),
+        ...pathNodes.slice(0, -1).map((node, index) => {
+          const next = pathNodes[index + 1] ?? "";
+          return `  ${this.toMermaidId(node)} --> ${this.toMermaidId(next)}`;
+        }),
+        "```",
+      ];
+      sections.push(lines.join("\n"));
+    }
+
+    return sections.join("\n\n");
+  }
+
   /** Runs deterministic breadth-first search to find the shortest path. */
   private searchBfs(
     from: string,
@@ -182,6 +247,11 @@ export class PathQueryService {
     }
 
     return null;
+  }
+
+  /** Converts a node name to a safe Mermaid identifier. */
+  private toMermaidId(name: string): string {
+    return name.replaceAll(/[^\dA-Za-z]/gu, "_");
   }
 
   /**
@@ -243,5 +313,44 @@ export class PathQueryService {
     }
 
     return results;
+  }
+
+  /** Renders combined path query results according to the selected format. */
+  public render(args: PathReportArguments): string {
+    if (args.format === FORMAT_JSON) {
+      return JSON.stringify(args.results, null, JSON_INDENTATION);
+    }
+
+    if (args.format === FORMAT_MERMAID) {
+      return this.renderMermaid(args.results);
+    }
+
+    return this.renderMarkdown(args.results);
+  }
+
+  /**
+   * Reads `--format` into what the run prints, falling back to
+   * `FORMAT_MARKDOWN` when the flag was left off entirely.
+   */
+  public resolveFormat(value: string | undefined): {
+    errors: string[];
+    format: PathFormat;
+  } {
+    if (value === undefined) {
+      return { errors: [], format: FORMAT_MARKDOWN };
+    }
+
+    const matched = PATH_FORMAT_NAMES.find((name) => name === value);
+
+    if (matched === undefined) {
+      return {
+        errors: [
+          `--format does not accept "${value}". It takes one of ${PATH_FORMAT_NAMES.map((name) => `"${name}"`).join(" and ")}, as in "--format ${FORMAT_MARKDOWN}".`,
+        ],
+        format: FORMAT_MARKDOWN,
+      };
+    }
+
+    return { errors: [], format: matched };
   }
 }

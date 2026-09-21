@@ -31,7 +31,6 @@ import {
   AnchorsService,
   DeliveryService,
   PathQueryService,
-  PathReportService,
 } from "@codependix/output";
 import { NestFactory } from "@nestjs/core";
 
@@ -155,7 +154,7 @@ export const fileImportsWorkspaceGraphService =
 export const nestjsModulesWorkspaceGraphService =
   new NestjsModulesWorkspaceGraphService();
 
-/** Finds shortest paths across codependix graph levels. */
+/** Finds shortest paths across codependix graph levels and renders results. */
 export const pathQueryService = new PathQueryService(
   fileImportsWorkspaceGraphService,
   moduleGraphService,
@@ -165,6 +164,3 @@ export const pathQueryService = new PathQueryService(
   typescriptService,
   workspaceGraphService,
 );
-
-/** Renders path query results to standard output formats. */
-export const pathReportService = new PathReportService();

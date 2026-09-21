@@ -1,4 +1,4 @@
-import { pathQueryService, pathReportService } from "./builders";
+import { pathQueryService } from "./builders";
 import { fence } from "./document";
 import { ATLAS_CHAIN, buildProjectGraph, readProjects } from "./nx-graphs";
 
@@ -36,7 +36,7 @@ async function buildFoundPathSection(): Promise<ExampleSection> {
     from: "atlas-application",
     to: "atlas-core",
   });
-  const output = pathReportService.render({
+  const output = pathQueryService.render({
     format: "markdown",
     results,
   });
@@ -56,7 +56,7 @@ async function buildJsonFormatSection(): Promise<ExampleSection> {
     from: "atlas-application",
     to: "atlas-core",
   });
-  const output = pathReportService.render({
+  const output = pathQueryService.render({
     format: "json",
     results,
   });
@@ -76,7 +76,7 @@ async function buildMermaidFormatSection(): Promise<ExampleSection> {
     from: "atlas-application",
     to: "atlas-core",
   });
-  const output = pathReportService.render({
+  const output = pathQueryService.render({
     format: "mermaid",
     results,
   });
@@ -96,7 +96,7 @@ async function buildNoPathSection(): Promise<ExampleSection> {
     from: "atlas-core",
     to: "atlas-application",
   });
-  const output = pathReportService.render({
+  const output = pathQueryService.render({
     format: "markdown",
     results,
   });

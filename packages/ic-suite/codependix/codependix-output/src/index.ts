@@ -44,6 +44,5 @@ export type {
   PathQueryResult,
   PathReportArguments,
 } from "./modules/path-query/path-query.types";
-export { PathReportService } from "./modules/path-query/path-report.service";
 export { ReportingModule } from "./modules/reporting/reporting.module";
 export { ReportingService } from "./modules/reporting/reporting.service";

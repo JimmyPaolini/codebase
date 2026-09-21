@@ -6,7 +6,6 @@ import {
   FORMAT_MARKDOWN,
   PATH_FORMAT_NAMES,
   PathQueryService,
-  PathReportService,
   ReportingService,
 } from "@codependix/output";
 import { Injectable } from "@nestjs/common";
@@ -37,7 +36,6 @@ export class PathCommand extends CommandRunner {
     private readonly configurationService: ConfigurationService,
     private readonly logger: LoggerService,
     private readonly pathQueryService: PathQueryService,
-    private readonly pathReportService: PathReportService,
     private readonly reportingService: ReportingService,
     private readonly runContextService: RunContextService,
   ) {
@@ -72,7 +70,7 @@ export class PathCommand extends CommandRunner {
     }
 
     const { errors: formatErrors, format } =
-      this.pathReportService.resolveFormat(options.format);
+      this.pathQueryService.resolveFormat(options.format);
 
     if (formatErrors.length > 0) {
       this.logger.error("🕸️ Rejected the command line", undefined, {
@@ -235,7 +233,7 @@ export class PathCommand extends CommandRunner {
         to: inputs.to,
       });
 
-      const content = this.pathReportService.render({
+      const content = this.pathQueryService.render({
         format: inputs.format,
         results,
       });

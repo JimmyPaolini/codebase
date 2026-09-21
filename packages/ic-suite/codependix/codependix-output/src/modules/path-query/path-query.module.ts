@@ -12,12 +12,11 @@ import { WorkspaceGraphModule } from "@codependix/nx-projects";
 import { Module } from "@nestjs/common";
 
 import { PathQueryService } from "./path-query.service";
-import { PathReportService } from "./path-report.service";
 
 /** Provides path query and rendering services across graph levels. */
 @Module({
   controllers: [],
-  exports: [PathQueryService, PathReportService],
+  exports: [PathQueryService],
   imports: [
     FileImportsWorkspaceGraphModule,
     ModuleGraphModule,
@@ -27,6 +26,6 @@ import { PathReportService } from "./path-report.service";
     TypescriptModule,
     WorkspaceGraphModule,
   ],
-  providers: [PathQueryService, PathReportService],
+  providers: [PathQueryService],
 })
 export class PathQueryModule {}
