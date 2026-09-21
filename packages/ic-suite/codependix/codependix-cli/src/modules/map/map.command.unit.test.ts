@@ -217,9 +217,9 @@ describe(MapCommand, () => {
   describe("an empty project selection", () => {
     // Nothing else catches it: --check boundaries judges every project
     // regardless of include, so the gate stays green while exports go silent.
-    it("warns when no include glob selects a project", async () => {
-      vi.mocked(runContextService.build).mockResolvedValue(
-        buildContextWithInclude([]),
+    it("warns when no project was selected", async () => {
+      vi.mocked(codependixService.run).mockResolvedValue(
+        buildMapRun({ failures: [], results: [] }),
       );
 
       await run({ write: true });
@@ -231,7 +231,21 @@ describe(MapCommand, () => {
       );
     });
 
-    it("stays quiet when an include glob selects something", async () => {
+    it("stays quiet when projects were selected", async () => {
+      vi.mocked(codependixService.run).mockResolvedValue(
+        buildMapRun({
+          failures: [],
+          results: [
+            {
+              isCurrent: true,
+              projectName: "atlas-service",
+              staleExports: [],
+              stalePaths: [],
+            },
+          ],
+        }),
+      );
+
       await run({ write: true });
 
       expect(loggerService.warn).not.toHaveBeenCalled();
@@ -244,9 +258,6 @@ describe(MapCommand, () => {
         checksReports: false,
         writes: false,
       });
-      vi.mocked(runContextService.build).mockResolvedValue(
-        buildContextWithInclude([]),
-      );
 
       await run({ check: "boundaries" });
 
@@ -407,6 +418,13 @@ describe(MapCommand, () => {
         {
           isCurrent: false,
           projectName: "codependix-nx",
+          staleExports: [
+            {
+              anchor: undefined,
+              difference: "graph",
+              path: "codependix-nx.json",
+            },
+          ],
           stalePaths: ["codependix-nx.json"],
         },
       ],
@@ -422,7 +440,12 @@ describe(MapCommand, () => {
     const outcome: GraphRunOutcome = {
       failures: [{ error: "boom", projectName: "codependix-nestjs" }],
       results: [
-        { isCurrent: true, projectName: "codependix-nx", stalePaths: [] },
+        {
+          isCurrent: true,
+          projectName: "codependix-nx",
+          staleExports: [],
+          stalePaths: [],
+        },
       ],
     };
     vi.mocked(codependixService.run).mockResolvedValue(buildMapRun(outcome));
@@ -445,6 +468,13 @@ describe(MapCommand, () => {
         {
           isCurrent: false,
           projectName: "codependix-nx",
+          staleExports: [
+            {
+              anchor: undefined,
+              difference: "graph",
+              path: "codependix-nx.json",
+            },
+          ],
           stalePaths: ["codependix-nx.json"],
         },
       ],
@@ -462,7 +492,17 @@ describe(MapCommand, () => {
     expect(loggerService.error).toHaveBeenCalledWith(
       "🕸️ Found stale codependix exports",
       undefined,
-      { projects: ["codependix-nx"] },
+      {
+        exports: [
+          {
+            anchor: undefined,
+            difference: "graph",
+            path: "codependix-nx.json",
+            project: "codependix-nx",
+          },
+        ],
+        projects: ["codependix-nx"],
+      },
     );
   });
 
@@ -513,6 +553,13 @@ describe(MapCommand, () => {
           {
             isCurrent: false,
             projectName: "codependix-nx",
+            staleExports: [
+              {
+                anchor: undefined,
+                difference: "graph",
+                path: "a",
+              },
+            ],
             stalePaths: ["a"],
           },
         ],
@@ -529,7 +576,17 @@ describe(MapCommand, () => {
     expect(loggerService.error).toHaveBeenCalledWith(
       "🕸️ Found stale codependix exports",
       undefined,
-      { projects: ["codependix-nx"] },
+      {
+        exports: [
+          {
+            anchor: undefined,
+            difference: "graph",
+            path: "a",
+            project: "codependix-nx",
+          },
+        ],
+        projects: ["codependix-nx"],
+      },
     );
     expect(loggerService.error).toHaveBeenCalledWith(
       "🕸️ Found codependix boundary violations",

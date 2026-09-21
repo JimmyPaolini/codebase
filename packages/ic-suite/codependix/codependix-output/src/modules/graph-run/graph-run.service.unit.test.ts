@@ -148,11 +148,23 @@ describe(GraphRunService, () => {
     it("combines the per-project outcome with the workspace graph's entry and result", () => {
       vi.mocked(projectGraphsService.runNxProjectsGraphs).mockReturnValue({
         failures: [],
-        results: [{ isCurrent: true, projectName: "a", stalePaths: [] }],
+        results: [
+          {
+            isCurrent: true,
+            projectName: "a",
+            staleExports: [],
+            stalePaths: [],
+          },
+        ],
       });
       vi.mocked(workspaceGraphsService.runNxWorkspaceGraph).mockReturnValue({
         entry: { json: { projectNames: [] }, markdown: "```mermaid\n```" },
-        result: { isCurrent: true, projectName: "workspace", stalePaths: [] },
+        result: {
+          isCurrent: true,
+          projectName: "workspace",
+          staleExports: [],
+          stalePaths: [],
+        },
       });
 
       const outcome = service.runNxGraphs(buildContext());
@@ -160,8 +172,18 @@ describe(GraphRunService, () => {
       expect(outcome).toStrictEqual({
         failures: [],
         results: [
-          { isCurrent: true, projectName: "a", stalePaths: [] },
-          { isCurrent: true, projectName: "workspace", stalePaths: [] },
+          {
+            isCurrent: true,
+            projectName: "a",
+            staleExports: [],
+            stalePaths: [],
+          },
+          {
+            isCurrent: true,
+            projectName: "workspace",
+            staleExports: [],
+            stalePaths: [],
+          },
         ],
         workspaceEntry: {
           json: { projectNames: [] },
@@ -173,7 +195,14 @@ describe(GraphRunService, () => {
     it("records a failure building the workspace graph without losing the project results", () => {
       vi.mocked(projectGraphsService.runNxProjectsGraphs).mockReturnValue({
         failures: [],
-        results: [{ isCurrent: true, projectName: "a", stalePaths: [] }],
+        results: [
+          {
+            isCurrent: true,
+            projectName: "a",
+            staleExports: [],
+            stalePaths: [],
+          },
+        ],
       });
       vi.mocked(workspaceGraphsService.runNxWorkspaceGraph).mockImplementation(
         () => {
@@ -184,7 +213,12 @@ describe(GraphRunService, () => {
       const outcome = service.runNxGraphs(buildContext());
 
       expect(outcome.results).toStrictEqual([
-        { isCurrent: true, projectName: "a", stalePaths: [] },
+        {
+          isCurrent: true,
+          projectName: "a",
+          staleExports: [],
+          stalePaths: [],
+        },
       ]);
       expect(outcome.failures).toStrictEqual([
         { error: "failed to build workspace graph", projectName: "workspace" },
@@ -207,7 +241,14 @@ describe(GraphRunService, () => {
     it("combines the per-project outcome with the workspace graph's entry and result", () => {
       vi.mocked(projectGraphsService.runFileImportsProjects).mockReturnValue({
         failures: [],
-        results: [{ isCurrent: true, projectName: "a", stalePaths: [] }],
+        results: [
+          {
+            isCurrent: true,
+            projectName: "a",
+            staleExports: [],
+            stalePaths: [],
+          },
+        ],
       });
       vi.mocked(
         workspaceGraphsService.runFileImportsWorkspaceGraph,
@@ -216,7 +257,12 @@ describe(GraphRunService, () => {
           json: { edges: [], fileNames: [] },
           markdown: "```mermaid\n```",
         },
-        result: { isCurrent: true, projectName: "workspace", stalePaths: [] },
+        result: {
+          isCurrent: true,
+          projectName: "workspace",
+          staleExports: [],
+          stalePaths: [],
+        },
       });
 
       const outcome = service.runImportGraphs(buildContext());
@@ -224,8 +270,18 @@ describe(GraphRunService, () => {
       expect(outcome).toStrictEqual({
         failures: [],
         results: [
-          { isCurrent: true, projectName: "a", stalePaths: [] },
-          { isCurrent: true, projectName: "workspace", stalePaths: [] },
+          {
+            isCurrent: true,
+            projectName: "a",
+            staleExports: [],
+            stalePaths: [],
+          },
+          {
+            isCurrent: true,
+            projectName: "workspace",
+            staleExports: [],
+            stalePaths: [],
+          },
         ],
         workspaceEntry: {
           json: { edges: [], fileNames: [] },
@@ -267,7 +323,14 @@ describe(GraphRunService, () => {
         projectGraphsService.runNestjsModulesProjects,
       ).mockResolvedValue({
         failures: [],
-        results: [{ isCurrent: true, projectName: "a", stalePaths: [] }],
+        results: [
+          {
+            isCurrent: true,
+            projectName: "a",
+            staleExports: [],
+            stalePaths: [],
+          },
+        ],
       });
       vi.mocked(
         workspaceGraphsService.runNestjsModulesWorkspaceGraph,
@@ -276,7 +339,12 @@ describe(GraphRunService, () => {
           json: { edges: [], moduleNames: [] },
           markdown: "```mermaid\n```",
         },
-        result: { isCurrent: true, projectName: "workspace", stalePaths: [] },
+        result: {
+          isCurrent: true,
+          projectName: "workspace",
+          staleExports: [],
+          stalePaths: [],
+        },
       });
 
       const outcome = await service.runNestjsGraphs(buildContext());
@@ -284,8 +352,18 @@ describe(GraphRunService, () => {
       expect(outcome).toStrictEqual({
         failures: [],
         results: [
-          { isCurrent: true, projectName: "a", stalePaths: [] },
-          { isCurrent: true, projectName: "workspace", stalePaths: [] },
+          {
+            isCurrent: true,
+            projectName: "a",
+            staleExports: [],
+            stalePaths: [],
+          },
+          {
+            isCurrent: true,
+            projectName: "workspace",
+            staleExports: [],
+            stalePaths: [],
+          },
         ],
         workspaceEntry: {
           json: { edges: [], moduleNames: [] },
@@ -315,7 +393,12 @@ describe(GraphRunService, () => {
       const outcome: GraphRunOutcome = {
         failures: [],
         results: [
-          { isCurrent: true, projectName: "affirmations", stalePaths: [] },
+          {
+            isCurrent: true,
+            projectName: "affirmations",
+            staleExports: [],
+            stalePaths: [],
+          },
         ],
       };
 
@@ -330,13 +413,27 @@ describe(GraphRunService, () => {
     it("aggregates the results and failures from all four passes", async () => {
       vi.mocked(projectGraphsService.runNxProjectsGraphs).mockReturnValue({
         failures: [{ error: "nx-boom", projectName: "a" }],
-        results: [{ isCurrent: true, projectName: "b", stalePaths: [] }],
+        results: [
+          {
+            isCurrent: true,
+            projectName: "b",
+            staleExports: [],
+            stalePaths: [],
+          },
+        ],
       });
       vi.mocked(
         projectGraphsService.runNestjsModulesProjects,
       ).mockResolvedValue({
         failures: [],
-        results: [{ isCurrent: false, projectName: "c", stalePaths: ["c"] }],
+        results: [
+          {
+            isCurrent: false,
+            projectName: "c",
+            staleExports: [],
+            stalePaths: ["c"],
+          },
+        ],
       });
       vi.mocked(projectGraphsService.runFileImportsProjects).mockReturnValue({
         failures: [{ error: "import-boom", projectName: "d" }],
@@ -344,7 +441,14 @@ describe(GraphRunService, () => {
       });
       vi.mocked(pythonImportsService.runGraphs).mockReturnValue({
         failures: [],
-        results: [{ isCurrent: true, projectName: "e", stalePaths: [] }],
+        results: [
+          {
+            isCurrent: true,
+            projectName: "e",
+            staleExports: [],
+            stalePaths: [],
+          },
+        ],
       });
 
       const { outcome } = await service.run(buildContext());
@@ -355,9 +459,24 @@ describe(GraphRunService, () => {
           { error: "import-boom", projectName: "d" },
         ],
         results: [
-          { isCurrent: true, projectName: "b", stalePaths: [] },
-          { isCurrent: false, projectName: "c", stalePaths: ["c"] },
-          { isCurrent: true, projectName: "e", stalePaths: [] },
+          {
+            isCurrent: true,
+            projectName: "b",
+            staleExports: [],
+            stalePaths: [],
+          },
+          {
+            isCurrent: false,
+            projectName: "c",
+            staleExports: [],
+            stalePaths: ["c"],
+          },
+          {
+            isCurrent: true,
+            projectName: "e",
+            staleExports: [],
+            stalePaths: [],
+          },
         ],
       });
     });

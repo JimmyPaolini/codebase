@@ -73,6 +73,7 @@ export interface ProjectRunFailure {
 export interface ProjectRunResult {
   isCurrent: boolean;
   projectName: string;
+  staleExports: StaleExport[];
   stalePaths: string[];
 }
 
@@ -102,3 +103,16 @@ export interface RunModeSelection {
   readonly errors: readonly string[];
   readonly mode: RunMode;
 }
+
+/** One destination that no longer holds what a fresh export would produce. */
+export interface StaleExport {
+  /** The anchor name if the destination is an anchored Markdown block, or undefined. */
+  readonly anchor?: string | undefined;
+  /** What differs between the current destination and the fresh export: "graph" or "formatting". */
+  readonly difference: StaleExportDifference;
+  /** The relative destination path (e.g. "README.md", "codependix-nx-graph.json"). */
+  readonly path: string;
+}
+
+/** What differs between the current destination and the fresh export. */
+export type StaleExportDifference = "formatting" | "graph";

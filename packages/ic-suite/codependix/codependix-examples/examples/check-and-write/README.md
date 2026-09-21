@@ -22,11 +22,19 @@ The first result is what `--check` reports for an export nothing has moved. The 
   {
     "isCurrent": true,
     "projectName": "atlas-service",
+    "staleExports": [],
     "stalePaths": []
   },
   {
     "isCurrent": false,
     "projectName": "atlas-service",
+    "staleExports": [
+      {
+        "anchor": "example-nx",
+        "difference": "graph",
+        "path": "README.md"
+      }
+    ],
     "stalePaths": [
       "README.md"
     ]

@@ -15,6 +15,8 @@ import type {
 import type {
   MarkdownSectionArguments,
   ProjectRunResult,
+  StaleExport,
+  StaleExportDifference,
 } from "@codependix/core";
 
 /**
@@ -41,23 +43,20 @@ export class DeliveryService {
   // 🔏 Private Methods
 
   /**
-   * Splices content into a named anchor block, or checks it is current.
+   * Checks whether a named anchor block is current against fresh content.
    *
-   * A missing anchor is treated differently by mode: `--check` reports it as
-   * stale rather than throwing, consistent with every other kind of drift
-   * this tool reports, and `--write` auto-creates the section via
-   * `AnchorsService.insertAnchorSection` when `markdownSection` was supplied,
-   * or falls back to the historical hard failure when it was not. The file
-   * itself not existing at all is always an error, regardless of mode — a
-   * project with no README is a more serious problem than a missing anchor.
+   * A missing anchor is reported as stale rather than throwing, consistent
+   * with every other kind of drift this tool reports.
    */
-  private deliverAnchoredMarkdown(
-    args: DeliverFileArguments & {
-      anchorName: string;
-      markdownSection: MarkdownSectionArguments | undefined;
-    },
-  ): boolean {
-    const resolvedPath = path.resolve(args.absoluteRoot, args.relativePath);
+  private checkAnchoredMarkdown(args: {
+    absoluteRoot: string;
+    anchorName: string;
+    content: string;
+    path: string;
+    staleExports: StaleExport[];
+    stalePaths: string[];
+  }): void {
+    const resolvedPath = path.resolve(args.absoluteRoot, args.path);
 
     if (!existsSync(resolvedPath)) {
       throw new AnchorNotFoundError(args.anchorName, resolvedPath);
@@ -70,55 +69,66 @@ export class DeliveryService {
       filePath: resolvedPath,
     });
 
-    if (args.mode === "check") {
-      if (!anchorExists) {
-        return false;
-      }
-
-      return this.anchorsService.checkAnchor({
-        anchorName: args.anchorName,
-        fileContent,
-        filePath: resolvedPath,
-        freshContent: args.content,
-      }).isCurrent;
-    }
-
     if (!anchorExists) {
-      return this.writeAutoCreatedAnchorSection({
-        anchorName: args.anchorName,
-        content: args.content,
-        fileContent,
-        markdownSection: args.markdownSection,
-        resolvedPath,
+      args.stalePaths.push(args.path);
+      args.staleExports.push({
+        anchor: args.anchorName,
+        difference: "graph",
+        path: args.path,
       });
+      return;
     }
 
-    const updated = this.anchorsService.replaceAnchorContent({
+    const checkResult = this.anchorsService.checkAnchor({
       anchorName: args.anchorName,
       fileContent,
       filePath: resolvedPath,
-      newContent: args.content,
+      freshContent: args.content,
     });
 
-    if (updated !== fileContent) {
-      writeFileSync(resolvedPath, updated, "utf8");
+    if (!checkResult.isCurrent) {
+      args.stalePaths.push(args.path);
+      args.staleExports.push({
+        anchor: args.anchorName,
+        difference: this.classifyDifference(
+          checkResult.currentContent,
+          args.content,
+          "markdown",
+        ),
+        path: args.path,
+      });
     }
-
-    return true;
   }
 
-  /** Writes or checks a whole file's rendered content. */
-  private deliverFile(args: DeliverFileArguments): boolean {
-    const resolvedPath = path.resolve(args.absoluteRoot, args.relativePath);
+  /** Classifies whether a difference is formatting or graph structure. */
+  private classifyDifference(
+    current: string,
+    fresh: string,
+    kind: "json" | "markdown",
+  ): StaleExportDifference {
+    if (kind === "json") {
+      try {
+        const currentParsed: unknown = JSON.parse(current);
+        const freshParsed: unknown = JSON.parse(fresh);
 
-    if (args.mode === "check") {
-      return this.readFileOrEmpty(resolvedPath) === args.content;
+        if (JSON.stringify(currentParsed) === JSON.stringify(freshParsed)) {
+          return "formatting";
+        }
+      } catch {
+        return "graph";
+      }
+
+      return "graph";
     }
 
-    mkdirSync(path.dirname(resolvedPath), { recursive: true });
-    writeFileSync(resolvedPath, args.content, "utf8");
+    const normalizedCurrent = current.replaceAll(/\s+/gu, " ").trim();
+    const normalizedFresh = fresh.replaceAll(/\s+/gu, " ").trim();
 
-    return true;
+    if (normalizedCurrent === normalizedFresh && normalizedCurrent.length > 0) {
+      return "formatting";
+    }
+
+    return "graph";
   }
 
   /** Delivers a JSON destination, recording it as stale if needed. */
@@ -127,18 +137,31 @@ export class DeliveryService {
     content: string;
     mode: DeliverFileArguments["mode"];
     path: string;
+    staleExports: StaleExport[];
     stalePaths: string[];
   }): void {
-    const isCurrent = this.deliverFile({
-      absoluteRoot: args.absoluteRoot,
-      content: args.content,
-      mode: args.mode,
-      relativePath: args.path,
-    });
+    const resolvedPath = path.resolve(args.absoluteRoot, args.path);
 
-    if (!isCurrent) {
-      args.stalePaths.push(args.path);
+    if (args.mode === "check") {
+      const existingContent = this.readFileOrEmpty(resolvedPath);
+
+      if (existingContent !== args.content) {
+        args.stalePaths.push(args.path);
+        args.staleExports.push({
+          anchor: undefined,
+          difference: this.classifyDifference(
+            existingContent,
+            args.content,
+            "json",
+          ),
+          path: args.path,
+        });
+      }
+      return;
     }
+
+    mkdirSync(path.dirname(resolvedPath), { recursive: true });
+    writeFileSync(resolvedPath, args.content, "utf8");
   }
 
   /** Delivers a Markdown destination, recording it as stale if needed. */
@@ -149,29 +172,55 @@ export class DeliveryService {
     markdownSection: MarkdownSectionArguments | undefined;
     mode: DeliverFileArguments["mode"];
     path: string;
+    staleExports: StaleExport[];
     stalePaths: string[];
   }): void {
-    const deliverArguments: DeliverFileArguments = {
-      absoluteRoot: args.absoluteRoot,
-      content: args.content,
-      mode: args.mode,
-      relativePath: args.path,
-    };
-    const isCurrent =
-      args.anchor === undefined
-        ? this.deliverFile({
-            ...deliverArguments,
-            content: `${args.content}\n`,
-          })
-        : this.deliverAnchoredMarkdown({
-            ...deliverArguments,
-            anchorName: args.anchor,
-            markdownSection: args.markdownSection,
-          });
+    if (args.anchor === undefined) {
+      const resolvedPath = path.resolve(args.absoluteRoot, args.path);
+      const expectedContent = `${args.content}\n`;
 
-    if (!isCurrent) {
-      args.stalePaths.push(args.path);
+      if (args.mode === "check") {
+        const existingContent = this.readFileOrEmpty(resolvedPath);
+
+        if (existingContent !== expectedContent) {
+          args.stalePaths.push(args.path);
+          args.staleExports.push({
+            anchor: undefined,
+            difference: this.classifyDifference(
+              existingContent,
+              expectedContent,
+              "markdown",
+            ),
+            path: args.path,
+          });
+        }
+        return;
+      }
+
+      mkdirSync(path.dirname(resolvedPath), { recursive: true });
+      writeFileSync(resolvedPath, expectedContent, "utf8");
+      return;
     }
+
+    if (args.mode === "check") {
+      this.checkAnchoredMarkdown({
+        absoluteRoot: args.absoluteRoot,
+        anchorName: args.anchor,
+        content: args.content,
+        path: args.path,
+        staleExports: args.staleExports,
+        stalePaths: args.stalePaths,
+      });
+      return;
+    }
+
+    this.writeAnchoredMarkdown({
+      absoluteRoot: args.absoluteRoot,
+      anchorName: args.anchor,
+      content: args.content,
+      markdownSection: args.markdownSection,
+      path: args.path,
+    });
   }
 
   /** Reads a file's content, or an empty string when it does not exist yet. */
@@ -229,6 +278,50 @@ export class DeliveryService {
     };
   }
 
+  /** Splices content into a named anchor block on write. */
+  private writeAnchoredMarkdown(args: {
+    absoluteRoot: string;
+    anchorName: string;
+    content: string;
+    markdownSection: MarkdownSectionArguments | undefined;
+    path: string;
+  }): void {
+    const resolvedPath = path.resolve(args.absoluteRoot, args.path);
+
+    if (!existsSync(resolvedPath)) {
+      throw new AnchorNotFoundError(args.anchorName, resolvedPath);
+    }
+
+    const fileContent = readFileSync(resolvedPath, "utf8");
+    const anchorExists = this.anchorsService.hasAnchor({
+      anchorName: args.anchorName,
+      fileContent,
+      filePath: resolvedPath,
+    });
+
+    if (!anchorExists) {
+      this.writeAutoCreatedAnchorSection({
+        anchorName: args.anchorName,
+        content: args.content,
+        fileContent,
+        markdownSection: args.markdownSection,
+        resolvedPath,
+      });
+      return;
+    }
+
+    const updated = this.anchorsService.replaceAnchorContent({
+      anchorName: args.anchorName,
+      fileContent,
+      filePath: resolvedPath,
+      newContent: args.content,
+    });
+
+    if (updated !== fileContent) {
+      writeFileSync(resolvedPath, updated, "utf8");
+    }
+  }
+
   /**
    * Auto-creates a missing anchor's `## 🕸️ Codependix` section and writes it.
    *
@@ -272,6 +365,7 @@ export class DeliveryService {
    */
   deliverGraphOutput(args: DeliverGraphOutputArguments): ProjectRunResult {
     const { markdownSection, mode, project } = args;
+    const staleExports: StaleExport[] = [];
     const stalePaths: string[] = [];
     const jsonDelivery = this.resolveJsonDelivery(args);
     const markdownDelivery = this.resolveMarkdownDelivery(args);
@@ -282,6 +376,7 @@ export class DeliveryService {
         content: jsonDelivery.content,
         mode,
         path: jsonDelivery.path,
+        staleExports,
         stalePaths,
       });
     }
@@ -294,6 +389,7 @@ export class DeliveryService {
         markdownSection,
         mode,
         path: markdownDelivery.path,
+        staleExports,
         stalePaths,
       });
     }
@@ -301,6 +397,7 @@ export class DeliveryService {
     return {
       isCurrent: stalePaths.length === 0,
       projectName: project.name,
+      staleExports,
       stalePaths,
     };
   }

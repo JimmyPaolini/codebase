@@ -203,7 +203,12 @@ describe(ProjectGraphsService, () => {
       expect(outcome).toStrictEqual({
         failures: [],
         results: [
-          { isCurrent: true, projectName: "codependix-nx", stalePaths: [] },
+          {
+            isCurrent: true,
+            projectName: "codependix-nx",
+            staleExports: [],
+            stalePaths: [],
+          },
         ],
       });
 
@@ -237,6 +242,13 @@ describe(ProjectGraphsService, () => {
           {
             isCurrent: false,
             projectName: "codependix-nx",
+            staleExports: [
+              {
+                anchor: undefined,
+                difference: "graph",
+                path: "codependix-nx.json",
+              },
+            ],
             stalePaths: ["codependix-nx.json"],
           },
         ],
@@ -320,7 +332,12 @@ describe(ProjectGraphsService, () => {
         },
       ]);
       expect(outcome.results).toStrictEqual([
-        { isCurrent: true, projectName: "other-project", stalePaths: [] },
+        {
+          isCurrent: true,
+          projectName: "other-project",
+          staleExports: [],
+          stalePaths: [],
+        },
       ]);
 
       const written = JSON.parse(
@@ -389,7 +406,12 @@ describe(ProjectGraphsService, () => {
       expect(outcome).toStrictEqual({
         failures: [],
         results: [
-          { isCurrent: true, projectName: "codependix-cli", stalePaths: [] },
+          {
+            isCurrent: true,
+            projectName: "codependix-cli",
+            staleExports: [],
+            stalePaths: [],
+          },
         ],
       });
 
@@ -417,6 +439,13 @@ describe(ProjectGraphsService, () => {
           {
             isCurrent: false,
             projectName: "codependix-cli",
+            staleExports: [
+              {
+                anchor: undefined,
+                difference: "graph",
+                path: "codependix-cli.json",
+              },
+            ],
             stalePaths: ["codependix-cli.json"],
           },
         ],
@@ -521,6 +550,7 @@ describe(ProjectGraphsService, () => {
         {
           isCurrent: true,
           projectName: "other-nestjs-project",
+          staleExports: [],
           stalePaths: [],
         },
       ]);
@@ -583,6 +613,7 @@ describe(ProjectGraphsService, () => {
           {
             isCurrent: true,
             projectName: "codependix-imports",
+            staleExports: [],
             stalePaths: [],
           },
         ],
@@ -615,6 +646,13 @@ describe(ProjectGraphsService, () => {
           {
             isCurrent: false,
             projectName: "codependix-imports",
+            staleExports: [
+              {
+                anchor: undefined,
+                difference: "graph",
+                path: "codependix-imports.json",
+              },
+            ],
             stalePaths: ["codependix-imports.json"],
           },
         ],
@@ -721,6 +759,7 @@ describe(ProjectGraphsService, () => {
         {
           isCurrent: true,
           projectName: "other-imports-project",
+          staleExports: [],
           stalePaths: [],
         },
       ]);

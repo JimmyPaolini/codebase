@@ -97,16 +97,20 @@ export class MapCommand extends CommandRunner {
   }
 
   /**
-   * Runs the export pass, warning first when it can select nothing.
+   * Runs the export pass, warning when nothing was selected.
    *
    * Returns both the usual delivery outcome and every active graph type's
    * whole-workspace data, so `runMode` can hand the latter to
    * `CombinedOutputService` without running the export pass a second time.
    */
   private async runExports(context: GraphRunContext): Promise<MapRunResult> {
-    this.reportingService.reportEmptySelection(context.configuration.include);
+    const result = await this.graphRunService.run(context);
 
-    return this.graphRunService.run(context);
+    this.reportingService.reportEmptySelection(
+      result.outcome.results.length + result.outcome.failures.length,
+    );
+
+    return result;
   }
 
   /**
