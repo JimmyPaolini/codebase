@@ -1,8 +1,8 @@
 name: 🦹 Continuous Compliance
 
 # External and repository compliance checks:
-# 1. 🧑‍💼 Audit Issues: Issue metadata, hierarchy, and release significance.
-# 2. 👮 Audit Governance: Repository governance and workflow security.
+# 1. 🧑‍💼 Issue: Issue metadata, hierarchy, and release significance.
+# 2. 👮 Enforce: Repository governance and workflow security.
 # 3. 🧑‍⚖️ Comply: Pull request metadata and commit message conventions.
 #
 # Label reconciliation runs through `tools/synchronization`, and compliance
@@ -52,15 +52,15 @@ jobs:
       fail-fast: false
       matrix:
         target:
-          - id: audit-issues
-            name: Audit Issues
+          - id: issue
+            name: Issue
             emoji: 🧑‍💼
             timeout: 10
-          - id: audit-governance
-            name: Audit Governance
+          - id: enforce
+            name: Enforce
             emoji: 👮
             timeout: 10
-          - id: comply-code
+          - id: comply
             name: Comply
             emoji: 🧑‍⚖️
             timeout: 10
@@ -74,19 +74,19 @@ jobs:
           EVENT_NAME: ${{ github.event_name }}
           TARGET: ${{ matrix.target.id }}
         run: |
-          if [ "$EVENT_NAME" = "issues" ] && [ "$TARGET" != "audit-issues" ]; then
+          if [ "$EVENT_NAME" = "issues" ] && [ "$TARGET" != "issue" ]; then
             echo "⏭️ Skipping $TARGET on issues event."
             echo "skip=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
-          if [ "$EVENT_NAME" = "pull_request" ] && [ "$TARGET" != "comply-code" ]; then
+          if [ "$EVENT_NAME" = "pull_request" ] && [ "$TARGET" != "comply" ]; then
             echo "⏭️ Skipping $TARGET on pull_request event."
             echo "skip=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
-          if [ "$EVENT_NAME" = "push" ] && [ "$TARGET" = "audit-issues" ]; then
+          if [ "$EVENT_NAME" = "push" ] && [ "$TARGET" = "issue" ]; then
             echo "⏭️ Skipping $TARGET on push event."
             echo "skip=true" >> "$GITHUB_OUTPUT"
             exit 0
@@ -140,7 +140,7 @@ jobs:
       - name: 🏷️ Reconcile Issue Labels
         if: >-
           steps.check-skip.outputs.skip != 'true' &&
-          matrix.target.id == 'audit-issues' &&
+          matrix.target.id == 'issue' &&
           github.event.action == 'opened'
         env:
           GH_TOKEN: ${{ github.token }}
@@ -155,7 +155,7 @@ jobs:
       - name: 🧾 Audit Single Issue Metadata
         if: >-
           steps.check-skip.outputs.skip != 'true' &&
-          matrix.target.id == 'audit-issues' &&
+          matrix.target.id == 'issue' &&
           github.event.issue != null
         env:
           GH_TOKEN: ${{ github.token }}
@@ -169,7 +169,7 @@ jobs:
       - name: 🧾 Audit All Open Issues Metadata
         if: >-
           steps.check-skip.outputs.skip != 'true' &&
-          matrix.target.id == 'audit-issues' &&
+          matrix.target.id == 'issue' &&
           github.event.issue == null
         env:
           GH_TOKEN: ${{ github.token }}
@@ -179,7 +179,7 @@ jobs:
 
       # Audits repository governance (CODEOWNERS rules and workflow security).
       - name: 👮 Audit Repository Governance
-        if: steps.check-skip.outputs.skip != 'true' && matrix.target.id == 'audit-governance'
+        if: steps.check-skip.outputs.skip != 'true' && matrix.target.id == 'enforce'
         run: |
           NODE_OPTIONS='' node --import @swc-node/register/esm-register \
             tools/validation/src/main.ts audit-governance
@@ -188,7 +188,7 @@ jobs:
       - name: 🏷️ Reconcile Pull Request Labels
         if: >-
           steps.check-skip.outputs.skip != 'true' &&
-          matrix.target.id == 'comply-code' &&
+          matrix.target.id == 'comply' &&
           github.event.pull_request != null
         env:
           GH_TOKEN: ${{ github.token }}
@@ -201,7 +201,7 @@ jobs:
       - name: 🌿 Validate Branch Name
         if: >-
           steps.check-skip.outputs.skip != 'true' &&
-          matrix.target.id == 'comply-code' &&
+          matrix.target.id == 'comply' &&
           github.event.pull_request != null
         env:
           BRANCH_NAME: ${{ github.head_ref }}
@@ -212,7 +212,7 @@ jobs:
       - name: 🏷️ Validate Pull Request Title
         if: >-
           steps.check-skip.outputs.skip != 'true' &&
-          matrix.target.id == 'comply-code' &&
+          matrix.target.id == 'comply' &&
           github.event.pull_request != null
         env:
           PULL_REQUEST_TITLE: ${{ github.event.pull_request.title }}
@@ -224,7 +224,7 @@ jobs:
       - name: 📝 Validate Pull Request Body
         if: >-
           steps.check-skip.outputs.skip != 'true' &&
-          matrix.target.id == 'comply-code' &&
+          matrix.target.id == 'comply' &&
           github.event.pull_request != null &&
           github.actor != 'dependabot[bot]'
         env:
@@ -240,7 +240,7 @@ jobs:
       - name: 🚦 Validate Release Significance
         if: >-
           steps.check-skip.outputs.skip != 'true' &&
-          matrix.target.id == 'comply-code' &&
+          matrix.target.id == 'comply' &&
           github.event.pull_request != null
         env:
           GH_TOKEN: ${{ github.token }}
@@ -254,7 +254,7 @@ jobs:
       - name: 🏷️ Validate Commit Message
         if: >-
           steps.check-skip.outputs.skip != 'true' &&
-          matrix.target.id == 'comply-code' &&
+          matrix.target.id == 'comply' &&
           github.event_name == 'push'
         run: |
           git log -1 --pretty=%B | \
