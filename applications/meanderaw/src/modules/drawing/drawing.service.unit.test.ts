@@ -29,10 +29,11 @@ describe(DrawingService, () => {
    * the renderer draws what it is given level by level, and one level is
    * enough to assert where a segment lands.
    */
-  const code = (digits: string, columns: number): ParsedCode => ({
+  const code = (digits: string, columns: number, repeats = 1): ParsedCode => ({
     columns,
     digits,
     levels: digits.length / columns,
+    repeats,
     rows: 6,
   });
 
@@ -116,6 +117,16 @@ describe(DrawingService, () => {
       expect(svg).toContain('height="65"');
       expect(svg).toContain("<svg");
       expect(svg).toContain("</svg>");
+    });
+
+    it("repeats patterns horizontally and widens canvas when repeats > 1", () => {
+      const svg = service.render(code("2", 1, 3));
+
+      expect(svg).toContain("M2.5 12.5H12.5");
+      expect(svg).toContain("M12.5 12.5H22.5");
+      expect(svg).toContain("M22.5 12.5H32.5");
+      expect(svg).toContain('<path d="M32.5 62.5H2.5M32.5 2.5H2.5"');
+      expect(svg).toContain('width="35"');
     });
   });
 });

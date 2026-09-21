@@ -8,8 +8,9 @@
  */
 export interface CodeDrawingOptions {
   readonly code: string;
-  readonly columns: number;
-  readonly rows: number;
+  readonly columns?: number | undefined;
+  readonly repeats?: number | undefined;
+  readonly rows?: number | undefined;
 }
 
 /**

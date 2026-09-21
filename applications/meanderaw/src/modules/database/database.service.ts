@@ -46,11 +46,11 @@ export class DatabaseService {
    * Finds one meander by its lattice address, which is its identity.
    */
   async findOneByLattice(
-    code: string,
+    lattice: string,
     rows: number,
     columns: number,
   ): Promise<Meander | null> {
-    return this.meanderRepository.findOneBy({ code, columns, rows });
+    return this.meanderRepository.findOneBy({ columns, lattice, rows });
   }
 
   /**

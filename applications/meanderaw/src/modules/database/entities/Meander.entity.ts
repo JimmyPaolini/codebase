@@ -69,7 +69,7 @@ import { MEANDER_PROVENANCES } from "../database.constants";
  * service's own doc comment for what each one means.
  */
 @Entity({ name: "meanders" })
-@Index(["code", "rows", "columns"], { unique: true })
+@Index(["code"], { unique: true })
 export class Meander {
   @Column({ type: "simple-array" })
   characteristics!: string[];
@@ -137,6 +137,9 @@ export class Meander {
   @Column({ type: "int" })
   inkXJunctions!: number;
 
+  @Column({ type: "text" })
+  lattice!: string;
+
   @Column({ default: 0, type: "int" })
   lCount!: number;
 
@@ -157,6 +160,9 @@ export class Meander {
 
   @Column({ enum: MEANDER_PROVENANCES, type: "simple-enum" })
   provenance!: "enumerated" | "hardcoded";
+
+  @Column({ default: 1, type: "int" })
+  repeats!: number;
 
   @Column({ type: "int" })
   rows!: number;

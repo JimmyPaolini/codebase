@@ -52,20 +52,27 @@ export class DrawingService {
 
   /** The path data every point of the Code draws, in reading order. */
   private codeSegments(geometry: Geometry, code: ParsedCode): string {
+    const { repeats } = code;
     const segments: string[] = [];
 
-    for (let level = 0; level < code.levels; level += 1) {
-      for (let column = 0; column < code.columns; column += 1) {
-        segments.push(
-          this.pointSegments(
-            geometry,
-            this.codeService.directionsAt(code, level, column),
-            {
-              x: geometry.offset + column * geometry.unit,
-              y: geometry.offset + (level + 1) * geometry.unit,
-            },
-          ),
-        );
+    for (let repeatIndex = 0; repeatIndex < repeats; repeatIndex += 1) {
+      const columnOffset = repeatIndex * code.columns;
+
+      for (let level = 0; level < code.levels; level += 1) {
+        for (let column = 0; column < code.columns; column += 1) {
+          const absoluteColumn = columnOffset + column;
+
+          segments.push(
+            this.pointSegments(
+              geometry,
+              this.codeService.directionsAt(code, level, column),
+              {
+                x: geometry.offset + absoluteColumn * geometry.unit,
+                y: geometry.offset + (level + 1) * geometry.unit,
+              },
+            ),
+          );
+        }
       }
     }
 
@@ -114,9 +121,10 @@ export class DrawingService {
    * one whole meander directly.
    */
   render(code: ParsedCode): string {
-    const { columns, rows } = code;
+    const { columns, repeats, rows } = code;
+    const totalColumns = columns * repeats;
     const geometry = this.geometryService.compute(rows);
-    const rightEdge = geometry.offset + columns * geometry.unit;
+    const rightEdge = geometry.offset + totalColumns * geometry.unit;
     const paths = [
       this.codeSegments(geometry, code),
       this.geometryService.borderPath(geometry, rightEdge),

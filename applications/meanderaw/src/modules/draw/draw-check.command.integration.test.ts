@@ -132,20 +132,20 @@ describe("drawCommand --check mode", () => {
     "throws naming the Code when the committed database holds a row the regenerated sweep cannot produce",
     async () => {
       await repository.save({
+        characteristics: [],
         code: "not-a-real-lattice-address",
         columns: 999,
         components: 1,
         cycles: 0,
+        drawingHash: "hash",
         families: [],
         freeEnds: 0,
-
         inkTJunctions: 0,
         inkXJunctions: 0,
-
-        characteristics: [],
-        drawingHash: "hash",
+        lattice: "not-a-real-lattice-address",
         pitch: 999,
         provenance: "hardcoded",
+        repeats: 1,
         rows: 999,
       });
 

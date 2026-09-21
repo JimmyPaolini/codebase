@@ -14,6 +14,7 @@ describe(CharacteristicsPathService, () => {
     columns: 4,
     digits: "",
     levels: 1,
+    repeats: 1,
     rows: 2,
     ...overrides,
   });
@@ -137,5 +138,16 @@ describe(CharacteristicsPathService, () => {
     const result = service.analyzePaths(parsedCode({ columns: 4 }));
 
     expect(result).toBeDefined();
+  });
+
+  it("handles applyTurn returns stepsSinceTurn unchanged for non-turns", () => {
+    const metrics = {
+      hasLeftTurn: false,
+      hasRightTurn: false,
+      hasTightU: false,
+    };
+    const result = service.applyTurn(0, metrics, 5);
+
+    expect(result).toBe(6);
   });
 });

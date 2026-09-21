@@ -7,6 +7,7 @@ import { TileService } from "../tile/tile.service";
 
 import {
   InvalidCodeCharacterError,
+  InvalidCodeFormatError,
   InvalidCodeLengthError,
 } from "./code.constants";
 import { CodeService } from "./code.service";
@@ -42,31 +43,31 @@ describe(CodeService, () => {
 
   describe("directionsAt", () => {
     it("returns bare point if level is below 0", () => {
-      const parsed = service.parse("36c9", 3, 2);
+      const parsed = service.parse("02x03y36c9r01");
 
       expect(service.directionsAt(parsed, -1, 0)).toStrictEqual(BARE);
     });
 
     it("returns bare point if level is beyond maximum levels", () => {
-      const parsed = service.parse("36c9", 3, 2);
+      const parsed = service.parse("02x03y36c9r01");
 
       expect(service.directionsAt(parsed, 2, 0)).toStrictEqual(BARE);
     });
 
     it("returns bare point if column is below 0", () => {
-      const parsed = service.parse("36c9", 3, 2);
+      const parsed = service.parse("02x03y36c9r01");
 
       expect(service.directionsAt(parsed, 0, -1)).toStrictEqual(BARE);
     });
 
     it("returns bare point if column is beyond maximum columns", () => {
-      const parsed = service.parse("36c9", 3, 2);
+      const parsed = service.parse("02x03y36c9r01");
 
       expect(service.directionsAt(parsed, 0, 2)).toStrictEqual(BARE);
     });
 
     it("returns decoded directions if within bounds", () => {
-      const parsed = service.parse("36c9", 3, 2);
+      const parsed = service.parse("02x03y36c9r01");
 
       expect(service.directionsAt(parsed, 0, 0)).toStrictEqual({
         east: true,
@@ -117,11 +118,16 @@ describe(CodeService, () => {
       // 1 rows implies 0 levels
       expect(
         service.directionsAt(
-          { columns: 1, digits: "0", levels: 0, rows: 1 },
+          { columns: 1, digits: "0", levels: 0, repeats: 1, rows: 1 },
           0,
           0,
         ),
-      ).toStrictEqual({ east: false, north: false, south: false, west: false });
+      ).toStrictEqual({
+        east: false,
+        north: false,
+        south: false,
+        west: false,
+      });
     });
 
     it("returns empty directions when columns are out of bounds", () => {
@@ -147,6 +153,7 @@ describe(CodeService, () => {
         columns: 2,
         digits: "f",
         levels: 1,
+        repeats: 1,
         rows: 2,
       };
 
@@ -160,11 +167,113 @@ describe(CodeService, () => {
     });
   });
 
+  describe("format", () => {
+    it("formats a ParsedCode without repeats segment when repeats is 1", () => {
+      expect(
+        service.format({
+          columns: 2,
+          digits: "36c9",
+          levels: 2,
+          repeats: 1,
+          rows: 3,
+        }),
+      ).toBe("02x03y36c9");
+    });
+
+    it("formats larger column and row counts properly and includes repeats suffix when repeats > 1", () => {
+      expect(
+        service.format({
+          columns: 12,
+          digits: "0".repeat(24),
+          levels: 2,
+          repeats: 3,
+          rows: 3,
+        }),
+      ).toBe(`12x03y${"0".repeat(24)}r03`);
+    });
+  });
+
+  describe("parse", () => {
+    it("parses a self-contained Code string with padded numbers", () => {
+      expect(service.parse("02x03y36c9r01")).toStrictEqual({
+        columns: 2,
+        digits: "36c9",
+        levels: 2,
+        repeats: 1,
+        rows: 3,
+      });
+    });
+
+    it("parses a self-contained Code string without the repeats segment, defaulting to 1", () => {
+      expect(service.parse("02x03y36c9")).toStrictEqual({
+        columns: 2,
+        digits: "36c9",
+        levels: 2,
+        repeats: 1,
+        rows: 3,
+      });
+    });
+
+    it("parses case-insensitively and normalizes digits to lowercase", () => {
+      expect(service.parse("02X03Y36CAr03")).toStrictEqual({
+        columns: 2,
+        digits: "36ca",
+        levels: 2,
+        repeats: 3,
+        rows: 3,
+      });
+    });
+
+    it("reads bare hexadecimal digits when rows and columns are passed", () => {
+      expect(service.parse("36c9", 3, 2)).toStrictEqual({
+        columns: 2,
+        digits: "36c9",
+        levels: 2,
+        repeats: 1,
+        rows: 3,
+      });
+    });
+
+    it("throws InvalidCodeFormatError if the code is invalid without rows and columns", () => {
+      expect(() => service.parse("invalid-code")).toThrow(
+        InvalidCodeFormatError,
+      );
+    });
+
+    it("refuses a Code whose length disagrees with the rows and columns", () => {
+      expect(() => service.parse("02x03y36cr01")).toThrow(
+        InvalidCodeLengthError,
+      );
+      expect(() => service.parse("36c", 3, 2)).toThrow(InvalidCodeLengthError);
+    });
+
+    it("refuses a character outside the hexadecimal alphabet", () => {
+      expect(() => service.parse("02x03y36czr01")).toThrow(
+        InvalidCodeCharacterError,
+      );
+      expect(() => service.parse("36cz", 3, 2)).toThrow(
+        InvalidCodeCharacterError,
+      );
+    });
+  });
+
   describe("reduceToUnit", () => {
     it("returns unmodified code if it has 0 columns", () => {
       expect(
-        service.reduceToUnit({ columns: 0, digits: "", levels: 1, rows: 2 }),
-      ).toStrictEqual({ columns: 0, digits: "", levels: 1, rows: 2 });
+        service.reduceToUnit({
+          columns: 0,
+          digits: "",
+          levels: 1,
+          repeats: 1,
+          rows: 2,
+        }),
+      ).toStrictEqual({
+        columns: 0,
+        digits: "",
+        levels: 1,
+        repeats: 1,
+        rows: 2,
+      });
     });
 
     it("finds the smallest repeating sub-tile", () => {
@@ -174,6 +283,7 @@ describe(CodeService, () => {
         columns: 1,
         digits: "36c9",
         levels: 4,
+        repeats: 1,
         rows: 5,
       });
     });
@@ -191,63 +301,41 @@ describe(CodeService, () => {
         columns: 2,
         digits: "369c",
         levels: 2,
+        repeats: 1,
         rows: 3,
       });
-    });
-  });
-
-  describe("parse", () => {
-    it("reads a Code at the shape it was given, carrying the interior level count beside it", () => {
-      expect(service.parse("36c9", 3, 2)).toStrictEqual({
-        columns: 2,
-        digits: "36c9",
-        levels: 2,
-        rows: 3,
-      });
-    });
-
-    it("refuses a Code whose length disagrees with the rows and columns it was handed", () => {
-      expect(() => service.parse("36c", 3, 2)).toThrow(InvalidCodeLengthError);
-    });
-
-    it("refuses a character outside the hexadecimal alphabet rather than reading it as a bit pattern", () => {
-      expect(() => service.parse("36cz", 3, 2)).toThrow(
-        InvalidCodeCharacterError,
-      );
-    });
-
-    it("accepts an upper-case digit, since a Code names the same point either way", () => {
-      expect(service.parse("36CA", 3, 2).digits).toBe("36CA");
     });
   });
 
   describe("spell", () => {
-    it("writes one hexadecimal character per point, worth 8 north, 4 south, 2 east and 1 west", () => {
-      // A point sending a southward edge, the point below it receiving one,
-      // two bare points, and one carrying the wrapped east-west rule.
-      expect(service.spell(singleColumn)).toBe("48030");
+    it("writes a self-contained Code string in the format {columns}x{rows}y{digits} without r suffix when repeats is 1", () => {
+      expect(service.spell(singleColumn)).toBe("01x06y48030");
+    });
+
+    it("allows specifying custom repeats count and includes r suffix when repeats > 1", () => {
+      expect(service.spell(singleColumn, 3)).toBe("01x06y48030r03");
     });
 
     it("reads row-major, so a two-column tile interleaves its columns", () => {
-      expect(service.spell(buildTile(["e.", ".."]))).toBe("2100");
-      expect(service.spell(buildTile([".e", ".."]))).toBe("1200");
+      expect(service.spell(buildTile(["e.", ".."]))).toBe("02x03y2100");
+      expect(service.spell(buildTile([".e", ".."]))).toBe("02x03y1200");
     });
 
     it("writes a single column's wrapped edge as both east and west, which is what its ink does", () => {
-      expect(service.spell(buildTile(["e"]))).toBe("3");
-      expect(service.spell(buildTile(["e."]))).toBe("21");
+      expect(service.spell(buildTile(["e"]))).toBe("01x02y3");
+      expect(service.spell(buildTile(["e."]))).toBe("02x02y21");
     });
 
     it("writes a point owning both its edges as one character, which a per-mark letter had none for", () => {
-      expect(service.spell(buildTile(["b.", "..", ".."]))).toBe("618000");
+      expect(service.spell(buildTile(["b.", "..", ".."]))).toBe("02x04y618000");
     });
 
-    it("round-trips a tile through a Code and back to the same tile, which is what makes the two directions one conversion", () => {
+    it("round-trips a tile through a Code and back to the same tile", () => {
       const tile = buildTile(["bs", "e."]);
 
-      expect(
-        service.tile(service.parse(service.spell(tile), 3, 2)),
-      ).toStrictEqual(tile);
+      expect(service.tile(service.parse(service.spell(tile)))).toStrictEqual(
+        tile,
+      );
     });
 
     it("names a tile completely, so two tiles of one shape share it only when they are the same tile", () => {
@@ -272,11 +360,11 @@ describe(CodeService, () => {
       );
     });
 
-    it("is the representative's own bit string, so a Code describes the tile that spelled it", () => {
+    it("is the representative's own formatted code string", () => {
       expect(service.spellCanonical(singleColumn)).toBe(
         service.spell(symmetryService.canonicalTile(singleColumn)),
       );
-      expect(service.spellCanonical(singleColumn)).toBe("03048");
+      expect(service.spellCanonical(singleColumn)).toBe("01x06y03048");
     });
 
     it("keeps two genuinely different tiles apart", () => {
@@ -328,6 +416,7 @@ describe(CodeService, () => {
         columns: 3,
         digits: "120453",
         levels: 2,
+        repeats: 1,
         rows: 3,
       });
     });

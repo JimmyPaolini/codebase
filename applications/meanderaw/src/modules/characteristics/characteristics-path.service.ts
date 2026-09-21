@@ -71,30 +71,6 @@ export class CharacteristicsPathService {
     return { currentNode, direction, nextNode, stepsSinceTurn };
   }
 
-  /** Applies a turn to the metrics. */
-  private applyTurn(
-    turn: number,
-    metrics: {
-      hasLeftTurn: boolean;
-      hasRightTurn: boolean;
-      hasTightU: boolean;
-    },
-    stepsSinceTurn: number,
-  ): number {
-    if (turn === 0 || turn === 2) return stepsSinceTurn + 1;
-    if (turn === 1) {
-      metrics.hasRightTurn = true;
-      if (stepsSinceTurn === 1) metrics.hasTightU = true;
-      return 0;
-    }
-    if (turn === 3) {
-      metrics.hasLeftTurn = true;
-      if (stepsSinceTurn === 1) metrics.hasTightU = true;
-      return 0;
-    }
-    return stepsSinceTurn;
-  }
-
   /** Builds an adjacency list from the given edges. */
   private buildAdjacencyGraph(
     edges: { from: string; to: string }[],
@@ -319,5 +295,29 @@ export class CharacteristicsPathService {
     }
 
     return this.tracePaths(adjacency, code.columns);
+  }
+
+  /** Applies a turn to the metrics. */
+  public applyTurn(
+    turn: number,
+    metrics: {
+      hasLeftTurn: boolean;
+      hasRightTurn: boolean;
+      hasTightU: boolean;
+    },
+    stepsSinceTurn: number,
+  ): number {
+    if (turn === 0 || turn === 2) return stepsSinceTurn + 1;
+    if (turn === 1) {
+      metrics.hasRightTurn = true;
+      if (stepsSinceTurn === 1) metrics.hasTightU = true;
+      return 0;
+    }
+    if (turn === 3) {
+      metrics.hasLeftTurn = true;
+      if (stepsSinceTurn === 1) metrics.hasTightU = true;
+      return 0;
+    }
+    return stepsSinceTurn;
   }
 }

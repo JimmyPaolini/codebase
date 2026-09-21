@@ -1,5 +1,12 @@
 // ♟️ Constants
 
+/**
+ * Matches a self-contained Code string in the format `{columns}x{rows}y{lattice}r{repeats}`
+ * (or without the `r` suffix), case-insensitively.
+ */
+export const CODE_FORMAT_PATTERN =
+  /^(?<columns>\d+)x(?<rows>\d+)y(?<digits>[^r]+?)(?:r(?<repeats>\d+))?$/iu;
+
 /** Matches exactly one hexadecimal digit, upper or lower case. */
 export const HEXADECIMAL_DIGIT_PATTERN = /^[0-9a-f]$/iu;
 
@@ -18,6 +25,19 @@ export class InvalidCodeCharacterError extends Error {
       `Code "${code}" carries "${character}", which is not a hexadecimal digit`,
     );
     this.name = "InvalidCodeCharacterError";
+  }
+}
+
+/**
+ * Thrown when a Code string cannot be parsed as a self-contained code
+ * format (`{columns}x{rows}y{lattice}r{repeats}`).
+ */
+export class InvalidCodeFormatError extends Error {
+  constructor(code: string) {
+    super(
+      `Code "${code}" is not formatted as "{columns}x{rows}y{lattice}r{repeats}"`,
+    );
+    this.name = "InvalidCodeFormatError";
   }
 }
 
