@@ -263,6 +263,7 @@ describe(WorkspaceGraphsService, () => {
       expect(result).toStrictEqual({
         isCurrent: true,
         projectName: "workspace",
+        staleExports: [],
         stalePaths: [],
       });
 
@@ -293,6 +294,13 @@ describe(WorkspaceGraphsService, () => {
       expect(result).toStrictEqual({
         isCurrent: false,
         projectName: "workspace",
+        staleExports: [
+          {
+            anchor: undefined,
+            difference: "graph",
+            path: "codependix-workspace-file-imports.json",
+          },
+        ],
         stalePaths: ["codependix-workspace-file-imports.json"],
       });
     });
@@ -427,6 +435,7 @@ describe(WorkspaceGraphsService, () => {
       expect(result).toStrictEqual({
         isCurrent: true,
         projectName: "workspace",
+        staleExports: [],
         stalePaths: [],
       });
 
@@ -465,6 +474,13 @@ describe(WorkspaceGraphsService, () => {
       expect(result).toStrictEqual({
         isCurrent: false,
         projectName: "workspace",
+        staleExports: [
+          {
+            anchor: undefined,
+            difference: "graph",
+            path: "codependix-workspace-nestjs-modules.json",
+          },
+        ],
         stalePaths: ["codependix-workspace-nestjs-modules.json"],
       });
     });
@@ -541,6 +557,7 @@ describe(WorkspaceGraphsService, () => {
       expect(result).toStrictEqual({
         isCurrent: true,
         projectName: "workspace",
+        staleExports: [],
         stalePaths: [],
       });
 
@@ -571,6 +588,13 @@ describe(WorkspaceGraphsService, () => {
       expect(result).toStrictEqual({
         isCurrent: false,
         projectName: "workspace",
+        staleExports: [
+          {
+            anchor: undefined,
+            difference: "graph",
+            path: "codependix-workspace.json",
+          },
+        ],
         stalePaths: ["codependix-workspace.json"],
       });
     });

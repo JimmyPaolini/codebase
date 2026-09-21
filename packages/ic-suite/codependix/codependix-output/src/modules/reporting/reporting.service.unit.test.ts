@@ -179,6 +179,13 @@ describe(ReportingService, () => {
           {
             isCurrent: false,
             projectName: "codependix-nx",
+            staleExports: [
+              {
+                anchor: undefined,
+                difference: "graph",
+                path: "codependix-nx.json",
+              },
+            ],
             stalePaths: ["codependix-nx.json"],
           },
         ],
@@ -188,7 +195,17 @@ describe(ReportingService, () => {
       expect(loggerService.error).toHaveBeenCalledWith(
         "🕸️ Found stale codependix exports",
         undefined,
-        { projects: ["codependix-nx"] },
+        {
+          exports: [
+            {
+              anchor: undefined,
+              difference: "graph",
+              path: "codependix-nx.json",
+              project: "codependix-nx",
+            },
+          ],
+          projects: ["codependix-nx"],
+        },
       );
     });
 
@@ -199,16 +216,37 @@ describe(ReportingService, () => {
           {
             isCurrent: false,
             projectName: "atlas-service",
+            staleExports: [
+              {
+                anchor: "codependix-nx-projects",
+                difference: "graph",
+                path: "README.md",
+              },
+            ],
             stalePaths: ["README.md"],
           },
           {
             isCurrent: false,
             projectName: "atlas-service",
+            staleExports: [
+              {
+                anchor: undefined,
+                difference: "formatting",
+                path: "codependix-imports-graph.json",
+              },
+            ],
             stalePaths: ["codependix-imports-graph.json"],
           },
           {
             isCurrent: false,
             projectName: "atlas-core",
+            staleExports: [
+              {
+                anchor: "codependix-nx-projects",
+                difference: "graph",
+                path: "README.md",
+              },
+            ],
             stalePaths: ["README.md"],
           },
         ],
@@ -218,7 +256,29 @@ describe(ReportingService, () => {
       expect(loggerService.error).toHaveBeenCalledWith(
         "🕸️ Found stale codependix exports",
         undefined,
-        { projects: ["atlas-service", "atlas-core"] },
+        {
+          exports: [
+            {
+              anchor: "codependix-nx-projects",
+              difference: "graph",
+              path: "README.md",
+              project: "atlas-service",
+            },
+            {
+              anchor: undefined,
+              difference: "formatting",
+              path: "codependix-imports-graph.json",
+              project: "atlas-service",
+            },
+            {
+              anchor: "codependix-nx-projects",
+              difference: "graph",
+              path: "README.md",
+              project: "atlas-core",
+            },
+          ],
+          projects: ["atlas-service", "atlas-core"],
+        },
       );
     });
   });
@@ -246,7 +306,14 @@ describe(ReportingService, () => {
           outcome: {
             failures: [],
             results: [
-              { isCurrent: false, projectName: "a", stalePaths: ["a"] },
+              {
+                isCurrent: false,
+                projectName: "a",
+                staleExports: [
+                  { anchor: undefined, difference: "graph", path: "a" },
+                ],
+                stalePaths: ["a"],
+              },
             ],
           },
         },
@@ -288,7 +355,12 @@ describe(ReportingService, () => {
       const exportOutcome: GraphRunOutcome = {
         failures: [],
         results: [
-          { isCurrent: true, projectName: "codependix-nx", stalePaths: [] },
+          {
+            isCurrent: true,
+            projectName: "codependix-nx",
+            staleExports: [],
+            stalePaths: [],
+          },
         ],
       };
 

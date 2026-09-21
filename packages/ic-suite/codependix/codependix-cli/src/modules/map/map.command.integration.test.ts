@@ -265,12 +265,27 @@ describe("map command", () => {
 
       writeFileSync(ownGraphPath, JSON.stringify({ drifted: true }));
 
-      const { exitCode } = await run({
+      const { exitCode, loggedErrors } = await run({
         check: "reports",
         directory: workingDirectory,
       });
 
       expect(exitCode).toBe(1);
+      expect(loggedErrors).toContainEqual([
+        "🕸️ Found stale codependix exports",
+        undefined,
+        {
+          exports: [
+            {
+              anchor: undefined,
+              difference: "graph",
+              path: "own-neighborhood.json",
+              project: "project-with-own-file",
+            },
+          ],
+          projects: ["project-with-own-file"],
+        },
+      ]);
 
       // Restore what --write produced, so later tests in this file are not
       // affected by this test's drift.

@@ -60,6 +60,7 @@ describe(DeliveryService, () => {
       expect(result).toStrictEqual({
         isCurrent: true,
         projectName: "logger",
+        staleExports: [],
         stalePaths: [],
       });
       await expect(
@@ -86,6 +87,9 @@ describe(DeliveryService, () => {
       expect(result).toStrictEqual({
         isCurrent: false,
         projectName: "logger",
+        staleExports: [
+          { anchor: undefined, difference: "graph", path: "logger.json" },
+        ],
         stalePaths: ["logger.json"],
       });
     });
@@ -179,6 +183,9 @@ describe(DeliveryService, () => {
       expect(result).toStrictEqual({
         isCurrent: false,
         projectName: "logger",
+        staleExports: [
+          { anchor: "nx", difference: "graph", path: "README.md" },
+        ],
         stalePaths: ["README.md"],
       });
       await expect(readFile(readmePath, "utf8")).resolves.toContain("stale");
@@ -233,6 +240,7 @@ describe(DeliveryService, () => {
       expect(result).toStrictEqual({
         isCurrent: true,
         projectName: "logger",
+        staleExports: [],
         stalePaths: [],
       });
     });
@@ -385,6 +393,13 @@ describe(DeliveryService, () => {
       expect(result).toStrictEqual({
         isCurrent: false,
         projectName: "logger",
+        staleExports: [
+          {
+            anchor: "codependix-nx-projects",
+            difference: "graph",
+            path: "README.md",
+          },
+        ],
         stalePaths: ["README.md"],
       });
       await expect(
@@ -435,6 +450,7 @@ describe(DeliveryService, () => {
       expect(result).toStrictEqual({
         isCurrent: true,
         projectName: "logger",
+        staleExports: [],
         stalePaths: [],
       });
     });
@@ -458,7 +474,153 @@ describe(DeliveryService, () => {
       expect(result).toStrictEqual({
         isCurrent: true,
         projectName: "logger",
+        staleExports: [],
         stalePaths: [],
+      });
+    });
+
+    it("classifies difference as formatting when JSON content differs only in formatting", async () => {
+      const jsonPath = path.join(projectRoot, "logger.json");
+
+      await writeFile(jsonPath, '{\n  "name": "logger"\n}\n', "utf8");
+
+      const resolvedOutput: ResolvedCodependixGraphOutput = {
+        json: { path: "logger.json" },
+        markdown: undefined,
+        target: "json",
+      };
+
+      const result = service.deliverGraphOutput({
+        jsonContent: '{"name":"logger"}',
+        markdownContent: undefined,
+        markdownSection: undefined,
+        mode: "check",
+        project: { absoluteRoot: projectRoot, name: "logger" },
+        resolvedOutput,
+      });
+
+      expect(result).toStrictEqual({
+        isCurrent: false,
+        projectName: "logger",
+        staleExports: [
+          { anchor: undefined, difference: "formatting", path: "logger.json" },
+        ],
+        stalePaths: ["logger.json"],
+      });
+    });
+
+    it("classifies difference as formatting when markdown differs only in whitespace", async () => {
+      const mdPath = path.join(projectRoot, "graph.md");
+
+      await writeFile(mdPath, "```mermaid\n  graph   LR\n```\n", "utf8");
+
+      const resolvedOutput: ResolvedCodependixGraphOutput = {
+        json: undefined,
+        markdown: { anchor: undefined, path: "graph.md" },
+        target: "markdown",
+      };
+
+      const result = service.deliverGraphOutput({
+        jsonContent: undefined,
+        markdownContent: "```mermaid\ngraph LR\n```",
+        markdownSection: undefined,
+        mode: "check",
+        project: { absoluteRoot: projectRoot, name: "logger" },
+        resolvedOutput,
+      });
+
+      expect(result).toStrictEqual({
+        isCurrent: false,
+        projectName: "logger",
+        staleExports: [
+          { anchor: undefined, difference: "formatting", path: "graph.md" },
+        ],
+        stalePaths: ["graph.md"],
+      });
+    });
+
+    it("classifies difference as graph when JSON content is malformed", async () => {
+      const jsonPath = path.join(projectRoot, "logger.json");
+
+      await writeFile(jsonPath, "not-valid-json", "utf8");
+
+      const resolvedOutput: ResolvedCodependixGraphOutput = {
+        json: { path: "logger.json" },
+        markdown: undefined,
+        target: "json",
+      };
+
+      const result = service.deliverGraphOutput({
+        jsonContent: '{"name":"logger"}',
+        markdownContent: undefined,
+        markdownSection: undefined,
+        mode: "check",
+        project: { absoluteRoot: projectRoot, name: "logger" },
+        resolvedOutput,
+      });
+
+      expect(result).toStrictEqual({
+        isCurrent: false,
+        projectName: "logger",
+        staleExports: [
+          { anchor: undefined, difference: "graph", path: "logger.json" },
+        ],
+        stalePaths: ["logger.json"],
+      });
+    });
+
+    it("throws when checking an anchor in a file that does not exist", () => {
+      const resolvedOutput: ResolvedCodependixGraphOutput = {
+        json: undefined,
+        markdown: { anchor: "codependix-nx-projects", path: "non-existent.md" },
+        target: "markdown",
+      };
+
+      expect(() =>
+        service.deliverGraphOutput({
+          jsonContent: undefined,
+          markdownContent: "```mermaid\ngraph LR\n```",
+          markdownSection: undefined,
+          mode: "check",
+          project: { absoluteRoot: projectRoot, name: "logger" },
+          resolvedOutput,
+        }),
+      ).toThrow(AnchorNotFoundError);
+    });
+
+    it("classifies difference as graph when anchored markdown differs in diagram structure", async () => {
+      const readmePath = path.join(projectRoot, "README.md");
+      const fileContent = [
+        "# logger",
+        '<!-- codependix:start name="nx" -->',
+        "```mermaid\ngraph TD\n```",
+        '<!-- codependix:end name="nx" -->',
+      ].join("\n");
+
+      await writeFile(readmePath, fileContent, "utf8");
+
+      const resolvedOutput: ResolvedCodependixGraphOutput = {
+        json: undefined,
+        markdown: { anchor: "nx", path: "README.md" },
+        target: "markdown",
+      };
+
+      const result = service.deliverGraphOutput({
+        jsonContent: undefined,
+        markdownContent: "```mermaid\ngraph LR\n```",
+        markdownSection: undefined,
+        mode: "check",
+        project: { absoluteRoot: projectRoot, name: "logger" },
+        resolvedOutput,
+      });
+
+      expect(result).toStrictEqual({
+        isCurrent: false,
+        projectName: "logger",
+        staleExports: [
+          { anchor: "nx", difference: "graph", path: "README.md" },
+        ],
+        stalePaths: ["README.md"],
       });
     });
   });

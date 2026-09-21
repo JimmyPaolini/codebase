@@ -110,12 +110,9 @@ export class ReportingService {
    * regardless of an earlier one's failure.
    */
   reportOutcome(outcome: GraphRunOutcome): boolean {
+    const staleResults = outcome.results.filter((result) => !result.isCurrent);
     const staleProjects = [
-      ...new Set(
-        outcome.results
-          .filter((result) => !result.isCurrent)
-          .map((result) => result.projectName),
-      ),
+      ...new Set(staleResults.map((result) => result.projectName)),
     ];
 
     if (outcome.failures.length > 0) {
@@ -125,7 +122,24 @@ export class ReportingService {
     }
 
     if (staleProjects.length > 0) {
+      const staleExports = [
+        ...new Map(
+          staleResults.flatMap((result) =>
+            result.staleExports.map((stale) => [
+              `${result.projectName}:${stale.path}:${stale.anchor ?? ""}`,
+              {
+                ...(stale.anchor !== undefined && { anchor: stale.anchor }),
+                difference: stale.difference,
+                path: stale.path,
+                project: result.projectName,
+              },
+            ]),
+          ),
+        ).values(),
+      ];
+
       this.logger.error("🕸️ Found stale codependix exports", undefined, {
+        exports: staleExports,
         projects: staleProjects,
       });
     }

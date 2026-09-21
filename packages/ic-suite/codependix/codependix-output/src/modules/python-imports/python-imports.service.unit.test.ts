@@ -140,7 +140,12 @@ describe(PythonImportsService, () => {
     expect(outcome).toStrictEqual({
       failures: [],
       results: [
-        { isCurrent: true, projectName: "affirmations", stalePaths: [] },
+        {
+          isCurrent: true,
+          projectName: "affirmations",
+          staleExports: [],
+          stalePaths: [],
+        },
       ],
     });
 
@@ -166,6 +171,13 @@ describe(PythonImportsService, () => {
         {
           isCurrent: false,
           projectName: "affirmations",
+          staleExports: [
+            {
+              anchor: undefined,
+              difference: "graph",
+              path: "affirmations.json",
+            },
+          ],
           stalePaths: ["affirmations.json"],
         },
       ],
@@ -261,6 +273,7 @@ describe(PythonImportsService, () => {
       {
         isCurrent: true,
         projectName: "other-python-project",
+        staleExports: [],
         stalePaths: [],
       },
     ]);
