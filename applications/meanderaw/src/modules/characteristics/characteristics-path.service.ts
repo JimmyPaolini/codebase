@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 
 import { ConnectivityService } from "./connectivity.service";
 
-import type { ParsedCode } from "../code/code.types";
+import type { CodeObject } from "../code/code.types";
 
 /**
  * Service for analyzing single-arc paths to determine turning and reversing characteristics.
@@ -278,7 +278,7 @@ export class CharacteristicsPathService {
   /**
    * Analyzes path directions in a junction-free code to determine turning properties.
    */
-  public analyzePaths(code: ParsedCode): {
+  public analyzePaths(code: CodeObject): {
     reversesAtItsTightestTurn: boolean;
     turnsMonotonically: boolean;
   } {

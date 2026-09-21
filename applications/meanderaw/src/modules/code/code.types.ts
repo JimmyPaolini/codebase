@@ -1,6 +1,11 @@
 // 🏷️ Types
 
 /**
+ * A meander code string (either self-contained formatted or bare hexadecimal digits).
+ */
+export type Code = string;
+
+/**
  * One Code with the shape it is read at, which is the whole of what a
  * meander is.
  *
@@ -23,7 +28,7 @@
  * rules at grid levels `0` and `rows` are cap ticks rather than points of
  * the repeat, so a `rows`-row meander has `rows - 1` interior levels.
  */
-export interface ParsedCode {
+export interface CodeObject {
   readonly columns: number;
   readonly digits: string;
   readonly levels: number;

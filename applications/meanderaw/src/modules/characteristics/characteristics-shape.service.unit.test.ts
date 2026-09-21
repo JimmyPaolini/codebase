@@ -3,13 +3,13 @@ import { beforeAll, describe, expect, it } from "vitest";
 
 import { CharacteristicsShapeService } from "./characteristics-shape.service";
 
-import type { ParsedCode } from "../code/code.types";
+import type { CodeObject } from "../code/code.types";
 import type { UnitShapeCounts } from "./characteristics.types";
 
 describe(CharacteristicsShapeService, () => {
   let service: CharacteristicsShapeService;
 
-  const parsedCode = (overrides: Partial<ParsedCode> = {}): ParsedCode => ({
+  const parsedCode = (overrides: Partial<CodeObject> = {}): CodeObject => ({
     columns: 2,
     digits: "",
     levels: 2,

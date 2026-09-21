@@ -4,13 +4,13 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { CharacteristicsPathService } from "./characteristics-path.service";
 import { ConnectivityService } from "./connectivity.service";
 
-import type { ParsedCode } from "../code/code.types";
+import type { CodeObject } from "../code/code.types";
 
 describe(CharacteristicsPathService, () => {
   let service: CharacteristicsPathService;
   let connectivityService: ConnectivityService;
 
-  const parsedCode = (overrides: Partial<ParsedCode> = {}): ParsedCode => ({
+  const parsedCode = (overrides: Partial<CodeObject> = {}): CodeObject => ({
     columns: 4,
     digits: "",
     levels: 1,

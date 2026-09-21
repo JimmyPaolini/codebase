@@ -4,7 +4,7 @@ import { CodeService } from "../code/code.service";
 import { GraphService } from "../graph/graph.service";
 
 import type { CodeService as ICodeService } from "../code/code.service";
-import type { ParsedCode } from "../code/code.types";
+import type { CodeObject } from "../code/code.types";
 import type { InkAdjacency } from "../graph/graph.types";
 import type { CodeEdge, Connectivity } from "./characteristics.types";
 
@@ -64,7 +64,7 @@ export class ConnectivityService {
 
   /** The Code's edges as an {@link InkAdjacency}, which is all {@link GraphService.components} needs of it. */
   private adjacency(
-    code: ParsedCode,
+    code: CodeObject,
     edges: readonly CodeEdge[],
   ): InkAdjacency<string> {
     const neighbors = new Map<string, string[]>();
@@ -97,7 +97,7 @@ export class ConnectivityService {
   }
 
   /** Whether the southward edge leaving `(level, column)` is claimed by either of its two ends, reading past the last level as absent. */
-  private joinsSouth(code: ParsedCode, level: number, column: number): boolean {
+  private joinsSouth(code: CodeObject, level: number, column: number): boolean {
     if (level + 1 >= code.levels) {
       return false;
     }
@@ -114,7 +114,7 @@ export class ConnectivityService {
   }
 
   /** Every point the Code spells, inked dots included — a point on no edge at all is a component of its own. */
-  private nodes(code: ParsedCode): string[] {
+  private nodes(code: CodeObject): string[] {
     return Array.from({ length: code.levels }, (_unused, level) =>
       Array.from({ length: code.columns }, (_column, column) =>
         this.key(level, column),
@@ -131,7 +131,7 @@ export class ConnectivityService {
    * satisfies, reported as a count here because a family is told from another
    * by how many loops it closes rather than only by whether it closes one.
    */
-  connectivity(code: ParsedCode, unwrapped = false): Connectivity {
+  connectivity(code: CodeObject, unwrapped = false): Connectivity {
     const edges = this.edges(code, unwrapped);
     const adjacency = this.adjacency(code, edges);
     const components = this.graphService.components(adjacency);
@@ -150,7 +150,7 @@ export class ConnectivityService {
    * one stops at the last level — see this service's own doc comment for why
    * the two directions differ.
    */
-  edges(code: ParsedCode, unwrapped: boolean): CodeEdge[] {
+  edges(code: CodeObject, unwrapped: boolean): CodeEdge[] {
     const { columns, levels } = code;
     const edges: CodeEdge[] = [];
 
@@ -177,7 +177,7 @@ export class ConnectivityService {
   // 🌎 Public Methods
 
   /** Whether the eastward edge leaving `column` is claimed by either of its two ends. */
-  joinsEast(code: ParsedCode, level: number, column: number): boolean {
+  joinsEast(code: CodeObject, level: number, column: number): boolean {
     const point = this.codeService.directionsAt(code, level, column);
     const eastward = this.codeService.directionsAt(
       code,

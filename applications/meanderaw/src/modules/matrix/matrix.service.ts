@@ -4,13 +4,13 @@ import { CodeService } from "../code/code.service";
 
 import { BARE_MATRIX_POINT } from "./matrix.constants";
 
-import type { ParsedCode } from "../code/code.types";
-import type { Matrix, MatrixPoint, MatrixWindow } from "./matrix.types";
+import type { Code, CodeObject } from "../code/code.types";
+import type { Matrix, MatrixPoint, Submatrix } from "./matrix.types";
 
 /**
  * Owns 2D matrix transformations for meander patterns: converting to and from
  * meander Code strings, coordinate lookups with column wrapping, cyclic column
- * rotation, and arbitrary sliding kernel window extraction.
+ * rotation, and arbitrary sliding kernel submatrix extraction.
  */
 @Injectable()
 export class MatrixService {
@@ -27,53 +27,42 @@ export class MatrixService {
 
   // 🔏 Private Methods
 
-<<<<<<< HEAD
-=======
   /**
-   * Extracts a 2D window kernel starting at the given origin with the specified size.
+   * Extracts a 2D submatrix kernel starting at the given origin with the specified size.
    */
-  private extractWindow(
+  private extractSubmatrix(
     matrix: Matrix,
     origin: { readonly column: number; readonly row: number },
-    size: { readonly height: number; readonly width: number },
+    size: {
+      readonly columnCount: number;
+      readonly height: number;
+      readonly width: number;
+    },
   ): MatrixPoint[][] {
-    const columnCount = matrix[0]?.length ?? 0;
+    return Array.from({ length: size.height }, (_unusedRow, deltaRow) => {
+      const row = matrix[origin.row + deltaRow];
 
-    return Array.from({ length: size.height }, (_unusedRow, deltaRow) =>
-      Array.from({ length: size.width }, (_unusedColumn, deltaColumn) => {
-        const columnIndex =
-          (((origin.column + deltaColumn) % columnCount) + columnCount) %
-          columnCount;
+      return Array.from(
+        { length: size.width },
+        (_unusedColumn, deltaColumn) => {
+          const columnIndex =
+            (((origin.column + deltaColumn) % size.columnCount) +
+              size.columnCount) %
+            size.columnCount;
 
-        return (
-          matrix[origin.row + deltaRow]?.[columnIndex] ?? BARE_MATRIX_POINT
-        );
-      }),
-    );
+          return row?.[columnIndex] ?? BARE_MATRIX_POINT;
+        },
+      );
+    });
   }
 
-  /**
-   * Checks whether the target window dimensions are valid for the given matrix.
-   */
-  private hasValidDimensions(
-    matrix: Matrix,
-    height: number,
-    width: number,
-  ): boolean {
-    const rowCount = matrix.length;
-    const columnCount = matrix[0]?.length ?? 0;
-
-    return rowCount >= height && columnCount > 0 && height > 0 && width > 0;
-  }
-
->>>>>>> 2259ecb83 (fixup! feat(meanderaw): ✨ implement MatrixService pointAt, rotate, and slidingWindow (#1035))
   // 🌎 Public Methods
 
   /**
    * Converts a meander Code string (self-contained formatted or bare hexadecimal digits with dimensions)
-   * or a `ParsedCode` into a 2D Matrix indexed as `[row][column]`.
+   * or a `CodeObject` into a 2D Matrix indexed as `[row][column]`.
    */
-  fromCode(code: ParsedCode | string, rows?: number, columns?: number): Matrix {
+  fromCode(code: Code | CodeObject, rows?: number, columns?: number): Matrix {
     const parsed =
       typeof code === "string"
         ? this.codeService.parse(code, rows, columns)
@@ -125,26 +114,33 @@ export class MatrixService {
   }
 
   /**
-   * Extracts sliding window kernels of size `height x width` over the matrix with horizontal column wrapping.
+   * Extracts sliding submatrix kernels of size `height x width` over the matrix with horizontal column wrapping.
    */
-  slidingWindow(matrix: Matrix, height: number, width: number): MatrixWindow[] {
-    if (!this.hasValidDimensions(matrix, height, width)) {
+  submatrices(matrix: Matrix, height: number, width: number): Submatrix[] {
+    const firstRow = matrix[0];
+    if (
+      height <= 0 ||
+      width <= 0 ||
+      matrix.length < height ||
+      !firstRow ||
+      firstRow.length === 0
+    ) {
       return [];
     }
 
     const rowCount = matrix.length;
-    const columnCount = matrix[0]?.length ?? 0;
-    const windows: MatrixWindow[] = [];
+    const columnCount = firstRow.length;
+    const items: Submatrix[] = [];
 
     for (let row = 0; row <= rowCount - height; row += 1) {
       for (let column = 0; column < columnCount; column += 1) {
-        windows.push({
+        items.push({
           column,
           height,
-          matrix: this.extractWindow(
+          matrix: this.extractSubmatrix(
             matrix,
             { column, row },
-            { height, width },
+            { columnCount, height, width },
           ),
           row,
           width,
@@ -152,19 +148,19 @@ export class MatrixService {
       }
     }
 
-    return windows;
+    return items;
   }
 
   /**
    * Encodes a 2D Matrix back into a formatted meander Code string.
    */
-  toCode(matrix: Matrix, repeats = 1): string {
-    if (matrix.length === 0) {
-      return "00x00y";
-    }
-
+  toCode(matrix: Matrix, repeats = 1): Code {
     const rowCount = matrix.length;
     const columnCount = matrix[0]?.length ?? 0;
+
+    if (rowCount === 0 || columnCount === 0) {
+      return "00x00y";
+    }
 
     const digits = matrix
       .flatMap((row) =>

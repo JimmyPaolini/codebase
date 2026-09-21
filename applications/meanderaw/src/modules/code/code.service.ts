@@ -11,7 +11,7 @@ import {
 } from "./code.constants";
 
 import type { Directions, Tile } from "../tile/tile.types";
-import type { ParsedCode } from "./code.types";
+import type { Code, CodeObject } from "./code.types";
 
 /**
  * Owns a meander's Code: reading one, reading a lattice point's four
@@ -74,7 +74,7 @@ export class CodeService {
   /**
    * Checks if a column span repeats exactly to fill the Code.
    */
-  private isRepeatingUnit(code: ParsedCode, width: number): boolean {
+  private isRepeatingUnit(code: CodeObject, width: number): boolean {
     const { columns, digits, levels } = code;
     for (let level = 0; level < levels; level += 1) {
       const row = digits.slice(level * columns, (level + 1) * columns);
@@ -86,8 +86,8 @@ export class CodeService {
     return true;
   }
 
-  /** Parses bare hexadecimal digits with explicit dimensions into a `ParsedCode`. */
-  private parseBare(code: string, rows: number, columns: number): ParsedCode {
+  /** Parses bare hexadecimal digits with explicit dimensions into a `CodeObject`. */
+  private parseBare(code: string, rows: number, columns: number): CodeObject {
     this.validateDigits(code, rows, columns);
 
     return {
@@ -99,8 +99,8 @@ export class CodeService {
     };
   }
 
-  /** Parses a self-contained code string match into a `ParsedCode`. */
-  private parseFormatted(match: RegExpExecArray): ParsedCode {
+  /** Parses a self-contained code string match into a `CodeObject`. */
+  private parseFormatted(match: RegExpExecArray): CodeObject {
     const {
       columns: rawColumns = "",
       digits: rawDigits = "",
@@ -146,11 +146,11 @@ export class CodeService {
    * The group of phases defaults to every cyclic column rotation.
    */
   canonicalPhase(
-    code: ParsedCode,
-    measureSeams: (phase: ParsedCode) => number,
-    group: (code: ParsedCode) => ParsedCode[] = (c) =>
+    code: CodeObject,
+    measureSeams: (phase: CodeObject) => number,
+    group: (code: CodeObject) => CodeObject[] = (c) =>
       Array.from({ length: c.columns }, (_, index) => this.rotate(c, index)),
-  ): ParsedCode {
+  ): CodeObject {
     let best = code;
     let minimumSeamComponents = Infinity;
 
@@ -179,7 +179,7 @@ export class CodeService {
    * ticks rather than points of the repeat, so there is nothing there for a
    * bit to be set on.
    */
-  directionsAt(code: ParsedCode, level: number, column: number): Directions {
+  directionsAt(code: CodeObject, level: number, column: number): Directions {
     const { columns, digits, levels } = code;
 
     if (level < 0 || level >= levels || column < 0 || column >= columns) {
@@ -192,11 +192,11 @@ export class CodeService {
   }
 
   /**
-   * Formats a `ParsedCode` into the self-contained Code string in the format
+   * Formats a `CodeObject` into the self-contained Code string in the format
    * `{columns}x{rows}y{digits}` (or `{columns}x{rows}y{digits}r{repeats}` when `repeats > 1`),
    * with 2-digit zero-padding on `columns`, `rows`, and `repeats`.
    */
-  format(code: ParsedCode): string {
+  format(code: CodeObject): Code {
     const columns = String(code.columns).padStart(2, "0");
     const rows = String(code.rows).padStart(2, "0");
     const repeatSuffix =
@@ -213,7 +213,7 @@ export class CodeService {
    * Refuses a length that disagrees with `rows` and `columns` or a character
    * outside the hexadecimal alphabet.
    */
-  parse(code: string, rows?: number, columns?: number): ParsedCode {
+  parse(code: Code, rows?: number, columns?: number): CodeObject {
     const match = CODE_FORMAT_PATTERN.exec(code);
     if (match !== null) {
       return this.parseFormatted(match);
@@ -230,7 +230,7 @@ export class CodeService {
    * Reduces a Code to its smallest repeating unit by finding the smallest
    * column span that divides the Code's columns and repeats exactly to fill them.
    */
-  reduceToUnit(code: ParsedCode): ParsedCode {
+  reduceToUnit(code: CodeObject): CodeObject {
     const { columns, digits, levels, repeats, rows } = code;
 
     for (let width = 1; width <= columns; width += 1) {
@@ -274,7 +274,7 @@ export class CodeService {
    * A negative or oversized `shift` is taken modulo the column span rather
    * than refused, since every integer names a real phase.
    */
-  rotate(code: ParsedCode, shift: number): ParsedCode {
+  rotate(code: CodeObject, shift: number): CodeObject {
     const { columns, digits, levels } = code;
     const offset = ((shift % columns) + columns) % columns;
     const rotated = Array.from({ length: levels }, (_unused, level) => {
@@ -335,7 +335,7 @@ export class CodeService {
    * caller asking a question the tile vocabulary already answers reaches for
    * this.
    */
-  tile(code: ParsedCode): Tile {
+  tile(code: CodeObject): Tile {
     const { columns, levels, rows } = code;
 
     return {

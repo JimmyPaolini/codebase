@@ -18,9 +18,9 @@ export interface MatrixPoint {
 }
 
 /**
- * A kernel window extracted from a larger Matrix during sliding window operations.
+ * A submatrix kernel extracted from a larger Matrix during submatrix scanning operations.
  */
-export interface MatrixWindow {
+export interface Submatrix {
   readonly column: number;
   readonly height: number;
   readonly matrix: Matrix;
