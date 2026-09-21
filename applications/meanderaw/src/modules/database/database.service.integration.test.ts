@@ -68,7 +68,7 @@ describe(DatabaseService, () => {
     edgeCount: 0,
     embeddedOCount: 0,
     embeddedUCount: 0,
-    families: [],
+    family: "unclassified",
     freeEnds: 0,
     horizontalDashCount: 0,
     horizontalPointCount: 0,
@@ -134,7 +134,7 @@ describe(DatabaseService, () => {
         edgeCount: 0,
         embeddedOCount: 0,
         embeddedUCount: 0,
-        families: ["snake"],
+        family: "snake",
         freeEnds: 0,
         horizontalDashCount: 0,
         horizontalPointCount: 0,
@@ -182,7 +182,7 @@ describe(DatabaseService, () => {
         edgeCount: 0,
         embeddedOCount: 0,
         embeddedUCount: 0,
-        families: ["snake"],
+        family: "snake",
         freeEnds: 0,
         horizontalDashCount: 0,
         horizontalPointCount: 0,
@@ -250,7 +250,7 @@ describe(DatabaseService, () => {
         record({
           characteristics: ["dots"],
           code: "trusted-row",
-          families: ["boxes"],
+          family: "boxes",
         }),
       );
 
@@ -258,7 +258,7 @@ describe(DatabaseService, () => {
 
       expect(row).toMatchObject({
         characteristics: ["dots"],
-        families: ["boxes"],
+        family: "boxes",
       });
     });
 
@@ -267,7 +267,7 @@ describe(DatabaseService, () => {
 
       const row = await repository.findOneByOrFail({ id: saved.id });
 
-      expect(row.families).toStrictEqual([]);
+      expect(row.family).toBe("unclassified");
       expect(row.characteristics).toStrictEqual([]);
     });
   });

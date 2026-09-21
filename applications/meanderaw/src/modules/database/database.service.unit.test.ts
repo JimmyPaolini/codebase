@@ -28,7 +28,7 @@ describe(DatabaseService, () => {
     edgeCount: 0,
     embeddedOCount: 0,
     embeddedUCount: 0,
-    families: [],
+    family: "unclassified",
     freeEnds: 0,
     horizontalDashCount: 0,
     horizontalPointCount: 0,

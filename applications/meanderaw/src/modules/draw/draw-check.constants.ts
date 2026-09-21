@@ -36,7 +36,7 @@ export const MEANDER_DRIFT_COMPARISON_COLUMNS = [
   "components",
   "cycles",
   "characteristics",
-  "families",
+  "family",
   "freeEnds",
   "inkTJunctions",
   "inkXJunctions",

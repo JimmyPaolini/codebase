@@ -79,7 +79,7 @@ describe(DrawIndexService, () => {
     edgeCount: 0,
     embeddedOCount: 0,
     embeddedUCount: 0,
-    families: [],
+    family: "unclassified",
     freeEnds: 0,
     horizontalDashCount: 0,
     horizontalPointCount: 0,
@@ -121,7 +121,7 @@ describe(DrawIndexService, () => {
     await repository.save(
       record({
         code: "01x01y0",
-        families: ["snake"],
+        family: "snake",
         lattice: "0",
       }),
     );
@@ -129,12 +129,12 @@ describe(DrawIndexService, () => {
       record({
         characteristics: ["dots"],
         code: "01x01y1",
-        families: ["whirl"],
+        family: "whirl",
         lattice: "1",
       }),
     );
     await repository.save(
-      record({ code: "01x01y2", families: [], lattice: "2" }),
+      record({ code: "01x01y2", family: "unclassified", lattice: "2" }),
     );
 
     const pages = await service.build();

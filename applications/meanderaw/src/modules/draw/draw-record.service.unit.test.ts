@@ -6,6 +6,7 @@ import { CharacteristicsPathService } from "../characteristics/characteristics-p
 import { CharacteristicsShapeService } from "../characteristics/characteristics-shape.service";
 import { CharacteristicsService } from "../characteristics/characteristics.service";
 import { ConnectivityService } from "../characteristics/connectivity.service";
+import { ClassificationService } from "../classification/classification.service";
 import { CodeService } from "../code/code.service";
 import { DrawingService } from "../drawing/drawing.service";
 import { GeometryService } from "../geometry/geometry.service";
@@ -36,6 +37,7 @@ describe(DrawRecordService, () => {
         CharacteristicsFamilyService,
         CharacteristicsPathService,
         CharacteristicsShapeService,
+        ClassificationService,
         ConnectivityService,
         CodeService,
         MatrixService,
@@ -86,9 +88,13 @@ describe(DrawRecordService, () => {
             "edgeCount": 1,
             "embeddedOCount": 0,
             "embeddedUCount": 0,
+<<<<<<< HEAD
             "families": [
               "bars",
             ],
+=======
+            "family": "unclassified",
+>>>>>>> 088f6e73e (refactor(meanderaw): ♻️ update Meander entity and DrawRecordService to single family (#1045))
             "freeEnds": 2,
             "horizontalDashCount": 0,
             "horizontalPointCount": 0,
@@ -119,26 +125,14 @@ describe(DrawRecordService, () => {
         `);
     });
 
-    it("records earned families for lines, dots, and mesh codes", () => {
-      expect(
-        service.record("3333", { columns: 2, rows: 2 }, "enumerated").families,
-      ).toStrictEqual(["lines"]);
-      expect(
-        service.record("0000", { columns: 2, rows: 2 }, "enumerated").families,
-      ).toStrictEqual(["dots"]);
-      expect(
-        service.record("77bb", { columns: 2, rows: 2 }, "enumerated").families,
-      ).toStrictEqual(["mesh"]);
-    });
-
-    it("records empty families and specific characteristics where a Code's structure earns them", () => {
+    it("records unclassified family and specific characteristics where a Code's structure earns them", () => {
       const record = service.record(
         "2569a1",
         { columns: 2, rows: 3 },
         "hardcoded",
       );
 
-      expect(record.families).toStrictEqual([]);
+      expect(record.family).toBe("unclassified");
       expect(record.characteristics).toContain("isJunctionFree");
     });
 

@@ -3,6 +3,7 @@ import * as crypto from "node:crypto";
 import { Inject, Injectable } from "@nestjs/common";
 
 import { CharacteristicsService } from "../characteristics/characteristics.service";
+import { ClassificationService } from "../classification/classification.service";
 import { CodeService } from "../code/code.service";
 import { DrawingService } from "../drawing/drawing.service";
 
@@ -36,6 +37,8 @@ export class DrawRecordService {
   constructor(
     @Inject(CharacteristicsService)
     private readonly characteristicsService: CharacteristicsService,
+    @Inject(ClassificationService)
+    private readonly classificationService: ClassificationService,
     @Inject(CodeService)
     private readonly codeService: CodeService,
     @Inject(DrawingService)
@@ -67,6 +70,10 @@ export class DrawRecordService {
       this.characteristicsService.seamComponents(phase),
     );
     const characteristics = this.characteristicsService.compute(canonical);
+    const family = this.classificationService.classify(characteristics, {
+      columns: canonical.columns,
+      rows: canonical.rows,
+    });
     const booleanKeys = (
       Object.entries(characteristics) as [string, boolean | number][]
     )
@@ -92,7 +99,7 @@ export class DrawRecordService {
       code: this.codeService.format(canonical),
       columns: canonical.columns,
       drawingHash,
-      families: this.characteristicsService.classifyFamilies(canonical),
+      family,
       lattice: canonical.digits,
       pitch: canonical.columns,
       provenance,

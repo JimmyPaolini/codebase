@@ -138,7 +138,7 @@ describe("drawCommand --check mode", () => {
         components: 1,
         cycles: 0,
         drawingHash: "hash",
-        families: [],
+        family: "unclassified",
         freeEnds: 0,
         inkTJunctions: 0,
         inkXJunctions: 0,
@@ -176,7 +176,7 @@ describe("drawCommand --check mode", () => {
         columns: entry.columns,
         components: 1,
         cycles: 0,
-        families: [],
+        family: "unclassified",
         freeEnds: 0,
 
         inkTJunctions: 0,

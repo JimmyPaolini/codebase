@@ -58,7 +58,7 @@ describe(DrawCheckService, () => {
       components: 1,
       cycles: 0,
       drawingHash: "hash",
-      families: [],
+      family: "unclassified",
       freeEnds: 0,
       inkTJunctions: 0,
       inkXJunctions: 0,
@@ -73,9 +73,7 @@ describe(DrawCheckService, () => {
   describe(MeanderDriftDetectedError, () => {
     it("builds a descriptive message with new, missing, and changed entries", () => {
       const error = new MeanderDriftDetectedError({
-        changed: [
-          { code: "c", columns: 1, differences: ["families"], rows: 2 },
-        ],
+        changed: [{ code: "c", columns: 1, differences: ["family"], rows: 2 }],
         committedCount: 2,
         missing: [{ code: "b", columns: 1, rows: 2 }],
         new: [{ code: "a", columns: 1, rows: 2 }],
@@ -85,7 +83,7 @@ describe(DrawCheckService, () => {
       expect(error.message).toContain("1 new, 1 missing, 1 changed");
       expect(error.message).toContain("new a (2x1)");
       expect(error.message).toContain("missing b (2x1)");
-      expect(error.message).toContain("changed c (2x1) [families]");
+      expect(error.message).toContain("changed c (2x1) [family]");
     });
   });
 
@@ -130,13 +128,13 @@ describe(DrawCheckService, () => {
     it("reports a row present in both sides as changed, naming every column that disagrees", () => {
       const regeneratedRow = meander({
         code: "a",
-        families: ["snake"],
+        family: "snake",
 
         id: 1,
       });
       const committedRow = meander({
         code: "a",
-        families: ["boxes"],
+        family: "boxes",
 
         id: 2,
       });
@@ -147,7 +145,7 @@ describe(DrawCheckService, () => {
         {
           code: "a",
           columns: 1,
-          differences: ["families"],
+          differences: ["family"],
           rows: 2,
         },
       ]);
