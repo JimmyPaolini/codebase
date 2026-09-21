@@ -119,10 +119,12 @@ jobs:
           elif [ "${TARGET}" == "test-code" ]; then
             pnpm exec nx affected --target=test-code \
               --configuration=coverage --parallel=4
+          elif [ "${TARGET}" == "build-projects" ]; then
+            pnpm exec nx affected --target=build-projects \
+              --parallel=4
           else
-            CONFIG=$([ "${TARGET}" == "build-projects" ] && echo "" || echo "check")
-            pnpm exec nx affected --target=${TARGET} \
-              --configuration=${CONFIG}
+            pnpm exec nx affected --target="${TARGET}" \
+              --configuration=check --parallel=4
           fi
 
       - name: 📊 Report Integration

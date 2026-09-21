@@ -1,22 +1,13 @@
 name: 🦹 Continuous Compliance
 
-# External and repository compliance checks outside the codebase:
-# 1. 🧑‍💼 Audit Issues: Issue metadata (`type:*`, `scope:*`, and `source:*` labels)
-#    and 3-tier hierarchy / release significance validation across open issues.
-# 2. 👮 Audit Governance: Repository governance (CODEOWNERS and workflow security).
-# 3. 🧑‍⚖️ Comply: Pull request conventions (title, body, branch name,
-#    labels, and release significance validation).
+# External and repository compliance checks:
+# 1. 🧑‍💼 Audit Issues: Issue metadata, hierarchy, and release significance.
+# 2. 👮 Audit Governance: Repository governance and workflow security.
+# 3. 🧑‍⚖️ Comply: Pull request title, body, branch name, and labels.
 #
-# On `opened`, labels implied by the issue or pull request are reconciled by
-# `issue-labels` and `pull-request-labels` in `tools/synchronization`. The metadata
-# check is executed by `issue-metadata`, `pull-request-body`, and
-# `pull-request-release-significance` in `tools/validation`. Governance rules are
-# verified by `audit-governance` in `tools/validation`. All run through Node.js
-# directly without building an Nx project graph.
-#
-# Mislabeled issues, invalid PR metadata, or governance violations do not block
-# creation on GitHub; this workflow fails the job so the status is surfaced on
-# the README badge or PR checks.
+# Label reconciliation runs through `tools/synchronization`, and compliance
+# validation runs through `tools/validation`. All checks execute directly via
+# Node.js without building an Nx project graph.
 
 on:
   issues:
@@ -217,7 +208,8 @@ jobs:
         env:
           PULL_REQUEST_TITLE: ${{ github.event.pull_request.title }}
         run: |
-          echo "$PULL_REQUEST_TITLE" | npx commitlint --config configuration/commitlint.config.ts
+          echo "$PULL_REQUEST_TITLE" | \
+            npx commitlint --config configuration/commitlint.config.ts
 
       # Validates pull request body against required template sections.
       - name: 📝 Validate Pull Request Body
@@ -235,7 +227,7 @@ jobs:
             tools/validation/src/main.ts pull-request-body pull_request_body.md
           rm pull_request_body.md
 
-      # Validates that the pull request title release significance matches or exceeds branch commits.
+      # Validates that PR title release significance matches or exceeds commits.
       - name: 🚦 Validate Release Significance
         if: >-
           steps.check-skip.outputs.skip != 'true' &&
@@ -246,4 +238,5 @@ jobs:
           PULL_REQUEST_NUMBER: ${{ github.event.pull_request.number }}
         run: |
           NODE_OPTIONS='' node --import @swc-node/register/esm-register \
-            tools/validation/src/main.ts pull-request-release-significance "$PULL_REQUEST_NUMBER"
+            tools/validation/src/main.ts pull-request-release-significance \
+            "$PULL_REQUEST_NUMBER"
