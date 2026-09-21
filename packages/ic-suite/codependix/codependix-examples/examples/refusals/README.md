@@ -72,4 +72,4 @@ UnknownConfigurationFileTypeError: Unsupported configuration file type: <example
 
 ## Next
 
-[json-exports](../json-exports/README.md).
+[path-queries](../path-queries/README.md).
