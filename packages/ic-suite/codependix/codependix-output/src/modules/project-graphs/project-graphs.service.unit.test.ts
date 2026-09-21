@@ -37,7 +37,10 @@ const MODULE_GRAPH: NestjsModuleGraph = {
   ambientModuleNames: [],
   edges: [{ source: "MainModule", target: "LoggerModule" }],
   isolatedModuleNames: [],
-  moduleNames: ["LoggerModule", "MainModule"],
+  nodes: [
+    { declaringFile: "src/logger.module.ts", name: "LoggerModule" },
+    { declaringFile: "src/main.module.ts", name: "MainModule" },
+  ],
   projectName: "codependix-cli",
 };
 
