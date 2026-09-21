@@ -489,7 +489,7 @@ describe("every example configuration this package ships", () => {
         expect(written).toContain("img.shields.io");
         // The markers come with it, into a file that did not exist: one sink
         // serves a bare statistics page and a README with prose alike.
-        expect(written).toContain("<!-- CODE_STATISTICS_START -->");
+        expect(written).toContain("<!-- codometer:start -->");
         // And a named destination stands for all of them, so the configured
         // report is not written.
         expect(
@@ -577,8 +577,8 @@ describe("every example configuration this package ships", () => {
 
         const first = fs.readFileSync(destination, "utf8");
 
-        expect(first).toContain("<!-- CODE_STATISTICS_START -->");
-        expect(first).toContain("<!-- CODE_STATISTICS_END -->");
+        expect(first).toContain("<!-- codometer:start -->");
+        expect(first).toContain("<!-- codometer:end -->");
 
         runCodometer(
           ["--config", configuration, "--output-markdown"],
@@ -588,7 +588,7 @@ describe("every example configuration this package ships", () => {
         // Rewritten in place rather than appended a second time.
         const second = fs.readFileSync(destination, "utf8");
 
-        expect(second.split("<!-- CODE_STATISTICS_START -->")).toHaveLength(2);
+        expect(second.split("<!-- codometer:start -->")).toHaveLength(2);
       });
     });
 
@@ -609,7 +609,7 @@ describe("every example configuration this package ships", () => {
         );
 
         expect(written).toContain("<!-- SAMPLE_STATISTICS_START -->");
-        expect(written).not.toContain("<!-- CODE_STATISTICS_START -->");
+        expect(written).not.toContain("<!-- codometer:start -->");
       });
     });
 
@@ -634,7 +634,7 @@ describe("every example configuration this package ships", () => {
         // to `anchors.syncAnchoredBlock`.
         expect(written).toContain("source files");
         expect(written).toContain("img.shields.io");
-        expect(written).toContain("<!-- CODE_STATISTICS_START -->");
+        expect(written).toContain("<!-- codometer:start -->");
       });
     });
 

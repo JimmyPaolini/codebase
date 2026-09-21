@@ -135,8 +135,8 @@ export class ConformetryGeneratorsCommand
   } {
     const filePath = path.join(process.cwd(), targetFile);
     const content = readFileSync(filePath, "utf8");
-    const startMarker = "<!-- conformetry-generators-table start -->";
-    const endMarker = "<!-- conformetry-generators-table end -->";
+    const startMarker = "<!-- conformetry:start -->";
+    const endMarker = "<!-- conformetry:end -->";
 
     const startIndex = content.indexOf(startMarker);
     const endIndex = content.indexOf(endMarker);

@@ -149,7 +149,7 @@ closure rules only ever refuse a destination.
 
 [shared tail](../shared-tail/README.md).
 
-<!-- CALL_STACKS_START -->
+<!-- callidescope:start -->
 
 ## 🔭 Callidescope
 
@@ -196,4 +196,4 @@ What this project is judged against, as declared in its own `callidescope.config
 | `GatedLeafService.read` | 3 | `GatedLeafService.parse`, `GatedLeafService.normalize`, `GatedLeafService.finish` | `packages/ic-suite/callidescope/callidescope-examples/examples/gated-leaf/gated-leaf.ts:40` |
 | `GatedLeafService.normalize` | 1 | `GatedLeafService.finish` | `packages/ic-suite/callidescope/callidescope-examples/examples/gated-leaf/gated-leaf.ts:22` |
 | `GatedLeafService.parse` | 1 | `GatedLeafService.normalize` | `packages/ic-suite/callidescope/callidescope-examples/examples/gated-leaf/gated-leaf.ts:27` |
-<!-- CALL_STACKS_END -->
+<!-- callidescope:end -->

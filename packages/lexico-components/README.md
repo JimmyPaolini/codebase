@@ -435,7 +435,7 @@ External resources:
 
 See [LICENSE](../../LICENSE) for licensing information.
 
-<!-- CALL_STACKS_START -->
+<!-- callidescope:start -->
 
 ## 🔭 Callidescope
 
@@ -2247,7 +2247,7 @@ What this project is judged against, as declared in its own `callidescope.config
 | `useBreakpoint` | 1 | `useMediaQuery` | `packages/lexico-components/src/hooks/use-media-query.ts:62` |
 
 </details>
-<!-- CALL_STACKS_END -->
+<!-- callidescope:end -->
 
 ## 🕸️ Codependix
 
@@ -2407,7 +2407,7 @@ graph LR
 ```
 <!-- codependix:end name="codependix-file-imports" -->
 
-<!-- CODE_STATISTICS_START -->
+<!-- codometer:start -->
 
 ## ⏲️ Codometer
 
@@ -2621,4 +2621,4 @@ graph LR
 ![Inline Code](https://img.shields.io/badge/Inline_Code-17-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-0-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-0-a16207?style=flat-square)
-<!-- CODE_STATISTICS_END -->
+<!-- codometer:end -->

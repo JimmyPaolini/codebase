@@ -116,10 +116,10 @@ export const DEFAULT_RUN_HEADING = "# 🔭 Callidescope";
 export const DEFAULT_PREVIEW_COUNT = 3;
 
 /** Opening anchor of the generated markdown block. */
-export const DEFAULT_MARKDOWN_START_MARKER = "<!-- CALL_STACKS_START -->";
+export const DEFAULT_MARKDOWN_START_MARKER = "<!-- callidescope:start -->";
 
 /** Closing anchor of the generated markdown block. */
-export const DEFAULT_MARKDOWN_END_MARKER = "<!-- CALL_STACKS_END -->";
+export const DEFAULT_MARKDOWN_END_MARKER = "<!-- callidescope:end -->";
 
 // 🔒 Project Configuration
 

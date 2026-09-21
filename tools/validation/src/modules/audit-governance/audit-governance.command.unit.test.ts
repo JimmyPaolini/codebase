@@ -158,4 +158,35 @@ describe(AuditGovernanceCommand, () => {
     );
     expect(exitSpy).toHaveBeenCalledWith(1);
   });
+
+  it("handles valid codeowners without explicit filePath and workflow violation without job", async () => {
+    expect.hasAssertions();
+
+    const exitSpy = mockProcessExit();
+
+    vi.mocked(service.checkGovernance).mockReturnValue({
+      codeowners: {
+        ruleCount: 2,
+        valid: true,
+        violations: [],
+      },
+      valid: false,
+      workflows: {
+        valid: false,
+        violations: [
+          {
+            file: ".github/workflows/ci.yml",
+            reason: "Workflow file syntax error",
+          },
+        ],
+        workflowsAudited: 1,
+      },
+    });
+
+    await expect(command.run()).rejects.toThrow("process.exit:1");
+    expect(logger.log).toHaveBeenCalledWith(
+      expect.stringContaining("Verified CODEOWNERS file (valid) with 2 rules."),
+    );
+    expect(exitSpy).toHaveBeenCalledWith(1);
+  });
 });

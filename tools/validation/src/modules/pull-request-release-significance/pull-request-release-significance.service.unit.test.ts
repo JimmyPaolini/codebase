@@ -171,9 +171,20 @@ describe(PullRequestReleaseSignificanceService, () => {
       ["a revert", { breaking: false, scopes: [], type: "revert" }, 1],
       ["a chore", { breaking: false, scopes: [], type: "chore" }, 0],
       ["an unrecognized type", { breaking: false, scopes: [], type: "wip" }, 0],
+      [
+        "an unknown release rule level",
+        { breaking: false, scopes: [], type: "custom" },
+        0,
+      ],
     ])("ranks %s", (_description, subject, expected) => {
       expect.hasAssertions();
-      expect(service.significanceRank(subject, RELEASE_RULES)).toBe(expected);
+
+      const rules: ReleaseRule[] = [
+        ...RELEASE_RULES,
+        { release: false, type: "custom" },
+      ];
+
+      expect(service.significanceRank(subject, rules)).toBe(expected);
     });
   });
 
@@ -202,6 +213,33 @@ describe(PullRequestReleaseSignificanceService, () => {
             },
             sha: "abcdef1",
             subject: "feat(lexico): add moon phases",
+          },
+        ],
+        resolved: true,
+        title: "feat(lexico): ✨ add moon phases",
+      });
+    });
+
+    it("falls back to default attributes when commit fields are not strings", () => {
+      expect.hasAssertions();
+
+      const document = JSON.stringify({
+        commits: [
+          {
+            messageBody: 123,
+            messageHeadline: null,
+            oid: false,
+          },
+        ],
+        title: "feat(lexico): ✨ add moon phases",
+      });
+
+      expect(service.resolveFromDocument(document)).toStrictEqual({
+        commits: [
+          {
+            convention: undefined,
+            sha: "",
+            subject: "",
           },
         ],
         resolved: true,
@@ -241,6 +279,15 @@ describe(PullRequestReleaseSignificanceService, () => {
     it("reads an empty title and no commits from a document missing both", () => {
       expect.hasAssertions();
       expect(service.resolveFromDocument("{}")).toStrictEqual({
+        commits: [],
+        resolved: true,
+        title: "",
+      });
+    });
+
+    it("handles a non-object JSON document gracefully", () => {
+      expect.hasAssertions();
+      expect(service.resolveFromDocument('"not-an-object"')).toStrictEqual({
         commits: [],
         resolved: true,
         title: "",
@@ -329,6 +376,11 @@ describe(PullRequestReleaseSignificanceService, () => {
             "bbb2222",
             "feat(synchronization): reconcile pull request labels",
           ),
+          commit(
+            service,
+            "ccc3333",
+            "fix(synchronization): patch pull request labels",
+          ),
         ],
         releaseRules: RELEASE_RULES,
         titleConvention: title(
@@ -338,8 +390,9 @@ describe(PullRequestReleaseSignificanceService, () => {
       });
 
       expect(verdict.failures).toHaveLength(1);
-      expect(verdict.failures[0]).toContain("synchronization");
-      expect(verdict.failures[0]).toContain("bbb2222");
+      expect(verdict.failures[0]).toContain(
+        'Scope "synchronization" is used in commits bbb2222, ccc3333',
+      );
     });
 
     it("ignores a commit whose subject does not parse as conventional", () => {

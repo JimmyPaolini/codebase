@@ -249,6 +249,7 @@ graph LR
   file_testing_setup_ts["testing/setup.ts"]
   file_vitest_config_ts["vitest.config.ts"]
   file_testing_examples_integration_test_ts --> file_testing_render_anchor_placement_ts
+  file_testing_examples_integration_test_ts --> file_testing_render_builders_ts
   file_testing_examples_integration_test_ts --> file_testing_render_catalog_ts
   file_testing_examples_integration_test_ts --> file_testing_render_configuration_ts
   file_testing_examples_integration_test_ts --> file_testing_render_document_ts
@@ -328,7 +329,7 @@ graph LR
 _This project defines no NestJS modules to graph._
 <!-- codependix:end name="codependix-nestjs-modules" -->
 
-<!-- CODE_STATISTICS_START -->
+<!-- codometer:start -->
 
 ## ⏲️ Codometer
 
@@ -538,4 +539,4 @@ _This project defines no NestJS modules to graph._
 ![Inline Code](https://img.shields.io/badge/Inline_Code-391-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-0-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-0-a16207?style=flat-square)
-<!-- CODE_STATISTICS_END -->
+<!-- codometer:end -->

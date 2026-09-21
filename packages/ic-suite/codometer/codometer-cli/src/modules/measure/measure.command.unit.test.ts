@@ -85,9 +85,9 @@ function buildConfiguration(
 const markdownOutput = {
   custom: [],
   description: undefined,
-  endMarker: "<!-- CODE_STATISTICS_END -->",
+  endMarker: "<!-- codometer:end -->",
   path: "README.md",
-  startMarker: "<!-- CODE_STATISTICS_START -->",
+  startMarker: "<!-- codometer:start -->",
   type: "markdown" as const,
   write: undefined,
 };

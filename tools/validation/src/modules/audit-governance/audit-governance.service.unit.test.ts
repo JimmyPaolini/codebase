@@ -243,6 +243,57 @@ jobs:
       expect(verdict.valid).toBe(true);
       expect(verdict.violations).toHaveLength(0);
     });
+
+    it("accepts valid workflow with multiple jobs", () => {
+      expect.hasAssertions();
+
+      vi.mocked(existsSync).mockReturnValue(true);
+      vi.mocked(readdirSync as (target: string) => string[]).mockReturnValue([
+        "ci.yml",
+      ]);
+      vi.mocked(readFileSync).mockReturnValue(`
+name: Multi Job CI
+permissions:
+  contents: read
+jobs:
+  build:
+    permissions:
+      contents: read
+    timeout-minutes: 10
+  test:
+    permissions:
+      contents: read
+    timeout-minutes: 15
+`);
+
+      const verdict = service.checkWorkflows("/mock/workspace");
+
+      expect(verdict.valid).toBe(true);
+      expect(verdict.violations).toHaveLength(0);
+    });
+
+    it("handles non-job lines before the first job declaration in jobs section", () => {
+      expect.hasAssertions();
+
+      vi.mocked(existsSync).mockReturnValue(true);
+      vi.mocked(readdirSync as (target: string) => string[]).mockReturnValue([
+        "compliance.yml",
+      ]);
+      vi.mocked(readFileSync).mockReturnValue(`
+name: Compliance
+permissions:
+  contents: read
+jobs:
+  # comment before first job
+  audit:
+    timeout-minutes: 10
+`);
+
+      const verdict = service.checkWorkflows("/mock/workspace");
+
+      expect(verdict.valid).toBe(true);
+      expect(verdict.violations).toHaveLength(0);
+    });
   });
 
   describe("checkGovernance", () => {

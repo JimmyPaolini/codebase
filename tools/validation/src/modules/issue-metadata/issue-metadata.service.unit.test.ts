@@ -403,6 +403,27 @@ describe(IssueMetadataService, () => {
       );
     });
 
+    it("stops parent depth calculation when parent issue is not in issueMap", () => {
+      expect.hasAssertions();
+
+      const verdict = service.checkBulkIssues([
+        {
+          body: "Part of #999\n### Scope\nlexico\n### Type\nfeat\n### Source\nagent",
+          labels: [
+            { name: "type:feat" },
+            { name: "scope:lexico" },
+            { name: "source:agent" },
+          ],
+          number: 1,
+          title: "feat(lexico): child issue",
+        },
+      ]);
+
+      expect(verdict.failureCount).toBe(0);
+      expect(verdict.failures).toHaveLength(0);
+      expect(verdict.hierarchyViolations).toHaveLength(0);
+    });
+
     it("requires the labels document to be an array", () => {
       expect.hasAssertions();
       expect(
@@ -499,6 +520,39 @@ describe(IssueMetadataService, () => {
           title: "Non conventional title",
         }),
       ).toStrictEqual({ level: "minor", rank: 2, type: "feat" });
+    });
+
+    it("falls back to chore when title is non-conventional and has no type label", () => {
+      expect.hasAssertions();
+      expect(
+        service.resolveIssueReleaseLevel({
+          body: "description",
+          labelNames: [],
+          title: "Non conventional title",
+        }),
+      ).toStrictEqual({ level: "none", rank: 0, type: "chore" });
+    });
+
+    it("handles unknown type by falling back to none level and zero rank", () => {
+      expect.hasAssertions();
+      expect(
+        service.resolveIssueReleaseLevel({
+          body: "description",
+          labelNames: ["type:unknown-custom"],
+          title: "unknown-custom(readme): update docs",
+        }),
+      ).toStrictEqual({ level: "none", rank: 0, type: "unknown-custom" });
+    });
+
+    it("falls back to feat when breaking change has non-conventional title", () => {
+      expect.hasAssertions();
+      expect(
+        service.resolveIssueReleaseLevel({
+          body: "BREAKING CHANGE: something changed",
+          labelNames: [],
+          title: "Non conventional title",
+        }),
+      ).toStrictEqual({ level: "major", rank: 3, type: "feat" });
     });
   });
 
@@ -616,6 +670,54 @@ describe(IssueMetadataService, () => {
       expect(violations[0]?.message).toContain(
         "Hierarchy depth of issue #4 is 4, exceeding maximum depth of 3",
       );
+    });
+
+    it("handles circular parent links gracefully without infinite loop", () => {
+      expect.hasAssertions();
+
+      const issues = [
+        {
+          body: "Part of #2",
+          labels: [
+            { name: "type:feat" },
+            { name: "scope:auth" },
+            { name: "source:agent" },
+          ],
+          number: 1,
+          title: "feat(auth): issue 1",
+        },
+        {
+          body: "Part of #1",
+          labels: [
+            { name: "type:feat" },
+            { name: "scope:auth" },
+            { name: "source:agent" },
+          ],
+          number: 2,
+          title: "feat(auth): issue 2",
+        },
+      ];
+
+      expect(service.checkHierarchy(issues)).toBeDefined();
+    });
+
+    it("ignores parent references to issues not present in the issue set", () => {
+      expect.hasAssertions();
+
+      const issues = [
+        {
+          body: "Part of #999",
+          labels: [
+            { name: "type:feat" },
+            { name: "scope:auth" },
+            { name: "source:agent" },
+          ],
+          number: 1,
+          title: "feat(auth): child of external",
+        },
+      ];
+
+      expect(service.checkHierarchy(issues)).toStrictEqual([]);
     });
   });
 

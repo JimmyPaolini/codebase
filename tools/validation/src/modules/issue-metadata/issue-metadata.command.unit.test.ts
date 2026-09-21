@@ -334,6 +334,16 @@ describe(IssueMetadataCommand, () => {
       expect(appendFileSync).not.toHaveBeenCalled();
     });
 
+    it("writes nothing when the variable is empty", async () => {
+      expect.hasAssertions();
+
+      setValidEnvironment();
+      process.env[STEP_SUMMARY_VARIABLE] = "";
+
+      await expect(runCommand()).resolves.toBe(false);
+      expect(appendFileSync).not.toHaveBeenCalled();
+    });
+
     it("cannot turn a passing issue into a failing one", async () => {
       expect.hasAssertions();
 
@@ -420,6 +430,19 @@ describe(IssueMetadataCommand, () => {
       expect(reportLines[0]).toContain(
         "❌ Found 3 compliance issue(s) across 1 open issue(s)",
       );
+    });
+
+    it("supports parseAllOption and runs with options all: true", async () => {
+      expect.hasAssertions();
+
+      expect(command.parseAllOption()).toBe(true);
+
+      vi.mocked(githubService.listOpenIssues).mockReturnValue({
+        issues: [],
+        success: true,
+      });
+
+      await expect(command.run([], { all: true })).resolves.toBeUndefined();
     });
   });
 });

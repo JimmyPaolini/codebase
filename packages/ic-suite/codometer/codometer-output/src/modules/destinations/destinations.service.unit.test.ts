@@ -125,9 +125,9 @@ describe(DestinationsService, () => {
         markdown: {
           custom: [],
           description: undefined,
-          endMarker: "<!-- CODE_STATISTICS_END -->",
+          endMarker: "<!-- codometer:end -->",
           path: "/repo/docs/statistics.md",
-          startMarker: "<!-- CODE_STATISTICS_START -->",
+          startMarker: "<!-- codometer:start -->",
           write: undefined,
         },
       });

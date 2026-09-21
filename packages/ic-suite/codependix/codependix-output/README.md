@@ -261,7 +261,7 @@ graph LR
 ```
 <!-- codependix:end name="codependix-file-imports" -->
 
-<!-- CALL_STACKS_START -->
+<!-- callidescope:start -->
 
 ## 🔭 Callidescope
 
@@ -393,4 +393,4 @@ What this project is judged against, as declared in its own `callidescope.config
 | `GraphRunService.runPythonImportGraphs` | 1 | `PythonImportsService.runGraphs` | `packages/ic-suite/codependix/codependix-output/src/modules/graph-run/graph-run.service.ts:266` |
 
 </details>
-<!-- CALL_STACKS_END -->
+<!-- callidescope:end -->

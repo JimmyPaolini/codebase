@@ -78,7 +78,7 @@ nx run logger:vitest
 
 MIT — see [LICENSE](../../LICENSE).
 
-<!-- CALL_STACKS_START -->
+<!-- callidescope:start -->
 
 ## 🔭 Callidescope
 
@@ -124,7 +124,7 @@ What this project is judged against, as declared in its own `callidescope.config
 | `checkConventionalMessage` | 2 | `parseLogMessage`, `isConventionalVerb` | `packages/logger/src/lib/conventional-log-message.eslint-rule.ts:61` |
 | `CallExpression` | 2 | `isLoggerObjectText`, `checkMessageArgumentConvention` | `packages/logger/src/lib/conventional-log-message.eslint-rule.ts:151` |
 | `checkMessageArgumentConvention` | 1 | `checkConventionalMessage` | `packages/logger/src/lib/conventional-log-message.eslint-rule.ts:91` |
-<!-- CALL_STACKS_END -->
+<!-- callidescope:end -->
 
 ## 🕸️ Codependix
 
@@ -220,7 +220,7 @@ graph LR
 ```
 <!-- codependix:end name="codependix-file-imports" -->
 
-<!-- CODE_STATISTICS_START -->
+<!-- codometer:start -->
 
 ## ⏲️ Codometer
 
@@ -434,4 +434,4 @@ graph LR
 ![Inline Code](https://img.shields.io/badge/Inline_Code-53-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-0-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-0-a16207?style=flat-square)
-<!-- CODE_STATISTICS_END -->
+<!-- codometer:end -->

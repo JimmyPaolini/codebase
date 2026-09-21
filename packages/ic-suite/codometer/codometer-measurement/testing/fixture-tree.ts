@@ -30,7 +30,7 @@ const FIXTURE_FILES: Readonly<Record<string, string>> = {
   "nested/keep.md": "# Keep\n",
   "node_modules/library/index.ts": "export const library = 1;\n",
   "README.md":
-    "# Readme\n\n<!-- CODE_STATISTICS_START -->\n\nold\n<!-- CODE_STATISTICS_END -->\n",
+    "# Readme\n\n<!-- codometer:start -->\n\nold\n<!-- codometer:end -->\n",
   "redistribute/index.ts": "export const redistributed = 1;\n",
   "src/app.ts": "export const app = 1;\n",
   "src/app.unit.test.ts": "export const appTest = 1;\n",
