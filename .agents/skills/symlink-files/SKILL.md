@@ -1,6 +1,6 @@
 ---
 name: symlink-files
-description: Explains how configuration files like CLAUDE.md, .claude/skills, .github/copilot-instructions.md, and .github/skills are symlinked to AGENTS.md and .agents/skills/. Use when managing agent instructions, checking why edits to a mirror file are lost, or setting up new agents.
+description: Explains how configuration files like .claude/CLAUDE.md, .claude/skills, .github/copilot-instructions.md, and .github/skills are symlinked to AGENTS.md and .agents/skills/. Use when managing agent instructions, checking why edits to a mirror file are lost, or setting up new agents.
 ---
 # Symlinked Agent Configuration
 
@@ -9,14 +9,14 @@ description: Explains how configuration files like CLAUDE.md, .claude/skills, .g
 ## When to Use This Skill
 
 - When wondering where to edit agent instructions.
-- When you see a file like `CLAUDE.md` and want to edit it (do not edit the mirror!).
+- When you see a file like `.claude/CLAUDE.md` and want to edit it (do not edit the mirror!).
 - When setting up new agent platforms that need their own instruction files.
 
 ## Architecture
 
 | Symlink                           | Target           |
 | --------------------------------- | ---------------- |
-| `CLAUDE.md`                       | `AGENTS.md`      |
+| `.claude/CLAUDE.md`               | `AGENTS.md`      |
 | `.claude/skills`                  | `.agents/skills` |
 | `.github/copilot-instructions.md` | `AGENTS.md`      |
 | `.github/skills`                  | `.agents/skills` |

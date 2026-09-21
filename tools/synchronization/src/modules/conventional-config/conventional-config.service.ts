@@ -54,7 +54,7 @@ export class ConventionalConfigService {
     );
   private readonly releaseConfigFile = path.join(
     this.workspaceRoot,
-    "release.config.cjs",
+    "configuration/release.config.cjs",
   );
   private readonly requireFromCurrentModule = createRequire(import.meta.url);
   private readonly settingsFile = path.join(

@@ -375,7 +375,7 @@ Instead of per-project devcontainers (lexico, caelundas, etc.):
 
 ## Related Documentation
 
-- [CONTRIBUTING.md](../CONTRIBUTING.md) - Development workflow
+- [CONTRIBUTING.md](../.github/CONTRIBUTING.md) - Development workflow
 - [AGENTS.md](../AGENTS.md) - AI agent guidance
 - [Dev Container Specification](https://containers.dev/implementors/spec/)
 - [VS Code Dev Containers](https://code.visualstudio.com/docs/devcontainers/containers)

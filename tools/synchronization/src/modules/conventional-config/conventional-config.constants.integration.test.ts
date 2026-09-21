@@ -32,6 +32,14 @@ function findMarkerBearingFiles(): string[] {
     .filter((entry) => entry.isFile() && entry.name.endsWith(".md"))
     .map((entry) => entry.name);
 
+  const githubDirectory = path.join(workspaceRoot, ".github");
+  const githubMarkdownFiles = fs.existsSync(githubDirectory)
+    ? fs
+        .readdirSync(githubDirectory, { withFileTypes: true })
+        .filter((entry) => entry.isFile() && entry.name.endsWith(".md"))
+        .map((entry) => path.join(".github", entry.name))
+    : [];
+
   const skillsDirectory = path.join(workspaceRoot, ".agents/skills");
   const skillMarkdownFiles = fs
     .readdirSync(skillsDirectory, { withFileTypes: true })
@@ -39,7 +47,11 @@ function findMarkerBearingFiles(): string[] {
     .map((entry) => path.join(".agents/skills", entry.name, "SKILL.md"))
     .filter((file) => fs.existsSync(path.join(workspaceRoot, file)));
 
-  return [...rootMarkdownFiles, ...skillMarkdownFiles].filter((file) =>
+  return [
+    ...rootMarkdownFiles,
+    ...githubMarkdownFiles,
+    ...skillMarkdownFiles,
+  ].filter((file) =>
     fs
       .readFileSync(path.join(workspaceRoot, file), "utf8")
       .includes(SCOPES_START_MARKER),

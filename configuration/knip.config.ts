@@ -92,7 +92,6 @@ const config: KnipConfig = {
     // Root workspace: scripts, base configs, and Nx configuration files
     ".": {
       entry: [
-        ".pnpmfile.mjs",
         "scripts/**/*.{js,mjs,ts,sh}",
         ".devcontainer/scripts/**/*.{js,mjs,ts,sh}",
         "configuration/vitest.config.ts",
@@ -110,7 +109,7 @@ const config: KnipConfig = {
         // it re-exports configuration/codometer.config.ts from the workspace
         // root, which is the only place that search can reach.
         "codometer.config.ts",
-        "release.config.cjs",
+        "configuration/release.config.cjs",
         "validate-branch-name.config.cjs",
       ],
       ignore: [

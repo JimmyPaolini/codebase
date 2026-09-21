@@ -2,7 +2,7 @@
 
 Thank you for contributing! This guide covers the development workflow, code standards, and release process.
 
-[AGENTS.md](AGENTS.md) is the deeper reference for conventions, project layout, and the toolchains this repository publishes. This guide is the shorter path: what to install, what to run, and what the checks will reject.
+[AGENTS.md](../AGENTS.md) is the deeper reference for conventions, project layout, and the toolchains this repository publishes. This guide is the shorter path: what to install, what to run, and what the checks will reject.
 
 ## Table of Contents
 
@@ -136,7 +136,7 @@ pnpm is pinned by `packageManager` in the root `package.json`, so Corepack selec
 | 54324 | Supabase Email     | Silent       |
 | 54325 | Supabase Analytics | Silent       |
 
-See [.devcontainer/README.md](.devcontainer/README.md) for detailed configuration and troubleshooting.
+See [.devcontainer/README.md](../.devcontainer/README.md) for detailed configuration and troubleshooting.
 
 ### Commit Signing (Required)
 
@@ -182,7 +182,7 @@ codebase/
 └── .agents/skills/     # Agent skills; every other agent entrypoint symlinks here
 ```
 
-Every project lives in `applications/`, `packages/`, or `tools/` — a file directly in one of those directories is a lint error, not a style preference. The full annotated project list is in [README.md](README.md), kept in step with the workspace by the `check-readme-projects` target; `nx show projects` prints the same set.
+Every project lives in `applications/`, `packages/`, or `tools/` — a file directly in one of those directories is a lint error, not a style preference. The full annotated project list is in [README.md](../README.md), kept in step with the workspace by the `check-readme-projects` target; `nx show projects` prints the same set.
 
 **A package removed from the workspace can still look like a project on a stale checkout.** `check-readme-projects` and `nx show projects` both key off any directory holding its own `package.json`, not off what git tracks — so a checkout that had a since-removed package built or installed before the removal lands keeps that package's `node_modules/`, `coverage/`, and other untracked build output, and pnpm or Nx can keep treating the directory as a real project from those leftovers alone. `pull`ing the removal only deletes the tracked files; the untracked ones stay until something deletes them. If `check-readme-projects` names a project that was removed on `main`, or `nx show projects` lists one you know is gone, delete that directory outright rather than tracking down which file is still there — nothing in a removed package's directory is meant to survive.
 
@@ -332,23 +332,23 @@ Four toolchains are developed in this repository and gate its own code. You are 
 | `codependix`   | Exports Nx, NestJS module, and file-level import graphs, and judges them against declared boundary rules                       | `codependix --check boundaries`, run beside `lint-code` in Lint Codebase        |
 | `callidescope` | Traces call stacks through injected dependencies and flags stacks that are too deep or callables that reach too widely         | the inferred per-project `gate` target, run beside `lint-code` in Lint Codebase |
 
-Each is documented in its command-line package — [conformetry-cli](packages/ic-suite/conformetry/conformetry-cli/README.md), [codometer-cli](packages/ic-suite/codometer/codometer-cli/README.md), [codependix-cli](packages/ic-suite/codependix/codependix-cli/README.md), [callidescope-cli](packages/ic-suite/callidescope/callidescope-cli/README.md) — and each has agent skills for the same three moments, which read just as well for a human: running it, configuring it, and acting on what it said (codependix adds a fourth, for reading a graph the repository already committed). They are the `conformetry-*`, `codometer-*`, `codependix-*`, and `callidescope-*` entries under [.agents/skills](.agents/skills).
+Each is documented in its command-line package — [conformetry-cli](../packages/ic-suite/conformetry/conformetry-cli/README.md), [codometer-cli](../packages/ic-suite/codometer/codometer-cli/README.md), [codependix-cli](../packages/ic-suite/codependix/codependix-cli/README.md), [callidescope-cli](../packages/ic-suite/callidescope/callidescope-cli/README.md) — and each has agent skills for the same three moments, which read just as well for a human: running it, configuring it, and acting on what it said (codependix adds a fourth, for reading a graph the repository already committed). They are the `conformetry-*`, `codometer-*`, `codependix-*`, and `callidescope-*` entries under [.agents/skills](../.agents/skills).
 
 Conformetry is the one you should reach for deliberately rather than only meet as a failure: **generate rather than hand-craft**, because code written in a shape a template already describes starts life failing conformance. `nx g conformetry:` lists the generators, and `conformetry templates` describes what each one produces.
 
-Every configuration these four read lives in [configuration/](configuration), one file per toolchain, alongside per-project `codometer.config.ts` files that spread the shared object.
+Every configuration these four read lives in [configuration/](../configuration), one file per toolchain, alongside per-project `codometer.config.ts` files that spread the shared object.
 
 > ⚠️ **Each toolchain ships an `*-examples` package that contains code which is deliberately wrong** — a breaching limit, a `tsconfig.json` the compiler cannot parse, a stack eight frames deep, an instance missing an export. Each is the reproduction of a failure you will hit, and "fixing" one deletes the only place that behavior is demonstrated. Every examples package's `AGENTS.md` lists its own, and maps "the tool said X" to the example that reproduces X in about a second.
 
 ## Git Hooks (Husky)
 
-Three Husky hooks enforce quality gates locally, from [configuration/.husky/](configuration/.husky). **Never bypass them with `--no-verify`** — fix the underlying issue instead.
+Three Husky hooks enforce quality gates locally, from [configuration/.husky/](../configuration/.husky). **Never bypass them with `--no-verify`** — fix the underlying issue instead.
 
-| Hook         | Trigger      | What it runs                                                                                                       | Config                                                             |
-| ------------ | ------------ | ------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------ |
-| `pre-commit` | `git commit` | GPG signing configuration check, then **lint-staged**: format, lint, typecheck, spelling, and more on staged files | [lint-staged.config.ts](configuration/lint-staged.config.ts)       |
-| `commit-msg` | `git commit` | **commitlint**: validates the Conventional Commits format                                                          | [commitlint.config.ts](configuration/commitlint.config.ts)         |
-| `pre-push`   | `git push`   | **validate-branch-name**, then a commit signature check over the pushed commits                                    | [validate-branch-name.config.cjs](validate-branch-name.config.cjs) |
+| Hook         | Trigger      | What it runs                                                                                                       | Config                                                                |
+| ------------ | ------------ | ------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------- |
+| `pre-commit` | `git commit` | GPG signing configuration check, then **lint-staged**: format, lint, typecheck, spelling, and more on staged files | [lint-staged.config.ts](../configuration/lint-staged.config.ts)       |
+| `commit-msg` | `git commit` | **commitlint**: validates the Conventional Commits format                                                          | [commitlint.config.ts](../configuration/commitlint.config.ts)         |
+| `pre-push`   | `git push`   | **validate-branch-name**, then a commit signature check over the pushed commits                                    | [validate-branch-name.config.cjs](../validate-branch-name.config.cjs) |
 
 If a hook fails, the git operation is blocked until you fix the error. `pre-commit` writes its full output to `last-lint-staged-output.log`, which is where to look when the terminal output is truncated.
 
@@ -362,7 +362,7 @@ Worktrees are the normal way to run several branches side by side here, and thre
 - **Never run `git submodule update --init` for `applications/JimmyPaolini`.** That submodule is deliberately left uninitialized everywhere, locally and in CI. A `-` prefix in `git submodule status` is expected here, not broken.
 - **The stash stack is shared with every other worktree.** A bare `git stash pop` can take someone else's work. Prefer a temporary commit, or `git stash push -u -m "<unique-tag>"` and `git stash apply <sha>`.
 
-The branch name is not free-form in a worktree either — derive one from the tables below and validate it before creating anything, since an unvalidated branch cannot be pushed. If the branch already exists locally, attach a worktree to it rather than creating a second branch. See [using-git-worktrees](.agents/skills/using-git-worktrees/SKILL.md).
+The branch name is not free-form in a worktree either — derive one from the tables below and validate it before creating anything, since an unvalidated branch cannot be pushed. If the branch already exists locally, attach a worktree to it rather than creating a second branch. See [using-git-worktrees](../.agents/skills/using-git-worktrees/SKILL.md).
 
 ## Branch Naming Guidelines
 
@@ -520,7 +520,7 @@ See [create-pull-request](.agents/skills/create-pull-request/SKILL.md) and [upda
 
 Releases use [semantic-release](https://semantic-release.gitbook.io/), fully automated on merge to `main` by the 🦸 Continuous Deployment workflow (`push-releases` target). Versioning is fixed — the whole codebase shares one version — and nothing is published to a package registry.
 
-**Version bumps**, from `releaseRules` in [release.config.cjs](release.config.cjs):
+**Version bumps**, from `releaseRules` in [release.config.cjs](../configuration/release.config.cjs):
 
 | Bump  | Types                                                                           |
 | ----- | ------------------------------------------------------------------------------- |
@@ -603,15 +603,15 @@ pnpm add -w <package>
 
 ## Additional Resources
 
-- [AGENTS.md](AGENTS.md) — the full conventions reference, mirrored to `CLAUDE.md` and `.github/copilot-instructions.md`
-- [CONTEXT.md](CONTEXT.md) — domain model and shared vocabulary
-- [docs/adr](docs/adr) — architecture decision records
-- [openwiki/quickstart.md](openwiki/quickstart.md) — generated code documentation
-- [.agents/skills](.agents/skills) — agent skills, the canonical source for every agent entrypoint
-- [Commit Messages Guide](.agents/skills/commit-code/SKILL.md)
-- [Code Validation Guide](.agents/skills/validate-code/SKILL.md)
-- [Semantic Release Config](release.config.cjs)
-- [GitHub Actions Workflows](.github/workflows)
+- [AGENTS.md](../AGENTS.md) — the full conventions reference, mirrored to `.claude/CLAUDE.md` and `.github/copilot-instructions.md`
+- [CONTEXT.md](../CONTEXT.md) — domain model and shared vocabulary
+- [docs/adr](../docs/adr) — architecture decision records
+- [openwiki/quickstart.md](../openwiki/quickstart.md) — generated code documentation
+- [.agents/skills](../.agents/skills) — agent skills, the canonical source for every agent entrypoint
+- [Commit Messages Guide](../.agents/skills/commit-code/SKILL.md)
+- [Code Validation Guide](../.agents/skills/validate-code/SKILL.md)
+- [Semantic Release Config](../configuration/release.config.cjs)
+- [GitHub Actions Workflows](./workflows)
 - [Gitmoji Reference](https://gitmoji.dev)
 - [Nx Documentation](https://nx.dev)
 - [Conventional Commits](https://www.conventionalcommits.org/)

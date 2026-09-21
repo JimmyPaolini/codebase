@@ -693,8 +693,6 @@
   "markdownlint.severityForWarning": "Warning",
   "material-icon-theme.files.associations": {
     ".code-workspace*": "vscode",
-    ".pnpmfile.mjs": "pnpm",
-    ".sqlfluffignore": "git",
     ".yamllint": "yaml",
     "*.args.js": "excalidraw",
     "*.args.ts": "excalidraw",
