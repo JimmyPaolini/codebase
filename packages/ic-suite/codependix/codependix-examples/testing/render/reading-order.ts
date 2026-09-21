@@ -29,6 +29,7 @@ export const EXAMPLE_ORDER = [
   "check-and-write",
   "boundary-rules",
   "refusals",
+  "path-queries",
   "json-exports",
   "workspace-drift",
 ] as const;
@@ -51,6 +52,7 @@ export const EXAMPLE_EMOJI: Record<string, string> = {
   "json-exports": "📦",
   "markdown-modes": "📝",
   "neighborhood-scope": "🏘️",
+  "path-queries": "🛤️",
   "preview-mode": "👁️",
   "python-scanner": "🐍",
   refusals: "🚫",

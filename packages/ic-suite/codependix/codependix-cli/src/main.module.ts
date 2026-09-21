@@ -6,6 +6,7 @@ import { LoggerModule } from "@codebase/logger";
 
 import { environmentSchema } from "./constants";
 import { MapModule } from "./modules/map/map.module";
+import { PathModule } from "./modules/path/path.module";
 
 /**
  * Root NestJS application module.
@@ -21,6 +22,7 @@ import { MapModule } from "./modules/map/map.module";
     DiscoveryModule,
     LoggerModule,
     MapModule,
+    PathModule,
   ],
 })
 export class MainModule {}

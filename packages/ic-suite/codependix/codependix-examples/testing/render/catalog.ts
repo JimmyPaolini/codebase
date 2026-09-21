@@ -5,6 +5,7 @@ import { buildDeliveryDocuments } from "./export-delivery";
 import { buildGraphLevelDocuments } from "./graph-levels";
 import { buildNestjsDocuments } from "./nestjs-graphs";
 import { buildNxDocuments } from "./nx-graphs";
+import { buildPathQueriesDocuments } from "./path-queries";
 import { buildPythonDocuments } from "./python-imports";
 import { EXAMPLE_ORDER } from "./reading-order";
 import { buildTypescriptDocuments } from "./typescript-imports";
@@ -25,6 +26,7 @@ export async function collectDocuments(): Promise<ExampleDocument[]> {
     ...(await buildDeliveryDocuments()),
     ...buildAnchorDocuments(),
     ...buildBoundaryDocuments(),
+    ...(await buildPathQueriesDocuments()),
   ]);
 }
 

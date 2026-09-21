@@ -1,6 +1,6 @@
 # 🕸️ Codependix Examples
 
-**Sixteen small subjects built to be graphed, so every graph codependix draws
+**Seventeen small subjects built to be graphed, so every graph codependix draws
 has somewhere to point.**
 
 Codependix draws dependency graphs at four levels — the Nx Neighborhood, the
@@ -63,6 +63,7 @@ renderer chains them with, declared once in
 | [`check-and-write`](examples/check-and-write) | What each `--check` name gates, what drift is reported as, and the four command lines refused outright |
 | [`boundary-rules`](examples/boundary-rules) | The three rule kinds, judged by the real evaluator — including the implicit edge no lint rule can see |
 | [`refusals`](examples/refusals) | Every refusal, with the reproduction that produces it |
+| [`path-queries`](examples/path-queries) | How `codependix path` traces shortest connecting paths across graph levels in Markdown, JSON, and Mermaid |
 | [`json-exports`](examples/json-exports) | Every graph's JSON shape, and the two workspace rules switched off for these files |
 | [`workspace-drift`](examples/workspace-drift) | Why this repository gates no pull request on `codependix map --check` |
 
