@@ -7,6 +7,7 @@ import { LoggerModule } from "@codebase/logger";
 import { environmentSchema } from "./constants";
 import { DrawModule } from "./modules/draw/draw.module";
 import { DrawingModule } from "./modules/drawing/drawing.module";
+import { MatrixModule } from "./modules/matrix/matrix.module";
 
 /**
  * Root NestJS application module.
@@ -33,6 +34,7 @@ import { DrawingModule } from "./modules/drawing/drawing.module";
     // extraction is the one thing that still has to go the other way, from the
     // drawings this project started from to the Codes that name them.
     DrawingModule,
+    MatrixModule,
   ],
 })
 export class MainModule {}
