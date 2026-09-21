@@ -9,6 +9,7 @@ import {
   BODY_GUIDANCE_LINES,
   BODY_MISSING_MESSAGE,
   BODY_VALID_MESSAGE,
+  EMPTY_SECTIONS_MESSAGE,
   MISSING_HEADINGS_MESSAGE,
   PULL_REQUEST_BODY_VARIABLE,
   PULL_REQUEST_TEMPLATE_PATH,
@@ -22,9 +23,9 @@ import type { BodyVerdict } from "./pull-request-body.types";
 /**
  * CLI command that checks a pull request description against its template.
  *
- * Two things, and a description that fails both is reported against both:
- * every one of the four headings must be present, and no `<!-- … -->` prompt
- * from the template may survive unfilled.
+ * Three things, and a description that fails multiple is reported against all:
+ * every one of the four headings must be present, each section must contain
+ * content, and no `<!-- … -->` prompt from the template may survive unfilled.
  *
  * Two input modes, neither of which needs a token. The description normally
  * arrives as `PULL_REQUEST_BODY`, which is the workflow mode. A path argument
@@ -36,7 +37,7 @@ import type { BodyVerdict } from "./pull-request-body.types";
  */
 @Command({
   description:
-    "Check that a pull request description carries every heading and no unfilled template comment",
+    "Check that a pull request description carries every heading, non-empty sections, and no unfilled template comment",
   name: "pull-request-body",
 })
 @Injectable()
@@ -68,11 +69,18 @@ export class PullRequestBodyCommand extends CommandRunner {
     return process.exit(1);
   }
 
-  /** Prints both failure lists and the guidance that closes them. */
+  /** Prints the failure lists and the guidance that closes them. */
   private reportVerdict(verdict: BodyVerdict): never {
     if (verdict.missingHeadings.length > 0) {
       console.error(
         `${MISSING_HEADINGS_MESSAGE}${verdict.missingHeadings.map((heading) => ` ${heading.replace("## ", "")}`).join("")}`,
+      );
+      console.error("");
+    }
+
+    if (verdict.emptySections.length > 0) {
+      console.error(
+        `${EMPTY_SECTIONS_MESSAGE}${verdict.emptySections.map((section) => ` ${section.replace("## ", "")}`).join("")}`,
       );
       console.error("");
     }
@@ -140,6 +148,7 @@ export class PullRequestBodyCommand extends CommandRunner {
 
     if (
       verdict.missingHeadings.length === 0 &&
+      verdict.emptySections.length === 0 &&
       verdict.unfilledComments.length === 0
     ) {
       console.info(BODY_VALID_MESSAGE);

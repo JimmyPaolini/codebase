@@ -153,6 +153,166 @@ describe(PullRequestBodyService, () => {
     });
   });
 
+  describe("findEmptySections", () => {
+    it("finds no empty sections in a complete description", () => {
+      expect.hasAssertions();
+      expect(service.findEmptySections(validBody)).toStrictEqual([]);
+    });
+
+    it("names an empty section that contains only whitespace", () => {
+      expect.hasAssertions();
+
+      const bodyWithEmptySection = [
+        "## 🌰 Summary",
+        "",
+        "Moves four checks into a validation application.",
+        "",
+        "## 📝 Details",
+        "",
+        "   ",
+        "",
+        "## 🧪 Testing",
+        "",
+        "1. Run the suite",
+        "",
+        "## 🔗 Related",
+        "",
+        "- Issue 120",
+      ].join("\n");
+
+      expect(service.findEmptySections(bodyWithEmptySection)).toStrictEqual([
+        "## 📝 Details",
+      ]);
+    });
+
+    it("names a section containing only HTML comments", () => {
+      expect.hasAssertions();
+
+      const bodyWithCommentOnly = [
+        "## 🌰 Summary",
+        "",
+        "<!-- Some comment -->",
+        "",
+        "## 📝 Details",
+        "",
+        "- Added feature",
+        "",
+        "## 🧪 Testing",
+        "",
+        "1. Run the suite",
+        "",
+        "## 🔗 Related",
+        "",
+        "- Issue 120",
+      ].join("\n");
+
+      expect(service.findEmptySections(bodyWithCommentOnly)).toStrictEqual([
+        "## 🌰 Summary",
+      ]);
+    });
+
+    it("names a section containing only empty markdown list items", () => {
+      expect.hasAssertions();
+
+      const bodyWithEmptyBullets = [
+        "## 🌰 Summary",
+        "",
+        "Moves four checks into a validation application.",
+        "",
+        "## 📝 Details",
+        "",
+        "- ",
+        "* ",
+        "+ ",
+        "1. ",
+        "2) ",
+        "",
+        "## 🧪 Testing",
+        "",
+        "1. Run the suite",
+        "",
+        "## 🔗 Related",
+        "",
+        "- Issue 120",
+      ].join("\n");
+
+      expect(service.findEmptySections(bodyWithEmptyBullets)).toStrictEqual([
+        "## 📝 Details",
+      ]);
+    });
+
+    it("names multiple empty sections in the order they are required", () => {
+      expect.hasAssertions();
+
+      const bodyWithMultipleEmpty = [
+        "## 🌰 Summary",
+        "",
+        "## 📝 Details",
+        "",
+        "Added feature",
+        "",
+        "## 🧪 Testing",
+        "",
+        "## 🔗 Related",
+        "",
+        "- ",
+      ].join("\n");
+
+      expect(service.findEmptySections(bodyWithMultipleEmpty)).toStrictEqual([
+        "## 🌰 Summary",
+        "## 🧪 Testing",
+        "## 🔗 Related",
+      ]);
+    });
+
+    it("does not report missing headings as empty sections", () => {
+      expect.hasAssertions();
+
+      const bodyWithMissingHeading = [
+        "## 🌰 Summary",
+        "",
+        "Moves four checks.",
+        "",
+        "## 📝 Details",
+        "",
+        "- Adds the project",
+        "",
+        "## 🧪 Testing",
+        "",
+        "1. Run the suite",
+      ].join("\n");
+
+      expect(service.findEmptySections(bodyWithMissingHeading)).toStrictEqual(
+        [],
+      );
+    });
+
+    it("names an empty section at the end of the document", () => {
+      expect.hasAssertions();
+
+      const bodyWithEmptyTail = [
+        "## 🌰 Summary",
+        "",
+        "Moves four checks.",
+        "",
+        "## 📝 Details",
+        "",
+        "- Adds the project",
+        "",
+        "## 🧪 Testing",
+        "",
+        "1. Run the suite",
+        "",
+        "## 🔗 Related",
+        "",
+      ].join("\n");
+
+      expect(service.findEmptySections(bodyWithEmptyTail)).toStrictEqual([
+        "## 🔗 Related",
+      ]);
+    });
+  });
+
   describe("findUnfilledComments", () => {
     /** The prompts the template currently holds. */
     const templateComments = (): string[] =>
@@ -225,6 +385,7 @@ describe(PullRequestBodyService, () => {
     it("passes a fully valid description", () => {
       expect.hasAssertions();
       expect(check(validBody)).toStrictEqual({
+        emptySections: [],
         missingHeadings: [],
         unfilledComments: [],
       });
@@ -235,7 +396,34 @@ describe(PullRequestBodyService, () => {
       expect(
         check(validBody.replace("## 🔗 Related", "## Related")),
       ).toStrictEqual({
+        emptySections: [],
         missingHeadings: ["## 🔗 Related"],
+        unfilledComments: [],
+      });
+    });
+
+    it("reports an empty section alone", () => {
+      expect.hasAssertions();
+
+      const bodyWithEmptySection = [
+        "## 🌰 Summary",
+        "",
+        "Moves four checks.",
+        "",
+        "## 📝 Details",
+        "",
+        "## 🧪 Testing",
+        "",
+        "1. Run the suite",
+        "",
+        "## 🔗 Related",
+        "",
+        "- Issue 120",
+      ].join("\n");
+
+      expect(check(bodyWithEmptySection)).toStrictEqual({
+        emptySections: ["## 📝 Details"],
+        missingHeadings: [],
         unfilledComments: [],
       });
     });
@@ -245,19 +433,32 @@ describe(PullRequestBodyService, () => {
       expect(
         check(`${validBody}\n<!-- List of specific changes made -->`),
       ).toStrictEqual({
+        emptySections: [],
         missingHeadings: [],
         unfilledComments: ["<!-- List of specific changes made -->"],
       });
     });
 
-    it("reports both when a description hits both", () => {
+    it("reports missing headings, empty sections, and surviving prompts when a description hits all three", () => {
       expect.hasAssertions();
 
       const verdict = check(
-        `${validBody.replace("## 🔗 Related", "## Related")}\n<!-- List of specific changes made -->`,
+        [
+          "## 🌰 Summary",
+          "",
+          "## 📝 Details",
+          "",
+          "- Adds the project",
+          "",
+          "## 🧪 Testing",
+          "",
+          "1. Run the suite",
+          "<!-- List of specific changes made -->",
+        ].join("\n"),
       );
 
       expect(verdict.missingHeadings).toStrictEqual(["## 🔗 Related"]);
+      expect(verdict.emptySections).toStrictEqual(["## 🌰 Summary"]);
       expect(verdict.unfilledComments).toStrictEqual([
         "<!-- List of specific changes made -->",
       ]);

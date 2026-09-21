@@ -8,6 +8,7 @@
  * is two round trips through a required check.
  */
 export interface BodyVerdict {
+  readonly emptySections: readonly string[];
   readonly missingHeadings: readonly string[];
   readonly unfilledComments: readonly string[];
 }
