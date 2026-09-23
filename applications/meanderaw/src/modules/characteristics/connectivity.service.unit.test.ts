@@ -3,6 +3,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 
 import { CodeService } from "../code/code.service";
 import { GraphService } from "../graph/graph.service";
+import { MatrixService } from "../matrix/matrix.service";
 import { SymmetryService } from "../symmetry/symmetry.service";
 import { TileService } from "../tile/tile.service";
 
@@ -11,13 +12,14 @@ import { ConnectivityService } from "./connectivity.service";
 // 🧪 Tests
 
 /**
- * Drives `ConnectivityService` through the decoder, so a case names
- * the Code it is about rather than a Code literal: these counts are read off
- * a Code in production, and a fixture written any other way would be
+ * Drives `ConnectivityService` through matrix representation, so a case names
+ * the Code it is about converted to Matrix: these counts are read off
+ * a Matrix in production, and a fixture written any other way would be
  * asserting something the pipeline never computes.
  */
 describe(ConnectivityService, () => {
   let codeService: CodeService;
+  let matrixService: MatrixService;
   let service: ConnectivityService;
 
   beforeAll(async () => {
@@ -25,6 +27,7 @@ describe(ConnectivityService, () => {
       providers: [
         ConnectivityService,
         CodeService,
+        MatrixService,
         SymmetryService,
         TileService,
         GraphService,
@@ -32,6 +35,7 @@ describe(ConnectivityService, () => {
     }).compile();
 
     codeService = await module.resolve(CodeService);
+    matrixService = await module.resolve(MatrixService);
     service = await module.resolve(ConnectivityService);
   });
 
@@ -80,19 +84,32 @@ describe(ConnectivityService, () => {
           "the `bars` tile `branch`'s comb and `parallel`'s one-strand bundle both address to: two separate bars, each terminating at both ends",
       },
     ])("reads $shape as $expected", ({ code, columns, expected, rows }) => {
-      expect(
-        service.connectivity(codeService.parse(code, rows, columns)),
-      ).toStrictEqual(expected);
+      const matrix = matrixService.fromCode(
+        codeService.parse(code, rows, columns),
+      );
+
+      expect(service.connectivity(matrix)).toStrictEqual(expected);
     });
 
     it("reads an edge claimed by only one of its two ends, which no well-formed Code spells but the reader still admits", () => {
-      expect(service.connectivity(codeService.parse("20", 1, 2))).toStrictEqual(
-        {
-          components: 1,
-          cycles: 0,
-          freeEnds: 2,
-        },
-      );
+      const matrix = matrixService.fromCode(codeService.parse("20", 1, 2));
+
+      expect(service.connectivity(matrix)).toStrictEqual({
+        components: 1,
+        cycles: 0,
+        freeEnds: 2,
+      });
+    });
+
+    it("handles empty matrices for connectivity, edges, and joinsEast", () => {
+      expect(service.connectivity([])).toStrictEqual({
+        components: 0,
+        cycles: 0,
+        freeEnds: 0,
+      });
+      expect(service.edges([], false)).toStrictEqual([]);
+      expect(service.joinsEast([], 0, 0)).toBe(false);
+      expect(service.joinsEast([[]], 0, 0)).toBe(false);
     });
   });
 });

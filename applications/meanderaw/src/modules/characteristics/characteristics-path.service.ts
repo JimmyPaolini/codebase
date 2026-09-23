@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 
 import { ConnectivityService } from "./connectivity.service";
 
-import type { CodeObject } from "../code/code.types";
+import type { Matrix } from "../matrix/matrix.types";
 
 /**
  * Service for analyzing single-arc paths to determine turning and reversing characteristics.
@@ -158,13 +158,23 @@ export class CharacteristicsPathService {
     const toPos = this.parseKey(to);
 
     if (fromPos.row === toPos.row) {
-      if (toPos.column === (fromPos.column + 1) % columns) return 1;
-      if (fromPos.column === (toPos.column + 1) % columns) return 3;
+      if (toPos.column === (fromPos.column + 1) % columns) {
+        return 1;
+      }
+      if (fromPos.column === (toPos.column + 1) % columns) {
+        return 3;
+      }
     }
+
     if (fromPos.column === toPos.column) {
-      if (toPos.row === fromPos.row + 1) return 2;
-      if (fromPos.row === toPos.row + 1) return 0;
+      if (toPos.row === fromPos.row + 1) {
+        return 2;
+      }
+      if (fromPos.row === toPos.row + 1) {
+        return 0;
+      }
     }
+
     return -1;
   }
 
@@ -276,13 +286,18 @@ export class CharacteristicsPathService {
   // 🌎 Public Methods
 
   /**
-   * Analyzes path directions in a junction-free code to determine turning properties.
+   * Analyzes path directions in a junction-free Matrix to determine turning properties.
    */
-  public analyzePaths(code: CodeObject): {
+  public analyzePaths(matrix: Matrix): {
     reversesAtItsTightestTurn: boolean;
     turnsMonotonically: boolean;
   } {
-    const edges = this.meanderConnectivityService.edges(code, false);
+    const columns = matrix[0]?.length ?? 0;
+    if (columns === 0 || matrix.length === 0) {
+      return { reversesAtItsTightestTurn: false, turnsMonotonically: false };
+    }
+
+    const edges = this.meanderConnectivityService.edges(matrix, false);
     if (edges.length === 0) {
       return { reversesAtItsTightestTurn: false, turnsMonotonically: false };
     }
@@ -294,7 +309,7 @@ export class CharacteristicsPathService {
       }
     }
 
-    return this.tracePaths(adjacency, code.columns);
+    return this.tracePaths(adjacency, columns);
   }
 
   /** Applies a turn to the metrics. */
