@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.18.1](https://github.com/JimmyPaolini/codebase/compare/v2.18.0...v2.18.1) (2026-09-23)
+
+### ♻️ Code Refactoring
+
+* **configuration,deployments:** :recycle: relocate root configuration files and rename compliance jobs ([#1032](https://github.com/JimmyPaolini/codebase/issues/1032)) ([951d98a](https://github.com/JimmyPaolini/codebase/commit/951d98a8ff30c056de7c57954bb05d3e75326327))
+
 ## [2.18.0](https://github.com/JimmyPaolini/codebase/compare/v2.17.0...v2.18.0) (2026-09-21)
 
 ### ✨ Features
