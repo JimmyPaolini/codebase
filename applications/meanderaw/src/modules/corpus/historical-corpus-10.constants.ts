@@ -108,13 +108,13 @@ export const HISTORICAL_CORPUS_10: readonly CorpusEntry[] = [
   {
     code: "6333333354c6333335cccc63335cccccc635cccccccc69cccccccca39cccccca3339cccca333339c8a33333339",
     columns: 10,
-    filedUnder: ["snake", "whirl"],
+    filedUnder: ["whirl"],
     rows: 9,
   },
   {
     code: "46333333356333333354cc6333335cc6333335ccccc63335cccc63335ccccccc635cccccc635cccccccca5cccccccc69ccccccca39cccccccca39ccccca3339cccccca3339ccca333339cccca333339ca3333333988a33333339",
     columns: 20,
-    filedUnder: ["snake"],
+    filedUnder: ["whirl"],
     rows: 9,
   },
   {
@@ -132,13 +132,13 @@ export const HISTORICAL_CORPUS_10: readonly CorpusEntry[] = [
   {
     code: "63333333354c63333335cccc633335cccccc6335cccccccc65cccccccccca9cccccccca339cccccca33339cccca3333339c8a333333339",
     columns: 11,
-    filedUnder: ["snake", "whirl"],
+    filedUnder: ["whirl"],
     rows: 10,
   },
   {
     code: "4633333333563333333354cc63333335cc63333335ccccc633335cccc633335ccccccc6335cccccc6335ccccccccc65cccccccc65ccccccccca9cccccccccca9ccccccca339cccccccca339ccccca33339cccccca33339ccca3333339cccca3333339ca33333333988a333333339",
     columns: 22,
-    filedUnder: ["snake"],
+    filedUnder: ["whirl"],
     rows: 10,
   },
   {
@@ -156,13 +156,13 @@ export const HISTORICAL_CORPUS_10: readonly CorpusEntry[] = [
   {
     code: "633333333354c633333335cccc6333335cccccc63335cccccccc635cccccccccc69cccccccccca39cccccccca3339cccccca333339cccca33333339c8a3333333339",
     columns: 12,
-    filedUnder: ["snake", "whirl"],
+    filedUnder: ["whirl"],
     rows: 11,
   },
   {
     code: "463333333335633333333354cc633333335cc633333335ccccc6333335cccc6333335ccccccc63335cccccc63335ccccccccc635cccccccc635cccccccccca5cccccccccc69ccccccccca39cccccccccca39ccccccca3339cccccccca3339ccccca333339cccccca333339ccca33333339cccca33333339ca333333333988a3333333339",
     columns: 24,
-    filedUnder: ["snake"],
+    filedUnder: ["whirl"],
     rows: 11,
   },
   {
@@ -177,11 +177,11 @@ export const HISTORICAL_CORPUS_10: readonly CorpusEntry[] = [
     filedUnder: ["snake"],
     rows: 11,
   },
-  { code: "6354c69c8a39", columns: 4, filedUnder: ["snake", "whirl"], rows: 3 },
+  { code: "6354c69c8a39", columns: 4, filedUnder: ["whirl"], rows: 3 },
   {
     code: "46356354ca5cc69ca3988a39",
     columns: 8,
-    filedUnder: ["snake"],
+    filedUnder: ["whirl"],
     rows: 3,
   },
   { code: "3356569a9a33", columns: 4, filedUnder: ["snake"], rows: 3 },
@@ -189,13 +189,13 @@ export const HISTORICAL_CORPUS_10: readonly CorpusEntry[] = [
   {
     code: "63354c65cccca9c8a339",
     columns: 5,
-    filedUnder: ["snake", "whirl"],
+    filedUnder: ["whirl"],
     rows: 4,
   },
   {
     code: "4633563354cc65cc65ccca9cccca9ca33988a339",
     columns: 10,
-    filedUnder: ["snake"],
+    filedUnder: ["whirl"],
     rows: 4,
   },
   {
@@ -208,13 +208,13 @@ export const HISTORICAL_CORPUS_10: readonly CorpusEntry[] = [
   {
     code: "633354c635cccc69cccca39c8a3339",
     columns: 6,
-    filedUnder: ["snake", "whirl"],
+    filedUnder: ["whirl"],
     rows: 5,
   },
   {
     code: "463335633354cc635cc635cccca5cccc69ccca39cccca39ca333988a3339",
     columns: 12,
-    filedUnder: ["snake"],
+    filedUnder: ["whirl"],
     rows: 5,
   },
   {
@@ -232,13 +232,13 @@ export const HISTORICAL_CORPUS_10: readonly CorpusEntry[] = [
   {
     code: "6333354c6335cccc65cccccca9cccca339c8a33339",
     columns: 7,
-    filedUnder: ["snake", "whirl"],
+    filedUnder: ["whirl"],
     rows: 6,
   },
   {
     code: "46333356333354cc6335cc6335ccccc65cccc65ccccca9cccccca9ccca339cccca339ca3333988a33339",
     columns: 14,
-    filedUnder: ["snake"],
+    filedUnder: ["whirl"],
     rows: 6,
   },
   {
@@ -256,13 +256,13 @@ export const HISTORICAL_CORPUS_10: readonly CorpusEntry[] = [
   {
     code: "63333354c63335cccc635cccccc69cccccca39cccca3339c8a333339",
     columns: 8,
-    filedUnder: ["snake", "whirl"],
+    filedUnder: ["whirl"],
     rows: 7,
   },
   {
     code: "4633333563333354cc63335cc63335ccccc635cccc635cccccca5cccccc69ccccca39cccccca39ccca3339cccca3339ca33333988a333339",
     columns: 16,
-    filedUnder: ["snake"],
+    filedUnder: ["whirl"],
     rows: 7,
   },
   {
@@ -280,13 +280,13 @@ export const HISTORICAL_CORPUS_10: readonly CorpusEntry[] = [
   {
     code: "633333354c633335cccc6335cccccc65cccccccca9cccccca339cccca33339c8a3333339",
     columns: 9,
-    filedUnder: ["snake", "whirl"],
+    filedUnder: ["whirl"],
     rows: 8,
   },
   {
     code: "463333335633333354cc633335cc633335ccccc6335cccc6335ccccccc65cccccc65ccccccca9cccccccca9ccccca339cccccca339ccca33339cccca33339ca333333988a3333339",
     columns: 18,
-    filedUnder: ["snake"],
+    filedUnder: ["whirl"],
     rows: 8,
   },
   {
