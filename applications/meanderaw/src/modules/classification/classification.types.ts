@@ -9,6 +9,7 @@ export type MeanderFamily =
   | "boxes"
   | "branch"
   | "chain"
+  | "clasps"
   | "cross"
   | "parallel"
   | "snake"

@@ -93,6 +93,7 @@ describe(ClassificationService, () => {
       "whirl",
       "swirl",
       "chain",
+      "clasps",
       "snake",
       "unclassified",
     ]);
@@ -188,6 +189,32 @@ describe(ClassificationService, () => {
       expect(service.classify(characteristics, shape)).toBe("swirl");
     });
 
+    it("classifies chain meanders with connected links correctly", () => {
+      const characteristics = createMockCharacteristics({
+        crossesTheSeam: true,
+        cycles: 0,
+        inkTJunctions: 0,
+        inkXJunctions: 0,
+        reversesAtItsTightestTurn: true,
+      });
+      const shape: MeanderShape = { columns: 4, rows: 3 };
+
+      expect(service.classify(characteristics, shape)).toBe("chain");
+    });
+
+    it("classifies clasps meanders with disconnected links correctly", () => {
+      const characteristics = createMockCharacteristics({
+        crossesTheSeam: false,
+        cycles: 0,
+        inkTJunctions: 0,
+        inkXJunctions: 0,
+        reversesAtItsTightestTurn: true,
+      });
+      const shape: MeanderShape = { columns: 4, rows: 3 };
+
+      expect(service.classify(characteristics, shape)).toBe("clasps");
+    });
+
     it("classifies snake meanders correctly", () => {
       const rows = 4;
       const pitch = rows - 1;
@@ -279,26 +306,40 @@ describe(ClassificationService, () => {
       expect(service.classify(branch, { columns: 3, rows: 4 })).toBe("branch");
     });
 
-    it("evaluates chain rule matches directly", () => {
+    it("evaluates chain and clasps rule matches directly", () => {
       const rows = 4;
       const pitch = rows - 1;
-      const characteristics = createMockCharacteristics({
-        components: 1,
-        cycles: 0,
-        freeEnds: 2,
-        inkTJunctions: 0,
-        inkXJunctions: 0,
-        isSingleArc: true,
-        pitch,
-      });
-      const structure = {
-        characteristics,
+      const chainStructure = {
+        characteristics: createMockCharacteristics({
+          crossesTheSeam: true,
+          cycles: 0,
+          inkTJunctions: 0,
+          inkXJunctions: 0,
+          pitch,
+          reversesAtItsTightestTurn: true,
+        }),
+        columns: pitch,
+        rows,
+      };
+      const claspsStructure = {
+        characteristics: createMockCharacteristics({
+          crossesTheSeam: false,
+          cycles: 0,
+          inkTJunctions: 0,
+          inkXJunctions: 0,
+          pitch,
+          reversesAtItsTightestTurn: true,
+        }),
         columns: pitch,
         rows,
       };
       const chainRule = service.rules().find((r) => r.name === "chain");
+      const claspsRule = service.rules().find((r) => r.name === "clasps");
 
-      expect(chainRule?.matches(structure)).toBe(true);
+      expect(chainRule?.matches(chainStructure)).toBe(true);
+      expect(chainRule?.matches(claspsStructure)).toBe(false);
+      expect(claspsRule?.matches(claspsStructure)).toBe(true);
+      expect(claspsRule?.matches(chainStructure)).toBe(false);
     });
 
     it("tests individual branch conditions for isBundle, isArc, and isClosedLoop", () => {

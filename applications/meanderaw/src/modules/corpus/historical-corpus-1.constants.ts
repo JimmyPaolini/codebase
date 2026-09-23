@@ -424,13 +424,13 @@ export const HISTORICAL_CORPUS_1: readonly CorpusEntry[] = [
   {
     code: "6333333354c6333335cccc63335cccccc635cccccccc48cccccccca39cccccca3339cccca333339c8a33333339",
     columns: 10,
-    filedUnder: ["chain"],
+    filedUnder: ["clasps"],
     rows: 9,
   },
   {
     code: "46333333356333333354cc6333335cc6333335ccccc63335cccc63335ccccccc635cccccc635cccccccc84cccccccc48ccccccca39cccccccca39ccccca3339cccccca3339ccca333339cccca333339ca3333333988a33333339",
     columns: 20,
-    filedUnder: ["chain"],
+    filedUnder: ["clasps"],
     rows: 9,
   },
   {
@@ -448,13 +448,13 @@ export const HISTORICAL_CORPUS_1: readonly CorpusEntry[] = [
   {
     code: "63333333354c63333335cccc633335cccccc6335cccccccc61cccccccccc29cccccccca339cccccca33339cccca3333339c8a333333339",
     columns: 11,
-    filedUnder: ["chain"],
+    filedUnder: ["clasps"],
     rows: 10,
   },
   {
     code: "4633333333563333333354cc63333335cc63333335ccccc633335cccc633335ccccccc6335cccccc6335ccccccccc25cccccccc61ccccccccca1cccccccccc29ccccccca339cccccccca339ccccca33339cccccca33339ccca3333339cccca3333339ca33333333988a333333339",
     columns: 22,
-    filedUnder: ["chain"],
+    filedUnder: ["clasps"],
     rows: 10,
   },
   {
@@ -472,7 +472,7 @@ export const HISTORICAL_CORPUS_1: readonly CorpusEntry[] = [
   {
     code: "633333333354c633333335cccc6333335cccccc63335cccccccc635cccccccccc48cccccccccca39cccccccca3339cccccca333339cccca33333339c8a3333333339",
     columns: 12,
-    filedUnder: ["chain"],
+    filedUnder: ["clasps"],
     rows: 11,
   },
 ];

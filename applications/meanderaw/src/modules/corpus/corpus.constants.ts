@@ -15,6 +15,7 @@ export const CORPUS_FAMILIES: readonly CorpusFamily[] = [
   "boxes",
   "branch",
   "chain",
+  "clasps",
   "cross",
   "negative",
   "parallel",

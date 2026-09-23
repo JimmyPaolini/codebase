@@ -44,6 +44,7 @@ export type CorpusFamily =
   | "boxes"
   | "branch"
   | "chain"
+  | "clasps"
   | "cross"
   | "negative"
   | "parallel"
