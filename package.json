@@ -103,6 +103,9 @@
   "license": "MIT",
   "name": "codebase",
   "packageManager": "pnpm@12.4.2",
+  "release": {
+    "extends": "./configuration/release.config.cjs"
+  },
   "repository": "JimmyPaolini/codebase.git",
   "scripts": {
     "postinstall": "conformetry-nx-bootstrap && bash scripts/install-skills.sh",

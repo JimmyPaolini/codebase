@@ -55,7 +55,7 @@ export const BREAKING_CHANGE_FOOTER_PATTERN = /BREAKING[ -]CHANGE:/u;
  * Read fresh on every run rather than copied here, so a `releaseRules` change
  * needs no matching change in this check — the two cannot drift apart.
  */
-export const RELEASE_CONFIG_PATH = "release.config.cjs";
+export const RELEASE_CONFIG_PATH = "configuration/release.config.cjs";
 
 /** The plugin entry in `release.config.cjs` whose options hold `releaseRules`. */
 export const COMMIT_ANALYZER_PLUGIN_NAME = "@semantic-release/commit-analyzer";

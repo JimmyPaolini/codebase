@@ -21,8 +21,8 @@ CHANGELOG.md
 # Generated files
 **/routeTree.gen.ts
 applications/lexico/src/routeTree.gen.ts
+.claude/CLAUDE.md
 .github/copilot-instructions.md
-CLAUDE.md
 lint-staged.config.ts
 **/packages/lexico-components/src/components/**
 **/packages/lexico-components/src/hooks/**

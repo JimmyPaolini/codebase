@@ -712,7 +712,6 @@ overrides:
   markdown-it@<=14.1.1: ^14.2.0
   ws@>=8.0.0 <8.21.0: ^8.21.0
 
-pnpmfileChecksum: sha256-7t6Un+VI6tKofTaz+YQo4KWFj/1Rz+TGhIMRXYI19Xw=
 
 patchedDependencies:
   nestjs-spelunker@1.3.2: 0512c9ba84b256155ad0e226021313026d21c2ef7afc477f2ed655576af37055

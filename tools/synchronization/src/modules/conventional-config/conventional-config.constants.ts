@@ -14,7 +14,7 @@
  * carry the markers.
  */
 export const SYNC_CONVENTIONAL_CONFIG_MARKDOWN_FILES = [
-  "CONTRIBUTING.md",
+  ".github/CONTRIBUTING.md",
   ".agents/skills/checkout-branch/SKILL.md",
   ".agents/skills/commit-code/SKILL.md",
   ".agents/skills/create-pull-request/SKILL.md",

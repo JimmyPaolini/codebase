@@ -705,7 +705,7 @@ pnpm exec nx run codebase:check-lockfile
 
 ## Related Documentation
 
-- [CONTRIBUTING.md](../CONTRIBUTING.md) - Contribution guidelines
+- [CONTRIBUTING.md](../.github/CONTRIBUTING.md) - Contribution guidelines
 - [scripts/utilities.sh](./utilities.sh) - Common utility functions
 - [.github/workflows/](../.github/workflows/) - CI/CD workflows using these scripts
 

@@ -51,7 +51,7 @@ This skill teaches how to write commit messages for this codebase. All commits *
 
 ### Release Significance
 
-This repository squash-merges pull requests with `PR_TITLE`, so the **pull request title, not any individual commit, is what semantic-release reads**. [release.config.cjs](../../../release.config.cjs)'s `releaseRules` map each type above to a version bump:
+This repository squash-merges pull requests with `PR_TITLE`, so the **pull request title, not any individual commit, is what semantic-release reads**. [release.config.cjs](../../../configuration/release.config.cjs)'s `releaseRules` map each type above to a version bump:
 
 | Types                                                                   | Bump              |
 | ----------------------------------------------------------------------- | ----------------- |

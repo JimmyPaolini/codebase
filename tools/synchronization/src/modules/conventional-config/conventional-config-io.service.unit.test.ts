@@ -50,7 +50,10 @@ describe(ConventionalConfigIoService, () => {
   let service: ConventionalConfigIoService;
 
   const workspaceRoot = process.cwd();
-  const releaseConfigFile = path.join(workspaceRoot, "release.config.cjs");
+  const releaseConfigFile = path.join(
+    workspaceRoot,
+    "configuration/release.config.cjs",
+  );
   const settingsFile = path.join(workspaceRoot, ".vscode/settings.json");
 
   beforeAll(async () => {

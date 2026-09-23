@@ -128,7 +128,7 @@ A modern TypeScript codebase with Nx, featuring automated releases, comprehensiv
 
 ### Getting Started & Workflow
 
-- [Contributing Guide](CONTRIBUTING.md) - **Start here.** Local and dev container setup, the commands to run, code standards, branch and commit conventions, pull requests, and releases
+- [Contributing Guide](.github/CONTRIBUTING.md) - **Start here.** Local and dev container setup, the commands to run, code standards, branch and commit conventions, pull requests, and releases
 - [AGENTS.md](AGENTS.md) - Commands, project layout, conventions, code quality gates, and git workflow
 - [Release Process](documentation/development/release-process.md) - Automated semantic versioning and changelogs
 
@@ -153,7 +153,7 @@ Skills are specialized instruction files used by our automated agents, but they 
 - **Tooling:** [Nx Workspaces](.agents/skills/nx-workspace/SKILL.md) / [Generators](.agents/skills/nx-generate/SKILL.md) / [Task Running](.agents/skills/nx-run-tasks/SKILL.md)
 - **Triage:** [Failing CI](.agents/skills/triage-integration/SKILL.md) / [Rejected Commits](.agents/skills/triage-integration/SKILL.md) / [Spell Check](.agents/skills/spell-check/SKILL.md)
 
-Other important files include [CHANGELOG.md](CHANGELOG.md) and [SECURITY.md](SECURITY.md).
+Other important files include [CHANGELOG.md](CHANGELOG.md) and [SECURITY.md](.github/SECURITY.md).
 
 ## 👔 Conformetry
 

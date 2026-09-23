@@ -56,11 +56,11 @@
         "{workspaceRoot}/.agents/skills/create-pull-request/SKILL.md",
         "{workspaceRoot}/.agents/skills/rename-branch/SKILL.md",
         "{workspaceRoot}/.agents/skills/triage-integration/SKILL.md",
+        "{workspaceRoot}/.github/CONTRIBUTING.md",
         "{workspaceRoot}/.github/ISSUE_TEMPLATE/issue.yml",
         "{workspaceRoot}/.vscode/settings.json",
         "{workspaceRoot}/configuration/conventional.config.cjs",
-        "{workspaceRoot}/CONTRIBUTING.md",
-        "{workspaceRoot}/release.config.cjs",
+        "{workspaceRoot}/configuration/release.config.cjs",
         "shared-globals"
       ],
       "options": {

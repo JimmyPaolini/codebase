@@ -223,7 +223,7 @@ implementation run legitimate. Five repository rules override
   this session's job.** One ticket per pull request, and name each branch or at
   least the type and scope every branch must take — a squashed title is all
   semantic-release ever sees, so the ticket split decides
-  [Release Significance](CONTRIBUTING.md#release-significance). Then give the dependency order:
+  [Release Significance](.github/CONTRIBUTING.md#release-significance). Then give the dependency order:
   which tickets are independent and run in parallel off `main`, and which stack
   with [gh-stack](.agents/skills/gh-stack/SKILL.md) because one needs another's
   branch underneath it. "This session's job" means dispatching and
@@ -252,7 +252,7 @@ nx show projects
 `nx run codebase:check-readme-projects` fails when it misses one.
 
 **A commit scope is not a project.** The scope vocabulary is the closed set in
-[Conventional Naming](CONTRIBUTING.md#commit-guidelines), and it collapses each toolchain to
+[Conventional Naming](.github/CONTRIBUTING.md#commit-guidelines), and it collapses each toolchain to
 a single name: every `callidescope-*`, `codependix-*`, `codometer-*`, and
 `conformetry-*` package commits under `callidescope`, `codependix`, `codometer`,
 and `conformetry` respectively. Deriving a scope from a directory name is how an
@@ -264,7 +264,7 @@ invented scope fails validation.
 - If a request spans multiple projects or scopes, complete the first project end-to-end before starting the next one.
 - If the work is truly independent across projects, split it into separate subagents or separate passes so each agent stays project-scoped.
 - Avoid mixing unrelated project changes in one context unless the task is explicitly orchestrating them.
-- This also keeps a pull request's commits at one release significance: see [Release Significance](CONTRIBUTING.md#release-significance) for why a branch that stays within one project or module rarely accumulates a commit more significant than the type its title was going to use.
+- This also keeps a pull request's commits at one release significance: see [Release Significance](.github/CONTRIBUTING.md#release-significance) for why a branch that stays within one project or module rarely accumulates a commit more significant than the type its title was going to use.
 
 ## Code Quality & Conventions
 
@@ -319,7 +319,7 @@ For naming conventions, abbreviations, formatting, and language-specific rules, 
 
 ## Git Workflow
 
-[`CONTRIBUTING.md`](CONTRIBUTING.md) contains the full narrative for worktrees, hooks, branch naming, commits, releases, and the pull request process. **Do not execute raw Git commands for these workflows.** Instead, rely entirely on the provided skills which inherently enforce this repository's conventions:
+[`CONTRIBUTING.md`](.github/CONTRIBUTING.md) contains the full narrative for worktrees, hooks, branch naming, commits, releases, and the pull request process. **Do not execute raw Git commands for these workflows.** Instead, rely entirely on the provided skills which inherently enforce this repository's conventions:
 
 - **Worktrees & Branches**: Use [using-git-worktrees](.agents/skills/using-git-worktrees/SKILL.md) and [checkout-branch](.agents/skills/checkout-branch/SKILL.md).
 - **Commits**: Use [commit-code](.agents/skills/commit-code/SKILL.md) to generate Conventional Commits with Gitmoji.

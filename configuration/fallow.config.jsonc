@@ -20,7 +20,6 @@
   },
   "entry": [
     "**/scripts/**/*.{js,mjs,ts,sh}",
-    ".pnpmfile.mjs",
     "{applications,packages,tools}/**/src/index.ts",
     "{applications,packages,tools}/**/src/main.ts",
     "{applications,packages,tools}/**/src/modules/**/*.module.ts",
@@ -72,7 +71,7 @@
     "applications/lexico/src/lib/routeTree.gen.ts",
     "applications/lexico/src/router.tsx",
     "packages/lexico-entities/src/modules/database/migrations/**/*.ts",
-    "release.config.cjs",
+    "configuration/release.config.cjs",
     "validate-branch-name.config.cjs",
   ],
   "health": {
