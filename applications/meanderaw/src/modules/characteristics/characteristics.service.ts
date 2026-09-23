@@ -9,7 +9,6 @@ import { CharacteristicsPathService } from "./characteristics-path.service";
 import { CharacteristicsShapeService } from "./characteristics-shape.service";
 import { ConnectivityService } from "./connectivity.service";
 
-import type { CodeService as ICodeService } from "../code/code.service";
 import type { CodeObject } from "../code/code.types";
 import type { Matrix, MatrixPoint } from "../matrix/matrix.types";
 import type {

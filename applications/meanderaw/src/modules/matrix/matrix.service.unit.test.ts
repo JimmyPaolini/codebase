@@ -186,6 +186,9 @@ describe(MatrixService, () => {
     it("returns BARE_MATRIX_POINT for empty matrix", () => {
       expect(service.pointAt([], 0, 0)).toStrictEqual(BARE_MATRIX_POINT);
       expect(service.pointAt([[]], 0, 0)).toStrictEqual(BARE_MATRIX_POINT);
+      expect(service.pointAt([[undefined as never]], 0, 0)).toStrictEqual(
+        BARE_MATRIX_POINT,
+      );
     });
   });
 
@@ -278,6 +281,27 @@ describe(MatrixService, () => {
       expect(service.submatrices(matrix, 2, 0)).toStrictEqual([]);
       expect(service.submatrices([], 1, 1)).toStrictEqual([]);
       expect(service.submatrices([[]], 1, 1)).toStrictEqual([]);
+    });
+
+    it("falls back to BARE_MATRIX_POINT for ragged matrix rows during submatrix extraction", () => {
+      const raggedMatrix = [[BARE_MATRIX_POINT, BARE_MATRIX_POINT], []];
+      const submatrices = service.submatrices(raggedMatrix, 2, 2);
+
+      expect(submatrices[0]?.matrix[1]?.[0]).toStrictEqual(BARE_MATRIX_POINT);
+    });
+  });
+
+  describe("toCode edge cases", () => {
+    it("returns 00x00y for empty matrices", () => {
+      expect(service.toCode([])).toBe("00x00y");
+      expect(service.toCode([[]])).toBe("00x00y");
+    });
+
+    it("formats with repeats > 1", () => {
+      const matrix = service.fromCode("02x02y36c9");
+      const codeWithRepeats = service.toCode(matrix, 2);
+
+      expect(codeWithRepeats).toBe("02x02y36c9r02");
     });
   });
 });

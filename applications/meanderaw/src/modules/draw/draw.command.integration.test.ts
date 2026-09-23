@@ -18,6 +18,7 @@ import { Meander } from "../database/entities/Meander.entity";
 import { DrawingModule } from "../drawing/drawing.module";
 import { GeometryService } from "../geometry/geometry.service";
 import { GraphService } from "../graph/graph.service";
+import { MatrixModule } from "../matrix/matrix.module";
 import { SvgService } from "../svg/svg.service";
 import { TileService } from "../tile/tile.service";
 
@@ -57,6 +58,7 @@ describe("drawCommand --code mode", () => {
         TypeOrmModule.forFeature([Meander]),
         CodeModule,
         DrawingModule,
+        MatrixModule,
       ],
       providers: [
         DrawCommand,

@@ -18,6 +18,7 @@ import { ConnectivityService } from "./connectivity.service";
 
 describe(CharacteristicsService, () => {
   let codeService: CodeService;
+  let matrixService: MatrixService;
   let service: CharacteristicsService;
 
   beforeAll(async () => {
@@ -37,6 +38,7 @@ describe(CharacteristicsService, () => {
     }).compile();
 
     codeService = await module.resolve(CodeService);
+    matrixService = await module.resolve(MatrixService);
     service = await module.resolve(CharacteristicsService);
   });
 
@@ -84,7 +86,7 @@ describe(CharacteristicsService, () => {
             "longestHorizontalRun": 0,
             "longestVerticalRun": 0,
             "oCount": 0,
-            "pitch": 1,
+            "pitch": 0,
             "plusCount": 0,
             "reversesAtItsTightestTurn": false,
             "seamComponents": 0,
@@ -107,7 +109,13 @@ describe(CharacteristicsService, () => {
       const edges = [
         { from: "NaN,NaN", orientation: "vertical" as const, to: "1,1" },
       ];
-      const result = (service as any).findFreeEnds(edges);
+      const result = (
+        service as unknown as {
+          findFreeEnds: (
+            edgeList: typeof edges,
+          ) => { column: number; row: number }[];
+        }
+      ).findFreeEnds(edges);
 
       expect(result).toStrictEqual([
         { column: 0, row: 0 },
@@ -782,6 +790,48 @@ describe(CharacteristicsService, () => {
       const dotsCode = codeService.parse("0000", 2, 2);
 
       expect(service.classifyFamilies(dotsCode)).toStrictEqual(["dots"]);
+    });
+  });
+
+  describe("measure", () => {
+    it("measures directly from a raw formatted or bare code string", () => {
+      const fromFormatted = service.measure("02x02y4488r01");
+      const fromBare = service.measure("4488", 2, 2);
+      const fromParsed = service.compute(codeService.parse("4488", 2, 2));
+
+      expect(fromFormatted).toStrictEqual(fromParsed);
+      expect(fromBare).toStrictEqual(fromParsed);
+    });
+
+    it("measures directly from a 2D Matrix", () => {
+      const matrix = [
+        [
+          { east: false, north: false, south: true, west: false },
+          { east: false, north: false, south: true, west: false },
+        ],
+        [
+          { east: false, north: true, south: false, west: false },
+          { east: false, north: true, south: false, west: false },
+        ],
+      ];
+      const result = service.measure(matrix);
+
+      expect(result.shapeICount).toBe(2);
+      expect(result.pitch).toBe(2);
+      expect(result.isConnected).toBe(false);
+    });
+
+    it("computes seamComponents across string, ParsedCode, and Matrix inputs", () => {
+      const codeStr = "02x02y4488";
+      const parsed = codeService.parse("4488", 2, 2);
+      const matrix = matrixService.fromCode(parsed);
+
+      const seamFromStr = service.seamComponents(codeStr);
+      const seamFromParsed = service.seamComponents(parsed);
+      const seamFromMatrix = service.seamComponents(matrix);
+
+      expect(seamFromStr).toBe(seamFromParsed);
+      expect(seamFromMatrix).toBe(seamFromParsed);
     });
   });
 

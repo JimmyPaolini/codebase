@@ -148,4 +148,29 @@ describe(CharacteristicsShapeService, () => {
 
     expect(result5.embeddedUCount).toBeGreaterThan(0);
   });
+
+  it("handles empty matrix or matrices smaller than 2x2", () => {
+    expect(service.tallyUnitShapes([])).toStrictEqual({
+      embeddedOCount: 0,
+      embeddedUCount: 0,
+      horizontalDashCount: 0,
+      lCount: 0,
+      oCount: 0,
+      plusCount: 0,
+      shapeICount: 0,
+      uCount: 0,
+      verticalDashCount: 0,
+    });
+    expect(service.tallyUnitShapes([[]])).toStrictEqual({
+      embeddedOCount: 0,
+      embeddedUCount: 0,
+      horizontalDashCount: 0,
+      lCount: 0,
+      oCount: 0,
+      plusCount: 0,
+      shapeICount: 0,
+      uCount: 0,
+      verticalDashCount: 0,
+    });
+  });
 });

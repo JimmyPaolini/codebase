@@ -104,6 +104,16 @@ describe(TileService, () => {
         service.build({ columns: 2, rows: 3 }, service.edges(tile)),
       ).toStrictEqual(tile);
     });
+
+    it("handles sparse edges when building a tile", () => {
+      const built = service.build(
+        { columns: 1, rows: 2 },
+        { horizontal: [], vertical: [] },
+      );
+
+      expect(built.points[0]?.[0]).toStrictEqual(BARE);
+      expect(built.points[1]?.[0]).toStrictEqual(BARE);
+    });
   });
 
   describe("degree", () => {
@@ -237,6 +247,26 @@ describe(TileService, () => {
       expect(() => service.assertWellFormed(tile)).toThrow(
         /the first row carries no north/u,
       );
+    });
+
+    it("accepts north on non-zero rows when matching south above", () => {
+      const tile: Tile = {
+        columns: 1,
+        points: [[{ ...BARE, south: true }], [{ ...BARE, north: true }]],
+        rows: 2,
+      };
+
+      expect(() => service.assertWellFormed(tile)).not.toThrow();
+    });
+
+    it("refuses ragged rows where point or rightward point is missing", () => {
+      const tile: Tile = {
+        columns: 2,
+        points: [[BARE, undefined as never]],
+        rows: 1,
+      };
+
+      expect(() => service.assertWellFormed(tile)).toThrow(/row 0 is ragged/u);
     });
   });
 });
