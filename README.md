@@ -38,8 +38,8 @@
 [![Terraform](https://img.shields.io/badge/Terraform-IaC-844FBA?logo=terraform)](https://www.terraform.io/)
 
 [![Continuous Integration](https://github.com/JimmyPaolini/codebase/actions/workflows/continuous-integration.yml/badge.svg)](https://github.com/JimmyPaolini/codebase/actions/workflows/continuous-integration.yml)
-[![Continuous Compliance](https://github.com/JimmyPaolini/codebase/actions/workflows/continuous-compliance.yml/badge.svg)](https://github.com/JimmyPaolini/codebase/actions/workflows/continuous-compliance.yml)
 [![Continuous Deployment](https://github.com/JimmyPaolini/codebase/actions/workflows/continuous-deployment.yml/badge.svg)](https://github.com/JimmyPaolini/codebase/actions/workflows/continuous-deployment.yml)
+[![Continuous Compliance](https://github.com/JimmyPaolini/codebase/actions/workflows/continuous-compliance.yml/badge.svg)](https://github.com/JimmyPaolini/codebase/actions/workflows/continuous-compliance.yml)
 
 A modern TypeScript codebase with Nx, featuring automated releases, comprehensive code quality tools, and strict type safety.
 
@@ -107,8 +107,6 @@ A modern TypeScript codebase with Nx, featuring automated releases, comprehensiv
 
 </details>
 
-**[infrastructure](infrastructure)** - Helm charts, Terraform, Kubernetes infrastructure\
-**[JimmyPaolini](applications/JimmyPaolini)** - GitHub profile site
 <details>
 <summary><strong>🐺 lexico</strong> - Latin-English dictionary suite: the web application, its components, its schema, and the ingestion that fills it</summary>
 
@@ -120,7 +118,9 @@ A modern TypeScript codebase with Nx, featuring automated releases, comprehensiv
 </details>
 
 **🪵 [logger](packages/logger)** - Shared pino-backed NestJS `LoggerService` and `LoggerModule`\
-**🏺 [meanderaw](applications/meanderaw)** - CLI that generates Greek meander (key/fret) SVG patterns programmatically from a type, row count, and repeat count\
+**🏺 [meanderaw](applications/meanderaw)** - CLI that generates Greek meander (key/fret) SVG patterns programmatically from a type, row count, and repeat count
+
+**[JimmyPaolini](applications/JimmyPaolini)** - GitHub profile site\
 **↔️ [synchronization](tools/synchronization)** - NestJS CLI that regenerates the workspace's derived configuration and documentation, and fails CI when they drift\
 **🧑‍⚖️ [validation](tools/validation)** - NestJS CLI for the repository's one-sided checks, the ones with a check and no write, such as the pull request metadata gate
 
