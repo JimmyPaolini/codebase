@@ -150,10 +150,21 @@ export class ClassificationService {
       },
       {
         matches: (structure) =>
-          this.isArc(structure) &&
-          structure.characteristics.pitch === structure.rows - 1 &&
+          this.isJunctionFree(structure) &&
+          structure.characteristics.cycles === 0 &&
+          structure.characteristics.crossesTheSeam &&
+          structure.characteristics.reversesAtItsTightestTurn &&
           this.reachesMinimumRows(structure, "chain"),
         name: "chain",
+      },
+      {
+        matches: (structure) =>
+          this.isJunctionFree(structure) &&
+          structure.characteristics.cycles === 0 &&
+          !structure.characteristics.crossesTheSeam &&
+          structure.characteristics.reversesAtItsTightestTurn &&
+          this.reachesMinimumRows(structure, "clasps"),
+        name: "clasps",
       },
       {
         matches: (structure) =>

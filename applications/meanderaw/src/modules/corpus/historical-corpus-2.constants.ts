@@ -20,7 +20,7 @@ export const HISTORICAL_CORPUS_2: readonly CorpusEntry[] = [
   {
     code: "463333333335633333333354cc633333335cc633333335ccccc6333335cccc6333335ccccccc63335cccccc63335ccccccccc635cccccccc635cccccccccc84cccccccccc48ccccccccca39cccccccccca39ccccccca3339cccccccca3339ccccca333339cccccca333339ccca33333339cccca33333339ca333333333988a3333333339",
     columns: 24,
-    filedUnder: ["chain"],
+    filedUnder: ["clasps"],
     rows: 11,
   },
   {
@@ -35,20 +35,20 @@ export const HISTORICAL_CORPUS_2: readonly CorpusEntry[] = [
     filedUnder: ["chain"],
     rows: 11,
   },
-  { code: "6354c48c8a39", columns: 4, filedUnder: ["chain"], rows: 3 },
+  { code: "6354c48c8a39", columns: 4, filedUnder: ["clasps"], rows: 3 },
   {
     code: "46356354c84cc48ca3988a39",
     columns: 8,
-    filedUnder: ["chain"],
+    filedUnder: ["clasps"],
     rows: 3,
   },
   { code: "335644889a33", columns: 4, filedUnder: ["chain"], rows: 3 },
   { code: "635c489a3", columns: 3, filedUnder: ["chain"], rows: 3 },
-  { code: "63354c61cccc29c8a339", columns: 5, filedUnder: ["chain"], rows: 4 },
+  { code: "63354c61cccc29c8a339", columns: 5, filedUnder: ["clasps"], rows: 4 },
   {
     code: "4633563354cc25cc61ccca1cccc29ca33988a339",
     columns: 10,
-    filedUnder: ["chain"],
+    filedUnder: ["clasps"],
     rows: 4,
   },
   {
@@ -61,13 +61,13 @@ export const HISTORICAL_CORPUS_2: readonly CorpusEntry[] = [
   {
     code: "633354c635cccc48cccca39c8a3339",
     columns: 6,
-    filedUnder: ["chain"],
+    filedUnder: ["clasps"],
     rows: 5,
   },
   {
     code: "463335633354cc635cc635cccc84cccc48ccca39cccca39ca333988a3339",
     columns: 12,
-    filedUnder: ["chain"],
+    filedUnder: ["clasps"],
     rows: 5,
   },
   {
@@ -85,13 +85,13 @@ export const HISTORICAL_CORPUS_2: readonly CorpusEntry[] = [
   {
     code: "6333354c6335cccc61cccccc29cccca339c8a33339",
     columns: 7,
-    filedUnder: ["chain"],
+    filedUnder: ["clasps"],
     rows: 6,
   },
   {
     code: "46333356333354cc6335cc6335ccccc25cccc61ccccca1cccccc29ccca339cccca339ca3333988a33339",
     columns: 14,
-    filedUnder: ["chain"],
+    filedUnder: ["clasps"],
     rows: 6,
   },
   {
@@ -109,13 +109,13 @@ export const HISTORICAL_CORPUS_2: readonly CorpusEntry[] = [
   {
     code: "63333354c63335cccc635cccccc48cccccca39cccca3339c8a333339",
     columns: 8,
-    filedUnder: ["chain"],
+    filedUnder: ["clasps"],
     rows: 7,
   },
   {
     code: "4633333563333354cc63335cc63335ccccc635cccc635cccccc84cccccc48ccccca39cccccca39ccca3339cccca3339ca33333988a333339",
     columns: 16,
-    filedUnder: ["chain"],
+    filedUnder: ["clasps"],
     rows: 7,
   },
   {
@@ -133,13 +133,13 @@ export const HISTORICAL_CORPUS_2: readonly CorpusEntry[] = [
   {
     code: "633333354c633335cccc6335cccccc61cccccccc29cccccca339cccca33339c8a3333339",
     columns: 9,
-    filedUnder: ["chain"],
+    filedUnder: ["clasps"],
     rows: 8,
   },
   {
     code: "463333335633333354cc633335cc633335ccccc6335cccc6335ccccccc25cccccc61ccccccca1cccccccc29ccccca339cccccca339ccca33339cccca33339ca333333988a3333339",
     columns: 18,
-    filedUnder: ["chain"],
+    filedUnder: ["clasps"],
     rows: 8,
   },
   {
