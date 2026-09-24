@@ -48,7 +48,7 @@ vi.mock("node:fs/promises", () => ({
  * rather than hand-listed. A budget raised in `EDGE_BUDGET` moves this
  * number, and should fail here rather than pass quietly.
  */
-const HISTORICAL_CORPUS_BEYOND_ENUMERATION = 965;
+const HISTORICAL_CORPUS_BEYOND_ENUMERATION = 991;
 
 /**
  * Drives the whole of `DrawCommand`'s sweep — the generalized enumeration,
@@ -153,7 +153,7 @@ describe("drawCommand sweep mode", () => {
           (total, shape) => total + enumeration.enumerate(shape).length,
           0,
         );
-      const expectedHardcoded = 902;
+      const expectedHardcoded = 928;
 
       await command.run([], {});
 
@@ -193,7 +193,7 @@ describe("drawCommand sweep mode", () => {
   );
 
   it(
-    "ingests exactly the 965 entries the retired constants files held, computed from the sweep's own reach rather than listed",
+    "ingests exactly the 991 entries the retired constants files held, computed from the sweep's own reach rather than listed",
     () => {
       expect(
         HISTORICAL_CORPUS.filter((entry) => corpus.isBeyondEnumeration(entry)),
