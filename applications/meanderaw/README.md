@@ -2004,10 +2004,10 @@ Call stacks traced through `applications/meanderaw`, deepest first. Each frame s
 
 | Measure | Value |
 | --- | --- |
-| Callables | 279 |
+| Callables | 280 |
 | Files | 92 |
-| Calls traced | 337 |
-| Call stacks | 19 |
+| Calls traced | 339 |
+| Call stacks | 20 |
 | Deepest stack | 16 |
 | Stacks through recursion | 0 |
 | Unfollowable calls | 16 |
@@ -2092,7 +2092,7 @@ What this project is judged against, as declared in its own `callidescope.config
 ```
 
 <details>
-<summary>16 more call stacks</summary>
+<summary>17 more call stacks</summary>
 
 **4. `CodeService.tile`** — depth 5 · orphan-root
 
@@ -2172,24 +2172,14 @@ What this project is judged against, as declared in its own `callidescope.config
 **11. `ClassificationService.matches`** — depth 3 · orphan-root
 
 ```text
-🚀 ClassificationService.matches(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:152]
-  └─> ClassificationService.isArc(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:31]
-     ↳ Whether a repeat's ink is one open arc with two ends and no junctions.
-    └─> ClassificationService.isJunctionFree(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:69]
-       ↳ Whether a repeat's ink is free of T-junctions and X-junctions.
-```
-
-**12. `ClassificationService.matches`** — depth 3 · orphan-root
-
-```text
-🚀 ClassificationService.matches(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:159]
+🚀 ClassificationService.matches(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:170]
   └─> ClassificationService.isClosedLoop(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:57]
      ↳ Whether a repeat's ink is one closed loop with no junctions and no free ends.
     └─> ClassificationService.isJunctionFree(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:69]
        ↳ Whether a repeat's ink is free of T-junctions and X-junctions.
 ```
 
-**13. `MatrixService.toCode`** — depth 3 · orphan-root
+**12. `MatrixService.toCode`** — depth 3 · orphan-root
 
 ```text
 🚀 MatrixService.toCode(matrix: Matrix, repeats?: number): Code [applications/meanderaw/src/modules/matrix/matrix.service.ts:157]
@@ -2198,7 +2188,7 @@ What this project is judged against, as declared in its own `callidescope.config
     └─> MatrixService.map(…)(point: MatrixPoint): string [applications/meanderaw/src/modules/matrix/matrix.service.ts:167]
 ```
 
-**14. `CharacteristicsService.classifyFamilies`** — depth 3 · orphan-root
+**13. `CharacteristicsService.classifyFamilies`** — depth 3 · orphan-root
 
 ```text
 🚀 CharacteristicsService.classifyFamilies(code: CodeObject): string[] [applications/meanderaw/src/modules/characteristics/characteristics.service.ts:376]
@@ -2209,7 +2199,7 @@ What this project is judged against, as declared in its own `callidescope.config
        ↳ Whether the meander consists only of parallel vertical lines across the entire column width from the top border tick to…
 ```
 
-**15. `TileEnumerationService.isMatching`** — depth 3 · orphan-root
+**14. `TileEnumerationService.isMatching`** — depth 3 · orphan-root
 
 ```text
 🚀 TileEnumerationService.isMatching(tile: Tile): boolean [applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:235]
@@ -2220,7 +2210,7 @@ What this project is judged against, as declared in its own `callidescope.config
        ↳ How many of a point's four direction bits are set — the point's degree as the drawing shows it.
 ```
 
-**16. `ClassificationService.matches`** — depth 2 · orphan-root
+**15. `ClassificationService.matches`** — depth 2 · orphan-root
 
 ```text
 🚀 ClassificationService.matches(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:116]
@@ -2228,7 +2218,7 @@ What this project is judged against, as declared in its own `callidescope.config
      ↳ Whether a repeat satisfies the structural minimum row constraint for a family.
 ```
 
-**17. `ClassificationService.matches`** — depth 2 · orphan-root
+**16. `ClassificationService.matches`** — depth 2 · orphan-root
 
 ```text
 🚀 ClassificationService.matches(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:123]
@@ -2236,7 +2226,23 @@ What this project is judged against, as declared in its own `callidescope.config
      ↳ Whether a repeat satisfies the structural minimum row constraint for a family.
 ```
 
-**18. `TileService.isBare`** — depth 2 · orphan-root
+**17. `ClassificationService.matches`** — depth 2 · orphan-root
+
+```text
+🚀 ClassificationService.matches(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:152]
+  └─> ClassificationService.isJunctionFree(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:69]
+     ↳ Whether a repeat's ink is free of T-junctions and X-junctions.
+```
+
+**18. `ClassificationService.matches`** — depth 2 · orphan-root
+
+```text
+🚀 ClassificationService.matches(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:161]
+  └─> ClassificationService.isJunctionFree(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:69]
+     ↳ Whether a repeat's ink is free of T-junctions and X-junctions.
+```
+
+**19. `TileService.isBare`** — depth 2 · orphan-root
 
 ```text
 🚀 TileService.isBare(directions: Directions): boolean [applications/meanderaw/src/modules/tile/tile.service.ts:231]
@@ -2245,7 +2251,7 @@ What this project is judged against, as declared in its own `callidescope.config
      ↳ How many of a point's four direction bits are set — the point's degree as the drawing shows it.
 ```
 
-**19. `MatrixService.rotate`** — depth 2 · orphan-root
+**20. `MatrixService.rotate`** — depth 2 · orphan-root
 
 ```text
 🚀 MatrixService.rotate(matrix: Matrix, step: number): Matrix [applications/meanderaw/src/modules/matrix/matrix.service.ts:101]
@@ -2264,7 +2270,7 @@ What this project is judged against, as declared in its own `callidescope.config
 | `DrawRecordService.record` | 10 | `CodeService.parse`, `DrawRecordService.canonicalPhase(…)`, `CodeService.canonicalPhase`, `CharacteristicsService.compute`, `ClassificationService.classify`, `DrawRecordService.map(…)`, `DrawRecordService.filter(…)`, `DrawRecordService.filter(…)`, `DrawingService.render`, `CodeService.format` | `applications/meanderaw/src/modules/draw/draw-record.service.ts:57` |
 
 <details>
-<summary>154 more callables</summary>
+<summary>155 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
@@ -2296,8 +2302,9 @@ What this project is judged against, as declared in its own `callidescope.config
 | `ClassificationService.matches` | 2 | `ClassificationService.isArc`, `ClassificationService.reachesMinimumRows` | `applications/meanderaw/src/modules/classification/classification.service.ts:131` |
 | `ClassificationService.matches` | 2 | `ClassificationService.isArc`, `ClassificationService.reachesMinimumRows` | `applications/meanderaw/src/modules/classification/classification.service.ts:138` |
 | `ClassificationService.matches` | 2 | `ClassificationService.isArc`, `ClassificationService.reachesMinimumRows` | `applications/meanderaw/src/modules/classification/classification.service.ts:145` |
-| `ClassificationService.matches` | 2 | `ClassificationService.isArc`, `ClassificationService.reachesMinimumRows` | `applications/meanderaw/src/modules/classification/classification.service.ts:152` |
-| `ClassificationService.matches` | 2 | `ClassificationService.isClosedLoop`, `ClassificationService.reachesMinimumRows` | `applications/meanderaw/src/modules/classification/classification.service.ts:159` |
+| `ClassificationService.matches` | 2 | `ClassificationService.isJunctionFree`, `ClassificationService.reachesMinimumRows` | `applications/meanderaw/src/modules/classification/classification.service.ts:152` |
+| `ClassificationService.matches` | 2 | `ClassificationService.isJunctionFree`, `ClassificationService.reachesMinimumRows` | `applications/meanderaw/src/modules/classification/classification.service.ts:161` |
+| `ClassificationService.matches` | 2 | `ClassificationService.isClosedLoop`, `ClassificationService.reachesMinimumRows` | `applications/meanderaw/src/modules/classification/classification.service.ts:170` |
 | `TileService.assertPointAgrees` | 2 | `MalformedTileError.constructor`, `TileService.assertPointJoinsBelow` | `applications/meanderaw/src/modules/tile/tile.service.ts:50` |
 | `TileService.assertWellFormed` | 2 | `MalformedTileError.constructor`, `TileService.assertPointAgrees` | `applications/meanderaw/src/modules/tile/tile.service.ts:120` |
 | `TileService.from(…)` | 2 | `TileService.horizontal`, `TileService.vertical` | `applications/meanderaw/src/modules/tile/tile.service.ts:168` |
@@ -3085,14 +3092,14 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-18641-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-40.75_MB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-18699-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-40.73_MB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-20-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-128-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-98.38_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-98.46_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
@@ -3110,11 +3117,11 @@ graph LR
 ![Test Files](https://img.shields.io/badge/Test_Files-32-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-15-8b5cf6?style=flat-square)
 ![Classes](https://img.shields.io/badge/Classes-49-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-608-16a34a?style=flat-square)
-![Methods](https://img.shields.io/badge/Methods-245-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-729-4ade80?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-611-16a34a?style=flat-square)
+![Methods](https://img.shields.io/badge/Methods-246-15803d?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-733-4ade80?style=flat-square)
 ![Async Functions](https://img.shields.io/badge/Async_Functions-124-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-758-dc2626?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-763-dc2626?style=flat-square)
 ![Imports](https://img.shields.io/badge/Imports-614-0284c7?style=flat-square)
 ![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-133-ea580c?style=flat-square)
 ![Comments](https://img.shields.io/badge/Comments-681-64748b?style=flat-square)

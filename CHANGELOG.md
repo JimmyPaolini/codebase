@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.21.0](https://github.com/JimmyPaolini/codebase/compare/v2.20.0...v2.21.0) (2026-09-24)
+
+### ✨ Features
+
+* **meanderaw:** ✨ add clasps family for disconnected chain meanders ([#1054](https://github.com/JimmyPaolini/codebase/issues/1054)) ([ab955a0](https://github.com/JimmyPaolini/codebase/commit/ab955a05412b2a077ec0c43ae226765f2cc29f83)), closes [#1027](https://github.com/JimmyPaolini/codebase/issues/1027) [#1052](https://github.com/JimmyPaolini/codebase/issues/1052)
+
 ## [2.20.0](https://github.com/JimmyPaolini/codebase/compare/v2.19.0...v2.20.0) (2026-09-24)
 
 ### ✨ Features
