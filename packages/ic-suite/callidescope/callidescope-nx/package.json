@@ -8,7 +8,6 @@
     "@nestjs/common": "catalog:",
     "@nestjs/core": "catalog:",
     "@nx/devkit": "catalog:",
-    "@swc-node/register": "catalog:",
     "pino": "catalog:",
     "pino-pretty": "catalog:",
     "reflect-metadata": "catalog:"
@@ -18,7 +17,6 @@
     "@golevelup/ts-vitest": "catalog:",
     "@nestjs/testing": "catalog:",
     "@nx/eslint-plugin": "catalog:",
-    "@swc/core": "catalog:",
     "@swc/helpers": "catalog:",
     "@types/node": "catalog:",
     "@vitest/coverage-v8": "catalog:",
@@ -29,9 +27,7 @@
   "exports": {
     ".": {
       "types": "./src/index.ts",
-      "import": "./src/index.cjs",
-      "require": "./src/index.cjs",
-      "default": "./src/index.cjs"
+      "default": "./src/index.ts"
     },
     "./executors.json": "./executors.json",
     "./package.json": "./package.json",
@@ -54,9 +50,7 @@
     "exports": {
       ".": {
         "types": "./dist/src/index.d.ts",
-        "import": "./dist/src/index.cjs",
-        "require": "./dist/src/index.cjs",
-        "default": "./dist/src/index.cjs"
+        "default": "./dist/src/index.js"
       },
       "./executors.json": "./executors.json",
       "./package.json": "./package.json",

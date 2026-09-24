@@ -46,6 +46,9 @@
   "private": true,
   "publishConfig": {
     "access": "public",
+    "bin": {
+      "callidescope": "./dist/src/main.js"
+    },
     "exports": {
       ".": {
         "types": "./dist/src/index.d.ts",
