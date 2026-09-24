@@ -2558,9 +2558,6 @@ importers:
 
   packages/ic-suite/conformetry/conformetry-cli:
     dependencies:
-      '@codebase/logger':
-        specifier: workspace:*
-        version: link:../../../logger
       '@conformetry/configuration':
         specifier: workspace:*
         version: link:../conformetry-configuration
@@ -2592,6 +2589,9 @@ importers:
         specifier: 'catalog:'
         version: 4.4.3
     devDependencies:
+      '@codebase/logger':
+        specifier: workspace:*
+        version: link:../../../logger
       '@conformetry/core':
         specifier: workspace:*
         version: link:../conformetry-core
@@ -2852,9 +2852,6 @@ importers:
 
   packages/ic-suite/conformetry/conformetry-nx:
     dependencies:
-      '@codebase/logger':
-        specifier: workspace:*
-        version: link:../../../logger
       '@conformetry/configuration':
         specifier: workspace:*
         version: link:../conformetry-configuration
@@ -2883,6 +2880,9 @@ importers:
         specifier: 'catalog:'
         version: 0.2.2
     devDependencies:
+      '@codebase/logger':
+        specifier: workspace:*
+        version: link:../../../logger
       '@golevelup/ts-vitest':
         specifier: 'catalog:'
         version: 4.0.0

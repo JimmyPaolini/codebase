@@ -3,7 +3,6 @@
     "conformetry": "./dist/src/main.js"
   },
   "dependencies": {
-    "@codebase/logger": "workspace:*",
     "@conformetry/configuration": "workspace:*",
     "@conformetry/generation": "workspace:*",
     "@conformetry/output": "workspace:*",
@@ -16,6 +15,7 @@
     "zod": "catalog:"
   },
   "devDependencies": {
+    "@codebase/logger": "workspace:*",
     "@conformetry/core": "workspace:*",
     "@golevelup/ts-vitest": "catalog:",
     "@nestjs/testing": "catalog:",
