@@ -10,7 +10,6 @@
     "remark": "catalog:",
     "remark-frontmatter": "catalog:",
     "remark-gfm": "catalog:",
-    "tslib": "catalog:",
     "typescript": "catalog:",
     "yaml": "catalog:",
     "zod": "catalog:"

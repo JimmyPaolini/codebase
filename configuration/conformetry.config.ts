@@ -122,13 +122,6 @@ const conformetryConfiguration: ConformetryNxConfiguration = [
       // fails as ambiguous, which is why the two cores that had one were moved
       // to `src/lib/` rather than given a template of their own.
       {
-        patterns: ["packages/ic-suite/codometer/codometer-configuration"],
-        substitutions: {
-          type: "packages/ic-suite/codometer",
-          workspaceRelativePrefix: "../../../../",
-        },
-      },
-      {
         patterns: [
           "packages/ic-suite/conformetry/conformetry-{configuration,core,generation,languages,output,validation,nx}",
         ],
