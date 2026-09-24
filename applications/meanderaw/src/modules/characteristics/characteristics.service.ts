@@ -123,7 +123,9 @@ export class CharacteristicsService {
       cycleCount: wrappedGraph.cycles,
       endsAreLatticeNeighbors,
       endsOnBorderRules,
+      hasArcadePillars: unitShapes.arcadePillarCount > 0,
       hasBranching: ink.tJunctions > 0,
+      hasCombSpine: unitShapes.combSpineCount > 0,
       hasCrossing: ink.xJunctions > 0,
       inkTJunctions: ink.tJunctions,
       inkXJunctions: ink.xJunctions,
@@ -134,13 +136,31 @@ export class CharacteristicsService {
         histogram.isJunctionFree,
       isConnected: wrappedGraph.components === 1,
       isFlipSymmetric: false,
+      isFork:
+        wrappedGraph.components === 1 &&
+        wrappedGraph.cycles === 0 &&
+        ink.tJunctions === 1 &&
+        ink.xJunctions === 0 &&
+        wrappedGraph.freeEnds === 3 &&
+        histogram.dotCount === 0,
+      isJunctionFree: histogram.isJunctionFree,
       isMirrorSymmetric: false,
+      isPureTree:
+        wrappedGraph.components === 1 &&
+        wrappedGraph.cycles === 0 &&
+        ink.tJunctions >= 2 &&
+        ink.xJunctions === 0 &&
+        histogram.dotCount === 0,
       isReducible,
       isSingleArc:
         wrappedGraph.components === 1 &&
         wrappedGraph.cycles === 0 &&
         wrappedGraph.freeEnds === 2 &&
         histogram.isJunctionFree,
+      isStippled:
+        wrappedGraph.components > 1 &&
+        histogram.dotCount > 0 &&
+        ink.tJunctions > 0,
       longestHorizontalRun: this.longestHorizontalRun(matrix),
       longestVerticalRun: this.longestVerticalRun(matrix),
       pitch: columns,

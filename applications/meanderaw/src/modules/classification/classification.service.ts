@@ -13,7 +13,7 @@ import type {
 /**
  * Decides which single family a meander belongs to from its measured
  * Characteristics and shape, applying strict hierarchical precedence:
- * `parallel` -\> `cross` -\> `branch` -\> `boxes` -\> `whirl` -\> `swirl` -\> `chain` -\> `snake` -\> `unclassified`.
+ * `parallel` -\> `cross` -\> `arcade` -\> `comb` -\> `fork` -\> `tree` -\> `boxes` -\> `whirl` -\> `swirl` -\> `chain` -\> `clasps` -\> `snake` -\> `stipple` -\> `unclassified`.
  */
 @Injectable()
 export class ClassificationService {
@@ -121,11 +121,29 @@ export class ClassificationService {
       },
       {
         matches: (structure) =>
-          structure.characteristics.inkTJunctions > 0 &&
+          structure.characteristics.hasArcadePillars &&
           structure.characteristics.inkXJunctions === 0 &&
-          structure.characteristics.cycles === 0 &&
-          this.reachesMinimumRows(structure, "branch"),
-        name: "branch",
+          this.reachesMinimumRows(structure, "arcade"),
+        name: "arcade",
+      },
+      {
+        matches: (structure) =>
+          structure.characteristics.hasCombSpine &&
+          structure.characteristics.inkXJunctions === 0 &&
+          this.reachesMinimumRows(structure, "comb"),
+        name: "comb",
+      },
+      {
+        matches: (structure) =>
+          structure.characteristics.isFork &&
+          this.reachesMinimumRows(structure, "fork"),
+        name: "fork",
+      },
+      {
+        matches: (structure) =>
+          structure.characteristics.isPureTree &&
+          this.reachesMinimumRows(structure, "tree"),
+        name: "tree",
       },
       {
         matches: (structure) =>
@@ -172,6 +190,12 @@ export class ClassificationService {
           structure.characteristics.pitch === structure.rows - 1 &&
           this.reachesMinimumRows(structure, "snake"),
         name: "snake",
+      },
+      {
+        matches: (structure) =>
+          structure.characteristics.isStippled &&
+          this.reachesMinimumRows(structure, "stipple"),
+        name: "stipple",
       },
     ];
   }

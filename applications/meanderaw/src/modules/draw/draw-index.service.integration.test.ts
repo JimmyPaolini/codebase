@@ -68,7 +68,10 @@ describe(DrawIndexService, () => {
   const record = (
     overrides: Partial<MeanderRecord> & Pick<MeanderRecord, "code">,
   ): MeanderRecord => ({
+    arcadePillarCount: 0,
+    bifurcationCount: 0,
     columns: 1,
+    combSpineCount: 0,
     componentCount: 0,
     components: 1,
     cornerCount: 0,

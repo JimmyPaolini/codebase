@@ -16,8 +16,11 @@ describe(DatabaseService, () => {
   let meanderRepository: Repository<Meander>;
 
   const record: MeanderRecord = {
+    arcadePillarCount: 0,
+    bifurcationCount: 0,
     code: "3c9a",
     columns: 2,
+    combSpineCount: 0,
     componentCount: 0,
     components: 1,
     cornerCount: 0,

@@ -11,6 +11,7 @@ import { TileService } from "../tile/tile.service";
 import { CharacteristicsFamilyService } from "./characteristics-family.service";
 import { CharacteristicsPathService } from "./characteristics-path.service";
 import { CharacteristicsShapeService } from "./characteristics-shape.service";
+import { CHARACTERISTIC_SOURCES } from "./characteristics.constants";
 import { CharacteristicsService } from "./characteristics.service";
 import { ConnectivityService } from "./connectivity.service";
 
@@ -46,11 +47,18 @@ describe(CharacteristicsService, () => {
     expect(service).toBeDefined();
   });
 
+  it("defines a source category for every characteristic", () => {
+    expect(Object.keys(CHARACTERISTIC_SOURCES).length).toBeGreaterThan(0);
+  });
+
   describe("compute", () => {
     it("reports every count and characteristic as zero or false for a Code with no row at all", () => {
       expect(service.compute(codeService.parse("", 0, 1)))
         .toMatchInlineSnapshot(`
           {
+            "arcadePillarCount": 0,
+            "bifurcationCount": 0,
+            "combSpineCount": 0,
             "componentCount": 0,
             "components": 0,
             "cornerCount": 0,
@@ -65,7 +73,9 @@ describe(CharacteristicsService, () => {
             "endsAreLatticeNeighbors": false,
             "endsOnBorderRules": false,
             "freeEnds": 0,
+            "hasArcadePillars": false,
             "hasBranching": false,
+            "hasCombSpine": false,
             "hasCrossing": false,
             "hasDots": false,
             "hasTJunctions": false,
@@ -78,10 +88,13 @@ describe(CharacteristicsService, () => {
             "isClosedLoop": false,
             "isConnected": false,
             "isFlipSymmetric": false,
+            "isFork": false,
             "isJunctionFree": true,
             "isMirrorSymmetric": false,
+            "isPureTree": false,
             "isReducible": false,
             "isSingleArc": false,
+            "isStippled": false,
             "lCount": 0,
             "longestHorizontalRun": 0,
             "longestVerticalRun": 0,
@@ -127,6 +140,9 @@ describe(CharacteristicsService, () => {
       expect(service.compute(codeService.parse("0", 1, 1)))
         .toMatchInlineSnapshot(`
           {
+            "arcadePillarCount": 0,
+            "bifurcationCount": 0,
+            "combSpineCount": 0,
             "componentCount": 1,
             "components": 1,
             "cornerCount": 0,
@@ -141,7 +157,9 @@ describe(CharacteristicsService, () => {
             "endsAreLatticeNeighbors": false,
             "endsOnBorderRules": false,
             "freeEnds": 0,
+            "hasArcadePillars": false,
             "hasBranching": false,
+            "hasCombSpine": false,
             "hasCrossing": false,
             "hasDots": true,
             "hasTJunctions": false,
@@ -154,10 +172,13 @@ describe(CharacteristicsService, () => {
             "isClosedLoop": false,
             "isConnected": true,
             "isFlipSymmetric": false,
+            "isFork": false,
             "isJunctionFree": true,
             "isMirrorSymmetric": false,
+            "isPureTree": false,
             "isReducible": false,
             "isSingleArc": false,
+            "isStippled": false,
             "lCount": 0,
             "longestHorizontalRun": 0,
             "longestVerticalRun": 0,
@@ -184,6 +205,9 @@ describe(CharacteristicsService, () => {
       expect(service.compute(codeService.parse("21", 1, 2)))
         .toMatchInlineSnapshot(`
           {
+            "arcadePillarCount": 0,
+            "bifurcationCount": 0,
+            "combSpineCount": 0,
             "componentCount": 1,
             "components": 1,
             "cornerCount": 0,
@@ -198,7 +222,9 @@ describe(CharacteristicsService, () => {
             "endsAreLatticeNeighbors": true,
             "endsOnBorderRules": true,
             "freeEnds": 2,
+            "hasArcadePillars": false,
             "hasBranching": false,
+            "hasCombSpine": false,
             "hasCrossing": false,
             "hasDots": false,
             "hasTJunctions": false,
@@ -211,10 +237,13 @@ describe(CharacteristicsService, () => {
             "isClosedLoop": false,
             "isConnected": true,
             "isFlipSymmetric": false,
+            "isFork": false,
             "isJunctionFree": true,
             "isMirrorSymmetric": false,
+            "isPureTree": false,
             "isReducible": false,
             "isSingleArc": true,
+            "isStippled": false,
             "lCount": 0,
             "longestHorizontalRun": 1,
             "longestVerticalRun": 0,
@@ -243,6 +272,9 @@ describe(CharacteristicsService, () => {
       expect(service.compute(codeService.parse("2100", 2, 2)))
         .toMatchInlineSnapshot(`
           {
+            "arcadePillarCount": 0,
+            "bifurcationCount": 0,
+            "combSpineCount": 0,
             "componentCount": 3,
             "components": 3,
             "cornerCount": 0,
@@ -257,7 +289,9 @@ describe(CharacteristicsService, () => {
             "endsAreLatticeNeighbors": true,
             "endsOnBorderRules": true,
             "freeEnds": 2,
+            "hasArcadePillars": false,
             "hasBranching": false,
+            "hasCombSpine": false,
             "hasCrossing": false,
             "hasDots": true,
             "hasTJunctions": false,
@@ -270,10 +304,13 @@ describe(CharacteristicsService, () => {
             "isClosedLoop": false,
             "isConnected": false,
             "isFlipSymmetric": false,
+            "isFork": false,
             "isJunctionFree": true,
             "isMirrorSymmetric": false,
+            "isPureTree": false,
             "isReducible": false,
             "isSingleArc": false,
+            "isStippled": false,
             "lCount": 0,
             "longestHorizontalRun": 1,
             "longestVerticalRun": 0,
@@ -302,6 +339,9 @@ describe(CharacteristicsService, () => {
       expect(service.compute(codeService.parse("4080", 2, 2)))
         .toMatchInlineSnapshot(`
           {
+            "arcadePillarCount": 0,
+            "bifurcationCount": 0,
+            "combSpineCount": 0,
             "componentCount": 3,
             "components": 3,
             "cornerCount": 0,
@@ -316,7 +356,9 @@ describe(CharacteristicsService, () => {
             "endsAreLatticeNeighbors": true,
             "endsOnBorderRules": true,
             "freeEnds": 2,
+            "hasArcadePillars": false,
             "hasBranching": false,
+            "hasCombSpine": false,
             "hasCrossing": false,
             "hasDots": true,
             "hasTJunctions": false,
@@ -329,10 +371,13 @@ describe(CharacteristicsService, () => {
             "isClosedLoop": false,
             "isConnected": false,
             "isFlipSymmetric": false,
+            "isFork": false,
             "isJunctionFree": true,
             "isMirrorSymmetric": false,
+            "isPureTree": false,
             "isReducible": false,
             "isSingleArc": false,
+            "isStippled": false,
             "lCount": 0,
             "longestHorizontalRun": 0,
             "longestVerticalRun": 1,
@@ -361,6 +406,9 @@ describe(CharacteristicsService, () => {
       expect(service.compute(codeService.parse("4488", 2, 2)))
         .toMatchInlineSnapshot(`
           {
+            "arcadePillarCount": 0,
+            "bifurcationCount": 0,
+            "combSpineCount": 0,
             "componentCount": 1,
             "components": 1,
             "cornerCount": 0,
@@ -375,7 +423,9 @@ describe(CharacteristicsService, () => {
             "endsAreLatticeNeighbors": true,
             "endsOnBorderRules": true,
             "freeEnds": 2,
+            "hasArcadePillars": false,
             "hasBranching": false,
+            "hasCombSpine": false,
             "hasCrossing": false,
             "hasDots": false,
             "hasTJunctions": false,
@@ -388,10 +438,13 @@ describe(CharacteristicsService, () => {
             "isClosedLoop": false,
             "isConnected": true,
             "isFlipSymmetric": false,
+            "isFork": false,
             "isJunctionFree": true,
             "isMirrorSymmetric": false,
+            "isPureTree": false,
             "isReducible": true,
             "isSingleArc": true,
+            "isStippled": false,
             "lCount": 0,
             "longestHorizontalRun": 0,
             "longestVerticalRun": 1,
@@ -420,6 +473,9 @@ describe(CharacteristicsService, () => {
       expect(service.compute(codeService.parse("40a1", 2, 2)))
         .toMatchInlineSnapshot(`
           {
+            "arcadePillarCount": 0,
+            "bifurcationCount": 0,
+            "combSpineCount": 0,
             "componentCount": 2,
             "components": 2,
             "cornerCount": 1,
@@ -434,7 +490,9 @@ describe(CharacteristicsService, () => {
             "endsAreLatticeNeighbors": false,
             "endsOnBorderRules": true,
             "freeEnds": 2,
+            "hasArcadePillars": false,
             "hasBranching": false,
+            "hasCombSpine": false,
             "hasCrossing": false,
             "hasDots": true,
             "hasTJunctions": false,
@@ -447,10 +505,13 @@ describe(CharacteristicsService, () => {
             "isClosedLoop": false,
             "isConnected": false,
             "isFlipSymmetric": false,
+            "isFork": false,
             "isJunctionFree": true,
             "isMirrorSymmetric": false,
+            "isPureTree": false,
             "isReducible": false,
             "isSingleArc": false,
+            "isStippled": false,
             "lCount": 1,
             "longestHorizontalRun": 1,
             "longestVerticalRun": 1,
@@ -479,6 +540,9 @@ describe(CharacteristicsService, () => {
       expect(service.compute(codeService.parse("44a9", 2, 2)))
         .toMatchInlineSnapshot(`
           {
+            "arcadePillarCount": 0,
+            "bifurcationCount": 0,
+            "combSpineCount": 0,
             "componentCount": 1,
             "components": 1,
             "cornerCount": 2,
@@ -493,7 +557,9 @@ describe(CharacteristicsService, () => {
             "endsAreLatticeNeighbors": true,
             "endsOnBorderRules": true,
             "freeEnds": 2,
+            "hasArcadePillars": false,
             "hasBranching": false,
+            "hasCombSpine": false,
             "hasCrossing": false,
             "hasDots": false,
             "hasTJunctions": false,
@@ -506,10 +572,13 @@ describe(CharacteristicsService, () => {
             "isClosedLoop": false,
             "isConnected": true,
             "isFlipSymmetric": false,
+            "isFork": false,
             "isJunctionFree": true,
             "isMirrorSymmetric": false,
+            "isPureTree": false,
             "isReducible": false,
             "isSingleArc": true,
+            "isStippled": false,
             "lCount": 0,
             "longestHorizontalRun": 1,
             "longestVerticalRun": 1,
@@ -538,6 +607,9 @@ describe(CharacteristicsService, () => {
       expect(service.compute(codeService.parse("65a9", 2, 2)))
         .toMatchInlineSnapshot(`
           {
+            "arcadePillarCount": 0,
+            "bifurcationCount": 0,
+            "combSpineCount": 0,
             "componentCount": 1,
             "components": 1,
             "cornerCount": 4,
@@ -552,7 +624,9 @@ describe(CharacteristicsService, () => {
             "endsAreLatticeNeighbors": false,
             "endsOnBorderRules": false,
             "freeEnds": 0,
+            "hasArcadePillars": false,
             "hasBranching": false,
+            "hasCombSpine": false,
             "hasCrossing": false,
             "hasDots": false,
             "hasTJunctions": false,
@@ -565,10 +639,13 @@ describe(CharacteristicsService, () => {
             "isClosedLoop": true,
             "isConnected": true,
             "isFlipSymmetric": false,
+            "isFork": false,
             "isJunctionFree": true,
             "isMirrorSymmetric": false,
+            "isPureTree": false,
             "isReducible": false,
             "isSingleArc": false,
+            "isStippled": false,
             "lCount": 0,
             "longestHorizontalRun": 1,
             "longestVerticalRun": 1,
@@ -597,6 +674,9 @@ describe(CharacteristicsService, () => {
       expect(service.compute(codeService.parse("9a56", 2, 2)))
         .toMatchInlineSnapshot(`
           {
+            "arcadePillarCount": 0,
+            "bifurcationCount": 0,
+            "combSpineCount": 0,
             "componentCount": 2,
             "components": 2,
             "cornerCount": 4,
@@ -611,7 +691,9 @@ describe(CharacteristicsService, () => {
             "endsAreLatticeNeighbors": false,
             "endsOnBorderRules": false,
             "freeEnds": 0,
+            "hasArcadePillars": false,
             "hasBranching": false,
+            "hasCombSpine": false,
             "hasCrossing": false,
             "hasDots": false,
             "hasTJunctions": false,
@@ -624,10 +706,13 @@ describe(CharacteristicsService, () => {
             "isClosedLoop": false,
             "isConnected": false,
             "isFlipSymmetric": false,
+            "isFork": false,
             "isJunctionFree": true,
             "isMirrorSymmetric": false,
+            "isPureTree": false,
             "isReducible": false,
             "isSingleArc": false,
+            "isStippled": false,
             "lCount": 0,
             "longestHorizontalRun": 1,
             "longestVerticalRun": 1,
@@ -654,6 +739,9 @@ describe(CharacteristicsService, () => {
       expect(service.compute(codeService.parse("7", 1, 1)))
         .toMatchInlineSnapshot(`
           {
+            "arcadePillarCount": 0,
+            "bifurcationCount": 0,
+            "combSpineCount": 0,
             "componentCount": 1,
             "components": 1,
             "cornerCount": 0,
@@ -668,7 +756,9 @@ describe(CharacteristicsService, () => {
             "endsAreLatticeNeighbors": false,
             "endsOnBorderRules": false,
             "freeEnds": 0,
+            "hasArcadePillars": false,
             "hasBranching": true,
+            "hasCombSpine": false,
             "hasCrossing": false,
             "hasDots": false,
             "hasTJunctions": true,
@@ -681,10 +771,13 @@ describe(CharacteristicsService, () => {
             "isClosedLoop": false,
             "isConnected": true,
             "isFlipSymmetric": false,
+            "isFork": false,
             "isJunctionFree": false,
             "isMirrorSymmetric": false,
+            "isPureTree": false,
             "isReducible": false,
             "isSingleArc": false,
+            "isStippled": false,
             "lCount": 0,
             "longestHorizontalRun": 1,
             "longestVerticalRun": 1,
@@ -711,6 +804,9 @@ describe(CharacteristicsService, () => {
       expect(service.compute(codeService.parse("f", 1, 1)))
         .toMatchInlineSnapshot(`
           {
+            "arcadePillarCount": 0,
+            "bifurcationCount": 0,
+            "combSpineCount": 0,
             "componentCount": 1,
             "components": 1,
             "cornerCount": 0,
@@ -725,7 +821,9 @@ describe(CharacteristicsService, () => {
             "endsAreLatticeNeighbors": false,
             "endsOnBorderRules": false,
             "freeEnds": 0,
+            "hasArcadePillars": false,
             "hasBranching": false,
+            "hasCombSpine": false,
             "hasCrossing": true,
             "hasDots": false,
             "hasTJunctions": false,
@@ -738,10 +836,13 @@ describe(CharacteristicsService, () => {
             "isClosedLoop": false,
             "isConnected": true,
             "isFlipSymmetric": false,
+            "isFork": false,
             "isJunctionFree": false,
             "isMirrorSymmetric": false,
+            "isPureTree": false,
             "isReducible": false,
             "isSingleArc": false,
+            "isStippled": false,
             "lCount": 0,
             "longestHorizontalRun": 1,
             "longestVerticalRun": 1,
@@ -778,6 +879,46 @@ describe(CharacteristicsService, () => {
 
       expect(result.longestHorizontalRun).toBe(1);
       expect(result.longestVerticalRun).toBe(0);
+    });
+
+    it("identifies fork, tree, comb, arcade, and stipple characteristics", () => {
+      // Fork (single T-junction, 3 free ends, 1 component, 0 dots)
+      // 444
+      // ccc
+      // ab9
+      const forkCode = codeService.parse("444cccab9", 3, 3);
+      const forkResult = service.compute(forkCode);
+
+      expect(forkResult.isFork).toBe(true);
+      expect(forkResult.isPureTree).toBe(false);
+
+      // Pure tree (>=2 T-junctions, 1 component, 0 dots)
+      // 444
+      // edc
+      // 8a9
+      const treeCode = codeService.parse("444edc8a9", 3, 3);
+      const treeResult = service.compute(treeCode);
+
+      expect(treeResult.isFork).toBe(false);
+      expect(treeResult.isPureTree).toBe(true);
+
+      // Comb spine (e1/e1)
+      const combCode = codeService.parse("e1e1a100", 4, 2);
+      const combResult = service.compute(combCode);
+
+      expect(combResult.hasCombSpine).toBe(true);
+
+      // Arcade pillars (67cc / ccb9)
+      const arcadeCode = codeService.parse("6775ccccbb98", 3, 4);
+      const arcadeResult = service.compute(arcadeCode);
+
+      expect(arcadeResult.hasArcadePillars).toBe(true);
+
+      // Stippled (multi-component with dots and branching)
+      const stippledCode = codeService.parse("408070bb0000", 3, 4);
+      const stippledResult = service.compute(stippledCode);
+
+      expect(stippledResult.isStippled).toBe(true);
     });
   });
 

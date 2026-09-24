@@ -8,6 +8,9 @@
  */
 export interface Characteristics extends Connectivity {
   // Graph
+  readonly arcadePillarCount: number;
+  readonly bifurcationCount: number;
+  readonly combSpineCount: number;
   readonly componentCount: number;
   readonly cornerCount: number;
   // Seam
@@ -23,7 +26,9 @@ export interface Characteristics extends Connectivity {
   readonly embeddedUCount: number;
   readonly endsAreLatticeNeighbors: boolean;
   readonly endsOnBorderRules: boolean;
+  readonly hasArcadePillars: boolean;
   readonly hasBranching: boolean;
+  readonly hasCombSpine: boolean;
   readonly hasCrossing: boolean;
   readonly hasDots: boolean;
   readonly hasTJunctions: boolean;
@@ -41,12 +46,15 @@ export interface Characteristics extends Connectivity {
   readonly isConnected: boolean;
   readonly isFlipSymmetric: boolean;
 
+  readonly isFork: boolean;
   readonly isJunctionFree: boolean;
   readonly isMirrorSymmetric: boolean;
 
+  readonly isPureTree: boolean;
   // Structure
   readonly isReducible: boolean;
   readonly isSingleArc: boolean;
+  readonly isStippled: boolean;
   readonly lCount: number;
   // Runs
   readonly longestHorizontalRun: number;
@@ -147,6 +155,9 @@ export type MutableHistogram = Pick<
 
 /** Counts for exactly matched shapes in 2x2 windows. */
 export interface UnitShapeCounts {
+  arcadePillarCount: number;
+  bifurcationCount: number;
+  combSpineCount: number;
   embeddedOCount: number;
   embeddedUCount: number;
   horizontalDashCount: number;

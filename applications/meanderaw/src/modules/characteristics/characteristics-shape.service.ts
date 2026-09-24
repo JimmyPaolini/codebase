@@ -3,6 +3,8 @@ import { Inject, Injectable } from "@nestjs/common";
 import { BARE_MATRIX_POINT } from "../matrix/matrix.constants";
 import { MatrixService } from "../matrix/matrix.service";
 
+import { ISOLATED_SHAPE_MAP } from "./characteristics.constants";
+
 import type { Matrix, MatrixPoint, Submatrix } from "../matrix/matrix.types";
 import type { UnitShapeCounts } from "./characteristics.types";
 
@@ -77,44 +79,9 @@ export class CharacteristicsShapeService {
     windowString: string,
     counts: UnitShapeCounts,
   ): void {
-    switch (windowString) {
-      case "9a56": {
-        counts.plusCount += 1;
-        break;
-      }
-      case "0021":
-      case "2100": {
-        counts.horizontalDashCount += 1;
-        break;
-      }
-      case "40a1":
-      case "0429":
-      case "2508":
-      case "6180": {
-        counts.lCount += 1;
-        break;
-      }
-      case "44a9":
-      case "61a1":
-      case "2529":
-      case "6588": {
-        counts.uCount += 1;
-        break;
-      }
-      case "65a9": {
-        counts.oCount += 1;
-        break;
-      }
-      case "0408":
-      case "4080": {
-        counts.verticalDashCount += 1;
-        break;
-      }
-      case "2121":
-      case "4488": {
-        counts.shapeICount += 1;
-        break;
-      }
+    const key = ISOLATED_SHAPE_MAP[windowString];
+    if (key) {
+      counts[key] += 1;
     }
   }
 
@@ -153,6 +120,9 @@ export class CharacteristicsShapeService {
    */
   public tallyUnitShapes(matrix: Matrix): UnitShapeCounts {
     const counts: UnitShapeCounts = {
+      arcadePillarCount: 0,
+      bifurcationCount: 0,
+      combSpineCount: 0,
       embeddedOCount: 0,
       embeddedUCount: 0,
       horizontalDashCount: 0,

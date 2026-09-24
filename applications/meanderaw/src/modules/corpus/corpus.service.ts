@@ -3,6 +3,7 @@ import * as crypto from "node:crypto";
 import { Inject, Injectable } from "@nestjs/common";
 
 import { CharacteristicsService } from "../characteristics/characteristics.service";
+import { ClassificationService } from "../classification/classification.service";
 import { CodeService } from "../code/code.service";
 import { DatabaseService } from "../database/database.service";
 import { DrawingService } from "../drawing/drawing.service";
@@ -66,6 +67,8 @@ export class CorpusService {
   constructor(
     @Inject(CharacteristicsService)
     private readonly characteristicsService: CharacteristicsService,
+    @Inject(ClassificationService)
+    private readonly classificationService: ClassificationService,
     @Inject(DatabaseService)
     private readonly databaseService: DatabaseService,
     @Inject(CodeService)
@@ -121,10 +124,16 @@ export class CorpusService {
         return existing;
       }
 
+      const filedFamily = entry.filedUnder[0];
       const entityFamily =
-        entry.filedUnder[0] === "negative"
+        filedFamily === "negative"
           ? "unclassified"
-          : entry.filedUnder[0];
+          : filedFamily === "branch"
+            ? this.classificationService.classify(characteristics, {
+                columns,
+                rows,
+              })
+            : filedFamily;
 
       return await this.databaseService.save({
         // type-coverage:ignore-next-line

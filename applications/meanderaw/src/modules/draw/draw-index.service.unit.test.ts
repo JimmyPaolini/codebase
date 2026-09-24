@@ -24,7 +24,10 @@ describe(DrawIndexService, () => {
   const meander = (
     overrides: Partial<Meander> & Pick<Meander, "code" | "id">,
   ): Meander => ({
+    arcadePillarCount: 0,
+    bifurcationCount: 0,
     columns: 1,
+    combSpineCount: 0,
     componentCount: 0,
     components: 1,
     cornerCount: 0,

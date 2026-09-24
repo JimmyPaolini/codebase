@@ -57,7 +57,10 @@ describe(DatabaseService, () => {
   const record = (
     overrides: Partial<MeanderRecord> & Pick<MeanderRecord, "code">,
   ): MeanderRecord => ({
+    arcadePillarCount: 0,
+    bifurcationCount: 0,
     columns: 1,
+    combSpineCount: 0,
     componentCount: 0,
     components: 1,
     cornerCount: 0,
@@ -122,8 +125,11 @@ describe(DatabaseService, () => {
   describe("save", () => {
     it("persists a meander row with every field it was given", async () => {
       const saved = await service.save({
+        arcadePillarCount: 0,
+        bifurcationCount: 0,
         code: "3c9a",
         columns: 2,
+        combSpineCount: 0,
         componentCount: 0,
         components: 1,
         cornerCount: 0,
