@@ -149,9 +149,10 @@
     "pg",
     // Invoked by the squawk target rather than imported.
     "squawk-cli",
-    // Runtime dependency for inlined @codebase/logger in published packages
+    // Runtime dependency of the inlined @codebase/logger utility.
     "pino",
-    // Pretty-printing transport reached only via runtime string in pino configuration
+    // Reached only through a runtime transport string in Pino for development-mode
+    // pretty printing, so invisible to static import analysis.
     "pino-pretty",
     // TypeScript helper library, an implicit runtime dependency of compiled
     // output.

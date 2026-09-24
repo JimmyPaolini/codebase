@@ -79,9 +79,10 @@ const config: KnipConfig = {
     // typescript-eslint and @swc-node/register still require TypeScript 6.
     "typescript-7",
     "squawk-cli", // SQL linter CLI, invoked via nx:run-commands in project.json
-    // Runtime dependency for inlined @codebase/logger in published packages
+    // Runtime dependency of the inlined @codebase/logger utility
     "pino",
-    "pino-pretty", // Pretty-printing transport reached only via runtime string in pino configuration
+    // Reached only through a runtime transport string in Pino for development-mode pretty printing, so invisible to static import analysis
+    "pino-pretty",
     // Dynamically loaded by vite-plugin-dts / unplugin-dts for declaration bundling via API Extractor
     "@microsoft/api-extractor",
   ],

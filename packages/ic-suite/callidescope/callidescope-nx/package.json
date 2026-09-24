@@ -9,6 +9,8 @@
     "@nestjs/core": "catalog:",
     "@nx/devkit": "catalog:",
     "@swc-node/register": "catalog:",
+    "pino": "catalog:",
+    "pino-pretty": "catalog:",
     "reflect-metadata": "catalog:"
   },
   "devDependencies": {
