@@ -18,6 +18,32 @@ export class CharacteristicsFamilyService {
 
   // 🔏 Private Methods
 
+  /** Builds the expected Code digits for an evenly-spaced downward zig-zagging waterfall. */
+  private expectedWaterfallsDigits(rows: number, columns: number): string {
+    const grid = Array.from({ length: rows }, () =>
+      Array.from({ length: columns }, () => "3"),
+    );
+
+    const firstRow = grid[0] ?? [];
+    const lastRow = grid[rows - 1] ?? [];
+
+    firstRow[0] = "2";
+    firstRow[columns - 1] = "5";
+
+    const mod = (n: number): number => ((n % columns) + columns) % columns;
+
+    for (let r = 1; r < rows - 1; r += 1) {
+      const row = grid[r] ?? [];
+      row[mod(columns - r)] = "a";
+      row[mod(columns - 1 - r)] = "5";
+    }
+
+    lastRow[mod(columns - (rows - 1))] = "a";
+    lastRow[mod(columns - rows)] = "1";
+
+    return grid.map((row) => row.join("")).join("");
+  }
+
   // 🌎 Public Methods
 
   /**
@@ -101,24 +127,16 @@ export class CharacteristicsFamilyService {
   }
 
   /**
-   * Whether the meander consists of a downward zig-zagging staircase across the
-   * vertical seam, stepping down row by row across 2 or more columns.
+   * Whether the meander consists of an evenly-spaced downward zig-zagging staircase
+   * across the vertical seam, stepping down row by row across 2 or more columns.
    */
   isWaterfalls(code: CodeObject): boolean {
     if (code.columns < 2 || code.rows < 2) {
       return false;
     }
 
-    const horizontalFiller = "3".repeat(code.columns - 2);
-    const emptyFiller = "0".repeat(code.columns - 2);
-
-    let expected = `2${horizontalFiller}5`;
-    for (let row = 1; row < code.rows - 1; row += 1) {
-      expected += row % 2 === 1 ? `5${emptyFiller}a` : `a${horizontalFiller}5`;
-    }
-    expected +=
-      (code.rows - 1) % 2 === 1 ? `1${emptyFiller}a` : `a${horizontalFiller}1`;
-
-    return code.digits === expected;
+    return (
+      code.digits === this.expectedWaterfallsDigits(code.rows, code.columns)
+    );
   }
 }
