@@ -127,17 +127,29 @@ output clean and parseable as data.
 | [`@codependix/nestjs-modules`](../codependix-nestjs-modules/README.md) | Explores a NestJS project's container and builds its module graph |
 | [`@codependix/file-imports`](../codependix-file-imports/README.md) | Builds a project's file-level import graph — a `typescript` module walking its own `ts.Program`, and a `python` module parsing `import`/`from ... import` statements |
 
+## Agent skills
+
+Agent skills for coding agents working with codependix are published in
+[`@codependix/agents`](https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/codependix/codependix-agents):
+
+| Skill | Description |
+| ----- | ----------- |
+| [`codependix-export`](https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/codependix/codependix-agents/skills/codependix-export) | Export dependency graphs and run boundary checks |
+| [`codependix-configure`](https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/codependix/codependix-agents/skills/codependix-configure) | Configure graph types, export destinations, and boundary rules in `codependix.config.ts` |
+| [`codependix-navigate`](https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/codependix/codependix-agents/skills/codependix-navigate) | Query dependency paths and navigate package relationships |
+| [`codependix-triage`](https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/codependix/codependix-agents/skills/codependix-triage) | Triage boundary violations and report drift |
+
 ## Examples
 
 Every behavior described above — and every one that is not, because it lived
 only in a JSDoc comment until now — has a worked example rendered by the real
 tool in
-[`packages/ic-suite/codependix/codependix-examples`](../codependix-examples/README.md):
+[`@codependix/examples`](https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/codependix/codependix-examples):
 
-- [README](../codependix-examples/README.md) — one directory per example, each
+- [README](https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/codependix/codependix-examples) — one directory per example, each
   readable on its own, plus configuring a first export destination and adopting
   codependix in a workspace with no anchor blocks anywhere yet
-- [AGENTS.md](../codependix-examples/AGENTS.md) — a "codependix said X → open
+- [AGENTS.md](https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/codependix/codependix-examples/AGENTS.md) — a "codependix said X → open
   this example" table, weighted toward the refusals and toward `--check`
   staleness
 
