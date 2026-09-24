@@ -6,8 +6,7 @@
     "@codometer/languages": "workspace:*",
     "@nestjs/common": "catalog:",
     "ignore": "7.0.9",
-    "reflect-metadata": "catalog:",
-    "tslib": "catalog:"
+    "reflect-metadata": "catalog:"
   },
   "devDependencies": {
     "@golevelup/ts-vitest": "catalog:",

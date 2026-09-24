@@ -6,7 +6,6 @@
     "@codometer/measurement": "workspace:*",
     "@nestjs/common": "catalog:",
     "reflect-metadata": "catalog:",
-    "tslib": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {

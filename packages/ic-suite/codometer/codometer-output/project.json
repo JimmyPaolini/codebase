@@ -13,19 +13,11 @@
   ],
   "targets": {
     "build": {
-      "executor": "@nx/js:tsc",
+      "executor": "@nx/vite:build",
       "options": {
-        "assets": [
-          {
-            "glob": "README.md",
-            "input": "packages/ic-suite/codometer/codometer-output",
-            "output": "."
-          }
-        ],
+        "configFile": "packages/ic-suite/codometer/codometer-output/vite.config.ts",
         "generatePackageJson": false,
-        "main": "packages/ic-suite/codometer/codometer-output/src/index.ts",
-        "outputPath": "packages/ic-suite/codometer/codometer-output/dist",
-        "tsConfig": "packages/ic-suite/codometer/codometer-output/tsconfig.build.json"
+        "outputPath": "packages/ic-suite/codometer/codometer-output/dist"
       },
       "outputs": ["{options.outputPath}"]
     },
