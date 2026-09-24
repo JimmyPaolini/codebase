@@ -7,6 +7,8 @@
     "@codependix/nestjs-modules": "workspace:*",
     "@codependix/nx-projects": "workspace:*",
     "@nestjs/common": "catalog:",
+    "pino": "catalog:",
+    "pino-pretty": "catalog:",
     "reflect-metadata": "catalog:"
   },
   "devDependencies": {
