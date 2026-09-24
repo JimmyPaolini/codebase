@@ -1,6 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
 
 import { CodeService } from "../code/code.service";
+import { MatrixService } from "../matrix/matrix.service";
 
 import { CharacteristicsFamilyService } from "./characteristics-family.service";
 import { CharacteristicsPathService } from "./characteristics-path.service";
@@ -43,6 +44,8 @@ export class CharacteristicsService {
     private readonly codeService: CodeService,
     @Inject(CharacteristicsFamilyService)
     private readonly familyService: CharacteristicsFamilyService,
+    @Inject(MatrixService)
+    private readonly matrixService: MatrixService,
     @Inject(ConnectivityService)
     private readonly meanderConnectivityService: ConnectivityService,
     @Inject(CharacteristicsPathService)
@@ -298,7 +301,8 @@ export class CharacteristicsService {
     const unwrappedJunctions = this.countJunctions(unwrappedEdges);
 
     const histogram = this.tallyHistogram(reduced);
-    const unitShapes = this.shapeService.tallyUnitShapes(reduced);
+    const matrix = this.matrixService.fromCode(reduced);
+    const unitShapes = this.shapeService.tallyUnitShapes(matrix);
 
     const freeEndsList = this.findFreeEnds(wrappedEdges);
     const endsOnBorderRules =

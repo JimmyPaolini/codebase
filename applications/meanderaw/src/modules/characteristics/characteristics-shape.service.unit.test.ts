@@ -1,12 +1,17 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
+import { CodeModule } from "../code/code.module";
+import { MatrixModule } from "../matrix/matrix.module";
+import { MatrixService } from "../matrix/matrix.service";
+
 import { CharacteristicsShapeService } from "./characteristics-shape.service";
 
 import type { CodeObject } from "../code/code.types";
 import type { UnitShapeCounts } from "./characteristics.types";
 
 describe(CharacteristicsShapeService, () => {
+  let matrixService: MatrixService;
   let service: CharacteristicsShapeService;
 
   const parsedCode = (overrides: Partial<CodeObject> = {}): CodeObject => ({
@@ -19,9 +24,11 @@ describe(CharacteristicsShapeService, () => {
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
+      imports: [CodeModule, MatrixModule],
       providers: [CharacteristicsShapeService],
     }).compile();
 
+    matrixService = await module.resolve(MatrixService);
     service = await module.resolve(CharacteristicsShapeService);
   });
 
@@ -32,11 +39,13 @@ describe(CharacteristicsShapeService, () => {
   it("tallies missing digit string fallbacks", () => {
     // Intentionally empty digits so the ?? "0" fallback is triggered
     const result = service.tallyUnitShapes(
-      parsedCode({
-        columns: 2,
-        digits: "",
-        rows: 2,
-      }),
+      matrixService.fromCode(
+        parsedCode({
+          columns: 2,
+          digits: "",
+          rows: 2,
+        }),
+      ),
     );
 
     expect(result.horizontalDashCount).toBe(0);
@@ -65,11 +74,13 @@ describe(CharacteristicsShapeService, () => {
     for (const t of tests) {
       // 2 columns, 2 rows -> length 4 string
       const result = service.tallyUnitShapes(
-        parsedCode({
-          columns: 2,
-          digits: t.code,
-          rows: 2,
-        }),
+        matrixService.fromCode(
+          parsedCode({
+            columns: 2,
+            digits: t.code,
+            rows: 2,
+          }),
+        ),
       );
 
       expect(result[t.field]).toBeGreaterThan(0);
@@ -78,51 +89,61 @@ describe(CharacteristicsShapeService, () => {
 
   it("tallies embedded shapes", () => {
     const result = service.tallyUnitShapes(
-      parsedCode({
-        columns: 2,
-        digits: "65a9", // O shape
-        rows: 2,
-      }),
+      matrixService.fromCode(
+        parsedCode({
+          columns: 2,
+          digits: "65a9", // O shape
+          rows: 2,
+        }),
+      ),
     );
 
     expect(result.embeddedOCount).toBeGreaterThan(0);
 
     const result2 = service.tallyUnitShapes(
-      parsedCode({
-        columns: 2,
-        digits: "44a9", // U shape variants
-        rows: 2,
-      }),
+      matrixService.fromCode(
+        parsedCode({
+          columns: 2,
+          digits: "44a9", // U shape variants
+          rows: 2,
+        }),
+      ),
     );
 
     expect(result2.embeddedUCount).toBeGreaterThan(0);
 
     const result3 = service.tallyUnitShapes(
-      parsedCode({
-        columns: 2,
-        digits: "6588",
-        rows: 2,
-      }),
+      matrixService.fromCode(
+        parsedCode({
+          columns: 2,
+          digits: "6588",
+          rows: 2,
+        }),
+      ),
     );
 
     expect(result3.embeddedUCount).toBeGreaterThan(0);
 
     const result4 = service.tallyUnitShapes(
-      parsedCode({
-        columns: 2,
-        digits: "61a1",
-        rows: 2,
-      }),
+      matrixService.fromCode(
+        parsedCode({
+          columns: 2,
+          digits: "61a1",
+          rows: 2,
+        }),
+      ),
     );
 
     expect(result4.embeddedUCount).toBeGreaterThan(0);
 
     const result5 = service.tallyUnitShapes(
-      parsedCode({
-        columns: 2,
-        digits: "2529",
-        rows: 2,
-      }),
+      matrixService.fromCode(
+        parsedCode({
+          columns: 2,
+          digits: "2529",
+          rows: 2,
+        }),
+      ),
     );
 
     expect(result5.embeddedUCount).toBeGreaterThan(0);

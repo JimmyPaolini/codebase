@@ -2,6 +2,7 @@ import { Module } from "@nestjs/common";
 
 import { CodeModule } from "../code/code.module";
 import { GraphModule } from "../graph/graph.module";
+import { MatrixModule } from "../matrix/matrix.module";
 
 import { CharacteristicsFamilyService } from "./characteristics-family.service";
 import { CharacteristicsPathService } from "./characteristics-path.service";
@@ -17,6 +18,7 @@ import { ConnectivityService } from "./connectivity.service";
  * nothing rendered in between.
  *
  * It imports `CodeModule` for the reading of a point's bits at a position,
+ * `MatrixModule` for 2D matrix representations and sliding window analysis,
  * and `GraphModule` for one thing: the graph walk
  * `ConnectivityService` counts a repeat's pieces with. That service
  * is written against `InkAdjacency` rather than against a document or a
@@ -30,7 +32,7 @@ import { ConnectivityService } from "./connectivity.service";
     CharacteristicsService,
     ConnectivityService,
   ],
-  imports: [CodeModule, GraphModule],
+  imports: [CodeModule, GraphModule, MatrixModule],
   providers: [
     CharacteristicsFamilyService,
     CharacteristicsPathService,

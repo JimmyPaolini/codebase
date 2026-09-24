@@ -4,6 +4,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { CodeService } from "../code/code.service";
 import { HISTORICAL_CORPUS } from "../corpus/historical-corpus.constants";
 import { GraphService } from "../graph/graph.service";
+import { MatrixService } from "../matrix/matrix.service";
 import { SymmetryService } from "../symmetry/symmetry.service";
 import { TileService } from "../tile/tile.service";
 
@@ -24,6 +25,7 @@ describe(CharacteristicsService, () => {
       providers: [
         CodeService,
         GraphService,
+        MatrixService,
         CharacteristicsService,
         CharacteristicsFamilyService,
         ConnectivityService,
