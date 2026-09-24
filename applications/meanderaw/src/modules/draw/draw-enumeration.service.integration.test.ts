@@ -18,6 +18,7 @@ import { EnumerationService } from "../enumeration/enumeration.service";
 import { TileEnumerationService } from "../enumeration/tile-enumeration.service";
 import { GeometryService } from "../geometry/geometry.service";
 import { GraphService } from "../graph/graph.service";
+import { MatrixService } from "../matrix/matrix.service";
 import { SvgService } from "../svg/svg.service";
 import { SymmetryService } from "../symmetry/symmetry.service";
 import { TileService } from "../tile/tile.service";
@@ -73,6 +74,7 @@ describe(DrawEnumerationService, () => {
         DrawRecordService,
         GeometryService,
         CodeService,
+        MatrixService,
         CharacteristicsService,
         CharacteristicsFamilyService,
         ConnectivityService,

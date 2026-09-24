@@ -1,6 +1,8 @@
 import { Inject, Injectable } from "@nestjs/common";
 
 import { CodeService } from "../code/code.service";
+import { BARE_MATRIX_POINT } from "../matrix/matrix.constants";
+import { MatrixService } from "../matrix/matrix.service";
 
 import { CharacteristicsFamilyService } from "./characteristics-family.service";
 import { CharacteristicsPathService } from "./characteristics-path.service";
@@ -8,7 +10,7 @@ import { CharacteristicsShapeService } from "./characteristics-shape.service";
 import { ConnectivityService } from "./connectivity.service";
 
 import type { CodeObject } from "../code/code.types";
-import type { Directions } from "../tile/tile.types";
+import type { Matrix, MatrixPoint } from "../matrix/matrix.types";
 import type {
   Characteristics,
   CodeEdge,
@@ -17,40 +19,19 @@ import type {
   MutableHistogram,
 } from "./characteristics.types";
 
-/** * Computes the raw junction counts and boolean Characteristics spec #813
- * asks every meander row to record, directly from a Code,
- * point by point — over the Code `CodeService.parse` already reads, with
- * no SVG and no rendering step anywhere in between. A retired reader did
- * the same two counts off a *rendered* SVG document, by rebuilding a
- * lattice from its path data; nothing reads a drawing now.
- * **Ink junctions** need no adjacency lookup: a Code spells all four direction
- * bits out at every point rather than leaving north and west to be derived
- * from a neighbor (see `CodeService`'s own doc comment), so a
- * point's ink degree is simply how many of its own four bits are set.
- * **Negative (white-space) junctions** are still counted over the dual grid
- * of cells — a cell bounded by four lattice points has a corridor to a neighboring cell
- * wherever the ink edge between them is absent — but bounded by the Code's
- * own extent rather than a rendered canvas's: a cell on the Code's
- * own edge has fewer than four possible corridors, cropped relative to
- * where the Code itself stops rather than to a border rule a renderer draws
- * beyond it.
- * **`hasBranching` and `hasCrossing`** read *both* counts rather than the
- * ink count alone. Ink-only would read `false` across the whole historical
- * corpus, because a finished drawing never actually violates the charter's no-branching and
- * no-crossing invariants in its ink — two sub-families of `mosaic` "cross"
- * only in the negative space, and nowhere else — so a Characteristic meant
- * to flag that structure has to look at both.
+/**
+ * Computes the raw ink junction counts and boolean Characteristics spec #813
+ * asks every meander row to record, directly from a 2D Matrix or Code,
+ * point by point — with no SVG and no rendering step anywhere in between.
+ *
+ * **Ink junctions** need no adjacency lookup: a MatrixPoint spells all four direction
+ * bits out at every point, so a point's ink degree is simply how many of its own four bits are set.
+ *
+ * **`hasBranching` and `hasCrossing`** read the ink junction counts.
+ *
  * **Components, cycles, and free ends** are delegated whole to
- * `ConnectivityService`, which reads the same Code as a graph rather
- * than point by point. They are Characteristics for the same reason the
- * junction counts are: no charter invariant fixes them, and they are what
- * tells one family's structure from another's where the junction counts
- * agree. Measured over the committed corpus, a `snake` repeat is one piece
- * closing one loop with nothing terminating, a `boxes` repeat one piece
- * closing none with two ends, and a `parallel` repeat one piece per strand
- * plus one, each with two ends — three readings the junction counts call
- * identically and this one separates. `ClassificationService` is
- * where that separation is written down.
+ * `ConnectivityService`, which reads the Matrix as a graph rather
+ * than point by point.
  */
 @Injectable()
 export class CharacteristicsService {
@@ -61,6 +42,8 @@ export class CharacteristicsService {
     private readonly codeService: CodeService,
     @Inject(CharacteristicsFamilyService)
     private readonly familyService: CharacteristicsFamilyService,
+    @Inject(MatrixService)
+    private readonly matrixService: MatrixService,
     @Inject(ConnectivityService)
     private readonly meanderConnectivityService: ConnectivityService,
     @Inject(CharacteristicsPathService)
@@ -75,8 +58,7 @@ export class CharacteristicsService {
 
   // 🔏 Private Methods
 
-  /** Internal helper method. */
-  /** Checks if two free ends are adjacent on the lattice (wrapping considered). */
+  /** Internal helper method. Checks if two free ends are adjacent on the lattice (wrapping considered). */
   private checkEndsAreLatticeNeighbors(
     freeEnds: { column: number; row: number }[],
     columns: number,
@@ -93,8 +75,87 @@ export class CharacteristicsService {
     return minimumColumnDiff + rowDiff === 1;
   }
 
-  /** Internal helper method. */
-  /** Counts the T and X junctions for a given set of edges. */
+  /** Computes every characteristic from a 2D Matrix representation. */
+  private computeFromMatrix(
+    matrix: Matrix,
+    isReducible = false,
+  ): Characteristics {
+    const rows = matrix.length;
+    const columns = matrix[0]?.length ?? 0;
+    const ink = this.tallyInk(matrix);
+
+    const wrappedGraph = this.meanderConnectivityService.connectivity(
+      matrix,
+      false,
+    );
+    const unwrappedGraph = this.meanderConnectivityService.connectivity(
+      matrix,
+      true,
+    );
+    const wrappedEdges = this.meanderConnectivityService.edges(matrix, false);
+    const unwrappedEdges = this.meanderConnectivityService.edges(matrix, true);
+
+    const wrappedJunctions = this.countJunctions(wrappedEdges);
+    const unwrappedJunctions = this.countJunctions(unwrappedEdges);
+
+    const histogram = this.tallyHistogram(matrix);
+    const unitShapes = this.shapeService.tallyUnitShapes(matrix);
+
+    const freeEndsList = this.findFreeEnds(wrappedEdges);
+    const endsOnBorderRules =
+      freeEndsList.length === 2 &&
+      freeEndsList.every((end) => end.row === 0 || end.row === rows - 1);
+    const endsAreLatticeNeighbors = this.checkEndsAreLatticeNeighbors(
+      freeEndsList,
+      columns,
+    );
+
+    const pathProps = histogram.isJunctionFree
+      ? this.pathService.analyzePaths(matrix)
+      : { reversesAtItsTightestTurn: false, turnsMonotonically: false };
+
+    return {
+      ...wrappedGraph,
+      ...histogram,
+      ...unitShapes,
+      componentCount: wrappedGraph.components,
+      crossesTheSeam: wrappedEdges.length > unwrappedEdges.length,
+      cycleCount: wrappedGraph.cycles,
+      endsAreLatticeNeighbors,
+      endsOnBorderRules,
+      hasBranching: ink.tJunctions > 0,
+      hasCrossing: ink.xJunctions > 0,
+      inkTJunctions: ink.tJunctions,
+      inkXJunctions: ink.xJunctions,
+      isClosedLoop:
+        wrappedGraph.components === 1 &&
+        wrappedGraph.cycles === 1 &&
+        wrappedGraph.freeEnds === 0 &&
+        histogram.isJunctionFree,
+      isConnected: wrappedGraph.components === 1,
+      isFlipSymmetric: false,
+      isMirrorSymmetric: false,
+      isReducible,
+      isSingleArc:
+        wrappedGraph.components === 1 &&
+        wrappedGraph.cycles === 0 &&
+        wrappedGraph.freeEnds === 2 &&
+        histogram.isJunctionFree,
+      longestHorizontalRun: this.longestHorizontalRun(matrix),
+      longestVerticalRun: this.longestVerticalRun(matrix),
+      pitch: columns,
+      reversesAtItsTightestTurn: pathProps.reversesAtItsTightestTurn,
+      seamComponents: unwrappedGraph.components - wrappedGraph.components,
+      seamCycles: wrappedGraph.cycles - unwrappedGraph.cycles,
+      seamTJunctions:
+        wrappedJunctions.tJunctions - unwrappedJunctions.tJunctions,
+      seamXJunctions:
+        wrappedJunctions.xJunctions - unwrappedJunctions.xJunctions,
+      turnsMonotonically: pathProps.turnsMonotonically,
+    };
+  }
+
+  /** Internal helper method. Counts the T and X junctions for a given set of edges. */
   private countJunctions(edges: CodeEdge[]): {
     tJunctions: number;
     xJunctions: number;
@@ -113,8 +174,7 @@ export class CharacteristicsService {
     return { tJunctions, xJunctions };
   }
 
-  /** Internal helper method. */
-  /** Finds nodes with exactly one connecting edge. */
+  /** Internal helper method. Finds nodes with exactly one connecting edge. */
   private findFreeEnds(edges: CodeEdge[]): { column: number; row: number }[] {
     const degree = new Map<string, number>();
     for (const edge of edges) {
@@ -138,137 +198,69 @@ export class CharacteristicsService {
     return freeEnds;
   }
 
-  /** Whether the cell at `(row, column)` has an open corridor east, into `(row, column + 1)`. */
-  private hasEastCorridor(
-    code: CodeObject,
-    row: number,
-    column: number,
-  ): boolean {
-    const cellColumns = code.columns - 1;
-
-    return (
-      column < cellColumns - 1 &&
-      !this.codeService.directionsAt(code, row, column + 1).south
-    );
-  }
-
-  /** Whether the cell at `(row, column)` has an open corridor north, into `(row - 1, column)`. */
-  private hasNorthCorridor(
-    code: CodeObject,
-    row: number,
-    column: number,
-  ): boolean {
-    return row > 0 && !this.codeService.directionsAt(code, row, column).east;
-  }
-
-  /** Whether the cell at `(row, column)` has an open corridor south, into `(row + 1, column)`. */
-  private hasSouthCorridor(
-    code: CodeObject,
-    row: number,
-    column: number,
-  ): boolean {
-    const cellRows = code.rows - 1;
-
-    return (
-      row < cellRows - 1 &&
-      !this.codeService.directionsAt(code, row + 1, column).east
-    );
-  }
-
-  /** Whether the cell at `(row, column)` has an open corridor west, into `(row, column - 1)`. */
-  private hasWestCorridor(
-    code: CodeObject,
-    row: number,
-    column: number,
-  ): boolean {
-    return (
-      column > 0 && !this.codeService.directionsAt(code, row, column).south
-    );
-  }
-
   /** How many of a point's four direction bits are set, read directly off the digit rather than derived from a neighbor's edge. */
-  private inkDegree(point: Directions): number {
+  private inkDegree(point: MatrixPoint): number {
     return [point.east, point.north, point.south, point.west].filter(Boolean)
       .length;
   }
 
-  /** The length of the longest straight horizontal run of ink, wrapping around the columns. */
-  private longestHorizontalRun(code: CodeObject): number {
-    let maximumRun = 0;
+  /** The length of the longest straight vertical run of ink in a column. */
+  private longestColumnRun(matrix: Matrix, column: number): number {
+    let run = 0;
+    let maximum = 0;
 
-    for (let row = 0; row < code.rows; row += 1) {
-      let run = 0;
-      let rowMaximum = 0;
-
-      // Scan twice to handle wrap-around
-      for (let index = 0; index < code.columns * 2; index += 1) {
-        if (
-          this.codeService.directionsAt(code, row, index % code.columns).east
-        ) {
-          run += 1;
-          if (run > rowMaximum) rowMaximum = run;
-        } else {
-          run = 0;
-        }
-      }
-
-      // Cap at columns, which is the length of a full loop
-      if (rowMaximum > code.columns) {
-        rowMaximum = code.columns;
-      }
-
-      if (rowMaximum > maximumRun) {
-        maximumRun = rowMaximum;
+    for (const row of matrix) {
+      const point = row[column] ?? BARE_MATRIX_POINT;
+      if (point.south) {
+        run += 1;
+        if (run > maximum) maximum = run;
+      } else {
+        run = 0;
       }
     }
 
-    return maximumRun;
+    return maximum;
+  }
+
+  /** The length of the longest straight horizontal run of ink, wrapping around the columns. */
+  private longestHorizontalRun(matrix: Matrix): number {
+    const columns = matrix[0]?.length ?? 0;
+    if (matrix.length === 0 || columns === 0) return 0;
+
+    return Math.max(...matrix.map((row) => this.longestRowRun(row, columns)));
+  }
+
+  /** The length of the longest straight horizontal run of ink in a row, wrapping around columns. */
+  private longestRowRun(
+    rowPoints: readonly MatrixPoint[],
+    columns: number,
+  ): number {
+    let run = 0;
+    let maximum = 0;
+
+    for (let index = 0; index < columns * 2; index += 1) {
+      const point = rowPoints[index % columns] ?? BARE_MATRIX_POINT;
+      if (point.east) {
+        run += 1;
+        if (run > maximum) maximum = run;
+      } else {
+        run = 0;
+      }
+    }
+
+    return Math.min(maximum, columns);
   }
 
   /** The length of the longest straight vertical run of ink. */
-  private longestVerticalRun(code: CodeObject): number {
-    let maximumRun = 0;
+  private longestVerticalRun(matrix: Matrix): number {
+    const columns = matrix[0]?.length ?? 0;
+    if (matrix.length === 0 || columns === 0) return 0;
 
-    for (let column = 0; column < code.columns; column += 1) {
-      let run = 0;
-      let columnMaximum = 0;
-
-      for (let row = 0; row < code.rows; row += 1) {
-        if (this.codeService.directionsAt(code, row, column).south) {
-          run += 1;
-          if (run > columnMaximum) columnMaximum = run;
-        } else {
-          run = 0;
-        }
-      }
-
-      if (columnMaximum > maximumRun) {
-        maximumRun = columnMaximum;
-      }
-    }
-
-    return maximumRun;
-  }
-
-  /**
-   * How many of a cell's up to four corridors to a neighboring cell are
-   * open, where the cell bounded by grid points `(row, column)`,
-   * `(row, column + 1)`, `(row + 1, column)`, and
-   * `(row + 1, column + 1)` is bounded rather than crossing off the
-   * Code's own extent, which is where a rendered canvas's edge used to be
-   * read off instead.
-   */
-  private negativeDegree(
-    code: CodeObject,
-    row: number,
-    column: number,
-  ): number {
-    return [
-      this.hasEastCorridor(code, row, column),
-      this.hasNorthCorridor(code, row, column),
-      this.hasSouthCorridor(code, row, column),
-      this.hasWestCorridor(code, row, column),
-    ].filter(Boolean).length;
+    return Math.max(
+      ...Array.from({ length: columns }, (_unused, column) =>
+        this.longestColumnRun(matrix, column),
+      ),
+    );
   }
 
   /** Records one degree as a three-armed junction, a four-armed one, or neither. */
@@ -282,33 +274,23 @@ export class CharacteristicsService {
     }
   }
 
-  /** Records counts for a single character to the histogram. */
-  private tallyCharacter(character: string, counts: MutableHistogram): void {
-    if (character === "0") {
-      counts.dotCount += 1;
-    } else if (["1", "2", "4", "8"].includes(character)) {
-      counts.freeEnds += 1;
-      counts.edgeCount += 1;
-    } else if (character === "3") {
+  /** Records counts for a degree-2 point (straight line or corner). */
+  private tallyDegreeTwoPoint(
+    point: MatrixPoint,
+    counts: MutableHistogram,
+  ): void {
+    counts.edgeCount += 2;
+    if (point.east && point.west) {
       counts.horizontalPointCount += 1;
-      counts.edgeCount += 2;
-    } else if (character === "c" || character === "C") {
+    } else if (point.north && point.south) {
       counts.verticalPointCount += 1;
-      counts.edgeCount += 2;
-    } else if (["5", "6", "9", "a", "A"].includes(character)) {
+    } else {
       counts.cornerCount += 1;
-      counts.edgeCount += 2;
-    } else if (["7", "b", "B", "d", "D", "e", "E"].includes(character)) {
-      counts.tCount += 1;
-      counts.edgeCount += 3;
-    } else if (character === "f" || character === "F") {
-      counts.xCount += 1;
-      counts.edgeCount += 4;
     }
   }
 
-  /** The character counts over a Code. */
-  private tallyHistogram(code: CodeObject): HistogramCounts {
+  /** The character counts over a Matrix. */
+  private tallyHistogram(matrix: Matrix): HistogramCounts {
     const counts: MutableHistogram = {
       cornerCount: 0,
       dotCount: 0,
@@ -320,16 +302,18 @@ export class CharacteristicsService {
       xCount: 0,
     };
 
-    for (const character of code.digits) {
-      this.tallyCharacter(character, counts);
+    for (const row of matrix) {
+      for (const point of row) {
+        this.tallyMatrixPoint(point, counts);
+      }
     }
 
-    const inkPointCount = code.digits.length - counts.dotCount;
+    const rows = matrix.length;
+    const columns = matrix[0]?.length ?? 0;
+    const totalPoints = rows * columns;
+    const inkPointCount = totalPoints - counts.dotCount;
     const edgeCount = counts.edgeCount / 2;
-    const density =
-      code.rows * code.columns > 0
-        ? inkPointCount / (code.rows * code.columns)
-        : 0;
+    const density = totalPoints > 0 ? inkPointCount / totalPoints : 0;
 
     return {
       ...counts,
@@ -343,35 +327,47 @@ export class CharacteristicsService {
     };
   }
 
-  /** The ink T-junction and X-junction counts over every point the Code spells. */
-  private tallyInk(code: CodeObject): JunctionCounts {
+  /** The ink T-junction and X-junction counts over every point the Matrix spells. */
+  private tallyInk(matrix: Matrix): JunctionCounts {
     const counts: JunctionCounts = { tJunctions: 0, xJunctions: 0 };
 
-    for (let row = 0; row < code.rows; row += 1) {
-      for (let column = 0; column < code.columns; column += 1) {
-        this.tally(
-          counts,
-          this.inkDegree(this.codeService.directionsAt(code, row, column)),
-        );
+    for (const row of matrix) {
+      for (const point of row) {
+        this.tally(counts, this.inkDegree(point));
       }
     }
 
     return counts;
   }
 
-  /** The negative T-junction and X-junction counts over every cell of the lattice's dual. */
-  private tallyNegative(code: CodeObject): JunctionCounts {
-    const cellRows = code.rows - 1;
-    const cellColumns = code.columns - 1;
-    const counts: JunctionCounts = { tJunctions: 0, xJunctions: 0 };
-
-    for (let row = 0; row < cellRows; row += 1) {
-      for (let column = 0; column < cellColumns; column += 1) {
-        this.tally(counts, this.negativeDegree(code, row, column));
+  /** Records counts for a single matrix point to the histogram. */
+  private tallyMatrixPoint(point: MatrixPoint, counts: MutableHistogram): void {
+    const degree = this.inkDegree(point);
+    switch (degree) {
+      case 0: {
+        counts.dotCount += 1;
+        break;
+      }
+      case 1: {
+        counts.freeEnds += 1;
+        counts.edgeCount += 1;
+        break;
+      }
+      case 2: {
+        this.tallyDegreeTwoPoint(point, counts);
+        break;
+      }
+      case 3: {
+        counts.tCount += 1;
+        counts.edgeCount += 3;
+        break;
+      }
+      case 4: {
+        counts.xCount += 1;
+        counts.edgeCount += 4;
+        break;
       }
     }
-
-    return counts;
   }
 
   // 🌎 Public Methods
@@ -381,92 +377,49 @@ export class CharacteristicsService {
     return this.familyService.classify(code);
   }
 
-  /** Computes every characteristic for a given code. */
+  /** Computes every characteristic for a given parsed code (delegates to measure). */
   public compute(code: CodeObject): Characteristics {
-    const reduced = this.codeService.reduceToUnit(code);
-    const ink = this.tallyInk(reduced);
-    const negative = this.tallyNegative(reduced);
-
-    const wrappedGraph = this.meanderConnectivityService.connectivity(
-      reduced,
-      false,
-    );
-    const unwrappedGraph = this.meanderConnectivityService.connectivity(
-      reduced,
-      true,
-    );
-    const wrappedEdges = this.meanderConnectivityService.edges(reduced, false);
-    const unwrappedEdges = this.meanderConnectivityService.edges(reduced, true);
-
-    const wrappedJunctions = this.countJunctions(wrappedEdges);
-    const unwrappedJunctions = this.countJunctions(unwrappedEdges);
-
-    const histogram = this.tallyHistogram(reduced);
-    const unitShapes = this.shapeService.tallyUnitShapes(reduced);
-
-    const freeEndsList = this.findFreeEnds(wrappedEdges);
-    const endsOnBorderRules =
-      freeEndsList.length === 2 &&
-      freeEndsList.every(
-        (end) => end.row === 0 || end.row === reduced.rows - 1,
-      );
-    const endsAreLatticeNeighbors = this.checkEndsAreLatticeNeighbors(
-      freeEndsList,
-      reduced.columns,
-    );
-
-    const pathProps = histogram.isJunctionFree
-      ? this.pathService.analyzePaths(reduced)
-      : { reversesAtItsTightestTurn: false, turnsMonotonically: false };
-
-    return {
-      ...wrappedGraph,
-      ...histogram,
-      ...unitShapes,
-      componentCount: wrappedGraph.components,
-      crossesTheSeam: wrappedEdges.length > unwrappedEdges.length,
-      cycleCount: wrappedGraph.cycles,
-      endsAreLatticeNeighbors,
-      endsOnBorderRules,
-      hasBranching: ink.tJunctions > 0 || negative.tJunctions > 0,
-      hasCrossing: ink.xJunctions > 0 || negative.xJunctions > 0,
-      inkTJunctions: ink.tJunctions,
-      inkXJunctions: ink.xJunctions,
-      isClosedLoop:
-        wrappedGraph.components === 1 &&
-        wrappedGraph.cycles === 1 &&
-        wrappedGraph.freeEnds === 0 &&
-        histogram.isJunctionFree,
-      isConnected: wrappedGraph.components === 1,
-      isFlipSymmetric: false,
-      isMirrorSymmetric: false,
-      isReducible: code.columns > reduced.columns,
-      isSingleArc:
-        wrappedGraph.components === 1 &&
-        wrappedGraph.cycles === 0 &&
-        wrappedGraph.freeEnds === 2 &&
-        histogram.isJunctionFree,
-      longestHorizontalRun: this.longestHorizontalRun(reduced),
-      longestVerticalRun: this.longestVerticalRun(reduced),
-      negativeTJunctions: negative.tJunctions,
-      negativeXJunctions: negative.xJunctions,
-      pitch: reduced.columns,
-      reversesAtItsTightestTurn: pathProps.reversesAtItsTightestTurn,
-      seamComponents: unwrappedGraph.components - wrappedGraph.components,
-      seamCycles: wrappedGraph.cycles - unwrappedGraph.cycles,
-      seamTJunctions:
-        wrappedJunctions.tJunctions - unwrappedJunctions.tJunctions,
-      seamXJunctions:
-        wrappedJunctions.xJunctions - unwrappedJunctions.xJunctions,
-      turnsMonotonically: pathProps.turnsMonotonically,
-    };
+    return this.measure(code);
   }
 
-  /** Internal helper method. */
-  /** Computes the number of seam components for a given code. */
-  public seamComponents(code: CodeObject): number {
-    const wrapped = this.meanderConnectivityService.connectivity(code, false);
-    const unwrapped = this.meanderConnectivityService.connectivity(code, true);
+  /** Computes every characteristic for a given Matrix, CodeObject, or code string. */
+  public measure(
+    input: CodeObject | Matrix | string,
+    rows?: number,
+    columns?: number,
+  ): Characteristics {
+    if (typeof input === "string") {
+      const parsed = this.codeService.parse(input, rows, columns);
+      const reduced = this.codeService.reduceToUnit(parsed);
+      const matrix = this.matrixService.fromCode(reduced);
+      return this.computeFromMatrix(matrix, parsed.columns > reduced.columns);
+    }
+
+    if ("digits" in input) {
+      const reduced = this.codeService.reduceToUnit(input);
+      const matrix = this.matrixService.fromCode(reduced);
+      return this.computeFromMatrix(matrix, input.columns > reduced.columns);
+    }
+
+    return this.computeFromMatrix(input, false);
+  }
+
+  /** Computes the number of seam components for a given Matrix, CodeObject, or code string. */
+  public seamComponents(code: CodeObject | Matrix | string): number {
+    let matrix: Matrix;
+    if (typeof code === "string") {
+      matrix = this.matrixService.fromCode(this.codeService.parse(code));
+    } else if ("digits" in code) {
+      matrix = this.matrixService.fromCode(code);
+    } else {
+      matrix = code;
+    }
+
+    const wrapped = this.meanderConnectivityService.connectivity(matrix, false);
+    const unwrapped = this.meanderConnectivityService.connectivity(
+      matrix,
+      true,
+    );
     return unwrapped.components - wrapped.components;
   }
 }

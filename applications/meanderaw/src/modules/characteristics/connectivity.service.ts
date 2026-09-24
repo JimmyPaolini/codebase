@@ -1,43 +1,41 @@
 import { Inject, Injectable } from "@nestjs/common";
 
-import { CodeService } from "../code/code.service";
 import { GraphService } from "../graph/graph.service";
+import { BARE_MATRIX_POINT } from "../matrix/matrix.constants";
 
-import type { CodeObject } from "../code/code.types";
 import type { InkAdjacency } from "../graph/graph.types";
+import type { Matrix } from "../matrix/matrix.types";
 import type { CodeEdge, Connectivity } from "./characteristics.types";
 
 /**
- * Reads a Code as a graph, and reports the three numbers no
+ * Reads a meander Matrix as a graph, and reports the three numbers no
  * charter invariant fixes: how many pieces the ink falls into, how many
  * loops it closes, and how many of its points terminate.
  *
- * They are read off the Code directly, for the same reason
- * `CharacteristicsService` reads the junction counts off it: a Code is what
- * a meander is, and measuring it should not require rendering it first, nor
- * building a grid to walk.
+ * They are read off the Matrix directly, for the same reason
+ * `CharacteristicsService` reads the junction counts off it: measuring it
+ * should not require rendering it first, nor building a separate grid to walk.
  *
- * **A Code is read as one repeat of a band, not as a finished drawing.** A
+ * **A Matrix is read as one repeat of a band, not as a finished drawing.** A
  * step east off the last column arrives at the first column of the same
- * Code, because that wrap is what makes a repeat unit join up with its own
- * next repeat. North and south do not wrap: the Code's first and last rows
+ * Matrix, because that wrap is what makes a repeat unit join up with its own
+ * next repeat. North and south do not wrap: the first and last rows
  * sit against the band's two border rules, which are cap ticks rather than
  * points of the repeat. The consequence is worth stating:
  * a run that closes only by wrapping — every row leaving its own point
  * east and arriving back at it from the west — is a loop here and a straight
  * rule in the drawing.
  *
- * **An edge is claimed by either of its ends.** A Code spells all four bits
- * out per point and `CodeService.parse` validates only the alphabet, so a
- * Code may name an eastward edge at one point without the point it reaches
+ * **An edge is claimed by either of its ends.** A MatrixPoint spells all four bits
+ * out per point, so a Matrix may name an eastward edge at one point without the point it reaches
  * naming the matching westward one. Following only a point's own bits would
- * make the walk's answer depend on the order the Code is read in, which is
+ * make the walk's answer depend on the order the Matrix is read in, which is
  * no property of the ink at all — so an edge is present when either end
- * claims it, and the graph is symmetric by construction whatever the Code
- * says. For a Code spelled from a well-formed tile the two readings agree,
+ * claims it, and the graph is symmetric by construction whatever the Matrix
+ * says. For a Matrix built from a well-formed tile the two readings agree,
  * since every edge there is written at both of its ends.
  *
- * A **self-loop** — a single-column Code's eastward edge, which leaves its
+ * A **self-loop** — a single-column Matrix's eastward edge, which leaves its
  * point and arrives back at it — is one edge incident to its point twice.
  * That is what keeps `cycles` reporting it as the loop it is, and what keeps
  * it out of `freeEnds`: the ink really does leave that point both ways,
@@ -49,8 +47,6 @@ export class ConnectivityService {
   // 🏗 Dependency Injection
 
   constructor(
-    @Inject(CodeService)
-    private readonly codeService: CodeService,
     @Inject(GraphService)
     private readonly graphService: GraphService,
   ) {}
@@ -61,9 +57,9 @@ export class ConnectivityService {
 
   // 🔏 Private Methods
 
-  /** The Code's edges as an {@link InkAdjacency}, which is all {@link GraphService.components} needs of it. */
+  /** The Matrix's edges as an {@link InkAdjacency}, which is all {@link GraphService.components} needs of it. */
   private adjacency(
-    code: CodeObject,
+    matrix: Matrix,
     edges: readonly CodeEdge[],
   ): InkAdjacency<string> {
     const neighbors = new Map<string, string[]>();
@@ -76,11 +72,11 @@ export class ConnectivityService {
     return {
       key: (node) => node,
       neighbors: (node) => neighbors.get(node) ?? [],
-      nodes: this.nodes(code),
+      nodes: this.nodes(matrix),
     };
   }
 
-  /** How many of the Code's points are incident to exactly one edge, counting a self-loop's single point as incident twice. */
+  /** How many of the Matrix's points are incident to exactly one edge, counting a self-loop's single point as incident twice. */
   private freeEnds(edges: readonly CodeEdge[]): number {
     const incidences = new Map<string, number>();
     const bump = (node: string): void => {
@@ -96,13 +92,15 @@ export class ConnectivityService {
   }
 
   /** Whether the southward edge leaving `(row, column)` is claimed by either of its two ends, reading past the last row as absent. */
-  private joinsSouth(code: CodeObject, row: number, column: number): boolean {
-    if (row + 1 >= code.rows) {
+  private joinsSouth(matrix: Matrix, row: number, column: number): boolean {
+    const currentRow = matrix[row];
+    const nextRow = matrix[row + 1];
+    if (!currentRow || !nextRow) {
       return false;
     }
 
-    const point = this.codeService.directionsAt(code, row, column);
-    const below = this.codeService.directionsAt(code, row + 1, column);
+    const point = currentRow[column] ?? BARE_MATRIX_POINT;
+    const below = nextRow[column] ?? BARE_MATRIX_POINT;
 
     return point.south || below.north;
   }
@@ -112,10 +110,12 @@ export class ConnectivityService {
     return `${row},${column}`;
   }
 
-  /** Every point the Code spells, inked dots included — a point on no edge at all is a component of its own. */
-  private nodes(code: CodeObject): string[] {
-    return Array.from({ length: code.rows }, (_unused, row) =>
-      Array.from({ length: code.columns }, (_column, column) =>
+  /** Every point the Matrix spells, inked dots included — a point on no edge at all is a component of its own. */
+  private nodes(matrix: Matrix): string[] {
+    const rows = matrix.length;
+    const columns = matrix[0]?.length ?? 0;
+    return Array.from({ length: rows }, (_unused, row) =>
+      Array.from({ length: columns }, (_column, column) =>
         this.key(row, column),
       ),
     ).flat();
@@ -130,9 +130,9 @@ export class ConnectivityService {
    * satisfies, reported as a count here because a family is told from another
    * by how many loops it closes rather than only by whether it closes one.
    */
-  connectivity(code: CodeObject, unwrapped = false): Connectivity {
-    const edges = this.edges(code, unwrapped);
-    const adjacency = this.adjacency(code, edges);
+  connectivity(matrix: Matrix, unwrapped = false): Connectivity {
+    const edges = this.edges(matrix, unwrapped);
+    const adjacency = this.adjacency(matrix, edges);
     const components = this.graphService.components(adjacency);
 
     return {
@@ -143,14 +143,18 @@ export class ConnectivityService {
   }
 
   /**
-   * Every edge the Code holds, each once, named by the two points it joins.
+   * Every edge the Matrix holds, each once, named by the two points it joins.
    *
-   * An eastward edge wraps around the Code's own column span and a southward
+   * An eastward edge wraps around the Matrix's own column span and a southward
    * one stops at the last row — see this service's own doc comment for why
    * the two directions differ.
    */
-  edges(code: CodeObject, unwrapped: boolean): CodeEdge[] {
-    const { columns, rows } = code;
+  edges(matrix: Matrix, unwrapped: boolean): CodeEdge[] {
+    const rows = matrix.length;
+    const columns = matrix[0]?.length ?? 0;
+    if (rows === 0 || columns === 0) {
+      return [];
+    }
     const edges: CodeEdge[] = [];
 
     for (let row = 0; row < rows; row += 1) {
@@ -158,13 +162,13 @@ export class ConnectivityService {
         const from = this.key(row, column);
 
         if (
-          this.joinsEast(code, row, column) &&
+          this.joinsEast(matrix, row, column) &&
           (!unwrapped || column !== columns - 1)
         ) {
           edges.push({ from, to: this.key(row, (column + 1) % columns) });
         }
 
-        if (this.joinsSouth(code, row, column)) {
+        if (this.joinsSouth(matrix, row, column)) {
           edges.push({ from, to: this.key(row + 1, column) });
         }
       }
@@ -176,13 +180,14 @@ export class ConnectivityService {
   // 🌎 Public Methods
 
   /** Whether the eastward edge leaving `column` is claimed by either of its two ends. */
-  joinsEast(code: CodeObject, row: number, column: number): boolean {
-    const point = this.codeService.directionsAt(code, row, column);
-    const eastward = this.codeService.directionsAt(
-      code,
-      row,
-      (column + 1) % code.columns,
-    );
+  joinsEast(matrix: Matrix, row: number, column: number): boolean {
+    const targetRow = matrix[row];
+    if (!targetRow || targetRow.length === 0) {
+      return false;
+    }
+    const columns = targetRow.length;
+    const point = targetRow[column] ?? BARE_MATRIX_POINT;
+    const eastward = targetRow[(column + 1) % columns] ?? BARE_MATRIX_POINT;
 
     return point.east || eastward.west;
   }

@@ -31,9 +31,10 @@ describe(CorpusService, () => {
     components: 1,
     cycles: 0,
     freeEnds: 2,
-
     inkTJunctions: 1,
     inkXJunctions: 0,
+    isClosedLoop: false,
+    isJunctionFree: true,
   });
   const savedMeander = createMock<Meander>({ id: 1 });
 
@@ -146,7 +147,7 @@ describe(CorpusService, () => {
           inkTJunctions: 1,
           inkXJunctions: 0,
 
-          characteristics: [],
+          characteristics: ["isJunctionFree"],
           drawingHash:
             "8fa0825a9fafc5c9cc0fa1377d44f9c63d0113001d1fe09388da64ebb410dd7d",
           lattice: "3",
@@ -162,6 +163,17 @@ describe(CorpusService, () => {
       vi.mocked(enumerationService.isAdmitted).mockReturnValue(true);
 
       await expect(service.ingest([entry])).resolves.toStrictEqual([]);
+      expect(databaseService.save).not.toHaveBeenCalled();
+    });
+
+    it("returns existing record if already found in database", async () => {
+      vi.mocked(databaseService.findOneByLattice).mockResolvedValueOnce(
+        savedMeander,
+      );
+
+      await expect(service.ingest([entry])).resolves.toStrictEqual([
+        savedMeander,
+      ]);
       expect(databaseService.save).not.toHaveBeenCalled();
     });
 

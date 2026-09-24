@@ -1,22 +1,21 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
+import { BARE_MATRIX_POINT } from "../matrix/matrix.constants";
+
 import { CharacteristicsPathService } from "./characteristics-path.service";
 import { ConnectivityService } from "./connectivity.service";
 
-import type { CodeObject } from "../code/code.types";
+import type { Matrix } from "../matrix/matrix.types";
 
 describe(CharacteristicsPathService, () => {
   let service: CharacteristicsPathService;
   let connectivityService: ConnectivityService;
 
-  const parsedCode = (overrides: Partial<CodeObject> = {}): CodeObject => ({
-    columns: 4,
-    digits: "",
-    repeats: 1,
-    rows: 1,
-    ...overrides,
-  });
+  const createMatrix = (rows = 1, columns = 4): Matrix =>
+    Array.from({ length: rows }, () =>
+      Array.from({ length: columns }, () => BARE_MATRIX_POINT),
+    );
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
@@ -40,7 +39,7 @@ describe(CharacteristicsPathService, () => {
   });
 
   it("handles empty paths", () => {
-    expect(service.analyzePaths(parsedCode())).toStrictEqual({
+    expect(service.analyzePaths(createMatrix())).toStrictEqual({
       reversesAtItsTightestTurn: false,
       turnsMonotonically: false,
     });
@@ -52,7 +51,7 @@ describe(CharacteristicsPathService, () => {
       { from: "1,2", to: "0,2" }, // Up (direction 0) -> turn 3 (Left)
       { from: "0,2", to: "0,1" }, // Left (direction 3) -> turn 3 (Left)
     ];
-    const result = service.analyzePaths(parsedCode({ columns: 4 }));
+    const result = service.analyzePaths(createMatrix(2, 4));
 
     expect(result.reversesAtItsTightestTurn).toBe(true);
     expect(result.turnsMonotonically).toBe(true);
@@ -65,7 +64,7 @@ describe(CharacteristicsPathService, () => {
       { from: "1,3", to: "2,3" }, // Turn right (1)
       { from: "2,3", to: "2,4" }, // Turn left (3)
     ];
-    const result = service.analyzePaths(parsedCode({ columns: 5 }));
+    const result = service.analyzePaths(createMatrix(3, 5));
 
     expect(result.reversesAtItsTightestTurn).toBe(false);
     expect(result.turnsMonotonically).toBe(false);
@@ -78,7 +77,7 @@ describe(CharacteristicsPathService, () => {
       { from: "1,3", to: "0,3" }, // Turn left (3)
       { from: "0,3", to: "0,4" }, // Turn right (1)
     ];
-    const result = service.analyzePaths(parsedCode({ columns: 5 }));
+    const result = service.analyzePaths(createMatrix(3, 5));
 
     expect(result.reversesAtItsTightestTurn).toBe(false);
     expect(result.turnsMonotonically).toBe(false);
@@ -91,7 +90,7 @@ describe(CharacteristicsPathService, () => {
       { from: "2,2", to: "2,1" }, // Left (3)
       { from: "2,1", to: "1,1" }, // Up (0)
     ];
-    const result = service.analyzePaths(parsedCode({ columns: 4 }));
+    const result = service.analyzePaths(createMatrix(3, 4));
 
     expect(result.reversesAtItsTightestTurn).toBe(true);
     expect(result.turnsMonotonically).toBe(true);
@@ -102,7 +101,7 @@ describe(CharacteristicsPathService, () => {
       { from: "1,1", to: "1,2" }, // Right (1)
       { from: "1,2", to: "1,1" }, // Left (3) -> Turn backwards (2)
     ];
-    const result = service.analyzePaths(parsedCode({ columns: 4 }));
+    const result = service.analyzePaths(createMatrix(2, 4));
 
     expect(result.reversesAtItsTightestTurn).toBe(false);
   });
@@ -112,7 +111,7 @@ describe(CharacteristicsPathService, () => {
       { from: "1,1", to: "1,2" }, // Right
       { from: "1,2", to: "1,3" }, // Right
     ];
-    const result = service.analyzePaths(parsedCode({ columns: 4 }));
+    const result = service.analyzePaths(createMatrix(2, 4));
 
     expect(result.reversesAtItsTightestTurn).toBe(false);
     expect(result.turnsMonotonically).toBe(false); // no turns
@@ -123,7 +122,7 @@ describe(CharacteristicsPathService, () => {
       { from: "1,1", to: "3,3" }, // Invalid
       { from: "3,3", to: "4,4" }, // Invalid
     ];
-    const result = service.analyzePaths(parsedCode({ columns: 4 }));
+    const result = service.analyzePaths(createMatrix(4, 4));
 
     expect(result.reversesAtItsTightestTurn).toBe(false);
   });
@@ -134,9 +133,22 @@ describe(CharacteristicsPathService, () => {
       { from: "0,1", to: "0,2" },
       { from: "0,1", to: "1,1" }, // Branch
     ];
-    const result = service.analyzePaths(parsedCode({ columns: 4 }));
+    const result = service.analyzePaths(createMatrix(2, 4));
 
     expect(result).toBeDefined();
+  });
+
+  it("handles paths wrapping around columns", () => {
+    connectivityService.edges = () => [
+      { from: "0,3", to: "0,0" }, // Wrapping right
+      { from: "0,0", to: "1,0" }, // Down
+      { from: "1,0", to: "1,3" }, // Wrapping left
+      { from: "1,3", to: "0,3" }, // Up
+    ];
+    const result = service.analyzePaths(createMatrix(2, 4));
+
+    expect(result.reversesAtItsTightestTurn).toBe(true);
+    expect(result.turnsMonotonically).toBe(true);
   });
 
   it("handles applyTurn returns stepsSinceTurn unchanged for non-turns", () => {
@@ -145,8 +157,12 @@ describe(CharacteristicsPathService, () => {
       hasRightTurn: false,
       hasTightU: false,
     };
-    const result = service.applyTurn(0, metrics, 5);
+    const resultStraight = service.applyTurn(0, metrics, 5);
+    const resultReversal = service.applyTurn(2, metrics, 5);
+    const resultUnknown = service.applyTurn(99, metrics, 5);
 
-    expect(result).toBe(6);
+    expect(resultStraight).toBe(6);
+    expect(resultReversal).toBe(6);
+    expect(resultUnknown).toBe(5);
   });
 });

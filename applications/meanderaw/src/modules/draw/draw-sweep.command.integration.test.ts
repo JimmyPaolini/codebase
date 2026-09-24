@@ -272,8 +272,6 @@ describe("drawCommand sweep mode", () => {
         inkTJunctions: 0,
         inkXJunctions: 0,
         lattice: duplicated.code,
-        negativeTJunctions: 0,
-        negativeXJunctions: 0,
         pitch: duplicated.columns,
         provenance: "enumerated",
         repeats: 1,

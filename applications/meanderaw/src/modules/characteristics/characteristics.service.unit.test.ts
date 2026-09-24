@@ -4,6 +4,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { CodeService } from "../code/code.service";
 import { HISTORICAL_CORPUS } from "../corpus/historical-corpus.constants";
 import { GraphService } from "../graph/graph.service";
+import { MatrixService } from "../matrix/matrix.service";
 import { SymmetryService } from "../symmetry/symmetry.service";
 import { TileService } from "../tile/tile.service";
 
@@ -13,32 +14,11 @@ import { CharacteristicsShapeService } from "./characteristics-shape.service";
 import { CharacteristicsService } from "./characteristics.service";
 import { ConnectivityService } from "./connectivity.service";
 
-// 🔧 Configuration
-
-/**
- * A four-by-four Code of points, three-by-three cells wide — the smallest
- * square that gives one cell (the center) all four neighboring cells, and
- * so a chance to reach negative degree 4. Every point is bare except the
- * center, whose `east` bit `closeCenterEastCorridor` can set — closing the
- * one corridor shared between the center cell and the cell above it.
- *
- * With every point bare, every corridor is open by construction: a corner
- * cell has two neighboring cells, an edge cell three, and the center cell
- * all four, which is exactly what a plain count of lattice position predicts
- * with no ink drawn anywhere to close one.
- */
-const squareCode = (
-  options: { readonly closeCenterEastCorridor?: boolean } = {},
-): string =>
-  Array.from({ length: 16 }, (_unused, index) => {
-    if (index === 0) return "8"; // Make it irreducible without affecting east/south corridors
-    return index === 5 && options.closeCenterEastCorridor === true ? "2" : "0";
-  }).join("");
-
 // 🧪 Tests
 
 describe(CharacteristicsService, () => {
   let codeService: CodeService;
+  let matrixService: MatrixService;
   let service: CharacteristicsService;
 
   beforeAll(async () => {
@@ -46,6 +26,7 @@ describe(CharacteristicsService, () => {
       providers: [
         CodeService,
         GraphService,
+        MatrixService,
         CharacteristicsService,
         CharacteristicsFamilyService,
         ConnectivityService,
@@ -57,6 +38,7 @@ describe(CharacteristicsService, () => {
     }).compile();
 
     codeService = await module.resolve(CodeService);
+    matrixService = await module.resolve(MatrixService);
     service = await module.resolve(CharacteristicsService);
   });
 
@@ -103,10 +85,8 @@ describe(CharacteristicsService, () => {
             "lCount": 0,
             "longestHorizontalRun": 0,
             "longestVerticalRun": 0,
-            "negativeTJunctions": 0,
-            "negativeXJunctions": 0,
             "oCount": 0,
-            "pitch": 1,
+            "pitch": 0,
             "plusCount": 0,
             "reversesAtItsTightestTurn": false,
             "seamComponents": 0,
@@ -129,7 +109,13 @@ describe(CharacteristicsService, () => {
       const edges = [
         { from: "NaN,NaN", orientation: "vertical" as const, to: "1,1" },
       ];
-      const result = (service as any).findFreeEnds(edges);
+      const result = (
+        service as unknown as {
+          findFreeEnds: (
+            edgeList: typeof edges,
+          ) => { column: number; row: number }[];
+        }
+      ).findFreeEnds(edges);
 
       expect(result).toStrictEqual([
         { column: 0, row: 0 },
@@ -175,8 +161,6 @@ describe(CharacteristicsService, () => {
             "lCount": 0,
             "longestHorizontalRun": 0,
             "longestVerticalRun": 0,
-            "negativeTJunctions": 0,
-            "negativeXJunctions": 0,
             "oCount": 0,
             "pitch": 1,
             "plusCount": 0,
@@ -234,8 +218,6 @@ describe(CharacteristicsService, () => {
             "lCount": 0,
             "longestHorizontalRun": 1,
             "longestVerticalRun": 0,
-            "negativeTJunctions": 0,
-            "negativeXJunctions": 0,
             "oCount": 0,
             "pitch": 2,
             "plusCount": 0,
@@ -295,8 +277,6 @@ describe(CharacteristicsService, () => {
             "lCount": 0,
             "longestHorizontalRun": 1,
             "longestVerticalRun": 0,
-            "negativeTJunctions": 0,
-            "negativeXJunctions": 0,
             "oCount": 0,
             "pitch": 2,
             "plusCount": 0,
@@ -356,8 +336,6 @@ describe(CharacteristicsService, () => {
             "lCount": 0,
             "longestHorizontalRun": 0,
             "longestVerticalRun": 1,
-            "negativeTJunctions": 0,
-            "negativeXJunctions": 0,
             "oCount": 0,
             "pitch": 2,
             "plusCount": 0,
@@ -417,8 +395,6 @@ describe(CharacteristicsService, () => {
             "lCount": 0,
             "longestHorizontalRun": 0,
             "longestVerticalRun": 1,
-            "negativeTJunctions": 0,
-            "negativeXJunctions": 0,
             "oCount": 0,
             "pitch": 1,
             "plusCount": 0,
@@ -478,8 +454,6 @@ describe(CharacteristicsService, () => {
             "lCount": 1,
             "longestHorizontalRun": 1,
             "longestVerticalRun": 1,
-            "negativeTJunctions": 0,
-            "negativeXJunctions": 0,
             "oCount": 0,
             "pitch": 2,
             "plusCount": 0,
@@ -539,8 +513,6 @@ describe(CharacteristicsService, () => {
             "lCount": 0,
             "longestHorizontalRun": 1,
             "longestVerticalRun": 1,
-            "negativeTJunctions": 0,
-            "negativeXJunctions": 0,
             "oCount": 0,
             "pitch": 2,
             "plusCount": 0,
@@ -600,8 +572,6 @@ describe(CharacteristicsService, () => {
             "lCount": 0,
             "longestHorizontalRun": 1,
             "longestVerticalRun": 1,
-            "negativeTJunctions": 0,
-            "negativeXJunctions": 0,
             "oCount": 1,
             "pitch": 2,
             "plusCount": 0,
@@ -661,8 +631,6 @@ describe(CharacteristicsService, () => {
             "lCount": 0,
             "longestHorizontalRun": 1,
             "longestVerticalRun": 1,
-            "negativeTJunctions": 0,
-            "negativeXJunctions": 0,
             "oCount": 0,
             "pitch": 2,
             "plusCount": 1,
@@ -720,8 +688,6 @@ describe(CharacteristicsService, () => {
             "lCount": 0,
             "longestHorizontalRun": 1,
             "longestVerticalRun": 1,
-            "negativeTJunctions": 0,
-            "negativeXJunctions": 0,
             "oCount": 0,
             "pitch": 1,
             "plusCount": 0,
@@ -779,8 +745,6 @@ describe(CharacteristicsService, () => {
             "lCount": 0,
             "longestHorizontalRun": 1,
             "longestVerticalRun": 1,
-            "negativeTJunctions": 0,
-            "negativeXJunctions": 0,
             "oCount": 0,
             "pitch": 1,
             "plusCount": 0,
@@ -796,126 +760,6 @@ describe(CharacteristicsService, () => {
             "verticalDashCount": 0,
             "verticalPointCount": 0,
             "xCount": 1,
-          }
-        `);
-    });
-
-    it("counts a corner cell's two corridors, an edge cell's three, and the center cell's four, over a fully bare Code", () => {
-      expect(service.compute(codeService.parse(squareCode(), 4, 4)))
-        .toMatchInlineSnapshot(`
-          {
-            "componentCount": 16,
-            "components": 16,
-            "cornerCount": 0,
-            "crossesTheSeam": false,
-            "cycleCount": 0,
-            "cycles": 0,
-            "density": 0.0625,
-            "dotCount": 15,
-            "edgeCount": 0.5,
-            "embeddedOCount": 0,
-            "embeddedUCount": 0,
-            "endsAreLatticeNeighbors": false,
-            "endsOnBorderRules": false,
-            "freeEnds": 1,
-            "hasBranching": true,
-            "hasCrossing": true,
-            "hasDots": true,
-            "hasTJunctions": false,
-            "hasXJunctions": false,
-            "horizontalDashCount": 0,
-            "horizontalPointCount": 0,
-            "inkPointCount": 1,
-            "inkTJunctions": 0,
-            "inkXJunctions": 0,
-            "isClosedLoop": false,
-            "isConnected": false,
-            "isFlipSymmetric": false,
-            "isJunctionFree": true,
-            "isMirrorSymmetric": false,
-            "isReducible": false,
-            "isSingleArc": false,
-            "lCount": 0,
-            "longestHorizontalRun": 0,
-            "longestVerticalRun": 0,
-            "negativeTJunctions": 4,
-            "negativeXJunctions": 1,
-            "oCount": 0,
-            "pitch": 4,
-            "plusCount": 0,
-            "reversesAtItsTightestTurn": false,
-            "seamComponents": 0,
-            "seamCycles": 0,
-            "seamTJunctions": 0,
-            "seamXJunctions": 0,
-            "shapeICount": 0,
-            "tCount": 0,
-            "turnsMonotonically": false,
-            "uCount": 0,
-            "verticalDashCount": 0,
-            "verticalPointCount": 0,
-            "xCount": 0,
-          }
-        `);
-    });
-
-    it("closing one corridor turns the center cell's negative crossing into a negative branch, without touching the ink", () => {
-      const code = squareCode({ closeCenterEastCorridor: true });
-
-      expect(service.compute(codeService.parse(code, 4, 4)))
-        .toMatchInlineSnapshot(`
-          {
-            "componentCount": 15,
-            "components": 15,
-            "cornerCount": 0,
-            "crossesTheSeam": false,
-            "cycleCount": 0,
-            "cycles": 0,
-            "density": 0.125,
-            "dotCount": 14,
-            "edgeCount": 1,
-            "embeddedOCount": 0,
-            "embeddedUCount": 0,
-            "endsAreLatticeNeighbors": true,
-            "endsOnBorderRules": false,
-            "freeEnds": 2,
-            "hasBranching": true,
-            "hasCrossing": false,
-            "hasDots": true,
-            "hasTJunctions": false,
-            "hasXJunctions": false,
-            "horizontalDashCount": 0,
-            "horizontalPointCount": 0,
-            "inkPointCount": 2,
-            "inkTJunctions": 0,
-            "inkXJunctions": 0,
-            "isClosedLoop": false,
-            "isConnected": false,
-            "isFlipSymmetric": false,
-            "isJunctionFree": true,
-            "isMirrorSymmetric": false,
-            "isReducible": false,
-            "isSingleArc": false,
-            "lCount": 0,
-            "longestHorizontalRun": 1,
-            "longestVerticalRun": 0,
-            "negativeTJunctions": 4,
-            "negativeXJunctions": 0,
-            "oCount": 0,
-            "pitch": 4,
-            "plusCount": 0,
-            "reversesAtItsTightestTurn": false,
-            "seamComponents": 0,
-            "seamCycles": 0,
-            "seamTJunctions": 0,
-            "seamXJunctions": 0,
-            "shapeICount": 0,
-            "tCount": 0,
-            "turnsMonotonically": false,
-            "uCount": 0,
-            "verticalDashCount": 0,
-            "verticalPointCount": 0,
-            "xCount": 0,
           }
         `);
     });
@@ -946,6 +790,48 @@ describe(CharacteristicsService, () => {
       const dotsCode = codeService.parse("0000", 2, 2);
 
       expect(service.classifyFamilies(dotsCode)).toStrictEqual(["dots"]);
+    });
+  });
+
+  describe("measure", () => {
+    it("measures directly from a raw formatted or bare code string", () => {
+      const fromFormatted = service.measure("02x02y4488r01");
+      const fromBare = service.measure("4488", 2, 2);
+      const fromParsed = service.compute(codeService.parse("4488", 2, 2));
+
+      expect(fromFormatted).toStrictEqual(fromParsed);
+      expect(fromBare).toStrictEqual(fromParsed);
+    });
+
+    it("measures directly from a 2D Matrix", () => {
+      const matrix = [
+        [
+          { east: false, north: false, south: true, west: false },
+          { east: false, north: false, south: true, west: false },
+        ],
+        [
+          { east: false, north: true, south: false, west: false },
+          { east: false, north: true, south: false, west: false },
+        ],
+      ];
+      const result = service.measure(matrix);
+
+      expect(result.shapeICount).toBe(2);
+      expect(result.pitch).toBe(2);
+      expect(result.isConnected).toBe(false);
+    });
+
+    it("computes seamComponents across string, ParsedCode, and Matrix inputs", () => {
+      const codeStr = "02x02y4488";
+      const parsed = codeService.parse("4488", 2, 2);
+      const matrix = matrixService.fromCode(parsed);
+
+      const seamFromStr = service.seamComponents(codeStr);
+      const seamFromParsed = service.seamComponents(parsed);
+      const seamFromMatrix = service.seamComponents(matrix);
+
+      expect(seamFromStr).toBe(seamFromParsed);
+      expect(seamFromMatrix).toBe(seamFromParsed);
     });
   });
 

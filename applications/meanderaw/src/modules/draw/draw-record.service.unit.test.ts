@@ -10,6 +10,7 @@ import { CodeService } from "../code/code.service";
 import { DrawingService } from "../drawing/drawing.service";
 import { GeometryService } from "../geometry/geometry.service";
 import { GraphService } from "../graph/graph.service";
+import { MatrixService } from "../matrix/matrix.service";
 import { SvgService } from "../svg/svg.service";
 import { SymmetryService } from "../symmetry/symmetry.service";
 import { TileService } from "../tile/tile.service";
@@ -37,6 +38,7 @@ describe(DrawRecordService, () => {
         CharacteristicsShapeService,
         ConnectivityService,
         CodeService,
+        MatrixService,
         SymmetryService,
         DrawingService,
         GraphService,
@@ -97,8 +99,6 @@ describe(DrawRecordService, () => {
             "lattice": "4488",
             "longestHorizontalRun": 0,
             "longestVerticalRun": 1,
-            "negativeTJunctions": 0,
-            "negativeXJunctions": 0,
             "oCount": 0,
             "pitch": 2,
             "plusCount": 0,

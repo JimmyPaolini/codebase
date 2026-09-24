@@ -7,7 +7,7 @@ import { DatabaseService } from "./database.service";
 import { Meander } from "./entities/Meander.entity";
 
 import type { MeanderRecord } from "./database.types";
-import type { Repository } from "typeorm";
+import type { EntityManager, Repository } from "typeorm";
 
 // 🧪 Tests
 
@@ -101,6 +101,54 @@ describe(DatabaseService, () => {
 
     it("resolves with the row the repository saved", async () => {
       await expect(service.save(record)).resolves.toBe(savedMeander);
+    });
+  });
+
+  describe("findOneByLattice", () => {
+    it("delegates findOneBy with columns, lattice, and rows", async () => {
+      vi.mocked(meanderRepository.findOneBy).mockResolvedValue(savedMeander);
+
+      await expect(
+        service.findOneByLattice("3c9a", 3, 2),
+      ).resolves.toStrictEqual(savedMeander);
+      expect(meanderRepository.findOneBy).toHaveBeenCalledWith({
+        columns: 2,
+        lattice: "3c9a",
+        rows: 3,
+      });
+    });
+  });
+
+  describe("saveAll", () => {
+    it("saves all records in chunks using a transaction", async () => {
+      vi.mocked(meanderRepository.manager.transaction).mockImplementation(
+        async (
+          callbackOrLevel: unknown,
+          maybeCallback?: (manager: EntityManager) => Promise<unknown>,
+        ) => {
+          const callback =
+            typeof callbackOrLevel === "function"
+              ? (callbackOrLevel as (
+                  manager: EntityManager,
+                ) => Promise<unknown>)
+              : maybeCallback;
+          if (callback) {
+            await callback(meanderRepository.manager);
+          }
+        },
+      );
+      vi.mocked(meanderRepository.manager.insert).mockResolvedValue(
+        undefined as never,
+      );
+
+      const records = [record, { ...record, lattice: "3c9b" }];
+      const count = await service.saveAll(records);
+
+      expect(count).toBe(2);
+      expect(meanderRepository.manager.insert).toHaveBeenCalledWith(
+        Meander,
+        records,
+      );
     });
   });
 });
