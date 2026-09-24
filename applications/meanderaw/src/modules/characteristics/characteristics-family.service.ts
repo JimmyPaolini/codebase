@@ -71,19 +71,24 @@ export class CharacteristicsFamilyService {
   ): boolean {
     const topRow = grid[0] ?? "";
     const bottomRow = grid[rows - 1] ?? "";
-    const hasTop = /[765]/u.test(topRow);
-    const hasBottom = /[ba9]/u.test(bottomRow);
+    const columns = topRow.length;
+    let hasDownTeeth = false;
+    let hasUpTeeth = false;
 
-    if (!hasTop || !hasBottom) {
-      return false;
+    for (let column = 0; column < columns; column += 1) {
+      const topCharacter = topRow[column] ?? "";
+      const bottomCharacter = bottomRow[column] ?? "";
+      hasDownTeeth ||= /[765]/u.test(topCharacter) && bottomCharacter === "8";
+      hasUpTeeth ||= topCharacter === "4" && /[ba9]/u.test(bottomCharacter);
     }
 
-    if (rows > 2) {
-      const middle = grid.slice(1, rows - 1).join("");
-      return /^c+$/u.test(middle);
-    }
-
-    return !digits.includes("0");
+    return (
+      hasDownTeeth &&
+      hasUpTeeth &&
+      (rows <= 2
+        ? !digits.includes("0")
+        : /^c+$/u.test(grid.slice(1, rows - 1).join("")))
+    );
   }
 
   /** Whether vertical column is a comb spine with horizontal teeth. */
