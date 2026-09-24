@@ -19,6 +19,7 @@
     "@eslint-react/eslint-plugin": "catalog:",
     "@eslint/js": "catalog:",
     "@eslint/markdown": "catalog:",
+    "@microsoft/api-extractor": "catalog:",
     "@nx/eslint": "catalog:",
     "@nx/eslint-plugin": "catalog:",
     "@nx/js": "catalog:",
@@ -89,6 +90,7 @@
     "typescript-eslint": "catalog:",
     "validate-branch-name": "catalog:",
     "vite": "catalog:",
+    "vite-plugin-dts": "catalog:",
     "vitest": "catalog:",
     "zod": "catalog:"
   },
