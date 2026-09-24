@@ -62,7 +62,6 @@
     "executors": "./executors.json",
     "generators": "./generators.json"
   },
-  "private": true,
   "publishConfig": {
     "access": "public",
     "exports": {
