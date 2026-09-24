@@ -3,6 +3,8 @@
     "@callidescope/configuration": "workspace:*",
     "@callidescope/core": "workspace:*",
     "@nestjs/common": "catalog:",
+    "pino": "catalog:",
+    "pino-pretty": "catalog:",
     "reflect-metadata": "catalog:"
   },
   "devDependencies": {
