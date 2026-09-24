@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.19.0](https://github.com/JimmyPaolini/codebase/compare/v2.18.1...v2.19.0) (2026-09-24)
+
+### ✨ Features
+
+* **meanderaw:** ✨ Implement MatrixModule and 2D matrix transformation ([#1048](https://github.com/JimmyPaolini/codebase/issues/1048)) ([46c7c3b](https://github.com/JimmyPaolini/codebase/commit/46c7c3b98f63cbb04af92e16b40a2ec2d14213e0)), closes [#1028](https://github.com/JimmyPaolini/codebase/issues/1028) [#1027](https://github.com/JimmyPaolini/codebase/issues/1027)
+
+### 📝 Documentation
+
+* **documentation,deployments:** 📝 reorder readme projects and remove probe from compliance workflow ([#1053](https://github.com/JimmyPaolini/codebase/issues/1053)) ([d0c86ea](https://github.com/JimmyPaolini/codebase/commit/d0c86eadd80cb427f5e548315a539d453ed6ec0c))
+
+### ♻️ Code Refactoring
+
+* **meanderaw:** ♻️ Redefine rows to lattice height and eliminate levels ([#1049](https://github.com/JimmyPaolini/codebase/issues/1049)) ([cd83426](https://github.com/JimmyPaolini/codebase/commit/cd8342670cb04aa8b51026875feee64c24240624)), closes [#1029](https://github.com/JimmyPaolini/codebase/issues/1029) [#1027](https://github.com/JimmyPaolini/codebase/issues/1027)
+
 ## [2.18.1](https://github.com/JimmyPaolini/codebase/compare/v2.18.0...v2.18.1) (2026-09-23)
 
 ### ♻️ Code Refactoring

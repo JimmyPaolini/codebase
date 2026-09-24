@@ -1,4 +1,4 @@
-# Codebase v2.18.1
+# Codebase v2.19.0
 
 [![Nx](https://img.shields.io/badge/Nx-Codebase-143055?logo=nx)](https://nx.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Strict-3178C6?logo=typescript)](https://www.typescriptlang.org/)
@@ -409,12 +409,12 @@ Repository statistics measured by [codometer](packages/ic-suite/codometer/codome
 ### YAML
 
 ![YAML Files](https://img.shields.io/badge/YAML_Files-21-cb171e?style=flat-square)
-![YAML Lines](https://img.shields.io/badge/YAML_Lines-2781-e34c26?style=flat-square)
+![YAML Lines](https://img.shields.io/badge/YAML_Lines-2766-e34c26?style=flat-square)
 ![YAML Documents](https://img.shields.io/badge/YAML_Documents-21-f97316?style=flat-square)
 ![YAML Mappings](https://img.shields.io/badge/YAML_Mappings-395-7c3aed?style=flat-square)
 ![YAML Sequences](https://img.shields.io/badge/YAML_Sequences-86-8b5cf6?style=flat-square)
-![YAML Keys](https://img.shields.io/badge/YAML_Keys-1362-0284c7?style=flat-square)
-![YAML Scalars](https://img.shields.io/badge/YAML_Scalars-2736-16a34a?style=flat-square)
+![YAML Keys](https://img.shields.io/badge/YAML_Keys-1360-0284c7?style=flat-square)
+![YAML Scalars](https://img.shields.io/badge/YAML_Scalars-2732-16a34a?style=flat-square)
 ![YAML Anchors](https://img.shields.io/badge/YAML_Anchors-0-059669?style=flat-square)
 ![YAML Aliases](https://img.shields.io/badge/YAML_Aliases-0-10b981?style=flat-square)
 ![YAML Comments](https://img.shields.io/badge/YAML_Comments-386-64748b?style=flat-square)
@@ -558,10 +558,10 @@ The workspace's call graph, traced by [callidescope](packages/ic-suite/callidesc
 
 | Measure | Value |
 | --- | --- |
-| Callables | 5033 |
-| Files | 1414 |
-| Calls traced | 5623 |
-| Call stacks | 1300 |
+| Callables | 5046 |
+| Files | 1418 |
+| Calls traced | 5634 |
+| Call stacks | 1305 |
 | Deepest stack | 17 |
 | Stacks through recursion | 12 |
 | Unfollowable calls | 336 |
