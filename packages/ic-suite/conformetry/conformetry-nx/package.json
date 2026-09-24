@@ -12,8 +12,7 @@
     "@nestjs/core": "catalog:",
     "@nx/devkit": "catalog:",
     "@swc-node/register": "catalog:",
-    "reflect-metadata": "catalog:",
-    "tslib": "catalog:"
+    "reflect-metadata": "catalog:"
   },
   "devDependencies": {
     "@golevelup/ts-vitest": "catalog:",

@@ -8,7 +8,6 @@
     "reflect-metadata": "catalog:",
     "remark": "catalog:",
     "remark-gfm": "catalog:",
-    "tslib": "catalog:",
     "typescript": "catalog:"
   },
   "devDependencies": {

@@ -13,19 +13,11 @@
   ],
   "targets": {
     "build": {
-      "executor": "@nx/js:tsc",
+      "executor": "@nx/vite:build",
       "options": {
-        "assets": [
-          {
-            "glob": "README.md",
-            "input": "packages/ic-suite/conformetry/conformetry-core",
-            "output": "."
-          }
-        ],
+        "configFile": "packages/ic-suite/conformetry/conformetry-core/vite.config.ts",
         "generatePackageJson": false,
-        "main": "packages/ic-suite/conformetry/conformetry-core/src/index.ts",
-        "outputPath": "packages/ic-suite/conformetry/conformetry-core/dist",
-        "tsConfig": "packages/ic-suite/conformetry/conformetry-core/tsconfig.build.json"
+        "outputPath": "packages/ic-suite/conformetry/conformetry-core/dist"
       },
       "outputs": ["{options.outputPath}"]
     },

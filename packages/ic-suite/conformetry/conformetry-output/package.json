@@ -3,8 +3,7 @@
     "@conformetry/core": "workspace:*",
     "@conformetry/languages": "workspace:*",
     "@nestjs/common": "catalog:",
-    "reflect-metadata": "catalog:",
-    "tslib": "catalog:"
+    "reflect-metadata": "catalog:"
   },
   "devDependencies": {
     "@golevelup/ts-vitest": "catalog:",

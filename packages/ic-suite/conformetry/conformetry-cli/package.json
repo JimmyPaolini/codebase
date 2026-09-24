@@ -13,7 +13,6 @@
     "@nestjs/core": "catalog:",
     "nest-commander": "catalog:",
     "reflect-metadata": "catalog:",
-    "tslib": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
