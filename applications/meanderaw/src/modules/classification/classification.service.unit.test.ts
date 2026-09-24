@@ -95,6 +95,7 @@ describe(ClassificationService, () => {
       "chain",
       "clasps",
       "snake",
+      "dotted",
       "unclassified",
     ]);
   });
@@ -232,10 +233,22 @@ describe(ClassificationService, () => {
       expect(service.classify(characteristics, shape)).toBe("snake");
     });
 
-    it("returns unclassified when no rule matches", () => {
+    it("returns dotted when no rule matches and hasDots is true", () => {
       const characteristics = createMockCharacteristics({
         components: 2,
         cycles: 2,
+        hasDots: true,
+      });
+      const shape: MeanderShape = { columns: 4, rows: 4 };
+
+      expect(service.classify(characteristics, shape)).toBe("dotted");
+    });
+
+    it("returns unclassified when no rule matches and hasDots is false", () => {
+      const characteristics = createMockCharacteristics({
+        components: 2,
+        cycles: 2,
+        hasDots: false,
       });
       const shape: MeanderShape = { columns: 4, rows: 4 };
 

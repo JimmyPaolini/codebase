@@ -11,6 +11,7 @@ export type MeanderFamily =
   | "chain"
   | "clasps"
   | "cross"
+  | "dotted"
   | "parallel"
   | "snake"
   | "swirl"

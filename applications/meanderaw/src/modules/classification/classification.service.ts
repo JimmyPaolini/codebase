@@ -100,6 +100,10 @@ export class ClassificationService {
       }
     }
 
+    if (characteristics.hasDots) {
+      return "dotted";
+    }
+
     return "unclassified";
   }
 

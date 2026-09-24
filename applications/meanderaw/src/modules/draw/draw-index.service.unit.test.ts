@@ -160,6 +160,7 @@ describe(DrawIndexService, () => {
         meander({ code: "a", family: "parallel", id: 1 }),
         meander({ code: "b", family: "boxes", id: 2 }),
         meander({ code: "c", family: "snake", id: 3 }),
+        meander({ code: "d", family: "dotted", id: 4 }),
       ]);
 
       const indexPage = pages["index.html"] ?? "";
@@ -169,6 +170,9 @@ describe(DrawIndexService, () => {
       );
       expect(indexPage.indexOf("parallel.html")).toBeLessThan(
         indexPage.indexOf("snake.html"),
+      );
+      expect(indexPage.indexOf("snake.html")).toBeLessThan(
+        indexPage.indexOf("dotted.html"),
       );
     });
 

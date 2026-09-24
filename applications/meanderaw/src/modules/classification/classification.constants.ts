@@ -16,6 +16,7 @@ export const MEANDER_FAMILIES: readonly MeanderFamily[] = [
   "chain",
   "clasps",
   "snake",
+  "dotted",
   "unclassified",
 ];
 
@@ -28,6 +29,7 @@ export const STRUCTURAL_MINIMUM_ROWS: Record<MeanderFamily, number> = {
   chain: 3,
   clasps: 3,
   cross: 6,
+  dotted: 1,
   parallel: 2,
   snake: 3,
   swirl: 3,
