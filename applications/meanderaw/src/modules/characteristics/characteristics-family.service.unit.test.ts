@@ -101,6 +101,48 @@ describe(CharacteristicsFamilyService, () => {
     });
   });
 
+  describe("isComb", () => {
+    it("recognizes vertical combs with spine and teeth", () => {
+      expect(service.isComb(code("61e1a1", 3, 2))).toBe(true);
+    });
+
+    it("rejects codes with bars, lines, or mesh", () => {
+      expect(service.isComb(code("4488", 2, 2))).toBe(false);
+      expect(service.isComb(code("3333", 2, 2))).toBe(false);
+      expect(service.isComb(code("77bb", 2, 2))).toBe(false);
+    });
+
+    it("rejects codes with invalid dimensions", () => {
+      expect(service.isComb(code("3", 1, 1))).toBe(false);
+      expect(service.isComb(code("4", 1, 1))).toBe(false);
+    });
+  });
+
+  describe("isArcade", () => {
+    it("recognizes arcade with continuous through-pillars", () => {
+      expect(service.isArcade(code("6775ccccab98", 3, 4))).toBe(true);
+    });
+
+    it("rejects codes with rows < 3", () => {
+      expect(service.isArcade(code("48", 2, 1))).toBe(false);
+      expect(service.isArcade(code("4488", 2, 2))).toBe(false);
+    });
+
+    it("rejects codes with columns < 1", () => {
+      expect(service.isArcade(code("", 3, 0))).toBe(false);
+    });
+
+    it("rejects codes that are bars, mesh, or comb", () => {
+      expect(service.isArcade(code("4cc8", 3, 1))).toBe(false);
+      expect(service.isArcade(code("7fb", 3, 1))).toBe(false);
+      expect(service.isArcade(code("61e1a1", 3, 2))).toBe(false);
+    });
+
+    it("rejects codes with mismatched digit length", () => {
+      expect(service.isArcade(code("667", 3, 2))).toBe(false);
+    });
+  });
+
   describe("classify", () => {
     it("classifies bars correctly", () => {
       expect(service.classify(code("4488", 2, 2))).toStrictEqual(["bars"]);
@@ -116,6 +158,16 @@ describe(CharacteristicsFamilyService, () => {
 
     it("classifies mesh correctly", () => {
       expect(service.classify(code("77bb", 2, 2))).toStrictEqual(["mesh"]);
+    });
+
+    it("classifies comb correctly", () => {
+      expect(service.classify(code("61e1a1", 3, 2))).toStrictEqual(["comb"]);
+    });
+
+    it("classifies arcade correctly", () => {
+      expect(service.classify(code("6775ccccab98", 3, 4))).toStrictEqual([
+        "arcade",
+      ]);
     });
 
     it("returns an empty array for unclassified codes", () => {

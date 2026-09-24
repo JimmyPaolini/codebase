@@ -687,7 +687,7 @@ describe(CharacteristicsService, () => {
             "isArcade": false,
             "isBars": false,
             "isClosedLoop": true,
-            "isComb": true,
+            "isComb": false,
             "isConnected": true,
             "isDots": false,
             "isFlipSymmetric": false,
