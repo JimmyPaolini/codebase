@@ -98,6 +98,19 @@
       "tags": ["language:typescript", "type:tool"]
     }
   },
+  "release": {
+    "projects": ["packages/ic-suite/*/*"],
+    "projectsRelationship": "independent",
+    "releaseTag": {
+      "pattern": "{projectName}@{version}"
+    },
+    "version": {
+      "currentVersionResolver": "git-tag",
+      "fallbackCurrentVersionResolver": "disk",
+      "specifierSource": "conventional-commits",
+      "updateDependents": "auto"
+    }
+  },
   "sync": {
     "globalGenerators": ["@conformetry/nx:sync"]
   },
