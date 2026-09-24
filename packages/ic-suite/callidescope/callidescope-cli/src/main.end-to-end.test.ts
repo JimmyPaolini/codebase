@@ -6,6 +6,8 @@ import { pathToFileURL } from "node:url";
 
 import { describe, expect, it } from "vitest";
 
+import { assertTarballTypechecks } from "../testing/tarball";
+
 import { environmentSchema } from "./constants";
 
 /** This package's own `main.ts`, spawned the way the `start` target does. */
@@ -243,4 +245,16 @@ describe("main end-to-end suite", () => {
     },
     SPAWNED_RUN_TIMEOUT,
   );
+
+  describe("callidescope-cli tarball assertion", () => {
+    it("installs from its tarball and typechecks under modern module resolution", () => {
+      expect.hasAssertions();
+      expect(() => {
+        assertTarballTypechecks({
+          packageName: "@callidescope/cli",
+          tarballName: "callidescope-cli",
+        });
+      }).not.toThrow();
+    });
+  });
 });
