@@ -4,7 +4,7 @@ import { CodeService } from "../code/code.service";
 import { GeometryService } from "../geometry/geometry.service";
 import { SvgService } from "../svg/svg.service";
 
-import type { ParsedCode } from "../code/code.types";
+import type { CodeObject } from "../code/code.types";
 import type { Geometry } from "../geometry/geometry.types";
 import type { Directions } from "../tile/tile.types";
 import type { CanvasPoint } from "./drawing.types";
@@ -51,7 +51,7 @@ export class DrawingService {
   // 🔏 Private Methods
 
   /** The path data every point of the Code draws, in reading order. */
-  private codeSegments(geometry: Geometry, code: ParsedCode): string {
+  private codeSegments(geometry: Geometry, code: CodeObject): string {
     const { repeats } = code;
     const segments: string[] = [];
 
@@ -62,15 +62,17 @@ export class DrawingService {
         for (let column = 0; column < code.columns; column += 1) {
           const absoluteColumn = columnOffset + column;
 
+          const directions: Directions = this.codeService.directionsAt(
+            code,
+            level,
+            column,
+          );
+
           segments.push(
-            this.pointSegments(
-              geometry,
-              this.codeService.directionsAt(code, level, column),
-              {
-                x: geometry.offset + absoluteColumn * geometry.unit,
-                y: geometry.offset + (level + 1) * geometry.unit,
-              },
-            ),
+            this.pointSegments(geometry, directions, {
+              x: geometry.offset + absoluteColumn * geometry.unit,
+              y: geometry.offset + (level + 1) * geometry.unit,
+            }),
           );
         }
       }
@@ -120,7 +122,7 @@ export class DrawingService {
    * units wide, with no repeat and no addressed window, since a Code names
    * one whole meander directly.
    */
-  render(code: ParsedCode): string {
+  render(code: CodeObject): string {
     const { columns, repeats, rows } = code;
     const totalColumns = columns * repeats;
     const geometry = this.geometryService.compute(rows);

@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 
-import type { ParsedCode } from "../code/code.types";
+import type { CodeObject } from "../code/code.types";
 import type { UnitShapeCounts } from "./characteristics.types";
 
 /** Internal helper method. */
@@ -94,7 +94,7 @@ export class CharacteristicsShapeService {
   /** Internal helper method. */
   // 🌎 Public Methods
 
-  public tallyUnitShapes(code: ParsedCode): UnitShapeCounts {
+  public tallyUnitShapes(code: CodeObject): UnitShapeCounts {
     const counts: UnitShapeCounts = {
       embeddedOCount: 0,
       embeddedUCount: 0,

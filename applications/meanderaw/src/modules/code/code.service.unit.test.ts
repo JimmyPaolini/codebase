@@ -168,7 +168,7 @@ describe(CodeService, () => {
   });
 
   describe("format", () => {
-    it("formats a ParsedCode without repeats segment when repeats is 1", () => {
+    it("formats a CodeObject without repeats segment when repeats is 1", () => {
       expect(
         service.format({
           columns: 2,

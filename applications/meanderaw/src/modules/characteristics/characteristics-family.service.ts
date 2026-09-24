@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 
-import type { ParsedCode } from "../code/code.types";
+import type { CodeObject } from "../code/code.types";
 
 /**
  * Classifies meanders into formal family categories based on structural
@@ -24,7 +24,7 @@ export class CharacteristicsFamilyService {
    * Evaluates all formalized family predicates against the given Code and returns
    * the list of earned family names.
    */
-  classify(code: ParsedCode): string[] {
+  classify(code: CodeObject): string[] {
     const families: string[] = [];
 
     if (this.isBars(code)) {
@@ -50,7 +50,7 @@ export class CharacteristicsFamilyService {
    * Whether the meander consists only of parallel vertical lines across the
    * entire column width from the top border tick to the bottom border tick.
    */
-  isBars(code: ParsedCode): boolean {
+  isBars(code: CodeObject): boolean {
     if (code.levels < 2 || code.columns < 1) {
       return false;
     }
@@ -67,7 +67,7 @@ export class CharacteristicsFamilyService {
    * Whether the meander contains no connections between any lattice points,
    * rendering purely as bare dots.
    */
-  isDots(code: ParsedCode): boolean {
+  isDots(code: CodeObject): boolean {
     return code.digits.length > 0 && /^0+$/u.test(code.digits);
   }
 
@@ -75,7 +75,7 @@ export class CharacteristicsFamilyService {
    * Whether the meander consists only of parallel horizontal lines spanning
    * unbroken across every level of the band.
    */
-  isLines(code: ParsedCode): boolean {
+  isLines(code: CodeObject): boolean {
     return code.digits.length > 0 && /^3+$/u.test(code.digits);
   }
 
@@ -83,7 +83,7 @@ export class CharacteristicsFamilyService {
    * Whether the meander contains all possible horizontal and vertical
    * connections across the entire lattice grid.
    */
-  isMesh(code: ParsedCode): boolean {
+  isMesh(code: CodeObject): boolean {
     if (code.levels < 2 || code.columns < 1) {
       return false;
     }

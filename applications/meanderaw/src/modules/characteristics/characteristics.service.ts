@@ -12,7 +12,7 @@ import { CharacteristicsShapeService } from "./characteristics-shape.service";
 import { ConnectivityService } from "./connectivity.service";
 
 import type { CodeService as ICodeService } from "../code/code.service";
-import type { ParsedCode } from "../code/code.types";
+import type { CodeObject } from "../code/code.types";
 import type { Directions } from "../tile/tile.types";
 import type {
   Characteristics,
@@ -145,7 +145,7 @@ export class CharacteristicsService {
 
   /** Whether the cell at `(level, column)` has an open corridor east, into `(level, column + 1)`. */
   private hasEastCorridor(
-    code: ParsedCode,
+    code: CodeObject,
     level: number,
     column: number,
   ): boolean {
@@ -159,7 +159,7 @@ export class CharacteristicsService {
 
   /** Whether the cell at `(level, column)` has an open corridor north, into `(level - 1, column)`. */
   private hasNorthCorridor(
-    code: ParsedCode,
+    code: CodeObject,
     level: number,
     column: number,
   ): boolean {
@@ -170,7 +170,7 @@ export class CharacteristicsService {
 
   /** Whether the cell at `(level, column)` has an open corridor south, into `(level + 1, column)`. */
   private hasSouthCorridor(
-    code: ParsedCode,
+    code: CodeObject,
     level: number,
     column: number,
   ): boolean {
@@ -184,7 +184,7 @@ export class CharacteristicsService {
 
   /** Whether the cell at `(level, column)` has an open corridor west, into `(level, column - 1)`. */
   private hasWestCorridor(
-    code: ParsedCode,
+    code: CodeObject,
     level: number,
     column: number,
   ): boolean {
@@ -200,7 +200,7 @@ export class CharacteristicsService {
   }
 
   /** The length of the longest straight horizontal run of ink, wrapping around the columns. */
-  private longestHorizontalRun(code: ParsedCode): number {
+  private longestHorizontalRun(code: CodeObject): number {
     let maximumRun = 0;
 
     for (let level = 0; level < code.levels; level += 1) {
@@ -233,7 +233,7 @@ export class CharacteristicsService {
   }
 
   /** The length of the longest straight vertical run of ink. */
-  private longestVerticalRun(code: ParsedCode): number {
+  private longestVerticalRun(code: CodeObject): number {
     let maximumRun = 0;
 
     for (let column = 0; column < code.columns; column += 1) {
@@ -266,7 +266,7 @@ export class CharacteristicsService {
    * read off instead.
    */
   private negativeDegree(
-    code: ParsedCode,
+    code: CodeObject,
     level: number,
     column: number,
   ): number {
@@ -319,7 +319,7 @@ export class CharacteristicsService {
   /** Computes every raw junction count and boolean Characteristic a Code carries. */
 
   /** The character counts over a Code. */
-  private tallyHistogram(code: ParsedCode): HistogramCounts {
+  private tallyHistogram(code: CodeObject): HistogramCounts {
     const counts: MutableHistogram = {
       cornerCount: 0,
       dotCount: 0,
@@ -355,7 +355,7 @@ export class CharacteristicsService {
   }
 
   /** The ink T-junction and X-junction counts over every point the Code spells. */
-  private tallyInk(code: ParsedCode): JunctionCounts {
+  private tallyInk(code: CodeObject): JunctionCounts {
     const counts: JunctionCounts = { tJunctions: 0, xJunctions: 0 };
 
     for (let level = 0; level < code.levels; level += 1) {
@@ -371,7 +371,7 @@ export class CharacteristicsService {
   }
 
   /** The negative T-junction and X-junction counts over every cell of the lattice's dual. */
-  private tallyNegative(code: ParsedCode): JunctionCounts {
+  private tallyNegative(code: CodeObject): JunctionCounts {
     const cellRows = code.levels - 1;
     const cellColumns = code.columns - 1;
     const counts: JunctionCounts = { tJunctions: 0, xJunctions: 0 };
@@ -386,12 +386,12 @@ export class CharacteristicsService {
   }
 
   /** Evaluates formalized family memberships for a Code. */
-  public classifyFamilies(code: ParsedCode): string[] {
+  public classifyFamilies(code: CodeObject): string[] {
     return this.familyService.classify(code);
   }
 
   /** Computes every characteristic for a given code. */
-  public compute(code: ParsedCode): Characteristics {
+  public compute(code: CodeObject): Characteristics {
     const reduced = this.codeService.reduceToUnit(code);
     const ink = this.tallyInk(reduced);
     const negative = this.tallyNegative(reduced);
@@ -473,7 +473,7 @@ export class CharacteristicsService {
 
   /** Internal helper method. */
   /** Computes the number of seam components for a given code. */
-  public seamComponents(code: ParsedCode): number {
+  public seamComponents(code: CodeObject): number {
     const wrapped = this.meanderConnectivityService.connectivity(code, false);
     const unwrapped = this.meanderConnectivityService.connectivity(code, true);
     return unwrapped.components - wrapped.components;

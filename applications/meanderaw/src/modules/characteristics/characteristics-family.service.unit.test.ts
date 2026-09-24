@@ -3,14 +3,14 @@ import { beforeAll, describe, expect, it } from "vitest";
 
 import { CharacteristicsFamilyService } from "./characteristics-family.service";
 
-import type { ParsedCode } from "../code/code.types";
+import type { CodeObject } from "../code/code.types";
 
 // 🧪 Tests
 
 describe(CharacteristicsFamilyService, () => {
   let service: CharacteristicsFamilyService;
 
-  const code = (digits: string, rows: number, columns: number): ParsedCode => ({
+  const code = (digits: string, rows: number, columns: number): CodeObject => ({
     columns,
     digits,
     levels: rows - 1,

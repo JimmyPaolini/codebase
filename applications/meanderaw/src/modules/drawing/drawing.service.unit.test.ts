@@ -9,7 +9,7 @@ import { TileService } from "../tile/tile.service";
 
 import { DrawingService } from "./drawing.service";
 
-import type { ParsedCode } from "../code/code.types";
+import type { CodeObject } from "../code/code.types";
 
 // 🧪 Tests
 
@@ -29,7 +29,7 @@ describe(DrawingService, () => {
    * the renderer draws what it is given level by level, and one level is
    * enough to assert where a segment lands.
    */
-  const code = (digits: string, columns: number, repeats = 1): ParsedCode => ({
+  const code = (digits: string, columns: number, repeats = 1): CodeObject => ({
     columns,
     digits,
     levels: digits.length / columns,
