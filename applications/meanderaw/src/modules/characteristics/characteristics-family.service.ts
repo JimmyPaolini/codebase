@@ -18,30 +18,49 @@ export class CharacteristicsFamilyService {
 
   // 🔏 Private Methods
 
-  /** Builds the expected Code digits for an evenly-spaced downward zig-zagging waterfall. */
-  private expectedWaterfallsDigits(rows: number, columns: number): string {
-    const grid = Array.from({ length: rows }, () =>
-      Array.from({ length: columns }, () => "3"),
-    );
+  /**
+   * Generates the canonical digit string for an evenly spaced waterfall of a given
+   * step size across the entire lattice.
+   */
+  private generateWaterfall(
+    rows: number,
+    columns: number,
+    stepSize: number,
+  ): string {
+    const period = stepSize + 1;
+    const strandCount = columns / period;
 
-    const firstRow = grid[0] ?? [];
-    const lastRow = grid[rows - 1] ?? [];
-
-    firstRow[0] = "2";
-    firstRow[columns - 1] = "5";
-
-    const mod = (n: number): number => ((n % columns) + columns) % columns;
-
-    for (let r = 1; r < rows - 1; r += 1) {
-      const row = grid[r] ?? [];
-      row[mod(columns - r)] = "a";
-      row[mod(columns - 1 - r)] = "5";
+    let digits = "";
+    for (let row = 0; row < rows; row += 1) {
+      let unit: string;
+      if (row === 0) {
+        unit = `2${"3".repeat(stepSize - 1)}5`;
+      } else if (row === rows - 1) {
+        const base = `a${"3".repeat(stepSize - 1)}1`;
+        const offset = (row * stepSize) % period;
+        unit = this.shiftString(base, offset);
+      } else {
+        const base = `a${"3".repeat(stepSize - 1)}5`;
+        const offset = (row * stepSize) % period;
+        unit = this.shiftString(base, offset);
+      }
+      digits += unit.repeat(strandCount);
     }
 
-    lastRow[mod(columns - (rows - 1))] = "a";
-    lastRow[mod(columns - rows)] = "1";
+    return digits;
+  }
 
-    return grid.map((row) => row.join("")).join("");
+  /**
+   * Cyclically shifts a string right by a given offset.
+   */
+  private shiftString(str: string, offset: number): string {
+    const length = str.length;
+    const normalizedOffset = ((offset % length) + length) % length;
+
+    return (
+      str.slice(length - normalizedOffset) +
+      str.slice(0, length - normalizedOffset)
+    );
   }
 
   // 🌎 Public Methods
@@ -127,16 +146,27 @@ export class CharacteristicsFamilyService {
   }
 
   /**
-   * Whether the meander consists of an evenly-spaced downward zig-zagging staircase
-   * across the vertical seam, stepping down row by row across 2 or more columns.
+   * Whether the meander consists of evenly spaced, downward zig-zagging waterfalls across the
+   * vertical seam, stepping down row by row with no isolated dots.
    */
   isWaterfalls(code: CodeObject): boolean {
     if (code.columns < 2 || code.rows < 2) {
       return false;
     }
 
-    return (
-      code.digits === this.expectedWaterfallsDigits(code.rows, code.columns)
-    );
+    for (let stepSize = 1; stepSize <= code.columns - 1; stepSize += 1) {
+      if (code.columns % (stepSize + 1) === 0) {
+        const expected = this.generateWaterfall(
+          code.rows,
+          code.columns,
+          stepSize,
+        );
+        if (code.digits === expected) {
+          return true;
+        }
+      }
+    }
+
+    return false;
   }
 }

@@ -72,18 +72,19 @@ export class ClassificationService {
     return inkTJunctions === 0 && inkXJunctions === 0;
   }
 
-  /** Whether a repeat's ink is a downward zig-zagging waterfall across the seam. */
+  /** Whether a repeat's ink is a downward zig-zagging waterfall across the seam with no isolated dots. */
   private isWaterfalls(structure: MeanderStructure): boolean {
     const { characteristics } = structure;
 
     return (
-      this.isArc(structure) &&
-      structure.columns >= 2 &&
+      this.isJunctionFree(structure) &&
+      characteristics.dotCount === 0 &&
+      characteristics.cycles === 0 &&
+      characteristics.freeEnds === 2 * characteristics.components &&
       characteristics.crossesTheSeam &&
       characteristics.endsOnBorderRules &&
       !characteristics.endsAreLatticeNeighbors &&
       characteristics.embeddedUCount === 0 &&
-      characteristics.longestHorizontalRun === structure.columns - 1 &&
       characteristics.longestVerticalRun === 1 &&
       this.reachesMinimumRows(structure, "waterfalls")
     );
