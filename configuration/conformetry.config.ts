@@ -72,13 +72,6 @@ const conformetryConfiguration: ConformetryNxConfiguration = [
       // one of them also carries the `framework:nest-commander` tag, and
       // listed after the catch-all they would never be reached.
       {
-        patterns: ["packages/ic-suite/callidescope/callidescope-cli"],
-        substitutions: {
-          type: "packages/ic-suite/callidescope",
-          workspaceRelativePrefix: "../../../../",
-        },
-      },
-      {
         patterns: ["packages/ic-suite/codependix/codependix-cli"],
         substitutions: {
           type: "packages/ic-suite/codependix",
@@ -100,7 +93,7 @@ const conformetryConfiguration: ConformetryNxConfiguration = [
         },
       },
       {
-        patterns: ["."],
+        patterns: ["applications/*", "tools/*"],
         substitutions: { workspaceRelativePrefix: "../../" },
         tags: ["framework:nest-commander"],
       },

@@ -7,7 +7,6 @@
     "@callidescope/core": "workspace:*",
     "@callidescope/graph": "workspace:*",
     "@callidescope/output": "workspace:*",
-    "@codebase/logger": "workspace:*",
     "@nestjs/common": "catalog:",
     "@nestjs/config": "catalog:",
     "@nestjs/core": "catalog:",
@@ -16,6 +15,7 @@
     "zod": "catalog:"
   },
   "devDependencies": {
+    "@codebase/logger": "workspace:*",
     "@golevelup/ts-vitest": "catalog:",
     "@nestjs/testing": "catalog:",
     "@nx/eslint-plugin": "catalog:",
