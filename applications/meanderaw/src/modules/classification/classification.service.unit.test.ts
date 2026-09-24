@@ -90,10 +90,11 @@ describe(ClassificationService, () => {
       "cross",
       "branch",
       "boxes",
+      "chain",
+      "double-chain",
       "waterfalls",
       "whirl",
       "swirl",
-      "chain",
       "clasps",
       "snake",
       "unclassified",
@@ -288,14 +289,42 @@ describe(ClassificationService, () => {
 
     it("classifies whirl meanders correctly", () => {
       const rows = 4;
-      const pitch = rows;
+      const pitch = rows + 1;
       const characteristics = createMockCharacteristics({
         components: 1,
+        crossesTheSeam: false,
         cycles: 0,
+        density: 1,
+        dotCount: 0,
+        endsOnBorderRules: true,
         freeEnds: 2,
         inkTJunctions: 0,
         inkXJunctions: 0,
         isSingleArc: true,
+        longestHorizontalRun: rows - 1,
+        longestVerticalRun: rows - 1,
+        pitch,
+      });
+      const shape: MeanderShape = { columns: pitch, rows };
+
+      expect(service.classify(characteristics, shape)).toBe("whirl");
+    });
+
+    it("classifies double whirl meanders correctly", () => {
+      const rows = 4;
+      const pitch = 2 * rows + 2; // 10
+      const characteristics = createMockCharacteristics({
+        components: 2,
+        crossesTheSeam: false,
+        cycles: 0,
+        density: 1,
+        dotCount: 0,
+        endsOnBorderRules: false,
+        freeEnds: 4,
+        inkTJunctions: 0,
+        inkXJunctions: 0,
+        longestHorizontalRun: rows - 1,
+        longestVerticalRun: rows - 1,
         pitch,
       });
       const shape: MeanderShape = { columns: pitch, rows };
@@ -305,14 +334,20 @@ describe(ClassificationService, () => {
 
     it("classifies swirl meanders correctly", () => {
       const rows = 4;
-      const pitch = 2 * rows - 3;
+      const pitch = 2 * rows - 1; // 7
       const characteristics = createMockCharacteristics({
         components: 1,
+        crossesTheSeam: false,
         cycles: 0,
+        density: 1,
+        dotCount: 0,
+        endsOnBorderRules: false,
         freeEnds: 2,
         inkTJunctions: 0,
         inkXJunctions: 0,
         isSingleArc: true,
+        longestHorizontalRun: rows - 1,
+        longestVerticalRun: rows - 1,
         pitch,
       });
       const shape: MeanderShape = { columns: pitch, rows };
@@ -320,28 +355,179 @@ describe(ClassificationService, () => {
       expect(service.classify(characteristics, shape)).toBe("swirl");
     });
 
-    it("classifies chain meanders with connected links correctly", () => {
+    it("classifies double swirl meanders correctly", () => {
+      const rows = 4;
+      const pitch = 4 * rows - 2; // 14
       const characteristics = createMockCharacteristics({
-        crossesTheSeam: true,
+        components: 2,
+        crossesTheSeam: false,
         cycles: 0,
+        density: 1,
+        dotCount: 0,
+        endsOnBorderRules: false,
+        freeEnds: 4,
         inkTJunctions: 0,
         inkXJunctions: 0,
+        longestHorizontalRun: rows - 1,
+        longestVerticalRun: rows - 1,
+        pitch,
+      });
+      const shape: MeanderShape = { columns: pitch, rows };
+
+      expect(service.classify(characteristics, shape)).toBe("swirl");
+    });
+
+    it("classifies single-strand chain meanders correctly", () => {
+      const rows = 5;
+      const pitch = 5;
+      const characteristics = createMockCharacteristics({
+        components: 1,
+        crossesTheSeam: true,
+        cycles: 0,
+        density: 1,
+        dotCount: 0,
+        endsOnBorderRules: false,
+        freeEnds: 2,
+        inkTJunctions: 0,
+        inkXJunctions: 0,
+        isSingleArc: true,
+        longestHorizontalRun: pitch,
+        longestVerticalRun: rows - 1,
+        pitch,
         reversesAtItsTightestTurn: true,
       });
-      const shape: MeanderShape = { columns: 4, rows: 3 };
+      const shape: MeanderShape = { columns: pitch, rows };
 
       expect(service.classify(characteristics, shape)).toBe("chain");
     });
 
-    it("classifies clasps meanders with disconnected links correctly", () => {
+    it("classifies double-chain meanders correctly", () => {
+      const rows = 5;
+      const pitch = 2 * rows - 2; // 8
       const characteristics = createMockCharacteristics({
-        crossesTheSeam: false,
+        components: 2,
+        crossesTheSeam: true,
         cycles: 0,
+        density: 1,
+        dotCount: 0,
+        endsOnBorderRules: false,
+        freeEnds: 4,
         inkTJunctions: 0,
         inkXJunctions: 0,
+        longestHorizontalRun: pitch - 1,
+        longestVerticalRun: rows - 2,
+        pitch,
+        reversesAtItsTightestTurn: true,
+      });
+      const shape: MeanderShape = { columns: pitch, rows };
+
+      expect(service.classify(characteristics, shape)).toBe("double-chain");
+    });
+
+    it("rejects non-chain sparse dot/fragment meanders from chain and double-chain", () => {
+      const characteristics = createMockCharacteristics({
+        components: 3,
+        crossesTheSeam: true,
+        cycles: 0,
+        density: 0.8,
+        dotCount: 2,
+        freeEnds: 4,
+        inkTJunctions: 0,
+        inkXJunctions: 0,
+        pitch: 4,
         reversesAtItsTightestTurn: true,
       });
       const shape: MeanderShape = { columns: 4, rows: 3 };
+
+      expect(service.classify(characteristics, shape)).toBe("unclassified");
+    });
+
+    it("rejects non-chain patterns that touch border rules or have insufficient run length", () => {
+      const borderEndChain = createMockCharacteristics({
+        components: 1,
+        crossesTheSeam: true,
+        cycles: 0,
+        density: 1,
+        dotCount: 0,
+        embeddedUCount: 1,
+        endsOnBorderRules: true,
+        freeEnds: 2,
+        inkTJunctions: 0,
+        inkXJunctions: 0,
+        isSingleArc: true,
+        longestHorizontalRun: 2,
+        longestVerticalRun: 2,
+        pitch: 3,
+        reversesAtItsTightestTurn: true,
+      });
+
+      expect(service.classify(borderEndChain, { columns: 3, rows: 3 })).toBe(
+        "unclassified",
+      );
+    });
+
+    it("rejects non-whirl patterns from whirl classification", () => {
+      const falseWhirl = createMockCharacteristics({
+        components: 1,
+        crossesTheSeam: false,
+        cycles: 0,
+        density: 1,
+        dotCount: 0,
+        endsOnBorderRules: true,
+        freeEnds: 2,
+        inkTJunctions: 0,
+        inkXJunctions: 0,
+        isSingleArc: true,
+        longestHorizontalRun: 2,
+        longestVerticalRun: 2,
+        pitch: 3,
+      });
+
+      expect(service.classify(falseWhirl, { columns: 3, rows: 3 })).toBe(
+        "unclassified",
+      );
+    });
+
+    it("classifies clasps meanders with disconnected links correctly", () => {
+      const rows = 4;
+      const pitch = rows + 1; // 5
+      const characteristics = createMockCharacteristics({
+        components: 2,
+        crossesTheSeam: false,
+        cycles: 0,
+        density: 1,
+        dotCount: 0,
+        freeEnds: 4,
+        inkTJunctions: 0,
+        inkXJunctions: 0,
+        longestHorizontalRun: rows - 1,
+        longestVerticalRun: rows - 1,
+        pitch,
+        reversesAtItsTightestTurn: true,
+      });
+      const shape: MeanderShape = { columns: pitch, rows };
+
+      expect(service.classify(characteristics, shape)).toBe("clasps");
+    });
+
+    it("classifies double clasps meanders correctly", () => {
+      const rows = 4;
+      const pitch = 2 * rows + 2; // 10
+      const characteristics = createMockCharacteristics({
+        components: 4,
+        crossesTheSeam: false,
+        cycles: 0,
+        density: 1,
+        dotCount: 0,
+        freeEnds: 8,
+        inkTJunctions: 0,
+        inkXJunctions: 0,
+        longestHorizontalRun: rows - 1,
+        longestVerticalRun: rows - 1,
+        pitch,
+        reversesAtItsTightestTurn: true,
+      });
+      const shape: MeanderShape = { columns: pitch, rows };
 
       expect(service.classify(characteristics, shape)).toBe("clasps");
     });
@@ -441,38 +627,78 @@ describe(ClassificationService, () => {
       expect(service.classify(branch, { columns: 3, rows: 4 })).toBe("branch");
     });
 
-    it("evaluates chain and clasps rule matches directly", () => {
+    it("evaluates chain, double-chain and clasps rule matches directly", () => {
       const rows = 4;
-      const pitch = rows - 1;
       const chainStructure = {
         characteristics: createMockCharacteristics({
+          components: 1,
           crossesTheSeam: true,
           cycles: 0,
+          density: 1,
+          dotCount: 0,
+          endsOnBorderRules: false,
+          freeEnds: 2,
           inkTJunctions: 0,
           inkXJunctions: 0,
-          pitch,
+          isSingleArc: true,
+          longestHorizontalRun: 4,
+          longestVerticalRun: 3,
+          pitch: 4,
           reversesAtItsTightestTurn: true,
         }),
-        columns: pitch,
+        columns: 4,
+        rows,
+      };
+      const doubleChainStructure = {
+        characteristics: createMockCharacteristics({
+          components: 2,
+          crossesTheSeam: true,
+          cycles: 0,
+          density: 1,
+          dotCount: 0,
+          endsOnBorderRules: false,
+          freeEnds: 4,
+          inkTJunctions: 0,
+          inkXJunctions: 0,
+          longestHorizontalRun: 5,
+          longestVerticalRun: 2,
+          pitch: 6,
+          reversesAtItsTightestTurn: true,
+        }),
+        columns: 6,
         rows,
       };
       const claspsStructure = {
         characteristics: createMockCharacteristics({
+          components: 2,
           crossesTheSeam: false,
           cycles: 0,
+          density: 1,
+          dotCount: 0,
+          freeEnds: 4,
           inkTJunctions: 0,
           inkXJunctions: 0,
-          pitch,
+          longestHorizontalRun: 3,
+          longestVerticalRun: 3,
+          pitch: 5,
           reversesAtItsTightestTurn: true,
         }),
-        columns: pitch,
+        columns: 5,
         rows,
       };
       const chainRule = service.rules().find((r) => r.name === "chain");
+      const doubleChainRule = service
+        .rules()
+        .find((r) => r.name === "double-chain");
       const claspsRule = service.rules().find((r) => r.name === "clasps");
 
       expect(chainRule?.matches(chainStructure)).toBe(true);
       expect(chainRule?.matches(claspsStructure)).toBe(false);
+      expect(chainRule?.matches(doubleChainStructure)).toBe(false);
+
+      expect(doubleChainRule?.matches(doubleChainStructure)).toBe(true);
+      expect(doubleChainRule?.matches(chainStructure)).toBe(false);
+
       expect(claspsRule?.matches(claspsStructure)).toBe(true);
       expect(claspsRule?.matches(chainStructure)).toBe(false);
     });
