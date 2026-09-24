@@ -23,7 +23,7 @@ describe(CodeService, () => {
   let service: CodeService;
   let symmetryService: SymmetryService;
 
-  // Six rows, one column: five interior levels whose top point sends a
+  // Five rows, one column: five interior rows whose top point sends a
   // southward edge, then a bare point, then the wrapped east-west rule,
   // then another bare point.
   const singleColumn = buildTile(["s", ".", ".", "e", "."]);
@@ -42,32 +42,32 @@ describe(CodeService, () => {
   });
 
   describe("directionsAt", () => {
-    it("returns bare point if level is below 0", () => {
-      const parsed = service.parse("02x03y36c9r01");
+    it("returns bare point if row is below 0", () => {
+      const parsed = service.parse("02x02y36c9r01");
 
       expect(service.directionsAt(parsed, -1, 0)).toStrictEqual(BARE);
     });
 
-    it("returns bare point if level is beyond maximum levels", () => {
-      const parsed = service.parse("02x03y36c9r01");
+    it("returns bare point if row is beyond maximum rows", () => {
+      const parsed = service.parse("02x02y36c9r01");
 
       expect(service.directionsAt(parsed, 2, 0)).toStrictEqual(BARE);
     });
 
     it("returns bare point if column is below 0", () => {
-      const parsed = service.parse("02x03y36c9r01");
+      const parsed = service.parse("02x02y36c9r01");
 
       expect(service.directionsAt(parsed, 0, -1)).toStrictEqual(BARE);
     });
 
     it("returns bare point if column is beyond maximum columns", () => {
-      const parsed = service.parse("02x03y36c9r01");
+      const parsed = service.parse("02x02y36c9r01");
 
       expect(service.directionsAt(parsed, 0, 2)).toStrictEqual(BARE);
     });
 
     it("returns decoded directions if within bounds", () => {
-      const parsed = service.parse("02x03y36c9r01");
+      const parsed = service.parse("02x02y36c9r01");
 
       expect(service.directionsAt(parsed, 0, 0)).toStrictEqual({
         east: true,
@@ -85,12 +85,12 @@ describe(CodeService, () => {
       ["f", { east: true, north: true, south: true, west: true }],
     ])("reads %s as the four bits it spells", (digit, directions) => {
       expect(
-        service.directionsAt(service.parse(digit, 2, 1), 0, 0),
+        service.directionsAt(service.parse(digit, 1, 1), 0, 0),
       ).toStrictEqual(directions);
     });
 
-    it("finds a point at level times columns plus column, which is the whole of the addressing", () => {
-      const code = service.parse("0369", 3, 2);
+    it("finds a point at row times columns plus column, which is the whole of the addressing", () => {
+      const code = service.parse("0369", 2, 2);
 
       expect(service.directionsAt(code, 0, 0)).toStrictEqual(BARE);
       expect(service.directionsAt(code, 1, 1)).toStrictEqual({
@@ -101,24 +101,23 @@ describe(CodeService, () => {
     });
 
     it.each([
-      ["a level past the last", 2, 0],
-      ["a level before the first", -1, 0],
+      ["a row past the last", 2, 0],
+      ["a row before the first", -1, 0],
       ["a column past the last", 0, 2],
       ["a column before the first", 0, -1],
     ])(
       "reads %s as carrying no ink, since nothing is there to be inked",
-      (_name, level, column) => {
+      (_name, row, column) => {
         expect(
-          service.directionsAt(service.parse("0369", 3, 2), level, column),
+          service.directionsAt(service.parse("0369", 2, 2), row, column),
         ).toStrictEqual(BARE);
       },
     );
 
-    it("returns empty directions when levels are out of bounds", () => {
-      // 1 rows implies 0 levels
+    it("returns empty directions when rows are out of bounds", () => {
       expect(
         service.directionsAt(
-          { columns: 1, digits: "0", levels: 0, repeats: 1, rows: 1 },
+          { columns: 1, digits: "0", repeats: 1, rows: 0 },
           0,
           0,
         ),
@@ -131,7 +130,7 @@ describe(CodeService, () => {
     });
 
     it("returns empty directions when columns are out of bounds", () => {
-      const code = service.parse("0", 2, 1); // 2 rows = 1 level
+      const code = service.parse("0", 1, 1);
 
       expect(service.directionsAt(code, 0, -1)).toStrictEqual({
         east: false,
@@ -152,9 +151,8 @@ describe(CodeService, () => {
       const code = {
         columns: 2,
         digits: "f",
-        levels: 1,
         repeats: 1,
-        rows: 2,
+        rows: 1,
       };
 
       // The length is 1, but we ask for [0 * 2 + 1] = [1]
@@ -173,11 +171,10 @@ describe(CodeService, () => {
         service.format({
           columns: 2,
           digits: "36c9",
-          levels: 2,
           repeats: 1,
-          rows: 3,
+          rows: 2,
         }),
-      ).toBe("02x03y36c9");
+      ).toBe("02x02y36c9");
     });
 
     it("formats larger column and row counts properly and includes repeats suffix when repeats > 1", () => {
@@ -185,52 +182,47 @@ describe(CodeService, () => {
         service.format({
           columns: 12,
           digits: "0".repeat(24),
-          levels: 2,
           repeats: 3,
-          rows: 3,
+          rows: 2,
         }),
-      ).toBe(`12x03y${"0".repeat(24)}r03`);
+      ).toBe(`12x02y${"0".repeat(24)}r03`);
     });
   });
 
   describe("parse", () => {
     it("parses a self-contained Code string with padded numbers", () => {
-      expect(service.parse("02x03y36c9r01")).toStrictEqual({
+      expect(service.parse("02x02y36c9r01")).toStrictEqual({
         columns: 2,
         digits: "36c9",
-        levels: 2,
         repeats: 1,
-        rows: 3,
+        rows: 2,
       });
     });
 
     it("parses a self-contained Code string without the repeats segment, defaulting to 1", () => {
-      expect(service.parse("02x03y36c9")).toStrictEqual({
+      expect(service.parse("02x02y36c9")).toStrictEqual({
         columns: 2,
         digits: "36c9",
-        levels: 2,
         repeats: 1,
-        rows: 3,
+        rows: 2,
       });
     });
 
     it("parses case-insensitively and normalizes digits to lowercase", () => {
-      expect(service.parse("02X03Y36CAr03")).toStrictEqual({
+      expect(service.parse("02X02Y36CAr03")).toStrictEqual({
         columns: 2,
         digits: "36ca",
-        levels: 2,
         repeats: 3,
-        rows: 3,
+        rows: 2,
       });
     });
 
     it("reads bare hexadecimal digits when rows and columns are passed", () => {
-      expect(service.parse("36c9", 3, 2)).toStrictEqual({
+      expect(service.parse("36c9", 2, 2)).toStrictEqual({
         columns: 2,
         digits: "36c9",
-        levels: 2,
         repeats: 1,
-        rows: 3,
+        rows: 2,
       });
     });
 
@@ -241,17 +233,17 @@ describe(CodeService, () => {
     });
 
     it("refuses a Code whose length disagrees with the rows and columns", () => {
-      expect(() => service.parse("02x03y36cr01")).toThrow(
+      expect(() => service.parse("02x02y36cr01")).toThrow(
         InvalidCodeLengthError,
       );
-      expect(() => service.parse("36c", 3, 2)).toThrow(InvalidCodeLengthError);
+      expect(() => service.parse("36c", 2, 2)).toThrow(InvalidCodeLengthError);
     });
 
     it("refuses a character outside the hexadecimal alphabet", () => {
-      expect(() => service.parse("02x03y36czr01")).toThrow(
+      expect(() => service.parse("02x02y36czr01")).toThrow(
         InvalidCodeCharacterError,
       );
-      expect(() => service.parse("36cz", 3, 2)).toThrow(
+      expect(() => service.parse("36cz", 2, 2)).toThrow(
         InvalidCodeCharacterError,
       );
     });
@@ -263,71 +255,67 @@ describe(CodeService, () => {
         service.reduceToUnit({
           columns: 0,
           digits: "",
-          levels: 1,
           repeats: 1,
-          rows: 2,
+          rows: 1,
         }),
       ).toStrictEqual({
         columns: 0,
         digits: "",
-        levels: 1,
         repeats: 1,
-        rows: 2,
+        rows: 1,
       });
     });
 
     it("finds the smallest repeating sub-tile", () => {
-      const code = service.parse("3366cc99", 5, 2);
+      const code = service.parse("3366cc99", 4, 2);
 
       expect(service.reduceToUnit(code)).toStrictEqual({
         columns: 1,
         digits: "36c9",
-        levels: 4,
         repeats: 1,
-        rows: 5,
+        rows: 4,
       });
     });
 
     it("returns the original Code if it is not repeating", () => {
-      const code = service.parse("36c9", 5, 1);
+      const code = service.parse("36c9", 4, 1);
 
       expect(service.reduceToUnit(code)).toStrictEqual(code);
     });
 
     it("reduces across multiple repeating pieces", () => {
-      const code = service.parse("36369c9c", 3, 4);
+      const code = service.parse("36369c9c", 2, 4);
 
       expect(service.reduceToUnit(code)).toStrictEqual({
         columns: 2,
         digits: "369c",
-        levels: 2,
         repeats: 1,
-        rows: 3,
+        rows: 2,
       });
     });
   });
 
   describe("spell", () => {
     it("writes a self-contained Code string in the format {columns}x{rows}y{digits} without r suffix when repeats is 1", () => {
-      expect(service.spell(singleColumn)).toBe("01x06y48030");
+      expect(service.spell(singleColumn)).toBe("01x05y48030");
     });
 
     it("allows specifying custom repeats count and includes r suffix when repeats > 1", () => {
-      expect(service.spell(singleColumn, 3)).toBe("01x06y48030r03");
+      expect(service.spell(singleColumn, 3)).toBe("01x05y48030r03");
     });
 
     it("reads row-major, so a two-column tile interleaves its columns", () => {
-      expect(service.spell(buildTile(["e.", ".."]))).toBe("02x03y2100");
-      expect(service.spell(buildTile([".e", ".."]))).toBe("02x03y1200");
+      expect(service.spell(buildTile(["e.", ".."]))).toBe("02x02y2100");
+      expect(service.spell(buildTile([".e", ".."]))).toBe("02x02y1200");
     });
 
     it("writes a single column's wrapped edge as both east and west, which is what its ink does", () => {
-      expect(service.spell(buildTile(["e"]))).toBe("01x02y3");
-      expect(service.spell(buildTile(["e."]))).toBe("02x02y21");
+      expect(service.spell(buildTile(["e"]))).toBe("01x01y3");
+      expect(service.spell(buildTile(["e."]))).toBe("02x01y21");
     });
 
     it("writes a point owning both its edges as one character, which a per-mark letter had none for", () => {
-      expect(service.spell(buildTile(["b.", "..", ".."]))).toBe("02x04y618000");
+      expect(service.spell(buildTile(["b.", "..", ".."]))).toBe("02x03y618000");
     });
 
     it("round-trips a tile through a Code and back to the same tile", () => {
@@ -364,7 +352,7 @@ describe(CodeService, () => {
       expect(service.spellCanonical(singleColumn)).toBe(
         service.spell(symmetryService.canonicalTile(singleColumn)),
       );
-      expect(service.spellCanonical(singleColumn)).toBe("01x06y03048");
+      expect(service.spellCanonical(singleColumn)).toBe("01x05y03048");
     });
 
     it("keeps two genuinely different tiles apart", () => {
@@ -375,26 +363,26 @@ describe(CodeService, () => {
   });
 
   describe("rotate", () => {
-    it("shifts every level's own columns west by the same amount", () => {
-      const code = service.parse("1230abc0", 5, 2);
+    it("shifts every row's own columns west by the same amount", () => {
+      const code = service.parse("1230abc0", 4, 2);
 
       expect(service.rotate(code, 1).digits).toBe("2103ba0c");
     });
 
     it("leaves the Code alone at a shift of no columns", () => {
-      const code = service.parse("36c9", 3, 2);
+      const code = service.parse("36c9", 2, 2);
 
       expect(service.rotate(code, 0).digits).toBe("36c9");
     });
 
     it("returns to the Code it started from after a whole span of shifts", () => {
-      const code = service.parse("012345", 3, 3);
+      const code = service.parse("012345", 2, 3);
 
       expect(service.rotate(code, 3).digits).toBe("012345");
     });
 
     it("takes a shift past the span modulo it, since every integer names a real phase", () => {
-      const code = service.parse("012345", 3, 3);
+      const code = service.parse("012345", 2, 3);
 
       expect(service.rotate(code, 4).digits).toBe(
         service.rotate(code, 1).digits,
@@ -402,7 +390,7 @@ describe(CodeService, () => {
     });
 
     it("reads a negative shift as the phase it names rather than refusing it", () => {
-      const code = service.parse("012345", 3, 3);
+      const code = service.parse("012345", 2, 3);
 
       expect(service.rotate(code, -1).digits).toBe(
         service.rotate(code, 2).digits,
@@ -410,14 +398,13 @@ describe(CodeService, () => {
     });
 
     it("keeps the shape it was given, since re-phasing a band cuts it elsewhere rather than resizing it", () => {
-      const rotated = service.rotate(service.parse("012345", 3, 3), 1);
+      const rotated = service.rotate(service.parse("012345", 2, 3), 1);
 
       expect(rotated).toStrictEqual({
         columns: 3,
         digits: "120453",
-        levels: 2,
         repeats: 1,
-        rows: 3,
+        rows: 2,
       });
     });
   });

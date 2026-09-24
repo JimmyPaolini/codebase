@@ -58,20 +58,20 @@ export class DrawingService {
     for (let repeatIndex = 0; repeatIndex < repeats; repeatIndex += 1) {
       const columnOffset = repeatIndex * code.columns;
 
-      for (let level = 0; level < code.levels; level += 1) {
+      for (let row = 0; row < code.rows; row += 1) {
         for (let column = 0; column < code.columns; column += 1) {
           const absoluteColumn = columnOffset + column;
 
           const directions: Directions = this.codeService.directionsAt(
             code,
-            level,
+            row,
             column,
           );
 
           segments.push(
             this.pointSegments(geometry, directions, {
               x: geometry.offset + absoluteColumn * geometry.unit,
-              y: geometry.offset + (level + 1) * geometry.unit,
+              y: geometry.offset + (row + 1) * geometry.unit,
             }),
           );
         }

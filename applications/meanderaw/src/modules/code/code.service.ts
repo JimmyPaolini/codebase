@@ -26,7 +26,7 @@ import type { Code, CodeObject } from "./code.types";
  * a point at a time.
  *
  * **A Code is read in place.** Every bit is decoded literally off its own
- * digit at `level * columns + column` rather than derived from a neighbor:
+ * digit at `row * columns + column` rather than derived from a neighbor:
  * north and west are redundant with the previous point's south and east
  * under the lattice's own agreement invariant, but a Code spells all four
  * bits out per point regardless, and reading what is written is simpler than
@@ -36,8 +36,8 @@ import type { Code, CodeObject } from "./code.types";
  * does not.
  *
  * **The spelling is deliberately redundant.** Four bits per point describes
- * `4 * columns * (rows - 1)` bits where a tile has only
- * `columns * (2 * rows - 3)` degrees of freedom, because every edge is
+ * `4 * columns * rows` bits where a tile has only
+ * `columns * (2 * rows - 1)` degrees of freedom, because every edge is
  * written twice, once at each end. That is the same redundancy
  * `TileService.assertWellFormed` checks, and paying it buys a Code
  * whose characters are the meander's own points: `0` is a dot, `3` a
@@ -75,11 +75,11 @@ export class CodeService {
    * Checks if a column span repeats exactly to fill the Code.
    */
   private isRepeatingUnit(code: CodeObject, width: number): boolean {
-    const { columns, digits, levels } = code;
-    for (let level = 0; level < levels; level += 1) {
-      const row = digits.slice(level * columns, (level + 1) * columns);
-      const piece = row.slice(0, width);
-      if (piece.repeat(columns / width) !== row) {
+    const { columns, digits, rows } = code;
+    for (let row = 0; row < rows; row += 1) {
+      const rowSlice = digits.slice(row * columns, (row + 1) * columns);
+      const piece = rowSlice.slice(0, width);
+      if (piece.repeat(columns / width) !== rowSlice) {
         return false;
       }
     }
@@ -93,7 +93,6 @@ export class CodeService {
     return {
       columns,
       digits: code.toLowerCase(),
-      levels: Math.max(0, rows - 1),
       repeats: 1,
       rows,
     };
@@ -117,7 +116,6 @@ export class CodeService {
     return {
       columns: parsedColumns,
       digits,
-      levels: Math.max(0, parsedRows - 1),
       repeats,
       rows: parsedRows,
     };
@@ -125,8 +123,7 @@ export class CodeService {
 
   /** Validates that digits match expected length for the shape and are valid hexadecimal. */
   private validateDigits(digits: string, rows: number, columns: number): void {
-    const levels = Math.max(0, rows - 1);
-    if (digits.length !== levels * columns) {
+    if (digits.length !== rows * columns) {
       throw new InvalidCodeLengthError(digits, rows, columns);
     }
 
@@ -170,24 +167,24 @@ export class CodeService {
   }
 
   /**
-   * The four direction bits the point at `(level, column)` carries, read off
-   * the single character at `level * columns + column`.
+   * The four direction bits the point at `(row, column)` carries, read off
+   * the single character at `row * columns + column`.
    *
    * A position outside the Code's own extent carries no ink at all. That is
-   * not a tolerated fallback but what the lattice says: the levels above the
+   * not a tolerated fallback but what the lattice says: the rows above the
    * first and below the last are the band's two border rules, which are cap
    * ticks rather than points of the repeat, so there is nothing there for a
    * bit to be set on.
    */
-  directionsAt(code: CodeObject, level: number, column: number): Directions {
-    const { columns, digits, levels } = code;
+  directionsAt(code: CodeObject, row: number, column: number): Directions {
+    const { columns, digits, rows } = code;
 
-    if (level < 0 || level >= levels || column < 0 || column >= columns) {
+    if (row < 0 || row >= rows || column < 0 || column >= columns) {
       return { east: false, north: false, south: false, west: false };
     }
 
     return this.decode(
-      Number.parseInt(digits[level * columns + column] ?? "0", 16),
+      Number.parseInt(digits[row * columns + column] ?? "0", 16),
     );
   }
 
@@ -231,7 +228,7 @@ export class CodeService {
    * column span that divides the Code's columns and repeats exactly to fill them.
    */
   reduceToUnit(code: CodeObject): CodeObject {
-    const { columns, digits, levels, repeats, rows } = code;
+    const { columns, digits, repeats, rows } = code;
 
     for (let width = 1; width <= columns; width += 1) {
       if (columns % width !== 0) {
@@ -240,17 +237,13 @@ export class CodeService {
 
       if (this.isRepeatingUnit(code, width)) {
         let reducedDigits = "";
-        for (let level = 0; level < levels; level += 1) {
-          reducedDigits += digits.slice(
-            level * columns,
-            level * columns + width,
-          );
+        for (let row = 0; row < rows; row += 1) {
+          reducedDigits += digits.slice(row * columns, row * columns + width);
         }
 
         return {
           columns: width,
           digits: reducedDigits,
-          levels,
           repeats,
           rows,
         };
@@ -261,13 +254,13 @@ export class CodeService {
   }
 
   /**
-   * The Code shifted `shift` columns west, wrapping each level around its own
+   * The Code shifted `shift` columns west, wrapping each row around its own
    * span — the same band cut at a different place.
    *
    * A Code repeats forever east and west, so a cyclic shift of its columns
    * re-phases the pattern without changing it: the point at
-   * `(level, column)` moves to `(level, column - shift)` carrying all four of
-   * its bits, which for a row-major reading is a rotation of each level's own
+   * `(row, column)` moves to `(row, column - shift)` carrying all four of
+   * its bits, which for a row-major reading is a rotation of each row's own
    * substring and nothing more. The bits travel unchanged because a shift
    * moves the whole lattice rather than the ink across it.
    *
@@ -275,12 +268,12 @@ export class CodeService {
    * than refused, since every integer names a real phase.
    */
   rotate(code: CodeObject, shift: number): CodeObject {
-    const { columns, digits, levels } = code;
+    const { columns, digits, rows } = code;
     const offset = ((shift % columns) + columns) % columns;
-    const rotated = Array.from({ length: levels }, (_unused, level) => {
-      const row = digits.slice(level * columns, (level + 1) * columns);
+    const rotated = Array.from({ length: rows }, (_unused, row) => {
+      const rowSlice = digits.slice(row * columns, (row + 1) * columns);
 
-      return row.slice(offset) + row.slice(0, offset);
+      return rowSlice.slice(offset) + rowSlice.slice(0, offset);
     });
 
     return { ...code, digits: rotated.join("") };
@@ -309,7 +302,6 @@ export class CodeService {
     return this.format({
       columns: tile.columns,
       digits,
-      levels: Math.max(0, tile.rows - 1),
       repeats,
       rows: tile.rows,
     });
@@ -336,13 +328,13 @@ export class CodeService {
    * this.
    */
   tile(code: CodeObject): Tile {
-    const { columns, levels, rows } = code;
+    const { columns, rows } = code;
 
     return {
       columns,
-      points: Array.from({ length: levels }, (_level, level) =>
+      points: Array.from({ length: rows }, (_row, row) =>
         Array.from({ length: columns }, (_column, column) =>
-          this.directionsAt(code, level, column),
+          this.directionsAt(code, row, column),
         ),
       ),
       rows,

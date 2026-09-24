@@ -3,15 +3,15 @@
 /**
  * The smallest `rows` value a `mosaic` tile is worth enumerating at.
  *
- * Three, where a tile's interior is two grid levels — enough for a southward
+ * Two, where a tile's interior is two point rows — enough for a southward
  * edge to join them, which is the shallowest tile that can hold one. Below
- * it the interior is a single level with nothing under it, so the only
+ * it the interior is a single row with nothing under it, so the only
  * tiles are a bare point and the wrapped rule and there is nothing to
  * permute.
  *
- * It was 4 while the space at three rows held four tiles. The budget is
- * what makes three worth sweeping: it admits five column spans there,
- * against one at six rows, so the shallowest band is where the family is
+ * It was 3 while the space at two rows held four tiles. The budget is
+ * what makes two worth sweeping: it admits five column spans there,
+ * against one at five rows, so the shallowest band is where the family is
  * widest.
  */
 
@@ -19,7 +19,7 @@
 
 /**
  * Thrown when a grid of direction bits is not a tile: two adjoining points
- * disagree about the edge between them, a point at the first level claims a
+ * disagree about the edge between them, a point at the first row claims a
  * `north` or one at the last claims a `south`, or the grid is not the size
  * its own `rows` and `columns` declare.
  *

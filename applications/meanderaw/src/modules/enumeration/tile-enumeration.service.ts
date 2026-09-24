@@ -17,9 +17,9 @@ import type {
  * Enumerates every distinct `mosaic` tile at a given size.
  *
  * A tile's degrees of freedom are its edges and nothing else: one eastward
- * edge and one southward edge per point, minus the last level's southward
+ * edge and one southward edge per point, minus the last row's southward
  * ones, which have nowhere to reach. So the space at one shape is every
- * subset of them — `2^(columns * (2 * rows - 3))` in all — and enumerating
+ * subset of them — `2^(columns * (2 * rows - 1))` in all — and enumerating
  * it is deciding each edge in turn rather than searching for an
  * arrangement, which is what makes the walk indifferent to what the tiles
  * mean.
@@ -83,21 +83,21 @@ export class TileEnumerationService {
 
   // 🔏 Private Methods
 
-  /** Where the `ordinal`-th edge sits in a draft: the grid that holds it, and its level and column within that grid. */
+  /** Where the `ordinal`-th edge sits in a draft: the grid that holds it, and its row and column within that grid. */
   private address(
     edges: EdgesDraft,
     shape: TileShape,
     ordinal: number,
   ): EdgeAddress {
     const { columns, rows } = shape;
-    const horizontalCount = columns * (rows - 1);
+    const horizontalCount = columns * rows;
     const isHorizontal = ordinal < horizontalCount;
     const local = isHorizontal ? ordinal : ordinal - horizontalCount;
 
     return {
       column: local % columns,
       grid: isHorizontal ? edges.horizontal : edges.vertical,
-      level: Math.floor(local / columns),
+      row: Math.floor(local / columns),
     };
   }
 
@@ -127,11 +127,11 @@ export class TileEnumerationService {
 
   /** Clears the `ordinal`-th edge of a draft, undoing {@link set} on the way back out of the walk. */
   private clear(edges: EdgesDraft, shape: TileShape, ordinal: number): void {
-    const { column, grid, level } = this.address(edges, shape, ordinal);
-    const row = grid[level];
+    const { column, grid, row } = this.address(edges, shape, ordinal);
+    const targetRow = grid[row];
 
-    if (row !== undefined) {
-      row[column] = false;
+    if (targetRow !== undefined) {
+      targetRow[column] = false;
     }
   }
 
@@ -158,9 +158,9 @@ export class TileEnumerationService {
 
   /** Sets the `ordinal`-th edge of a draft. */
   private set(edges: EdgesDraft, shape: TileShape, ordinal: number): void {
-    const { column, grid, level } = this.address(edges, shape, ordinal);
+    const { column, grid, row } = this.address(edges, shape, ordinal);
 
-    this.tileService.mark(grid, level, column);
+    this.tileService.mark(grid, row, column);
   }
 
   // 🌎 Public Methods
@@ -170,7 +170,7 @@ export class TileEnumerationService {
    * decisions one tile is and what the configured edge budget bounds.
    */
   edges(shape: TileShape): number {
-    return shape.columns * (2 * shape.rows - 3);
+    return shape.columns * (2 * shape.rows - 1);
   }
 
   /**
@@ -233,9 +233,9 @@ export class TileEnumerationService {
    * space *contains* the narrower one rather than replacing it.
    */
   isMatching(tile: Tile): boolean {
-    for (const [level, row] of tile.points.entries()) {
-      for (const [column] of row.entries()) {
-        if (this.tileService.incidentEdges(tile, level, column) > 1) {
+    for (const [row, pointsRow] of tile.points.entries()) {
+      for (const [column] of pointsRow.entries()) {
+        if (this.tileService.incidentEdges(tile, row, column) > 1) {
           return false;
         }
       }
@@ -249,10 +249,10 @@ export class TileEnumerationService {
    * least one at every row count the family draws in.
    *
    * The sweep asks per row rather than reading a column cap, which is what
-   * makes the budget the single knob: five columns at three rows, one at
-   * six, and the arithmetic between them says so rather than a table.
+   * makes the budget the single knob: five columns at two rows, one at
+   * five, and the arithmetic between them says so rather than a table.
    */
   maximumColumns(rows: number): number {
-    return Math.max(Math.floor(this.edgeBudget / (2 * rows - 3)), 1);
+    return Math.max(Math.floor(this.edgeBudget / (2 * rows - 1)), 1);
   }
 }

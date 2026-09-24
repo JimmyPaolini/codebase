@@ -11,7 +11,7 @@ export type Code = string;
  *
  * A Code is one hexadecimal character per interior lattice point, in reading
  * order — top to bottom, left to right — so the character for the point at
- * `(level, column)` sits at `level * columns + column` and nothing more than
+ * `(row, column)` sits at `row * columns + column` and nothing more than
  * that index is needed to read it. {@link CodeService.directionsAt} is that
  * arithmetic written once.
  *
@@ -23,15 +23,12 @@ export type Code = string;
  * reading a caller gets back for one point, which is where the bit meanings
  * are written down — see `Directions`.
  *
- * {@link levels} is `rows - 1` and is carried rather than recomputed because
- * it is the bound every walk over a Code runs to: the band's two border
- * rules at grid levels `0` and `rows` are cap ticks rather than points of
- * the repeat, so a `rows`-row meander has `rows - 1` interior levels.
+ * `rows` directly denotes the interior lattice height (the vertical count
+ * of points on the lattice, so `digits.length === rows * columns`).
  */
 export interface CodeObject {
   readonly columns: number;
   readonly digits: string;
-  readonly levels: number;
   readonly repeats: number;
   readonly rows: number;
 }

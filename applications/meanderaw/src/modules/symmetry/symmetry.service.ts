@@ -9,7 +9,7 @@ import type { PointRank, Transform, TransformChoice } from "./symmetry.types";
  * The symmetries under which two `mosaic` tiles draw the same pattern, and
  * the tile-shaped operations that act under them. A tile repeats forever in
  * both directions, so shifting its columns only re-phases the same
- * wallpaper; reversing its columns or flipping its levels mirrors it.
+ * wallpaper; reversing its columns or flipping its rows mirrors it.
  * Enumerating every tile and keeping one representative per symmetry class
  * is what turns a combinatorial blow-up into a set small enough to look
  * through.
@@ -20,14 +20,14 @@ import type { PointRank, Transform, TransformChoice } from "./symmetry.types";
  * to a canonical name. Nothing here reaches back.
  *
  * The group has order `4 × columns` — `columns` translations, times a
- * horizontal mirror, times a level flip — and it acts on the tile's edges
+ * horizontal mirror, times a vertical flip — and it acts on the tile's edges
  * rather than on its points, because an edge is where the tile's degrees of
- * freedom are. A translation moves an edge along its level; a mirror sends
+ * freedom are. A translation moves an edge along its row; a mirror sends
  * the eastward edge leaving one point to the eastward edge *arriving* at
  * its reflection, which is why its column arithmetic differs by one from
  * the southward edge's; a flip turns the tile upside down, and a southward
- * edge lands one level higher than a horizontal one because it is indexed
- * by the upper of the two levels it joins.
+ * edge lands one row higher than a horizontal one because it is indexed
+ * by the upper of the two rows it joins.
  */
 @Injectable()
 export class SymmetryService {
@@ -79,25 +79,23 @@ export class SymmetryService {
    * Copies one direction's edges from `source` onto `target` under one group
    * element.
    *
-   * A flip turns the tile upside down, and a southward edge lands one level
+   * A flip turns the tile upside down, and a southward edge lands one row
    * higher than an eastward one because it is indexed by the upper of the
-   * two levels it joins.
+   * two rows it joins.
    */
   private place(
     source: readonly (readonly boolean[])[],
     target: readonly boolean[][],
     options: Transform,
   ): void {
-    const lastLevel = options.isHorizontal
-      ? options.rows - 2
-      : options.rows - 3;
+    const lastRow = options.isHorizontal ? options.rows - 1 : options.rows - 2;
 
-    for (const [level, row] of source.entries()) {
-      for (const [column, isSet] of row.entries()) {
+    for (const [row, sourceRow] of source.entries()) {
+      for (const [column, isSet] of sourceRow.entries()) {
         if (isSet) {
           this.tileService.mark(
             target,
-            options.flip ? lastLevel - level : level,
+            options.flip ? lastRow - row : row,
             this.mapColumn(column, options),
           );
         }

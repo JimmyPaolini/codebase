@@ -28,9 +28,9 @@ import type { CorpusEntry, CorpusFamily } from "./corpus.types";
  * reach is two bounds rather than one. `EnumerationService.isAdmitted` is
  * the edge budget, which is what makes enumeration possible at all; and
  * `SWEEP_MINIMUM_ROWS` is the floor the sweep starts at, because a
- * two-row band's interior is a single level with no southward edge anywhere
+ * single-row band's interior is a single row with no southward edge anywhere
  * in it. An entry is kept when either bound puts it outside, which is what
- * lets `parallel`'s five two-row entries stay in the corpus while sitting
+ * lets `parallel`'s five single-row entries stay in the corpus while sitting
  * comfortably inside the budget. Nothing hand-lists the split, so raising
  * the budget moves the boundary here rather than leaving a stale list behind.
  *

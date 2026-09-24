@@ -9,7 +9,7 @@
  * things that share no coordinate system. A rendered document's ink lives on
  * a bounded lattice, where a node is a `"column,row"` point and a neighbor is
  * one pitch away in a straight line. A repeat unit's ink lives on the unit
- * itself, where a node is a `"level,column"` position and a step east off the
+ * itself, where a node is a `"row,column"` position and a step east off the
  * last column arrives at the first column of the same unit — the wrap that
  * makes a repeat repeat at all. Neither reading is a special case of the
  * other, and the walk that counts the pieces does not care which it is given:

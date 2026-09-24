@@ -3,7 +3,6 @@ import { Inject, Injectable } from "@nestjs/common";
 import { CodeService } from "../code/code.service";
 import { GraphService } from "../graph/graph.service";
 
-import type { CodeService as ICodeService } from "../code/code.service";
 import type { CodeObject } from "../code/code.types";
 import type { InkAdjacency } from "../graph/graph.types";
 import type { CodeEdge, Connectivity } from "./characteristics.types";
@@ -21,10 +20,10 @@ import type { CodeEdge, Connectivity } from "./characteristics.types";
  * **A Code is read as one repeat of a band, not as a finished drawing.** A
  * step east off the last column arrives at the first column of the same
  * Code, because that wrap is what makes a repeat unit join up with its own
- * next repeat. North and south do not wrap: the Code's first and last levels
+ * next repeat. North and south do not wrap: the Code's first and last rows
  * sit against the band's two border rules, which are cap ticks rather than
  * points of the repeat. The consequence is worth stating:
- * a run that closes only by wrapping — every level leaving its own point
+ * a run that closes only by wrapping — every row leaving its own point
  * east and arriving back at it from the west — is a loop here and a straight
  * rule in the drawing.
  *
@@ -51,7 +50,7 @@ export class ConnectivityService {
 
   constructor(
     @Inject(CodeService)
-    private readonly codeService: ICodeService,
+    private readonly codeService: CodeService,
     @Inject(GraphService)
     private readonly graphService: GraphService,
   ) {}
@@ -96,28 +95,28 @@ export class ConnectivityService {
     return [...incidences.values()].filter((count) => count === 1).length;
   }
 
-  /** Whether the southward edge leaving `(level, column)` is claimed by either of its two ends, reading past the last level as absent. */
-  private joinsSouth(code: CodeObject, level: number, column: number): boolean {
-    if (level + 1 >= code.levels) {
+  /** Whether the southward edge leaving `(row, column)` is claimed by either of its two ends, reading past the last row as absent. */
+  private joinsSouth(code: CodeObject, row: number, column: number): boolean {
+    if (row + 1 >= code.rows) {
       return false;
     }
 
-    const point = this.codeService.directionsAt(code, level, column);
-    const below = this.codeService.directionsAt(code, level + 1, column);
+    const point = this.codeService.directionsAt(code, row, column);
+    const below = this.codeService.directionsAt(code, row + 1, column);
 
     return point.south || below.north;
   }
 
   /** One point's identity in the graph, which is its position and nothing else. */
-  private key(level: number, column: number): string {
-    return `${level},${column}`;
+  private key(row: number, column: number): string {
+    return `${row},${column}`;
   }
 
   /** Every point the Code spells, inked dots included — a point on no edge at all is a component of its own. */
   private nodes(code: CodeObject): string[] {
-    return Array.from({ length: code.levels }, (_unused, level) =>
+    return Array.from({ length: code.rows }, (_unused, row) =>
       Array.from({ length: code.columns }, (_column, column) =>
-        this.key(level, column),
+        this.key(row, column),
       ),
     ).flat();
   }
@@ -147,26 +146,26 @@ export class ConnectivityService {
    * Every edge the Code holds, each once, named by the two points it joins.
    *
    * An eastward edge wraps around the Code's own column span and a southward
-   * one stops at the last level — see this service's own doc comment for why
+   * one stops at the last row — see this service's own doc comment for why
    * the two directions differ.
    */
   edges(code: CodeObject, unwrapped: boolean): CodeEdge[] {
-    const { columns, levels } = code;
+    const { columns, rows } = code;
     const edges: CodeEdge[] = [];
 
-    for (let level = 0; level < levels; level += 1) {
+    for (let row = 0; row < rows; row += 1) {
       for (let column = 0; column < columns; column += 1) {
-        const from = this.key(level, column);
+        const from = this.key(row, column);
 
         if (
-          this.joinsEast(code, level, column) &&
+          this.joinsEast(code, row, column) &&
           (!unwrapped || column !== columns - 1)
         ) {
-          edges.push({ from, to: this.key(level, (column + 1) % columns) });
+          edges.push({ from, to: this.key(row, (column + 1) % columns) });
         }
 
-        if (this.joinsSouth(code, level, column)) {
-          edges.push({ from, to: this.key(level + 1, column) });
+        if (this.joinsSouth(code, row, column)) {
+          edges.push({ from, to: this.key(row + 1, column) });
         }
       }
     }
@@ -177,11 +176,11 @@ export class ConnectivityService {
   // 🌎 Public Methods
 
   /** Whether the eastward edge leaving `column` is claimed by either of its two ends. */
-  joinsEast(code: CodeObject, level: number, column: number): boolean {
-    const point = this.codeService.directionsAt(code, level, column);
+  joinsEast(code: CodeObject, row: number, column: number): boolean {
+    const point = this.codeService.directionsAt(code, row, column);
     const eastward = this.codeService.directionsAt(
       code,
-      level,
+      row,
       (column + 1) % code.columns,
     );
 

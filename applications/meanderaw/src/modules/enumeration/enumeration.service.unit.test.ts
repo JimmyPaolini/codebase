@@ -76,20 +76,20 @@ describe(EnumerationService, () => {
       expect(
         service.shapes().map(({ columns, rows }) => `${rows}r${columns}c`),
       ).toStrictEqual([
+        "2r1c",
+        "2r2c",
+        "2r3c",
+        "2r4c",
+        "2r5c",
         "3r1c",
         "3r2c",
         "3r3c",
-        "3r4c",
-        "3r5c",
         "4r1c",
         "4r2c",
-        "4r3c",
         "5r1c",
-        "5r2c",
         "6r1c",
         "7r1c",
         "8r1c",
-        "9r1c",
       ]);
     });
 
@@ -102,19 +102,19 @@ describe(EnumerationService, () => {
 
   describe("bounded by configured rows and columns", () => {
     it("stops the sweep at the configured maximum rows, layered on top of the edge budget", async () => {
-      const bounded = await createService({ SWEEP_MAXIMUM_ROWS: 4 });
+      const bounded = await createService({ SWEEP_MAXIMUM_ROWS: 3 });
 
       expect(
         bounded.shapes().map(({ columns, rows }) => `${rows}r${columns}c`),
       ).toStrictEqual([
+        "2r1c",
+        "2r2c",
+        "2r3c",
+        "2r4c",
+        "2r5c",
         "3r1c",
         "3r2c",
         "3r3c",
-        "3r4c",
-        "3r5c",
-        "4r1c",
-        "4r2c",
-        "4r3c",
       ]);
     });
 
@@ -124,16 +124,16 @@ describe(EnumerationService, () => {
       expect(
         bounded.shapes().map(({ columns, rows }) => `${rows}r${columns}c`),
       ).toStrictEqual([
+        "2r1c",
+        "2r2c",
         "3r1c",
         "3r2c",
         "4r1c",
         "4r2c",
         "5r1c",
-        "5r2c",
         "6r1c",
         "7r1c",
         "8r1c",
-        "9r1c",
       ]);
     });
 
@@ -173,12 +173,12 @@ describe(EnumerationService, () => {
     // space, folded by the same symmetry group, now run for every family
     // rather than for one.
     it.each([
-      { columns: 1, count: 6, rows: 3 },
-      { columns: 2, count: 21, rows: 3 },
-      { columns: 3, count: 74, rows: 3 },
-      { columns: 1, count: 20, rows: 4 },
-      { columns: 1, count: 72, rows: 5 },
-      { columns: 1, count: 272, rows: 6 },
+      { columns: 1, count: 6, rows: 2 },
+      { columns: 2, count: 21, rows: 2 },
+      { columns: 3, count: 74, rows: 2 },
+      { columns: 1, count: 20, rows: 3 },
+      { columns: 1, count: 72, rows: 4 },
+      { columns: 1, count: 272, rows: 5 },
     ])(
       "finds $count distinct meanders at $rows rows and $columns columns",
       ({ columns, count, rows }) => {
@@ -193,26 +193,26 @@ describe(EnumerationService, () => {
     // sweep stable across runs rather than dependent on which member of a
     // symmetry class the walk happened to reach first.
     it("spells each one by its Code, at the shape it was enumerated at", () => {
-      expect(service.enumerate({ columns: 1, rows: 3 })).toStrictEqual([
-        { code: "01x03y00", columns: 1, rows: 3 },
-        { code: "01x03y48", columns: 1, rows: 3 },
-        { code: "01x03y03", columns: 1, rows: 3 },
-        { code: "01x03y4b", columns: 1, rows: 3 },
-        { code: "01x03y33", columns: 1, rows: 3 },
-        { code: "01x03y7b", columns: 1, rows: 3 },
+      expect(service.enumerate({ columns: 1, rows: 2 })).toStrictEqual([
+        { code: "01x02y00", columns: 1, rows: 2 },
+        { code: "01x02y48", columns: 1, rows: 2 },
+        { code: "01x02y03", columns: 1, rows: 2 },
+        { code: "01x02y4b", columns: 1, rows: 2 },
+        { code: "01x02y33", columns: 1, rows: 2 },
+        { code: "01x02y7b", columns: 1, rows: 2 },
       ]);
     });
 
     it("produces no two meanders sharing a Code, since a Code is a meander's whole identity", () => {
       const codes = service
-        .enumerate({ columns: 2, rows: 4 })
+        .enumerate({ columns: 2, rows: 3 })
         .map(({ code }) => code);
 
       expect(new Set(codes).size).toBe(codes.length);
     });
 
     it("refuses a shape the budget does not admit, rather than walking it slowly", () => {
-      expect(() => service.enumerate({ columns: 2, rows: 6 })).toThrow(
+      expect(() => service.enumerate({ columns: 2, rows: 5 })).toThrow(
         /past the budget/u,
       );
     });

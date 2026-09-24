@@ -52,17 +52,17 @@ const ADMITTED_SHAPES: readonly {
   readonly rows: number;
   readonly tiles: number;
 }[] = [
-  { columns: 1, matchings: 4, rows: 3, tiles: 6 },
-  { columns: 2, matchings: 6, rows: 3, tiles: 21 },
-  { columns: 3, matchings: 9, rows: 3, tiles: 74 },
-  { columns: 4, matchings: 20, rows: 3, tiles: 354 },
-  { columns: 5, matchings: 36, rows: 3, tiles: 1884 },
-  { columns: 1, matchings: 8, rows: 4, tiles: 20 },
-  { columns: 2, matchings: 15, rows: 4, tiles: 204 },
-  { columns: 3, matchings: 33, rows: 4, tiles: 3100 },
-  { columns: 1, matchings: 18, rows: 5, tiles: 72 },
-  { columns: 2, matchings: 50, rows: 5, tiles: 2544 },
-  { columns: 1, matchings: 40, rows: 6, tiles: 272 },
+  { columns: 1, matchings: 4, rows: 2, tiles: 6 },
+  { columns: 2, matchings: 6, rows: 2, tiles: 21 },
+  { columns: 3, matchings: 9, rows: 2, tiles: 74 },
+  { columns: 4, matchings: 20, rows: 2, tiles: 354 },
+  { columns: 5, matchings: 36, rows: 2, tiles: 1884 },
+  { columns: 1, matchings: 8, rows: 3, tiles: 20 },
+  { columns: 2, matchings: 15, rows: 3, tiles: 204 },
+  { columns: 3, matchings: 33, rows: 3, tiles: 3100 },
+  { columns: 1, matchings: 18, rows: 4, tiles: 72 },
+  { columns: 2, matchings: 50, rows: 4, tiles: 2544 },
+  { columns: 1, matchings: 40, rows: 5, tiles: 272 },
 ];
 
 // 🧪 Tests
@@ -101,49 +101,49 @@ describe(TileEnumerationService, () => {
   });
 
   describe("the edge budget", () => {
-    it("admits exactly eleven shapes, none of them above six rows", () => {
+    it("admits exactly eleven shapes, none of them above five rows", () => {
       expect(
         ADMITTED_SHAPES.map(({ columns, rows }) => `${rows}x${columns}`),
       ).toStrictEqual([
+        "2x1",
+        "2x2",
+        "2x3",
+        "2x4",
+        "2x5",
         "3x1",
         "3x2",
         "3x3",
-        "3x4",
-        "3x5",
         "4x1",
         "4x2",
-        "4x3",
         "5x1",
-        "5x2",
-        "6x1",
       ]);
     });
 
     it("gives a shallower band more columns, since a tile's edge count grows in both dimensions at once", () => {
-      expect(service.maximumColumns(3)).toBe(5);
-      expect(service.maximumColumns(4)).toBe(3);
-      expect(service.maximumColumns(5)).toBe(2);
-      expect(service.maximumColumns(6)).toBe(1);
+      expect(service.maximumColumns(2)).toBe(5);
+      expect(service.maximumColumns(3)).toBe(3);
+      expect(service.maximumColumns(4)).toBe(2);
+      expect(service.maximumColumns(5)).toBe(1);
     });
 
-    it("counts a shape's edges as columns times two rows less three", () => {
-      expect(service.edges({ columns: 2, rows: 5 })).toBe(14);
-      expect(service.edges({ columns: 5, rows: 3 })).toBe(15);
+    it("counts a shape's edges as columns times two rows less one", () => {
+      expect(service.edges({ columns: 2, rows: 4 })).toBe(14);
+      expect(service.edges({ columns: 5, rows: 2 })).toBe(15);
     });
 
     /**
      * The shape the negative-space survey measured, which the budget no
      * longer admits.
      *
-     * `README.md` reports 2,013 folded tiles at 8 rows and 2 columns from
+     * `README.md` reports 2,013 folded tiles at 7 rows and 2 columns from
      * 11,275 unfolded — under the old exact-cover rule. Without a degree
      * ceiling that same shape holds 2 ** 26 assignments, which is what the
      * budget exists to refuse: the shapes the matching rule made cheap are
      * exactly the ones an unbounded degree makes ruinous.
      */
     it("refuses a shape past the budget rather than enumerating it slowly", () => {
-      expect(service.isAdmitted({ columns: 2, rows: 8 })).toBe(false);
-      expect(() => service.enumerate(8, 2)).toThrow(OversizedTileError);
+      expect(service.isAdmitted({ columns: 2, rows: 7 })).toBe(false);
+      expect(() => service.enumerate(7, 2)).toThrow(OversizedTileError);
     });
   });
 
@@ -151,15 +151,15 @@ describe(TileEnumerationService, () => {
     it("reads a smaller budget than today's default from the environment", async () => {
       const configured = await createService({ SWEEP_EDGE_BUDGET: 10 });
 
-      expect(configured.isAdmitted({ columns: 3, rows: 3 })).toBe(true);
-      expect(configured.isAdmitted({ columns: 4, rows: 3 })).toBe(false);
-      expect(configured.maximumColumns(3)).toBe(3);
+      expect(configured.isAdmitted({ columns: 3, rows: 2 })).toBe(true);
+      expect(configured.isAdmitted({ columns: 4, rows: 2 })).toBe(false);
+      expect(configured.maximumColumns(2)).toBe(3);
     });
 
     it("names the configured budget rather than today's default in a refusal", async () => {
       const configured = await createService({ SWEEP_EDGE_BUDGET: 10 });
 
-      expect(() => configured.enumerate(3, 4)).toThrow(
+      expect(() => configured.enumerate(2, 4)).toThrow(
         /past the budget of 10/u,
       );
     });
@@ -183,8 +183,8 @@ describe(TileEnumerationService, () => {
       }).compile();
       const unset = await module.resolve(TileEnumerationService);
 
-      expect(unset.isAdmitted({ columns: 5, rows: 3 })).toBe(true);
-      expect(unset.isAdmitted({ columns: 6, rows: 3 })).toBe(false);
+      expect(unset.isAdmitted({ columns: 5, rows: 2 })).toBe(true);
+      expect(unset.isAdmitted({ columns: 6, rows: 2 })).toBe(false);
     });
   });
 
@@ -192,7 +192,7 @@ describe(TileEnumerationService, () => {
     it("reaches every one of the sixteen direction-bit patterns a point can carry", () => {
       const seen = new Set(
         service
-          .enumerate(4, 3)
+          .enumerate(3, 3)
           .flatMap((tile) =>
             tile.points.flatMap((row) =>
               row.map(
@@ -203,8 +203,8 @@ describe(TileEnumerationService, () => {
           ),
       );
 
-      // Four rows and three columns is the smallest shape a crossing fits
-      // in: a point needs a level above and below it for its northward and
+      // Three rows and three columns is the smallest shape a crossing fits
+      // in: a point needs a row above and below it for its northward and
       // southward edges, and three columns for its eastward and westward
       // ones to be two different edges rather than one wrapped pair.
       expect(seen.size).toBe(16);
@@ -226,7 +226,7 @@ describe(TileEnumerationService, () => {
     );
 
     it("returns one tile per symmetry class, never two that draw the same pattern", () => {
-      const tiles = service.enumerate(4, 2);
+      const tiles = service.enumerate(3, 2);
       const identifiers = tiles.map((tile) => codeService.spellCanonical(tile));
 
       expect(new Set(identifiers).size).toBe(tiles.length);
@@ -234,47 +234,47 @@ describe(TileEnumerationService, () => {
 
     it("orders tiles by the key it folds on, so a sweep is stable across runs", () => {
       const keys = service
-        .enumerate(5, 1)
+        .enumerate(4, 1)
         .map((tile) => symmetryService.edgeKey(tile));
 
       expect(keys).toStrictEqual(keys.toSorted());
     });
 
     it("returns the representative of each class rather than whichever member the walk reached first", () => {
-      for (const tile of service.enumerate(5, 2)) {
+      for (const tile of service.enumerate(4, 2)) {
         expect(symmetryService.canonicalTile(tile)).toStrictEqual(tile);
       }
     });
 
-    it("includes the three named members of the family at 6 rows", () => {
+    it("includes the three named members of the family at 5 rows", () => {
       const singleColumn = service
-        .enumerate(6, 1)
+        .enumerate(5, 1)
         .map((tile) => codeService.spellCanonical(tile));
       const twoColumn = service
-        .enumerate(5, 2)
+        .enumerate(4, 2)
         .map((tile) => codeService.spellCanonical(tile));
 
-      // `dots` is a bare point on every level, so `0` throughout;
-      // `lines` is the single column's wrapped rule on every level, so `3`
+      // `dots` is a bare point on every row, so `0` throughout;
+      // `lines` is the single column's wrapped rule on every row, so `3`
       // — east and west — throughout; `dashes` alternates the anchor `2`
       // with the point `1` it reaches across a two-column tile.
-      expect(singleColumn).toContain("01x06y00000");
-      expect(singleColumn).toContain("01x06y33333");
-      expect(twoColumn).toContain("02x05y21212121");
+      expect(singleColumn).toContain("01x05y00000");
+      expect(singleColumn).toContain("01x05y33333");
+      expect(twoColumn).toContain("02x04y21212121");
     });
 
     it("finds only the dot and the line at the smallest tile there is", () => {
       const identifiers = service
-        .enumerate(4, 1)
+        .enumerate(3, 1)
         .map((tile) => codeService.spellCanonical(tile));
 
-      // Three interior levels, one column. Every point bare, every point on
-      // the wrapped rule, and a southward edge over the lower two levels —
+      // Three rows, one column. Every point bare, every point on
+      // the wrapped rule, and a southward edge over the lower two rows —
       // the last being the representative its own top-to-bottom mirror
       // folds onto.
-      expect(identifiers).toContain("01x04y000");
-      expect(identifiers).toContain("01x04y333");
-      expect(identifiers).toContain("01x04y048");
+      expect(identifiers).toContain("01x03y000");
+      expect(identifiers).toContain("01x03y333");
+      expect(identifiers).toContain("01x03y048");
     });
 
     it.each(ADMITTED_SHAPES)(
@@ -316,12 +316,12 @@ describe(TileEnumerationService, () => {
     );
 
     it("returns tiles whose direction bits agree, so every one of them denotes a drawing", () => {
-      const tiles = service.enumerate(4, 3);
+      const tiles = service.enumerate(3, 3);
       const malformed = tiles.filter((tile) => {
         try {
           tileService.assertWellFormed(tile);
 
-          return tile.points.length !== tile.rows - 1;
+          return tile.points.length !== tile.rows;
         } catch {
           return true;
         }
