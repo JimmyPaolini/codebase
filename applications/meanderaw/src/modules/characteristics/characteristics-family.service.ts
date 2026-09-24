@@ -24,20 +24,15 @@ export class CharacteristicsFamilyService {
     rows: number,
     columns: number,
   ): number {
-    let count = 0;
     const topRow = grid[0] ?? "";
     const bottomRow = grid[rows - 1] ?? "";
+    let count = 0;
 
-    for (let column = 0; column < columns; column += 1) {
-      const topCharacter = topRow[column] ?? "";
-      const bottomCharacter = bottomRow[column] ?? "";
-      const isTopJoint = /[765]/u.test(topCharacter);
-      const isBottomJoint = /[ba9]/u.test(bottomCharacter);
-      const isMiddlePillar = grid
-        .slice(1, rows - 1)
-        .every((row) => row[column] === "c");
-
-      if (isTopJoint && isBottomJoint && isMiddlePillar) {
+    for (const column of Array.from({ length: columns }, (_, index) => index)) {
+      if (
+        this.hasConnectors(topRow, bottomRow, column) &&
+        grid.slice(1, rows - 1).every((row) => row[column] === "c")
+      ) {
         count += 1;
       }
     }
@@ -45,9 +40,73 @@ export class CharacteristicsFamilyService {
     return count;
   }
 
+  /** Checks if top/bottom rails have the right connectors at this column. */
+  private hasConnectors(
+    topRow: string,
+    bottomRow: string,
+    column: number,
+  ): boolean {
+    return (
+      /[765]/u.test(topRow[column] ?? "") &&
+      /[ba9]/u.test(bottomRow[column] ?? "")
+    );
+  }
+
+  /** Checks if a top/bottom pair has downward teeth. */
+  private hasDownTeeth(grid: readonly string[]): boolean {
+    const topRow = grid[0] ?? "";
+    for (const column of Array.from(
+      { length: topRow.length },
+      (_, index) => index,
+    )) {
+      const topCharacter = topRow[column] ?? "";
+      const bottomCharacter = grid.at(1)?.[column] ?? "";
+      if (/[765]/u.test(topCharacter) && bottomCharacter === "8") {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  /** Checks if middle rows are all pillars (continuous "c" characters). */
+  private hasOnlyPillars(grid: readonly string[]): boolean {
+    if (grid.length <= 2) {
+      return true;
+    }
+
+    const middle = grid.slice(1, -1).join("");
+    return /^c+$/u.test(middle);
+  }
+
+  /** Checks if top and bottom rails have joint connectors. */
+  private hasRailConnectors(grid: readonly string[], rows: number): boolean {
+    const topRow = grid[0] ?? "";
+    const bottomRow = grid[rows - 1] ?? "";
+    return /[765]/u.test(topRow) && /[ba9]/u.test(bottomRow);
+  }
+
+  /** Checks if a top/bottom pair has upward teeth. */
+  private hasUpTeeth(grid: readonly string[]): boolean {
+    const bottomRow = grid.at(-1) ?? "";
+    const secondToLast = grid.at(-2);
+    for (const column of Array.from(
+      { length: bottomRow.length },
+      (_, index) => index,
+    )) {
+      const topCharacter = secondToLast?.[column] ?? "";
+      const bottomCharacter = bottomRow[column] ?? "";
+      if (topCharacter === "4" && /[ba9]/u.test(bottomCharacter)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   /** Whether horizontal row is a comb spine with vertical teeth. */
   private isHorizontalComb(grid: readonly string[], rows: number): boolean {
-    for (let row = 0; row < rows; row += 1) {
+    for (const row of Array.from({ length: rows }, (_, index) => index)) {
       const rowChars = grid[row] ?? "";
       const isSpine = /^[37b65a9]+$/u.test(rowChars);
       const hasJoint = /[7b]/u.test(rowChars);
@@ -69,31 +128,20 @@ export class CharacteristicsFamilyService {
     rows: number,
     digits: string,
   ): boolean {
-    const topRow = grid[0] ?? "";
-    const bottomRow = grid[rows - 1] ?? "";
-    const columns = topRow.length;
-    let hasDownTeeth = false;
-    let hasUpTeeth = false;
-
-    for (let column = 0; column < columns; column += 1) {
-      const topCharacter = topRow[column] ?? "";
-      const bottomCharacter = bottomRow[column] ?? "";
-      hasDownTeeth ||= /[765]/u.test(topCharacter) && bottomCharacter === "8";
-      hasUpTeeth ||= topCharacter === "4" && /[ba9]/u.test(bottomCharacter);
+    if (!this.hasDownTeeth(grid) || !this.hasUpTeeth(grid)) {
+      return false;
     }
 
-    return (
-      hasDownTeeth &&
-      hasUpTeeth &&
-      (rows <= 2
-        ? !digits.includes("0")
-        : /^c+$/u.test(grid.slice(1, rows - 1).join("")))
-    );
+    if (rows <= 2) {
+      return !digits.includes("0");
+    }
+
+    return this.hasOnlyPillars(grid);
   }
 
   /** Whether vertical column is a comb spine with horizontal teeth. */
   private isVerticalComb(grid: readonly string[], columns: number): boolean {
-    for (let column = 0; column < columns; column += 1) {
+    for (const column of Array.from({ length: columns }, (_, index) => index)) {
       const columnChars = grid.map((row) => row[column] ?? "").join("");
       const isSpine = /^[cde65a9]+$/u.test(columnChars);
       const hasJoint = /[de]/u.test(columnChars);
@@ -117,6 +165,20 @@ export class CharacteristicsFamilyService {
     return Array.from({ length: rows }, (_, row) =>
       digits.slice(row * columns, (row + 1) * columns),
     );
+  }
+
+  /** Validates basic dimensions and prevents overlap with other families. */
+  private validateBasic(
+    code: CodeObject,
+    minimumRows: number,
+    excludeFamilies: ((code: CodeObject) => boolean)[],
+  ): boolean {
+    const { columns, digits, rows } = code;
+    if (rows < minimumRows || columns < 1 || digits.length !== rows * columns) {
+      return false;
+    }
+
+    return !excludeFamilies.some((checkFamily) => checkFamily(code));
   }
 
   // 🌎 Public Methods
@@ -160,26 +222,22 @@ export class CharacteristicsFamilyService {
    * continuous vertical through-pillars, forming architectural bays/arches.
    */
   isArcade(code: CodeObject): boolean {
-    const { columns, digits, rows } = code;
     if (
-      rows < 3 ||
-      columns < 1 ||
-      digits.length !== rows * columns ||
-      this.isBars(code) ||
-      this.isMesh(code) ||
-      this.isComb(code)
+      !this.validateBasic(code, 3, [
+        (c) => this.isBars(c),
+        (c) => this.isMesh(c),
+        (c) => this.isComb(c),
+      ])
     ) {
       return false;
     }
 
     const grid = this.toGrid(code);
-    const topRow = grid[0] ?? "";
-    const bottomRow = grid[rows - 1] ?? "";
-    if (!/[765]/u.test(topRow) || !/[ba9]/u.test(bottomRow)) {
+    if (!this.hasRailConnectors(grid, code.rows)) {
       return false;
     }
 
-    return this.countThroughPillars(grid, rows, columns) >= 2;
+    return this.countThroughPillars(grid, code.rows, code.columns) >= 2;
   }
 
   /**
@@ -204,14 +262,12 @@ export class CharacteristicsFamilyService {
    * or alternating reversing top and bottom combs.
    */
   isComb(code: CodeObject): boolean {
-    const { columns, digits, rows } = code;
     if (
-      rows < 2 ||
-      columns < 1 ||
-      digits.length !== rows * columns ||
-      this.isBars(code) ||
-      this.isLines(code) ||
-      this.isMesh(code)
+      !this.validateBasic(code, 2, [
+        (c) => this.isBars(c),
+        (c) => this.isLines(c),
+        (c) => this.isMesh(c),
+      ])
     ) {
       return false;
     }
@@ -219,9 +275,9 @@ export class CharacteristicsFamilyService {
     const grid = this.toGrid(code);
 
     return (
-      this.isVerticalComb(grid, columns) ||
-      this.isHorizontalComb(grid, rows) ||
-      this.isReversingComb(grid, rows, digits)
+      this.isVerticalComb(grid, code.columns) ||
+      this.isHorizontalComb(grid, code.rows) ||
+      this.isReversingComb(grid, code.rows, code.digits)
     );
   }
 

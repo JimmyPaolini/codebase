@@ -116,6 +116,14 @@ describe(CharacteristicsFamilyService, () => {
       expect(service.isComb(code("3", 1, 1))).toBe(false);
       expect(service.isComb(code("4", 1, 1))).toBe(false);
     });
+
+    it("rejects codes with insufficient columns", () => {
+      expect(service.isComb(code("", 2, 0))).toBe(false);
+    });
+
+    it("rejects codes with mismatched digit length", () => {
+      expect(service.isComb(code("61e", 3, 2))).toBe(false);
+    });
   });
 
   describe("isArcade", () => {
@@ -140,6 +148,14 @@ describe(CharacteristicsFamilyService, () => {
 
     it("rejects codes with mismatched digit length", () => {
       expect(service.isArcade(code("667", 3, 2))).toBe(false);
+    });
+
+    it("rejects codes without proper rail connectors", () => {
+      expect(service.isArcade(code("334488cc", 3, 2))).toBe(false);
+    });
+
+    it("rejects codes with insufficient through-pillars", () => {
+      expect(service.isArcade(code("6448cc", 3, 2))).toBe(false);
     });
   });
 
