@@ -166,10 +166,7 @@ const conformetryConfiguration: ConformetryNxConfiguration = [
         },
       },
       {
-        patterns: [
-          "packages/ic-suite/codometer/codometer-configuration",
-          "packages/ic-suite/codometer/codometer-core",
-        ],
+        patterns: ["packages/ic-suite/codometer/codometer-configuration"],
         substitutions: {
           type: "packages/ic-suite/codometer",
           workspaceRelativePrefix: "../../../../",
