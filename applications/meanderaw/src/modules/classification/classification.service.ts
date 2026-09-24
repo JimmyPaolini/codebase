@@ -13,7 +13,7 @@ import type {
 /**
  * Decides which single family a meander belongs to from its measured
  * Characteristics and shape, applying strict hierarchical precedence:
- * `parallel` -\> `cross` -\> `branch` -\> `boxes` -\> `whirl` -\> `swirl` -\> `chain` -\> `snake` -\> `unclassified`.
+ * `parallel` -\> `cross` -\> `branch` -\> `boxes` -\> `chain` -\> `double-chain` -\> `whirl` -\> `swirl` -\> `clasps` -\> `snake` -\> `unclassified`.
  */
 @Injectable()
 export class ClassificationService {
@@ -53,6 +53,27 @@ export class ClassificationService {
     );
   }
 
+  /** Whether a repeat's ink matches the single-strand chain structure. */
+  private isChain(structure: MeanderStructure): boolean {
+    const {
+      crossesTheSeam,
+      density,
+      dotCount,
+      pitch,
+      reversesAtItsTightestTurn,
+    } = structure.characteristics;
+
+    return (
+      this.isArc(structure) &&
+      pitch === structure.rows &&
+      crossesTheSeam &&
+      reversesAtItsTightestTurn &&
+      density === 1 &&
+      dotCount === 0 &&
+      this.reachesMinimumRows(structure, "chain")
+    );
+  }
+
   /** Whether a repeat's ink is one closed loop with no junctions and no free ends. */
   private isClosedLoop(structure: MeanderStructure): boolean {
     const { components, cycles, freeEnds } = structure.characteristics;
@@ -62,6 +83,33 @@ export class ClassificationService {
       components === 1 &&
       cycles === 1 &&
       freeEnds === 0
+    );
+  }
+
+  /** Whether a repeat's ink matches the two-strand double-chain structure. */
+  private isDoubleChain(structure: MeanderStructure): boolean {
+    const {
+      components,
+      crossesTheSeam,
+      cycles,
+      density,
+      dotCount,
+      freeEnds,
+      pitch,
+      reversesAtItsTightestTurn,
+    } = structure.characteristics;
+
+    return (
+      this.isJunctionFree(structure) &&
+      components === 2 &&
+      cycles === 0 &&
+      freeEnds === 4 &&
+      pitch === 2 * structure.rows - 2 &&
+      crossesTheSeam &&
+      reversesAtItsTightestTurn &&
+      density === 1 &&
+      dotCount === 0 &&
+      this.reachesMinimumRows(structure, "double-chain")
     );
   }
 
@@ -135,6 +183,14 @@ export class ClassificationService {
         name: "boxes",
       },
       {
+        matches: (structure) => this.isChain(structure),
+        name: "chain",
+      },
+      {
+        matches: (structure) => this.isDoubleChain(structure),
+        name: "double-chain",
+      },
+      {
         matches: (structure) =>
           this.isArc(structure) &&
           structure.characteristics.pitch === structure.rows &&
@@ -147,15 +203,6 @@ export class ClassificationService {
           structure.characteristics.pitch === 2 * structure.rows - 3 &&
           this.reachesMinimumRows(structure, "swirl"),
         name: "swirl",
-      },
-      {
-        matches: (structure) =>
-          this.isJunctionFree(structure) &&
-          structure.characteristics.cycles === 0 &&
-          structure.characteristics.crossesTheSeam &&
-          structure.characteristics.reversesAtItsTightestTurn &&
-          this.reachesMinimumRows(structure, "chain"),
-        name: "chain",
       },
       {
         matches: (structure) =>

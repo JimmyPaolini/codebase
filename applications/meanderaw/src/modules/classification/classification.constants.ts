@@ -4,16 +4,17 @@ import type { MeanderFamily } from "./classification.types";
 
 /**
  * Supported meander families with precedence:
- * parallel -\> cross -\> branch -\> boxes -\> whirl -\> swirl -\> chain -\> snake -\> unclassified.
+ * parallel -\> cross -\> branch -\> boxes -\> chain -\> double-chain -\> whirl -\> swirl -\> clasps -\> snake -\> unclassified.
  */
 export const MEANDER_FAMILIES: readonly MeanderFamily[] = [
   "parallel",
   "cross",
   "branch",
   "boxes",
+  "chain",
+  "double-chain",
   "whirl",
   "swirl",
-  "chain",
   "clasps",
   "snake",
   "unclassified",
@@ -28,6 +29,7 @@ export const STRUCTURAL_MINIMUM_ROWS: Record<MeanderFamily, number> = {
   chain: 3,
   clasps: 3,
   cross: 6,
+  "double-chain": 3,
   parallel: 2,
   snake: 3,
   swirl: 3,
