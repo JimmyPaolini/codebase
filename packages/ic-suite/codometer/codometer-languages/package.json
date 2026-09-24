@@ -1,6 +1,5 @@
 {
   "dependencies": {
-    "@codebase/logger": "workspace:*",
     "@codometer/configuration": "workspace:*",
     "@codometer/core": "workspace:*",
     "@nestjs/common": "catalog:",
@@ -15,6 +14,7 @@
     "zod": "catalog:"
   },
   "devDependencies": {
+    "@codebase/logger": "workspace:*",
     "@golevelup/ts-vitest": "catalog:",
     "@nestjs/testing": "catalog:",
     "@nx/eslint-plugin": "catalog:",

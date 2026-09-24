@@ -79,13 +79,6 @@ const conformetryConfiguration: ConformetryNxConfiguration = [
         },
       },
       {
-        patterns: ["packages/ic-suite/codometer/codometer-cli"],
-        substitutions: {
-          type: "packages/ic-suite/codometer",
-          workspaceRelativePrefix: "../../../../",
-        },
-      },
-      {
         patterns: ["packages/ic-suite/conformetry/conformetry-cli"],
         substitutions: {
           type: "packages/ic-suite/conformetry",
