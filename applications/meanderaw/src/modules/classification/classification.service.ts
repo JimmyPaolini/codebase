@@ -59,6 +59,9 @@ export class ClassificationService {
       crossesTheSeam,
       density,
       dotCount,
+      endsOnBorderRules,
+      longestHorizontalRun,
+      longestVerticalRun,
       pitch,
       reversesAtItsTightestTurn,
     } = structure.characteristics;
@@ -68,6 +71,9 @@ export class ClassificationService {
       pitch === structure.rows &&
       crossesTheSeam &&
       reversesAtItsTightestTurn &&
+      !endsOnBorderRules &&
+      longestHorizontalRun === structure.columns &&
+      longestVerticalRun === structure.rows - 1 &&
       density === 1 &&
       dotCount === 0 &&
       this.reachesMinimumRows(structure, "chain")
@@ -94,7 +100,10 @@ export class ClassificationService {
       cycles,
       density,
       dotCount,
+      endsOnBorderRules,
       freeEnds,
+      longestHorizontalRun,
+      longestVerticalRun,
       pitch,
       reversesAtItsTightestTurn,
     } = structure.characteristics;
@@ -107,6 +116,9 @@ export class ClassificationService {
       pitch === 2 * structure.rows - 2 &&
       crossesTheSeam &&
       reversesAtItsTightestTurn &&
+      !endsOnBorderRules &&
+      longestHorizontalRun === structure.columns - 1 &&
+      longestVerticalRun === structure.rows - 2 &&
       density === 1 &&
       dotCount === 0 &&
       this.reachesMinimumRows(structure, "double-chain")
@@ -118,6 +130,87 @@ export class ClassificationService {
     const { inkTJunctions, inkXJunctions } = structure.characteristics;
 
     return inkTJunctions === 0 && inkXJunctions === 0;
+  }
+
+  /** Whether a repeat's ink matches the single- or double-strand swirl structure. */
+  private isSwirl(structure: MeanderStructure): boolean {
+    const {
+      components,
+      crossesTheSeam,
+      cycles,
+      density,
+      dotCount,
+      endsOnBorderRules,
+      freeEnds,
+      longestHorizontalRun,
+      longestVerticalRun,
+      pitch,
+    } = structure.characteristics;
+
+    if (
+      !this.isJunctionFree(structure) ||
+      crossesTheSeam ||
+      cycles !== 0 ||
+      density !== 1 ||
+      dotCount !== 0 ||
+      endsOnBorderRules ||
+      longestHorizontalRun !== structure.rows - 1 ||
+      longestVerticalRun !== structure.rows - 1 ||
+      !this.reachesMinimumRows(structure, "swirl")
+    ) {
+      return false;
+    }
+
+    const isSingleSwirl =
+      components === 1 && freeEnds === 2 && pitch === 2 * structure.rows - 1;
+
+    const isDoubleSwirl =
+      components === 2 && freeEnds === 4 && pitch === 4 * structure.rows - 2;
+
+    return isSingleSwirl || isDoubleSwirl;
+  }
+
+  /** Whether a repeat's ink matches the single- or double-strand whirl structure. */
+  private isWhirl(structure: MeanderStructure): boolean {
+    const {
+      components,
+      crossesTheSeam,
+      cycles,
+      density,
+      dotCount,
+      endsOnBorderRules,
+      freeEnds,
+      longestHorizontalRun,
+      longestVerticalRun,
+      pitch,
+    } = structure.characteristics;
+
+    if (
+      !this.isJunctionFree(structure) ||
+      crossesTheSeam ||
+      cycles !== 0 ||
+      density !== 1 ||
+      dotCount !== 0 ||
+      longestHorizontalRun !== structure.rows - 1 ||
+      longestVerticalRun !== structure.rows - 1 ||
+      !this.reachesMinimumRows(structure, "whirl")
+    ) {
+      return false;
+    }
+
+    const isSingleWhirl =
+      components === 1 &&
+      freeEnds === 2 &&
+      endsOnBorderRules &&
+      pitch === structure.rows + 1;
+
+    const isDoubleWhirl =
+      components === 2 &&
+      freeEnds === 4 &&
+      !endsOnBorderRules &&
+      pitch === 2 * structure.rows + 2;
+
+    return isSingleWhirl || isDoubleWhirl;
   }
 
   /** Whether a repeat satisfies the structural minimum row constraint for a family. */
@@ -191,17 +284,11 @@ export class ClassificationService {
         name: "double-chain",
       },
       {
-        matches: (structure) =>
-          this.isArc(structure) &&
-          structure.characteristics.pitch === structure.rows &&
-          this.reachesMinimumRows(structure, "whirl"),
+        matches: (structure) => this.isWhirl(structure),
         name: "whirl",
       },
       {
-        matches: (structure) =>
-          this.isArc(structure) &&
-          structure.characteristics.pitch === 2 * structure.rows - 3 &&
-          this.reachesMinimumRows(structure, "swirl"),
+        matches: (structure) => this.isSwirl(structure),
         name: "swirl",
       },
       {
