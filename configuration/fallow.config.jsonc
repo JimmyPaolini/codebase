@@ -164,15 +164,6 @@
     // build/lint time, not code this repository ships or runs in production.
     "zod",
   ],
-  "ignoreDependencyOverrides": [
-    { "package": "axios" },
-    { "package": "brace-expansion" },
-    { "package": "conventional-changelog-conventionalcommits" },
-    { "package": "fast-uri" },
-    { "package": "js-yaml" },
-    { "package": "markdown-it" },
-    { "package": "ws" },
-  ],
   "ignoreExports": [
     {
       "exports": ["*"],
