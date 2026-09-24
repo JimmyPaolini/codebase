@@ -14,19 +14,11 @@
   ],
   "targets": {
     "build": {
-      "executor": "@nx/js:tsc",
+      "executor": "@nx/vite:build",
       "options": {
-        "assets": [
-          {
-            "glob": "README.md",
-            "input": "packages/ic-suite/callidescope/callidescope-cli",
-            "output": "."
-          }
-        ],
+        "configFile": "packages/ic-suite/callidescope/callidescope-cli/vite.config.ts",
         "generatePackageJson": false,
-        "main": "packages/ic-suite/callidescope/callidescope-cli/src/main.ts",
-        "outputPath": "packages/ic-suite/callidescope/callidescope-cli/dist",
-        "tsConfig": "packages/ic-suite/callidescope/callidescope-cli/tsconfig.build.json"
+        "outputPath": "packages/ic-suite/callidescope/callidescope-cli/dist"
       },
       "outputs": ["{options.outputPath}"]
     },
