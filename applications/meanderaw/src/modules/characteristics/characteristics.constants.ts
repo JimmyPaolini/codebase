@@ -47,11 +47,17 @@ export const CHARACTERISTIC_SOURCES: Record<
   inkTJunctions: "pattern",
   inkXJunctions: "pattern",
   // Family-defining
+  isArcade: "pattern",
+  isBars: "pattern",
   isClosedLoop: "walk",
+  isComb: "pattern",
   isConnected: "walk",
+  isDots: "pattern",
   isFlipSymmetric: "pattern",
   isFork: "walk",
   isJunctionFree: "pattern",
+  isLines: "pattern",
+  isMesh: "pattern",
   isMirrorSymmetric: "pattern",
   isPureTree: "walk",
   // Structure

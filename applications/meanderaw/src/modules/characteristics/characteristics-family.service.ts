@@ -18,6 +18,102 @@ export class CharacteristicsFamilyService {
 
   // 🔏 Private Methods
 
+  /** Counts how many vertical pillars connect top and bottom rails continuously. */
+  private countThroughPillars(
+    grid: readonly string[],
+    rows: number,
+    columns: number,
+  ): number {
+    let count = 0;
+    const topRow = grid[0] ?? "";
+    const bottomRow = grid[rows - 1] ?? "";
+
+    for (let column = 0; column < columns; column += 1) {
+      const topCharacter = topRow[column] ?? "";
+      const bottomCharacter = bottomRow[column] ?? "";
+      const isTopJoint = /[765]/u.test(topCharacter);
+      const isBottomJoint = /[ba9]/u.test(bottomCharacter);
+      const isMiddlePillar = grid
+        .slice(1, rows - 1)
+        .every((row) => row[column] === "c");
+
+      if (isTopJoint && isBottomJoint && isMiddlePillar) {
+        count += 1;
+      }
+    }
+
+    return count;
+  }
+
+  /** Whether horizontal row is a comb spine with vertical teeth. */
+  private isHorizontalComb(grid: readonly string[], rows: number): boolean {
+    for (let row = 0; row < rows; row += 1) {
+      const rowChars = grid[row] ?? "";
+      const isSpine = /^[37b65a9]+$/u.test(rowChars);
+      const hasJoint = /[7b]/u.test(rowChars);
+
+      if (isSpine && hasJoint) {
+        const otherChars = grid.filter((_, index) => index !== row).join("");
+        if (otherChars.length > 0 && /^[48c]+$/u.test(otherChars)) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  /** Whether top and bottom rails interdigitate with vertical teeth. */
+  private isReversingComb(
+    grid: readonly string[],
+    rows: number,
+    digits: string,
+  ): boolean {
+    const topRow = grid[0] ?? "";
+    const bottomRow = grid[rows - 1] ?? "";
+    const hasTop = /[765]/u.test(topRow);
+    const hasBottom = /[ba9]/u.test(bottomRow);
+
+    if (!hasTop || !hasBottom) {
+      return false;
+    }
+
+    if (rows > 2) {
+      const middle = grid.slice(1, rows - 1).join("");
+      return /^c+$/u.test(middle);
+    }
+
+    return !digits.includes("0");
+  }
+
+  /** Whether vertical column is a comb spine with horizontal teeth. */
+  private isVerticalComb(grid: readonly string[], columns: number): boolean {
+    for (let column = 0; column < columns; column += 1) {
+      const columnChars = grid.map((row) => row[column] ?? "").join("");
+      const isSpine = /^[cde65a9]+$/u.test(columnChars);
+      const hasJoint = /[de]/u.test(columnChars);
+
+      if (isSpine && hasJoint) {
+        const otherChars = grid
+          .map((row) => row.slice(0, column) + row.slice(column + 1))
+          .join("");
+        if (otherChars.length > 0 && /^[123]+$/u.test(otherChars)) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  /** Converts CodeObject digits to an array of row strings. */
+  private toGrid(code: CodeObject): string[] {
+    const { columns, digits, rows } = code;
+    return Array.from({ length: rows }, (_, row) =>
+      digits.slice(row * columns, (row + 1) * columns),
+    );
+  }
+
   // 🌎 Public Methods
 
   /**
@@ -43,7 +139,42 @@ export class CharacteristicsFamilyService {
       families.push("mesh");
     }
 
+    if (this.isComb(code)) {
+      families.push("comb");
+    }
+
+    if (this.isArcade(code)) {
+      families.push("arcade");
+    }
+
     return families;
+  }
+
+  /**
+   * Whether the meander consists of top and bottom rails connected by
+   * continuous vertical through-pillars, forming architectural bays/arches.
+   */
+  isArcade(code: CodeObject): boolean {
+    const { columns, digits, rows } = code;
+    if (
+      rows < 3 ||
+      columns < 1 ||
+      digits.length !== rows * columns ||
+      this.isBars(code) ||
+      this.isMesh(code) ||
+      this.isComb(code)
+    ) {
+      return false;
+    }
+
+    const grid = this.toGrid(code);
+    const topRow = grid[0] ?? "";
+    const bottomRow = grid[rows - 1] ?? "";
+    if (!/[765]/u.test(topRow) || !/[ba9]/u.test(bottomRow)) {
+      return false;
+    }
+
+    return this.countThroughPillars(grid, rows, columns) >= 2;
   }
 
   /**
@@ -61,6 +192,32 @@ export class CharacteristicsFamilyService {
     const expected = topRow + middleRow.repeat(code.rows - 2) + bottomRow;
 
     return code.digits === expected;
+  }
+
+  /**
+   * Whether the meander consists of a spine with perpendicular teeth,
+   * or alternating reversing top and bottom combs.
+   */
+  isComb(code: CodeObject): boolean {
+    const { columns, digits, rows } = code;
+    if (
+      rows < 2 ||
+      columns < 1 ||
+      digits.length !== rows * columns ||
+      this.isBars(code) ||
+      this.isLines(code) ||
+      this.isMesh(code)
+    ) {
+      return false;
+    }
+
+    const grid = this.toGrid(code);
+
+    return (
+      this.isVerticalComb(grid, columns) ||
+      this.isHorizontalComb(grid, rows) ||
+      this.isReversingComb(grid, rows, digits)
+    );
   }
 
   /**

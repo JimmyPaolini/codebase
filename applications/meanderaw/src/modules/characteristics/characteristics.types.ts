@@ -41,13 +41,19 @@ export interface Characteristics extends Connectivity {
   readonly inkTJunctions: number;
   readonly inkXJunctions: number;
   // Family-defining
+  readonly isArcade: boolean;
+  readonly isBars: boolean;
   readonly isClosedLoop: boolean;
 
+  readonly isComb: boolean;
   readonly isConnected: boolean;
+  readonly isDots: boolean;
   readonly isFlipSymmetric: boolean;
 
   readonly isFork: boolean;
   readonly isJunctionFree: boolean;
+  readonly isLines: boolean;
+  readonly isMesh: boolean;
   readonly isMirrorSymmetric: boolean;
 
   readonly isPureTree: boolean;

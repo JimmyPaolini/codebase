@@ -7,12 +7,16 @@ import type { Characteristics } from "../characteristics/characteristics.types";
  */
 export type MeanderFamily =
   | "arcade"
+  | "bars"
   | "boxes"
   | "chain"
   | "clasps"
   | "comb"
   | "cross"
+  | "dots"
   | "fork"
+  | "lines"
+  | "mesh"
   | "parallel"
   | "snake"
   | "stipple"

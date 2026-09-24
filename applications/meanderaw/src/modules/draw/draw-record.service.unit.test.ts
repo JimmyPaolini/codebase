@@ -71,6 +71,7 @@ describe(DrawRecordService, () => {
             "bifurcationCount": 0,
             "characteristics": [
               "isJunctionFree",
+              "isBars",
               "endsAreLatticeNeighbors",
               "endsOnBorderRules",
               "isConnected",
@@ -91,7 +92,7 @@ describe(DrawRecordService, () => {
             "edgeCount": 1,
             "embeddedOCount": 0,
             "embeddedUCount": 0,
-            "family": "unclassified",
+            "family": "bars",
             "freeEnds": 2,
             "horizontalDashCount": 0,
             "horizontalPointCount": 0,

@@ -40,11 +40,17 @@ const defaultCharacteristics: Characteristics = {
   inkPointCount: 0,
   inkTJunctions: 0,
   inkXJunctions: 0,
+  isArcade: false,
+  isBars: false,
   isClosedLoop: false,
+  isComb: false,
   isConnected: false,
+  isDots: false,
   isFlipSymmetric: false,
   isFork: false,
   isJunctionFree: true,
+  isLines: false,
+  isMesh: false,
   isMirrorSymmetric: false,
   isPureTree: false,
   isReducible: false,
@@ -94,6 +100,10 @@ describe(ClassificationService, () => {
 
   it("exports supported families in precedence order", () => {
     expect(MEANDER_FAMILIES).toStrictEqual([
+      "dots",
+      "lines",
+      "bars",
+      "mesh",
       "parallel",
       "cross",
       "arcade",
@@ -112,6 +122,42 @@ describe(ClassificationService, () => {
   });
 
   describe("classify", () => {
+    it("classifies dots correctly", () => {
+      const characteristics = createMockCharacteristics({
+        isDots: true,
+      });
+      const shape: MeanderShape = { columns: 2, rows: 2 };
+
+      expect(service.classify(characteristics, shape)).toBe("dots");
+    });
+
+    it("classifies lines correctly", () => {
+      const characteristics = createMockCharacteristics({
+        isLines: true,
+      });
+      const shape: MeanderShape = { columns: 2, rows: 2 };
+
+      expect(service.classify(characteristics, shape)).toBe("lines");
+    });
+
+    it("classifies bars correctly", () => {
+      const characteristics = createMockCharacteristics({
+        isBars: true,
+      });
+      const shape: MeanderShape = { columns: 2, rows: 3 };
+
+      expect(service.classify(characteristics, shape)).toBe("bars");
+    });
+
+    it("classifies mesh correctly", () => {
+      const characteristics = createMockCharacteristics({
+        isMesh: true,
+      });
+      const shape: MeanderShape = { columns: 2, rows: 3 };
+
+      expect(service.classify(characteristics, shape)).toBe("mesh");
+    });
+
     it("classifies parallel bundles correctly", () => {
       const pitch = 4;
       const components = 3;
@@ -141,9 +187,7 @@ describe(ClassificationService, () => {
 
     it("classifies arcade meanders correctly", () => {
       const characteristics = createMockCharacteristics({
-        hasArcadePillars: true,
-        inkTJunctions: 4,
-        inkXJunctions: 0,
+        isArcade: true,
       });
       const shape: MeanderShape = { columns: 4, rows: 3 };
 
@@ -152,9 +196,7 @@ describe(ClassificationService, () => {
 
     it("classifies comb meanders correctly", () => {
       const characteristics = createMockCharacteristics({
-        hasCombSpine: true,
-        inkTJunctions: 3,
-        inkXJunctions: 0,
+        isComb: true,
       });
       const shape: MeanderShape = { columns: 2, rows: 4 };
 

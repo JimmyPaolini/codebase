@@ -109,29 +109,51 @@ export class ClassificationService {
   rules(): readonly MeanderFamilyRule[] {
     return [
       {
+        matches: (structure) =>
+          structure.characteristics.isDots &&
+          this.reachesMinimumRows(structure, "dots"),
+        name: "dots",
+      },
+      {
+        matches: (structure) =>
+          structure.characteristics.isLines &&
+          this.reachesMinimumRows(structure, "lines"),
+        name: "lines",
+      },
+      {
+        matches: (structure) =>
+          structure.characteristics.isBars &&
+          this.reachesMinimumRows(structure, "bars"),
+        name: "bars",
+      },
+      {
+        matches: (structure) =>
+          structure.characteristics.isMesh &&
+          this.reachesMinimumRows(structure, "mesh"),
+        name: "mesh",
+      },
+      {
+        matches: (structure) =>
+          structure.characteristics.isComb &&
+          this.reachesMinimumRows(structure, "comb"),
+        name: "comb",
+      },
+      {
+        matches: (structure) =>
+          structure.characteristics.isArcade &&
+          this.reachesMinimumRows(structure, "arcade"),
+        name: "arcade",
+      },
+      {
         matches: (structure) => this.isBundle(structure),
         name: "parallel",
       },
       {
         matches: (structure) =>
           structure.characteristics.inkXJunctions > 0 &&
-          structure.characteristics.inkTJunctions === 0 &&
+          !structure.characteristics.isMesh &&
           this.reachesMinimumRows(structure, "cross"),
         name: "cross",
-      },
-      {
-        matches: (structure) =>
-          structure.characteristics.hasArcadePillars &&
-          structure.characteristics.inkXJunctions === 0 &&
-          this.reachesMinimumRows(structure, "arcade"),
-        name: "arcade",
-      },
-      {
-        matches: (structure) =>
-          structure.characteristics.hasCombSpine &&
-          structure.characteristics.inkXJunctions === 0 &&
-          this.reachesMinimumRows(structure, "comb"),
-        name: "comb",
       },
       {
         matches: (structure) =>

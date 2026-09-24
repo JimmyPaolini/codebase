@@ -7,6 +7,10 @@ import type { MeanderFamily } from "./classification.types";
  * parallel -\> cross -\> arcade -\> comb -\> fork -\> tree -\> boxes -\> whirl -\> swirl -\> chain -\> clasps -\> snake -\> stipple -\> unclassified.
  */
 export const MEANDER_FAMILIES: readonly MeanderFamily[] = [
+  "dots",
+  "lines",
+  "bars",
+  "mesh",
   "parallel",
   "cross",
   "arcade",
@@ -28,12 +32,16 @@ export const MEANDER_FAMILIES: readonly MeanderFamily[] = [
  */
 export const STRUCTURAL_MINIMUM_ROWS: Record<MeanderFamily, number> = {
   arcade: 2,
+  bars: 2,
   boxes: 3,
   chain: 3,
   clasps: 3,
   comb: 2,
   cross: 6,
+  dots: 1,
   fork: 3,
+  lines: 1,
+  mesh: 2,
   parallel: 2,
   snake: 3,
   stipple: 2,
