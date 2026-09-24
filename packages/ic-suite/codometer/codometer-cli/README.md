@@ -101,7 +101,7 @@ changed at all. Check on the runtime the repository pins, or expect false
 staleness rather than a real finding.
 
 ```yaml
-- run: npx codometer --check reports,limits
+- run: npx @codometer/cli --check reports,limits
 ```
 
 ## One folder at a time
