@@ -1,6 +1,10 @@
 {
+  "author": "Jimmy Paolini",
   "bin": {
     "callidescope": "./dist/src/main.js"
+  },
+  "bugs": {
+    "url": "https://github.com/JimmyPaolini/codebase/issues"
   },
   "dependencies": {
     "@callidescope/configuration": "workspace:*",
@@ -38,6 +42,8 @@
     "LICENSE",
     "README.md"
   ],
+  "homepage": "https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/callidescope/callidescope-cli#readme",
+  "license": "MIT",
   "main": "src/index.ts",
   "name": "@callidescope/cli",
   "peerDependencies": {
@@ -59,6 +65,11 @@
     "main": "./dist/src/index.js",
     "registry": "https://registry.npmjs.org",
     "types": "./dist/src/index.d.ts"
+  },
+  "repository": {
+    "directory": "packages/ic-suite/callidescope/callidescope-cli",
+    "type": "git",
+    "url": "git+https://github.com/JimmyPaolini/codebase.git"
   },
   "type": "module",
   "typeCoverage": {

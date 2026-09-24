@@ -6,6 +6,7 @@ import { LoggerService } from "@codebase/logger";
 import { ConformetryGeneratorsCommand } from "../conformetry-generators/conformetry-generators.command";
 import { ConventionalConfigCommand } from "../conventional-config/conventional-config.command";
 import { DevcontainerConfigurationCommand } from "../devcontainer-configuration/devcontainer-configuration.command";
+import { PackageManifestsCommand } from "../package-manifests/package-manifests.command";
 import { PullRequestLabelsCommand } from "../pull-request-labels/pull-request-labels.command";
 import { PullRequestTemplateCommand } from "../pull-request-template/pull-request-template.command";
 import { ReadmeVersionCommand } from "../readme-version/readme-version.command";
@@ -50,6 +51,7 @@ export class SynchronizationCommand extends CommandRunner {
     private readonly conventionalConfigCommand: ConventionalConfigCommand,
     private readonly devcontainerConfigurationCommand: DevcontainerConfigurationCommand,
     private readonly logger: LoggerService,
+    private readonly packageManifestsCommand: PackageManifestsCommand,
     private readonly pullRequestLabelsCommand: PullRequestLabelsCommand,
     private readonly pullRequestTemplateCommand: PullRequestTemplateCommand,
     private readonly readmeVersionCommand: ReadmeVersionCommand,
@@ -78,6 +80,7 @@ export class SynchronizationCommand extends CommandRunner {
       this.conformetryGeneratorsCommand,
       this.conventionalConfigCommand,
       this.devcontainerConfigurationCommand,
+      this.packageManifestsCommand,
       this.pullRequestLabelsCommand,
       this.pullRequestTemplateCommand,
       this.readmeVersionCommand,

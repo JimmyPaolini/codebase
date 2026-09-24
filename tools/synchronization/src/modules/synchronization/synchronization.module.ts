@@ -5,6 +5,7 @@ import { LoggerModule } from "@codebase/logger";
 import { ConformetryGeneratorsModule } from "../conformetry-generators/conformetry-generators.module";
 import { ConventionalConfigModule } from "../conventional-config/conventional-config.module";
 import { DevcontainerConfigurationModule } from "../devcontainer-configuration/devcontainer-configuration.module";
+import { PackageManifestsModule } from "../package-manifests/package-manifests.module";
 import { PullRequestLabelsModule } from "../pull-request-labels/pull-request-labels.module";
 import { PullRequestTemplateModule } from "../pull-request-template/pull-request-template.module";
 import { ReadmeVersionModule } from "../readme-version/readme-version.module";
@@ -30,6 +31,7 @@ import { SynchronizationService } from "./synchronization.service";
     ConformetryGeneratorsModule,
     ConventionalConfigModule,
     DevcontainerConfigurationModule,
+    PackageManifestsModule,
     PullRequestLabelsModule,
     PullRequestTemplateModule,
     ReadmeVersionModule,

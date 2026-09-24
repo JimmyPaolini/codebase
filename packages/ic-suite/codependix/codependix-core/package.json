@@ -1,4 +1,8 @@
 {
+  "author": "Jimmy Paolini",
+  "bugs": {
+    "url": "https://github.com/JimmyPaolini/codebase/issues"
+  },
   "dependencies": {
     "@nestjs/common": "catalog:",
     "reflect-metadata": "catalog:"
@@ -21,6 +25,8 @@
     "LICENSE",
     "README.md"
   ],
+  "homepage": "https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/codependix/codependix-core#readme",
+  "license": "MIT",
   "main": "src/index.ts",
   "name": "@codependix/core",
   "private": true,
@@ -36,6 +42,11 @@
     "main": "./dist/src/index.js",
     "registry": "https://registry.npmjs.org",
     "types": "./dist/src/index.d.ts"
+  },
+  "repository": {
+    "directory": "packages/ic-suite/codependix/codependix-core",
+    "type": "git",
+    "url": "git+https://github.com/JimmyPaolini/codebase.git"
   },
   "type": "module",
   "typeCoverage": {
