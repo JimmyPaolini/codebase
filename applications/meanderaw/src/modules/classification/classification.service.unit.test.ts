@@ -357,14 +357,45 @@ describe(ClassificationService, () => {
     });
 
     it("classifies clasps meanders with disconnected links correctly", () => {
+      const rows = 4;
+      const pitch = rows + 1; // 5
       const characteristics = createMockCharacteristics({
+        components: 2,
         crossesTheSeam: false,
         cycles: 0,
+        density: 1,
+        dotCount: 0,
+        freeEnds: 4,
         inkTJunctions: 0,
         inkXJunctions: 0,
+        longestHorizontalRun: rows - 1,
+        longestVerticalRun: rows - 1,
+        pitch,
         reversesAtItsTightestTurn: true,
       });
-      const shape: MeanderShape = { columns: 4, rows: 3 };
+      const shape: MeanderShape = { columns: pitch, rows };
+
+      expect(service.classify(characteristics, shape)).toBe("clasps");
+    });
+
+    it("classifies double clasps meanders correctly", () => {
+      const rows = 4;
+      const pitch = 2 * rows + 2; // 10
+      const characteristics = createMockCharacteristics({
+        components: 4,
+        crossesTheSeam: false,
+        cycles: 0,
+        density: 1,
+        dotCount: 0,
+        freeEnds: 8,
+        inkTJunctions: 0,
+        inkXJunctions: 0,
+        longestHorizontalRun: rows - 1,
+        longestVerticalRun: rows - 1,
+        pitch,
+        reversesAtItsTightestTurn: true,
+      });
+      const shape: MeanderShape = { columns: pitch, rows };
 
       expect(service.classify(characteristics, shape)).toBe("clasps");
     });
@@ -503,14 +534,20 @@ describe(ClassificationService, () => {
       };
       const claspsStructure = {
         characteristics: createMockCharacteristics({
+          components: 2,
           crossesTheSeam: false,
           cycles: 0,
+          density: 1,
+          dotCount: 0,
+          freeEnds: 4,
           inkTJunctions: 0,
           inkXJunctions: 0,
-          pitch: 3,
+          longestHorizontalRun: 3,
+          longestVerticalRun: 3,
+          pitch: 5,
           reversesAtItsTightestTurn: true,
         }),
-        columns: 3,
+        columns: 5,
         rows,
       };
       const chainRule = service.rules().find((r) => r.name === "chain");

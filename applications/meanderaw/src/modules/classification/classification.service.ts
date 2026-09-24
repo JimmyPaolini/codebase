@@ -80,6 +80,44 @@ export class ClassificationService {
     );
   }
 
+  /** Whether a repeat's ink matches the single- or double-motif clasp structure. */
+  private isClasps(structure: MeanderStructure): boolean {
+    const {
+      components,
+      crossesTheSeam,
+      cycles,
+      density,
+      dotCount,
+      freeEnds,
+      longestHorizontalRun,
+      longestVerticalRun,
+      pitch,
+      reversesAtItsTightestTurn,
+    } = structure.characteristics;
+
+    if (
+      !this.isJunctionFree(structure) ||
+      crossesTheSeam ||
+      cycles !== 0 ||
+      density !== 1 ||
+      dotCount !== 0 ||
+      !reversesAtItsTightestTurn ||
+      longestHorizontalRun !== structure.rows - 1 ||
+      longestVerticalRun !== structure.rows - 1 ||
+      !this.reachesMinimumRows(structure, "clasps")
+    ) {
+      return false;
+    }
+
+    const isSingleClasp =
+      components === 2 && freeEnds === 4 && pitch === structure.rows + 1;
+
+    const isDoubleClasp =
+      components === 4 && freeEnds === 8 && pitch === 2 * structure.rows + 2;
+
+    return isSingleClasp || isDoubleClasp;
+  }
+
   /** Whether a repeat's ink is one closed loop with no junctions and no free ends. */
   private isClosedLoop(structure: MeanderStructure): boolean {
     const { components, cycles, freeEnds } = structure.characteristics;
@@ -292,12 +330,7 @@ export class ClassificationService {
         name: "swirl",
       },
       {
-        matches: (structure) =>
-          this.isJunctionFree(structure) &&
-          structure.characteristics.cycles === 0 &&
-          !structure.characteristics.crossesTheSeam &&
-          structure.characteristics.reversesAtItsTightestTurn &&
-          this.reachesMinimumRows(structure, "clasps"),
+        matches: (structure) => this.isClasps(structure),
         name: "clasps",
       },
       {
