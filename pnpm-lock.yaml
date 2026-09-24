@@ -1772,9 +1772,6 @@ importers:
 
   packages/ic-suite/codependix/codependix-cli:
     dependencies:
-      '@codebase/logger':
-        specifier: workspace:*
-        version: link:../../../logger
       '@codependix/boundaries':
         specifier: workspace:*
         version: link:../codependix-boundaries
@@ -1806,6 +1803,9 @@ importers:
         specifier: 'catalog:'
         version: 4.4.3
     devDependencies:
+      '@codebase/logger':
+        specifier: workspace:*
+        version: link:../../../logger
       '@golevelup/ts-vitest':
         specifier: 'catalog:'
         version: 4.0.0
@@ -2008,9 +2008,6 @@ importers:
 
   packages/ic-suite/codependix/codependix-nestjs-modules:
     dependencies:
-      '@codebase/logger':
-        specifier: workspace:*
-        version: link:../../../logger
       '@nestjs/common':
         specifier: 'catalog:'
         version: 12.0.1(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@10.2.2)
@@ -2027,6 +2024,9 @@ importers:
         specifier: 'catalog:'
         version: 0.2.2
     devDependencies:
+      '@codebase/logger':
+        specifier: workspace:*
+        version: link:../../../logger
       '@golevelup/ts-vitest':
         specifier: 'catalog:'
         version: 4.0.0
@@ -2088,9 +2088,6 @@ importers:
 
   packages/ic-suite/codependix/codependix-output:
     dependencies:
-      '@codebase/logger':
-        specifier: workspace:*
-        version: link:../../../logger
       '@codependix/boundaries':
         specifier: workspace:*
         version: link:../codependix-boundaries
@@ -2116,6 +2113,9 @@ importers:
         specifier: 'catalog:'
         version: 0.2.2
     devDependencies:
+      '@codebase/logger':
+        specifier: workspace:*
+        version: link:../../../logger
       '@golevelup/ts-vitest':
         specifier: 'catalog:'
         version: 4.0.0

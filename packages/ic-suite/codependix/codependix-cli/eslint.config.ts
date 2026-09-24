@@ -11,10 +11,11 @@ export default [
       "@nx/dependency-checks": [
         "error",
         {
+          // @codebase/logger: inlined into the bundled build output and declared as a devDependency.
           // vitest: referenced via tsconfig "types" array; it's a devDependency
           // and the @nx/dependency-checks rule misidentifies it as a production
           // dependency.
-          ignoredDependencies: ["vitest"],
+          ignoredDependencies: ["@codebase/logger", "vitest"],
           ignoredFiles: ["{projectRoot}/eslint.config.{js,cjs,mjs,ts,cts,mts}"],
         },
       ],

@@ -1,6 +1,5 @@
 {
   "dependencies": {
-    "@codebase/logger": "workspace:*",
     "@nestjs/common": "catalog:",
     "@nestjs/config": "catalog:",
     "@nestjs/core": "catalog:",
@@ -8,6 +7,7 @@
     "reflect-metadata": "catalog:"
   },
   "devDependencies": {
+    "@codebase/logger": "workspace:*",
     "@golevelup/ts-vitest": "catalog:",
     "@nestjs/testing": "catalog:",
     "@nx/eslint-plugin": "catalog:",
