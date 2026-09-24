@@ -13,7 +13,7 @@ import type {
 /**
  * Decides which single family a meander belongs to from its measured
  * Characteristics and shape, applying strict hierarchical precedence:
- * `parallel` -\> `cross` -\> `branch` -\> `boxes` -\> `whirl` -\> `swirl` -\> `chain` -\> `snake` -\> `unclassified`.
+ * `parallel` -\> `cross` -\> `branch` -\> `boxes` -\> `waterfalls` -\> `whirl` -\> `swirl` -\> `chain` -\> `clasps` -\> `snake` -\> `unclassified`.
  */
 @Injectable()
 export class ClassificationService {
@@ -70,6 +70,23 @@ export class ClassificationService {
     const { inkTJunctions, inkXJunctions } = structure.characteristics;
 
     return inkTJunctions === 0 && inkXJunctions === 0;
+  }
+
+  /** Whether a repeat's ink is a downward zig-zagging waterfall across the seam. */
+  private isWaterfalls(structure: MeanderStructure): boolean {
+    const { characteristics } = structure;
+
+    return (
+      this.isArc(structure) &&
+      structure.columns >= 2 &&
+      characteristics.crossesTheSeam &&
+      characteristics.endsOnBorderRules &&
+      !characteristics.endsAreLatticeNeighbors &&
+      characteristics.embeddedUCount === 0 &&
+      characteristics.longestHorizontalRun === structure.columns - 1 &&
+      characteristics.longestVerticalRun === 1 &&
+      this.reachesMinimumRows(structure, "waterfalls")
+    );
   }
 
   /** Whether a repeat satisfies the structural minimum row constraint for a family. */
@@ -131,8 +148,15 @@ export class ClassificationService {
         matches: (structure) =>
           this.isArc(structure) &&
           structure.characteristics.pitch === structure.rows - 1 &&
+          structure.characteristics.crossesTheSeam &&
+          !structure.characteristics.endsAreLatticeNeighbors &&
+          !this.isWaterfalls(structure) &&
           this.reachesMinimumRows(structure, "boxes"),
         name: "boxes",
+      },
+      {
+        matches: (structure) => this.isWaterfalls(structure),
+        name: "waterfalls",
       },
       {
         matches: (structure) =>

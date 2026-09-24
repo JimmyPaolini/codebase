@@ -43,6 +43,10 @@ export class CharacteristicsFamilyService {
       families.push("mesh");
     }
 
+    if (this.isWaterfalls(code)) {
+      families.push("waterfalls");
+    }
+
     return families;
   }
 
@@ -92,6 +96,28 @@ export class CharacteristicsFamilyService {
     const middleRow = "f".repeat(code.columns);
     const bottomRow = "b".repeat(code.columns);
     const expected = topRow + middleRow.repeat(code.rows - 2) + bottomRow;
+
+    return code.digits === expected;
+  }
+
+  /**
+   * Whether the meander consists of a downward zig-zagging staircase across the
+   * vertical seam, stepping down row by row across 2 or more columns.
+   */
+  isWaterfalls(code: CodeObject): boolean {
+    if (code.columns < 2 || code.rows < 2) {
+      return false;
+    }
+
+    const horizontalFiller = "3".repeat(code.columns - 2);
+    const emptyFiller = "0".repeat(code.columns - 2);
+
+    let expected = `2${horizontalFiller}5`;
+    for (let row = 1; row < code.rows - 1; row += 1) {
+      expected += row % 2 === 1 ? `5${emptyFiller}a` : `a${horizontalFiller}5`;
+    }
+    expected +=
+      (code.rows - 1) % 2 === 1 ? `1${emptyFiller}a` : `a${horizontalFiller}1`;
 
     return code.digits === expected;
   }
