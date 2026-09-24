@@ -141,7 +141,7 @@ describe(CorpusService, () => {
           columns: 3,
           components: 1,
           cycles: 0,
-          families: ["branch", "parallel"],
+          family: "branch",
           freeEnds: 2,
 
           inkTJunctions: 1,

@@ -11,6 +11,7 @@ import { CharacteristicsPathService } from "../characteristics/characteristics-p
 import { CharacteristicsShapeService } from "../characteristics/characteristics-shape.service";
 import { CharacteristicsService } from "../characteristics/characteristics.service";
 import { ConnectivityService } from "../characteristics/connectivity.service";
+import { ClassificationModule } from "../classification/classification.module";
 import { CodeModule } from "../code/code.module";
 import { CorpusService } from "../corpus/corpus.service";
 import { DatabaseService } from "../database/database.service";
@@ -56,6 +57,7 @@ describe("drawCommand --code mode", () => {
           type: "better-sqlite3",
         }),
         TypeOrmModule.forFeature([Meander]),
+        ClassificationModule,
         CodeModule,
         DrawingModule,
         MatrixModule,

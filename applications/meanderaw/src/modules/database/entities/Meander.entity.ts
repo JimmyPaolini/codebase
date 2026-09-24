@@ -1,6 +1,9 @@
 import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
 
+import { MEANDER_FAMILIES } from "../../classification/classification.constants";
 import { MEANDER_PROVENANCES } from "../database.constants";
+
+import type { MeanderFamily } from "../../classification/classification.types";
 
 /**
  * One row of the committed `output/meanders.sqlite` database: a single
@@ -113,8 +116,8 @@ export class Meander {
   @Column({ default: 0, type: "int" })
   embeddedUCount!: number;
 
-  @Column({ type: "simple-array" })
-  families!: string[];
+  @Column({ enum: MEANDER_FAMILIES, type: "simple-enum" })
+  family!: MeanderFamily;
 
   @Column({ type: "int" })
   freeEnds!: number;

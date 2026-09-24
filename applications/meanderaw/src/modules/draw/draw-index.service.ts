@@ -102,12 +102,10 @@ export class DrawIndexService {
   private groupByFamily(meanders: readonly Meander[]): MeanderIndexGroup[] {
     const groups = new Map<null | string, Meander[]>();
     for (const meander of meanders) {
-      const families = meander.families.length > 0 ? meander.families : [null];
-      for (const family of families) {
-        const members = groups.get(family) ?? [];
-        members.push(meander);
-        groups.set(family, members);
-      }
+      const family = meander.family === "unclassified" ? null : meander.family;
+      const members = groups.get(family) ?? [];
+      members.push(meander);
+      groups.set(family, members);
     }
     return [...groups.entries()]
       .toSorted(([a], [b]) => {

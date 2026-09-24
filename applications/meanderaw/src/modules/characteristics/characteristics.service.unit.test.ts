@@ -821,7 +821,7 @@ describe(CharacteristicsService, () => {
       expect(result.isConnected).toBe(false);
     });
 
-    it("computes seamComponents across string, ParsedCode, and Matrix inputs", () => {
+    it("computes seamComponents across string, CodeObject, and Matrix inputs", () => {
       const codeStr = "02x02y4488";
       const parsed = codeService.parse("4488", 2, 2);
       const matrix = matrixService.fromCode(parsed);

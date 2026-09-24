@@ -121,11 +121,10 @@ export class CorpusService {
         return existing;
       }
 
-      const evaluatedFamilies =
-        this.characteristicsService.classifyFamilies(canonical);
-      const families = [
-        ...new Set([...entry.filedUnder, ...evaluatedFamilies]),
-      ];
+      const entityFamily =
+        entry.filedUnder[0] === "negative"
+          ? "unclassified"
+          : entry.filedUnder[0];
 
       return await this.databaseService.save({
         // type-coverage:ignore-next-line
@@ -134,7 +133,7 @@ export class CorpusService {
         code: this.codeService.format(canonical),
         columns,
         drawingHash,
-        families,
+        family: entityFamily,
         lattice: canonical.digits,
         pitch: columns,
         provenance: "hardcoded" as const,

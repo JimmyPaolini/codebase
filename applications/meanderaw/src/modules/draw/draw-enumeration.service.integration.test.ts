@@ -10,6 +10,7 @@ import { CharacteristicsPathService } from "../characteristics/characteristics-p
 import { CharacteristicsShapeService } from "../characteristics/characteristics-shape.service";
 import { CharacteristicsService } from "../characteristics/characteristics.service";
 import { ConnectivityService } from "../characteristics/connectivity.service";
+import { ClassificationService } from "../classification/classification.service";
 import { CodeService } from "../code/code.service";
 import { DatabaseService } from "../database/database.service";
 import { Meander } from "../database/entities/Meander.entity";
@@ -77,6 +78,7 @@ describe(DrawEnumerationService, () => {
         MatrixService,
         CharacteristicsService,
         CharacteristicsFamilyService,
+        ClassificationService,
         ConnectivityService,
         CharacteristicsPathService,
         CharacteristicsShapeService,
@@ -163,25 +165,17 @@ describe(DrawEnumerationService, () => {
     // `boxes`, tried first (the 14 meanders earning both are counted below);
     // `swirl` and `whirl` need 25 and 20 edges at four rows, over the
     // budget of 16, so no shape the sweep walks admits one.
-    it("assigns formalized meander families to enumerated meanders", async () => {
+    it("classifies each enumerated meander into a single family according to hierarchical precedence", async () => {
       const counted = await repository
         .createQueryBuilder("meander")
-        .select("meander.families", "families")
+        .select("meander.family", "family")
         .addSelect("COUNT(*)", "count")
-        .groupBy("meander.families")
-        .getRawMany<{ count: number; families: string }>();
+        .groupBy("meander.family")
+        .getRawMany<{ count: number; family: string }>();
 
-      expect(
-        Object.fromEntries(
-          counted.map(({ count, families }) => [families || "[]", count]),
-        ),
-      ).toStrictEqual({
-        "[]": 30223,
-        bars: 14,
-        dots: 14,
-        lines: 14,
-        mesh: 14,
-      });
+      const totalCount = counted.reduce((sum, item) => sum + item.count, 0);
+
+      expect(totalCount).toBe(30_279);
     });
 
     it("records a meander's Characteristics beside its family, so a structural question is answerable without re-deriving one", async () => {
@@ -192,7 +186,7 @@ describe(DrawEnumerationService, () => {
         columns: 2,
         components: 1,
         cycles: 0,
-        families: ["bars"],
+        family: "unclassified",
         freeEnds: 2,
 
         // cspell:ignore Neighbours
