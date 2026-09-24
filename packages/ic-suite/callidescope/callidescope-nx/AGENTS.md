@@ -38,9 +38,7 @@ inference, the trace, and the gate; `RunConfigurationService`
 starts with — which configuration file is this run's;
 `AddressService` (`src/modules/address`) does the `depth` and `breadth`
 lookups, and `address.utilities.ts` holds the one prologue those two executors
-share. `src/index.ts` is the plugin entry Nx loads through `src/index.cjs`,
-which registers `@swc-node` first — esbuild does not emit `design:paramtypes`,
-and without it every constructor injection here resolves to `undefined`.
+share. `src/index.ts` is the plugin entry Nx loads.
 
 ## Architecture Overview
 

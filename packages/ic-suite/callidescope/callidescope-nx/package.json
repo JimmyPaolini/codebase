@@ -54,7 +54,7 @@
       },
       "./executors.json": "./executors.json",
       "./package.json": "./package.json",
-      "./src/executors/*": "./dist/src/executors/*"
+      "./src/executors/*": "./dist/src/executors/*.js"
     },
     "main": "./dist/src/index.js",
     "registry": "https://registry.npmjs.org",
