@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.22.1](https://github.com/JimmyPaolini/codebase/compare/v2.22.0...v2.22.1) (2026-09-24)
+
+### 🐛 Bug Fixes
+
+* **conformetry,codometer,callidescope,codependix,configuration,documentation:** 🐛 make exports conditions authoritative ([#1056](https://github.com/JimmyPaolini/codebase/issues/1056)) ([062d099](https://github.com/JimmyPaolini/codebase/commit/062d09928ee1908d8f2d485010ee3ec83c821a06)), closes [#447](https://github.com/JimmyPaolini/codebase/issues/447) [#448](https://github.com/JimmyPaolini/codebase/issues/448) [#449](https://github.com/JimmyPaolini/codebase/issues/449) [#450](https://github.com/JimmyPaolini/codebase/issues/450)
+
 ## [2.22.0](https://github.com/JimmyPaolini/codebase/compare/v2.21.0...v2.22.0) (2026-09-24)
 
 ### ✨ Features
