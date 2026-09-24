@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.20.0](https://github.com/JimmyPaolini/codebase/compare/v2.19.0...v2.20.0) (2026-09-24)
+
+### ✨ Features
+
+* **meanderaw:** ✨ Implement single-family classification and update meander entity ([#1052](https://github.com/JimmyPaolini/codebase/issues/1052)) ([8adc28b](https://github.com/JimmyPaolini/codebase/commit/8adc28b266884ced440621467ac7004f76d07fc1)), closes [#1031](https://github.com/JimmyPaolini/codebase/issues/1031) [#1027](https://github.com/JimmyPaolini/codebase/issues/1027)
+
+### ♻️ Code Refactoring
+
+* **meanderaw:** ♻️ Refactor characteristics to use 2D Matrix and remove negative space ([#1051](https://github.com/JimmyPaolini/codebase/issues/1051)) ([1b0c4f9](https://github.com/JimmyPaolini/codebase/commit/1b0c4f9189dd30ecd85dff622836a97c8f3c0b28)), closes [#1030](https://github.com/JimmyPaolini/codebase/issues/1030) [#1027](https://github.com/JimmyPaolini/codebase/issues/1027)
+
 ## [2.19.0](https://github.com/JimmyPaolini/codebase/compare/v2.18.1...v2.19.0) (2026-09-24)
 
 ### ✨ Features
