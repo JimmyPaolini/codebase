@@ -505,6 +505,24 @@ Rendering deliberately is _not_ an adapter: validation must substitute exactly
 as generation does, or validation would flag the files the generator itself
 produced.
 
+## Agent skills
+
+Agent skills for coding agents working with conformetry are published in
+[`@conformetry/agents`](https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/conformetry/conformetry-agents):
+
+| Skill | Description |
+| ----- | ----------- |
+| [`conformetry-generate`](https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/conformetry/conformetry-agents/skills/conformetry-generate) | Scaffold code from templates using conformetry generators |
+| [`conformetry-configure`](https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/conformetry/conformetry-agents/skills/conformetry-configure) | Configure generators, templates, and validation rules in `conformetry.config.ts` |
+| [`conformetry-validate`](https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/conformetry/conformetry-agents/skills/conformetry-validate) | Run structural conformance checks against templates |
+
+## Examples
+
+Worked examples and sandboxes are in
+[`@conformetry/examples`](https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/conformetry/conformetry-examples) — eleven self-contained
+examples covering template authoring, case variants, structural comparison, drift detection, and Nx integration. An agent arriving from a conformance report can use
+[`AGENTS.md`](https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/conformetry/conformetry-examples/AGENTS.md) to find the example that explains each finding.
+
 ## Start
 
 Run the CLI from source:
