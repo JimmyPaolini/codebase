@@ -10,8 +10,6 @@ import {
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import ts from "typescript";
-
 const packageRoot = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
   "..",
@@ -20,6 +18,14 @@ const packageRoot = path.resolve(
 const workspaceRoot = path.resolve(packageRoot, "..", "..", "..", "..");
 
 const tarballsDirectory = path.resolve(workspaceRoot, "dist", "tarballs");
+
+const typescriptCompilerBinary = path.resolve(
+  workspaceRoot,
+  "node_modules",
+  "typescript-7",
+  "bin",
+  "tsc",
+);
 
 /** Options for asserting a package tarball installs and typechecks cleanly. */
 export interface AssertTarballOptions {
@@ -80,37 +86,33 @@ export function assertTarballTypechecks(options: AssertTarballOptions): void {
     const defaultSource = `import * as packageModule from "${packageName}";\nexport { packageModule };\n`;
     writeFileSync(consumerPath, consumerSource ?? defaultSource, "utf8");
 
-    const compilerOptions: ts.CompilerOptions = {
-      emitDecoratorMetadata: true,
-      experimentalDecorators: true,
-      ignoreDeprecations: "6.0",
-      lib: ["lib.es2023.d.ts", "lib.dom.d.ts"],
-      module: ts.ModuleKind.ESNext,
-      moduleResolution: ts.ModuleResolutionKind.Bundler,
-      noEmit: true,
-      skipLibCheck: true,
-      strict: true,
-      target: ts.ScriptTarget.ES2023,
-      types: ["node"],
-    };
+    const tsconfigPath = path.resolve(scratchDirectory, "tsconfig.json");
+    const tsconfigContent = JSON.stringify({
+      compilerOptions: {
+        emitDecoratorMetadata: true,
+        experimentalDecorators: true,
+        ignoreDeprecations: "6.0",
+        lib: ["ES2023", "DOM"],
+        module: "ESNext",
+        moduleResolution: "bundler",
+        noEmit: true,
+        skipLibCheck: true,
+        strict: true,
+        target: "ES2023",
+        types: ["node"],
+      },
+      include: ["consumer.ts"],
+    });
+    writeFileSync(tsconfigPath, tsconfigContent, "utf8");
 
-    const program = ts.createProgram([consumerPath], compilerOptions);
-    const diagnostics = ts.getPreEmitDiagnostics(program);
-
-    const errors = diagnostics.filter(
-      (diagnostic) => diagnostic.category === ts.DiagnosticCategory.Error,
+    execFileSync(
+      process.execPath,
+      [typescriptCompilerBinary, "--noEmit", "-p", tsconfigPath],
+      {
+        cwd: scratchDirectory,
+        stdio: "pipe",
+      },
     );
-
-    if (errors.length > 0) {
-      const messages = errors
-        .map((diagnostic) =>
-          ts.flattenDiagnosticMessageText(diagnostic.messageText, "\n"),
-        )
-        .join("\n");
-      throw new Error(
-        `TypeScript diagnostics failed for ${packageName} from tarball:\n${messages}`,
-      );
-    }
   } finally {
     rmSync(scratchDirectory, { force: true, recursive: true });
   }

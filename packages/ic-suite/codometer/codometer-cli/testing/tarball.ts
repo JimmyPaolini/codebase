@@ -31,9 +31,9 @@ const typescriptCompilerBinary = path.resolve(
 export interface AssertTarballOptions {
   /** Optional custom consumer source code to typecheck against the package. */
   readonly consumerSource?: string;
-  /** The npm package name, e.g. `@conformetry/output`. */
+  /** The npm package name, e.g. `@codometer/cli`. */
   readonly packageName: string;
-  /** The tarball base name without version or extension, e.g. `conformetry-output`. */
+  /** The tarball base name without version or extension, e.g. `codometer-cli`. */
   readonly tarballName: string;
 }
 
