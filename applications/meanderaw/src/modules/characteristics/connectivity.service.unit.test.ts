@@ -111,5 +111,17 @@ describe(ConnectivityService, () => {
       expect(service.joinsEast([], 0, 0)).toBe(false);
       expect(service.joinsEast([[]], 0, 0)).toBe(false);
     });
+
+    it("handles edges at matrix boundaries", () => {
+      const matrix = matrixService.fromCode(codeService.parse("48", 2, 1));
+      const edges = service.edges(matrix, false);
+
+      expect(Array.isArray(edges)).toBe(true);
+
+      const matrix3Row = matrixService.fromCode(codeService.parse("4c8", 3, 1));
+      const edges3 = service.edges(matrix3Row, false);
+
+      expect(Array.isArray(edges3)).toBe(true);
+    });
   });
 });
