@@ -11,11 +11,16 @@ export default [
       "@nx/dependency-checks": [
         "error",
         {
+          // @codebase/logger: inlined into the bundled build output and declared as a devDependency.
           // @golevelup/ts-vitest: a devDependency used only in test files, which
           // are outside the build dependency check's scope.
           // vitest: referenced via tsconfig "types" array; it's a devDependency and
           // the @nx/dependency-checks rule misidentifies it as a production dependency.
-          ignoredDependencies: ["@golevelup/ts-vitest", "vitest"],
+          ignoredDependencies: [
+            "@codebase/logger",
+            "@golevelup/ts-vitest",
+            "vitest",
+          ],
           ignoredFiles: ["{projectRoot}/eslint.config.{js,cjs,mjs,ts,cts,mts}"],
         },
       ],
