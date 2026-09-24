@@ -121,13 +121,31 @@ describe(DrawRecordService, () => {
 
     it("records family and specific characteristics where a Code's structure earns them", () => {
       const record = service.record(
-        "2569a1",
+        "2335635cc29ca339",
+        { columns: 4, rows: 4 },
+        "hardcoded",
+      );
+
+      expect(record.family).toBe("whirl");
+      expect(record.characteristics).toContain("isJunctionFree");
+
+      const waterfallRecord = service.record(
+        "255aa1",
         { columns: 2, rows: 3 },
         "hardcoded",
       );
 
-      expect(record.family).toBe("boxes");
-      expect(record.characteristics).toContain("isJunctionFree");
+      expect(waterfallRecord.family).toBe("waterfalls");
+      expect(waterfallRecord.characteristics).toContain("isJunctionFree");
+
+      const wideWaterfallRecord = service.record(
+        "23531a",
+        { columns: 3, rows: 2 },
+        "hardcoded",
+      );
+
+      expect(wideWaterfallRecord.family).toBe("waterfalls");
+      expect(wideWaterfallRecord.characteristics).toContain("isJunctionFree");
     });
 
     it("records the provenance it was given rather than deriving one, since where a Code came from is no property of the Code", () => {
