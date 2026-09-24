@@ -19,6 +19,7 @@
     "yaml": "catalog:",
     "zod": "catalog:"
   },
+  "description": "Language parsers and comment analyzers across TypeScript, JSON, Markdown, Python, and SQL for Codometer",
   "devDependencies": {
     "@codebase/logger": "workspace:*",
     "@golevelup/ts-vitest": "catalog:",
@@ -40,6 +41,14 @@
     "README.md"
   ],
   "homepage": "https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/codometer/codometer-languages#readme",
+  "keywords": [
+    "ast",
+    "code-metrics",
+    "codometer",
+    "comment-analysis",
+    "languages",
+    "parsers"
+  ],
   "license": "MIT",
   "main": "src/index.ts",
   "name": "@codometer/languages",

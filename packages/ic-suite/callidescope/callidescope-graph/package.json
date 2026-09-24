@@ -11,6 +11,7 @@
     "pino-pretty": "catalog:",
     "reflect-metadata": "catalog:"
   },
+  "description": "TypeScript AST call-graph builder and call-stack depth and breadth traversal engine for Callidescope",
   "devDependencies": {
     "@codebase/logger": "workspace:*",
     "@golevelup/ts-vitest": "catalog:",
@@ -32,6 +33,14 @@
     "README.md"
   ],
   "homepage": "https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/callidescope/callidescope-graph#readme",
+  "keywords": [
+    "ast",
+    "call-graph",
+    "callidescope",
+    "graph-builder",
+    "traversal",
+    "typescript"
+  ],
   "license": "MIT",
   "main": "src/index.ts",
   "name": "@callidescope/graph",

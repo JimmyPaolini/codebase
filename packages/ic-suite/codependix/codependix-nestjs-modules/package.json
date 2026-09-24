@@ -12,6 +12,7 @@
     "pino-pretty": "catalog:",
     "reflect-metadata": "catalog:"
   },
+  "description": "NestJS module container inspection and module-level dependency graph extraction for Codependix",
   "devDependencies": {
     "@codebase/logger": "workspace:*",
     "@golevelup/ts-vitest": "catalog:",
@@ -32,6 +33,13 @@
     "README.md"
   ],
   "homepage": "https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/codependix/codependix-nestjs-modules#readme",
+  "keywords": [
+    "architecture",
+    "codependix",
+    "dependency-injection",
+    "module-graph",
+    "nestjs"
+  ],
   "license": "MIT",
   "main": "src/index.ts",
   "name": "@codependix/nestjs-modules",

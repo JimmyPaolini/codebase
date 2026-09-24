@@ -14,6 +14,7 @@
     "reflect-metadata": "catalog:",
     "zod": "catalog:"
   },
+  "description": "Configuration reader, schema validation, and template discovery for Conformetry",
   "devDependencies": {
     "@golevelup/ts-vitest": "catalog:",
     "@nestjs/testing": "catalog:",
@@ -36,6 +37,14 @@
     "README.md"
   ],
   "homepage": "https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/conformetry/conformetry-configuration#readme",
+  "keywords": [
+    "configuration",
+    "conformetry",
+    "discovery",
+    "schema",
+    "templates",
+    "zod"
+  ],
   "license": "MIT",
   "main": "src/index.ts",
   "name": "@conformetry/configuration",

@@ -8,6 +8,7 @@
     "@nx/devkit": "catalog:",
     "reflect-metadata": "catalog:"
   },
+  "description": "Nx workspace project graph extractor and neighborhood relationship builder for Codependix",
   "devDependencies": {
     "@golevelup/ts-vitest": "catalog:",
     "@nestjs/testing": "catalog:",
@@ -28,6 +29,13 @@
     "README.md"
   ],
   "homepage": "https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/codependix/codependix-nx-projects#readme",
+  "keywords": [
+    "codependix",
+    "monorepo",
+    "neighborhood-graph",
+    "nx",
+    "project-graph"
+  ],
   "license": "MIT",
   "main": "src/index.ts",
   "name": "@codependix/nx-projects",

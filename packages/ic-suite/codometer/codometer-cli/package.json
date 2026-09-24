@@ -20,6 +20,7 @@
     "reflect-metadata": "catalog:",
     "zod": "catalog:"
   },
+  "description": "Command-line tool for measuring repository size, counts, and comments against configured limits",
   "devDependencies": {
     "@codebase/logger": "workspace:*",
     "@golevelup/ts-vitest": "catalog:",
@@ -43,6 +44,14 @@
     "README.md"
   ],
   "homepage": "https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/codometer/codometer-cli#readme",
+  "keywords": [
+    "budgets",
+    "cli",
+    "code-metrics",
+    "codometer",
+    "limits",
+    "measurement"
+  ],
   "license": "MIT",
   "main": "src/index.ts",
   "name": "@codometer/cli",

@@ -7,6 +7,7 @@
     "@nestjs/common": "catalog:",
     "reflect-metadata": "catalog:"
   },
+  "description": "Domain vocabulary, call-graph representations, and limit contracts for the Callidescope toolchain",
   "devDependencies": {
     "@golevelup/ts-vitest": "catalog:",
     "@nestjs/testing": "catalog:",
@@ -26,6 +27,14 @@
     "README.md"
   ],
   "homepage": "https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/callidescope/callidescope-core#readme",
+  "keywords": [
+    "call-graph",
+    "call-stack",
+    "callidescope",
+    "contracts",
+    "depth-analysis",
+    "types"
+  ],
   "license": "MIT",
   "main": "src/index.ts",
   "name": "@callidescope/core",

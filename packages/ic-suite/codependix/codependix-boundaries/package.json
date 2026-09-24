@@ -12,6 +12,7 @@
     "@nestjs/common": "catalog:",
     "reflect-metadata": "catalog:"
   },
+  "description": "Boundary rule validation, forbid/allow rule enforcement, and cycle detection for Codependix graphs",
   "devDependencies": {
     "@golevelup/ts-vitest": "catalog:",
     "@nestjs/testing": "catalog:",
@@ -32,6 +33,13 @@
     "README.md"
   ],
   "homepage": "https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/codependix/codependix-boundaries#readme",
+  "keywords": [
+    "boundaries",
+    "codependix",
+    "cycle-detection",
+    "linting",
+    "rule-enforcement"
+  ],
   "license": "MIT",
   "main": "src/index.ts",
   "name": "@codependix/boundaries",

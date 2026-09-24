@@ -20,6 +20,7 @@
     "reflect-metadata": "catalog:",
     "zod": "catalog:"
   },
+  "description": "Command-line toolchain for scaffolding code from templates and holding implementations to them",
   "devDependencies": {
     "@codebase/logger": "workspace:*",
     "@conformetry/core": "workspace:*",
@@ -44,6 +45,14 @@
     "README.md"
   ],
   "homepage": "https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/conformetry/conformetry-cli#readme",
+  "keywords": [
+    "cli",
+    "code-generator",
+    "conformance",
+    "conformetry",
+    "nest-commander",
+    "scaffolding"
+  ],
   "license": "MIT",
   "main": "src/index.ts",
   "name": "@conformetry/cli",

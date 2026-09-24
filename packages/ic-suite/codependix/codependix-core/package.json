@@ -7,6 +7,7 @@
     "@nestjs/common": "catalog:",
     "reflect-metadata": "catalog:"
   },
+  "description": "Graph models, boundary rule definitions, and traversal contracts for the Codependix toolchain",
   "devDependencies": {
     "@golevelup/ts-vitest": "catalog:",
     "@nestjs/testing": "catalog:",
@@ -26,6 +27,14 @@
     "README.md"
   ],
   "homepage": "https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/codependix/codependix-core#readme",
+  "keywords": [
+    "architecture",
+    "boundaries",
+    "codependix",
+    "contracts",
+    "dependency-graph",
+    "types"
+  ],
   "license": "MIT",
   "main": "src/index.ts",
   "name": "@codependix/core",

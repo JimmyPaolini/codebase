@@ -13,6 +13,7 @@
     "reflect-metadata": "catalog:",
     "zod": "catalog:"
   },
+  "description": "Markdown badge rendering and JSON report formatting for Codometer measurements",
   "devDependencies": {
     "@codebase/logger": "workspace:*",
     "@golevelup/ts-vitest": "catalog:",
@@ -33,6 +34,13 @@
     "README.md"
   ],
   "homepage": "https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/codometer/codometer-output#readme",
+  "keywords": [
+    "codometer",
+    "json-report",
+    "markdown-badges",
+    "output",
+    "reporting"
+  ],
   "license": "MIT",
   "main": "src/index.ts",
   "name": "@codometer/output",

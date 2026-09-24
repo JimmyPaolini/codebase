@@ -12,6 +12,7 @@
     "pino-pretty": "catalog:",
     "reflect-metadata": "catalog:"
   },
+  "description": "Mermaid diagram generation, Markdown reports, and JSON export for Callidescope call graphs",
   "devDependencies": {
     "@codebase/logger": "workspace:*",
     "@golevelup/ts-vitest": "catalog:",
@@ -32,6 +33,13 @@
     "README.md"
   ],
   "homepage": "https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/callidescope/callidescope-output#readme",
+  "keywords": [
+    "call-graph-visualization",
+    "callidescope",
+    "markdown",
+    "mermaid",
+    "output"
+  ],
   "license": "MIT",
   "main": "src/index.ts",
   "name": "@callidescope/output",

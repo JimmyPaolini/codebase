@@ -20,6 +20,7 @@
     "reflect-metadata": "catalog:",
     "zod": "catalog:"
   },
+  "description": "Command-line tool for tracing call stacks across TypeScript monorepos and gating call depth",
   "devDependencies": {
     "@codebase/logger": "workspace:*",
     "@golevelup/ts-vitest": "catalog:",
@@ -43,6 +44,14 @@
     "README.md"
   ],
   "homepage": "https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/callidescope/callidescope-cli#readme",
+  "keywords": [
+    "call-graph",
+    "call-stack",
+    "callidescope",
+    "cli",
+    "depth-gate",
+    "typescript"
+  ],
   "license": "MIT",
   "main": "src/index.ts",
   "name": "@callidescope/cli",

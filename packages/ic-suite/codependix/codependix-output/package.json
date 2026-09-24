@@ -15,6 +15,7 @@
     "pino-pretty": "catalog:",
     "reflect-metadata": "catalog:"
   },
+  "description": "Mermaid diagram rendering, Markdown anchor splicing, and JSON export for Codependix dependency graphs",
   "devDependencies": {
     "@codebase/logger": "workspace:*",
     "@golevelup/ts-vitest": "catalog:",
@@ -36,6 +37,13 @@
     "README.md"
   ],
   "homepage": "https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/codependix/codependix-output#readme",
+  "keywords": [
+    "codependix",
+    "dependency-visualization",
+    "markdown-anchors",
+    "mermaid",
+    "output"
+  ],
   "license": "MIT",
   "main": "src/index.ts",
   "name": "@codependix/output",

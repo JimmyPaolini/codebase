@@ -10,6 +10,7 @@
     "@nestjs/common": "catalog:",
     "reflect-metadata": "catalog:"
   },
+  "description": "Template matching, existence verification, and conformance validation orchestrator for Conformetry",
   "devDependencies": {
     "@golevelup/ts-vitest": "catalog:",
     "@nestjs/testing": "catalog:",
@@ -30,6 +31,13 @@
     "README.md"
   ],
   "homepage": "https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/conformetry/conformetry-validation#readme",
+  "keywords": [
+    "conformance",
+    "conformetry",
+    "matching",
+    "orchestration",
+    "validation"
+  ],
   "license": "MIT",
   "main": "src/index.ts",
   "name": "@conformetry/validation",

@@ -12,6 +12,7 @@
     "reflect-metadata": "catalog:",
     "zod": "catalog:"
   },
+  "description": "Configuration loader, entry point resolution, and depth limit definitions for Callidescope",
   "devDependencies": {
     "@golevelup/ts-vitest": "catalog:",
     "@nestjs/testing": "catalog:",
@@ -33,6 +34,13 @@
     "README.md"
   ],
   "homepage": "https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/callidescope/callidescope-configuration#readme",
+  "keywords": [
+    "breadth-limits",
+    "callidescope",
+    "configuration",
+    "depth-limits",
+    "entry-points"
+  ],
   "license": "MIT",
   "main": "src/index.ts",
   "name": "@callidescope/configuration",

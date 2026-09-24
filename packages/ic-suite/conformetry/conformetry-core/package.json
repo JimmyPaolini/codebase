@@ -7,6 +7,7 @@
     "@nestjs/common": "catalog:",
     "reflect-metadata": "catalog:"
   },
+  "description": "Core types and structured contracts for the Conformetry code generation and conformance toolchain",
   "devDependencies": {
     "@golevelup/ts-vitest": "catalog:",
     "@nestjs/testing": "catalog:",
@@ -26,6 +27,14 @@
     "README.md"
   ],
   "homepage": "https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/conformetry/conformetry-core#readme",
+  "keywords": [
+    "code-generation",
+    "conformance",
+    "conformetry",
+    "contracts",
+    "templates",
+    "types"
+  ],
   "license": "MIT",
   "main": "src/index.ts",
   "name": "@conformetry/core",

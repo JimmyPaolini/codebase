@@ -11,6 +11,7 @@
     "reflect-metadata": "catalog:",
     "zod": "catalog:"
   },
+  "description": "Configuration loader, limit definitions, and counter resolution for Codometer",
   "devDependencies": {
     "@golevelup/ts-vitest": "catalog:",
     "@nestjs/testing": "catalog:",
@@ -31,6 +32,13 @@
     "README.md"
   ],
   "homepage": "https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/codometer/codometer-configuration#readme",
+  "keywords": [
+    "codometer",
+    "configuration",
+    "counters",
+    "limits",
+    "thresholds"
+  ],
   "license": "MIT",
   "main": "src/index.ts",
   "name": "@codometer/configuration",

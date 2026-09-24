@@ -20,6 +20,7 @@
     "reflect-metadata": "catalog:",
     "zod": "catalog:"
   },
+  "description": "Command-line tool for exporting and validating Nx, NestJS, and file-level dependency graphs and boundaries",
   "devDependencies": {
     "@codebase/logger": "workspace:*",
     "@golevelup/ts-vitest": "catalog:",
@@ -43,6 +44,14 @@
     "README.md"
   ],
   "homepage": "https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/codependix/codependix-cli#readme",
+  "keywords": [
+    "architecture-linter",
+    "boundaries",
+    "cli",
+    "codependix",
+    "dependency-graph",
+    "mermaid"
+  ],
   "license": "MIT",
   "main": "src/index.ts",
   "name": "@codependix/cli",

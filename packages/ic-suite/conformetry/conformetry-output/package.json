@@ -9,6 +9,7 @@
     "@nestjs/common": "catalog:",
     "reflect-metadata": "catalog:"
   },
+  "description": "Console rendering, JSON reporting, and formatting for Conformetry conformance results",
   "devDependencies": {
     "@golevelup/ts-vitest": "catalog:",
     "@nestjs/testing": "catalog:",
@@ -28,6 +29,13 @@
     "README.md"
   ],
   "homepage": "https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/conformetry/conformetry-output#readme",
+  "keywords": [
+    "cli-reporter",
+    "conformetry",
+    "formatting",
+    "output",
+    "reporting"
+  ],
   "license": "MIT",
   "main": "src/index.ts",
   "name": "@conformetry/output",

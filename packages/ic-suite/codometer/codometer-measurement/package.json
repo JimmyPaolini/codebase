@@ -13,6 +13,7 @@
     "pino-pretty": "catalog:",
     "reflect-metadata": "catalog:"
   },
+  "description": "File discovery, size calculation, and custom metric evaluation engine for Codometer",
   "devDependencies": {
     "@codebase/logger": "workspace:*",
     "@golevelup/ts-vitest": "catalog:",
@@ -33,6 +34,13 @@
     "README.md"
   ],
   "homepage": "https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/codometer/codometer-measurement#readme",
+  "keywords": [
+    "codometer",
+    "compression",
+    "file-size",
+    "measurement",
+    "metrics-engine"
+  ],
   "license": "MIT",
   "main": "src/index.ts",
   "name": "@codometer/measurement",
