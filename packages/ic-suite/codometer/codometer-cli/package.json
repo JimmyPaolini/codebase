@@ -43,6 +43,9 @@
   "private": true,
   "publishConfig": {
     "access": "public",
+    "bin": {
+      "codometer": "./dist/src/main.js"
+    },
     "exports": {
       ".": {
         "types": "./dist/src/index.d.ts",
