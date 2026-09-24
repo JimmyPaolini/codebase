@@ -147,6 +147,11 @@
     // Both manifests declaring it also carve it out of `@nx/dependency-checks`
     // in their own eslint.config.ts, for this same reason.
     "pg",
+    // Runtime dependency of the inlined logger utility, not directly imported in package source.
+    "pino",
+    // Pretty-printing transport for pino in development mode, reached only
+    // through a runtime string in LoggerService so invisible to static analysis.
+    "pino-pretty",
     // Invoked by the squawk target rather than imported.
     "squawk-cli",
     // Runtime dependency of the inlined @codebase/logger utility.

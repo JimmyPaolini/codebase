@@ -4,6 +4,8 @@
     "@codometer/core": "workspace:*",
     "@codometer/measurement": "workspace:*",
     "@nestjs/common": "catalog:",
+    "pino": "catalog:",
+    "pino-pretty": "catalog:",
     "reflect-metadata": "catalog:",
     "zod": "catalog:"
   },

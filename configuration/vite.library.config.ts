@@ -87,6 +87,13 @@ export function createViteLibraryConfig(
           if (id.startsWith(".") || id.startsWith("/") || path.isAbsolute(id)) {
             return false;
           }
+          if (
+            id.startsWith("@oxc-project/runtime") ||
+            id.startsWith("@swc/helpers") ||
+            id.startsWith("tslib")
+          ) {
+            return false;
+          }
           for (const inlinedPackage of inlinedPackages) {
             if (id === inlinedPackage || id.startsWith(`${inlinedPackage}/`)) {
               return false;

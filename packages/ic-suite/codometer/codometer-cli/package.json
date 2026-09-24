@@ -11,6 +11,8 @@
     "@nestjs/config": "catalog:",
     "@nestjs/core": "catalog:",
     "nest-commander": "catalog:",
+    "pino": "catalog:",
+    "pino-pretty": "catalog:",
     "reflect-metadata": "catalog:",
     "zod": "catalog:"
   },

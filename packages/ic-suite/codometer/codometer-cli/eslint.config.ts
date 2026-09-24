@@ -17,12 +17,17 @@ export default [
           // are outside the build dependency check's scope.
           // mdast: the markdown analyzer imports mdast's node types, which ship
           // in @types/mdast; the runtime package itself is never loaded.
+          // pino: runtime dependency of the inlined logger utility.
+          // pino-pretty: pretty-printing transport reached only through a runtime
+          // string in LoggerService, so invisible to static analysis.
           // vitest: referenced via tsconfig "types" array; it's a devDependency and
           // the @nx/dependency-checks rule misidentifies it as a production dependency.
           ignoredDependencies: [
             "@codebase/logger",
             "@golevelup/ts-vitest",
             "mdast",
+            "pino",
+            "pino-pretty",
             "vitest",
           ],
           ignoredFiles: ["{projectRoot}/eslint.config.{js,cjs,mjs,ts,cts,mts}"],
