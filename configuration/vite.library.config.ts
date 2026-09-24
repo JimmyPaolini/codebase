@@ -53,7 +53,11 @@ export function createViteLibraryConfig(
     tsconfigPath = path.resolve(packageDirectory, "tsconfig.build.json"),
   } = options;
 
-  const inlinedPackages = new Set(["@codebase/logger", ...bundledPackages]);
+  const inlinedPackages = new Set([
+    "@codebase/logger",
+    "@oxc-project/runtime",
+    ...bundledPackages,
+  ]);
 
   const resolvedEntry =
     typeof entry === "string"

@@ -4,6 +4,8 @@
     "@nestjs/config": "catalog:",
     "@nestjs/core": "catalog:",
     "nestjs-spelunker": "catalog:",
+    "pino": "catalog:",
+    "pino-pretty": "catalog:",
     "reflect-metadata": "catalog:"
   },
   "devDependencies": {
