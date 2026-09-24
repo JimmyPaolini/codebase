@@ -4,6 +4,8 @@ import path from "node:path";
 
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
+import { assertTarballTypechecks } from "../testing/tarball";
+
 import { environmentSchema } from "./constants";
 
 const COMMAND_PATH = path.resolve(import.meta.dirname, "main.ts");
@@ -95,6 +97,18 @@ describe("main end-to-end suite", () => {
       expect.hasAssertions();
 
       expect(standardError).toContain("ReportingService");
+    });
+  });
+
+  describe("codependix-cli tarball assertion", () => {
+    it("installs from its tarball and typechecks under modern module resolution", () => {
+      expect.hasAssertions();
+      expect(() => {
+        assertTarballTypechecks({
+          packageName: "@codependix/cli",
+          tarballName: "codependix-cli",
+        });
+      }).not.toThrow();
     });
   });
 });
