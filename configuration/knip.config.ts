@@ -80,6 +80,8 @@ const config: KnipConfig = {
     "typescript-7",
     "squawk-cli", // SQL linter CLI, invoked via nx:run-commands in project.json
     "pino-pretty", // Used by NX daemon and plugins
+    // Dynamically loaded by vite-plugin-dts / unplugin-dts for declaration bundling via API Extractor
+    "@microsoft/api-extractor",
   ],
 
   // Allow exports that are only used in the same file (common for barrel re-exports)
@@ -105,6 +107,7 @@ const config: KnipConfig = {
         "configuration/prettier.config.ts",
         "configuration/stylelint.config.cjs",
         "configuration/syncpack.config.cjs",
+        "configuration/vite.library.config.ts",
         // Read by codometer's nearest-ancestor search rather than imported;
         // it re-exports configuration/codometer.config.ts from the workspace
         // root, which is the only place that search can reach.
