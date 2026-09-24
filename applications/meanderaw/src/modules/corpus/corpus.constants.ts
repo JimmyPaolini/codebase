@@ -21,6 +21,7 @@ export const CORPUS_FAMILIES: readonly CorpusFamily[] = [
   "parallel",
   "snake",
   "swirl",
+  "waterfalls",
   "whirl",
 ];
 
