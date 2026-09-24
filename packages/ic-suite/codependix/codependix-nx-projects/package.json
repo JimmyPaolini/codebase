@@ -2,8 +2,7 @@
   "dependencies": {
     "@nestjs/common": "catalog:",
     "@nx/devkit": "catalog:",
-    "reflect-metadata": "catalog:",
-    "tslib": "catalog:"
+    "reflect-metadata": "catalog:"
   },
   "devDependencies": {
     "@golevelup/ts-vitest": "catalog:",
