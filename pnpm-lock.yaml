@@ -2879,9 +2879,6 @@ importers:
       '@nx/devkit':
         specifier: 'catalog:'
         version: 23.1.0(nx@23.2.1(@swc-node/register@1.12.1(@swc/core@1.16.2(@swc/helpers@0.5.23))(@swc/types@0.1.28)(supports-color@10.2.2)(typescript@6.0.3))(@swc/core@1.16.2(@swc/helpers@0.5.23)))
-      '@swc-node/register':
-        specifier: 'catalog:'
-        version: 1.12.1(@swc/core@1.16.2(@swc/helpers@0.5.23))(@swc/types@0.1.28)(supports-color@10.2.2)(typescript@6.0.3)
       pino:
         specifier: 'catalog:'
         version: 10.3.1
