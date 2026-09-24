@@ -92,6 +92,7 @@ describe(ClassificationService, () => {
       "boxes",
       "chain",
       "double-chain",
+      "waterfalls",
       "whirl",
       "swirl",
       "clasps",
@@ -140,20 +141,150 @@ describe(ClassificationService, () => {
     });
 
     it("classifies boxes meanders correctly", () => {
-      const rows = 3;
+      const rows = 4;
       const pitch = rows - 1;
       const characteristics = createMockCharacteristics({
         components: 1,
+        crossesTheSeam: true,
         cycles: 0,
+        embeddedUCount: 1,
+        endsAreLatticeNeighbors: false,
+        endsOnBorderRules: true,
         freeEnds: 2,
         inkTJunctions: 0,
         inkXJunctions: 0,
         isSingleArc: true,
+        longestHorizontalRun: 2,
+        longestVerticalRun: 1,
         pitch,
+        reversesAtItsTightestTurn: true,
       });
       const shape: MeanderShape = { columns: pitch, rows };
 
       expect(service.classify(characteristics, shape)).toBe("boxes");
+    });
+
+    it("classifies waterfalls meanders correctly across row sizes and column sizes", () => {
+      for (const rows of [2, 3, 4, 5, 6, 7, 8]) {
+        for (const columns of [2, 3, 4, 5, 6]) {
+          const characteristics = createMockCharacteristics({
+            components: 1,
+            crossesTheSeam: true,
+            cycles: 0,
+            endsAreLatticeNeighbors: false,
+            endsOnBorderRules: true,
+            freeEnds: 2,
+            inkTJunctions: 0,
+            inkXJunctions: 0,
+            isSingleArc: true,
+            longestHorizontalRun: columns - 1,
+            longestVerticalRun: 1,
+            pitch: columns,
+            reversesAtItsTightestTurn: true,
+          });
+          const shape: MeanderShape = { columns, rows };
+
+          expect(service.classify(characteristics, shape)).toBe("waterfalls");
+        }
+      }
+    });
+
+    it("does not classify invalid 3x2 meanders as boxes", () => {
+      // 02x03y52a529: rows === 3 < STRUCTURAL_MINIMUM_ROWS.boxes (4)
+      const spiral3x2 = createMockCharacteristics({
+        components: 1,
+        crossesTheSeam: true,
+        cycles: 0,
+        embeddedUCount: 1,
+        endsAreLatticeNeighbors: false,
+        endsOnBorderRules: true,
+        freeEnds: 2,
+        inkTJunctions: 0,
+        inkXJunctions: 0,
+        isSingleArc: true,
+        longestHorizontalRun: 2,
+        longestVerticalRun: 1,
+        pitch: 2,
+        reversesAtItsTightestTurn: true,
+      });
+
+      expect(service.classify(spiral3x2, { columns: 2, rows: 3 })).not.toBe(
+        "boxes",
+      );
+
+      // 02x03y2569a1: does not cross the seam
+      const noSeam = createMockCharacteristics({
+        components: 1,
+        crossesTheSeam: false,
+        cycles: 0,
+        endsAreLatticeNeighbors: false,
+        endsOnBorderRules: true,
+        freeEnds: 2,
+        inkTJunctions: 0,
+        inkXJunctions: 0,
+        isSingleArc: true,
+        pitch: 2,
+        reversesAtItsTightestTurn: true,
+      });
+
+      expect(service.classify(noSeam, { columns: 2, rows: 3 })).not.toBe(
+        "boxes",
+      );
+
+      // 02x03y44cca9: monotonic turn, ends are lattice neighbors
+      const monotonicNeighbors = createMockCharacteristics({
+        components: 1,
+        crossesTheSeam: false,
+        cycles: 0,
+        endsAreLatticeNeighbors: true,
+        endsOnBorderRules: true,
+        freeEnds: 2,
+        inkTJunctions: 0,
+        inkXJunctions: 0,
+        isSingleArc: true,
+        pitch: 2,
+        turnsMonotonically: true,
+      });
+
+      expect(
+        service.classify(monotonicNeighbors, { columns: 2, rows: 3 }),
+      ).not.toBe("boxes");
+
+      // 02x03y56c8a1: ends are lattice neighbors
+      const seamNeighbors = createMockCharacteristics({
+        components: 1,
+        crossesTheSeam: true,
+        cycles: 0,
+        endsAreLatticeNeighbors: true,
+        freeEnds: 2,
+        inkTJunctions: 0,
+        inkXJunctions: 0,
+        isSingleArc: true,
+        pitch: 2,
+        reversesAtItsTightestTurn: true,
+      });
+
+      expect(service.classify(seamNeighbors, { columns: 2, rows: 3 })).not.toBe(
+        "boxes",
+      );
+
+      // 02x03y65c8a1: ends are lattice neighbors, no seam
+      const noSeamNeighbors = createMockCharacteristics({
+        components: 1,
+        crossesTheSeam: false,
+        cycles: 0,
+        endsAreLatticeNeighbors: true,
+        freeEnds: 2,
+        inkTJunctions: 0,
+        inkXJunctions: 0,
+        isSingleArc: true,
+        pitch: 2,
+        reversesAtItsTightestTurn: true,
+      });
+
+      expect(
+        service.classify(noSeamNeighbors, { columns: 2, rows: 3 }),
+      ).not.toBe("boxes");
     });
 
     it("classifies whirl meanders correctly", () => {
@@ -318,13 +449,14 @@ describe(ClassificationService, () => {
         cycles: 0,
         density: 1,
         dotCount: 0,
+        embeddedUCount: 1,
         endsOnBorderRules: true,
         freeEnds: 2,
         inkTJunctions: 0,
         inkXJunctions: 0,
         isSingleArc: true,
         longestHorizontalRun: 2,
-        longestVerticalRun: 1,
+        longestVerticalRun: 2,
         pitch: 3,
         reversesAtItsTightestTurn: true,
       });
@@ -445,12 +577,16 @@ describe(ClassificationService, () => {
       const pitch = rows - 1;
       const characteristics = createMockCharacteristics({
         components: 1,
+        crossesTheSeam: true,
         cycles: 0,
+        endsAreLatticeNeighbors: false,
         freeEnds: 2,
         inkTJunctions: 0,
         inkXJunctions: 0,
         isSingleArc: true,
+        longestHorizontalRun: 2,
         pitch,
+        reversesAtItsTightestTurn: true,
       });
       const shape: MeanderShape = { columns: pitch, rows };
 

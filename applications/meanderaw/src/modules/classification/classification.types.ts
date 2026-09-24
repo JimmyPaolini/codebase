@@ -16,6 +16,7 @@ export type MeanderFamily =
   | "snake"
   | "swirl"
   | "unclassified"
+  | "waterfalls"
   | "whirl";
 
 /**

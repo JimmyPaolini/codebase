@@ -227,7 +227,7 @@ make together.
 Both anchored destinations render the same report, so a diagram draws exactly
 what the markdown one prints: the run's call stacks over the depth limit. The
 committed example of one is
-[`packages/ic-suite/callidescope/callidescope-examples/output/diagram.md`](../callidescope-examples/output/diagram.md),
+[`packages/ic-suite/callidescope/callidescope-examples/output/diagram.md`](https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/callidescope/callidescope-examples/output/diagram.md),
 where five stacks over that package's limit are drawn as 38 callables and 34
 arrows. This repository publishes no diagram at all — its deepest stack sits
 exactly at the limit, so there is nothing over it to draw, and a `--format
@@ -551,12 +551,23 @@ Anything left with no caller is promoted to an **orphan root**. That is the
 safety net: without it, a missing rule silently removes a whole subtree from
 every measurement instead of showing up.
 
+## Agent skills
+
+Agent skills for coding agents working with callidescope are published in
+[`@callidescope/agents`](https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/callidescope/callidescope-agents):
+
+| Skill | Description |
+| ----- | ----------- |
+| [`callidescope-trace`](https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/callidescope/callidescope-agents/skills/callidescope-trace) | Trace the workspace or inspect depth and breadth for named callables |
+| [`callidescope-configure`](https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/callidescope/callidescope-agents/skills/callidescope-configure) | Configure callidescope flags, rules, and `callidescope.config.ts` |
+| [`callidescope-triage`](https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/callidescope/callidescope-agents/skills/callidescope-triage) | Triage and resolve depth limit breaches and gate failures |
+
 ## Examples
 
 Every rule, finding, and output on this page has a worked example in
-[`@callidescope/examples`](../callidescope-examples/README.md) — a small
+[`@callidescope/examples`](https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/callidescope/callidescope-examples) — a small
 codebase written to be traced, with its rendered reports committed. Its
-[`AGENTS.md`](../callidescope-examples/AGENTS.md) is a "callidescope reported X
+[`AGENTS.md`](https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/callidescope/callidescope-examples/AGENTS.md) is a "callidescope reported X
 → open this example" table, so a failing `gate` has somewhere to go.
 
 ## Non-goals

@@ -1,6 +1,6 @@
 ---
 name: codometer-measure
-description: Run a codometer measurement, decide where its report goes, or read a badge block or JSON report it produced. Use when running codometer or npx codometer, choosing --output-json/--output-markdown and --check flags, wiring codometer into a CI step, splicing a badge block into a README, or reading a codometer JSON report's metrics, limits, or failures. Covers the command-line host directly, without assuming any task runner.
+description: Run a codometer measurement, decide where its report goes, or read a badge block or JSON report it produced. Use when running codometer or npx @codometer/cli, choosing --output-json/--output-markdown and --check flags, wiring codometer into a CI step, splicing a badge block into a README, or reading a codometer JSON report's metrics, limits, or failures. Covers the command-line host directly, without assuming any task runner.
 license: MIT
 ---
 
@@ -78,7 +78,7 @@ breach exits `1`, and only where `--check limits` asked for a gate at all. For
 what to do about either, reach for the `codometer-triage` skill.
 
 ```yaml
-- run: npx codometer --check limits,reports
+- run: npx @codometer/cli --check limits,reports
 ```
 
 ## Reading a report

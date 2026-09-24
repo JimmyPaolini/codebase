@@ -10,6 +10,7 @@ import { HISTORICAL_CORPUS_7 } from "./historical-corpus-7.constants";
 import { HISTORICAL_CORPUS_8 } from "./historical-corpus-8.constants";
 import { HISTORICAL_CORPUS_9 } from "./historical-corpus-9.constants";
 import { HISTORICAL_CORPUS_10 } from "./historical-corpus-10.constants";
+import { HISTORICAL_CORPUS_11 } from "./historical-corpus-11.constants";
 
 import type { CorpusEntry } from "./corpus.types";
 
@@ -49,4 +50,5 @@ export const HISTORICAL_CORPUS: readonly CorpusEntry[] = [
   ...HISTORICAL_CORPUS_8,
   ...HISTORICAL_CORPUS_9,
   ...HISTORICAL_CORPUS_10,
+  ...HISTORICAL_CORPUS_11,
 ];

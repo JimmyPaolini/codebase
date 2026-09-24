@@ -1,7 +1,9 @@
 # 👔 Conformetry Nx
 
-The Nx host for [Conformetry](../conformetry-cli/README.md). It adds two things
-the standalone CLI cannot offer: generators addressed by name through `nx g`,
+The Nx host for [Conformetry](https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/conformetry/conformetry-cli#readme).
+Canonical documentation for command behavior, configuration, template syntax, scoring, and validators is in the
+[@conformetry/cli README](https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/conformetry/conformetry-cli#readme).
+This package adds two things the standalone CLI cannot offer: generators addressed by name through `nx g`,
 and a cached validation target inferred onto every project that holds
 instances.
 

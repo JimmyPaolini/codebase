@@ -13,7 +13,7 @@ import type {
 /**
  * Decides which single family a meander belongs to from its measured
  * Characteristics and shape, applying strict hierarchical precedence:
- * `parallel` -\> `cross` -\> `branch` -\> `boxes` -\> `chain` -\> `double-chain` -\> `whirl` -\> `swirl` -\> `clasps` -\> `snake` -\> `unclassified`.
+ * `parallel` -\> `cross` -\> `branch` -\> `boxes` -\> `chain` -\> `double-chain` -\> `waterfalls` -\> `whirl` -\> `swirl` -\> `clasps` -\> `snake` -\> `unclassified`.
  */
 @Injectable()
 export class ClassificationService {
@@ -208,6 +208,24 @@ export class ClassificationService {
     return isSingleSwirl || isDoubleSwirl;
   }
 
+  /** Whether a repeat's ink is a downward zig-zagging waterfall across the seam with no isolated dots. */
+  private isWaterfalls(structure: MeanderStructure): boolean {
+    const { characteristics } = structure;
+
+    return (
+      this.isJunctionFree(structure) &&
+      characteristics.dotCount === 0 &&
+      characteristics.cycles === 0 &&
+      characteristics.freeEnds === 2 * characteristics.components &&
+      characteristics.crossesTheSeam &&
+      characteristics.endsOnBorderRules &&
+      !characteristics.endsAreLatticeNeighbors &&
+      characteristics.embeddedUCount === 0 &&
+      characteristics.longestVerticalRun === 1 &&
+      this.reachesMinimumRows(structure, "waterfalls")
+    );
+  }
+
   /** Whether a repeat's ink matches the single- or double-strand whirl structure. */
   private isWhirl(structure: MeanderStructure): boolean {
     const {
@@ -216,7 +234,6 @@ export class ClassificationService {
       cycles,
       density,
       dotCount,
-      endsOnBorderRules,
       freeEnds,
       longestHorizontalRun,
       longestVerticalRun,
@@ -239,14 +256,14 @@ export class ClassificationService {
     const isSingleWhirl =
       components === 1 &&
       freeEnds === 2 &&
-      endsOnBorderRules &&
-      pitch === structure.rows + 1;
+      ((pitch === structure.rows && structure.rows >= 4) ||
+        pitch === structure.rows + 1);
 
     const isDoubleWhirl =
       components === 2 &&
       freeEnds === 4 &&
-      !endsOnBorderRules &&
-      pitch === 2 * structure.rows + 2;
+      ((pitch === 2 * structure.rows && structure.rows >= 4) ||
+        pitch === 2 * structure.rows + 2);
 
     return isSingleWhirl || isDoubleWhirl;
   }
@@ -310,6 +327,9 @@ export class ClassificationService {
         matches: (structure) =>
           this.isArc(structure) &&
           structure.characteristics.pitch === structure.rows - 1 &&
+          structure.characteristics.crossesTheSeam &&
+          !structure.characteristics.endsAreLatticeNeighbors &&
+          !this.isWaterfalls(structure) &&
           this.reachesMinimumRows(structure, "boxes"),
         name: "boxes",
       },
@@ -320,6 +340,10 @@ export class ClassificationService {
       {
         matches: (structure) => this.isDoubleChain(structure),
         name: "double-chain",
+      },
+      {
+        matches: (structure) => this.isWaterfalls(structure),
+        name: "waterfalls",
       },
       {
         matches: (structure) => this.isWhirl(structure),

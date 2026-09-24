@@ -47,7 +47,8 @@ export const FAMILY_SORT_KEYS: Record<string, number> = {
   parallel: 7,
   snake: 8,
   swirl: 9,
-  whirl: 10,
+  waterfalls: 10,
+  whirl: 11,
 };
 
 /**
