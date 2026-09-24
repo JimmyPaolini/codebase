@@ -13,19 +13,11 @@
   ],
   "targets": {
     "build": {
-      "executor": "@nx/js:tsc",
+      "executor": "@nx/vite:build",
       "options": {
-        "assets": [
-          {
-            "glob": "README.md",
-            "input": "packages/ic-suite/codependix/codependix-file-imports",
-            "output": "."
-          }
-        ],
+        "configFile": "packages/ic-suite/codependix/codependix-file-imports/vite.config.ts",
         "generatePackageJson": false,
-        "main": "packages/ic-suite/codependix/codependix-file-imports/src/index.ts",
-        "outputPath": "packages/ic-suite/codependix/codependix-file-imports/dist",
-        "tsConfig": "packages/ic-suite/codependix/codependix-file-imports/tsconfig.build.json"
+        "outputPath": "packages/ic-suite/codependix/codependix-file-imports/dist"
       },
       "outputs": ["{options.outputPath}"]
     },

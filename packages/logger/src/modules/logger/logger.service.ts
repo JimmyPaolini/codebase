@@ -137,7 +137,8 @@ export class LoggerService extends ConsoleLogger {
       return;
     }
 
-    const { emoji, text } = args.parsed;
+    const emoji = args.parsed.emoji;
+    const text = args.parsed.text;
 
     if (emoji === undefined) {
       throw new Error(

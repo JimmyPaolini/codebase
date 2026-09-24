@@ -8,8 +8,7 @@
     "@codependix/nestjs-modules": "workspace:*",
     "@codependix/nx-projects": "workspace:*",
     "@nestjs/common": "catalog:",
-    "reflect-metadata": "catalog:",
-    "tslib": "catalog:"
+    "reflect-metadata": "catalog:"
   },
   "devDependencies": {
     "@golevelup/ts-vitest": "catalog:",
