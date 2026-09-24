@@ -1,8 +1,4 @@
-import {
-  forwardRef as forwardReference,
-  Inject,
-  Injectable,
-} from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 
 import { CodeService } from "../code/code.service";
 
@@ -11,7 +7,6 @@ import { CharacteristicsPathService } from "./characteristics-path.service";
 import { CharacteristicsShapeService } from "./characteristics-shape.service";
 import { ConnectivityService } from "./connectivity.service";
 
-import type { CodeService as ICodeService } from "../code/code.service";
 import type { CodeObject } from "../code/code.types";
 import type { Directions } from "../tile/tile.types";
 import type {
@@ -62,8 +57,8 @@ export class CharacteristicsService {
   // 🏗 Dependency Injection
 
   constructor(
-    @Inject(forwardReference(() => CodeService))
-    private readonly codeService: ICodeService,
+    @Inject(CodeService)
+    private readonly codeService: CodeService,
     @Inject(CharacteristicsFamilyService)
     private readonly familyService: CharacteristicsFamilyService,
     @Inject(ConnectivityService)
@@ -83,19 +78,19 @@ export class CharacteristicsService {
   /** Internal helper method. */
   /** Checks if two free ends are adjacent on the lattice (wrapping considered). */
   private checkEndsAreLatticeNeighbors(
-    freeEnds: { column: number; level: number }[],
+    freeEnds: { column: number; row: number }[],
     columns: number,
   ): boolean {
     if (freeEnds.length !== 2) return false;
     const first = freeEnds[0];
     const second = freeEnds[1];
     if (!first || !second) return false;
-    const { column: c1, level: l1 } = first;
-    const { column: c2, level: l2 } = second;
+    const { column: c1, row: r1 } = first;
+    const { column: c2, row: r2 } = second;
     const columnDiff = Math.abs(c1 - c2);
     const minimumColumnDiff = Math.min(columnDiff, columns - columnDiff);
-    const levelDiff = Math.abs(l1 - l2);
-    return minimumColumnDiff + levelDiff === 1;
+    const rowDiff = Math.abs(r1 - r2);
+    return minimumColumnDiff + rowDiff === 1;
   }
 
   /** Internal helper method. */
@@ -120,76 +115,74 @@ export class CharacteristicsService {
 
   /** Internal helper method. */
   /** Finds nodes with exactly one connecting edge. */
-  private findFreeEnds(edges: CodeEdge[]): { column: number; level: number }[] {
+  private findFreeEnds(edges: CodeEdge[]): { column: number; row: number }[] {
     const degree = new Map<string, number>();
     for (const edge of edges) {
       degree.set(edge.from, (degree.get(edge.from) || 0) + 1);
       degree.set(edge.to, (degree.get(edge.to) || 0) + 1);
     }
-    const freeEnds: { column: number; level: number }[] = [];
+    const freeEnds: { column: number; row: number }[] = [];
     for (const [node, d] of degree.entries()) {
       if (d === 1) {
         const parts = node.split(",");
-        const levelString = parts[0];
+        const rowString = parts[0];
         const columnString = parts[1];
-        const level = Number(levelString);
+        const row = Number(rowString);
         const column = Number(columnString);
         freeEnds.push({
           column: Number.isNaN(column) ? 0 : column,
-          level: Number.isNaN(level) ? 0 : level,
+          row: Number.isNaN(row) ? 0 : row,
         });
       }
     }
     return freeEnds;
   }
 
-  /** Whether the cell at `(level, column)` has an open corridor east, into `(level, column + 1)`. */
+  /** Whether the cell at `(row, column)` has an open corridor east, into `(row, column + 1)`. */
   private hasEastCorridor(
     code: CodeObject,
-    level: number,
+    row: number,
     column: number,
   ): boolean {
     const cellColumns = code.columns - 1;
 
     return (
       column < cellColumns - 1 &&
-      !this.codeService.directionsAt(code, level, column + 1).south
+      !this.codeService.directionsAt(code, row, column + 1).south
     );
   }
 
-  /** Whether the cell at `(level, column)` has an open corridor north, into `(level - 1, column)`. */
+  /** Whether the cell at `(row, column)` has an open corridor north, into `(row - 1, column)`. */
   private hasNorthCorridor(
     code: CodeObject,
-    level: number,
+    row: number,
     column: number,
   ): boolean {
-    return (
-      level > 0 && !this.codeService.directionsAt(code, level, column).east
-    );
+    return row > 0 && !this.codeService.directionsAt(code, row, column).east;
   }
 
-  /** Whether the cell at `(level, column)` has an open corridor south, into `(level + 1, column)`. */
+  /** Whether the cell at `(row, column)` has an open corridor south, into `(row + 1, column)`. */
   private hasSouthCorridor(
     code: CodeObject,
-    level: number,
+    row: number,
     column: number,
   ): boolean {
-    const cellRows = code.levels - 1;
+    const cellRows = code.rows - 1;
 
     return (
-      level < cellRows - 1 &&
-      !this.codeService.directionsAt(code, level + 1, column).east
+      row < cellRows - 1 &&
+      !this.codeService.directionsAt(code, row + 1, column).east
     );
   }
 
-  /** Whether the cell at `(level, column)` has an open corridor west, into `(level, column - 1)`. */
+  /** Whether the cell at `(row, column)` has an open corridor west, into `(row, column - 1)`. */
   private hasWestCorridor(
     code: CodeObject,
-    level: number,
+    row: number,
     column: number,
   ): boolean {
     return (
-      column > 0 && !this.codeService.directionsAt(code, level, column).south
+      column > 0 && !this.codeService.directionsAt(code, row, column).south
     );
   }
 
@@ -203,14 +196,14 @@ export class CharacteristicsService {
   private longestHorizontalRun(code: CodeObject): number {
     let maximumRun = 0;
 
-    for (let level = 0; level < code.levels; level += 1) {
+    for (let row = 0; row < code.rows; row += 1) {
       let run = 0;
       let rowMaximum = 0;
 
       // Scan twice to handle wrap-around
       for (let index = 0; index < code.columns * 2; index += 1) {
         if (
-          this.codeService.directionsAt(code, level, index % code.columns).east
+          this.codeService.directionsAt(code, row, index % code.columns).east
         ) {
           run += 1;
           if (run > rowMaximum) rowMaximum = run;
@@ -240,8 +233,8 @@ export class CharacteristicsService {
       let run = 0;
       let columnMaximum = 0;
 
-      for (let level = 0; level < code.levels; level += 1) {
-        if (this.codeService.directionsAt(code, level, column).south) {
+      for (let row = 0; row < code.rows; row += 1) {
+        if (this.codeService.directionsAt(code, row, column).south) {
           run += 1;
           if (run > columnMaximum) columnMaximum = run;
         } else {
@@ -259,22 +252,22 @@ export class CharacteristicsService {
 
   /**
    * How many of a cell's up to four corridors to a neighboring cell are
-   * open, where the cell bounded by grid points `(level, column)`,
-   * `(level, column + 1)`, `(level + 1, column)`, and
-   * `(level + 1, column + 1)` is bounded rather than crossing off the
+   * open, where the cell bounded by grid points `(row, column)`,
+   * `(row, column + 1)`, `(row + 1, column)`, and
+   * `(row + 1, column + 1)` is bounded rather than crossing off the
    * Code's own extent, which is where a rendered canvas's edge used to be
    * read off instead.
    */
   private negativeDegree(
     code: CodeObject,
-    level: number,
+    row: number,
     column: number,
   ): number {
     return [
-      this.hasEastCorridor(code, level, column),
-      this.hasNorthCorridor(code, level, column),
-      this.hasSouthCorridor(code, level, column),
-      this.hasWestCorridor(code, level, column),
+      this.hasEastCorridor(code, row, column),
+      this.hasNorthCorridor(code, row, column),
+      this.hasSouthCorridor(code, row, column),
+      this.hasWestCorridor(code, row, column),
     ].filter(Boolean).length;
   }
 
@@ -314,10 +307,6 @@ export class CharacteristicsService {
     }
   }
 
-  // 🌎 Public Methods
-
-  /** Computes every raw junction count and boolean Characteristic a Code carries. */
-
   /** The character counts over a Code. */
   private tallyHistogram(code: CodeObject): HistogramCounts {
     const counts: MutableHistogram = {
@@ -338,8 +327,8 @@ export class CharacteristicsService {
     const inkPointCount = code.digits.length - counts.dotCount;
     const edgeCount = counts.edgeCount / 2;
     const density =
-      code.levels * code.columns > 0
-        ? inkPointCount / (code.levels * code.columns)
+      code.rows * code.columns > 0
+        ? inkPointCount / (code.rows * code.columns)
         : 0;
 
     return {
@@ -358,11 +347,11 @@ export class CharacteristicsService {
   private tallyInk(code: CodeObject): JunctionCounts {
     const counts: JunctionCounts = { tJunctions: 0, xJunctions: 0 };
 
-    for (let level = 0; level < code.levels; level += 1) {
+    for (let row = 0; row < code.rows; row += 1) {
       for (let column = 0; column < code.columns; column += 1) {
         this.tally(
           counts,
-          this.inkDegree(this.codeService.directionsAt(code, level, column)),
+          this.inkDegree(this.codeService.directionsAt(code, row, column)),
         );
       }
     }
@@ -372,18 +361,20 @@ export class CharacteristicsService {
 
   /** The negative T-junction and X-junction counts over every cell of the lattice's dual. */
   private tallyNegative(code: CodeObject): JunctionCounts {
-    const cellRows = code.levels - 1;
+    const cellRows = code.rows - 1;
     const cellColumns = code.columns - 1;
     const counts: JunctionCounts = { tJunctions: 0, xJunctions: 0 };
 
-    for (let level = 0; level < cellRows; level += 1) {
+    for (let row = 0; row < cellRows; row += 1) {
       for (let column = 0; column < cellColumns; column += 1) {
-        this.tally(counts, this.negativeDegree(code, level, column));
+        this.tally(counts, this.negativeDegree(code, row, column));
       }
     }
 
     return counts;
   }
+
+  // 🌎 Public Methods
 
   /** Evaluates formalized family memberships for a Code. */
   public classifyFamilies(code: CodeObject): string[] {
@@ -417,7 +408,7 @@ export class CharacteristicsService {
     const endsOnBorderRules =
       freeEndsList.length === 2 &&
       freeEndsList.every(
-        (end) => end.level === 0 || end.level === reduced.levels - 1,
+        (end) => end.row === 0 || end.row === reduced.rows - 1,
       );
     const endsAreLatticeNeighbors = this.checkEndsAreLatticeNeighbors(
       freeEndsList,

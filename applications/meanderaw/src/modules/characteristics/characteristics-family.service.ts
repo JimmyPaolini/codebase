@@ -51,14 +51,14 @@ export class CharacteristicsFamilyService {
    * entire column width from the top border tick to the bottom border tick.
    */
   isBars(code: CodeObject): boolean {
-    if (code.levels < 2 || code.columns < 1) {
+    if (code.rows < 2 || code.columns < 1) {
       return false;
     }
 
     const topRow = "4".repeat(code.columns);
     const middleRow = "c".repeat(code.columns);
     const bottomRow = "8".repeat(code.columns);
-    const expected = topRow + middleRow.repeat(code.levels - 2) + bottomRow;
+    const expected = topRow + middleRow.repeat(code.rows - 2) + bottomRow;
 
     return code.digits === expected;
   }
@@ -84,14 +84,14 @@ export class CharacteristicsFamilyService {
    * connections across the entire lattice grid.
    */
   isMesh(code: CodeObject): boolean {
-    if (code.levels < 2 || code.columns < 1) {
+    if (code.rows < 2 || code.columns < 1) {
       return false;
     }
 
     const topRow = "7".repeat(code.columns);
     const middleRow = "f".repeat(code.columns);
     const bottomRow = "b".repeat(code.columns);
-    const expected = topRow + middleRow.repeat(code.levels - 2) + bottomRow;
+    const expected = topRow + middleRow.repeat(code.rows - 2) + bottomRow;
 
     return code.digits === expected;
   }

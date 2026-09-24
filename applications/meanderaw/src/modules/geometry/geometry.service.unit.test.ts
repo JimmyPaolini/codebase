@@ -20,9 +20,9 @@ describe(GeometryService, () => {
 
   describe("compute", () => {
     it.each([
-      { expected: { offset: 3.75, strokeWidth: 7.5, unit: 15 }, rows: 4 },
-      { expected: { offset: 3, strokeWidth: 6, unit: 12 }, rows: 5 },
-      { expected: { offset: 2.5, strokeWidth: 5, unit: 10 }, rows: 6 },
+      { expected: { offset: 3.75, strokeWidth: 7.5, unit: 15 }, rows: 3 },
+      { expected: { offset: 3, strokeWidth: 6, unit: 12 }, rows: 4 },
+      { expected: { offset: 2.5, strokeWidth: 5, unit: 10 }, rows: 5 },
     ])(
       "derives the grid unit, offset, and stroke width from $rows rows",
       ({ expected, rows }) => {
@@ -36,7 +36,7 @@ describe(GeometryService, () => {
     );
 
     it("keeps offset at one quarter of the unit and stroke width at half", () => {
-      const geometry = service.compute(7);
+      const geometry = service.compute(6);
 
       expect(geometry.offset).toBeCloseTo(geometry.unit / 4);
       expect(geometry.strokeWidth).toBeCloseTo(geometry.unit / 2);
@@ -50,14 +50,14 @@ describe(GeometryService, () => {
     // it, because the committed corpus is bytes and an extraction that
     // reordered these two runs would rewrite every drawing in it.
     it("rules both border rows from the right edge back to the left", () => {
-      expect(service.borderPath(service.compute(5), 123)).toBe(
+      expect(service.borderPath(service.compute(4), 123)).toBe(
         "M123 63H3M123 3H3",
       );
     });
 
     it("reads the band's depth off the geometry rather than the row count", () => {
-      const shallow = service.borderPath(service.compute(2), 40);
-      const deep = service.borderPath(service.compute(12), 40);
+      const shallow = service.borderPath(service.compute(1), 40);
+      const deep = service.borderPath(service.compute(11), 40);
 
       expect(shallow).not.toBe(deep);
       expect(shallow).toBe("M40 67.5H7.5M40 7.5H7.5");

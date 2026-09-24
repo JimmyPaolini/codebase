@@ -76,7 +76,6 @@ describe(CorpusService, () => {
     vi.mocked(codeService.parse).mockImplementation((code, rows, columns) => ({
       columns: columns ?? 1,
       digits: code,
-      levels: (rows ?? 2) - 1,
       repeats: 1,
       rows: rows ?? 2,
     }));
@@ -170,7 +169,7 @@ describe(CorpusService, () => {
       vi.mocked(enumerationService.isAdmitted).mockReturnValue(true);
 
       await expect(
-        service.ingest([{ ...entry, rows: 2 }]),
+        service.ingest([{ ...entry, rows: 1 }]),
       ).resolves.toStrictEqual([savedMeander]);
     });
 

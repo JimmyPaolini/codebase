@@ -157,13 +157,13 @@ export class CharacteristicsPathService {
     const fromPos = this.parseKey(from);
     const toPos = this.parseKey(to);
 
-    if (fromPos.level === toPos.level) {
+    if (fromPos.row === toPos.row) {
       if (toPos.column === (fromPos.column + 1) % columns) return 1;
       if (fromPos.column === (toPos.column + 1) % columns) return 3;
     }
     if (fromPos.column === toPos.column) {
-      if (toPos.level === fromPos.level + 1) return 2;
-      if (fromPos.level === toPos.level + 1) return 0;
+      if (toPos.row === fromPos.row + 1) return 2;
+      if (fromPos.row === toPos.row + 1) return 0;
     }
     return -1;
   }
@@ -176,12 +176,12 @@ export class CharacteristicsPathService {
     return adjacency.get(node) ?? [];
   }
 
-  /** Parses a node string key into column and level integers. */
-  private parseKey(key: string): { column: number; level: number } {
+  /** Parses a node string key into column and row integers. */
+  private parseKey(key: string): { column: number; row: number } {
     const parts = key.split(",");
     return {
       column: Number.parseInt(parts[1] ?? "0", 10),
-      level: Number.parseInt(parts[0] ?? "0", 10),
+      row: Number.parseInt(parts[0] ?? "0", 10),
     };
   }
 

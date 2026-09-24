@@ -67,17 +67,17 @@ describe(TileService, () => {
       });
     });
 
-    it("leaves the first level carrying no north and the last carrying no south, since the cap ticks are not tile points", () => {
+    it("leaves the first row carrying no north and the last carrying no south, since the cap ticks are not tile points", () => {
       const tile = buildTile(["s", "s", "s"]);
 
       expect(tile.points[0]?.[0]?.north).toBe(false);
       expect(tile.points[2]?.[0]?.south).toBe(false);
     });
 
-    it("gives a tile one level fewer than its rows", () => {
+    it("gives a tile the same number of rows as strings passed", () => {
       expect(buildTile([".", ".", ".", "."])).toMatchObject({
         columns: 1,
-        rows: 5,
+        rows: 4,
       });
     });
   });
@@ -101,7 +101,7 @@ describe(TileService, () => {
       const tile = buildTile(["b.", ".s", "e."]);
 
       expect(
-        service.build({ columns: 2, rows: 4 }, service.edges(tile)),
+        service.build({ columns: 2, rows: 3 }, service.edges(tile)),
       ).toStrictEqual(tile);
     });
   });
@@ -157,7 +157,7 @@ describe(TileService, () => {
 
   describe("blankEdges and mark", () => {
     it("starts every edge unset, one grid per direction", () => {
-      expect(service.blankEdges({ columns: 2, rows: 4 })).toStrictEqual({
+      expect(service.blankEdges({ columns: 2, rows: 3 })).toStrictEqual({
         horizontal: [
           [false, false],
           [false, false],
@@ -170,8 +170,8 @@ describe(TileService, () => {
       });
     });
 
-    it("ignores a level the grid does not have, so a caller may walk past the last one", () => {
-      const edges = service.blankEdges({ columns: 1, rows: 3 });
+    it("ignores a row the grid does not have, so a caller may walk past the last one", () => {
+      const edges = service.blankEdges({ columns: 1, rows: 2 });
 
       expect(() => service.mark(edges.vertical, 5, 0)).not.toThrow();
       expect(edges.vertical).toStrictEqual([[false]]);
@@ -185,20 +185,20 @@ describe(TileService, () => {
       ).not.toThrow();
     });
 
-    it("refuses a grid with the wrong number of levels for its rows", () => {
-      const tile: Tile = { columns: 1, points: [[BARE]], rows: 6 };
+    it("refuses a grid with the wrong number of rows", () => {
+      const tile: Tile = { columns: 1, points: [[BARE]], rows: 5 };
 
       expect(() => service.assertWellFormed(tile)).toThrow(MalformedTileError);
     });
 
-    it("refuses a level that does not span the tile's own columns", () => {
-      const tile: Tile = { columns: 2, points: [[BARE]], rows: 2 };
+    it("refuses a row that does not span the tile's own columns", () => {
+      const tile: Tile = { columns: 2, points: [[BARE]], rows: 1 };
 
       expect(() => service.assertWellFormed(tile)).toThrow(MalformedTileError);
     });
 
     it("refuses a point where the point itself is undefined in the matrix", () => {
-      const tile: Tile = { columns: 1, points: [[]], rows: 2 };
+      const tile: Tile = { columns: 1, points: [[]], rows: 1 };
 
       expect(() => service.assertWellFormed(tile)).toThrow(MalformedTileError);
     });
@@ -207,11 +207,11 @@ describe(TileService, () => {
       const tile: Tile = {
         columns: 2,
         points: [[{ ...BARE, east: true }, BARE]],
-        rows: 2,
+        rows: 1,
       };
 
       expect(() => service.assertWellFormed(tile)).toThrow(
-        /east at level 0 column 0/u,
+        /east at row 0 column 0/u,
       );
     });
 
@@ -219,23 +219,23 @@ describe(TileService, () => {
       const tile: Tile = {
         columns: 1,
         points: [[{ ...BARE, south: true }], [BARE]],
-        rows: 3,
-      };
-
-      expect(() => service.assertWellFormed(tile)).toThrow(
-        /south at level 0 column 0/u,
-      );
-    });
-
-    it("refuses a north on the first level, where grid level 0 is a cap tick", () => {
-      const tile: Tile = {
-        columns: 1,
-        points: [[{ ...BARE, north: true }]],
         rows: 2,
       };
 
       expect(() => service.assertWellFormed(tile)).toThrow(
-        /the first level carries no north/u,
+        /south at row 0 column 0/u,
+      );
+    });
+
+    it("refuses a north on the first row, where the top cap tick is not a tile point", () => {
+      const tile: Tile = {
+        columns: 1,
+        points: [[{ ...BARE, north: true }]],
+        rows: 1,
+      };
+
+      expect(() => service.assertWellFormed(tile)).toThrow(
+        /the first row carries no north/u,
       );
     });
   });

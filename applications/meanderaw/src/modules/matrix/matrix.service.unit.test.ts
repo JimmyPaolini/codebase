@@ -39,7 +39,7 @@ describe(MatrixService, () => {
 
   describe("fromCode and toCode", () => {
     it("converts a formatted code string into a 2D matrix", () => {
-      const matrix = service.fromCode("02x03y36c9");
+      const matrix = service.fromCode("02x02y36c9");
 
       expect(matrix).toHaveLength(2);
       expect(matrix[0]).toHaveLength(2);
@@ -70,7 +70,7 @@ describe(MatrixService, () => {
     });
 
     it("converts a CodeObject object directly into a 2D matrix", () => {
-      const parsed = codeService.parse("02x03y36c9");
+      const parsed = codeService.parse("02x02y36c9");
       const matrix = service.fromCode(parsed);
 
       expect(matrix).toHaveLength(2);
@@ -84,7 +84,7 @@ describe(MatrixService, () => {
     });
 
     it("converts bare hexadecimal digits with dimensions into a 2D matrix", () => {
-      const matrix = service.fromCode("36c9", 3, 2);
+      const matrix = service.fromCode("36c9", 2, 2);
 
       expect(matrix).toHaveLength(2);
       expect(matrix[0]).toHaveLength(2);
@@ -97,17 +97,17 @@ describe(MatrixService, () => {
     });
 
     it("encodes a 2D matrix back to a formatted code string", () => {
-      const matrix = service.fromCode("02x03y36c9");
+      const matrix = service.fromCode("02x02y36c9");
       const code = service.toCode(matrix);
 
-      expect(code).toBe("02x03y36c9");
+      expect(code).toBe("02x02y36c9");
     });
 
     it("encodes a 2D matrix with repeats", () => {
-      const matrix = service.fromCode("02x03y36c9");
+      const matrix = service.fromCode("02x02y36c9");
       const code = service.toCode(matrix, 2);
 
-      expect(code).toBe("02x03y36c9r02");
+      expect(code).toBe("02x02y36c9r02");
     });
 
     it("handles empty matrix in toCode", () => {
@@ -119,7 +119,7 @@ describe(MatrixService, () => {
     });
 
     it("preserves matrix structure through round-trip conversions", () => {
-      const originalCode = "02x03y36c9";
+      const originalCode = "02x02y36c9";
       const matrix = service.fromCode(originalCode);
       const encodedCode = service.toCode(matrix);
       const roundTrippedMatrix = service.fromCode(encodedCode);
@@ -131,7 +131,7 @@ describe(MatrixService, () => {
 
   describe("pointAt", () => {
     it("returns the point at exact coordinates", () => {
-      const matrix = service.fromCode("02x03y36c9");
+      const matrix = service.fromCode("02x02y36c9");
 
       expect(service.pointAt(matrix, 0, 0)).toStrictEqual({
         east: true,
@@ -148,7 +148,7 @@ describe(MatrixService, () => {
     });
 
     it("wraps positive column indices cyclically", () => {
-      const matrix = service.fromCode("02x03y36c9");
+      const matrix = service.fromCode("02x02y36c9");
 
       expect(service.pointAt(matrix, 0, 2)).toStrictEqual(
         service.pointAt(matrix, 0, 0),
@@ -162,7 +162,7 @@ describe(MatrixService, () => {
     });
 
     it("wraps negative column indices cyclically", () => {
-      const matrix = service.fromCode("02x03y36c9");
+      const matrix = service.fromCode("02x02y36c9");
 
       expect(service.pointAt(matrix, 0, -1)).toStrictEqual(
         service.pointAt(matrix, 0, 1),
@@ -176,7 +176,7 @@ describe(MatrixService, () => {
     });
 
     it("returns BARE_MATRIX_POINT when row index is out of bounds", () => {
-      const matrix = service.fromCode("02x03y36c9");
+      const matrix = service.fromCode("02x02y36c9");
 
       expect(service.pointAt(matrix, -1, 0)).toStrictEqual(BARE_MATRIX_POINT);
       expect(service.pointAt(matrix, 2, 0)).toStrictEqual(BARE_MATRIX_POINT);
@@ -191,14 +191,14 @@ describe(MatrixService, () => {
 
   describe("rotate", () => {
     it("returns identical columns when rotating by 0", () => {
-      const matrix = service.fromCode("02x03y36c9");
+      const matrix = service.fromCode("02x02y36c9");
       const rotated = service.rotate(matrix, 0);
 
       expect(rotated).toStrictEqual(matrix);
     });
 
     it("rotates columns westward by step", () => {
-      const matrix = service.fromCode("02x03y36c9");
+      const matrix = service.fromCode("02x02y36c9");
       const rotated = service.rotate(matrix, 1);
 
       expect(rotated[0]?.[0]).toStrictEqual(matrix[0]?.[1]);
@@ -208,7 +208,7 @@ describe(MatrixService, () => {
     });
 
     it("wraps rotation steps larger than column count", () => {
-      const matrix = service.fromCode("02x03y36c9");
+      const matrix = service.fromCode("02x02y36c9");
       const rotatedOnce = service.rotate(matrix, 1);
       const rotatedThrice = service.rotate(matrix, 3);
 
@@ -216,7 +216,7 @@ describe(MatrixService, () => {
     });
 
     it("handles negative rotation steps", () => {
-      const matrix = service.fromCode("02x03y36c9");
+      const matrix = service.fromCode("02x02y36c9");
       const rotatedNegative = service.rotate(matrix, -1);
       const rotatedPositive = service.rotate(matrix, 1);
 
@@ -231,7 +231,7 @@ describe(MatrixService, () => {
 
   describe("submatrices", () => {
     it("extracts submatrix kernels with horizontal wrapping", () => {
-      const matrix = service.fromCode("02x03y36c9");
+      const matrix = service.fromCode("02x02y36c9");
       const submatrices = service.submatrices(matrix, 2, 2);
 
       expect(submatrices).toHaveLength(2);
@@ -255,7 +255,7 @@ describe(MatrixService, () => {
     });
 
     it("extracts 1x1 submatrices across all rows and columns", () => {
-      const matrix = service.fromCode("02x03y36c9");
+      const matrix = service.fromCode("02x02y36c9");
       const submatrices = service.submatrices(matrix, 1, 1);
 
       expect(submatrices).toHaveLength(4);
@@ -266,13 +266,13 @@ describe(MatrixService, () => {
     });
 
     it("returns empty array when submatrix dimensions exceed matrix bounds", () => {
-      const matrix = service.fromCode("02x03y36c9");
+      const matrix = service.fromCode("02x02y36c9");
 
       expect(service.submatrices(matrix, 3, 2)).toStrictEqual([]);
     });
 
     it("returns empty array for non-positive dimensions or empty matrix", () => {
-      const matrix = service.fromCode("02x03y36c9");
+      const matrix = service.fromCode("02x02y36c9");
 
       expect(service.submatrices(matrix, 0, 2)).toStrictEqual([]);
       expect(service.submatrices(matrix, 2, 0)).toStrictEqual([]);

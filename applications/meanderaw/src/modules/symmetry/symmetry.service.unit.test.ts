@@ -9,7 +9,7 @@ import { SymmetryService } from "./symmetry.service";
 describe(SymmetryService, () => {
   let service: SymmetryService;
 
-  // Six rows, one column: five interior levels whose top point sends a
+  // Five rows, one column: five interior rows whose top point sends a
   // southward edge, then a bare point, then the wrapped east-west rule,
   // then another bare point.
   const singleColumn = buildTile(["s", ".", ".", "e", "."]);

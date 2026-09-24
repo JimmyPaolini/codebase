@@ -13,9 +13,8 @@ describe(CharacteristicsPathService, () => {
   const parsedCode = (overrides: Partial<CodeObject> = {}): CodeObject => ({
     columns: 4,
     digits: "",
-    levels: 1,
     repeats: 1,
-    rows: 2,
+    rows: 1,
     ...overrides,
   });
 

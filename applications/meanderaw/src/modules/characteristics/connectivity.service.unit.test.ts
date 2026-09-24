@@ -45,14 +45,14 @@ describe(ConnectivityService, () => {
         code: "00",
         columns: 2,
         expected: { components: 2, cycles: 0, freeEnds: 0 },
-        rows: 2,
+        rows: 1,
         shape: "two inked dots, joined to nothing and to each other by nothing",
       },
       {
         code: "3",
         columns: 1,
         expected: { components: 1, cycles: 1, freeEnds: 0 },
-        rows: 2,
+        rows: 1,
         shape:
           "a single column's eastward edge wrapping onto its own point, which is a loop in the repeat and a straight rule in the drawing",
       },
@@ -60,14 +60,14 @@ describe(ConnectivityService, () => {
         code: "cc",
         columns: 1,
         expected: { components: 1, cycles: 0, freeEnds: 2 },
-        rows: 3,
-        shape: "one vertical bar joining both levels of a one-column repeat",
+        rows: 2,
+        shape: "one vertical bar joining both rows of a one-column repeat",
       },
       {
         code: "56a9",
         columns: 2,
         expected: { components: 1, cycles: 1, freeEnds: 0 },
-        rows: 3,
+        rows: 2,
         shape:
           "the `zigzag` tile a `negative` drawing and a `parallel` serpentine both address to, whose ink closes through its own next repeat",
       },
@@ -75,7 +75,7 @@ describe(ConnectivityService, () => {
         code: "4488",
         columns: 2,
         expected: { components: 2, cycles: 0, freeEnds: 4 },
-        rows: 3,
+        rows: 2,
         shape:
           "the `bars` tile `branch`'s comb and `parallel`'s one-strand bundle both address to: two separate bars, each terminating at both ends",
       },
@@ -86,7 +86,7 @@ describe(ConnectivityService, () => {
     });
 
     it("reads an edge claimed by only one of its two ends, which no well-formed Code spells but the reader still admits", () => {
-      expect(service.connectivity(codeService.parse("20", 2, 2))).toStrictEqual(
+      expect(service.connectivity(codeService.parse("20", 1, 2))).toStrictEqual(
         {
           components: 1,
           cycles: 0,

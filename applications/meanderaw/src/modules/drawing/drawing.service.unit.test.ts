@@ -13,9 +13,9 @@ import type { CodeObject } from "../code/code.types";
 
 // 🧪 Tests
 
-// 🎯 Every fixture below is drawn at 6 rows, the same row count
+// 🎯 Every fixture below is drawn at 5 rows, the same row count
 // the retired per-tile motif computed its own geometry fixtures at —
-// `GeometryService.compute(6)` gives a unit of 10, an
+// `GeometryService.compute(5)` gives a unit of 10, an
 // offset of 2.5, and a stroke width of 5 — so a reader can check one
 // against the other rather than trusting a fresh set of numbers.
 describe(DrawingService, () => {
@@ -25,16 +25,15 @@ describe(DrawingService, () => {
    * The Code `digits` spells, at the shape the fixtures are drawn at.
    *
    * Built directly rather than through `CodeService.parse`, because these
-   * fixtures deliberately carry fewer levels than a 6-row meander really has:
-   * the renderer draws what it is given level by level, and one level is
+   * fixtures deliberately carry fewer rows than a full 5-row meander:
+   * the renderer draws what it is given row by row, and one row is
    * enough to assert where a segment lands.
    */
   const code = (digits: string, columns: number, repeats = 1): CodeObject => ({
     columns,
     digits,
-    levels: digits.length / columns,
     repeats,
-    rows: 6,
+    rows: 5,
   });
 
   beforeAll(async () => {
@@ -79,7 +78,7 @@ describe(DrawingService, () => {
     it("draws nothing of its own for a point reached only by a neighbor's north or west bit — that segment is the neighbor's own", () => {
       // 🎯 Not a dot either: a dot is a point neither owning nor reached by
       // any direction bit at all, and this one carries two.
-      expect(service.render(code("9", 1))).toContain(
+      expect(service.render(code("99999", 1))).toContain(
         '<path d="" stroke="black"',
       );
     });
@@ -91,7 +90,7 @@ describe(DrawingService, () => {
       expect(svg).toContain("M12.5 12.5H12.5");
     });
 
-    it("draws every level of a multi-row Code, each one grid unit further down", () => {
+    it("draws every row of a multi-row Code, each one grid unit further down", () => {
       const svg = service.render(code("40", 1));
 
       expect(svg).toContain("M2.5 12.5V22.5");

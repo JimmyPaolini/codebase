@@ -12,9 +12,8 @@ describe(CharacteristicsShapeService, () => {
   const parsedCode = (overrides: Partial<CodeObject> = {}): CodeObject => ({
     columns: 2,
     digits: "",
-    levels: 2,
     repeats: 1,
-    rows: 3,
+    rows: 2,
     ...overrides,
   });
 
@@ -36,7 +35,7 @@ describe(CharacteristicsShapeService, () => {
       parsedCode({
         columns: 2,
         digits: "",
-        levels: 2,
+        rows: 2,
       }),
     );
 
@@ -64,12 +63,12 @@ describe(CharacteristicsShapeService, () => {
     ];
 
     for (const t of tests) {
-      // 2 columns, 2 levels -> length 4 string
+      // 2 columns, 2 rows -> length 4 string
       const result = service.tallyUnitShapes(
         parsedCode({
           columns: 2,
           digits: t.code,
-          levels: 2,
+          rows: 2,
         }),
       );
 
@@ -82,7 +81,7 @@ describe(CharacteristicsShapeService, () => {
       parsedCode({
         columns: 2,
         digits: "65a9", // O shape
-        levels: 2,
+        rows: 2,
       }),
     );
 
@@ -92,7 +91,7 @@ describe(CharacteristicsShapeService, () => {
       parsedCode({
         columns: 2,
         digits: "44a9", // U shape variants
-        levels: 2,
+        rows: 2,
       }),
     );
 
@@ -102,7 +101,7 @@ describe(CharacteristicsShapeService, () => {
       parsedCode({
         columns: 2,
         digits: "6588",
-        levels: 2,
+        rows: 2,
       }),
     );
 
@@ -112,7 +111,7 @@ describe(CharacteristicsShapeService, () => {
       parsedCode({
         columns: 2,
         digits: "61a1",
-        levels: 2,
+        rows: 2,
       }),
     );
 
@@ -122,7 +121,7 @@ describe(CharacteristicsShapeService, () => {
       parsedCode({
         columns: 2,
         digits: "2529",
-        levels: 2,
+        rows: 2,
       }),
     );
 

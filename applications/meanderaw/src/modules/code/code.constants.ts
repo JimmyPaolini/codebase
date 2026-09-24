@@ -44,11 +44,11 @@ export class InvalidCodeFormatError extends Error {
 /**
  * Thrown when a Code's length disagrees with the grid `rows` and `columns`
  * describe: one hexadecimal character per interior lattice point, and a
- * grid of `rows` rows has `rows - 1` of those, `columns` wide.
+ * grid of `rows` rows has `rows` of those, `columns` wide.
  */
 export class InvalidCodeLengthError extends Error {
   constructor(code: string, rows: number, columns: number) {
-    const expected = (rows - 1) * columns;
+    const expected = rows * columns;
     super(
       `Code "${code}" is ${code.length} characters, but ${rows} rows and ${columns} columns need ${expected}`,
     );

@@ -21,21 +21,20 @@ const tileService = new TileService();
 // 🌎 Utilities
 
 /**
- * The tile whose points own the edges `levels` describes: one string per
- * interior level, one character per column, `.` for a point owning neither
+ * The tile whose points own the edges `rowDescriptions` describes: one string per
+ * interior row, one character per column, `.` for a point owning neither
  * edge, `e` for the eastward one, `s` for the southward one, and `b` for
  * both.
  *
- * `rows` is one more than the number of levels, since the cap ticks at grid
- * levels `0` and `rows` are not tile points. A `s` on the last level and a
+ * `rows` is the number of interior point rows. A `s` on the last row and a
  * `e` at one column both mean what they always mean — the former is dropped
  * for having nowhere to reach, the latter wraps onto its own point.
  */
-export const buildTile = (levels: readonly string[]): Tile => {
-  const columns = levels[0]?.length ?? 0;
-  const rows = levels.length + 1;
-  const owns = (level: number, column: number, mark: string): boolean => {
-    const character = levels[level]?.[column];
+export const buildTile = (rowDescriptions: readonly string[]): Tile => {
+  const columns = rowDescriptions[0]?.length ?? 0;
+  const rows = rowDescriptions.length;
+  const owns = (row: number, column: number, mark: string): boolean => {
+    const character = rowDescriptions[row]?.[column];
 
     return character === mark || character === "b";
   };
@@ -43,14 +42,14 @@ export const buildTile = (levels: readonly string[]): Tile => {
   return tileService.build(
     { columns, rows },
     {
-      horizontal: Array.from({ length: levels.length }, (_level, level) =>
+      horizontal: Array.from({ length: rows }, (_row, row) =>
         Array.from({ length: columns }, (_column, column) =>
-          owns(level, column, "e"),
+          owns(row, column, "e"),
         ),
       ),
-      vertical: Array.from({ length: levels.length - 1 }, (_level, level) =>
+      vertical: Array.from({ length: rows - 1 }, (_row, row) =>
         Array.from({ length: columns }, (_column, column) =>
-          owns(level, column, "s"),
+          owns(row, column, "s"),
         ),
       ),
     },

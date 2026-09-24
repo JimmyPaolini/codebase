@@ -67,7 +67,7 @@ export class MatrixService {
       typeof code === "string"
         ? this.codeService.parse(code, rows, columns)
         : code;
-    const rowCount = parsed.levels;
+    const rowCount = parsed.rows;
     const columnCount = parsed.columns;
 
     return Array.from({ length: rowCount }, (_unusedRow, row) =>
@@ -178,9 +178,8 @@ export class MatrixService {
     return this.codeService.format({
       columns: columnCount,
       digits,
-      levels: rowCount,
       repeats,
-      rows: rowCount + 1,
+      rows: rowCount,
     });
   }
 }

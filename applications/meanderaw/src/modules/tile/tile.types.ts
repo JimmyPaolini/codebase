@@ -23,13 +23,13 @@ export interface Directions {
 }
 
 /**
- * A tile's edges, held once each rather than twice. `horizontal[level]` runs
- * `0…columns - 1`, indexed by every interior level; `vertical[level]`
- * likewise, indexed by every level that has one below it.
+ * A tile's edges, held once each rather than twice. `horizontal[row]` runs
+ * `0…columns - 1`, indexed by every interior row; `vertical[row]`
+ * likewise, indexed by every row that has one below it.
  *
  * This is the form a tile is built from and folded in, because it is the
  * one whose entries are exactly the tile's own degrees of freedom: a shape
- * holds `2^(columns * (2 * rows - 3))` tiles, which is this structure's own
+ * holds `2^(columns * (2 * rows - 1))` tiles, which is this structure's own
  * size. {@link Directions} is the form a tile is read in.
  */
 export interface Edges {
@@ -49,10 +49,10 @@ export interface EdgesDraft {
 }
 
 /**
- * One repeat tile of the `mosaic` family: a `columns` by `rows - 1` grid of
+ * One repeat tile of the `mosaic` family: a `columns` by `rows` grid of
  * lattice points, each carrying the four direction bits that say where ink
- * leaves it. The two border rules at grid levels `0` and `rows` are the cap
- * ticks rather than tile points, so a point at the first level carries no
+ * leaves it. The two border rules at y = 0 and y = `rows + 1` are the cap
+ * ticks rather than tile points, so a point at the first row carries no
  * `north` and one at the last carries no `south`.
  *
  * A point on no edge at all *is* an inked dot, which is what makes every
@@ -61,7 +61,7 @@ export interface EdgesDraft {
  * stroke. `bars split`, `dots`, `dashes`, and `lines` are all members of
  * this one family.
  *
- * `points` is indexed `[level][column]`, `level` running `0…rows - 2`.
+ * `points` is indexed `[row][column]`, `row` running `0…rows - 1`.
  */
 export interface Tile {
   readonly columns: number;
@@ -72,7 +72,7 @@ export interface Tile {
 /** Which point of a tile is being talked about, grouped into one object so a method naming it stays inside the workspace's parameter limit. */
 export interface TilePoint {
   readonly column: number;
-  readonly level: number;
+  readonly row: number;
 }
 
 /** The size of a tile, apart from anything drawn on it: how deep a band one repeat spans, and how many columns. */

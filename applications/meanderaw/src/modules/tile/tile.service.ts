@@ -47,24 +47,24 @@ export class TileService {
    * {@link assertWellFormed} so each stays inside the workspace's statement
    * limit, and called only from it.
    */
-  private assertPointAgrees(tile: Tile, level: number, column: number): void {
+  private assertPointAgrees(tile: Tile, row: number, column: number): void {
     const { columns, points } = tile;
-    const point = points[level]?.[column];
-    const rightward = points[level]?.[(column + 1) % columns];
+    const point = points[row]?.[column];
+    const rightward = points[row]?.[(column + 1) % columns];
 
     if (point === undefined || rightward === undefined) {
-      throw new MalformedTileError(`level ${level} is ragged`);
+      throw new MalformedTileError(`row ${row} is ragged`);
     }
 
     if (point.east !== rightward.west) {
       throw new MalformedTileError(
-        `east at level ${level} column ${column} is not west at the point it reaches`,
+        `east at row ${row} column ${column} is not west at the point it reaches`,
       );
     }
 
-    this.assertPointJoinsBelow(point, points[level + 1]?.[column], {
+    this.assertPointJoinsBelow(point, points[row + 1]?.[column], {
       column,
-      level,
+      row,
     });
   }
 
@@ -74,29 +74,29 @@ export class TileService {
     below: Directions | undefined,
     at: TilePoint,
   ): void {
-    const { column, level } = at;
+    const { column, row } = at;
 
     if (point.south !== (below?.north ?? false)) {
       throw new MalformedTileError(
-        `south at level ${level} column ${column} is not north at the point below it`,
+        `south at row ${row} column ${column} is not north at the point below it`,
       );
     }
 
-    if (level === 0 && point.north) {
+    if (row === 0 && point.north) {
       throw new MalformedTileError(
-        "the first level carries no north; grid level 0 is a cap tick",
+        "the first row carries no north; the border at y = 0 is a cap tick",
       );
     }
   }
 
-  /** Whether the eastward edge leaving `(level, column)` is set, reading a level or column the tile does not have as unset. */
-  private horizontal(edges: Edges, level: number, column: number): boolean {
-    return edges.horizontal[level]?.[column] ?? false;
+  /** Whether the eastward edge leaving `(row, column)` is set, reading a row or column the tile does not have as unset. */
+  private horizontal(edges: Edges, row: number, column: number): boolean {
+    return edges.horizontal[row]?.[column] ?? false;
   }
 
-  /** Whether the southward edge leaving `(level, column)` is set. The last interior level has none, so it reads as unset there. */
-  private vertical(edges: Edges, level: number, column: number): boolean {
-    return edges.vertical[level]?.[column] ?? false;
+  /** Whether the southward edge leaving `(row, column)` is set. The last interior row has none, so it reads as unset there. */
+  private vertical(edges: Edges, row: number, column: number): boolean {
+    return edges.vertical[row]?.[column] ?? false;
   }
 
   // 🌎 Public Methods
@@ -109,8 +109,8 @@ export class TileService {
    * the grid is the size its own `rows` and `columns` declare; `east` at
    * every point equals `west` at the point to its right, wrapping from the
    * last column into the next repeat; and `south` equals `north` at the
-   * point below, with the levels above the first and below the last
-   * carrying neither, since the cap ticks at grid levels `0` and `rows` are
+   * point below, with the rows above the first and below the last
+   * carrying neither, since the cap ticks at border lines 0 and `rows + 1` are
    * not tile points.
    *
    * The east–west wrap is what makes a tile tile at all, rather than a
@@ -120,21 +120,21 @@ export class TileService {
   assertWellFormed(tile: Tile): void {
     const { columns, points, rows } = tile;
 
-    if (points.length !== rows - 1) {
+    if (points.length !== rows) {
       throw new MalformedTileError(
-        `a ${rows}-row tile has ${rows - 1} levels, not ${points.length}`,
+        `a ${rows}-row tile has ${rows} rows, not ${points.length}`,
       );
     }
 
-    for (const [level, row] of points.entries()) {
-      if (row.length !== columns) {
+    for (const [row, rowEntries] of points.entries()) {
+      if (rowEntries.length !== columns) {
         throw new MalformedTileError(
-          `level ${level} spans ${row.length} columns, not ${columns}`,
+          `row ${row} spans ${rowEntries.length} columns, not ${columns}`,
         );
       }
 
-      for (const [column] of row.entries()) {
-        this.assertPointAgrees(tile, level, column);
+      for (const [column] of rowEntries.entries()) {
+        this.assertPointAgrees(tile, row, column);
       }
     }
   }
@@ -142,12 +142,12 @@ export class TileService {
   /** A tile's worth of unset edges, ready to be marked one at a time and handed to {@link build}. */
   blankEdges(shape: TileShape): EdgesDraft {
     const { columns, rows } = shape;
-    const grid = (levels: number): boolean[][] =>
-      Array.from({ length: Math.max(levels, 0) }, () =>
+    const grid = (rowCount: number): boolean[][] =>
+      Array.from({ length: Math.max(rowCount, 0) }, () =>
         Array.from({ length: columns }, () => false),
       );
 
-    return { horizontal: grid(rows - 1), vertical: grid(rows - 2) };
+    return { horizontal: grid(rows), vertical: grid(rows - 1) };
   }
 
   /**
@@ -157,19 +157,19 @@ export class TileService {
    * At one column the eastward edge wraps onto its own point, so `east` and
    * `west` there are the same bit by construction — which is why the
    * single-column case needs no rule of its own, and why a shape holds
-   * `2^(columns × (2·rows − 3))` tiles at every column span including one.
+   * `2^(columns × (2·rows − 1))` tiles at every column span including one.
    */
   build(shape: TileShape, edges: Edges): Tile {
     const { columns, rows } = shape;
 
     return {
       columns,
-      points: Array.from({ length: rows - 1 }, (_level, level) =>
+      points: Array.from({ length: rows }, (_row, row) =>
         Array.from({ length: columns }, (_column, column) => ({
-          east: this.horizontal(edges, level, column),
-          north: level > 0 && this.vertical(edges, level - 1, column),
-          south: this.vertical(edges, level, column),
-          west: this.horizontal(edges, level, (column - 1 + columns) % columns),
+          east: this.horizontal(edges, row, column),
+          north: row > 0 && this.vertical(edges, row - 1, column),
+          south: this.vertical(edges, row, column),
+          west: this.horizontal(edges, row, (column - 1 + columns) % columns),
         })),
       ),
       rows,
@@ -215,8 +215,8 @@ export class TileService {
    * a dash — so it is what a caller asks for to recover that region of the
    * space.
    */
-  incidentEdges(tile: Tile, level: number, column: number): number {
-    const directions = tile.points[level]?.[column];
+  incidentEdges(tile: Tile, row: number, column: number): number {
+    const directions = tile.points[row]?.[column];
 
     if (directions === undefined) {
       return 0;
@@ -232,12 +232,12 @@ export class TileService {
     return this.degree(directions) === 0;
   }
 
-  /** Sets one edge of a draft, ignoring a level the draft does not have — which is what lets a caller walk past the last level without checking first. */
-  mark(grid: readonly boolean[][], level: number, column: number): void {
-    const row = grid[level];
+  /** Sets one edge of a draft, ignoring a row the draft does not have — which is what lets a caller walk past the last row without checking first. */
+  mark(grid: readonly boolean[][], row: number, column: number): void {
+    const targetRow = grid[row];
 
-    if (row !== undefined) {
-      row[column] = true;
+    if (targetRow !== undefined) {
+      targetRow[column] = true;
     }
   }
 }

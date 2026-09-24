@@ -109,7 +109,7 @@ describe(DrawIndexService, () => {
     drawingHash: "hash",
     pitch: 1,
     provenance: "hardcoded",
-    rows: 2,
+    rows: 1,
     ...overrides,
   });
 
@@ -120,7 +120,7 @@ describe(DrawIndexService, () => {
   it("builds pages from the committed rows, grouped by family with a section for the unclassified ones", async () => {
     await repository.save(
       record({
-        code: "01x02y0",
+        code: "01x01y0",
         families: ["snake"],
         lattice: "0",
       }),
@@ -128,13 +128,13 @@ describe(DrawIndexService, () => {
     await repository.save(
       record({
         characteristics: ["dots"],
-        code: "01x02y1",
+        code: "01x01y1",
         families: ["whirl"],
         lattice: "1",
       }),
     );
     await repository.save(
-      record({ code: "01x02y2", families: [], lattice: "2" }),
+      record({ code: "01x01y2", families: [], lattice: "2" }),
     );
 
     const pages = await service.build();
@@ -145,7 +145,7 @@ describe(DrawIndexService, () => {
       '<section id="unclassified">',
     );
     expect(pages["families/snake.html"]).toContain(
-      "<figcaption>2×1 · 01x02y0</figcaption>",
+      "<figcaption>1×1 · 01x01y0</figcaption>",
     );
     expect(pages["families/whirl.html"]).toContain("(dots)");
 

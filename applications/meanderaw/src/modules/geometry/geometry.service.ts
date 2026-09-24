@@ -49,7 +49,7 @@ export class GeometryService {
 
   /** Derives grid unit, offset, and stroke width from a row count and the fixed canvas height. */
   compute(rows: number): Geometry {
-    const unit = CANVAS_HEIGHT / rows;
+    const unit = CANVAS_HEIGHT / (rows + 1);
 
     return {
       height: CANVAS_HEIGHT,

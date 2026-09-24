@@ -4,11 +4,11 @@ import type { environmentSchema } from "../../constants";
 import type { EdgesDraft, Tile, TileShape } from "../tile/tile.types";
 import type { z } from "zod";
 
-/** Where one edge sits in an {@link EdgesDraft}: the grid that holds it, and its level and column within that grid. */
+/** Where one edge sits in an {@link EdgesDraft}: the grid that holds it, and its row and column within that grid. */
 export interface EdgeAddress {
   readonly column: number;
   readonly grid: readonly boolean[][];
-  readonly level: number;
+  readonly row: number;
 }
 
 /**

@@ -107,17 +107,16 @@ export class CharacteristicsShapeService {
       verticalDashCount: 0,
     };
 
-    for (let level = 0; level < code.levels - 1; level += 1) {
+    for (let row = 0; row < code.rows - 1; row += 1) {
       for (let column = 0; column < code.columns; column += 1) {
-        const tlString = code.digits[level * code.columns + column] ?? "0";
+        const tlString = code.digits[row * code.columns + column] ?? "0";
         const trString =
-          code.digits[level * code.columns + ((column + 1) % code.columns)] ??
+          code.digits[row * code.columns + ((column + 1) % code.columns)] ??
           "0";
-        const blString =
-          code.digits[(level + 1) * code.columns + column] ?? "0";
+        const blString = code.digits[(row + 1) * code.columns + column] ?? "0";
         const brString =
           code.digits[
-            (level + 1) * code.columns + ((column + 1) % code.columns)
+            (row + 1) * code.columns + ((column + 1) % code.columns)
           ] ?? "0";
 
         const windowString = tlString + trString + blString + brString;

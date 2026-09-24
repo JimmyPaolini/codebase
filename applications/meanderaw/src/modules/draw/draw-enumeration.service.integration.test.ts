@@ -36,7 +36,7 @@ import type { Environment } from "../enumeration/enumeration.types";
  * a shared CI runner. Bounded rather than removed, so a budget raised past
  * what anybody meant fails here rather than running forever.
  */
-const SWEEP_TIMEOUT_MILLISECONDS = 180_000;
+const SWEEP_TIMEOUT_MILLISECONDS = 300_000;
 
 // 🧪 Tests
 
@@ -186,7 +186,7 @@ describe(DrawEnumerationService, () => {
       const row = await repository.findOneByOrFail({ lattice: "4488" });
 
       expect(row).toMatchObject({
-        code: "02x03y4488",
+        code: "02x02y4488",
         columns: 2,
         components: 1,
         cycles: 0,
@@ -208,7 +208,7 @@ describe(DrawEnumerationService, () => {
         pitch: 2,
         provenance: "enumerated",
         repeats: 1,
-        rows: 3,
+        rows: 2,
       });
       expect(row.drawingHash).toBeDefined();
     });

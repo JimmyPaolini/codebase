@@ -89,7 +89,6 @@ describe(DrawIndexService, () => {
             parse: (c: string) => ({
               columns: 3,
               digits: c,
-              levels: 4,
               rows: 4,
             }),
           },
@@ -314,7 +313,7 @@ describe(DrawIndexService, () => {
           families: ["snake"],
           id: 1,
           pitch: 3,
-          rows: 4,
+          rows: 3,
         }),
       ]);
       const page = pages["families/snake.html"] ?? "";
@@ -333,7 +332,7 @@ describe(DrawIndexService, () => {
           families: ["snake"],
           id: 1,
           pitch: 3,
-          rows: 4,
+          rows: 3,
         }),
       ]);
       const page = pages["families/snake.html"] ?? "";

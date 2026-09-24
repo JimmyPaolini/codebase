@@ -65,8 +65,8 @@ describe(CharacteristicsService, () => {
   });
 
   describe("compute", () => {
-    it("reports every count and characteristic as zero or false for a Code with no level at all", () => {
-      expect(service.compute(codeService.parse("", 1, 1)))
+    it("reports every count and characteristic as zero or false for a Code with no row at all", () => {
+      expect(service.compute(codeService.parse("", 0, 1)))
         .toMatchInlineSnapshot(`
           {
             "componentCount": 0,
@@ -132,13 +132,13 @@ describe(CharacteristicsService, () => {
       const result = (service as any).findFreeEnds(edges);
 
       expect(result).toStrictEqual([
-        { column: 0, level: 0 },
-        { column: 1, level: 1 },
+        { column: 0, row: 0 },
+        { column: 1, row: 1 },
       ]);
     });
 
     it("reports no branching or crossing for a single bare point, which is one component of its own", () => {
-      expect(service.compute(codeService.parse("0", 2, 1)))
+      expect(service.compute(codeService.parse("0", 1, 1)))
         .toMatchInlineSnapshot(`
           {
             "componentCount": 1,
@@ -197,7 +197,7 @@ describe(CharacteristicsService, () => {
     });
 
     it("reports no branching or crossing for a chain-like code with no junction", () => {
-      expect(service.compute(codeService.parse("21", 2, 2)))
+      expect(service.compute(codeService.parse("21", 1, 2)))
         .toMatchInlineSnapshot(`
           {
             "componentCount": 1,
@@ -258,7 +258,7 @@ describe(CharacteristicsService, () => {
     it("reports an isolated horizontal dash", () => {
       // 21
       // 00
-      expect(service.compute(codeService.parse("2100", 3, 2)))
+      expect(service.compute(codeService.parse("2100", 2, 2)))
         .toMatchInlineSnapshot(`
           {
             "componentCount": 3,
@@ -319,7 +319,7 @@ describe(CharacteristicsService, () => {
     it("reports an isolated vertical dash", () => {
       // 40
       // 80
-      expect(service.compute(codeService.parse("4080", 3, 2)))
+      expect(service.compute(codeService.parse("4080", 2, 2)))
         .toMatchInlineSnapshot(`
           {
             "componentCount": 3,
@@ -380,7 +380,7 @@ describe(CharacteristicsService, () => {
     it("reports an i shape", () => {
       // 44
       // 88
-      expect(service.compute(codeService.parse("4488", 3, 2)))
+      expect(service.compute(codeService.parse("4488", 2, 2)))
         .toMatchInlineSnapshot(`
           {
             "componentCount": 1,
@@ -441,7 +441,7 @@ describe(CharacteristicsService, () => {
     it("reports an l shape", () => {
       // 40
       // a1
-      expect(service.compute(codeService.parse("40a1", 3, 2)))
+      expect(service.compute(codeService.parse("40a1", 2, 2)))
         .toMatchInlineSnapshot(`
           {
             "componentCount": 2,
@@ -502,7 +502,7 @@ describe(CharacteristicsService, () => {
     it("reports a u shape", () => {
       // 44
       // a9
-      expect(service.compute(codeService.parse("44a9", 3, 2)))
+      expect(service.compute(codeService.parse("44a9", 2, 2)))
         .toMatchInlineSnapshot(`
           {
             "componentCount": 1,
@@ -563,7 +563,7 @@ describe(CharacteristicsService, () => {
     it("reports an o shape", () => {
       // 65
       // a9
-      expect(service.compute(codeService.parse("65a9", 3, 2)))
+      expect(service.compute(codeService.parse("65a9", 2, 2)))
         .toMatchInlineSnapshot(`
           {
             "componentCount": 1,
@@ -624,7 +624,7 @@ describe(CharacteristicsService, () => {
     it("reports a plus shape", () => {
       // 9a
       // 56
-      expect(service.compute(codeService.parse("9a56", 3, 2)))
+      expect(service.compute(codeService.parse("9a56", 2, 2)))
         .toMatchInlineSnapshot(`
           {
             "componentCount": 2,
@@ -683,7 +683,7 @@ describe(CharacteristicsService, () => {
     });
 
     it("counts a three-armed ink junction as a T-junction and reports hasBranching", () => {
-      expect(service.compute(codeService.parse("7", 2, 1)))
+      expect(service.compute(codeService.parse("7", 1, 1)))
         .toMatchInlineSnapshot(`
           {
             "componentCount": 1,
@@ -742,7 +742,7 @@ describe(CharacteristicsService, () => {
     });
 
     it("counts a four-armed ink junction as an X-junction and reports hasCrossing", () => {
-      expect(service.compute(codeService.parse("f", 2, 1)))
+      expect(service.compute(codeService.parse("f", 1, 1)))
         .toMatchInlineSnapshot(`
           {
             "componentCount": 1,
@@ -801,7 +801,7 @@ describe(CharacteristicsService, () => {
     });
 
     it("counts a corner cell's two corridors, an edge cell's three, and the center cell's four, over a fully bare Code", () => {
-      expect(service.compute(codeService.parse(squareCode(), 5, 4)))
+      expect(service.compute(codeService.parse(squareCode(), 4, 4)))
         .toMatchInlineSnapshot(`
           {
             "componentCount": 16,
@@ -862,7 +862,7 @@ describe(CharacteristicsService, () => {
     it("closing one corridor turns the center cell's negative crossing into a negative branch, without touching the ink", () => {
       const code = squareCode({ closeCenterEastCorridor: true });
 
-      expect(service.compute(codeService.parse(code, 5, 4)))
+      expect(service.compute(codeService.parse(code, 4, 4)))
         .toMatchInlineSnapshot(`
           {
             "componentCount": 15,
@@ -921,7 +921,7 @@ describe(CharacteristicsService, () => {
     });
 
     it("finds the longest horizontal and vertical runs", () => {
-      const code = codeService.parse("ecf0", 3, 2);
+      const code = codeService.parse("ecf0", 2, 2);
       const result = service.compute(code);
 
       expect(result.longestHorizontalRun).toBe(1);
@@ -929,7 +929,7 @@ describe(CharacteristicsService, () => {
     });
 
     it("caps the horizontal run at pitch for a full loop", () => {
-      const code = codeService.parse("333300", 4, 2);
+      const code = codeService.parse("333300", 3, 2);
       const result = service.compute(code);
 
       expect(result.longestHorizontalRun).toBe(1);
@@ -939,11 +939,11 @@ describe(CharacteristicsService, () => {
 
   describe("classifyFamilies", () => {
     it("delegates family classification to CharacteristicsFamilyService", () => {
-      const linesCode = codeService.parse("3333", 3, 2);
+      const linesCode = codeService.parse("3333", 2, 2);
 
       expect(service.classifyFamilies(linesCode)).toStrictEqual(["lines"]);
 
-      const dotsCode = codeService.parse("0000", 3, 2);
+      const dotsCode = codeService.parse("0000", 2, 2);
 
       expect(service.classifyFamilies(dotsCode)).toStrictEqual(["dots"]);
     });
