@@ -4,8 +4,7 @@
     "@callidescope/core": "workspace:*",
     "@codebase/logger": "workspace:*",
     "@nestjs/common": "catalog:",
-    "reflect-metadata": "catalog:",
-    "tslib": "catalog:"
+    "reflect-metadata": "catalog:"
   },
   "devDependencies": {
     "@golevelup/ts-vitest": "catalog:",
