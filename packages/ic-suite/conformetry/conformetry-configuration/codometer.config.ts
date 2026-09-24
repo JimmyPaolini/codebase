@@ -18,5 +18,5 @@ export default {
   // because the package did. The workspace-wide two-rung raise supersedes the
   // number rather than contradicting it: 48 KB is two rungs above 24 KB and
   // covers the same growth.
-  limits: [{ metric: "Compiled JavaScript.size", value: "48 KB" }],
+  limits: [{ metric: "Compiled JavaScript.size", value: "32 KB" }],
 };
