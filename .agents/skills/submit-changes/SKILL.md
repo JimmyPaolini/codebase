@@ -116,33 +116,47 @@ gh pr list --head <branch> --state open
 ```
 
 1. Title: Same format as the commit message — `<type>(<scope>): <gitmoji> <subject>`
-2. Body: Auto-generate from the diff using the PR template structure:
+2. Body: Auto-generate from the diff using the PR template structure (all 4 sections are mandatory and non-empty):
    - **🌰 Summary**: Overall purpose in 1-2 sentences
    - **📝 Details**: Bulleted list of meaningful changes
    - **🧪 Testing**: Relevant `nx run <project>:<target>` commands and manual steps
-   - **🔗 Related**: Issue links discovered from branch name, commits, or `gh issue list --search`
-3. Assignee and labels — Validate Conventions rejects a pull request whose metadata disagrees with its title, so set all of this at creation time rather than waiting for the reconciliation step to backfill it:
+   - **🔗 Related**: Issue links discovered from branch name, commits, `gh issue list --search`, or related files/documentation (never omit or leave empty)
+3. Pre-flight validate the PR body locally before submission:
+
+   ```bash
+   cat << 'EOF' > /tmp/pr_body.md
+   <generated body>
+   EOF
+
+   NODE_OPTIONS='' node --import @swc-node/register/esm-register \
+     tools/validation/src/main.ts pull-request-body /tmp/pr_body.md
+   ```
+
+   Fix any reported issues (e.g. missing headings or leftover template comments) before proceeding.
+
+4. Assignee and labels — Validate Conventions rejects a pull request whose metadata disagrees with its title, so set all of this at creation time rather than waiting for the reconciliation step to backfill it:
    - **Assignee**: `--assignee @me`. A pull request with no assignee fails validation.
    - **Type label**: Exactly one `type:*` label, matching the title's type. Never more than one, never a mismatch.
    - **Scope label(s)**: One `scope:*` label per scope named in the title — if the title carries more than one scope (`type(scope-one,scope-two): …`), add a `--label scope:<name>` for each of them, and no extra `scope:*` label beyond what the title names.
    - **Source label**: Exactly one `source:*` label. This skill is agent-driven, so use `source:agent` — never `source:human`, and never both.
    - **Never** apply `do-not-merge` — it blocks the pull request while present, and this workflow is opening one for immediate review, not staging a draft.
-4. Create the PR:
+5. Create the PR:
 
    ```bash
    gh pr create \
      --title "<type>(<scope>): <gitmoji> <subject>" \
-     --body "<generated body>" \
+     --body-file /tmp/pr_body.md \
      --base main \
      --assignee @me \
      --label type:<type> \
      --label scope:<scope> \
      --label source:agent
+   rm /tmp/pr_body.md
    ```
 
    Repeat `--label scope:<name>` for each additional scope the title names.
 
-5. Confirm the metadata actually landed — a label GitHub silently drops (typo, not-yet-created) fails CI just as surely as never adding it:
+6. Confirm the metadata actually landed — a label GitHub silently drops (typo, not-yet-created) fails CI just as surely as never adding it:
 
    ```bash
    gh pr view <branch> --json number,labels,assignees
