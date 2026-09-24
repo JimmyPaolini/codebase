@@ -71,14 +71,13 @@ export function assertTarballTypechecks(options: AssertTarballOptions): void {
     );
 
     const manifestPath = path.resolve(targetModuleDir, "package.json");
-    const manifest = JSON.parse(readFileSync(manifestPath, "utf8")) as Record<
-      string,
-      unknown
-    >;
+    const manifest = JSON.parse(readFileSync(manifestPath, "utf8")) as {
+      readonly name?: string;
+    };
 
-    if (manifest["name"] !== packageName) {
+    if (manifest.name !== packageName) {
       throw new Error(
-        `Expected manifest name "${packageName}", got "${String(manifest["name"])}"`,
+        `Expected manifest name "${packageName}", got "${String(manifest.name)}"`,
       );
     }
 

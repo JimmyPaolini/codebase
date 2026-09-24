@@ -6,7 +6,10 @@ import { pathToFileURL } from "node:url";
 
 import { describe, expect, it } from "vitest";
 
-import { assertTarballTypechecks } from "../testing/tarball";
+import {
+  assertCommandLineBinaryRuns,
+  assertTarballTypechecks,
+} from "../testing/tarball";
 
 import { environmentSchema } from "./constants";
 
@@ -255,6 +258,19 @@ describe("main end-to-end suite", () => {
           tarballName: "callidescope-cli",
         });
       }).not.toThrow();
+    });
+
+    it("executes the binary from the installed tarball and produces expected help output", () => {
+      expect.hasAssertions();
+
+      const result = assertCommandLineBinaryRuns({
+        binaryName: "callidescope",
+        tarballName: "callidescope-cli",
+      });
+
+      expect(result.status).toBe(0);
+      expect(result.output).toContain("Usage:");
+      expect(result.output).toContain("--help");
     });
   });
 });

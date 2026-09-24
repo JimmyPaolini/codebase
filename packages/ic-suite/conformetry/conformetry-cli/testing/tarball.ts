@@ -1,4 +1,4 @@
-import { execFileSync } from "node:child_process";
+import { execFileSync, spawnSync } from "node:child_process";
 import {
   existsSync,
   mkdirSync,
@@ -27,6 +27,14 @@ const typescriptCompilerBinary = path.resolve(
   "tsc",
 );
 
+/** Options for asserting a command line binary runs from its tarball. */
+export interface AssertCommandLineBinaryOptions {
+  /** The binary command name, e.g. `conformetry`. */
+  readonly binaryName: string;
+  /** The tarball base name without version or extension, e.g. `conformetry-cli`. */
+  readonly tarballName: string;
+}
+
 /** Options for asserting a package tarball installs and typechecks cleanly. */
 export interface AssertTarballOptions {
   /** Optional custom consumer source code to typecheck against the package. */
@@ -35,6 +43,86 @@ export interface AssertTarballOptions {
   readonly packageName: string;
   /** The tarball base name without version or extension, e.g. `conformetry-cli`. */
   readonly tarballName: string;
+}
+
+/** Result of executing a command line binary. */
+export interface CommandLineBinaryResult {
+  /** Standard error and standard output combined. */
+  readonly output: string;
+  /** Process exit status code. */
+  readonly status: null | number;
+}
+
+/**
+ * Asserts that a command-line binary runs from its packed tarball and returns its execution result.
+ *
+ * @param options - Binary identification options.
+ * @returns The exit status and output from executing the binary.
+ */
+export function assertCommandLineBinaryRuns(
+  options: AssertCommandLineBinaryOptions,
+): CommandLineBinaryResult {
+  const { binaryName, tarballName } = options;
+
+  const tarballPath = ensureTarball(tarballName);
+
+  const scratchDirectory = path.resolve(
+    packageRoot,
+    "tmp",
+    `cli-bin-test-${String(Date.now())}-${Math.random().toString(36).slice(2)}`,
+  );
+  mkdirSync(scratchDirectory, { recursive: true });
+
+  try {
+    const targetDir = path.resolve(scratchDirectory, "package");
+    mkdirSync(targetDir, { recursive: true });
+
+    execFileSync(
+      "tar",
+      ["-xzf", tarballPath, "-C", targetDir, "--strip-components=1"],
+      { stdio: "pipe" },
+    );
+
+    const manifestPath = path.resolve(targetDir, "package.json");
+    const manifest = JSON.parse(readFileSync(manifestPath, "utf8")) as {
+      readonly bin?: Record<string, string> | string;
+      readonly name?: string;
+    };
+
+    if (!manifest.name) {
+      throw new Error("Missing manifest name in tarball package.json");
+    }
+
+    const binField = manifest.bin;
+    const binRelative =
+      typeof binField === "string" ? binField : (binField?.[binaryName] ?? "");
+
+    const binPath = path.resolve(targetDir, binRelative);
+
+    const tsconfigPath = path.resolve(packageRoot, "tsconfig.json");
+
+    const result = spawnSync(
+      process.execPath,
+      ["--import", "@swc-node/register/esm-register", binPath, "--help"],
+      {
+        cwd: packageRoot,
+        encoding: "utf8",
+        env: {
+          ...process.env,
+          FORCE_COLOR: "0",
+          SWC_NODE_PROJECT: tsconfigPath,
+        },
+        timeout: 30_000,
+      },
+    );
+
+    return {
+      output: `${result.stdout}\n${result.stderr}`,
+      status: result.status,
+    };
+  } finally {
+    rmSync(scratchDirectory, { force: true, recursive: true });
+  }
 }
 
 /**
@@ -71,14 +159,13 @@ export function assertTarballTypechecks(options: AssertTarballOptions): void {
     );
 
     const manifestPath = path.resolve(targetModuleDir, "package.json");
-    const manifest = JSON.parse(readFileSync(manifestPath, "utf8")) as Record<
-      string,
-      unknown
-    >;
+    const manifest = JSON.parse(readFileSync(manifestPath, "utf8")) as {
+      readonly name?: string;
+    };
 
-    if (manifest["name"] !== packageName) {
+    if (manifest.name !== packageName) {
       throw new Error(
-        `Expected manifest name "${packageName}", got "${String(manifest["name"])}"`,
+        `Expected manifest name "${packageName}", got "${String(manifest.name)}"`,
       );
     }
 

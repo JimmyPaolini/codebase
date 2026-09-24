@@ -12,7 +12,10 @@ import path from "node:path";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import { createFixtureTree, removeFixtureTree } from "../testing/fixture-tree";
-import { assertTarballTypechecks } from "../testing/tarball";
+import {
+  assertCommandLineBinaryRuns,
+  assertTarballTypechecks,
+} from "../testing/tarball";
 
 import { environmentSchema } from "./constants";
 
@@ -304,6 +307,19 @@ describe("main end-to-end suite", () => {
           tarballName: "codometer-cli",
         });
       }).not.toThrow();
+    });
+
+    it("executes the binary from the installed tarball and produces expected help output", () => {
+      expect.hasAssertions();
+
+      const result = assertCommandLineBinaryRuns({
+        binaryName: "codometer",
+        tarballName: "codometer-cli",
+      });
+
+      expect(result.status).toBe(0);
+      expect(result.output).toContain("Usage:");
+      expect(result.output).toContain("--help");
     });
   });
 });
