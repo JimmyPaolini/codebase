@@ -469,5 +469,23 @@ describe(CharacteristicsFamilyService, () => {
     it("returns an empty array for unclassified codes", () => {
       expect(service.classify(code("2569a1", 3, 2))).toStrictEqual([]);
     });
+
+    it("exercises hasDownTeeth false path when regex matches but char mismatch", () => {
+      // Grid with [765] in top but "7" (not "8") in second row
+      // This exercises the regex true but condition false path
+      expect(service.isComb(code("7670123", 3, 2))).toBe(false);
+    });
+
+    it("exercises hasUpTeeth false path when regex matches but char mismatch", () => {
+      // Grid with [ba9] in bottom but "3" (not "4") in second-to-last
+      // This exercises the regex true but condition false path
+      expect(service.isComb(code("1231b9a", 3, 2))).toBe(false);
+    });
+
+    it("exercises isVerticalComb false path with partial spine match", () => {
+      // Column 0 has [cd] (partial spine) but missing [e6sa9]
+      // Spin has joint [de] but otherChars have non-[123] chars
+      expect(service.isComb(code("c40d40", 3, 2))).toBe(false);
+    });
   });
 });
