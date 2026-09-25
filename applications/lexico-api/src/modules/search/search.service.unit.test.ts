@@ -386,5 +386,59 @@ describe("search service suite", () => {
         SearchMatchSource.TRANSLATION_FULLTEXT,
       );
     });
+
+    it("paginates English search results forward and backward", async () => {
+      expect.hasAssertions();
+
+      const lexeme1 = new Lexeme();
+      lexeme1.id = "lex-1";
+      lexeme1.lemma = "amo";
+
+      const lexeme2 = new Lexeme();
+      lexeme2.id = "lex-2";
+      lexeme2.lemma = "diligo";
+
+      const lexeme3 = new Lexeme();
+      lexeme3.id = "lex-3";
+      lexeme3.lemma = "amo-alt";
+
+      const translation1 = new Translation("love", lexeme1);
+      const translation2 = new Translation("love", lexeme2);
+      const translation3 = new Translation("love", lexeme3);
+
+      const mockLexemeRepo = createRepositoryMock<Lexeme>();
+      const mockWordRepo = createRepositoryMock<Word>();
+      const mockTranslationRepo = createRepositoryMock<Translation>();
+
+      const translationQb = mockTranslationRepo.createQueryBuilder();
+      vi.spyOn(translationQb, "getMany").mockResolvedValue([
+        translation1,
+        translation2,
+        translation3,
+      ]);
+
+      const service = new SearchService(
+        mockLexemeRepo,
+        mockWordRepo,
+        mockTranslationRepo,
+      );
+
+      const page1 = await service.searchEnglish("love", { first: 2 });
+
+      expect(page1.edges).toHaveLength(2);
+      expect(page1.pageInfo.hasNextPage).toBe(true);
+      expect(page1.pageInfo.hasPreviousPage).toBe(false);
+
+      const afterCursor = page1.edges[1]?.cursor;
+      const page2 = await service.searchEnglish("love", {
+        after: afterCursor,
+        first: 2,
+      });
+
+      expect(page2.edges).toHaveLength(1);
+      expect(page2.edges[0]?.node.lexeme.id).toBe("lex-3");
+      expect(page2.pageInfo.hasNextPage).toBe(false);
+      expect(page2.pageInfo.hasPreviousPage).toBe(true);
+    });
   });
 });

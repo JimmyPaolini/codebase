@@ -50,8 +50,8 @@ export function decomposeEnclitic(
   }
 
   for (const suffix of ENCLITIC_SUFFIXES) {
-    const minLength = suffix.length + 1;
-    if (normalized.endsWith(suffix) && normalized.length > minLength) {
+    const minimumLength = suffix.length + 1;
+    if (normalized.endsWith(suffix) && normalized.length > minimumLength) {
       return {
         enclitic: suffix,
         stem: normalized.slice(0, -suffix.length),
