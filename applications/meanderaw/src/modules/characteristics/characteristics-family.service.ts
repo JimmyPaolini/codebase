@@ -20,13 +20,13 @@ export class CharacteristicsFamilyService {
 
   /** Checks if a top/bottom pair has downward teeth. */
   private hasDownTeeth(grid: readonly string[]): boolean {
-    const topRow = grid[0] ?? "";
+    const topRow = grid.at(0) ?? "";
     for (const column of Array.from(
       { length: topRow.length },
       (_, index) => index,
     )) {
-      const topCharacter = topRow[column] ?? "";
-      const bottomCharacter = grid.at(1)?.[column] ?? "";
+      const topCharacter = topRow.at(column) ?? "";
+      const bottomCharacter = grid.at(1)?.at(column) ?? "";
       if (/[765]/u.test(topCharacter) && bottomCharacter === "8") {
         return true;
       }
@@ -43,8 +43,8 @@ export class CharacteristicsFamilyService {
       { length: bottomRow.length },
       (_, index) => index,
     )) {
-      const topCharacter = secondToLast?.[column] ?? "";
-      const bottomCharacter = bottomRow[column] ?? "";
+      const topCharacter = secondToLast?.at(column) ?? "";
+      const bottomCharacter = bottomRow.at(column) ?? "";
       if (topCharacter === "4" && /[ba9]/u.test(bottomCharacter)) {
         return true;
       }
@@ -56,13 +56,14 @@ export class CharacteristicsFamilyService {
   /** Whether horizontal row is a comb spine with vertical teeth. */
   private isHorizontalComb(grid: readonly string[], rows: number): boolean {
     for (const row of Array.from({ length: rows }, (_, index) => index)) {
-      const rowChars = grid[row] ?? "";
-      const isSpine = /^[37b65a9]+$/u.test(rowChars);
-      const hasJoint = /[7b]/u.test(rowChars);
-
-      if (isSpine && hasJoint) {
+      const rowChars = grid[row];
+      if (
+        rowChars &&
+        /^[37b65a9]+$/u.test(rowChars) &&
+        /[7b]/u.test(rowChars)
+      ) {
         const otherChars = grid.filter((_, index) => index !== row).join("");
-        if (otherChars.length > 0 && /^[48c]+$/u.test(otherChars)) {
+        if (/^[48c]*$/u.test(otherChars)) {
           return true;
         }
       }
@@ -92,15 +93,16 @@ export class CharacteristicsFamilyService {
   /** Whether vertical column is a comb spine with horizontal teeth. */
   private isVerticalComb(grid: readonly string[], columns: number): boolean {
     for (const column of Array.from({ length: columns }, (_, index) => index)) {
-      const columnChars = grid.map((row) => row[column] ?? "").join("");
-      const isSpine = /^[cde65a9]+$/u.test(columnChars);
-      const hasJoint = /[de]/u.test(columnChars);
-
-      if (isSpine && hasJoint) {
+      const columnChars = grid.map((row) => row[column] || "").join("");
+      if (
+        columnChars &&
+        /^[cde65a9]+$/u.test(columnChars) &&
+        /[de]/u.test(columnChars)
+      ) {
         const otherChars = grid
           .map((row) => row.slice(0, column) + row.slice(column + 1))
           .join("");
-        if (otherChars.length > 0 && /^[123]+$/u.test(otherChars)) {
+        if (/^[123]*$/u.test(otherChars)) {
           return true;
         }
       }
@@ -185,26 +187,32 @@ export class CharacteristicsFamilyService {
     }
 
     const grid = this.toGrid(code);
-    const topRow = grid[0] ?? "";
-    const bottomRow = grid[code.rows - 1] ?? "";
-    if (!/[765]/u.test(topRow) || !/[ba9]/u.test(bottomRow)) {
+    const topRow = grid[0];
+    const bottomRow = grid[code.rows - 1];
+
+    if (
+      !topRow ||
+      !bottomRow ||
+      !/[765]/u.test(topRow) ||
+      !/[ba9]/u.test(bottomRow)
+    ) {
       return false;
     }
 
-    const count = Array.from(
-      { length: code.columns },
-      (_, index) => index,
-    ).reduce(
-      (acc, column) =>
-        /[765]/u.test(topRow[column] ?? "") &&
-        /[ba9]/u.test(bottomRow[column] ?? "") &&
-        grid.slice(1, code.rows - 1).every((row) => row[column] === "c")
-          ? acc + 1
-          : acc,
-      0,
-    );
+    const middleRows = grid.slice(1, code.rows - 1);
+    const pillarCount = Array.from({ length: code.columns }, (_, column) => {
+      const topCharacter = topRow.at(column);
+      const bottomCharacter = bottomRow.at(column);
+      return topCharacter &&
+        bottomCharacter &&
+        /[765]/u.test(topCharacter) &&
+        /[ba9]/u.test(bottomCharacter) &&
+        middleRows.every((row) => row.at(column) === "c")
+        ? 1
+        : 0;
+    }).reduce((a: number, b) => a + b, 0);
 
-    return count >= 2;
+    return pillarCount >= 2;
   }
 
   /**
@@ -253,7 +261,7 @@ export class CharacteristicsFamilyService {
    * rendering purely as bare dots.
    */
   isDots(code: CodeObject): boolean {
-    return code.digits.length > 0 && /^0+$/u.test(code.digits);
+    return /^0+$/u.test(code.digits);
   }
 
   /**
@@ -261,7 +269,7 @@ export class CharacteristicsFamilyService {
    * unbroken across every level of the band.
    */
   isLines(code: CodeObject): boolean {
-    return code.digits.length > 0 && /^3+$/u.test(code.digits);
+    return /^3+$/u.test(code.digits);
   }
 
   /**

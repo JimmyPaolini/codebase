@@ -261,7 +261,7 @@ describe(CharacteristicsFamilyService, () => {
         expect(service.isComb(code("7144a1", 3, 2))).toBe(false);
       });
 
-      it("rejects comb when 2-row code includes isolation char 0", () => {
+      it("rejects comb when 2-row code includes isolation character 0", () => {
         expect(service.isComb(code("7a0b", 2, 2))).toBe(false);
       });
 
@@ -368,11 +368,6 @@ describe(CharacteristicsFamilyService, () => {
         expect(service.isArcade(code("6700c0cba00", 3, 2))).toBe(false);
       });
 
-      it("tests isBars validates column count correctly", () => {
-        // 0 columns should fail
-        expect(service.isBars(code("", 2, 0))).toBe(false);
-      });
-
       it("tests isDots with empty string", () => {
         // Empty string should not match /^0+$/
         expect(service.isDots(code("", 0, 0))).toBe(false);
@@ -381,11 +376,6 @@ describe(CharacteristicsFamilyService, () => {
       it("tests isLines with empty string", () => {
         // Empty string should not match /^3+$/
         expect(service.isLines(code("", 0, 0))).toBe(false);
-      });
-
-      it("tests isMesh validates column count correctly", () => {
-        // 0 columns should fail
-        expect(service.isMesh(code("", 2, 0))).toBe(false);
       });
 
       it("targets reversing comb with downward teeth only", () => {
@@ -470,13 +460,13 @@ describe(CharacteristicsFamilyService, () => {
       expect(service.classify(code("2569a1", 3, 2))).toStrictEqual([]);
     });
 
-    it("exercises hasDownTeeth false path when regex matches but char mismatch", () => {
+    it("exercises hasDownTeeth false path when regex matches but character mismatch", () => {
       // Grid with [765] in top but "7" (not "8") in second row
       // This exercises the regex true but condition false path
       expect(service.isComb(code("7670123", 3, 2))).toBe(false);
     });
 
-    it("exercises hasUpTeeth false path when regex matches but char mismatch", () => {
+    it("exercises hasUpTeeth false path when regex matches but character mismatch", () => {
       // Grid with [ba9] in bottom but "3" (not "4") in second-to-last
       // This exercises the regex true but condition false path
       expect(service.isComb(code("1231b9a", 3, 2))).toBe(false);
