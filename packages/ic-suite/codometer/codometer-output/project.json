@@ -40,6 +40,18 @@
     "markdown-lint": {},
     "oxfmt": {},
     "oxlint": {},
+    "pack": {
+      "cache": true,
+      "dependsOn": ["build"],
+      "description": "Pack this package into a tarball in dist/tarballs using pnpm pack.",
+      "executor": "nx:run-commands",
+      "inputs": ["^production", "dependency-versions", "production"],
+      "options": {
+        "command": "pnpm pack --pack-destination ../../../../dist/tarballs",
+        "cwd": "{projectRoot}"
+      },
+      "outputs": ["{workspaceRoot}/dist/tarballs/{projectName}-*.tgz"]
+    },
     "prettier": {},
     "spell-check": {},
     "test-code": {},

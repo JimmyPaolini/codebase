@@ -172,7 +172,6 @@ export function ensureTarball(tarballName: string): string {
   return tarballPath;
 }
 
-
 /**
  * Unpacks all available publish-set tarballs into a target node_modules directory.
  *
