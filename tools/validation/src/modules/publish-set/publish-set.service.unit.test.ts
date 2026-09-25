@@ -62,7 +62,7 @@ vi.mock("node:fs", () => ({
       const name = targetPath.includes("conformetry-core")
         ? "conformetry-core"
         : "conformetry-cli";
-      return JSON.stringify({ name });
+      return JSON.stringify({ name, tags: ["type:package"] });
     }
     if (targetPath.includes("conformetry-core")) {
       return JSON.stringify({

@@ -109,14 +109,14 @@ export class PublishSetService {
       readonly name: string;
       readonly publishConfig?: unknown;
     };
-
-    if (!manifest.publishConfig) {
-      return null;
-    }
-
     const project = JSON.parse(readFileSync(projectPath, "utf8")) as {
       readonly name: string;
+      readonly tags?: readonly string[];
     };
+
+    if (!manifest.publishConfig || !project.tags?.includes("type:package")) {
+      return null;
+    }
 
     let binaryName: string | undefined;
     if (manifest.bin && childName.endsWith("-cli")) {
