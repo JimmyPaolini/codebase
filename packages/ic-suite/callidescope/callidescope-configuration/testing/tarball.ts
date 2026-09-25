@@ -130,18 +130,23 @@ export function ensureTarball(tarballName: string): string {
   );
 
   if (!existsSync(tarballPath)) {
-    execFileSync(
-      "node",
-      [
-        "--import",
-        "@swc-node/register/esm-register",
-        path.resolve(workspaceRoot, "scripts", "pack-publish-set.ts"),
-      ],
-      {
+    // Don't try to run pack if we're already inside an Nx task execution.
+    // The pack target runs as a dependency of test-code, so tarballs
+    // should already exist or be being built in parallel.
+    if (!process.env["NX_TASK_TARGET_PROJECT"]) {
+      execFileSync("pnpm", ["exec", "nx", "run-many", "-t", "pack"], {
         cwd: workspaceRoot,
         stdio: "pipe",
-      },
-    );
+      });
+    } else {
+      // We're inside an Nx task - wait for pack to complete if it's running in parallel
+      for (let i = 0; i < 10; i++) {
+        if (existsSync(tarballPath)) {
+          return tarballPath;
+        }
+        execFileSync("sleep", ["0.1"]);
+      }
+    }
   }
 
   if (!existsSync(tarballPath)) {
