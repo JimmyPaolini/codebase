@@ -123,8 +123,10 @@ export class CharacteristicsFamilyService {
     minimumRows: number,
     excludeFamilies: ((code: CodeObject) => boolean)[],
   ): boolean {
-    const { columns, digits, rows } = code;
-    if (rows < minimumRows || columns < 1 || digits.length !== rows * columns) {
+    if (
+      code.rows < minimumRows ||
+      code.digits.length !== code.rows * code.columns
+    ) {
       return false;
     }
 
@@ -210,7 +212,7 @@ export class CharacteristicsFamilyService {
    * entire column width from the top border tick to the bottom border tick.
    */
   isBars(code: CodeObject): boolean {
-    if (code.rows < 2 || code.columns < 1) {
+    if (code.rows < 2) {
       return false;
     }
 
@@ -267,7 +269,7 @@ export class CharacteristicsFamilyService {
    * connections across the entire lattice grid.
    */
   isMesh(code: CodeObject): boolean {
-    if (code.rows < 2 || code.columns < 1) {
+    if (code.rows < 2) {
       return false;
     }
 
