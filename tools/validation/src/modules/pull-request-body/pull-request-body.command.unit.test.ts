@@ -18,6 +18,11 @@ const fileContents = new Map<string, string>();
 
 vi.mock("node:fs", () => ({
   readFileSync: vi.fn<(target: string) => string>((target: string) => {
+    if (target === "non-error.md") {
+      // eslint-disable-next-line @typescript-eslint/only-throw-error
+      throw "plain string error";
+    }
+
     const contents = fileContents.get(target);
 
     if (contents === undefined) {
@@ -276,6 +281,15 @@ describe(PullRequestBodyCommand, () => {
     await expect(runCommand(["missing.md"])).resolves.toBe(true);
     expect(reportLines[0]).toContain(
       "❌ Unable to read the body from missing.md: ",
+    );
+  });
+
+  it("reports a path read failure when readFileSync throws a non-Error", async () => {
+    expect.hasAssertions();
+
+    await expect(runCommand(["non-error.md"])).resolves.toBe(true);
+    expect(reportLines[0]).toContain(
+      "❌ Unable to read the body from non-error.md: plain string error",
     );
   });
 

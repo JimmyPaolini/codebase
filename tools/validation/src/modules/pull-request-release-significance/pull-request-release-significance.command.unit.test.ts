@@ -353,6 +353,23 @@ describe(PullRequestReleaseSignificanceCommand, () => {
       expect(appendFileSync).not.toHaveBeenCalled();
     });
 
+    it("logs a warning when writing step summary throws an error", async () => {
+      expect.hasAssertions();
+
+      process.env[STEP_SUMMARY_VARIABLE] = "/tmp/summary";
+      vi.mocked(githubService.run).mockReturnValue(
+        succeeded(pullRequestDocument({ title: "feat(lexico): add a page" })),
+      );
+      vi.mocked(appendFileSync).mockImplementationOnce(() => {
+        throw new Error("EACCES");
+      });
+
+      await expect(runCommand(["7"])).resolves.toBe(false);
+      expect(reportLines).toContain(
+        "⚠️ Unable to write the report to GITHUB_STEP_SUMMARY",
+      );
+    });
+
     it("writes nothing when the variable is empty", async () => {
       expect.hasAssertions();
 

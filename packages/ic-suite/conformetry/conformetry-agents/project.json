@@ -14,6 +14,7 @@
     "lint-code": {},
     "markdown-lint": {},
     "oxfmt": {},
+    "pack": {},
     "prettier": {},
     "spell-check": {},
     "test-code": {},
