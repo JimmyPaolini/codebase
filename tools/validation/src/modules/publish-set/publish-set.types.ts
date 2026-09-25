@@ -16,8 +16,12 @@ export interface PublishSetPackage {
  * Result of running the publish set tarball verification.
  */
 export interface PublishSetVerificationResult {
+  /** Total number of CLI binaries verified. */
+  readonly binaryCount: number;
   /** Detail or failure messages logged during verification. */
   readonly messages: readonly string[];
-  /** Whether all 28 tarballs installed, typechecked, and ran CLI binaries cleanly. */
+  /** Total number of publishable packages verified. */
+  readonly packageCount: number;
+  /** Whether all tarballs installed, typechecked, and ran CLI binaries cleanly. */
   readonly succeeded: boolean;
 }

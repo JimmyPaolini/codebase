@@ -70,7 +70,7 @@
     "eslint": {},
     "examples": {
       "cache": true,
-      "description": "Run every example the way its own guide says to, and gate on the exit code and the output that guide promises. Named `examples` so every examples package in this workspace has the same aggregate entry point. For this package the runner and the assertions are one thing: the suite reads each per-example target's command straight out of this file and runs it, so a separate script would only duplicate the expectation table. The eleven per-example targets are how you run one example and watch its output \u2014 four of them exit non-zero on purpose, which is why running them as a plain batch could never be the gate.",
+      "description": "Run every example the way its own guide says to, and gate on the exit code and the output that guide promises. Named `examples` so every examples package in this workspace has the same aggregate entry point. For this package the runner and the assertions are one thing: the suite reads each per-example target's command straight out of this file and runs it, so a separate script would only duplicate the expectation table. The eleven per-example targets are how you run one example and watch its output — four of them exit non-zero on purpose, which is why running them as a plain batch could never be the gate.",
       "executor": "nx:run-commands",
       "inputs": ["{projectRoot}/**/*", "default"],
       "options": {
@@ -142,18 +142,7 @@
       }
     },
     "oxfmt": {},
-    "pack": {
-      "cache": true,
-      "dependsOn": ["build"],
-      "description": "Pack this package into a tarball in dist/tarballs using pnpm pack.",
-      "executor": "nx:run-commands",
-      "inputs": ["^production", "dependency-versions", "production"],
-      "options": {
-        "command": "pnpm pack --pack-destination ../../../../dist/tarballs",
-        "cwd": "{projectRoot}"
-      },
-      "outputs": ["{workspaceRoot}/dist/tarballs/{projectName}-*.tgz"]
-    },
+    "pack": {},
     "prettier": {},
     "scoring-thresholds": {
       "cache": false,

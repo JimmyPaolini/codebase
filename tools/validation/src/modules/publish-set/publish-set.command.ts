@@ -3,7 +3,7 @@ import { Command, CommandRunner } from "nest-commander";
 
 import { LoggerService } from "@codebase/logger";
 
-import { PUBLISH_SET_SUCCESS_MESSAGE } from "./publish-set.constants";
+import { formatPublishSetSuccessMessage } from "./publish-set.constants";
 import { PublishSetService } from "./publish-set.service";
 
 /**
@@ -43,7 +43,9 @@ export class PublishSetCommand extends CommandRunner {
     const result = this.publishSetService.verifyPublishSet(process.cwd());
 
     if (result.succeeded) {
-      console.info(PUBLISH_SET_SUCCESS_MESSAGE);
+      console.info(
+        formatPublishSetSuccessMessage(result.packageCount, result.binaryCount),
+      );
 
       return;
     }

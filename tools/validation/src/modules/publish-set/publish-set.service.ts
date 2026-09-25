@@ -13,10 +13,7 @@ import { Injectable } from "@nestjs/common";
 
 import { LoggerService } from "@codebase/logger";
 
-import {
-  PUBLISH_SET_PACKAGES,
-  TARBALLS_DIRECTORY_MISSING_MESSAGE,
-} from "./publish-set.constants";
+import { TARBALLS_DIRECTORY_MISSING_MESSAGE } from "./publish-set.constants";
 
 import type {
   PublishSetPackage,
@@ -41,14 +38,32 @@ export class PublishSetService {
   // 🔏 Private Methods
 
   /**
+   * Creates scratch and node_modules directories for tarball verification.
+   */
+  private createScratchDirectories(workspaceRoot: string): {
+    nodeModulesDirectory: string;
+    scratchDirectory: string;
+  } {
+    const scratchDirectory = path.resolve(
+      workspaceRoot,
+      "tmp",
+      `publish-set-verify-${Date.now()}`,
+    );
+    const nodeModulesDirectory = path.resolve(scratchDirectory, "node_modules");
+
+    mkdirSync(nodeModulesDirectory, { recursive: true });
+
+    return { nodeModulesDirectory, scratchDirectory };
+  }
+
+  /**
    * Spawns the CLI binary and returns error message if execution fails.
    */
-  private executeSpawnedBinary(options: {
-    binaryName: string;
-    binPath: string;
-    packageRoot: string;
-  }): null | string {
-    const { binaryName, binPath, packageRoot } = options;
+  private executeSpawnedBinary(
+    binaryName: string,
+    binPath: string,
+    packageRoot: string,
+  ): null | string {
     const tsconfigPath = path.resolve(packageRoot, "tsconfig.json");
 
     const result = spawnSync(
@@ -75,6 +90,57 @@ export class PublishSetService {
   }
 
   /**
+   * Inspects a child directory and parses a PublishSetPackage if publishable.
+   */
+  private parsePackageCandidate(
+    familyDirectory: string,
+    childName: string,
+  ): null | PublishSetPackage {
+    const packageDirectory = path.resolve(familyDirectory, childName);
+    const manifestPath = path.resolve(packageDirectory, "package.json");
+    const projectPath = path.resolve(packageDirectory, "project.json");
+
+    if (!existsSync(manifestPath) || !existsSync(projectPath)) {
+      return null;
+    }
+
+    const manifest = JSON.parse(readFileSync(manifestPath, "utf8")) as {
+      readonly bin?: Record<string, string> | string;
+      readonly name: string;
+      readonly publishConfig?: unknown;
+    };
+
+    if (!manifest.publishConfig) {
+      return null;
+    }
+
+    const project = JSON.parse(readFileSync(projectPath, "utf8")) as {
+      readonly name: string;
+    };
+
+    let binaryName: string | undefined;
+    if (manifest.bin && childName.endsWith("-cli")) {
+      binaryName =
+        typeof manifest.bin === "string"
+          ? childName
+          : Object.keys(manifest.bin)[0];
+    }
+
+    if (binaryName) {
+      return {
+        binary: binaryName,
+        name: manifest.name,
+        tarball: project.name,
+      };
+    }
+
+    return {
+      name: manifest.name,
+      tarball: project.name,
+    };
+  }
+
+  /**
    * Reads the relative bin script path from a package manifest.
    */
   private readPackageManifestBin(
@@ -85,13 +151,34 @@ export class PublishSetService {
     const manifest = JSON.parse(readFileSync(manifestPath, "utf8")) as {
       readonly bin?: Record<string, string> | string;
     };
-    if (typeof manifest.bin === "string") {
-      return manifest.bin;
+    const binField = manifest.bin;
+
+    if (typeof binField === "string") {
+      return binField;
     }
-    if (manifest.bin && typeof manifest.bin === "object") {
-      return manifest.bin[binaryName] ?? "";
+
+    return binField?.[binaryName] ?? "";
+  }
+
+  /**
+   * Resolves publishable packages under a single toolchain family directory.
+   */
+  private resolveFamilyPackages(familyDirectory: string): PublishSetPackage[] {
+    const packages: PublishSetPackage[] = [];
+    const children = readdirSync(familyDirectory, { withFileTypes: true });
+
+    for (const child of children) {
+      if (!child.isDirectory()) {
+        continue;
+      }
+
+      const item = this.parsePackageCandidate(familyDirectory, child.name);
+      if (item) {
+        packages.push(item);
+      }
     }
-    return "";
+
+    return packages;
   }
 
   /**
@@ -157,10 +244,11 @@ export class PublishSetService {
   private verifyAllCliBinaries(
     workspaceRoot: string,
     tarballsDirectory: string,
+    publishSetPackages: readonly PublishSetPackage[],
   ): string[] {
     const errors: string[] = [];
 
-    for (const item of PUBLISH_SET_PACKAGES) {
+    for (const item of publishSetPackages) {
       const error = this.verifyCliBinary(
         workspaceRoot,
         tarballsDirectory,
@@ -181,10 +269,11 @@ export class PublishSetService {
   private verifyAllTypechecks(
     scratchDirectory: string,
     typescriptCompilerBinary: string,
+    publishSetPackages: readonly PublishSetPackage[],
   ): string[] {
     const errors: string[] = [];
 
-    for (const item of PUBLISH_SET_PACKAGES) {
+    for (const item of publishSetPackages) {
       const error = this.verifyPackageTypecheck(
         scratchDirectory,
         typescriptCompilerBinary,
@@ -243,11 +332,7 @@ export class PublishSetService {
       );
       const binPath = path.resolve(targetDirectory, binRelative);
 
-      return this.executeSpawnedBinary({
-        binaryName,
-        binPath,
-        packageRoot,
-      });
+      return this.executeSpawnedBinary(binaryName, binPath, packageRoot);
     } catch (error) {
       return `Failed to execute CLI binary for ${publishSetPackage.name}: ${String(error)}`;
     } finally {
@@ -319,24 +404,60 @@ export class PublishSetService {
   // 🌎 Public Methods
 
   /**
-   * Verifies that all 28 publish set tarballs install and typecheck cleanly,
-   * and that all 4 CLI binaries execute successfully.
+   * Dynamically resolves all publishable packages in `packages/ic-suite`.
    *
    * @param workspaceRoot - Absolute path to the workspace root directory.
-   * @returns Verification result including success status and error messages.
+   * @returns Array of publishable packages with names, tarball bases, and CLI binaries.
    */
-  public verifyPublishSet(
-    workspaceRoot: string = process.cwd(),
-  ): PublishSetVerificationResult {
+  public resolvePublishSetPackages(workspaceRoot: string): PublishSetPackage[] {
+    const icSuiteDirectory = path.resolve(
+      workspaceRoot,
+      "packages",
+      "ic-suite",
+    );
+
+    if (!existsSync(icSuiteDirectory)) {
+      return [];
+    }
+
+    const packages: PublishSetPackage[] = [];
+    const families = readdirSync(icSuiteDirectory, { withFileTypes: true });
+
+    for (const family of families) {
+      if (!family.isDirectory()) {
+        continue;
+      }
+
+      const familyDirectory = path.resolve(icSuiteDirectory, family.name);
+      packages.push(...this.resolveFamilyPackages(familyDirectory));
+    }
+
+    return packages.toSorted((first, second) =>
+      first.name.localeCompare(second.name),
+    );
+  }
+
+  /**
+   * Verifies that all publish set tarballs install and typecheck cleanly,
+   * and that all CLI binaries execute successfully.
+   *
+   * @param workspaceRoot - Absolute path to the workspace root directory.
+   * @returns Verification result including success status, counts, and error messages.
+   */
+  public verifyPublishSet(workspaceRoot: string): PublishSetVerificationResult {
     const tarballsDirectory = path.resolve(workspaceRoot, "dist", "tarballs");
 
     if (!existsSync(tarballsDirectory)) {
       return {
+        binaryCount: 0,
         messages: [TARBALLS_DIRECTORY_MISSING_MESSAGE],
+        packageCount: 0,
         succeeded: false,
       };
     }
 
+    const publishSetPackages = this.resolvePublishSetPackages(workspaceRoot);
+    const binaryCount = publishSetPackages.filter((item) => item.binary).length;
     const typescriptCompilerBinary = path.resolve(
       workspaceRoot,
       "node_modules",
@@ -345,31 +466,22 @@ export class PublishSetService {
       "tsc",
     );
 
-    const scratchDirectory = path.resolve(
-      workspaceRoot,
-      "tmp",
-      `publish-set-verify-${Date.now()}`,
-    );
-    mkdirSync(scratchDirectory, { recursive: true });
-
+    const { nodeModulesDirectory, scratchDirectory } =
+      this.createScratchDirectories(workspaceRoot);
     const messages: string[] = [];
 
     try {
-      const nodeModulesDirectory = path.resolve(
-        scratchDirectory,
-        "node_modules",
-      );
-      mkdirSync(nodeModulesDirectory, { recursive: true });
-
       this.unpackTarballs(nodeModulesDirectory, tarballsDirectory);
 
       const typecheckErrors = this.verifyAllTypechecks(
         scratchDirectory,
         typescriptCompilerBinary,
+        publishSetPackages,
       );
       const cliErrors = this.verifyAllCliBinaries(
         workspaceRoot,
         tarballsDirectory,
+        publishSetPackages,
       );
 
       messages.push(...typecheckErrors, ...cliErrors);
@@ -378,7 +490,9 @@ export class PublishSetService {
     }
 
     return {
+      binaryCount,
       messages,
+      packageCount: publishSetPackages.length,
       succeeded: messages.length === 0,
     };
   }

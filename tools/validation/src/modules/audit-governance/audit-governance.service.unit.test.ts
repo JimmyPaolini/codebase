@@ -146,6 +146,21 @@ jobs:
       ).toBe(true);
     });
 
+    it("returns valid verdict when workflow file has no jobs section", () => {
+      expect.hasAssertions();
+
+      vi.mocked(existsSync).mockReturnValue(true);
+      vi.mocked(readdirSync as (target: string) => string[]).mockReturnValue([
+        "empty.yml",
+      ]);
+      vi.mocked(readFileSync).mockReturnValue("name: Empty Workflow\n");
+
+      const verdict = service.checkWorkflows("/mock/workspace");
+
+      expect(verdict.valid).toBe(true);
+      expect(verdict.violations).toStrictEqual([]);
+    });
+
     it("returns violation when workflow has neither top-level nor job-level permissions", () => {
       expect.hasAssertions();
 

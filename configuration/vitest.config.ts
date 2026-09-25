@@ -17,7 +17,6 @@ const vitestConfig = defineConfig({
       },
     },
     globals: false,
-    hookTimeout: 30_000,
     include: [
       "src/**/*.test.js",
       "src/**/*.test.jsx",
@@ -29,7 +28,6 @@ const vitestConfig = defineConfig({
       "testing/**/*.test.tsx",
     ],
     setupFiles: ["./testing/setup.ts"],
-    testTimeout: 30_000,
   },
 });
 

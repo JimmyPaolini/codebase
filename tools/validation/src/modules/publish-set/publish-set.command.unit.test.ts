@@ -7,7 +7,7 @@ import { LoggerService } from "@codebase/logger";
 import { mockProcessExit } from "../../../testing/mocks";
 
 import { PublishSetCommand } from "./publish-set.command";
-import { PUBLISH_SET_SUCCESS_MESSAGE } from "./publish-set.constants";
+import { formatPublishSetSuccessMessage } from "./publish-set.constants";
 import { PublishSetService } from "./publish-set.service";
 
 describe(PublishSetCommand, () => {
@@ -68,21 +68,25 @@ describe(PublishSetCommand, () => {
     expect.hasAssertions();
 
     vi.mocked(service.verifyPublishSet).mockReturnValue({
+      binaryCount: 4,
       messages: [],
+      packageCount: 28,
       succeeded: true,
     });
     const infoSpy = vi.spyOn(console, "info").mockImplementation(() => {});
 
     await command.run();
 
-    expect(infoSpy).toHaveBeenCalledWith(PUBLISH_SET_SUCCESS_MESSAGE);
+    expect(infoSpy).toHaveBeenCalledWith(formatPublishSetSuccessMessage(28, 4));
   });
 
   it("logs error messages and exits with code 1 when verification fails", async () => {
     expect.hasAssertions();
 
     vi.mocked(service.verifyPublishSet).mockReturnValue({
+      binaryCount: 0,
       messages: ["Error 1"],
+      packageCount: 0,
       succeeded: false,
     });
     const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});

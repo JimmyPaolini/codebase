@@ -146,6 +146,20 @@ describe(IssueMetadataGithubService, () => {
       expect(result.success).toBe(false);
       expect(result.error).toContain("Unable to parse gh issue list output");
     });
+
+    it("returns error when JSON parsing throws a non-Error object", () => {
+      expect.hasAssertions();
+
+      completeWith({ stdout: "{}" });
+      vi.spyOn(JSON, "parse").mockImplementationOnce(() => {
+        throw new Error("string-error");
+      });
+
+      const result = service.listOpenIssues();
+
+      expect(result.success).toBe(false);
+      expect(result.error).toContain("string-error");
+    });
   });
 
   describe("isAvailable", () => {
