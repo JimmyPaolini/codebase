@@ -1,4 +1,4 @@
-# Codebase v2.22.1
+# Codebase v2.23.0
 
 [![Nx](https://img.shields.io/badge/Nx-Codebase-143055?logo=nx)](https://nx.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Strict-3178C6?logo=typescript)](https://www.typescriptlang.org/)
@@ -409,12 +409,12 @@ Repository statistics measured by [codometer](packages/ic-suite/codometer/codome
 ### YAML
 
 ![YAML Files](https://img.shields.io/badge/YAML_Files-21-cb171e?style=flat-square)
-![YAML Lines](https://img.shields.io/badge/YAML_Lines-2766-e34c26?style=flat-square)
+![YAML Lines](https://img.shields.io/badge/YAML_Lines-2752-e34c26?style=flat-square)
 ![YAML Documents](https://img.shields.io/badge/YAML_Documents-21-f97316?style=flat-square)
-![YAML Mappings](https://img.shields.io/badge/YAML_Mappings-395-7c3aed?style=flat-square)
-![YAML Sequences](https://img.shields.io/badge/YAML_Sequences-86-8b5cf6?style=flat-square)
-![YAML Keys](https://img.shields.io/badge/YAML_Keys-1360-0284c7?style=flat-square)
-![YAML Scalars](https://img.shields.io/badge/YAML_Scalars-2732-16a34a?style=flat-square)
+![YAML Mappings](https://img.shields.io/badge/YAML_Mappings-400-7c3aed?style=flat-square)
+![YAML Sequences](https://img.shields.io/badge/YAML_Sequences-87-8b5cf6?style=flat-square)
+![YAML Keys](https://img.shields.io/badge/YAML_Keys-1367-0284c7?style=flat-square)
+![YAML Scalars](https://img.shields.io/badge/YAML_Scalars-2744-16a34a?style=flat-square)
 ![YAML Anchors](https://img.shields.io/badge/YAML_Anchors-0-059669?style=flat-square)
 ![YAML Aliases](https://img.shields.io/badge/YAML_Aliases-0-10b981?style=flat-square)
 ![YAML Comments](https://img.shields.io/badge/YAML_Comments-386-64748b?style=flat-square)
@@ -529,24 +529,24 @@ Repository statistics measured by [codometer](packages/ic-suite/codometer/codome
 ### Markdown
 
 ![Markdown Files](https://img.shields.io/badge/Markdown_Files-103-083fa1?style=flat-square)
-![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-18340-1f6feb?style=flat-square)
+![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-18377-1f6feb?style=flat-square)
 ![H1](https://img.shields.io/badge/H1-102-7c3aed?style=flat-square)
 ![H2](https://img.shields.io/badge/H2-629-8b5cf6?style=flat-square)
 ![H3](https://img.shields.io/badge/H3-524-a78bfa?style=flat-square)
-![H4](https://img.shields.io/badge/H4-77-c4b5fd?style=flat-square)
+![H4](https://img.shields.io/badge/H4-78-c4b5fd?style=flat-square)
 ![H5](https://img.shields.io/badge/H5-0-ddd6fe?style=flat-square)
 ![H6](https://img.shields.io/badge/H6-0-ede9fe?style=flat-square)
-![Paragraphs](https://img.shields.io/badge/Paragraphs-5234-64748b?style=flat-square)
-![Lists](https://img.shields.io/badge/Lists-832-16a34a?style=flat-square)
-![List Items](https://img.shields.io/badge/List_Items-4055-22c55e?style=flat-square)
+![Paragraphs](https://img.shields.io/badge/Paragraphs-5242-64748b?style=flat-square)
+![Lists](https://img.shields.io/badge/Lists-833-16a34a?style=flat-square)
+![List Items](https://img.shields.io/badge/List_Items-4060-22c55e?style=flat-square)
 ![Task List Items](https://img.shields.io/badge/Task_List_Items-57-4ade80?style=flat-square)
 ![Tables](https://img.shields.io/badge/Tables-217-0284c7?style=flat-square)
 ![Table Rows](https://img.shields.io/badge/Table_Rows-1883-0ea5e9?style=flat-square)
 ![Links](https://img.shields.io/badge/Links-663-059669?style=flat-square)
 ![Images](https://img.shields.io/badge/Images-22-10b981?style=flat-square)
-![Code Blocks](https://img.shields.io/badge/Code_Blocks-395-dc2626?style=flat-square)
-![Inline Code](https://img.shields.io/badge/Inline_Code-10151-ef4444?style=flat-square)
-![Block Quotes](https://img.shields.io/badge/Block_Quotes-20-ca8a04?style=flat-square)
+![Code Blocks](https://img.shields.io/badge/Code_Blocks-397-dc2626?style=flat-square)
+![Inline Code](https://img.shields.io/badge/Inline_Code-10167-ef4444?style=flat-square)
+![Block Quotes](https://img.shields.io/badge/Block_Quotes-21-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-28-a16207?style=flat-square)
 <!-- codometer:end -->
 
@@ -558,22 +558,22 @@ The workspace's call graph, traced by [callidescope](packages/ic-suite/callidesc
 
 | Measure | Value |
 | --- | --- |
-| Callables | 5077 |
+| Callables | 5117 |
 | Files | 1423 |
-| Calls traced | 5673 |
-| Call stacks | 1316 |
+| Calls traced | 5722 |
+| Call stacks | 1330 |
 | Deepest stack | 17 |
 | Stacks through recursion | 12 |
-| Unfollowable calls | 337 |
+| Unfollowable calls | 338 |
 
 ### Projects
 
 | Project | Deepest | Limit | Headroom | Widest |
 | --- | --- | --- | --- | --- |
+| `applications/meanderaw` | 17 | 16 | -1 | 13 |
 | `applications/caelundas` | 16 | 16 | 0 | 12 |
 | `applications/lexico` | 9 | 9 | 0 | 9 |
 | `applications/lexico-ingestion` | 17 | 17 | 0 | 8 |
-| `applications/meanderaw` | 16 | 16 | 0 | 12 |
 | `packages/ic-suite/callidescope/callidescope-cli` | 15 | 15 | 0 | 10 |
 | `packages/ic-suite/callidescope/callidescope-nx` | 17 | 17 | 0 | 7 |
 | `packages/ic-suite/codependix/codependix-boundaries` | 12 | 12 | 0 | 7 |
@@ -613,16 +613,50 @@ The workspace's call graph, traced by [callidescope](packages/ic-suite/callidesc
 
 | Headroom | Projects |
 | --- | --- |
-| over limit | 0 |
-| 0 — at limit | 17 |
+| over limit | 1 |
+| 0 — at limit | 16 |
 | 1 | 0 |
 | 2–3 | 2 |
 | 4+ | 9 |
 | no stacks | 10 |
 
-### Call stacks over the depth limit (0)
+### Call stacks over the depth limit (1)
 
-None.
+**1. `DrawCommand.run`** — depth ≥ 17 · decorated-method
+
+```text
+🚀 DrawCommand.run(_passedParameters: string[], options: DrawCommandOptions): Promise<void> [applications/meanderaw/src/modules/draw/draw.command.ts:229]
+   ↳ Checks for drift when `--check` is given, sweeps every meander into the database when no Code is named, or draws the…
+  └─> DrawCheckService.check(): Promise<MeanderDriftReport> [applications/meanderaw/src/modules/draw/draw-check.service.ts:162]
+     ↳ Regenerates the whole corpus into a throwaway database, diffs it against the committed one, and throws {@link…
+    └─> DrawEnumerationService.sweep(): Promise<number> [applications/meanderaw/src/modules/draw/draw-enumeration.service.ts:80]
+       ↳ Every shape the budget admits, swept and written — which is what `draw` with no drawing named now does.
+      └─> DrawEnumerationService.persist(shapes: readonly MeanderShape[]): Promise<number> [applications/meanderaw/src/modules/draw/draw-enumeration.service.ts:60]
+         ↳ Enumerates the shapes named and writes every meander they hold, one shape's rows at a time, answering with how many…
+        └─> DrawEnumerationService.records(shape: MeanderShape): MeanderRecord[] [applications/meanderaw/src/modules/draw/draw-enumeration.service.ts:71]
+           ↳ Every meander of one shape, as the rows the database holds for them.
+          └─> DrawEnumerationService.map(…)({ code }: EnumeratedMeander): MeanderRecord [applications/meanderaw/src/modules/draw/draw-enumeration.service.ts:74]
+            └─> DrawRecordService.record(…): MeanderRecord [applications/meanderaw/src/modules/draw/draw-record.service.ts:57]
+               ↳ The row one Code describes at one shape, every field of it derived from that Code alone.
+              └─> CharacteristicsService.compute(code: CodeObject): Characteristics [applications/meanderaw/src/modules/characteristics/characteristics.service.ts:463]
+                 ↳ Computes every characteristic for a given parsed code (delegates to measure).
+                └─> CharacteristicsService.measure(…): Characteristics [applications/meanderaw/src/modules/characteristics/characteristics.service.ts:468]
+                   ↳ Computes every characteristic for a given Matrix, CodeObject, or code string.
+                  └─> CharacteristicsService.computeFromMatrix(matrix: Matrix, isReducible?: boolean): Characteristics [applications/meanderaw/src/modules/characteristics/characteristics.service.ts:89]
+                     ↳ Computes every characteristic from a 2D Matrix representation.
+                    └─> CharacteristicsService.measureGraphs(…): { unwrappedEdges: CodeEdge[]; unwrappedGraph: Connectivity; unwrappedJunctions: { tJunctions: number; xJunctions: number; }; wrappedEdges: CodeEdge[]; wrappedGraph: Connectivity; wrappedJunctions: { ...; }; } [applications/meanderaw/src/modules/characteristics/characteristics.service.ts:292]
+                       ↳ Computes graph connectivity and junctions.
+                      └─> ConnectivityService.connectivity(matrix: Matrix, unwrapped?: boolean): Connectivity [applications/meanderaw/src/modules/characteristics/connectivity.service.ts:133]
+                         ↳ How many pieces one repeat's ink falls into, how many independent loops it closes, and how many of its points…
+                        └─> ConnectivityService.adjacency(matrix: Matrix, edges: readonly CodeEdge[]): InkAdjacency<string> [applications/meanderaw/src/modules/characteristics/connectivity.service.ts:61]
+                           ↳ The Matrix's edges as an {@link InkAdjacency}, which is all {@link GraphService.components} needs of it.
+                          └─> ConnectivityService.nodes(matrix: Matrix): string[] [applications/meanderaw/src/modules/characteristics/connectivity.service.ts:114]
+                             ↳ Every point the Matrix spells, inked dots included — a point on no edge at all is a component of its own.
+                            └─> ConnectivityService.from(…)(_unused: unknown, row: number): string[] [applications/meanderaw/src/modules/characteristics/connectivity.service.ts:117]
+                              └─> ConnectivityService.from(…)(_column: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/connectivity.service.ts:118]
+                                └─> ConnectivityService.key(row: number, column: number): string [applications/meanderaw/src/modules/characteristics/connectivity.service.ts:109]
+                                   ↳ One point's identity in the graph, which is its position and nothing else.
+```
 
 ### Callables over the breadth limit (1)
 
