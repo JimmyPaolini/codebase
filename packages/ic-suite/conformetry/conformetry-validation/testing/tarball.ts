@@ -130,21 +130,37 @@ export function ensureTarball(tarballName: string): string {
   );
 
   if (!existsSync(tarballPath)) {
-    // Don't try to run pack if we're already inside an Nx task execution.
-    // The pack target runs as a dependency of test-code, so tarballs
-    // should already exist or be being built in parallel.
-    if (!process.env["NX_TASK_TARGET_PROJECT"]) {
-      execFileSync("pnpm", ["exec", "nx", "run-many", "-t", "pack"], {
-        cwd: workspaceRoot,
-        stdio: "pipe",
-      });
-    } else {
-      // We're inside an Nx task - wait for pack to complete if it's running in parallel
-      for (let i = 0; i < 10; i++) {
+    if (process.env["NX_TASK_TARGET_PROJECT"]) {
+      // Inside Nx task - wait for parallel pack to complete
+      for (let i = 0; i < 50; i++) {
         if (existsSync(tarballPath)) {
           return tarballPath;
         }
         execFileSync("sleep", ["0.1"]);
+      }
+    } else {
+      // Find the package directory with this name in ic-suite
+      let packageDir: string | undefined;
+      const icSuitePath = path.resolve(workspaceRoot, "packages", "ic-suite");
+      for (const suite of readdirSync(icSuitePath)) {
+        const suitePath = path.resolve(icSuitePath, suite);
+        const potentialPackageDir = path.resolve(suitePath, tarballName);
+        if (existsSync(path.resolve(potentialPackageDir, "package.json"))) {
+          packageDir = potentialPackageDir;
+          break;
+        }
+      }
+
+      if (packageDir) {
+        // Pack this package using pnpm
+        execFileSync(
+          "pnpm",
+          ["pack", "--pack-destination", tarballsDirectory],
+          {
+            cwd: packageDir,
+            stdio: "pipe",
+          },
+        );
       }
     }
   }
@@ -155,6 +171,7 @@ export function ensureTarball(tarballName: string): string {
 
   return tarballPath;
 }
+
 
 /**
  * Unpacks all available publish-set tarballs into a target node_modules directory.

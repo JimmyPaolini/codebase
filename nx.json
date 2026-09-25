@@ -1109,7 +1109,8 @@
     "vitest": {
       "configurations": {
         "coverage": {
-          "command": "pnpm exec vitest run --coverage --coverage.provider=v8"
+          "command": "pnpm exec vitest run --coverage --coverage.provider=v8",
+          "dependsOn": ["pack"]
         },
         "end-to-end": {
           "command": "pnpm exec vitest run end-to-end.test.ts",
