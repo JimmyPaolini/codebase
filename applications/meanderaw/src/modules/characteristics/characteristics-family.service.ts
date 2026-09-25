@@ -18,40 +18,6 @@ export class CharacteristicsFamilyService {
 
   // 🔏 Private Methods
 
-  /** Counts how many vertical pillars connect top and bottom rails continuously. */
-  private countThroughPillars(
-    grid: readonly string[],
-    rows: number,
-    columns: number,
-  ): number {
-    const topRow = grid[0] ?? "";
-    const bottomRow = grid[rows - 1] ?? "";
-    let count = 0;
-
-    for (const column of Array.from({ length: columns }, (_, index) => index)) {
-      if (
-        this.hasConnectors(topRow, bottomRow, column) &&
-        grid.slice(1, rows - 1).every((row) => row[column] === "c")
-      ) {
-        count += 1;
-      }
-    }
-
-    return count;
-  }
-
-  /** Checks if top/bottom rails have the right connectors at this column. */
-  private hasConnectors(
-    topRow: string,
-    bottomRow: string,
-    column: number,
-  ): boolean {
-    return (
-      /[765]/u.test(topRow[column] ?? "") &&
-      /[ba9]/u.test(bottomRow[column] ?? "")
-    );
-  }
-
   /** Checks if a top/bottom pair has downward teeth. */
   private hasDownTeeth(grid: readonly string[]): boolean {
     const topRow = grid[0] ?? "";
@@ -67,23 +33,6 @@ export class CharacteristicsFamilyService {
     }
 
     return false;
-  }
-
-  /** Checks if middle rows are all pillars (continuous "c" characters). */
-  private hasOnlyPillars(grid: readonly string[]): boolean {
-    if (grid.length <= 2) {
-      return true;
-    }
-
-    const middle = grid.slice(1, -1).join("");
-    return /^c+$/u.test(middle);
-  }
-
-  /** Checks if top and bottom rails have joint connectors. */
-  private hasRailConnectors(grid: readonly string[], rows: number): boolean {
-    const topRow = grid[0] ?? "";
-    const bottomRow = grid[rows - 1] ?? "";
-    return /[765]/u.test(topRow) && /[ba9]/u.test(bottomRow);
   }
 
   /** Checks if a top/bottom pair has upward teeth. */
@@ -136,7 +85,8 @@ export class CharacteristicsFamilyService {
       return !digits.includes("0");
     }
 
-    return this.hasOnlyPillars(grid);
+    const middle = grid.slice(1, -1).join("");
+    return /^c+$/u.test(middle);
   }
 
   /** Whether vertical column is a comb spine with horizontal teeth. */
@@ -233,11 +183,26 @@ export class CharacteristicsFamilyService {
     }
 
     const grid = this.toGrid(code);
-    if (!this.hasRailConnectors(grid, code.rows)) {
+    const topRow = grid[0] ?? "";
+    const bottomRow = grid[code.rows - 1] ?? "";
+    if (!/[765]/u.test(topRow) || !/[ba9]/u.test(bottomRow)) {
       return false;
     }
 
-    return this.countThroughPillars(grid, code.rows, code.columns) >= 2;
+    const count = Array.from(
+      { length: code.columns },
+      (_, index) => index,
+    ).reduce(
+      (acc, column) =>
+        /[765]/u.test(topRow[column] ?? "") &&
+        /[ba9]/u.test(bottomRow[column] ?? "") &&
+        grid.slice(1, code.rows - 1).every((row) => row[column] === "c")
+          ? acc + 1
+          : acc,
+      0,
+    );
+
+    return count >= 2;
   }
 
   /**
