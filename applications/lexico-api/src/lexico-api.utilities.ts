@@ -5,6 +5,15 @@ import { PageInfo } from "./lexico-api.entities";
 import type { ClassConstructor, Connection, Edge } from "./lexico-api.types";
 
 /**
+ * Parameters for finding index bounds for array pagination.
+ */
+interface PaginationBoundsParameters<T> {
+  after?: null | string | undefined;
+  before?: null | string | undefined;
+  getCursor: (item: T) => string;
+}
+
+/**
  * Creates a Relay Connection containing edges, page info, and total count.
  */
 export function createConnection<T>(parameters: {
@@ -120,48 +129,30 @@ export function fromCursorSafe<T = unknown>(
 }
 
 /**
- * Slices an array of items according to forward (first, after) Relay pagination parameters.
+ * Slices an array of items according to forward (first, after) and backward (last, before) Relay pagination parameters.
  */
 export function paginateArray<T>(
   items: T[],
   parameters: {
-    after?: null | string;
-    first?: null | number;
+    after?: null | string | undefined;
+    before?: null | string | undefined;
+    first?: null | number | undefined;
     getCursor: (item: T) => string;
+    last?: null | number | undefined;
   },
 ): {
   edges: Edge<T>[];
   hasNextPage: boolean;
   hasPreviousPage: boolean;
 } {
-  let startIndex = 0;
-  if (
-    parameters.after !== undefined &&
-    parameters.after !== null &&
-    parameters.after.length > 0
-  ) {
-    const foundIndex = items.findIndex(
-      (item) => parameters.getCursor(item) === parameters.after,
-    );
-    if (foundIndex !== -1) {
-      startIndex = foundIndex + 1;
-    }
-  }
-
-  const limit =
-    parameters.first !== undefined &&
-    parameters.first !== null &&
-    parameters.first > 0
-      ? parameters.first
-      : items.length;
-  const slicedItems = items.slice(startIndex, startIndex + limit);
+  const { endIndex, startIndex } = getPaginationBounds(items, parameters);
+  const sliced = items.slice(startIndex, endIndex);
+  const { hasNext, hasPrevious, result } = sliceWithLimits(sliced, parameters);
 
   return {
-    edges: slicedItems.map((item) =>
-      createEdge(item, parameters.getCursor(item)),
-    ),
-    hasNextPage: startIndex + limit < items.length,
-    hasPreviousPage: startIndex > 0,
+    edges: result.map((item) => createEdge(item, parameters.getCursor(item))),
+    hasNextPage: endIndex < items.length || hasNext,
+    hasPreviousPage: startIndex > 0 || hasPrevious,
   };
 }
 
@@ -198,4 +189,70 @@ export function Paginated<T>(
  */
 export function toCursor(data: unknown): string {
   return Buffer.from(JSON.stringify(data), "utf8").toString("base64url");
+}
+
+/**
+ * Computes start and end slice indices based on after and before cursors.
+ */
+function getPaginationBounds<T>(
+  items: T[],
+  parameters: PaginationBoundsParameters<T>,
+): { endIndex: number; startIndex: number } {
+  let startIndex = 0;
+  let endIndex = items.length;
+
+  if (parameters.after) {
+    const afterIndex = items.findIndex(
+      (item) => parameters.getCursor(item) === parameters.after,
+    );
+    if (afterIndex !== -1) {
+      startIndex = afterIndex + 1;
+    }
+  }
+
+  if (parameters.before) {
+    const beforeIndex = items.findIndex(
+      (item) => parameters.getCursor(item) === parameters.before,
+    );
+    if (beforeIndex !== -1) {
+      endIndex = beforeIndex;
+    }
+  }
+
+  return { endIndex, startIndex: Math.min(startIndex, endIndex) };
+}
+
+/**
+ * Slices a sub-array based on first and last count limits.
+ */
+function sliceWithLimits<T>(
+  items: T[],
+  limits: {
+    first?: null | number | undefined;
+    last?: null | number | undefined;
+  },
+): { hasNext: boolean; hasPrevious: boolean; result: T[] } {
+  let result = items;
+  let hasNext = false;
+  let hasPrevious = false;
+
+  if (
+    typeof limits.first === "number" &&
+    limits.first >= 0 &&
+    result.length > limits.first
+  ) {
+    result = result.slice(0, limits.first);
+    hasNext = true;
+  }
+
+  if (
+    typeof limits.last === "number" &&
+    limits.last >= 0 &&
+    result.length > limits.last
+  ) {
+    result = result.slice(result.length - limits.last);
+    hasPrevious = true;
+  }
+
+  return { hasNext, hasPrevious, result };
 }

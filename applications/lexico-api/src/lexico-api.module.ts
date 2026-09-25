@@ -28,6 +28,7 @@ import { LoggerModule } from "@codebase/logger";
 import { environmentSchema } from "./lexico-api.constants";
 import { HealthModule } from "./modules/health/health.module";
 import { LexemesModule } from "./modules/lexemes/lexemes.module";
+import { SearchModule } from "./modules/search/search.module";
 
 /**
  * Root NestJS application module for the Lexico GraphQL API.
@@ -68,6 +69,7 @@ import { LexemesModule } from "./modules/lexemes/lexemes.module";
     LoggerModule,
     HealthModule,
     LexemesModule,
+    SearchModule,
   ],
 })
 export class LexicoApiModule {}

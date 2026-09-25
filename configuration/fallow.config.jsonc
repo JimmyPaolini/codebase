@@ -18,6 +18,15 @@
     "skipLocal": true,
     "threshold": 6,
   },
+  "ignoreDependencyOverrides": [
+    { "package": "axios" },
+    { "package": "brace-expansion" },
+    { "package": "conventional-changelog-conventionalcommits" },
+    { "package": "fast-uri" },
+    { "package": "js-yaml" },
+    { "package": "markdown-it" },
+    { "package": "ws" },
+  ],
   "entry": [
     "**/scripts/**/*.{js,mjs,ts,sh}",
     "{applications,packages,tools}/**/src/index.ts",
