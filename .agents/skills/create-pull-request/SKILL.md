@@ -139,12 +139,14 @@ Write clear, comprehensive descriptions that help reviewers understand changes. 
 
 ### Description Guidelines
 
-| Section    | Purpose                                                 | Required      |
-| ---------- | ------------------------------------------------------- | ------------- |
-| 🌰 Summary | Brief overview of the PR                                | Yes           |
-| 📝 Details | Bulleted list of changes                                | Yes           |
-| 🧪 Testing | How to verify the changes                               | Yes           |
-| 🔗 Related | Links to issues and/or documentation this PR references | If applicable |
+| Section    | Purpose                                                                                   | Required |
+| ---------- | ----------------------------------------------------------------------------------------- | -------- |
+| 🌰 Summary | Brief overview of the PR (1-2 sentences)                                                  | Yes      |
+| 📝 Details | Bulleted list of changes                                                                  | Yes      |
+| 🧪 Testing | How to verify the changes (commands and manual steps)                                     | Yes      |
+| 🔗 Related | Links to issues, specs, or related files/docs (never omit or leave empty)                 | Yes      |
+
+> ⚠️ **Strict Validation:** CI validates that all 4 headings (`## 🌰 Summary`, `## 📝 Details`, `## 🧪 Testing`, `## 🔗 Related`) are present and non-empty, and that no HTML template comments (`<!-- ... -->`) remain. If there is no tracking issue, link to the relevant spec, files, or documentation in `🔗 Related`.
 
 ## Step-by-Step Workflow
 
@@ -177,13 +179,13 @@ git push -u origin feat/lexico-user-profile
 
 ### 4. Create Pull Request
 
-#### Using GitHub CLI (preferred)
+#### Validate PR Body Locally (Pre-flight Check)
 
-```bash
-gh pr create \
-  --title "feat(lexico): ✨ add user profile page" \
-  --assignee @me \
-  --body "## 🌰 Summary
+Before opening the pull request, validate the generated markdown body against repository rules:
+
+````bash
+cat << 'EOF' > /tmp/pr_body.md
+## 🌰 Summary
 
 Adds a user profile page where users can view and edit their information.
 
@@ -195,14 +197,31 @@ Adds a user profile page where users can view and edit their information.
 
 ## 🧪 Testing
 
-\`\`\`bash
+```bash
 nx run lexico:vitest
 nx run lexico:develop  # Navigate to /profile
-\`\`\`
+```
 
 ## 🔗 Related
 
-- Closes #123"
+- Closes #123
+EOF
+
+NODE_OPTIONS='' node --import @swc-node/register/esm-register \
+  tools/validation/src/main.ts pull-request-body /tmp/pr_body.md
+````
+
+#### Using GitHub CLI (preferred)
+
+```bash
+gh pr create \
+  --title "feat(lexico): ✨ add user profile page" \
+  --assignee @me \
+  --body-file /tmp/pr_body.md \
+  --label type:feat \
+  --label scope:lexico \
+  --label source:agent
+rm /tmp/pr_body.md
 ```
 
 ### 5. Address Review Feedback
