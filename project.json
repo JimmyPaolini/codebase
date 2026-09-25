@@ -585,47 +585,6 @@
         "cwd": "{projectRoot}"
       }
     },
-    "pack-publish-set": {
-      "cache": true,
-      "dependsOn": [
-        "callidescope-cli:build",
-        "callidescope-configuration:build",
-        "callidescope-core:build",
-        "callidescope-graph:build",
-        "callidescope-nx:build",
-        "callidescope-output:build",
-        "codependix-boundaries:build",
-        "codependix-cli:build",
-        "codependix-configuration:build",
-        "codependix-core:build",
-        "codependix-file-imports:build",
-        "codependix-nestjs-modules:build",
-        "codependix-nx-projects:build",
-        "codependix-output:build",
-        "codometer-cli:build",
-        "codometer-configuration:build",
-        "codometer-core:build",
-        "codometer-languages:build",
-        "codometer-measurement:build",
-        "codometer-output:build",
-        "conformetry-cli:build",
-        "conformetry-configuration:build",
-        "conformetry-core:build",
-        "conformetry-generation:build",
-        "conformetry-languages:build",
-        "conformetry-nx:build",
-        "conformetry-output:build",
-        "conformetry-validation:build"
-      ],
-      "description": "Pack every package in the publish set (28 packages across the 4 suites) into dist/tarballs.",
-      "executor": "nx:run-commands",
-      "inputs": ["^production", "dependency-versions", "production"],
-      "options": {
-        "command": "node --import @swc-node/register/esm-register scripts/pack-publish-set.ts",
-        "cwd": "{workspaceRoot}"
-      },
-      "outputs": ["{workspaceRoot}/dist/tarballs"]
-    },
     "pnpm-audit": {
       "cache": false,
       "configurations": {
