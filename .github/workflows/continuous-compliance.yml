@@ -228,5 +228,5 @@ jobs:
       - name: 🏷️ Validate Commit Message
         if: github.event_name == 'push'
         run: |
-          git log -1 --pretty=%B | \
+          git log -1 --pretty=%s | \
             npx commitlint --config configuration/commitlint.config.ts
