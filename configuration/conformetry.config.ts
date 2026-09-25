@@ -80,6 +80,13 @@ const conformetryConfiguration: ConformetryNxConfiguration = [
           workspaceRelativePrefix: "../../../../",
         },
       },
+      {
+        patterns: ["packages/ic-suite/codometer/codometer-cli"],
+        substitutions: {
+          type: "packages/ic-suite/codometer",
+          workspaceRelativePrefix: "../../../../",
+        },
+      },
     ],
     name: "nestjs-command-project",
     templatePath: "configuration/conformetry-templates/nestjs-command-project",
