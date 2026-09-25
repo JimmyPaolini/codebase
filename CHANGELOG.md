@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.23.1](https://github.com/JimmyPaolini/codebase/compare/v2.23.0...v2.23.1) (2026-09-25)
+
+### 📦 Build System
+
+* **callidescope,codependix,codometer,configuration,conformetry,ic-suite,testing,validation:** 📦️ verify publish set ([#1057](https://github.com/JimmyPaolini/codebase/issues/1057)) ([e2e155a](https://github.com/JimmyPaolini/codebase/commit/e2e155a2adec21cdfe19831448a383198d5d9d49)), closes [#451](https://github.com/JimmyPaolini/codebase/issues/451) [#452](https://github.com/JimmyPaolini/codebase/issues/452) [#453](https://github.com/JimmyPaolini/codebase/issues/453) [#454](https://github.com/JimmyPaolini/codebase/issues/454) [#455](https://github.com/JimmyPaolini/codebase/issues/455) [#456](https://github.com/JimmyPaolini/codebase/issues/456) [#457](https://github.com/JimmyPaolini/codebase/issues/457)
+* **configuration,documentation:** 📦️ add the shared vite library build ([#1058](https://github.com/JimmyPaolini/codebase/issues/1058)) ([b1d2a42](https://github.com/JimmyPaolini/codebase/commit/b1d2a4256c7373868c3cc6fde86d147bbb4107a4)), closes [#458](https://github.com/JimmyPaolini/codebase/issues/458) [#459](https://github.com/JimmyPaolini/codebase/issues/459) [#460](https://github.com/JimmyPaolini/codebase/issues/460) [#461](https://github.com/JimmyPaolini/codebase/issues/461)
+
 ## [2.23.0](https://github.com/JimmyPaolini/codebase/compare/v2.22.1...v2.23.0) (2026-09-25)
 
 ### ✨ Features

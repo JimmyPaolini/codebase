@@ -109,13 +109,13 @@ Call stacks traced through `tools/validation`, deepest first. Each frame shows w
 
 | Measure | Value |
 | --- | --- |
-| Callables | 207 |
-| Files | 52 |
-| Calls traced | 261 |
-| Call stacks | 8 |
+| Callables | 227 |
+| Files | 57 |
+| Calls traced | 278 |
+| Call stacks | 9 |
 | Deepest stack | 8 |
 | Stacks through recursion | 0 |
-| Unfollowable calls | 18 |
+| Unfollowable calls | 19 |
 
 ### Limits
 
@@ -189,7 +189,7 @@ What this project is judged against, as declared in its own `callidescope.config
 ```
 
 <details>
-<summary>5 more call stacks</summary>
+<summary>6 more call stacks</summary>
 
 **4. `PullRequestReleaseSignificanceCommand.run`** — depth 7 · decorated-method
 
@@ -236,7 +236,22 @@ What this project is judged against, as declared in its own `callidescope.config
         └─> CatalogManifestsService.some(…)(scope: string): boolean [tools/validation/src/modules/catalog-manifests/catalog-manifests.service.ts:38]
 ```
 
-**7. `LockfileCommand.run`** — depth 3 · decorated-method
+**7. `PublishSetCommand.run`** — depth 5 · decorated-method
+
+```text
+🚀 PublishSetCommand.run(): Promise<void> [tools/validation/src/modules/publish-set/publish-set.command.ts:40]
+   ↳ Executes the publish set tarball verification and exits 0 on success, 1 on failure.
+  └─> PublishSetService.verifyPublishSet(workspaceRoot: string): PublishSetVerificationResult [tools/validation/src/modules/publish-set/publish-set.service.ts:447]
+     ↳ Verifies that all publish set tarballs install and typecheck cleanly, and that all CLI binaries execute successfully.
+    └─> PublishSetService.resolvePublishSetPackages(workspaceRoot: string): PublishSetPackage[] [tools/validation/src/modules/publish-set/publish-set.service.ts:412]
+       ↳ Dynamically resolves all publishable packages in `packages/ic-suite`.
+      └─> PublishSetService.resolveFamilyPackages(familyDirectory: string): PublishSetPackage[] [tools/validation/src/modules/publish-set/publish-set.service.ts:166]
+         ↳ Resolves publishable packages under a single toolchain family directory.
+        └─> PublishSetService.parsePackageCandidate(familyDirectory: string, childName: string): null | PublishSetPackage [tools/validation/src/modules/publish-set/publish-set.service.ts:95]
+           ↳ Inspects a child directory and parses a PublishSetPackage if publishable.
+```
+
+**8. `LockfileCommand.run`** — depth 3 · decorated-method
 
 ```text
 🚀 LockfileCommand.run(): Promise<void> [tools/validation/src/modules/lockfile/lockfile.command.ts:50]
@@ -247,7 +262,7 @@ What this project is judged against, as declared in its own `callidescope.config
        ↳ Runs one candidate pnpm, merging both of its streams.
 ```
 
-**8. `ReadmeProjectsCommand.run`** — depth 3 · decorated-method
+**9. `ReadmeProjectsCommand.run`** — depth 3 · decorated-method
 
 ```text
 🚀 ReadmeProjectsCommand.run(): Promise<void> [tools/validation/src/modules/readme-projects/readme-projects.command.ts:43]
@@ -269,11 +284,12 @@ What this project is judged against, as declared in its own `callidescope.config
 | `PullRequestMetadataCommand.run` | 8 | `PullRequestMetadataCommand.resolveMetadata`, `PullRequestMetadataCommand.failWithMessage`, `PullRequestMetadataService.parseTitle`, `PullRequestMetadataService.checkMetadata`, `PullRequestMetadataCommand.resolvePullRequestNumber`, `PullRequestMetadataCommand.reportFailures`, `PullRequestMetadataCommand.appendToReport`, `PullRequestMetadataCommand.mirrorToStepSummary` | `tools/validation/src/modules/pull-request-metadata/pull-request-metadata.command.ts:264` |
 
 <details>
-<summary>95 more callables</summary>
+<summary>103 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
 | `IssueMetadataCommand.runBulkAudit` | 7 | `IssueMetadataGithubService.isAvailable`, `IssueMetadataCommand.failWithUsageError`, `IssueMetadataGithubService.listOpenIssues`, `IssueMetadataCommand.failWithMessage`, `IssueMetadataService.checkBulkIssues`, `IssueMetadataCommand.appendToReport`, `IssueMetadataCommand.mirrorToStepSummary` | `tools/validation/src/modules/issue-metadata/issue-metadata.command.ts:257` |
+| `PublishSetService.verifyPublishSet` | 6 | `PublishSetService.resolvePublishSetPackages`, `PublishSetService.filter(…)`, `PublishSetService.createScratchDirectories`, `PublishSetService.unpackTarballs`, `PublishSetService.verifyAllTypechecks`, `PublishSetService.verifyAllCliBinaries` | `tools/validation/src/modules/publish-set/publish-set.service.ts:447` |
 | `IssueMetadataCommand.readLiveMetadata` | 5 | `IssueMetadataGithubService.isAvailable`, `IssueMetadataCommand.failWithUsageError`, `IssueMetadataGithubService.run`, `IssueMetadataGithubService.describeFailure`, `IssueMetadataService.resolveFromDocument` | `tools/validation/src/modules/issue-metadata/issue-metadata.command.ts:153` |
 | `PullRequestMetadataService.checkMetadata` | 5 | `PullRequestMetadataService.groupLabels`, `PullRequestMetadataService.checkTypeLabel`, `PullRequestMetadataService.checkScopeLabels`, `PullRequestMetadataService.record`, `PullRequestMetadataService.checkSourceLabel` | `tools/validation/src/modules/pull-request-metadata/pull-request-metadata.service.ts:213` |
 | `PullRequestMetadataCommand.readLiveMetadata` | 5 | `PullRequestMetadataGithubService.isAvailable`, `PullRequestMetadataCommand.failWithUsageError`, `PullRequestMetadataGithubService.run`, `PullRequestMetadataGithubService.describeFailure`, `PullRequestMetadataService.resolveFromDocument` | `tools/validation/src/modules/pull-request-metadata/pull-request-metadata.command.ts:154` |
@@ -290,6 +306,7 @@ What this project is judged against, as declared in its own `callidescope.config
 | `IssueMetadataService.groupLabels` | 3 | `IssueMetadataService.filter(…)`, `IssueMetadataService.filter(…)`, `IssueMetadataService.filter(…)` | `tools/validation/src/modules/issue-metadata/issue-metadata.service.ts:401` |
 | `IssueMetadataService.resolveFromDocument` | 3 | `IssueMetadataService.describeError`, `IssueMetadataService.isRecord`, `IssueMetadataService.readLabelNames` | `tools/validation/src/modules/issue-metadata/issue-metadata.service.ts:427` |
 | `IssueMetadataCommand.resolveMetadata` | 3 | `IssueMetadataCommand.failWithUsageError`, `IssueMetadataCommand.readEnvironmentMetadata`, `IssueMetadataCommand.readLiveMetadata` | `tools/validation/src/modules/issue-metadata/issue-metadata.command.ts:229` |
+| `PublishSetService.verifyCliBinary` | 3 | `PublishSetService.unpackCliTarball`, `PublishSetService.readPackageManifestBin`, `PublishSetService.executeSpawnedBinary` | `tools/validation/src/modules/publish-set/publish-set.service.ts:294` |
 | `PullRequestBodyService.checkBody` | 3 | `PullRequestBodyService.findEmptySections`, `PullRequestBodyService.findMissingHeadings`, `PullRequestBodyService.findUnfilledComments` | `tools/validation/src/modules/pull-request-body/pull-request-body.service.ts:64` |
 | `PullRequestMetadataService.groupLabels` | 3 | `PullRequestMetadataService.filter(…)`, `PullRequestMetadataService.filter(…)`, `PullRequestMetadataService.filter(…)` | `tools/validation/src/modules/pull-request-metadata/pull-request-metadata.service.ts:254` |
 | `PullRequestMetadataService.resolveFromDocument` | 3 | `PullRequestMetadataService.describeError`, `PullRequestMetadataService.isRecord`, `PullRequestMetadataService.readNames` | `tools/validation/src/modules/pull-request-metadata/pull-request-metadata.service.ts:297` |
@@ -312,6 +329,8 @@ What this project is judged against, as declared in its own `callidescope.config
 | `IssueMetadataCommand.failWithUsageError` | 2 | `IssueMetadataCommand.appendToReport`, `IssueMetadataCommand.mirrorToStepSummary` | `tools/validation/src/modules/issue-metadata/issue-metadata.command.ts:87` |
 | `IssueMetadataCommand.readEnvironmentMetadata` | 2 | `IssueMetadataCommand.failWithUsageError`, `IssueMetadataService.resolveFromEnvironment` | `tools/validation/src/modules/issue-metadata/issue-metadata.command.ts:133` |
 | `IssueMetadataCommand.reportFailures` | 2 | `IssueMetadataCommand.appendToReport`, `IssueMetadataCommand.mirrorToStepSummary` | `tools/validation/src/modules/issue-metadata/issue-metadata.command.ts:183` |
+| `PublishSetService.resolvePublishSetPackages` | 2 | `PublishSetService.resolveFamilyPackages`, `PublishSetService.toSorted(…)` | `tools/validation/src/modules/publish-set/publish-set.service.ts:412` |
+| `PublishSetCommand.run` | 2 | `PublishSetService.verifyPublishSet`, `formatPublishSetSuccessMessage` | `tools/validation/src/modules/publish-set/publish-set.command.ts:40` |
 | `PullRequestBodyService.cleanSectionContent` | 2 | `PullRequestBodyService.filter(…)`, `PullRequestBodyService.map(…)` | `tools/validation/src/modules/pull-request-body/pull-request-body.service.ts:38` |
 | `PullRequestBodyService.findMissingHeadings` | 2 | `PullRequestBodyService.map(…)`, `PullRequestBodyService.filter(…)` | `tools/validation/src/modules/pull-request-body/pull-request-body.service.ts:120` |
 | `PullRequestBodyCommand.reportVerdict` | 2 | `PullRequestBodyCommand.map(…)`, `PullRequestBodyCommand.map(…)` | `tools/validation/src/modules/pull-request-body/pull-request-body.command.ts:73` |
@@ -345,6 +364,10 @@ What this project is judged against, as declared in its own `callidescope.config
 | `IssueMetadataService.parseFormAnswers` | 1 | `IssueMetadataService.extractFormField` | `tools/validation/src/modules/issue-metadata/issue-metadata.service.ts:416` |
 | `LockfileService.checkLockfile` | 1 | `LockfileService.runFrozenInstall` | `tools/validation/src/modules/lockfile/lockfile.service.ts:60` |
 | `LockfileCommand.run` | 1 | `LockfileService.checkLockfile` | `tools/validation/src/modules/lockfile/lockfile.command.ts:50` |
+| `PublishSetService.resolveFamilyPackages` | 1 | `PublishSetService.parsePackageCandidate` | `tools/validation/src/modules/publish-set/publish-set.service.ts:166` |
+| `PublishSetService.unpackTarballs` | 1 | `PublishSetService.filter(…)` | `tools/validation/src/modules/publish-set/publish-set.service.ts:209` |
+| `PublishSetService.verifyAllCliBinaries` | 1 | `PublishSetService.verifyCliBinary` | `tools/validation/src/modules/publish-set/publish-set.service.ts:244` |
+| `PublishSetService.verifyAllTypechecks` | 1 | `PublishSetService.verifyPackageTypecheck` | `tools/validation/src/modules/publish-set/publish-set.service.ts:269` |
 | `PullRequestBodyService.extractTemplateComments` | 1 | `PullRequestBodyService.map(…)` | `tools/validation/src/modules/pull-request-body/pull-request-body.service.ts:76` |
 | `PullRequestBodyService.findEmptySections` | 1 | `PullRequestBodyService.filter(…)` | `tools/validation/src/modules/pull-request-body/pull-request-body.service.ts:83` |
 | `PullRequestBodyService.filter(…)` | 1 | `PullRequestBodyService.cleanSectionContent` | `tools/validation/src/modules/pull-request-body/pull-request-body.service.ts:106` |
@@ -402,6 +425,7 @@ flowchart LR
   LockfileModule
   LoggerModule([LoggerModule])
   MainModule
+  PublishSetModule
   PullRequestBodyModule
   PullRequestMetadataModule
   PullRequestReleaseSignificanceModule
@@ -411,6 +435,7 @@ flowchart LR
   MainModule --> DiscoveryModule
   MainModule --> IssueMetadataModule
   MainModule --> LockfileModule
+  MainModule --> PublishSetModule
   MainModule --> PullRequestBodyModule
   MainModule --> PullRequestMetadataModule
   MainModule --> PullRequestReleaseSignificanceModule
@@ -468,6 +493,14 @@ graph LR
   file_src_modules_lockfile_lockfile_service_ts["src/modules/lockfile/lockfile.service.ts"]
   file_src_modules_lockfile_lockfile_service_unit_test_ts["src/modules/lockfile/lockfile.service.unit.test.ts"]
   file_src_modules_lockfile_lockfile_types_ts["src/modules/lockfile/lockfile.types.ts"]
+  file_src_modules_publish_set_publish_set_command_ts["src/modules/publish-set/publish-set.command.ts"]
+  file_src_modules_publish_set_publish_set_command_unit_test_ts["src/modules/publish-set/publish-set.command.unit.test.ts"]
+  file_src_modules_publish_set_publish_set_constants_ts["src/modules/publish-set/publish-set.constants.ts"]
+  file_src_modules_publish_set_publish_set_module_ts["src/modules/publish-set/publish-set.module.ts"]
+  file_src_modules_publish_set_publish_set_module_unit_test_ts["src/modules/publish-set/publish-set.module.unit.test.ts"]
+  file_src_modules_publish_set_publish_set_service_ts["src/modules/publish-set/publish-set.service.ts"]
+  file_src_modules_publish_set_publish_set_service_unit_test_ts["src/modules/publish-set/publish-set.service.unit.test.ts"]
+  file_src_modules_publish_set_publish_set_types_ts["src/modules/publish-set/publish-set.types.ts"]
   file_src_modules_pull_request_body_pull_request_body_command_ts["src/modules/pull-request-body/pull-request-body.command.ts"]
   file_src_modules_pull_request_body_pull_request_body_command_unit_test_ts["src/modules/pull-request-body/pull-request-body.command.unit.test.ts"]
   file_src_modules_pull_request_body_pull_request_body_constants_ts["src/modules/pull-request-body/pull-request-body.constants.ts"]
@@ -515,6 +548,7 @@ graph LR
   file_src_main_module_ts --> file_src_modules_catalog_manifests_catalog_manifests_module_ts
   file_src_main_module_ts --> file_src_modules_issue_metadata_issue_metadata_module_ts
   file_src_main_module_ts --> file_src_modules_lockfile_lockfile_module_ts
+  file_src_main_module_ts --> file_src_modules_publish_set_publish_set_module_ts
   file_src_main_module_ts --> file_src_modules_pull_request_body_pull_request_body_module_ts
   file_src_main_module_ts --> file_src_modules_pull_request_metadata_pull_request_metadata_module_ts
   file_src_main_module_ts --> file_src_modules_pull_request_release_significance_pull_request_release_significance_module_ts
@@ -524,6 +558,7 @@ graph LR
   file_src_main_unit_test_ts --> file_src_modules_catalog_manifests_catalog_manifests_module_ts
   file_src_main_unit_test_ts --> file_src_modules_issue_metadata_issue_metadata_module_ts
   file_src_main_unit_test_ts --> file_src_modules_lockfile_lockfile_module_ts
+  file_src_main_unit_test_ts --> file_src_modules_publish_set_publish_set_module_ts
   file_src_main_unit_test_ts --> file_src_modules_pull_request_body_pull_request_body_module_ts
   file_src_main_unit_test_ts --> file_src_modules_pull_request_metadata_pull_request_metadata_module_ts
   file_src_main_unit_test_ts --> file_src_modules_pull_request_release_significance_pull_request_release_significance_module_ts
@@ -594,6 +629,21 @@ graph LR
   file_src_modules_lockfile_lockfile_service_ts --> file_src_modules_lockfile_lockfile_types_ts
   file_src_modules_lockfile_lockfile_service_unit_test_ts --> file_src_modules_lockfile_lockfile_constants_ts
   file_src_modules_lockfile_lockfile_service_unit_test_ts --> file_src_modules_lockfile_lockfile_service_ts
+  file_src_modules_publish_set_publish_set_command_ts --> file_src_modules_publish_set_publish_set_constants_ts
+  file_src_modules_publish_set_publish_set_command_ts --> file_src_modules_publish_set_publish_set_service_ts
+  file_src_modules_publish_set_publish_set_command_unit_test_ts --> file_src_modules_publish_set_publish_set_command_ts
+  file_src_modules_publish_set_publish_set_command_unit_test_ts --> file_src_modules_publish_set_publish_set_constants_ts
+  file_src_modules_publish_set_publish_set_command_unit_test_ts --> file_src_modules_publish_set_publish_set_service_ts
+  file_src_modules_publish_set_publish_set_command_unit_test_ts --> file_testing_mocks_ts
+  file_src_modules_publish_set_publish_set_module_ts --> file_src_modules_publish_set_publish_set_command_ts
+  file_src_modules_publish_set_publish_set_module_ts --> file_src_modules_publish_set_publish_set_service_ts
+  file_src_modules_publish_set_publish_set_module_unit_test_ts --> file_src_modules_publish_set_publish_set_command_ts
+  file_src_modules_publish_set_publish_set_module_unit_test_ts --> file_src_modules_publish_set_publish_set_module_ts
+  file_src_modules_publish_set_publish_set_module_unit_test_ts --> file_src_modules_publish_set_publish_set_service_ts
+  file_src_modules_publish_set_publish_set_service_ts --> file_src_modules_publish_set_publish_set_constants_ts
+  file_src_modules_publish_set_publish_set_service_ts --> file_src_modules_publish_set_publish_set_types_ts
+  file_src_modules_publish_set_publish_set_service_unit_test_ts --> file_src_modules_publish_set_publish_set_constants_ts
+  file_src_modules_publish_set_publish_set_service_unit_test_ts --> file_src_modules_publish_set_publish_set_service_ts
   file_src_modules_pull_request_body_pull_request_body_command_ts --> file_src_modules_pull_request_body_pull_request_body_constants_ts
   file_src_modules_pull_request_body_pull_request_body_command_ts --> file_src_modules_pull_request_body_pull_request_body_service_ts
   file_src_modules_pull_request_body_pull_request_body_command_ts --> file_src_modules_pull_request_body_pull_request_body_types_ts
@@ -680,36 +730,36 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-10652-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-333.96_kB-6b7280?style=flat-square)
-![Folders](https://img.shields.io/badge/Folders-11-4a4a4a?style=flat-square)
-![Source Files](https://img.shields.io/badge/Source_Files-84-3178c6?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-11859-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-369.15_kB-6b7280?style=flat-square)
+![Folders](https://img.shields.io/badge/Folders-12-4a4a4a?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-92-3178c6?style=flat-square)
 
 ### TypeScript
 
-![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-84-3178c6?style=flat-square)
-![Interfaces](https://img.shields.io/badge/Interfaces-32-0ea5e9?style=flat-square)
+![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-92-3178c6?style=flat-square)
+![Interfaces](https://img.shields.io/badge/Interfaces-34-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-0-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
-![Decorators](https://img.shields.io/badge/Decorators-37-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-243-6366f1?style=flat-square)
+![Decorators](https://img.shields.io/badge/Decorators-41-db2777?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-263-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-0-166534?style=flat-square)
 
 ### JavaScript
 
 ![JavaScript Files](https://img.shields.io/badge/JavaScript_Files-0-f7df1e?style=flat-square)
-![Test Files](https://img.shields.io/badge/Test_Files-30-10b981?style=flat-square)
+![Test Files](https://img.shields.io/badge/Test_Files-33-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-14-8b5cf6?style=flat-square)
-![Classes](https://img.shields.io/badge/Classes-28-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-551-16a34a?style=flat-square)
-![Methods](https://img.shields.io/badge/Methods-186-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-618-4ade80?style=flat-square)
-![Async Functions](https://img.shields.io/badge/Async_Functions-119-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-448-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-338-0284c7?style=flat-square)
-![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-140-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-355-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-782-475569?style=flat-square)
+![Classes](https://img.shields.io/badge/Classes-32-7c3aed?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-604-16a34a?style=flat-square)
+![Methods](https://img.shields.io/badge/Methods-204-15803d?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-678-4ade80?style=flat-square)
+![Async Functions](https://img.shields.io/badge/Async_Functions-130-059669?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-522-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-375-0284c7?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-147-ea580c?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-387-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-822-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python
@@ -730,16 +780,16 @@ graph LR
 ### JSON
 
 ![JSON Files](https://img.shields.io/badge/JSON_Files-3-a16207?style=flat-square)
-![JSON Lines](https://img.shields.io/badge/JSON_Lines-134-ca8a04?style=flat-square)
-![JSON Objects](https://img.shields.io/badge/JSON_Objects-39-7c3aed?style=flat-square)
-![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-8-8b5cf6?style=flat-square)
-![JSON Properties](https://img.shields.io/badge/JSON_Properties-91-0284c7?style=flat-square)
-![JSON Strings](https://img.shields.io/badge/JSON_Strings-63-16a34a?style=flat-square)
+![JSON Lines](https://img.shields.io/badge/JSON_Lines-148-ca8a04?style=flat-square)
+![JSON Objects](https://img.shields.io/badge/JSON_Objects-43-7c3aed?style=flat-square)
+![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-9-8b5cf6?style=flat-square)
+![JSON Properties](https://img.shields.io/badge/JSON_Properties-102-0284c7?style=flat-square)
+![JSON Strings](https://img.shields.io/badge/JSON_Strings-69-16a34a?style=flat-square)
 ![JSON Numbers](https://img.shields.io/badge/JSON_Numbers-1-059669?style=flat-square)
-![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-6-0ea5e9?style=flat-square)
+![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-7-0ea5e9?style=flat-square)
 ![JSON Nulls](https://img.shields.io/badge/JSON_Nulls-0-64748b?style=flat-square)
-![JSON Items](https://img.shields.io/badge/JSON_Items-23-475569?style=flat-square)
-![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-117-dc2626?style=flat-square)
+![JSON Items](https://img.shields.io/badge/JSON_Items-24-475569?style=flat-square)
+![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-129-dc2626?style=flat-square)
 ![JSON Max Depth](https://img.shields.io/badge/JSON_Max_Depth-6-ea580c?style=flat-square)
 
 ### YAML
@@ -820,14 +870,14 @@ graph LR
 
 ### Conventions
 
-![Module Files](https://img.shields.io/badge/Module_Files-9-7c3aed?style=flat-square)
-![Service Files](https://img.shields.io/badge/Service_Files-11-0284c7?style=flat-square)
-![Command Files](https://img.shields.io/badge/Command_Files-8-16a34a?style=flat-square)
-![Constants Files](https://img.shields.io/badge/Constants_Files-8-ea580c?style=flat-square)
-![Types Files](https://img.shields.io/badge/Types_Files-8-db2777?style=flat-square)
+![Module Files](https://img.shields.io/badge/Module_Files-10-7c3aed?style=flat-square)
+![Service Files](https://img.shields.io/badge/Service_Files-12-0284c7?style=flat-square)
+![Command Files](https://img.shields.io/badge/Command_Files-9-16a34a?style=flat-square)
+![Constants Files](https://img.shields.io/badge/Constants_Files-9-ea580c?style=flat-square)
+![Types Files](https://img.shields.io/badge/Types_Files-9-db2777?style=flat-square)
 ![Utilities Files](https://img.shields.io/badge/Utilities_Files-0-0ea5e9?style=flat-square)
 ![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-0-059669?style=flat-square)
-![Unit Tests](https://img.shields.io/badge/Unit_Tests-29-ca8a04?style=flat-square)
+![Unit Tests](https://img.shields.io/badge/Unit_Tests-32-ca8a04?style=flat-square)
 ![Integration Tests](https://img.shields.io/badge/Integration_Tests-0-7c3aed?style=flat-square)
 ![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-1-0284c7?style=flat-square)
 ![CSS Comment Budget](https://img.shields.io/badge/CSS_Comment_Budget-0-16a34a?style=flat-square)
