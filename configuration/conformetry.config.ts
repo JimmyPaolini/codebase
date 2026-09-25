@@ -66,43 +66,12 @@ const conformetryConfiguration: ConformetryNxConfiguration = [
         ),
     }),
     instances: [
-      // Conformetry instance groups match first-match-wins, the opposite of
-      // Nx's targetDefaults arrays, so the four literal, deeper-nested
-      // overrides below must precede the generic tag-based catch-all — every
-      // one of them also carries the `framework:nest-commander` tag, and
-      // listed after the catch-all they would never be reached.
-      {
-        patterns: ["packages/ic-suite/callidescope/callidescope-cli"],
-        substitutions: {
-          type: "packages/ic-suite/callidescope",
-          workspaceRelativePrefix: "../../../../",
-        },
-      },
       {
         patterns: ["packages/ic-suite/codependix/codependix-cli"],
         substitutions: {
           type: "packages/ic-suite/codependix",
           workspaceRelativePrefix: "../../../../",
         },
-      },
-      {
-        patterns: ["packages/ic-suite/codometer/codometer-cli"],
-        substitutions: {
-          type: "packages/ic-suite/codometer",
-          workspaceRelativePrefix: "../../../../",
-        },
-      },
-      {
-        patterns: ["packages/ic-suite/conformetry/conformetry-cli"],
-        substitutions: {
-          type: "packages/ic-suite/conformetry",
-          workspaceRelativePrefix: "../../../../",
-        },
-      },
-      {
-        patterns: ["."],
-        substitutions: { workspaceRelativePrefix: "../../" },
-        tags: ["framework:nest-commander"],
       },
     ],
     name: "nestjs-command-project",
