@@ -67,6 +67,13 @@ const conformetryConfiguration: ConformetryNxConfiguration = [
     }),
     instances: [
       {
+        patterns: ["packages/ic-suite/callidescope/callidescope-cli"],
+        substitutions: {
+          type: "packages/ic-suite/callidescope",
+          workspaceRelativePrefix: "../../../../",
+        },
+      },
+      {
         patterns: ["packages/ic-suite/codependix/codependix-cli"],
         substitutions: {
           type: "packages/ic-suite/codependix",
