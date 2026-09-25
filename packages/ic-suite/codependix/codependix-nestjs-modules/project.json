@@ -13,19 +13,11 @@
   ],
   "targets": {
     "build": {
-      "executor": "@nx/js:tsc",
+      "executor": "@nx/vite:build",
       "options": {
-        "assets": [
-          {
-            "glob": "README.md",
-            "input": "packages/ic-suite/codependix/codependix-nestjs-modules",
-            "output": "."
-          }
-        ],
+        "configFile": "packages/ic-suite/codependix/codependix-nestjs-modules/vite.config.ts",
         "generatePackageJson": false,
-        "main": "packages/ic-suite/codependix/codependix-nestjs-modules/src/index.ts",
-        "outputPath": "packages/ic-suite/codependix/codependix-nestjs-modules/dist",
-        "tsConfig": "packages/ic-suite/codependix/codependix-nestjs-modules/tsconfig.build.json"
+        "outputPath": "packages/ic-suite/codependix/codependix-nestjs-modules/dist"
       },
       "outputs": ["{options.outputPath}"]
     },

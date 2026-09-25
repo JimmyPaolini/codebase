@@ -1744,9 +1744,6 @@ importers:
       reflect-metadata:
         specifier: 'catalog:'
         version: 0.2.2
-      tslib:
-        specifier: 'catalog:'
-        version: 2.8.1
     devDependencies:
       '@golevelup/ts-vitest':
         specifier: 'catalog:'
@@ -1775,9 +1772,6 @@ importers:
 
   packages/ic-suite/codependix/codependix-cli:
     dependencies:
-      '@codebase/logger':
-        specifier: workspace:*
-        version: link:../../../logger
       '@codependix/boundaries':
         specifier: workspace:*
         version: link:../codependix-boundaries
@@ -1802,16 +1796,22 @@ importers:
       nest-commander:
         specifier: 'catalog:'
         version: 3.21.0(@nestjs/common@12.0.1(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@10.2.2))(@nestjs/core@12.0.1(@nestjs/common@12.0.1(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@10.2.2))(reflect-metadata@0.2.2)(rxjs@7.8.2))(@types/inquirer@8.2.13)(@types/node@26.5.1)(typescript@6.0.3)
+      pino:
+        specifier: 'catalog:'
+        version: 10.3.1
+      pino-pretty:
+        specifier: 'catalog:'
+        version: 13.1.3
       reflect-metadata:
         specifier: 'catalog:'
         version: 0.2.2
-      tslib:
-        specifier: 'catalog:'
-        version: 2.8.1
       zod:
         specifier: 'catalog:'
         version: 4.4.3
     devDependencies:
+      '@codebase/logger':
+        specifier: workspace:*
+        version: link:../../../logger
       '@golevelup/ts-vitest':
         specifier: 'catalog:'
         version: 4.0.0
@@ -1860,9 +1860,6 @@ importers:
       reflect-metadata:
         specifier: 'catalog:'
         version: 0.2.2
-      tslib:
-        specifier: 'catalog:'
-        version: 2.8.1
       zod:
         specifier: 'catalog:'
         version: 4.4.3
@@ -1903,9 +1900,6 @@ importers:
       reflect-metadata:
         specifier: 'catalog:'
         version: 0.2.2
-      tslib:
-        specifier: 'catalog:'
-        version: 2.8.1
     devDependencies:
       '@golevelup/ts-vitest':
         specifier: 'catalog:'
@@ -1992,9 +1986,6 @@ importers:
       reflect-metadata:
         specifier: 'catalog:'
         version: 0.2.2
-      tslib:
-        specifier: 'catalog:'
-        version: 2.8.1
     devDependencies:
       '@golevelup/ts-vitest':
         specifier: 'catalog:'
@@ -2023,9 +2014,6 @@ importers:
 
   packages/ic-suite/codependix/codependix-nestjs-modules:
     dependencies:
-      '@codebase/logger':
-        specifier: workspace:*
-        version: link:../../../logger
       '@nestjs/common':
         specifier: 'catalog:'
         version: 12.0.1(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@10.2.2)
@@ -2038,13 +2026,19 @@ importers:
       nestjs-spelunker:
         specifier: 'catalog:'
         version: 1.3.2(patch_hash=0512c9ba84b256155ad0e226021313026d21c2ef7afc477f2ed655576af37055)(@nestjs/common@12.0.1(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@10.2.2))(@nestjs/core@12.0.1(@nestjs/common@12.0.1(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@10.2.2))(reflect-metadata@0.2.2)(rxjs@7.8.2))
+      pino:
+        specifier: 'catalog:'
+        version: 10.3.1
+      pino-pretty:
+        specifier: 'catalog:'
+        version: 13.1.3
       reflect-metadata:
         specifier: 'catalog:'
         version: 0.2.2
-      tslib:
-        specifier: 'catalog:'
-        version: 2.8.1
     devDependencies:
+      '@codebase/logger':
+        specifier: workspace:*
+        version: link:../../../logger
       '@golevelup/ts-vitest':
         specifier: 'catalog:'
         version: 4.0.0
@@ -2078,9 +2072,6 @@ importers:
       reflect-metadata:
         specifier: 'catalog:'
         version: 0.2.2
-      tslib:
-        specifier: 'catalog:'
-        version: 2.8.1
     devDependencies:
       '@golevelup/ts-vitest':
         specifier: 'catalog:'
@@ -2109,9 +2100,6 @@ importers:
 
   packages/ic-suite/codependix/codependix-output:
     dependencies:
-      '@codebase/logger':
-        specifier: workspace:*
-        version: link:../../../logger
       '@codependix/boundaries':
         specifier: workspace:*
         version: link:../codependix-boundaries
@@ -2133,13 +2121,19 @@ importers:
       '@nestjs/common':
         specifier: 'catalog:'
         version: 12.0.1(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@10.2.2)
+      pino:
+        specifier: 'catalog:'
+        version: 10.3.1
+      pino-pretty:
+        specifier: 'catalog:'
+        version: 13.1.3
       reflect-metadata:
         specifier: 'catalog:'
         version: 0.2.2
-      tslib:
-        specifier: 'catalog:'
-        version: 2.8.1
     devDependencies:
+      '@codebase/logger':
+        specifier: workspace:*
+        version: link:../../../logger
       '@golevelup/ts-vitest':
         specifier: 'catalog:'
         version: 4.0.0
