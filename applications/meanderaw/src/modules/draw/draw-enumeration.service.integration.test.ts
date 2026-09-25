@@ -186,12 +186,13 @@ describe(DrawEnumerationService, () => {
         columns: 2,
         components: 1,
         cycles: 0,
-        family: "unclassified",
+        family: "bars",
         freeEnds: 2,
 
         // cspell:ignore Neighbours
         characteristics: [
           "isJunctionFree",
+          "isBars",
           "endsAreLatticeNeighbors",
           "endsOnBorderRules",
           "isConnected",

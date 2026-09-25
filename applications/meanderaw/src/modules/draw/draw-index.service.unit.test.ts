@@ -9,6 +9,7 @@ import { GeometryService } from "../geometry/geometry.service";
 
 import { DrawIndexService } from "./draw-index.service";
 
+import type { MeanderFamily } from "../classification/classification.types";
 import type { Meander } from "../database/entities/Meander.entity";
 
 /**
@@ -24,7 +25,10 @@ describe(DrawIndexService, () => {
   const meander = (
     overrides: Partial<Meander> & Pick<Meander, "code" | "id">,
   ): Meander => ({
+    arcadePillarCount: 0,
+    bifurcationCount: 0,
     columns: 1,
+    combSpineCount: 0,
     componentCount: 0,
     components: 1,
     cornerCount: 0,
@@ -268,9 +272,9 @@ describe(DrawIndexService, () => {
 
     it("sorts unrecognized families alphabetically when missing from FAMILY_SORT_KEYS", () => {
       const pages = service.render([
-        meander({ code: "a", family: "zeta" as unknown as any, id: 1 }),
-        meander({ code: "b", family: "alpha" as unknown as any, id: 2 }),
-        meander({ code: "c", family: "zeta" as unknown as any, id: 3 }),
+        meander({ code: "a", family: "zeta" as MeanderFamily, id: 1 }),
+        meander({ code: "b", family: "alpha" as MeanderFamily, id: 2 }),
+        meander({ code: "c", family: "zeta" as MeanderFamily, id: 3 }),
         meander({ code: "d", family: "unclassified", id: 4 }),
       ]);
 

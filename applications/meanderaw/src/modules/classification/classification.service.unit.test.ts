@@ -11,6 +11,9 @@ import type { Characteristics } from "../characteristics/characteristics.types";
 import type { MeanderShape } from "./classification.types";
 
 const defaultCharacteristics: Characteristics = {
+  arcadePillarCount: 0,
+  bifurcationCount: 0,
+  combSpineCount: 0,
   componentCount: 0,
   components: 0,
   cornerCount: 0,
@@ -25,7 +28,9 @@ const defaultCharacteristics: Characteristics = {
   endsAreLatticeNeighbors: false,
   endsOnBorderRules: false,
   freeEnds: 0,
+  hasArcadePillars: false,
   hasBranching: false,
+  hasCombSpine: false,
   hasCrossing: false,
   hasDots: false,
   hasTJunctions: false,
@@ -35,13 +40,22 @@ const defaultCharacteristics: Characteristics = {
   inkPointCount: 0,
   inkTJunctions: 0,
   inkXJunctions: 0,
+  isArcade: false,
+  isBars: false,
   isClosedLoop: false,
+  isComb: false,
   isConnected: false,
+  isDots: false,
   isFlipSymmetric: false,
+  isFork: false,
   isJunctionFree: true,
+  isLines: false,
+  isMesh: false,
   isMirrorSymmetric: false,
+  isPureTree: false,
   isReducible: false,
   isSingleArc: false,
+  isStippled: false,
   lCount: 0,
   longestHorizontalRun: 0,
   longestVerticalRun: 0,
@@ -86,9 +100,16 @@ describe(ClassificationService, () => {
 
   it("exports supported families in precedence order", () => {
     expect(MEANDER_FAMILIES).toStrictEqual([
+      "dots",
+      "lines",
+      "bars",
+      "mesh",
       "parallel",
       "cross",
-      "branch",
+      "arcade",
+      "comb",
+      "fork",
+      "tree",
       "boxes",
       "chain",
       "double-chain",
@@ -97,11 +118,48 @@ describe(ClassificationService, () => {
       "swirl",
       "clasps",
       "snake",
+      "stipple",
       "unclassified",
     ]);
   });
 
   describe("classify", () => {
+    it("classifies dots correctly", () => {
+      const characteristics = createMockCharacteristics({
+        isDots: true,
+      });
+      const shape: MeanderShape = { columns: 2, rows: 2 };
+
+      expect(service.classify(characteristics, shape)).toBe("dots");
+    });
+
+    it("classifies lines correctly", () => {
+      const characteristics = createMockCharacteristics({
+        isLines: true,
+      });
+      const shape: MeanderShape = { columns: 2, rows: 2 };
+
+      expect(service.classify(characteristics, shape)).toBe("lines");
+    });
+
+    it("classifies bars correctly", () => {
+      const characteristics = createMockCharacteristics({
+        isBars: true,
+      });
+      const shape: MeanderShape = { columns: 2, rows: 3 };
+
+      expect(service.classify(characteristics, shape)).toBe("bars");
+    });
+
+    it("classifies mesh correctly", () => {
+      const characteristics = createMockCharacteristics({
+        isMesh: true,
+      });
+      const shape: MeanderShape = { columns: 2, rows: 3 };
+
+      expect(service.classify(characteristics, shape)).toBe("mesh");
+    });
+
     it("classifies parallel bundles correctly", () => {
       const pitch = 4;
       const components = 3;
@@ -129,15 +187,64 @@ describe(ClassificationService, () => {
       expect(service.classify(characteristics, shape)).toBe("cross");
     });
 
-    it("classifies branch meanders correctly", () => {
+    it("classifies arcade meanders correctly", () => {
       const characteristics = createMockCharacteristics({
-        cycles: 0,
-        inkTJunctions: 2,
-        inkXJunctions: 0,
+        isArcade: true,
       });
       const shape: MeanderShape = { columns: 4, rows: 3 };
 
-      expect(service.classify(characteristics, shape)).toBe("branch");
+      expect(service.classify(characteristics, shape)).toBe("arcade");
+    });
+
+    it("classifies comb meanders correctly", () => {
+      const characteristics = createMockCharacteristics({
+        isComb: true,
+      });
+      const shape: MeanderShape = { columns: 2, rows: 4 };
+
+      expect(service.classify(characteristics, shape)).toBe("comb");
+    });
+
+    it("classifies fork meanders correctly", () => {
+      const characteristics = createMockCharacteristics({
+        components: 1,
+        cycles: 0,
+        dotCount: 0,
+        freeEnds: 3,
+        inkTJunctions: 1,
+        inkXJunctions: 0,
+        isFork: true,
+      });
+      const shape: MeanderShape = { columns: 3, rows: 3 };
+
+      expect(service.classify(characteristics, shape)).toBe("fork");
+    });
+
+    it("classifies tree meanders correctly", () => {
+      const characteristics = createMockCharacteristics({
+        components: 1,
+        cycles: 0,
+        dotCount: 0,
+        freeEnds: 4,
+        inkTJunctions: 2,
+        inkXJunctions: 0,
+        isPureTree: true,
+      });
+      const shape: MeanderShape = { columns: 3, rows: 3 };
+
+      expect(service.classify(characteristics, shape)).toBe("tree");
+    });
+
+    it("classifies stipple meanders correctly", () => {
+      const characteristics = createMockCharacteristics({
+        components: 3,
+        dotCount: 2,
+        inkTJunctions: 1,
+        isStippled: true,
+      });
+      const shape: MeanderShape = { columns: 4, rows: 3 };
+
+      expect(service.classify(characteristics, shape)).toBe("stipple");
     });
 
     it("classifies boxes meanders correctly", () => {
@@ -608,7 +715,7 @@ describe(ClassificationService, () => {
         "parallel",
       );
 
-      // 2. cross takes precedence over branch when inkXJunctions > 0 and inkTJunctions === 0
+      // 2. cross takes precedence
       const cross = createMockCharacteristics({
         inkTJunctions: 0,
         inkXJunctions: 1,
@@ -616,15 +723,19 @@ describe(ClassificationService, () => {
 
       expect(service.classify(cross, { columns: 5, rows: 6 })).toBe("cross");
 
-      // 3. branch takes precedence over boxes/whirl/swirl/chain/snake when inkTJunctions > 0
-      const branch = createMockCharacteristics({
+      // 3. fork takes precedence over boxes/whirl/swirl/chain/snake
+      const fork = createMockCharacteristics({
+        components: 1,
         cycles: 0,
+        dotCount: 0,
+        freeEnds: 3,
         inkTJunctions: 1,
         inkXJunctions: 0,
+        isFork: true,
         pitch: 3,
       });
 
-      expect(service.classify(branch, { columns: 3, rows: 4 })).toBe("branch");
+      expect(service.classify(fork, { columns: 3, rows: 4 })).toBe("fork");
     });
 
     it("evaluates chain, double-chain and clasps rule matches directly", () => {

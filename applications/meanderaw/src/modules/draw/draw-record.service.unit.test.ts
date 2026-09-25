@@ -67,8 +67,11 @@ describe(DrawRecordService, () => {
       expect({ ...record, drawingHash: record.drawingHash.slice(0, 4) })
         .toMatchInlineSnapshot(`
           {
+            "arcadePillarCount": 0,
+            "bifurcationCount": 0,
             "characteristics": [
               "isJunctionFree",
+              "isBars",
               "endsAreLatticeNeighbors",
               "endsOnBorderRules",
               "isConnected",
@@ -77,6 +80,7 @@ describe(DrawRecordService, () => {
             ],
             "code": "02x02y4488",
             "columns": 2,
+            "combSpineCount": 0,
             "componentCount": 1,
             "components": 1,
             "cornerCount": 0,
@@ -88,7 +92,7 @@ describe(DrawRecordService, () => {
             "edgeCount": 1,
             "embeddedOCount": 0,
             "embeddedUCount": 0,
-            "family": "unclassified",
+            "family": "bars",
             "freeEnds": 2,
             "horizontalDashCount": 0,
             "horizontalPointCount": 0,

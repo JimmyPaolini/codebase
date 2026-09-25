@@ -1,3 +1,5 @@
+// cspell:ignore ccab ccbb
+
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
@@ -69,6 +71,17 @@ describe(CharacteristicsShapeService, () => {
       { code: "4080", field: "verticalDashCount" },
       { code: "2121", field: "shapeICount" },
       { code: "4488", field: "shapeICount" },
+      { code: "e1e1", field: "combSpineCount" },
+      { code: "2d2d", field: "combSpineCount" },
+      { code: "77cc", field: "combSpineCount" },
+      { code: "ccbb", field: "combSpineCount" },
+      { code: "44da", field: "bifurcationCount" },
+      { code: "44ad", field: "bifurcationCount" },
+      { code: "ed8a", field: "bifurcationCount" },
+      { code: "67cc", field: "arcadePillarCount" },
+      { code: "75cc", field: "arcadePillarCount" },
+      { code: "ccb9", field: "arcadePillarCount" },
+      { code: "cc8a", field: "arcadePillarCount" },
     ];
 
     for (const t of tests) {
@@ -151,6 +164,9 @@ describe(CharacteristicsShapeService, () => {
 
   it("handles empty matrix or matrices smaller than 2x2", () => {
     expect(service.tallyUnitShapes([])).toStrictEqual({
+      arcadePillarCount: 0,
+      bifurcationCount: 0,
+      combSpineCount: 0,
       embeddedOCount: 0,
       embeddedUCount: 0,
       horizontalDashCount: 0,
@@ -162,6 +178,9 @@ describe(CharacteristicsShapeService, () => {
       verticalDashCount: 0,
     });
     expect(service.tallyUnitShapes([[]])).toStrictEqual({
+      arcadePillarCount: 0,
+      bifurcationCount: 0,
+      combSpineCount: 0,
       embeddedOCount: 0,
       embeddedUCount: 0,
       horizontalDashCount: 0,

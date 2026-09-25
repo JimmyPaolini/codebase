@@ -1,6 +1,7 @@
 import { Module } from "@nestjs/common";
 
 import { CharacteristicsModule } from "../characteristics/characteristics.module";
+import { ClassificationModule } from "../classification/classification.module";
 import { CodeModule } from "../code/code.module";
 import { DatabaseModule } from "../database/database.module";
 import { DrawingModule } from "../drawing/drawing.module";
@@ -25,6 +26,7 @@ import { CorpusService } from "./corpus.service";
   exports: [CorpusService],
   imports: [
     CharacteristicsModule,
+    ClassificationModule,
     CodeModule,
     DatabaseModule,
     DrawingModule,

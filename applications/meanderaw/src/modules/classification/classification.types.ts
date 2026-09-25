@@ -6,15 +6,23 @@ import type { Characteristics } from "../characteristics/characteristics.types";
  * Every family a meander can be classified into, or unclassified if none matches.
  */
 export type MeanderFamily =
+  | "arcade"
+  | "bars"
   | "boxes"
-  | "branch"
   | "chain"
   | "clasps"
+  | "comb"
   | "cross"
+  | "dots"
   | "double-chain"
+  | "fork"
+  | "lines"
+  | "mesh"
   | "parallel"
   | "snake"
+  | "stipple"
   | "swirl"
+  | "tree"
   | "unclassified"
   | "waterfalls"
   | "whirl";

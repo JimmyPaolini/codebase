@@ -13,7 +13,7 @@ import type {
 /**
  * Decides which single family a meander belongs to from its measured
  * Characteristics and shape, applying strict hierarchical precedence:
- * `parallel` -\> `cross` -\> `branch` -\> `boxes` -\> `chain` -\> `double-chain` -\> `waterfalls` -\> `whirl` -\> `swirl` -\> `clasps` -\> `snake` -\> `unclassified`.
+ * `parallel` -> `cross` -> `arcade` -> `comb` -> `fork` -> `tree` -> `boxes` -> `chain` -> `double-chain` -> `waterfalls` -> `whirl` -> `swirl` -> `clasps` -> `snake` -> `stipple` -> `unclassified`.
  */
 @Injectable()
 export class ClassificationService {
@@ -305,23 +305,63 @@ export class ClassificationService {
   rules(): readonly MeanderFamilyRule[] {
     return [
       {
+        matches: (structure) =>
+          structure.characteristics.isDots &&
+          this.reachesMinimumRows(structure, "dots"),
+        name: "dots",
+      },
+      {
+        matches: (structure) =>
+          structure.characteristics.isLines &&
+          this.reachesMinimumRows(structure, "lines"),
+        name: "lines",
+      },
+      {
+        matches: (structure) =>
+          structure.characteristics.isBars &&
+          this.reachesMinimumRows(structure, "bars"),
+        name: "bars",
+      },
+      {
+        matches: (structure) =>
+          structure.characteristics.isMesh &&
+          this.reachesMinimumRows(structure, "mesh"),
+        name: "mesh",
+      },
+      {
+        matches: (structure) =>
+          structure.characteristics.isComb &&
+          this.reachesMinimumRows(structure, "comb"),
+        name: "comb",
+      },
+      {
+        matches: (structure) =>
+          structure.characteristics.isArcade &&
+          this.reachesMinimumRows(structure, "arcade"),
+        name: "arcade",
+      },
+      {
         matches: (structure) => this.isBundle(structure),
         name: "parallel",
       },
       {
         matches: (structure) =>
           structure.characteristics.inkXJunctions > 0 &&
-          structure.characteristics.inkTJunctions === 0 &&
+          !structure.characteristics.isMesh &&
           this.reachesMinimumRows(structure, "cross"),
         name: "cross",
       },
       {
         matches: (structure) =>
-          structure.characteristics.inkTJunctions > 0 &&
-          structure.characteristics.inkXJunctions === 0 &&
-          structure.characteristics.cycles === 0 &&
-          this.reachesMinimumRows(structure, "branch"),
-        name: "branch",
+          structure.characteristics.isFork &&
+          this.reachesMinimumRows(structure, "fork"),
+        name: "fork",
+      },
+      {
+        matches: (structure) =>
+          structure.characteristics.isPureTree &&
+          this.reachesMinimumRows(structure, "tree"),
+        name: "tree",
       },
       {
         matches: (structure) =>
@@ -363,6 +403,12 @@ export class ClassificationService {
           structure.characteristics.pitch === structure.rows - 1 &&
           this.reachesMinimumRows(structure, "snake"),
         name: "snake",
+      },
+      {
+        matches: (structure) =>
+          structure.characteristics.isStippled &&
+          this.reachesMinimumRows(structure, "stipple"),
+        name: "stipple",
       },
     ];
   }

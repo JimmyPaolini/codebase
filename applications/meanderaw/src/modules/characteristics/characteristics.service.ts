@@ -14,24 +14,15 @@ import type { Matrix, MatrixPoint } from "../matrix/matrix.types";
 import type {
   Characteristics,
   CodeEdge,
+  Connectivity,
   HistogramCounts,
   JunctionCounts,
   MutableHistogram,
 } from "./characteristics.types";
 
 /**
- * Computes the raw ink junction counts and boolean Characteristics spec #813
- * asks every meander row to record, directly from a 2D Matrix or Code,
- * point by point — with no SVG and no rendering step anywhere in between.
- *
- * **Ink junctions** need no adjacency lookup: a MatrixPoint spells all four direction
- * bits out at every point, so a point's ink degree is simply how many of its own four bits are set.
- *
- * **`hasBranching` and `hasCrossing`** read the ink junction counts.
- *
- * **Components, cycles, and free ends** are delegated whole to
- * `ConnectivityService`, which reads the Matrix as a graph rather
- * than point by point.
+ * Computes raw ink junction counts and boolean Characteristics directly
+ * from a 2D Matrix or Code point by point, with no rendering step.
  */
 @Injectable()
 export class CharacteristicsService {
@@ -75,6 +66,25 @@ export class CharacteristicsService {
     return minimumColumnDiff + rowDiff === 1;
   }
 
+  /** Computes the earned boolean family characteristics. */
+  private computeFamilyFlags(code: CodeObject): {
+    isArcade: boolean;
+    isBars: boolean;
+    isComb: boolean;
+    isDots: boolean;
+    isLines: boolean;
+    isMesh: boolean;
+  } {
+    return {
+      isArcade: this.familyService.isArcade(code),
+      isBars: this.familyService.isBars(code),
+      isComb: this.familyService.isComb(code),
+      isDots: this.familyService.isDots(code),
+      isLines: this.familyService.isLines(code),
+      isMesh: this.familyService.isMesh(code),
+    };
+  }
+
   /** Computes every characteristic from a 2D Matrix representation. */
   private computeFromMatrix(
     matrix: Matrix,
@@ -83,25 +93,10 @@ export class CharacteristicsService {
     const rows = matrix.length;
     const columns = matrix[0]?.length ?? 0;
     const ink = this.tallyInk(matrix);
-
-    const wrappedGraph = this.meanderConnectivityService.connectivity(
-      matrix,
-      false,
-    );
-    const unwrappedGraph = this.meanderConnectivityService.connectivity(
-      matrix,
-      true,
-    );
-    const wrappedEdges = this.meanderConnectivityService.edges(matrix, false);
-    const unwrappedEdges = this.meanderConnectivityService.edges(matrix, true);
-
-    const wrappedJunctions = this.countJunctions(wrappedEdges);
-    const unwrappedJunctions = this.countJunctions(unwrappedEdges);
-
+    const graphs = this.measureGraphs(matrix);
     const histogram = this.tallyHistogram(matrix);
     const unitShapes = this.shapeService.tallyUnitShapes(matrix);
-
-    const freeEndsList = this.findFreeEnds(wrappedEdges);
+    const freeEndsList = this.findFreeEnds(graphs.wrappedEdges);
     const endsOnBorderRules =
       freeEndsList.length === 2 &&
       freeEndsList.every((end) => end.row === 0 || end.row === rows - 1);
@@ -114,43 +109,73 @@ export class CharacteristicsService {
       ? this.pathService.analyzePaths(matrix)
       : { reversesAtItsTightestTurn: false, turnsMonotonically: false };
 
+    const parsedCode = this.toParsedCode(matrix, rows, columns);
+    const familyFlags = this.computeFamilyFlags(parsedCode);
+
     return {
-      ...wrappedGraph,
+      ...graphs.wrappedGraph,
       ...histogram,
       ...unitShapes,
-      componentCount: wrappedGraph.components,
-      crossesTheSeam: wrappedEdges.length > unwrappedEdges.length,
-      cycleCount: wrappedGraph.cycles,
+      ...familyFlags,
+      componentCount: graphs.wrappedGraph.components,
+      crossesTheSeam: graphs.wrappedEdges.length > graphs.unwrappedEdges.length,
+      cycleCount: graphs.wrappedGraph.cycles,
       endsAreLatticeNeighbors,
       endsOnBorderRules,
+      hasArcadePillars: unitShapes.arcadePillarCount > 0,
       hasBranching: ink.tJunctions > 0,
+      hasCombSpine: unitShapes.combSpineCount > 0,
       hasCrossing: ink.xJunctions > 0,
       inkTJunctions: ink.tJunctions,
       inkXJunctions: ink.xJunctions,
       isClosedLoop:
-        wrappedGraph.components === 1 &&
-        wrappedGraph.cycles === 1 &&
-        wrappedGraph.freeEnds === 0 &&
+        graphs.wrappedGraph.components === 1 &&
+        graphs.wrappedGraph.cycles === 1 &&
+        graphs.wrappedGraph.freeEnds === 0 &&
         histogram.isJunctionFree,
-      isConnected: wrappedGraph.components === 1,
+      isConnected: graphs.wrappedGraph.components === 1,
       isFlipSymmetric: false,
+      isFork:
+        graphs.wrappedGraph.components === 1 &&
+        graphs.wrappedGraph.cycles === 0 &&
+        ink.tJunctions === 1 &&
+        ink.xJunctions === 0 &&
+        graphs.wrappedGraph.freeEnds === 3 &&
+        histogram.dotCount === 0 &&
+        !familyFlags.isComb,
+      isJunctionFree: histogram.isJunctionFree,
       isMirrorSymmetric: false,
+      isPureTree:
+        graphs.wrappedGraph.components === 1 &&
+        graphs.wrappedGraph.cycles === 0 &&
+        ink.tJunctions >= 2 &&
+        ink.xJunctions === 0 &&
+        histogram.dotCount === 0 &&
+        !familyFlags.isComb &&
+        !familyFlags.isArcade,
       isReducible,
       isSingleArc:
-        wrappedGraph.components === 1 &&
-        wrappedGraph.cycles === 0 &&
-        wrappedGraph.freeEnds === 2 &&
+        graphs.wrappedGraph.components === 1 &&
+        graphs.wrappedGraph.cycles === 0 &&
+        graphs.wrappedGraph.freeEnds === 2 &&
         histogram.isJunctionFree,
+      isStippled:
+        graphs.wrappedGraph.components > 1 &&
+        histogram.dotCount > 0 &&
+        ink.tJunctions > 0,
       longestHorizontalRun: this.longestHorizontalRun(matrix),
       longestVerticalRun: this.longestVerticalRun(matrix),
       pitch: columns,
       reversesAtItsTightestTurn: pathProps.reversesAtItsTightestTurn,
-      seamComponents: unwrappedGraph.components - wrappedGraph.components,
-      seamCycles: wrappedGraph.cycles - unwrappedGraph.cycles,
+      seamComponents:
+        graphs.unwrappedGraph.components - graphs.wrappedGraph.components,
+      seamCycles: graphs.wrappedGraph.cycles - graphs.unwrappedGraph.cycles,
       seamTJunctions:
-        wrappedJunctions.tJunctions - unwrappedJunctions.tJunctions,
+        graphs.wrappedJunctions.tJunctions -
+        graphs.unwrappedJunctions.tJunctions,
       seamXJunctions:
-        wrappedJunctions.xJunctions - unwrappedJunctions.xJunctions,
+        graphs.wrappedJunctions.xJunctions -
+        graphs.unwrappedJunctions.xJunctions,
       turnsMonotonically: pathProps.turnsMonotonically,
     };
   }
@@ -263,6 +288,38 @@ export class CharacteristicsService {
     );
   }
 
+  /** Computes graph connectivity and junctions. */
+  private measureGraphs(matrix: Matrix): {
+    unwrappedEdges: CodeEdge[];
+    unwrappedGraph: Connectivity;
+    unwrappedJunctions: { tJunctions: number; xJunctions: number };
+    wrappedEdges: CodeEdge[];
+    wrappedGraph: Connectivity;
+    wrappedJunctions: { tJunctions: number; xJunctions: number };
+  } {
+    const wrappedGraph = this.meanderConnectivityService.connectivity(
+      matrix,
+      false,
+    );
+    const unwrappedGraph = this.meanderConnectivityService.connectivity(
+      matrix,
+      true,
+    );
+    const wrappedEdges = this.meanderConnectivityService.edges(matrix, false);
+    const unwrappedEdges = this.meanderConnectivityService.edges(matrix, true);
+    const wrappedJunctions = this.countJunctions(wrappedEdges);
+    const unwrappedJunctions = this.countJunctions(unwrappedEdges);
+
+    return {
+      unwrappedEdges,
+      unwrappedGraph,
+      unwrappedJunctions,
+      wrappedEdges,
+      wrappedGraph,
+      wrappedJunctions,
+    };
+  }
+
   /** Records one degree as a three-armed junction, a four-armed one, or neither. */
   private tally(counts: JunctionCounts, degree: number): void {
     if (degree === 3) {
@@ -368,6 +425,31 @@ export class CharacteristicsService {
         break;
       }
     }
+  }
+
+  /** Converts a 2D Matrix into a CodeObject representation. */
+  private toParsedCode(
+    matrix: Matrix,
+    rows: number,
+    columns: number,
+  ): CodeObject {
+    return {
+      columns,
+      digits: matrix
+        .flatMap((r) =>
+          r.map((pt) =>
+            (
+              (pt.north ? 8 : 0) +
+              (pt.south ? 4 : 0) +
+              (pt.east ? 2 : 0) +
+              (pt.west ? 1 : 0)
+            ).toString(16),
+          ),
+        )
+        .join(""),
+      repeats: 1,
+      rows,
+    };
   }
 
   // 🌎 Public Methods

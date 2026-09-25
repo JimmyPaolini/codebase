@@ -38,17 +38,25 @@ export const UNCLASSIFIED_FAMILY_LABEL = "unclassified";
 
 /** Sort order for each family on the index page. */
 export const FAMILY_SORT_KEYS: Record<string, number> = {
-  boxes: 1,
-  branch: 2,
-  chain: 3,
-  clasps: 4,
-  cross: 5,
-  "double-chain": 6,
-  parallel: 7,
-  snake: 8,
-  swirl: 9,
-  waterfalls: 10,
-  whirl: 11,
+  arcade: 1,
+  bars: 2,
+  boxes: 3,
+  chain: 4,
+  clasps: 5,
+  comb: 6,
+  cross: 7,
+  dots: 8,
+  "double-chain": 9,
+  fork: 10,
+  lines: 11,
+  mesh: 12,
+  parallel: 13,
+  snake: 14,
+  stipple: 15,
+  swirl: 16,
+  tree: 17,
+  waterfalls: 18,
+  whirl: 19,
 };
 
 /**

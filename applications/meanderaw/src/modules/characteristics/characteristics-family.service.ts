@@ -50,6 +50,112 @@ export class CharacteristicsFamilyService {
     return digits;
   }
 
+  /** Checks if a top/bottom pair has downward teeth. */
+  private hasDownTeeth(grid: readonly string[]): boolean {
+    const topRow = grid.at(0);
+    if (!topRow) return false;
+
+    for (const column of Array.from(
+      { length: topRow.length },
+      (_, index) => index,
+    )) {
+      const topCharacter = topRow.at(column);
+      const bottomCharacter = grid.at(1)?.at(column);
+      if (
+        topCharacter &&
+        bottomCharacter &&
+        /[765]/u.test(topCharacter) &&
+        bottomCharacter === "8"
+      ) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  /** Checks if a top/bottom pair has upward teeth. */
+  private hasUpTeeth(grid: readonly string[]): boolean {
+    const bottomRow = grid.at(-1);
+    const secondToLast = grid.at(-2);
+    if (!bottomRow || !secondToLast) return false;
+
+    for (const column of Array.from(
+      { length: bottomRow.length },
+      (_, index) => index,
+    )) {
+      const topCharacter = secondToLast.at(column);
+      const bottomCharacter = bottomRow.at(column);
+      if (
+        topCharacter === "4" &&
+        bottomCharacter &&
+        /[ba9]/u.test(bottomCharacter)
+      ) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  /** Whether horizontal row is a comb spine with vertical teeth. */
+  private isHorizontalComb(grid: readonly string[], rows: number): boolean {
+    for (const row of Array.from({ length: rows }, (_, index) => index)) {
+      const rowChars = grid.at(row);
+      if (
+        rowChars &&
+        /^[37b65a9]+$/u.test(rowChars) &&
+        /[7b]/u.test(rowChars)
+      ) {
+        const otherChars = grid.filter((_, index) => index !== row).join("");
+        if (/^[48c]*$/u.test(otherChars)) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  /** Whether top and bottom rails interdigitate with vertical teeth. */
+  private isReversingComb(
+    grid: readonly string[],
+    rows: number,
+    digits: string,
+  ): boolean {
+    if (!this.hasDownTeeth(grid) || !this.hasUpTeeth(grid)) {
+      return false;
+    }
+
+    if (rows <= 2) {
+      return !digits.includes("0");
+    }
+
+    const middle = grid.slice(1, -1).join("");
+    return /^c+$/u.test(middle);
+  }
+
+  /** Whether vertical column is a comb spine with horizontal teeth. */
+  private isVerticalComb(grid: readonly string[], columns: number): boolean {
+    for (const column of Array.from({ length: columns }, (_, index) => index)) {
+      const columnChars = grid.map((row) => row.at(column) || "").join("");
+      if (
+        columnChars &&
+        /^[cde65a9]+$/u.test(columnChars) &&
+        /[de]/u.test(columnChars)
+      ) {
+        const otherChars = grid
+          .map((row) => row.slice(0, column) + row.slice(column + 1))
+          .join("");
+        if (/^[123]*$/u.test(otherChars)) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
   /**
    * Cyclically shifts a string right by a given offset.
    */
@@ -61,6 +167,30 @@ export class CharacteristicsFamilyService {
       str.slice(length - normalizedOffset) +
       str.slice(0, length - normalizedOffset)
     );
+  }
+
+  /** Converts CodeObject digits to an array of row strings. */
+  private toGrid(code: CodeObject): string[] {
+    const { columns, digits, rows } = code;
+    return Array.from({ length: rows }, (_, row) =>
+      digits.slice(row * columns, (row + 1) * columns),
+    );
+  }
+
+  /** Validates basic dimensions and prevents overlap with other families. */
+  private validateBasic(
+    code: CodeObject,
+    minimumRows: number,
+    excludeFamilies: ((code: CodeObject) => boolean)[],
+  ): boolean {
+    if (
+      code.rows < minimumRows ||
+      code.digits.length !== code.rows * code.columns
+    ) {
+      return false;
+    }
+
+    return !excludeFamilies.some((checkFamily) => checkFamily(code));
   }
 
   // 🌎 Public Methods
@@ -88,6 +218,14 @@ export class CharacteristicsFamilyService {
       families.push("mesh");
     }
 
+    if (this.isComb(code)) {
+      families.push("comb");
+    }
+
+    if (this.isArcade(code)) {
+      families.push("arcade");
+    }
+
     if (this.isWaterfalls(code)) {
       families.push("waterfalls");
     }
@@ -96,11 +234,55 @@ export class CharacteristicsFamilyService {
   }
 
   /**
+   * Whether the meander consists of top and bottom rails connected by
+   * continuous vertical through-pillars, forming architectural bays/arches.
+   */
+  isArcade(code: CodeObject): boolean {
+    if (
+      !this.validateBasic(code, 3, [
+        (c) => this.isBars(c),
+        (c) => this.isMesh(c),
+        (c) => this.isComb(c),
+      ])
+    ) {
+      return false;
+    }
+
+    const grid = this.toGrid(code);
+    const topRow = grid[0];
+    const bottomRow = grid[code.rows - 1];
+
+    if (
+      !topRow ||
+      !bottomRow ||
+      !/[765]/u.test(topRow) ||
+      !/[ba9]/u.test(bottomRow)
+    ) {
+      return false;
+    }
+
+    const middleRows = grid.slice(1, code.rows - 1);
+    const pillarCount = Array.from({ length: code.columns }, (_, column) => {
+      const topCharacter = topRow.at(column);
+      const bottomCharacter = bottomRow.at(column);
+      return topCharacter &&
+        bottomCharacter &&
+        /[765]/u.test(topCharacter) &&
+        /[ba9]/u.test(bottomCharacter) &&
+        middleRows.every((row) => row.at(column) === "c")
+        ? 1
+        : 0;
+    }).reduce((a: number, b) => a + b, 0);
+
+    return pillarCount >= 2;
+  }
+
+  /**
    * Whether the meander consists only of parallel vertical lines across the
    * entire column width from the top border tick to the bottom border tick.
    */
   isBars(code: CodeObject): boolean {
-    if (code.rows < 2 || code.columns < 1) {
+    if (code.rows < 2) {
       return false;
     }
 
@@ -113,11 +295,35 @@ export class CharacteristicsFamilyService {
   }
 
   /**
+   * Whether the meander consists of a spine with perpendicular teeth,
+   * or alternating reversing top and bottom combs.
+   */
+  isComb(code: CodeObject): boolean {
+    if (
+      !this.validateBasic(code, 2, [
+        (c) => this.isBars(c),
+        (c) => this.isLines(c),
+        (c) => this.isMesh(c),
+      ])
+    ) {
+      return false;
+    }
+
+    const grid = this.toGrid(code);
+
+    return (
+      this.isVerticalComb(grid, code.columns) ||
+      this.isHorizontalComb(grid, code.rows) ||
+      this.isReversingComb(grid, code.rows, code.digits)
+    );
+  }
+
+  /**
    * Whether the meander contains no connections between any lattice points,
    * rendering purely as bare dots.
    */
   isDots(code: CodeObject): boolean {
-    return code.digits.length > 0 && /^0+$/u.test(code.digits);
+    return /^0+$/u.test(code.digits);
   }
 
   /**
@@ -125,7 +331,7 @@ export class CharacteristicsFamilyService {
    * unbroken across every level of the band.
    */
   isLines(code: CodeObject): boolean {
-    return code.digits.length > 0 && /^3+$/u.test(code.digits);
+    return /^3+$/u.test(code.digits);
   }
 
   /**
@@ -133,7 +339,7 @@ export class CharacteristicsFamilyService {
    * connections across the entire lattice grid.
    */
   isMesh(code: CodeObject): boolean {
-    if (code.rows < 2 || code.columns < 1) {
+    if (code.rows < 2) {
       return false;
     }
 
@@ -146,8 +352,8 @@ export class CharacteristicsFamilyService {
   }
 
   /**
-   * Whether the meander consists of evenly spaced, downward zig-zagging waterfalls across the
-   * vertical seam, stepping down row by row with no isolated dots.
+   * Whether the meander consists only of parallel vertical strands that cascade
+   * diagonally from corner to corner at a steady step size.
    */
   isWaterfalls(code: CodeObject): boolean {
     if (code.columns < 2 || code.rows < 2) {

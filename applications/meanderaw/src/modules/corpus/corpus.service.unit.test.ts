@@ -3,6 +3,7 @@ import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { CharacteristicsService } from "../characteristics/characteristics.service";
+import { ClassificationService } from "../classification/classification.service";
 import { CodeService } from "../code/code.service";
 import { DatabaseService } from "../database/database.service";
 import { DrawingService } from "../drawing/drawing.service";
@@ -45,6 +46,10 @@ describe(CorpusService, () => {
         {
           provide: CharacteristicsService,
           useValue: createMock<CharacteristicsService>(),
+        },
+        {
+          provide: ClassificationService,
+          useValue: createMock<ClassificationService>(),
         },
         {
           provide: DatabaseService,
@@ -132,7 +137,7 @@ describe(CorpusService, () => {
 
     it("persists each entry with pitch equal to columns, hardcoded provenance, and the first family it was filed under", async () => {
       await service.ingest([
-        { code: "3", columns: 3, filedUnder: ["branch", "parallel"], rows: 4 },
+        { code: "3", columns: 3, filedUnder: ["boxes", "parallel"], rows: 4 },
       ]);
 
       expect(databaseService.save).toHaveBeenCalledWith(
@@ -141,7 +146,7 @@ describe(CorpusService, () => {
           columns: 3,
           components: 1,
           cycles: 0,
-          family: "branch",
+          family: "boxes",
           freeEnds: 2,
 
           inkTJunctions: 1,

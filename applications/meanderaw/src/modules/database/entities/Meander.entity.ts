@@ -74,6 +74,12 @@ import type { MeanderFamily } from "../../classification/classification.types";
 @Entity({ name: "meanders" })
 @Index(["code"], { unique: true })
 export class Meander {
+  @Column({ default: 0, type: "int" })
+  arcadePillarCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  bifurcationCount!: number;
+
   @Column({ type: "simple-array" })
   characteristics!: string[];
 
@@ -82,6 +88,9 @@ export class Meander {
 
   @Column({ type: "int" })
   columns!: number;
+
+  @Column({ default: 0, type: "int" })
+  combSpineCount!: number;
 
   @Column({ default: 0, type: "int" })
   componentCount!: number;
