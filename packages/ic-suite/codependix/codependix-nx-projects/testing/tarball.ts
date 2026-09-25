@@ -130,39 +130,10 @@ export function ensureTarball(tarballName: string): string {
   );
 
   if (!existsSync(tarballPath)) {
-    if (process.env["NX_TASK_TARGET_PROJECT"]) {
-      // Inside Nx task - wait for parallel pack to complete
-      for (let i = 0; i < 50; i++) {
-        if (existsSync(tarballPath)) {
-          return tarballPath;
-        }
-        execFileSync("sleep", ["0.1"]);
-      }
-    } else {
-      // Find the package directory with this name in ic-suite
-      let packageDir: string | undefined;
-      const icSuitePath = path.resolve(workspaceRoot, "packages", "ic-suite");
-      for (const suite of readdirSync(icSuitePath)) {
-        const suitePath = path.resolve(icSuitePath, suite);
-        const potentialPackageDir = path.resolve(suitePath, tarballName);
-        if (existsSync(path.resolve(potentialPackageDir, "package.json"))) {
-          packageDir = potentialPackageDir;
-          break;
-        }
-      }
-
-      if (packageDir) {
-        // Pack this package using pnpm
-        execFileSync(
-          "pnpm",
-          ["pack", "--pack-destination", tarballsDirectory],
-          {
-            cwd: packageDir,
-            stdio: "pipe",
-          },
-        );
-      }
-    }
+    execFileSync("pnpm", ["exec", "nx", "run", `${tarballName}:pack`], {
+      cwd: workspaceRoot,
+      stdio: "pipe",
+    });
   }
 
   if (!existsSync(tarballPath)) {
