@@ -25,6 +25,7 @@ on:
       - unlabeled
       - assigned
       - unassigned
+      - ready_for_review
   schedule:
     - cron: 18 12 * * 5 # Weekly Friday 8:18am NYC (EDT: 12:18 UTC / EST: 13:18 UTC)
   workflow_dispatch:
@@ -152,8 +153,8 @@ jobs:
     timeout-minutes: 10
     if: >-
       github.actor != 'dependabot[bot]' &&
-      (github.event_name == 'pull_request' ||
-      github.event_name == 'push')
+      (github.event_name == 'push' ||
+      (github.event_name == 'pull_request' && !github.event.pull_request.draft))
 
     steps:
       - name: 📥 Checkout Repository

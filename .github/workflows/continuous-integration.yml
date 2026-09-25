@@ -9,6 +9,7 @@ on:
       - opened
       - reopened
       - synchronize
+      - ready_for_review
   merge_group:
   workflow_dispatch:
     inputs:
@@ -33,6 +34,7 @@ jobs:
     name: ${{ matrix.check.emoji }} ${{ matrix.check.name }}
     runs-on: ubuntu-latest
     timeout-minutes: 12
+    if: github.event_name != 'pull_request' || !github.event.pull_request.draft
     strategy:
       fail-fast: false
       matrix:
