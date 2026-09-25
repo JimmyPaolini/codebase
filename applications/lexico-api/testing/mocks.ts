@@ -82,5 +82,9 @@ export const createRepositoryMock = <
           where: vi.fn<() => QueryBuilder<Entity>>().mockReturnThis(),
         }),
       ),
+    find: vi.fn<Repository<Entity>["find"]>(),
+    findBy: vi.fn<Repository<Entity>["findBy"]>(),
+    findOne: vi.fn<Repository<Entity>["findOne"]>(),
+    findOneBy: vi.fn<Repository<Entity>["findOneBy"]>(),
   });
 };

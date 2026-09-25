@@ -26,7 +26,6 @@ export class Translation extends AuditableEntity {
   @Index()
   data!: string;
 
-  @Field(() => Object)
   @Index()
   @JoinColumn()
   @ManyToOne("Lexeme", "translations", {

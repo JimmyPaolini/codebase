@@ -33,7 +33,6 @@ export const pronunciationVariants = Object.values(
 @ObjectType()
 @Unique(["lexeme", "variant"])
 export class Pronunciation extends AuditableEntity {
-  @Field(() => Object)
   @Index()
   @JoinColumn()
   @ManyToOne("Lexeme", "pronunciations", {
@@ -46,7 +45,7 @@ export class Pronunciation extends AuditableEntity {
     comment: "Phonemic segmentation (e.g. a.moː)",
     nullable: true,
   })
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   @Index()
   phonemes?: null | string;
 
@@ -54,7 +53,7 @@ export class Pronunciation extends AuditableEntity {
     comment: "Phonemic IPA transcription (e.g. /ˈaː.moː/)",
     nullable: true,
   })
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   @Index()
   phonemic?: null | string;
 
@@ -62,7 +61,7 @@ export class Pronunciation extends AuditableEntity {
     comment: "Phonetic IPA transcription (e.g. [ˈäː.moː])",
     nullable: true,
   })
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   phonetic?: null | string;
 
   @Column({

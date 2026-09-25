@@ -1,4 +1,4 @@
-import { InterfaceType } from "@nestjs/graphql";
+import { Field, ID, InterfaceType } from "@nestjs/graphql";
 import { Entity, Index, ManyToOne, OneToMany, TableInheritance } from "typeorm";
 
 import { AuditableEntity } from "../../base/Auditable.entity";
@@ -18,7 +18,8 @@ import type { WordForm } from "../WordForm.entity";
 @InterfaceType()
 @TableInheritance({ column: { name: "type", type: "text" } })
 export class Form extends AuditableEntity {
-  // id, createdAt, createdBy, updatedAt, updatedBy, deletedAt, deletedBy inherited from AuditableEntity
+  @Field(() => ID)
+  declare id: string;
 
   @Index()
   @ManyToOne("Lexeme", "forms", {
