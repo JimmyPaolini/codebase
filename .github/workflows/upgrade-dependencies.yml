@@ -114,6 +114,7 @@ jobs:
           fi
 
       - name: 🔐 Import GPG Key
+        id: import-gpg
         if: steps.check.outputs.has_dependency_updates == 'true'
         uses: crazy-max/ghaction-import-gpg@v7
         with:
@@ -127,6 +128,13 @@ jobs:
         uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          committer: >-
+            ${{ steps.import-gpg.outputs.name }}
+            <${{ steps.import-gpg.outputs.email }}>
+          author: >-
+            ${{ steps.import-gpg.outputs.name }}
+            <${{ steps.import-gpg.outputs.email }}>
+          sign-commits: true
           commit-message: "chore(dependencies): ⬆️ Upgrade"
           branch: chore/dependencies-upgrade
           delete-branch: true

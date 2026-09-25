@@ -103,6 +103,15 @@
     "suggestInlineSuppression": false,
     "thresholdOverrides": [],
   },
+  "ignoreDependencyOverrides": [
+    { "package": "axios" },
+    { "package": "brace-expansion" },
+    { "package": "conventional-changelog-conventionalcommits" },
+    { "package": "fast-uri" },
+    { "package": "js-yaml" },
+    { "package": "markdown-it" },
+    { "package": "ws" },
+  ],
   // Every entry here is one fallow reports the moment it is removed — the list
   // was three times this size, and the surplus was config that had outlived
   // whatever once needed it. It only became visible once `ignorePatterns`
