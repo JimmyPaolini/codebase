@@ -2,8 +2,9 @@
 
 **An Nx plugin that traces call stacks per project, following the Nx dependency graph.**
 
-[`@callidescope/cli`](../callidescope-cli/README.md) is Nx-free on purpose: it
-takes `--directories`, each one a path holding its own `tsconfig.json`, so it
+Canonical documentation for call-stack tracing, configuration, depth and breadth analysis, and report formats is in the
+[`@callidescope/cli` README](https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/callidescope/callidescope-cli#readme).
+`@callidescope/cli` is Nx-free on purpose: it takes `--directories`, each one a path holding its own `tsconfig.json`, so it
 works in any TypeScript workspace whether or not Nx is anywhere near it. This
 package is the one place in the toolchain that knows Nx exists, and the only
 one that depends on `@nx/devkit`.

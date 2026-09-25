@@ -43,65 +43,24 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
-  continuous-compliance:
-    name: ${{ matrix.target.emoji }} ${{ matrix.target.name }}
+  issue:
+    name: 🧑‍💼 Issue
     runs-on: ubuntu-latest
-    timeout-minutes: ${{ matrix.target.timeout }}
-    if: github.actor != 'dependabot[bot]'
-    strategy:
-      fail-fast: false
-      matrix:
-        target:
-          - id: issue
-            name: Issue
-            emoji: 🧑‍💼
-            timeout: 10
-          - id: enforce
-            name: Enforce
-            emoji: 👮
-            timeout: 10
-          - id: comply
-            name: Comply
-            emoji: 🧑‍⚖️
-            timeout: 10
+    timeout-minutes: 10
+    if: >-
+      github.actor != 'dependabot[bot]' &&
+      (github.event_name == 'issues' ||
+      github.event_name == 'schedule' ||
+      github.event_name == 'workflow_dispatch')
 
     steps:
-      - name: 🚦 Skip Conditionally
-        id: check-skip
-        env:
-          EVENT_NAME: ${{ github.event_name }}
-          TARGET: ${{ matrix.target.id }}
-        run: |
-          if [ "$EVENT_NAME" = "issues" ] && [ "$TARGET" != "issue" ]; then
-            echo "⏭️ Skipping $TARGET on issues event."
-            echo "skip=true" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          if [ "$EVENT_NAME" = "pull_request" ] && [ "$TARGET" != "comply" ]; then
-            echo "⏭️ Skipping $TARGET on pull_request event."
-            echo "skip=true" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          if [ "$EVENT_NAME" = "push" ] && [ "$TARGET" = "issue" ]; then
-            echo "⏭️ Skipping $TARGET on push event."
-            echo "skip=true" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          echo "skip=false" >> "$GITHUB_OUTPUT"
-
       - name: 📥 Checkout Repository
-        if: steps.check-skip.outputs.skip != 'true'
         uses: actions/checkout@v7
 
       - name: 📦 Setup pnpm
-        if: steps.check-skip.outputs.skip != 'true'
         uses: ./.github/actions/setup-pnpm
 
       - name: 🟢 Setup node
-        if: steps.check-skip.outputs.skip != 'true'
         uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
@@ -113,7 +72,6 @@ jobs:
       # `...` on each filter resolves that transitively. Still no Nx cache, no
       # uv, and no Homebrew: there is no project graph to build.
       - name: 📚 Install Root Dependencies
-        if: steps.check-skip.outputs.skip != 'true'
         run: |
           CI=true pnpm install --frozen-lockfile --reporter=append-only \
             --filter . --filter synchronization... --filter validation... \
@@ -123,10 +81,7 @@ jobs:
       # never adds a field the body didn't already have, and re-adding labels
       # on every edit would fight a human who removed one on purpose.
       - name: 🏷️ Reconcile Issue Labels
-        if: >-
-          steps.check-skip.outputs.skip != 'true' &&
-          matrix.target.id == 'issue' &&
-          github.event.action == 'opened'
+        if: github.event_name == 'issues' && github.event.action == 'opened'
         env:
           GH_TOKEN: ${{ github.token }}
           ISSUE_BODY: ${{ github.event.issue.body }}
@@ -138,10 +93,7 @@ jobs:
 
       # Read live, by issue number, rather than out of this event's payload.
       - name: 🧾 Audit Single Issue Metadata
-        if: >-
-          steps.check-skip.outputs.skip != 'true' &&
-          matrix.target.id == 'issue' &&
-          github.event.issue != null
+        if: github.event_name == 'issues' && github.event.issue != null
         env:
           GH_TOKEN: ${{ github.token }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}
@@ -152,29 +104,79 @@ jobs:
       # Sweeps and audits all open issues and hierarchy relationships on
       # scheduled runs and manual dispatches.
       - name: 🧾 Audit All Open Issues Metadata
-        if: >-
-          steps.check-skip.outputs.skip != 'true' &&
-          matrix.target.id == 'issue' &&
-          github.event.issue == null
+        if: github.event.issue == null
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           NODE_OPTIONS='' node --import @swc-node/register/esm-register \
             tools/validation/src/main.ts issue-metadata --all
 
+  enforce:
+    name: 👮 Enforce
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: >-
+      github.actor != 'dependabot[bot]' &&
+      (github.event_name == 'push' ||
+      github.event_name == 'schedule' ||
+      github.event_name == 'workflow_dispatch')
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v7
+
+      - name: 📦 Setup pnpm
+        uses: ./.github/actions/setup-pnpm
+
+      - name: 🟢 Setup node
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: 📚 Install Root Dependencies
+        run: |
+          CI=true pnpm install --frozen-lockfile --reporter=append-only \
+            --filter . --filter synchronization... --filter validation... \
+            --ignore-scripts
+
       # Audits repository governance (CODEOWNERS rules and workflow security).
       - name: 👮 Audit Repository Governance
-        if: steps.check-skip.outputs.skip != 'true' && matrix.target.id == 'enforce'
         run: |
           NODE_OPTIONS='' node --import @swc-node/register/esm-register \
             tools/validation/src/main.ts audit-governance
 
+  comply:
+    name: 🧑‍⚖️ Comply
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: >-
+      github.actor != 'dependabot[bot]' &&
+      (github.event_name == 'pull_request' ||
+      github.event_name == 'push')
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v7
+
+      - name: 📦 Setup pnpm
+        uses: ./.github/actions/setup-pnpm
+
+      - name: 🟢 Setup node
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: 📚 Install Root Dependencies
+        run: |
+          CI=true pnpm install --frozen-lockfile --reporter=append-only \
+            --filter . --filter synchronization... --filter validation... \
+            --ignore-scripts
+
       # Only on pull request opened or synchronize — syncs labels from PR title.
       - name: 🏷️ Reconcile Pull Request Labels
-        if: >-
-          steps.check-skip.outputs.skip != 'true' &&
-          matrix.target.id == 'comply' &&
-          github.event.pull_request != null
+        if: github.event_name == 'pull_request'
         env:
           GH_TOKEN: ${{ github.token }}
           PULL_REQUEST_NUMBER: ${{ github.event.pull_request.number }}
@@ -184,10 +186,7 @@ jobs:
 
       # Validates that the pull request branch name conforms to Conventional Commits.
       - name: 🌿 Validate Branch Name
-        if: >-
-          steps.check-skip.outputs.skip != 'true' &&
-          matrix.target.id == 'comply' &&
-          github.event.pull_request != null
+        if: github.event_name == 'pull_request'
         env:
           BRANCH_NAME: ${{ github.head_ref }}
         run: |
@@ -195,10 +194,7 @@ jobs:
 
       # Validates that the pull request title follows Conventional Commits format.
       - name: 🏷️ Validate Pull Request Title
-        if: >-
-          steps.check-skip.outputs.skip != 'true' &&
-          matrix.target.id == 'comply' &&
-          github.event.pull_request != null
+        if: github.event_name == 'pull_request'
         env:
           PULL_REQUEST_TITLE: ${{ github.event.pull_request.title }}
         run: |
@@ -207,11 +203,7 @@ jobs:
 
       # Validates pull request body against required template sections.
       - name: 📝 Validate Pull Request Body
-        if: >-
-          steps.check-skip.outputs.skip != 'true' &&
-          matrix.target.id == 'comply' &&
-          github.event.pull_request != null &&
-          github.actor != 'dependabot[bot]'
+        if: github.event_name == 'pull_request' && github.actor != 'dependabot[bot]'
         env:
           GH_TOKEN: ${{ github.token }}
           PULL_REQUEST_NUMBER: ${{ github.event.pull_request.number }}
@@ -223,10 +215,7 @@ jobs:
 
       # Validates that PR title release significance matches or exceeds commits.
       - name: 🚦 Validate Release Significance
-        if: >-
-          steps.check-skip.outputs.skip != 'true' &&
-          matrix.target.id == 'comply' &&
-          github.event.pull_request != null
+        if: github.event_name == 'pull_request'
         env:
           GH_TOKEN: ${{ github.token }}
           PULL_REQUEST_NUMBER: ${{ github.event.pull_request.number }}
@@ -237,10 +226,7 @@ jobs:
 
       # Validates that the latest commit on main follows Conventional Commits.
       - name: 🏷️ Validate Commit Message
-        if: >-
-          steps.check-skip.outputs.skip != 'true' &&
-          matrix.target.id == 'comply' &&
-          github.event_name == 'push'
+        if: github.event_name == 'push'
         run: |
           git log -1 --pretty=%B | \
             npx commitlint --config configuration/commitlint.config.ts

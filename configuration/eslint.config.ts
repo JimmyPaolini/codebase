@@ -1409,10 +1409,16 @@ export default [
           pathPattern: String.raw`^(?!(?:.*\.)?commands?$)`,
         },
       ],
+      // Exempt the `exports` subtree from sorting so package condition order
+      // (e.g., `types` before `default`) can be manually controlled for correct
+      // TypeScript declaration resolution without being sorted alphabetically.
       "jsonc/sort-keys": [
         "error",
-        "asc",
-        { caseSensitive: false, minKeys: 2, natural: false },
+        {
+          minKeys: 2,
+          order: { caseSensitive: false, natural: false, type: "asc" },
+          pathPattern: String.raw`^(?!(?:.*\.)?exports(?:[\[.].*)?$)`,
+        },
       ],
     },
   },

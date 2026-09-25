@@ -14,6 +14,7 @@ export type MeanderFamily =
   | "comb"
   | "cross"
   | "dots"
+  | "double-chain"
   | "fork"
   | "lines"
   | "mesh"
@@ -23,6 +24,7 @@ export type MeanderFamily =
   | "swirl"
   | "tree"
   | "unclassified"
+  | "waterfalls"
   | "whirl";
 
 /**

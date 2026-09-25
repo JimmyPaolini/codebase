@@ -28,10 +28,10 @@
   "executors": "./executors.json",
   "exports": {
     ".": {
-      "default": "./src/index.cjs",
+      "types": "./src/index.ts",
       "import": "./src/index.cjs",
       "require": "./src/index.cjs",
-      "types": "./src/index.ts"
+      "default": "./src/index.cjs"
     },
     "./executors.json": "./executors.json",
     "./generators.json": "./generators.json",
@@ -59,10 +59,10 @@
     "access": "public",
     "exports": {
       ".": {
-        "default": "./dist/src/index.cjs",
+        "types": "./dist/src/index.d.ts",
         "import": "./dist/src/index.cjs",
         "require": "./dist/src/index.cjs",
-        "types": "./dist/src/index.d.ts"
+        "default": "./dist/src/index.cjs"
       },
       "./executors.json": "./executors.json",
       "./generators.json": "./generators.json",

@@ -50,4 +50,5 @@ export type CorpusFamily =
   | "parallel"
   | "snake"
   | "swirl"
+  | "waterfalls"
   | "whirl";

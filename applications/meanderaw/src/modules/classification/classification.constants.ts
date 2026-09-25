@@ -4,7 +4,7 @@ import type { MeanderFamily } from "./classification.types";
 
 /**
  * Supported meander families with precedence:
- * parallel -\> cross -\> arcade -\> comb -\> fork -\> tree -\> boxes -\> whirl -\> swirl -\> chain -\> clasps -\> snake -\> stipple -\> unclassified.
+ * parallel -> cross -> arcade -> comb -> fork -> tree -> boxes -> chain -> double-chain -> waterfalls -> whirl -> swirl -> clasps -> snake -> stipple -> unclassified.
  */
 export const MEANDER_FAMILIES: readonly MeanderFamily[] = [
   "dots",
@@ -18,9 +18,11 @@ export const MEANDER_FAMILIES: readonly MeanderFamily[] = [
   "fork",
   "tree",
   "boxes",
+  "chain",
+  "double-chain",
+  "waterfalls",
   "whirl",
   "swirl",
-  "chain",
   "clasps",
   "snake",
   "stipple",
@@ -33,11 +35,12 @@ export const MEANDER_FAMILIES: readonly MeanderFamily[] = [
 export const STRUCTURAL_MINIMUM_ROWS: Record<MeanderFamily, number> = {
   arcade: 2,
   bars: 2,
-  boxes: 3,
+  boxes: 4,
   chain: 3,
   clasps: 3,
   comb: 2,
   cross: 6,
+  "double-chain": 3,
   dots: 1,
   fork: 3,
   lines: 1,
@@ -48,5 +51,6 @@ export const STRUCTURAL_MINIMUM_ROWS: Record<MeanderFamily, number> = {
   swirl: 3,
   tree: 3,
   unclassified: 1,
+  waterfalls: 2,
   whirl: 3,
 };

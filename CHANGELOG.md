@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.22.1](https://github.com/JimmyPaolini/codebase/compare/v2.22.0...v2.22.1) (2026-09-24)
+
+### 🐛 Bug Fixes
+
+* **conformetry,codometer,callidescope,codependix,configuration,documentation:** 🐛 make exports conditions authoritative ([#1056](https://github.com/JimmyPaolini/codebase/issues/1056)) ([062d099](https://github.com/JimmyPaolini/codebase/commit/062d09928ee1908d8f2d485010ee3ec83c821a06)), closes [#447](https://github.com/JimmyPaolini/codebase/issues/447) [#448](https://github.com/JimmyPaolini/codebase/issues/448) [#449](https://github.com/JimmyPaolini/codebase/issues/449) [#450](https://github.com/JimmyPaolini/codebase/issues/450)
+
+## [2.22.0](https://github.com/JimmyPaolini/codebase/compare/v2.21.0...v2.22.0) (2026-09-24)
+
+### ✨ Features
+
+* **configuration,meanderaw:** ✨ add waterfalls family and remove invalid boxes ([#1101](https://github.com/JimmyPaolini/codebase/issues/1101)) ([fb32aa6](https://github.com/JimmyPaolini/codebase/commit/fb32aa6f5cb307bfb861310e6d4c5b860e475130))
+* **meanderaw:** :sparkles: extract characteristics to refine chain, whirl, and clasps classification ([#1098](https://github.com/JimmyPaolini/codebase/issues/1098)) ([1c4d89d](https://github.com/JimmyPaolini/codebase/commit/1c4d89d4607be3bbf00e4d340076a95815116e7d))
+
+### 📝 Documentation
+
+* **documentation:** 📝 cross-link skills, examples, and command line documentation ([#1055](https://github.com/JimmyPaolini/codebase/issues/1055)) ([5ac136d](https://github.com/JimmyPaolini/codebase/commit/5ac136d4ecc4a8a1f3bd69ffeb74ebbbb80bdace)), closes [#494](https://github.com/JimmyPaolini/codebase/issues/494) [#495](https://github.com/JimmyPaolini/codebase/issues/495) [#496](https://github.com/JimmyPaolini/codebase/issues/496) [#493](https://github.com/JimmyPaolini/codebase/issues/493) [#494](https://github.com/JimmyPaolini/codebase/issues/494) [#495](https://github.com/JimmyPaolini/codebase/issues/495) [#496](https://github.com/JimmyPaolini/codebase/issues/496) [#443](https://github.com/JimmyPaolini/codebase/issues/443)
+
 ## [2.21.0](https://github.com/JimmyPaolini/codebase/compare/v2.20.0...v2.21.0) (2026-09-24)
 
 ### ✨ Features

@@ -101,7 +101,7 @@ changed at all. Check on the runtime the repository pins, or expect false
 staleness rather than a real finding.
 
 ```yaml
-- run: npx codometer --check reports,limits
+- run: npx @codometer/cli --check reports,limits
 ```
 
 ## One folder at a time
@@ -574,12 +574,25 @@ Which paths to skip, where the output goes, and how Python is reached are all
 configuration. That split is what lets the CLI be a general tool rather than
 one repository's script.
 
+## Agent skills
+
+Agent skills for coding agents working with codometer are published in
+[`@codometer/agents`](https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/codometer/codometer-agents):
+
+| Skill | Description |
+| ----- | ----------- |
+| [`codometer-measure`](https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/codometer/codometer-agents/skills/codometer-measure) | Run code measurements and produce markdown or JSON reports |
+| [`codometer-configure`](https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/codometer/codometer-agents/skills/codometer-configure) | Configure measurement inputs, custom metrics, and limits in `codometer.config.ts` |
+| [`codometer-triage`](https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/codometer/codometer-agents/skills/codometer-triage) | Triage limit breaches and measurement failures |
+
+## Examples
+
 Everything above has a runnable example in
-[`@codometer/examples`](../codometer-examples/README.md), measured against a
+[`@codometer/examples`](https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/codometer/codometer-examples), measured against a
 sample corpus whose counts are stated and checked — including a reproduction of
 each refusal, which is where a reader is most likely to be stuck. An agent that
 has already been handed a refusal and needs the fix should start from that
-package's [AGENTS.md](../codometer-examples/AGENTS.md), which maps each message
+package's [AGENTS.md](https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/codometer/codometer-examples/AGENTS.md), which maps each message
 codometer prints to the example that reproduces it.
 
 ## Start

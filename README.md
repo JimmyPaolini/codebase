@@ -1,4 +1,4 @@
-# Codebase v2.21.0
+# Codebase v2.22.1
 
 [![Nx](https://img.shields.io/badge/Nx-Codebase-143055?logo=nx)](https://nx.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Strict-3178C6?logo=typescript)](https://www.typescriptlang.org/)
@@ -344,7 +344,7 @@ Repository statistics measured by [codometer](packages/ic-suite/codometer/codome
 
 ### Repository
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-5951-22c55e?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-5957-22c55e?style=flat-square)
 ![Repository Size](https://img.shields.io/badge/Repository_Size-2.05_MB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-74-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-23-3178c6?style=flat-square)
@@ -372,8 +372,8 @@ Repository statistics measured by [codometer](packages/ic-suite/codometer/codome
 ![Constants](https://img.shields.io/badge/Constants-84-dc2626?style=flat-square)
 ![Imports](https://img.shields.io/badge/Imports-46-0284c7?style=flat-square)
 ![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-10-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-666-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-1367-475569?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-669-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-1370-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python
@@ -529,7 +529,7 @@ Repository statistics measured by [codometer](packages/ic-suite/codometer/codome
 ### Markdown
 
 ![Markdown Files](https://img.shields.io/badge/Markdown_Files-103-083fa1?style=flat-square)
-![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-18339-1f6feb?style=flat-square)
+![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-18340-1f6feb?style=flat-square)
 ![H1](https://img.shields.io/badge/H1-102-7c3aed?style=flat-square)
 ![H2](https://img.shields.io/badge/H2-629-8b5cf6?style=flat-square)
 ![H3](https://img.shields.io/badge/H3-524-a78bfa?style=flat-square)
@@ -558,10 +558,10 @@ The workspace's call graph, traced by [callidescope](packages/ic-suite/callidesc
 
 | Measure | Value |
 | --- | --- |
-| Callables | 5066 |
-| Files | 1422 |
-| Calls traced | 5658 |
-| Call stacks | 1314 |
+| Callables | 5077 |
+| Files | 1423 |
+| Calls traced | 5673 |
+| Call stacks | 1316 |
 | Deepest stack | 17 |
 | Stacks through recursion | 12 |
 | Unfollowable calls | 337 |

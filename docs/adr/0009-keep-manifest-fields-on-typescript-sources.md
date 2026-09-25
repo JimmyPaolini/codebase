@@ -18,12 +18,12 @@ Only `publishConfig` escapes that circularity.
 - **Point `main`/`types`/`exports` at `dist/`, the conventional arrangement.**
   Rejected: it deadlocks the plugin graph load described above. Two further
   obstacles were verified behind it, so breaking the circularity alone would not
-  be enough. `oxfmt` sorts object keys and `exports` conditions are
-  order-sensitive, so a `{ "types": …, "default": … }` map is reformatted with
-  `default` first and `types` becomes unreachable. And `fallow-dead-code` and
-  `vitest` both resolve through the manifest and honor no `source` condition, so
-  fallow reports live code as unused and vitest cannot resolve the package until
-  it is built.
+  be enough. ESLint's `jsonc/sort-keys` sorts object keys and `exports` conditions
+  are order-sensitive, so a `{ "types": …, "default": … }` map would be sorted
+  with `default` first and `types` would become unreachable. And
+  `fallow-dead-code` and `vitest` both resolve through the manifest and honor no
+  `source` condition, so fallow reports live code as unused and vitest cannot
+  resolve the package until it is built.
 - **Trim the plugin entries' re-exports to shrink the closure.** Rejected, and
   worth recording because it reads like the obvious fix. Both entries re-export
   their package's modules, services, and types, which looks like the reason Nx

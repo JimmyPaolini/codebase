@@ -39,11 +39,12 @@ starts a fresh sorted run. That is the escape hatch when a literal has a
 meaningful order — group the members and let each group sort itself, rather than
 reaching for a disable comment.
 
-> ⚠️ **Warning:** `oxfmt` sorts object keys, and some object keys are
-> order-sensitive. A package manifest's `exports` conditions are the known case:
-> a `{ "types": …, "default": … }` map is reformatted with `default` first,
-> which makes `types` unreachable. Never rely on the source order of an
-> `exports` map surviving a format pass.
+> ⚠️ **Warning:** ESLint's `jsonc/sort-keys` rule sorts JSON object keys, but
+> package manifest `exports` conditions are order-sensitive: Node and TypeScript
+> resolve conditions in declaration order (first matching condition wins), so
+> `types` must precede `default` for type declarations to be reachable. The
+> `exports` subtree is exempted in `configuration/eslint.config.ts` so that
+> condition order can be authored deliberately.
 
 ## Cross-project imports
 
