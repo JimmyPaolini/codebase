@@ -20,14 +20,21 @@ export class CharacteristicsFamilyService {
 
   /** Checks if a top/bottom pair has downward teeth. */
   private hasDownTeeth(grid: readonly string[]): boolean {
-    const topRow = grid.at(0) ?? "";
+    const topRow = grid.at(0);
+    if (!topRow) return false;
+
     for (const column of Array.from(
       { length: topRow.length },
       (_, index) => index,
     )) {
-      const topCharacter = topRow.at(column) ?? "";
-      const bottomCharacter = grid.at(1)?.at(column) ?? "";
-      if (/[765]/u.test(topCharacter) && bottomCharacter === "8") {
+      const topCharacter = topRow.at(column);
+      const bottomCharacter = grid.at(1)?.at(column);
+      if (
+        topCharacter &&
+        bottomCharacter &&
+        /[765]/u.test(topCharacter) &&
+        bottomCharacter === "8"
+      ) {
         return true;
       }
     }
@@ -37,15 +44,21 @@ export class CharacteristicsFamilyService {
 
   /** Checks if a top/bottom pair has upward teeth. */
   private hasUpTeeth(grid: readonly string[]): boolean {
-    const bottomRow = grid.at(-1) ?? "";
+    const bottomRow = grid.at(-1);
     const secondToLast = grid.at(-2);
+    if (!bottomRow || !secondToLast) return false;
+
     for (const column of Array.from(
       { length: bottomRow.length },
       (_, index) => index,
     )) {
-      const topCharacter = secondToLast?.at(column) ?? "";
-      const bottomCharacter = bottomRow.at(column) ?? "";
-      if (topCharacter === "4" && /[ba9]/u.test(bottomCharacter)) {
+      const topCharacter = secondToLast.at(column);
+      const bottomCharacter = bottomRow.at(column);
+      if (
+        topCharacter === "4" &&
+        bottomCharacter &&
+        /[ba9]/u.test(bottomCharacter)
+      ) {
         return true;
       }
     }
@@ -56,7 +69,7 @@ export class CharacteristicsFamilyService {
   /** Whether horizontal row is a comb spine with vertical teeth. */
   private isHorizontalComb(grid: readonly string[], rows: number): boolean {
     for (const row of Array.from({ length: rows }, (_, index) => index)) {
-      const rowChars = grid[row];
+      const rowChars = grid.at(row);
       if (
         rowChars &&
         /^[37b65a9]+$/u.test(rowChars) &&
@@ -93,7 +106,7 @@ export class CharacteristicsFamilyService {
   /** Whether vertical column is a comb spine with horizontal teeth. */
   private isVerticalComb(grid: readonly string[], columns: number): boolean {
     for (const column of Array.from({ length: columns }, (_, index) => index)) {
-      const columnChars = grid.map((row) => row[column] || "").join("");
+      const columnChars = grid.map((row) => row.at(column) || "").join("");
       if (
         columnChars &&
         /^[cde65a9]+$/u.test(columnChars) &&
