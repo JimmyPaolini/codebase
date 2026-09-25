@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.23.2](https://github.com/JimmyPaolini/codebase/compare/v2.23.1...v2.23.2) (2026-09-25)
+
+### 🐛 Bug Fixes
+
+* **deployments,configuration:** 🐛 sign commits in upgrade-dependencies and suppress dead overrides ([#1135](https://github.com/JimmyPaolini/codebase/issues/1135)) ([a30b316](https://github.com/JimmyPaolini/codebase/commit/a30b316b853726c5c2c7582784953456bd1e8bbe)), closes [#1130](https://github.com/JimmyPaolini/codebase/issues/1130)
+
+### 📦 Build System
+
+* **codependix:** 📦️ migrate codependix to the vite library build and inline the logger ([#1094](https://github.com/JimmyPaolini/codebase/issues/1094)) ([13fc4de](https://github.com/JimmyPaolini/codebase/commit/13fc4dece2591fda9d9f6c82d0ca5398af010983)), closes [#481](https://github.com/JimmyPaolini/codebase/issues/481) [#482](https://github.com/JimmyPaolini/codebase/issues/482) [#483](https://github.com/JimmyPaolini/codebase/issues/483) [#484](https://github.com/JimmyPaolini/codebase/issues/484) [#485](https://github.com/JimmyPaolini/codebase/issues/485) [#486](https://github.com/JimmyPaolini/codebase/issues/486) [#443](https://github.com/JimmyPaolini/codebase/issues/443)
+
 ## [2.23.1](https://github.com/JimmyPaolini/codebase/compare/v2.23.0...v2.23.1) (2026-09-25)
 
 ### 📦 Build System
