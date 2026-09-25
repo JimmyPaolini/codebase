@@ -111,6 +111,7 @@ A modern TypeScript codebase with Nx, featuring automated releases, comprehensiv
 <summary><strong>🐺 lexico</strong> - Latin-English dictionary suite: the web application, its components, its schema, and the ingestion that fills it</summary>
 
 &nbsp;&nbsp;&nbsp;&nbsp;**[lexico](applications/lexico)** - TanStack Start SSR dictionary web application\
+&nbsp;&nbsp;&nbsp;&nbsp;**[lexico-api](applications/lexico-api)** - NestJS GraphQL API exposing Latin dictionary, literature, and Relay cursor-based search\
 &nbsp;&nbsp;&nbsp;&nbsp;**[lexico-components](packages/lexico-components)** - Shared React component library using shadcn/ui and Radix primitives\
 &nbsp;&nbsp;&nbsp;&nbsp;**[lexico-entities](packages/lexico-entities)** - TypeORM entities, migrations, and grammatical enumerations for the dictionary and literature schema\
 &nbsp;&nbsp;&nbsp;&nbsp;**[lexico-ingestion](applications/lexico-ingestion)** - NestJS CLI that scrapes and loads dictionary, literature, and etymology sources

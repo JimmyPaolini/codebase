@@ -8,7 +8,12 @@ describe("main end-to-end suite", () => {
       expect.hasAssertions();
       expect(environmentSchema.parse({})).toStrictEqual({
         LIGHTSHIP_PORT: 9000,
-        PORT: 3000,
+        PORT: 8398,
+        POSTGRES_DB: "postgres",
+        POSTGRES_HOST: "localhost",
+        POSTGRES_PASSWORD: "postgres",
+        POSTGRES_PORT: 5432,
+        POSTGRES_USER: "postgres",
       });
     });
   });

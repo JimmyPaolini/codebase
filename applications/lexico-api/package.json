@@ -1,40 +1,40 @@
 {
   "dependencies": {
     "@apollo/server": "catalog:",
+    "@codebase/lexico-entities": "workspace:*",
     "@codebase/logger": "workspace:*",
     "@nestjs/apollo": "catalog:",
     "@nestjs/common": "catalog:",
     "@nestjs/config": "catalog:",
     "@nestjs/core": "catalog:",
     "@nestjs/graphql": "catalog:",
-    "@nestjs/platform-express": "catalog:",
-    "dataloader": "catalog:",
     "graphql": "catalog:",
     "lightship": "catalog:",
-    "nestjs-graphql-connection": "catalog:",
     "reflect-metadata": "catalog:",
-    "tsx": "catalog:",
-    "unplugin-swc": "catalog:",
+    "tslib": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@faker-js/faker": "catalog:",
     "@golevelup/ts-vitest": "catalog:",
     "@nestjs/testing": "catalog:",
-    "@nx/eslint-plugin": "catalog:",
     "@swc-node/register": "catalog:",
     "@swc/core": "catalog:",
     "@swc/helpers": "catalog:",
     "@types/node": "catalog:",
     "@vitest/coverage-v8": "catalog:",
-    "fishery": "catalog:",
+    "typeorm": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
   },
-  "name": "{{nameKebabCase}}",
+  "name": "lexico-api",
   "type": "module",
   "typeCoverage": {
     "atLeast": 100,
+    "ignoreCatch": true,
+    "ignoreFiles": [
+      "**/*.test.ts",
+      "src/main.ts"
+    ],
     "strict": true
   },
   "version": "0.0.1"

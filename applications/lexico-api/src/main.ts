@@ -1,16 +1,18 @@
 import "reflect-metadata";
-
 import { NestFactory } from "@nestjs/core";
 import { createLightship } from "lightship";
 
 import { LoggerService } from "@codebase/logger";
 
 import { environmentSchema } from "./constants";
-import { {{namePascalCase}}Module } from "./modules/{{nameKebabCase}}/{{nameKebabCase}}.module";
+import { MainModule } from "./main.module";
 
 import type { INestApplication } from "@nestjs/common";
 
-async function bootstrap(): Promise<void> {
+/**
+ * Bootstraps the NestJS GraphQL API application.
+ */
+async function main(): Promise<void> {
   const environment = environmentSchema.parse(process.env);
   const logger = new LoggerService();
   logger.setContext("NestApplication");
@@ -19,19 +21,21 @@ async function bootstrap(): Promise<void> {
     port: environment.LIGHTSHIP_PORT,
   });
 
-  const app: INestApplication = await NestFactory.create({{namePascalCase}}Module, {
+  const application: INestApplication = await NestFactory.create(MainModule, {
     bufferLogs: true,
     logger,
   });
 
   lightship.registerShutdownHandler(async () => {
-    await app.close();
+    await application.close();
   });
 
-  await app.listen(environment.PORT);
+  await application.listen(environment.PORT);
   lightship.signalReady();
 
-  logger.log(`GraphQL API running on http://localhost:${environment.PORT}/graphql`);
+  logger.log(
+    `🌐 Serving GraphQL API on http://localhost:${environment.PORT}/graphql`,
+  );
 }
 
-void bootstrap();
+void main();
