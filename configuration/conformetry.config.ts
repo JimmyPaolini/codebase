@@ -87,6 +87,13 @@ const conformetryConfiguration: ConformetryNxConfiguration = [
           workspaceRelativePrefix: "../../../../",
         },
       },
+      {
+        patterns: ["packages/ic-suite/conformetry/conformetry-cli"],
+        substitutions: {
+          type: "packages/ic-suite/conformetry",
+          workspaceRelativePrefix: "../../../../",
+        },
+      },
     ],
     name: "nestjs-command-project",
     templatePath: "configuration/conformetry-templates/nestjs-command-project",
