@@ -1022,7 +1022,7 @@
         "unit": {}
       },
       "defaultConfiguration": "coverage",
-      "dependsOn": ["pack", "pytest", "vitest"],
+      "dependsOn": ["pytest", "vitest"],
       "description": "Dynamic code analysis: the tests, which execute the source. An nx:noop aggregator. The configuration propagates down dependsOn, so test-code:coverage reaches test:coverage.",
       "executor": "nx:noop"
     },
@@ -1109,12 +1109,10 @@
     "vitest": {
       "configurations": {
         "coverage": {
-          "command": "pnpm exec vitest run --coverage --coverage.provider=v8",
-          "dependsOn": ["pack"]
+          "command": "pnpm exec vitest run --coverage --coverage.provider=v8"
         },
         "end-to-end": {
-          "command": "pnpm exec vitest run end-to-end.test.ts",
-          "dependsOn": ["pack"]
+          "command": "pnpm exec vitest run end-to-end.test.ts"
         },
         "integration": {
           "command": "pnpm exec vitest run integration.test.ts"
@@ -1127,7 +1125,7 @@
         }
       },
       "defaultConfiguration": "coverage",
-      "description": "Extra configurations layered onto the vitest target that @nx/vitest infers. The plugin supplies the command, inputs, and outputs. Coverage is the default so that a bare `test-code` run still enforces the thresholds \u2014 Nx only propagates a configuration down `dependsOn` when it is named explicitly. end-to-end tests depend on pack to ensure tarballs are built."
+      "description": "Extra configurations layered onto the vitest target that @nx/vitest infers. The plugin supplies the command, inputs, and outputs. Coverage is the default so that a bare `test-code` run still enforces the thresholds \u2014 Nx only propagates a configuration down `dependsOn` when it is named explicitly."
     },
     "vulture": [
       {
