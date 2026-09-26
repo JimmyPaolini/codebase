@@ -4,8 +4,8 @@ import { createLightship } from "lightship";
 
 import { LoggerService } from "@codebase/logger";
 
-import { environmentSchema } from "./main.constants";
-import { MainModule } from "./main.module";
+import { environmentSchema } from "./lexico-api.constants";
+import { LexicoApiModule } from "./lexico-api.module";
 
 import type { INestApplication } from "@nestjs/common";
 
@@ -18,23 +18,26 @@ async function main(): Promise<void> {
   logger.setContext("NestApplication");
 
   const lightship = await createLightship({
-    port: environment.LIGHTSHIP_PORT,
+    port: environment.LEXICO_API_LIGHTSHIP_PORT,
   });
 
-  const application: INestApplication = await NestFactory.create(MainModule, {
-    bufferLogs: true,
-    logger,
-  });
+  const application: INestApplication = await NestFactory.create(
+    LexicoApiModule,
+    {
+      bufferLogs: true,
+      logger,
+    },
+  );
 
   lightship.registerShutdownHandler(async () => {
     await application.close();
   });
 
-  await application.listen(environment.APPLICATION_PORT);
+  await application.listen(environment.LEXICO_API_PORT);
   lightship.signalReady();
 
   logger.log(
-    `🌐 Serving GraphQL API on http://localhost:${environment.APPLICATION_PORT}/graphql`,
+    `🌐 Serving GraphQL API on http://localhost:${environment.LEXICO_API_PORT}/graphql`,
   );
 }
 

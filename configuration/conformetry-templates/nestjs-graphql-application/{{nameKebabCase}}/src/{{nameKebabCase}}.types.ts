@@ -1,4 +1,4 @@
-import type { PageInfo } from "./main.entities";
+import type { PageInfo } from "./{{nameKebabCase}}.entities";
 
 /**
  * Constructor type for class references.

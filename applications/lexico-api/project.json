@@ -5,7 +5,6 @@
   "sourceRoot": "applications/lexico-api",
   "tags": [
     "domain:lexico",
-    "framework:nestjs",
     "framework:nestjs-graphql-api",
     "generator:nestjs-graphql-application",
     "language:typescript",

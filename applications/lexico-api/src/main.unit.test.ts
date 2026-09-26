@@ -28,8 +28,8 @@ vi.mock("lightship", () => ({
     createLightshipMock(configuration),
 }));
 
-vi.mock("./main.module", () => ({
-  MainModule: function MainModule() {
+vi.mock("./lexico-api.module", () => ({
+  LexicoApiModule: function LexicoApiModule() {
     return undefined;
   },
 }));
@@ -91,11 +91,11 @@ describe("main bootstrap suite", () => {
     expect(closeMock).toHaveBeenCalledTimes(1);
   });
 
-  it("bootstraps nest application with custom APPLICATION_PORT and LIGHTSHIP_PORT", async () => {
+  it("bootstraps nest application with custom LEXICO_API_PORT and LEXICO_API_LIGHTSHIP_PORT", async () => {
     expect.hasAssertions();
 
-    process.env["APPLICATION_PORT"] = "9999";
-    process.env["LIGHTSHIP_PORT"] = "9005";
+    process.env["LEXICO_API_LIGHTSHIP_PORT"] = "9005";
+    process.env["LEXICO_API_PORT"] = "9999";
     const listenMock = vi
       .fn<() => Promise<INestApplication>>()
       .mockResolvedValue(undefined as unknown as INestApplication);
@@ -115,7 +115,7 @@ describe("main bootstrap suite", () => {
     expect(createLightshipMock).toHaveBeenCalledWith({ port: 9005 });
     expect(listenMock).toHaveBeenCalledWith(9999);
 
-    delete process.env["APPLICATION_PORT"];
-    delete process.env["LIGHTSHIP_PORT"];
+    delete process.env["LEXICO_API_LIGHTSHIP_PORT"];
+    delete process.env["LEXICO_API_PORT"];
   });
 });

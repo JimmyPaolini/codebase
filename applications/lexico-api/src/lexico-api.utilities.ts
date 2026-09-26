@@ -1,8 +1,32 @@
 import { Field, Int, ObjectType } from "@nestjs/graphql";
 
-import { PageInfo } from "./main.entities";
+import { PageInfo } from "./lexico-api.entities";
 
-import type { ClassConstructor, Connection, Edge } from "./main.types";
+import type { ClassConstructor, Connection, Edge } from "./lexico-api.types";
+
+/**
+ * Creates a Relay Connection containing edges, page info, and total count.
+ */
+export function createConnection<T>(parameters: {
+  edges: Edge<T>[];
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+  totalCount: number;
+}): Connection<T> {
+  const pageInfo = new PageInfo();
+  pageInfo.hasNextPage = parameters.hasNextPage;
+  pageInfo.hasPreviousPage = parameters.hasPreviousPage;
+  pageInfo.startCursor =
+    parameters.edges.length > 0 ? parameters.edges[0]?.cursor : undefined;
+  pageInfo.endCursor =
+    parameters.edges.length > 0 ? parameters.edges.at(-1)?.cursor : undefined;
+
+  return {
+    edges: parameters.edges,
+    pageInfo,
+    totalCount: parameters.totalCount,
+  };
+}
 
 /**
  * Creates a Relay Edge from a node and an encoded cursor string.
@@ -37,34 +61,31 @@ export function createEdgeType<T>(
 }
 
 /**
- * Creates a Relay Connection containing edges, page info, and total count.
+ * Decodes an offset-based cursor, returning the specified default offset if missing or invalid.
  */
-export function createConnection<T>(parameters: {
-  edges: Edge<T>[];
-  hasNextPage: boolean;
-  hasPreviousPage: boolean;
-  totalCount: number;
-}): Connection<T> {
-  const pageInfo = new PageInfo();
-  pageInfo.hasNextPage = parameters.hasNextPage;
-  pageInfo.hasPreviousPage = parameters.hasPreviousPage;
-  pageInfo.startCursor =
-    parameters.edges.length > 0 ? parameters.edges[0]?.cursor : undefined;
-  pageInfo.endCursor =
-    parameters.edges.length > 0 ? parameters.edges.at(-1)?.cursor : undefined;
-
-  return {
-    edges: parameters.edges,
-    pageInfo,
-    totalCount: parameters.totalCount,
-  };
+export function decodeOffsetCursor(
+  cursor?: null | string,
+  defaultOffset = 0,
+): number {
+  if (cursor === undefined || cursor === null || cursor.length === 0) {
+    return defaultOffset;
+  }
+  const decoded = fromCursorSafe<{ offset?: number }>(cursor);
+  if (
+    decoded !== null &&
+    typeof decoded.offset === "number" &&
+    decoded.offset >= 0
+  ) {
+    return decoded.offset;
+  }
+  return defaultOffset;
 }
 
 /**
- * Encodes structured data into an opaque Base64 cursor string.
+ * Encodes an offset-based integer cursor.
  */
-export function toCursor(data: unknown): string {
-  return Buffer.from(JSON.stringify(data), "utf8").toString("base64url");
+export function encodeOffsetCursor(offset: number): string {
+  return toCursor({ offset: Math.max(0, offset) });
 }
 
 /**
@@ -96,34 +117,6 @@ export function fromCursorSafe<T = unknown>(
   } catch {
     return null;
   }
-}
-
-/**
- * Encodes an offset-based integer cursor.
- */
-export function encodeOffsetCursor(offset: number): string {
-  return toCursor({ offset: Math.max(0, offset) });
-}
-
-/**
- * Decodes an offset-based cursor, returning the specified default offset if missing or invalid.
- */
-export function decodeOffsetCursor(
-  cursor?: null | string,
-  defaultOffset = 0,
-): number {
-  if (cursor === undefined || cursor === null || cursor.length === 0) {
-    return defaultOffset;
-  }
-  const decoded = fromCursorSafe<{ offset?: number }>(cursor);
-  if (
-    decoded !== null &&
-    typeof decoded.offset === "number" &&
-    decoded.offset >= 0
-  ) {
-    return decoded.offset;
-  }
-  return defaultOffset;
 }
 
 /**
@@ -198,4 +191,11 @@ export function Paginated<T>(
   }
 
   return ConnectionType;
+}
+
+/**
+ * Encodes structured data into an opaque Base64 cursor string.
+ */
+export function toCursor(data: unknown): string {
+  return Buffer.from(JSON.stringify(data), "utf8").toString("base64url");
 }
