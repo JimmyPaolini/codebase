@@ -36,7 +36,8 @@ describe(BettiNumber1CountCharacteristicService, () => {
     {
       code: "03x03y567def9ab",
       expected: 4,
-      shape: "a window of four unit squares sharing their walls",
+      shape:
+        "four unit squares sharing walls, two of them closing across the tile boundary",
     },
     { code: "03x02y2712b1", expected: 0, shape: "a branching tree" },
     { code: "01x03y000", expected: 0, shape: "three isolated dots" },
