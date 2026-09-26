@@ -20,120 +20,65 @@ helm upgrade --install myrelease ./chart
 
 ## Agent Workflow
 
-Use the [mattpocock/skills](https://github.com/mattpocock/skills) workflow for
-non-trivial features, refactors, and bugfixes so the work is clarified,
-specified, tracked, and implemented in a consistent way, with the
-[obra/superpowers](https://github.com/obra/superpowers) skills supplying the
-gates it leaves open — approval before the first line of code, a failing test
-before the first line of implementation, and a root cause before the first
-fix.
+Work in this repository integrates skills from both
+[mattpocock/skills](https://github.com/mattpocock/skills) and
+[obra/superpowers](https://github.com/obra/superpowers) to clarify, specify,
+track, implement, and review non-trivial features, refactors, and bugfixes with
+strict verification gates.
 
-1. Sharpen the request first, running
-   [brainstorming](.agents/skills/brainstorming/SKILL.md) and the grilling
-   skills together. Brainstorming classifies the request — spike, bounded, or
-   architectural — and holds the approval gate: no implementation skill, no
-   code, nothing scaffolded until you have said what you intend and heard yes,
-   however small the change. Around that gate, run
-   [grill-with-docs](.agents/skills/grill-with-docs/SKILL.md) when the work
-   needs a domain model or ADRs to come out of the conversation, or
-   [grill-me](.agents/skills/grill-me/SKILL.md) for a plain interview. Where
-   the two disagree on pacing, [grilling](.agents/skills/grilling/SKILL.md)
-   wins: ask the whole frontier as one numbered round carrying a recommended
-   answer per question, rather than brainstorming's one question per message.
-   Unsure which skill fits? Ask
-   [ask-matt](.agents/skills/ask-matt/SKILL.md).
-2. Capture the outcome with [to-spec](.agents/skills/to-spec/SKILL.md), then
-   split it with [to-tickets](.agents/skills/to-tickets/SKILL.md) when the work
-   spans multiple tasks. Reach for
-   [wayfinder](.agents/skills/wayfinder/SKILL.md) when the work is larger than
-   one agent session can hold. This step is brainstorming's terminal state:
-   ignore its hand-off to `writing-plans` and its `docs/superpowers/specs/`
-   destination — that skill is not installed here, and a spec and its tickets
-   belong where [`docs/agents/issue-tracker.md`](docs/agents/issue-tracker.md)
-   says.
-3. Hand the plan across the session boundary with
-   [handoff](.agents/skills/handoff/SKILL.md) whenever the building will happen
-   in a fresh session, which is the normal case for anything larger than a
-   single ticket. The document it writes is the next agent's entire brief, so
-   it is held to this repository's rules rather than the skill's defaults — see
-   [Handoffs](#handoffs).
-4. Move every ticket the work covers — the spec, the parent issue for the pull
-   request, and the sub-issue for the commit — to `status:in-progress` before
-   the first test, the way
-   [`docs/agents/issue-tracker.md`](docs/agents/issue-tracker.md) describes.
+**Planning is human-gated; implementation is continuous.** During planning,
+never chain skills automatically — stop after each step and wait for explicit
+invocation. During implementation, subagents execute autonomously and may create
+sub-issues without asking.
 
-   **A spec with more than one ticket is dispatched, not implemented in this
-   session.** Hand each parent issue — the whole pull request, not one task
-   inside it — to a fresh subagent: independent tickets together, dependent
-   ones one at a time down a stack. See
-   [Multiple Pull Requests](#multiple-pull-requests) for the dependency-order
-   mechanics and why dispatching this way, rather than implementing each
-   ticket here in turn, is what keeps this session's own context usable for
-   the run's length. This is
-   [subagent-driven-development](.agents/skills/subagent-driven-development/SKILL.md)'s
-   core principle — a fresh subagent per unit of work — applied one level up,
-   at ticket granularity instead of task granularity. Brief each dispatched
-   subagent with its ticket, the spec, and everything below through step 7:
-   it owns that ticket's whole lap and reports back only its branch, pull
-   request URL, and status. Only when the spec holds exactly one ticket does
-   this session run the process below directly rather than dispatching it.
+1. **Clarify**: Run [brainstorming](.agents/skills/brainstorming/SKILL.md) with
+   [grill-with-docs](.agents/skills/grill-with-docs/SKILL.md) (domain models/ADRs)
+   or [grill-me](.agents/skills/grill-me/SKILL.md) (plain interview). Follow
+   [grilling](.agents/skills/grilling/SKILL.md) pacing (one numbered frontier
+   with recommendations; ask [ask-matt](.agents/skills/ask-matt/SKILL.md) if
+   unsure). When done, summarize understanding and **stop**.
+2. **Specify**: Run [to-spec](.agents/skills/to-spec/SKILL.md) only on manual
+   request. Publish the spec issue, link it, and **stop**.
+3. **Decompose**: Run [to-tickets](.agents/skills/to-tickets/SKILL.md) only on
+   manual request. Confirm breakdown, publish tickets/sub-issues, and **stop**.
+   Reach for [wayfinder](.agents/skills/wayfinder/SKILL.md) if work exceeds one
+   session. (Ignore `writing-plans` / `docs/superpowers/specs/` hand-offs; see
+   [`docs/agents/issue-tracker.md`](docs/agents/issue-tracker.md)).
+4. **Handoff**: Run [handoff](.agents/skills/handoff/SKILL.md) only on manual
+   request for multi-session work. Post the `# Handoff` comment on the spec issue
+   (see [Handoffs](#handoffs)) and **stop**.
+5. **Build**: Set tickets to `status:in-progress` before testing (see
+   [`docs/agents/issue-tracker.md`](docs/agents/issue-tracker.md)).
+   - **Multi-ticket spec**: Dispatch each parent issue to a fresh subagent
+     ([subagent-driven-development](.agents/skills/subagent-driven-development/SKILL.md));
+     never implement sequentially in this session. Parallelize independent tickets
+     ([dispatching-parallel-agents](.agents/skills/dispatching-parallel-agents/SKILL.md))
+     or stack dependent ones ([gh-stack](.agents/skills/gh-stack/SKILL.md)). Brief each
+     with its ticket, the spec, and steps 5–8. See
+     [Multiple Pull Requests](#multiple-pull-requests).
+   - **TDD loop**: Use [implement](.agents/skills/implement/SKILL.md) with
+     [test-driven-development](.agents/skills/test-driven-development/SKILL.md) (strict
+     red-green cycle) and [tdd](.agents/skills/tdd/SKILL.md) (confirmed seams, public
+     interfaces; refactoring belongs to step 6). Test via `nx run <project>:vitest:<kind>`
+     (see [Testing & Coverage](#testing--coverage)).
+   - **Debugging**: Use [systematic-debugging](.agents/skills/systematic-debugging/SKILL.md)
+     (root-cause gate) with [diagnosing-bugs](.agents/skills/diagnosing-bugs/SKILL.md).
+6. **Review**: Request review via
+   [requesting-code-review](.agents/skills/requesting-code-review/SKILL.md) (fresh subagent
+   handed base/head commits), review with [code-review](.agents/skills/code-review/SKILL.md),
+   and apply feedback via [receiving-code-review](.agents/skills/receiving-code-review/SKILL.md).
+7. **Validate**: Run [validate-code](.agents/skills/validate-code/SKILL.md) gated by
+   [verification-before-completion](.agents/skills/verification-before-completion/SKILL.md).
+8. **Integrate**: Use [finishing-a-development-branch](.agents/skills/finishing-a-development-branch/SKILL.md)
+   for the merge/PR decision, executing via [submit-changes](.agents/skills/submit-changes/SKILL.md),
+   [commit-code](.agents/skills/commit-code/SKILL.md), and
+   [create-pull-request](.agents/skills/create-pull-request/SKILL.md). Read its test step as
+   `nx affected --target=vitest --base=main`.
 
-   Build with [implement](.agents/skills/implement/SKILL.md), which drives
-   red-green-refactor through two TDD skills used in tandem, both read before
-   the first test.
-   [test-driven-development](.agents/skills/test-driven-development/SKILL.md)
-   is the discipline — no production code without a failing test, and every
-   test watched failing for the right reason before the code that passes it is
-   written. [tdd](.agents/skills/tdd/SKILL.md) is what makes those tests worth
-   keeping — seams confirmed with the user before a test is written, behavior
-   asserted through public interfaces, and the tautological,
-   implementation-coupled, and horizontally-sliced anti-patterns named. Where
-   they disagree, `test-driven-development` owns the loop's strictness and
-   `tdd` owns refactoring: it belongs to step 5's review rather than to the
-   cycle. Its `npm test` invocations are `nx run <project>:vitest:<kind>` here
-   — see [Testing & Coverage](#testing--coverage). If the one ticket in front of you — this
-   session's own, or the one a dispatched subagent owns — still splits into
-   several independent tasks, orchestrate those with
-   [subagent-driven-development](.agents/skills/subagent-driven-development/SKILL.md)
-   again, one level down — one fresh subagent per task — and use
-   dispatching-parallel-agents when the tasks are genuinely independent. Debug
-   regressions with
-   [systematic-debugging](.agents/skills/systematic-debugging/SKILL.md) and
-   [diagnosing-bugs](.agents/skills/diagnosing-bugs/SKILL.md) in tandem, split
-   the way the TDD pair is: systematic-debugging is the gate — no fix proposed
-   until its root-cause phase is finished, however obvious the fix looks — and
-   diagnosing-bugs is the method that gets you a root cause.
-
-5. Ask for the review with
-   [requesting-code-review](.agents/skills/requesting-code-review/SKILL.md) —
-   a fresh subagent handed the base and head commits and what the work was
-   meant to do, never this session's history — review with
-   [code-review](.agents/skills/code-review/SKILL.md), and apply incoming
-   feedback through
-   [receiving-code-review](.agents/skills/receiving-code-review/SKILL.md)
-   rather than agreeing on sight.
-6. Finish with [validate-code](.agents/skills/validate-code/SKILL.md), gated by
-   [verification-before-completion](.agents/skills/verification-before-completion/SKILL.md):
-   never claim done without the command output that proves it.
-7. Integrate with
-   [finishing-a-development-branch](.agents/skills/finishing-a-development-branch/SKILL.md),
-   which supplies the decision — merge, open a pull request, or leave the
-   branch — and nothing else: this repository's own skills own the mechanics,
-   so run [submit-changes](.agents/skills/submit-changes/SKILL.md) and the
-   [commit-code](.agents/skills/commit-code/SKILL.md) and
-   [create-pull-request](.agents/skills/create-pull-request/SKILL.md) skills it
-   drives rather than that skill's git commands, and read its `npm test` step
-   as `nx affected --target=vitest --base=main`. Decline its worktree cleanup
-   when the harness created the worktree: the session is running inside it.
-
-Steps 4 through 7 are one ticket's lap, not the whole race — run directly by
-this session for a single-ticket spec, or run inside each dispatched
-subagent for a multi-ticket one. Either way the session's job does not end
-until the spec has no ticket left: for a single ticket, a pull request
-opened sends you back to step 4 with the next one; for a multi-ticket spec,
-a subagent's report sends you back to step 4 to dispatch the next
-independent batch or the next stack link. See
-[Multiple Pull Requests](#multiple-pull-requests).
+Steps 5 through 8 are one ticket's lap, not the whole race — run directly by this
+session for a single-ticket spec, or inside each dispatched subagent for a
+multi-ticket one. A pull request opened sends you back to step 5 for the next
+ticket or stack link. See [Multiple Pull Requests](#multiple-pull-requests).
 
 The codebase-native skills still own this repository's mechanics — branch
 names, commits, pull requests, Nx targets, and validation. Prefer them over any
@@ -210,7 +155,7 @@ implementation run legitimate. Five repository rules override
   [implement](.agents/skills/implement/SKILL.md) and
   [tdd](.agents/skills/tdd/SKILL.md), with subagent-driven-development invoked
   again at task granularity if that ticket itself splits into several tasks,
-  then steps 5–7 above. Say plainly that this session is the orchestrator: it
+  then steps 6–8 above. Say plainly that this session is the orchestrator: it
   dispatches tickets and reads their reports back, and implements a ticket in
   its own context only when the spec holds exactly one.
 - **Answer the two questions those skills otherwise stop and ask.**
