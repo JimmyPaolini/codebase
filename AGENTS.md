@@ -28,6 +28,14 @@ gates it leaves open — approval before the first line of code, a failing test
 before the first line of implementation, and a root cause before the first
 fix.
 
+**Planning is human-gated and step-by-step; implementation is continuous.**
+During planning, do not chain skills automatically or proceed from one step to
+the next without the user explicitly invoking the corresponding skill. Take
+planning one step at a time, yield control after each deliverable, and wait for
+direction. During implementation, full autonomy applies: subagents proceed
+continuously through their tasks and may create follow-up sub-issues without
+stopping to ask.
+
 1. Sharpen the request first, running
    [brainstorming](.agents/skills/brainstorming/SKILL.md) and the grilling
    skills together. Brainstorming classifies the request — spike, bounded, or
@@ -42,9 +50,14 @@ fix.
    answer per question, rather than brainstorming's one question per message.
    Unsure which skill fits? Ask
    [ask-matt](.agents/skills/ask-matt/SKILL.md).
-2. Capture the outcome with [to-spec](.agents/skills/to-spec/SKILL.md), then
-   split it with [to-tickets](.agents/skills/to-tickets/SKILL.md) when the work
-   spans multiple tasks. Reach for
+   When the conversation concludes, summarize the understanding and **stop** —
+   do not invoke `to-spec` or create an issue until the user asks.
+2. Capture the outcome with [to-spec](.agents/skills/to-spec/SKILL.md) only when
+   the user explicitly invokes it, then split it with
+   [to-tickets](.agents/skills/to-tickets/SKILL.md) only when the user
+   subsequently invokes that skill for work spanning multiple tasks. After
+   `to-spec`, publish the issue and **stop**; after `to-tickets`, present the
+   breakdown, confirm it, publish the tickets, and **stop**. Reach for
    [wayfinder](.agents/skills/wayfinder/SKILL.md) when the work is larger than
    one agent session can hold. This step is brainstorming's terminal state:
    ignore its hand-off to `writing-plans` and its `docs/superpowers/specs/`
@@ -52,11 +65,12 @@ fix.
    belong where [`docs/agents/issue-tracker.md`](docs/agents/issue-tracker.md)
    says.
 3. Hand the plan across the session boundary with
-   [handoff](.agents/skills/handoff/SKILL.md) whenever the building will happen
-   in a fresh session, which is the normal case for anything larger than a
-   single ticket. The document it writes is the next agent's entire brief, so
-   it is held to this repository's rules rather than the skill's defaults — see
-   [Handoffs](#handoffs).
+   [handoff](.agents/skills/handoff/SKILL.md) only when the user explicitly
+   invokes it, whenever the building will happen in a fresh session, which is
+   the normal case for anything larger than a single ticket. The document it
+   writes is the next agent's entire brief, so it is held to this repository's
+   rules rather than the skill's defaults — see [Handoffs](#handoffs). Post the
+   handoff comment and **stop**.
 4. Move every ticket the work covers — the spec, the parent issue for the pull
    request, and the sub-issue for the commit — to `status:in-progress` before
    the first test, the way
