@@ -1,8 +1,7 @@
 import { Inject } from "@nestjs/common";
 import { Args as Arguments, Query, Resolver } from "@nestjs/graphql";
 
-import { PaginationArguments } from "../../main.entities";
-
+import { PaginationArguments } from "./search-pagination.entities";
 import { LexemeSearchConnection, LexemeSearchResult } from "./search.entities";
 import { SearchService } from "./search.service";
 

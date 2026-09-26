@@ -31,7 +31,6 @@ import {
 } from "./search.utilities";
 
 import type { Connection } from "../../main.types";
-
 import type {
   EncliticDecompositionResult,
   SearchCursorPayload,

@@ -1,39 +1,4 @@
-import {
-  ArgsType as ArgumentsType,
-  Field,
-  Int,
-  ObjectType,
-} from "@nestjs/graphql";
-
-/**
- * GraphQL arguments for Relay forward and backward keyset pagination.
- */
-@ArgumentsType()
-export class PaginationArguments {
-  @Field(() => String, {
-    description: "Returns edges after the given cursor.",
-    nullable: true,
-  })
-  public after?: null | string | undefined;
-
-  @Field(() => String, {
-    description: "Returns edges before the given cursor.",
-    nullable: true,
-  })
-  public before?: null | string | undefined;
-
-  @Field(() => Int, {
-    description: "Number of edges to return from the start.",
-    nullable: true,
-  })
-  public first?: null | number | undefined;
-
-  @Field(() => Int, {
-    description: "Number of edges to return from the end.",
-    nullable: true,
-  })
-  public last?: null | number | undefined;
-}
+import { Field, ObjectType } from "@nestjs/graphql";
 
 /**
  * Relay PageInfo containing pagination state.

@@ -2,16 +2,12 @@ import { Field, Int, ObjectType } from "@nestjs/graphql";
 
 import { PageInfo } from "./lexico-api.entities";
 
-import type { ClassConstructor, Connection, Edge } from "./lexico-api.types";
-
-/**
- * Parameters for finding index bounds for array pagination.
- */
-interface PaginationBoundsParameters<T> {
-  after?: null | string | undefined;
-  before?: null | string | undefined;
-  getCursor: (item: T) => string;
-}
+import type {
+  ClassConstructor,
+  Connection,
+  Edge,
+  PaginationBoundsParameters,
+} from "./lexico-api.types";
 
 /**
  * Creates a Relay Connection containing edges, page info, and total count.
