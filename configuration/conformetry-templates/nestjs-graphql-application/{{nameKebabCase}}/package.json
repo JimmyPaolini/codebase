@@ -35,6 +35,11 @@
   "type": "module",
   "typeCoverage": {
     "atLeast": 100,
+    "ignoreCatch": true,
+    "ignoreFiles": [
+      "**/*.test.ts",
+      "src/{{nameKebabCase}}.ts"
+    ],
     "strict": true
   },
   "version": "0.0.1"

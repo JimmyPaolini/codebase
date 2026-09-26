@@ -33,7 +33,7 @@
     "ignoreCatch": true,
     "ignoreFiles": [
       "**/*.test.ts",
-      "src/main.ts"
+      "src/lexico-api.ts"
     ],
     "strict": true
   },

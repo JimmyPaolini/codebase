@@ -3,7 +3,6 @@
   "projectType": "application",
   "sourceRoot": "applications/{{nameKebabCase}}",
   "tags": [
-    "framework:nestjs",
     "framework:nestjs-graphql-api",
     "generator:nestjs-graphql-application",
     "language:typescript"
@@ -22,7 +21,7 @@
       "description": "Start the {{namePascalCase}} GraphQL API",
       "executor": "nx:run-commands",
       "options": {
-        "command": "node --import @swc-node/register/esm-register src/main.ts",
+        "command": "node --import @swc-node/register/esm-register src/{{nameKebabCase}}.ts",
         "cwd": "{projectRoot}"
       }
     },

@@ -45,7 +45,7 @@ vi.mock("@codebase/logger", () => ({
   },
 }));
 
-describe("main bootstrap suite", () => {
+describe("lexico api bootstrap suite", () => {
   beforeEach(() => {
     vi.resetModules();
   });
@@ -69,7 +69,7 @@ describe("main bootstrap suite", () => {
       .spyOn(NestFactory, "create")
       .mockResolvedValue(mockApp);
 
-    await import("./main");
+    await import("./lexico-api");
 
     await vi.waitFor(() => {
       expect(createSpy).toHaveBeenCalledTimes(1);
@@ -106,7 +106,7 @@ describe("main bootstrap suite", () => {
       .spyOn(NestFactory, "create")
       .mockResolvedValue(mockApp);
 
-    await import("./main");
+    await import("./lexico-api");
 
     await vi.waitFor(() => {
       expect(createSpy).toHaveBeenCalledTimes(1);
