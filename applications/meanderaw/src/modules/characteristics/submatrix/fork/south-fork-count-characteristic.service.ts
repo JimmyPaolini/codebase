@@ -1,0 +1,45 @@
+import { Injectable } from "@nestjs/common";
+
+import { countPointsWithExactArms } from "../submatrix.utilities";
+
+import type {
+  CharacteristicContext,
+  CharacteristicEvaluator,
+  CharacteristicMetadata,
+} from "../../characteristics.types";
+
+/**
+ * Counts the south forks of a Code — points whose ink leaves by
+ * south, east, and west only, drawn ┬ — as a 1×1 submatrix scan. A fork is
+ * named by its stem, the arm opposite the one it lacks.
+ */
+@Injectable()
+export class SouthForkCountCharacteristicService implements CharacteristicEvaluator<number> {
+  // 🏗 Dependency Injection
+
+  constructor() {}
+
+  // 🔐 Private Fields
+
+  // 🔑 Public Fields
+
+  /** Names and explains `southForkCount` for catalogs and inspectors. */
+  public readonly metadata: CharacteristicMetadata<number> = {
+    category: "submatrix",
+    description:
+      "The number of fork points whose ink leaves by south, east, and west only (┬).",
+    formula: String.raw`\left|\{\, p \in M : \text{arms}(p) = \{S, E, W\} \,\}\right|`,
+    key: "southForkCount",
+    name: "South Fork Count",
+    valueType: "number",
+  };
+
+  // 🔏 Private Methods
+
+  // 🌎 Public Methods
+
+  /** Counts the points whose only arms are south, east, and west. */
+  public compute(context: CharacteristicContext): number {
+    return countPointsWithExactArms(context.matrix, ["east", "south", "west"]);
+  }
+}

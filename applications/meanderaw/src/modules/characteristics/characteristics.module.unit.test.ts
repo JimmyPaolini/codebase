@@ -7,6 +7,12 @@ import { NorthEastCornerCountCharacteristicService } from "./submatrix/corner/no
 import { NorthWestCornerCountCharacteristicService } from "./submatrix/corner/north-west-corner-count-characteristic.service";
 import { SouthEastCornerCountCharacteristicService } from "./submatrix/corner/south-east-corner-count-characteristic.service";
 import { SouthWestCornerCountCharacteristicService } from "./submatrix/corner/south-west-corner-count-characteristic.service";
+import { CrossCountCharacteristicService } from "./submatrix/cross/cross-count-characteristic.service";
+import { EastForkCountCharacteristicService } from "./submatrix/fork/east-fork-count-characteristic.service";
+import { ForkCountCharacteristicService } from "./submatrix/fork/fork-count-characteristic.service";
+import { NorthForkCountCharacteristicService } from "./submatrix/fork/north-fork-count-characteristic.service";
+import { SouthForkCountCharacteristicService } from "./submatrix/fork/south-fork-count-characteristic.service";
+import { WestForkCountCharacteristicService } from "./submatrix/fork/west-fork-count-characteristic.service";
 import { DotCountCharacteristicService } from "./submatrix/point/dot-count-characteristic.service";
 import { HorizontalEdgeCountCharacteristicService } from "./submatrix/point/horizontal-edge-count-characteristic.service";
 import { VerticalEdgeCountCharacteristicService } from "./submatrix/point/vertical-edge-count-characteristic.service";
@@ -17,13 +23,19 @@ import type { Type } from "@nestjs/common";
 /** Every characteristic evaluator a consumer of `CharacteristicsModule` must be able to inject. */
 const CHARACTERISTIC_SERVICES: readonly Type<CharacteristicEvaluator>[] = [
   CornerCountCharacteristicService,
+  CrossCountCharacteristicService,
   DotCountCharacteristicService,
+  EastForkCountCharacteristicService,
+  ForkCountCharacteristicService,
   HorizontalEdgeCountCharacteristicService,
   NorthEastCornerCountCharacteristicService,
+  NorthForkCountCharacteristicService,
   NorthWestCornerCountCharacteristicService,
   SouthEastCornerCountCharacteristicService,
+  SouthForkCountCharacteristicService,
   SouthWestCornerCountCharacteristicService,
   VerticalEdgeCountCharacteristicService,
+  WestForkCountCharacteristicService,
 ];
 
 /** The token a consumer module gathers every evaluator under, through a factory whose `inject` list only resolves exported providers. */
