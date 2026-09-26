@@ -518,7 +518,10 @@ See [create-pull-request](.agents/skills/create-pull-request/SKILL.md) and [upda
 
 ## Release Process
 
-Releases use [semantic-release](https://semantic-release.gitbook.io/), fully automated on merge to `main` by the 🦸 Continuous Deployment workflow (`push-releases` target). Versioning is fixed — the whole codebase shares one version — and nothing is published to a package registry.
+Releases operate at two distinct tiers:
+
+1. **Workspace Root (Repository)**: Uses [semantic-release](https://semantic-release.gitbook.io/), fully automated on merge to `main` by the 🦸 Continuous Deployment workflow (`push-releases` target). Versioning is fixed — the whole codebase shares one version — and nothing is published to a package registry.
+2. **IC-Suite Packages (Publish Set)**: Uses [Nx Release](https://nx.dev/features/manage-releases) to independently version and publish the 28 publishable packages across the four toolchains (`callidescope`, `codependix`, `codometer`, `conformetry`). Each package is versioned from its own commit history, and upstream bumps automatically cascade patch bumps to internal dependents. The 8 unpublished packages (`*-agents` and `*-examples` across the four suites) are explicitly excluded in `nx.json` (`release.projects`) in addition to their private manifest flags.
 
 **Version bumps**, from `releaseRules` in [release.config.cjs](../configuration/release.config.cjs):
 
@@ -534,7 +537,12 @@ Releases use [semantic-release](https://semantic-release.gitbook.io/), fully aut
 **Test locally:**
 
 ```bash
+# Preview workspace root semantic-release
 pnpm semantic-release:dry-run
+
+# Preview IC-suite package releases and versions
+pnpm exec nx release --dry-run
+pnpm exec nx release version --dry-run
 ```
 
 Never hand-edit `CHANGELOG.md` or bump a version manually. A green Continuous Deployment run does not by itself mean a release happened — most runs are correctly no-ops.

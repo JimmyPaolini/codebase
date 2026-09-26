@@ -98,6 +98,29 @@
       "tags": ["language:typescript", "type:tool"]
     }
   },
+  "release": {
+    "projects": [
+      "!callidescope-agents",
+      "!callidescope-examples",
+      "!codependix-agents",
+      "!codependix-examples",
+      "!codometer-agents",
+      "!codometer-examples",
+      "!conformetry-agents",
+      "!conformetry-examples",
+      "packages/ic-suite/*/*"
+    ],
+    "projectsRelationship": "independent",
+    "releaseTag": {
+      "pattern": "{projectName}@{version}"
+    },
+    "version": {
+      "currentVersionResolver": "git-tag",
+      "fallbackCurrentVersionResolver": "disk",
+      "specifierSource": "conventional-commits",
+      "updateDependents": "auto"
+    }
+  },
   "sync": {
     "globalGenerators": ["@conformetry/nx:sync"]
   },
