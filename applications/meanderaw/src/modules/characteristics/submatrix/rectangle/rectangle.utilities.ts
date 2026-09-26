@@ -13,6 +13,12 @@ import type { SubmatrixOffset } from "../submatrix.types";
  * `height`, and may cross the tile's seam, since columns wrap. A ring is at
  * most `columns - 1` edges wide, because a wider one would overlap its own
  * repeat.
+ *
+ * "Nothing branches off it and nothing divides it" assumes the agreement
+ * invariant: every arm is reciprocated by its neighbor, the way
+ * {@link TileService.assertWellFormed} checks. A context built from a
+ * malformed Code can disagree with itself, and this function does not detect
+ * that.
  */
 export function countIsolatedRectangles(
   matrix: Matrix,

@@ -62,4 +62,26 @@ describe(countIsolatedRectangles, () => {
 
     expect(countAny(broken)).toBe(0);
   });
+
+  it("counts a ring exactly columns - 1 edges wide (03x02y635a39)", () => {
+    // box is 3 columns wide with a 2-edge-wide ring — the widest a ring can
+    // be without overlapping its own repeat across the tile's seam.
+    expect(countAny(box)).toBe(1);
+  });
+
+  it("finds nothing in a matrix with a single row (03x01y210)", () => {
+    const oneRow: Matrix = [[point("east"), point("west"), point()]];
+
+    expect(countAny(oneRow)).toBe(0);
+  });
+
+  it("finds nothing in a matrix with a single column (01x03y4c8)", () => {
+    const oneColumn: Matrix = [
+      [point("south")],
+      [point("north", "south")],
+      [point("north")],
+    ];
+
+    expect(countAny(oneColumn)).toBe(0);
+  });
 });
