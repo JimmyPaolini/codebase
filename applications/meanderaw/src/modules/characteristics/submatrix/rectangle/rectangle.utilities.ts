@@ -1,3 +1,5 @@
+import { pointDigitAt } from "../submatrix.utilities";
+
 import type { Matrix } from "../../../matrix/matrix.types";
 import type { SubmatrixOffset } from "../submatrix.types";
 
@@ -31,26 +33,6 @@ export function countIsolatedRectangles(
 }
 
 /**
- * The 4-bit digit of the point at `(row, column)` — north 8, south 4, east 2,
- * west 1 — with columns wrapping, or -1 past the top or bottom row.
- */
-function digitAt(matrix: Matrix, row: number, column: number): number {
-  const points = matrix[row] ?? [];
-  const point =
-    points[((column % points.length) + points.length) % points.length];
-  if (point === undefined) {
-    return -1;
-  }
-
-  return (
-    (point.north ? 8 : 0) +
-    (point.south ? 4 : 0) +
-    (point.east ? 2 : 0) +
-    (point.west ? 1 : 0)
-  );
-}
-
-/**
  * Whether an isolated rectangle has its north-west corner at `origin` and a
  * size `isCounted` accepts: the top and left sides are walked to their far
  * corners, and the bottom and right sides must then close the ring exactly.
@@ -60,7 +42,7 @@ function isIsolatedRectangleAt(
   origin: SubmatrixOffset,
   isCounted: (width: number, height: number) => boolean,
 ): boolean {
-  if (digitAt(matrix, origin.row, origin.column) !== 6) {
+  if (pointDigitAt(matrix, origin.row, origin.column) !== 6) {
     return false;
   }
 
@@ -98,14 +80,14 @@ function ringCloses(
   const { column, row } = origin;
   const { height, width } = size;
   const bottom = Array.from({ length: width - 1 }, (_unused, offset) =>
-    digitAt(matrix, row + height, column + 1 + offset),
+    pointDigitAt(matrix, row + height, column + 1 + offset),
   );
   const right = Array.from({ length: height - 1 }, (_unused, offset) =>
-    digitAt(matrix, row + 1 + offset, column + width),
+    pointDigitAt(matrix, row + 1 + offset, column + width),
   );
 
   return (
-    digitAt(matrix, row + height, column + width) === 9 &&
+    pointDigitAt(matrix, row + height, column + width) === 9 &&
     bottom.every((digit) => digit === 3) &&
     right.every((digit) => digit === 12)
   );
@@ -128,7 +110,7 @@ function sideLength(
   },
 ): number {
   for (let length = 1; length <= side.limit; length += 1) {
-    const digit = digitAt(
+    const digit = pointDigitAt(
       matrix,
       origin.row + side.step.row * length,
       origin.column + side.step.column * length,

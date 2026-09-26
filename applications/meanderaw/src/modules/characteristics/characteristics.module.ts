@@ -13,6 +13,7 @@ import { ConnectivityService } from "./connectivity.service";
 import { CornerCharacteristicsModule } from "./submatrix/corner/corner-characteristics.module";
 import { CrossCharacteristicsModule } from "./submatrix/cross/cross-characteristics.module";
 import { ForkCharacteristicsModule } from "./submatrix/fork/fork-characteristics.module";
+import { LetterCharacteristicsModule } from "./submatrix/letter/letter-characteristics.module";
 import { PointCharacteristicsModule } from "./submatrix/point/point-characteristics.module";
 import { RectangleCharacteristicsModule } from "./submatrix/rectangle/rectangle-characteristics.module";
 
@@ -47,6 +48,7 @@ import { RectangleCharacteristicsModule } from "./submatrix/rectangle/rectangle-
     CornerCharacteristicsModule,
     CrossCharacteristicsModule,
     ForkCharacteristicsModule,
+    LetterCharacteristicsModule,
     PointCharacteristicsModule,
     RectangleCharacteristicsModule,
   ],
@@ -56,6 +58,7 @@ import { RectangleCharacteristicsModule } from "./submatrix/rectangle/rectangle-
     CrossCharacteristicsModule,
     ForkCharacteristicsModule,
     GraphModule,
+    LetterCharacteristicsModule,
     MatrixModule,
     PointCharacteristicsModule,
     RectangleCharacteristicsModule,
