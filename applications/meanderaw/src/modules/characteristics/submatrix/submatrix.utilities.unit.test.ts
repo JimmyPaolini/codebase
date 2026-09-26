@@ -114,7 +114,14 @@ describe("submatrix utilities", () => {
     });
 
     it("counts nothing when the glyph is wider than the tile or taller than the band", () => {
-      expect(countIsolatedGlyphs(square, ["2331"])).toBe(0);
+      // Two points whose digits repeat exactly around a 2-column tile: a
+      // template naively wrapped past the guard would still match this
+      // template at column 0, so the guard is what keeps the count at 0.
+      const twoColumns: Matrix = [
+        [point("south", "west"), point("north", "east")],
+      ];
+
+      expect(countIsolatedGlyphs(twoColumns, ["5a5a"])).toBe(0);
       expect(countIsolatedGlyphs(square, ["4", "c", "8"])).toBe(0);
       expect(countIsolatedGlyphs([], ["4", "8"])).toBe(0);
     });

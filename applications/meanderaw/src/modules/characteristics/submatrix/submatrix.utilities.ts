@@ -12,6 +12,11 @@ import type { GlyphCell } from "./submatrix.types";
  * is what makes it isolated, and why each piece matches at one window only.
  * Columns wrap, so a glyph may cross the tile's seam; a glyph wider than the
  * tile would overlap its own repeat and is never counted.
+ *
+ * "Nothing joins it" assumes the agreement invariant: every arm is
+ * reciprocated by its neighbor, the way {@link TileService.assertWellFormed}
+ * checks. A context built from a malformed Code can disagree with itself, and
+ * this function does not detect that.
  */
 export function countIsolatedGlyphs(
   matrix: Matrix,
