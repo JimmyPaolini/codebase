@@ -1,4 +1,8 @@
 {
+  "author": "Jimmy Paolini",
+  "bugs": {
+    "url": "https://github.com/JimmyPaolini/codebase/issues"
+  },
   "dependencies": {
     "@codependix/configuration": "workspace:*",
     "@codependix/core": "workspace:*",
@@ -8,6 +12,7 @@
     "@nestjs/common": "catalog:",
     "reflect-metadata": "catalog:"
   },
+  "description": "Boundary rule validation, forbid/allow rule enforcement, and cycle detection for Codependix graphs",
   "devDependencies": {
     "@golevelup/ts-vitest": "catalog:",
     "@nestjs/testing": "catalog:",
@@ -27,6 +32,15 @@
     "LICENSE",
     "README.md"
   ],
+  "homepage": "https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/codependix/codependix-boundaries#readme",
+  "keywords": [
+    "boundaries",
+    "codependix",
+    "cycle-detection",
+    "linting",
+    "rule-enforcement"
+  ],
+  "license": "MIT",
   "main": "src/index.ts",
   "name": "@codependix/boundaries",
   "private": true,
@@ -42,6 +56,11 @@
     "main": "./dist/src/index.js",
     "registry": "https://registry.npmjs.org",
     "types": "./dist/src/index.d.ts"
+  },
+  "repository": {
+    "directory": "packages/ic-suite/codependix/codependix-boundaries",
+    "type": "git",
+    "url": "git+https://github.com/JimmyPaolini/codebase.git"
   },
   "type": "module",
   "typeCoverage": {

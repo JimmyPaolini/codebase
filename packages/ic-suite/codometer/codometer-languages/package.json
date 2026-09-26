@@ -1,4 +1,8 @@
 {
+  "author": "Jimmy Paolini",
+  "bugs": {
+    "url": "https://github.com/JimmyPaolini/codebase/issues"
+  },
   "dependencies": {
     "@codometer/configuration": "workspace:*",
     "@codometer/core": "workspace:*",
@@ -15,6 +19,7 @@
     "yaml": "catalog:",
     "zod": "catalog:"
   },
+  "description": "Language parsers and comment analyzers across TypeScript, JSON, Markdown, Python, and SQL for Codometer",
   "devDependencies": {
     "@codebase/logger": "workspace:*",
     "@golevelup/ts-vitest": "catalog:",
@@ -35,6 +40,16 @@
     "LICENSE",
     "README.md"
   ],
+  "homepage": "https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/codometer/codometer-languages#readme",
+  "keywords": [
+    "ast",
+    "code-metrics",
+    "codometer",
+    "comment-analysis",
+    "languages",
+    "parsers"
+  ],
+  "license": "MIT",
   "main": "src/index.ts",
   "name": "@codometer/languages",
   "private": true,
@@ -50,6 +65,11 @@
     "main": "./dist/src/index.js",
     "registry": "https://registry.npmjs.org",
     "types": "./dist/src/index.d.ts"
+  },
+  "repository": {
+    "directory": "packages/ic-suite/codometer/codometer-languages",
+    "type": "git",
+    "url": "git+https://github.com/JimmyPaolini/codebase.git"
   },
   "type": "module",
   "typeCoverage": {

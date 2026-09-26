@@ -1,6 +1,10 @@
 {
+  "author": "Jimmy Paolini",
   "bin": {
     "conformetry": "./dist/src/main.js"
+  },
+  "bugs": {
+    "url": "https://github.com/JimmyPaolini/codebase/issues"
   },
   "dependencies": {
     "@conformetry/configuration": "workspace:*",
@@ -16,6 +20,7 @@
     "reflect-metadata": "catalog:",
     "zod": "catalog:"
   },
+  "description": "Command-line toolchain for scaffolding code from templates and holding implementations to them",
   "devDependencies": {
     "@codebase/logger": "workspace:*",
     "@conformetry/core": "workspace:*",
@@ -39,6 +44,16 @@
     "LICENSE",
     "README.md"
   ],
+  "homepage": "https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/conformetry/conformetry-cli#readme",
+  "keywords": [
+    "cli",
+    "code-generator",
+    "conformance",
+    "conformetry",
+    "nest-commander",
+    "scaffolding"
+  ],
+  "license": "MIT",
   "main": "src/index.ts",
   "name": "@conformetry/cli",
   "private": true,
@@ -54,6 +69,11 @@
     "main": "./dist/src/index.js",
     "registry": "https://registry.npmjs.org",
     "types": "./dist/src/index.d.ts"
+  },
+  "repository": {
+    "directory": "packages/ic-suite/conformetry/conformetry-cli",
+    "type": "git",
+    "url": "git+https://github.com/JimmyPaolini/codebase.git"
   },
   "type": "module",
   "typeCoverage": {

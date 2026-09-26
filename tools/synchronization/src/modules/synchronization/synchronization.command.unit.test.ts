@@ -8,6 +8,7 @@ import { expectProcessExitOne } from "../../../testing/mocks";
 import { ConformetryGeneratorsCommand } from "../conformetry-generators/conformetry-generators.command";
 import { ConventionalConfigCommand } from "../conventional-config/conventional-config.command";
 import { DevcontainerConfigurationCommand } from "../devcontainer-configuration/devcontainer-configuration.command";
+import { PackageManifestsCommand } from "../package-manifests/package-manifests.command";
 import { PullRequestLabelsCommand } from "../pull-request-labels/pull-request-labels.command";
 import { PullRequestTemplateCommand } from "../pull-request-template/pull-request-template.command";
 import { ReadmeVersionCommand } from "../readme-version/readme-version.command";
@@ -77,6 +78,12 @@ describe(SynchronizationCommand, () => {
           useValue: createMock<LoggerService>(),
         },
         {
+          provide: PackageManifestsCommand,
+          useValue: createMock<PackageManifestsCommand>({
+            synchronizationLabel: "package-manifests",
+          }),
+        },
+        {
           provide: PullRequestLabelsCommand,
           useValue: createMock<PullRequestLabelsCommand>({
             synchronizationLabel: "pull-request-labels",
@@ -144,6 +151,10 @@ describe(SynchronizationCommand, () => {
         {
           provide: LoggerService,
           useValue: createMock<LoggerService>(),
+        },
+        {
+          provide: PackageManifestsCommand,
+          useValue: createMock<PackageManifestsCommand>(),
         },
         {
           provide: PullRequestLabelsCommand,

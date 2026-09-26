@@ -12,6 +12,7 @@
     "pino-pretty": "catalog:",
     "reflect-metadata": "catalog:"
   },
+  "description": "Nx plugin providing project-scoped call-stack tracing and depth gating along Nx dependency graphs",
   "devDependencies": {
     "@codebase/logger": "workspace:*",
     "@golevelup/ts-vitest": "catalog:",
@@ -39,6 +40,16 @@
     "LICENSE",
     "README.md"
   ],
+  "homepage": "https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/callidescope/callidescope-nx#readme",
+  "keywords": [
+    "call-graph",
+    "callidescope",
+    "depth-gate",
+    "nx",
+    "nx-plugin",
+    "tracing"
+  ],
+  "license": "MIT",
   "main": "src/index.ts",
   "name": "@callidescope/nx",
   "nx": {

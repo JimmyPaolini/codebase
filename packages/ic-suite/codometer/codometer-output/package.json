@@ -1,4 +1,8 @@
 {
+  "author": "Jimmy Paolini",
+  "bugs": {
+    "url": "https://github.com/JimmyPaolini/codebase/issues"
+  },
   "dependencies": {
     "@codometer/configuration": "workspace:*",
     "@codometer/core": "workspace:*",
@@ -9,6 +13,7 @@
     "reflect-metadata": "catalog:",
     "zod": "catalog:"
   },
+  "description": "Markdown badge rendering and JSON report formatting for Codometer measurements",
   "devDependencies": {
     "@codebase/logger": "workspace:*",
     "@golevelup/ts-vitest": "catalog:",
@@ -28,6 +33,15 @@
     "LICENSE",
     "README.md"
   ],
+  "homepage": "https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/codometer/codometer-output#readme",
+  "keywords": [
+    "codometer",
+    "json-report",
+    "markdown-badges",
+    "output",
+    "reporting"
+  ],
+  "license": "MIT",
   "main": "src/index.ts",
   "name": "@codometer/output",
   "private": true,
@@ -43,6 +57,11 @@
     "main": "./dist/src/index.js",
     "registry": "https://registry.npmjs.org",
     "types": "./dist/src/index.d.ts"
+  },
+  "repository": {
+    "directory": "packages/ic-suite/codometer/codometer-output",
+    "type": "git",
+    "url": "git+https://github.com/JimmyPaolini/codebase.git"
   },
   "type": "module",
   "typeCoverage": {

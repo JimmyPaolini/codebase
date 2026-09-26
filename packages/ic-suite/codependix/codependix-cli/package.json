@@ -1,6 +1,10 @@
 {
+  "author": "Jimmy Paolini",
   "bin": {
     "codependix": "./dist/src/main.js"
+  },
+  "bugs": {
+    "url": "https://github.com/JimmyPaolini/codebase/issues"
   },
   "dependencies": {
     "@codependix/boundaries": "workspace:*",
@@ -16,6 +20,7 @@
     "reflect-metadata": "catalog:",
     "zod": "catalog:"
   },
+  "description": "Command-line tool for exporting and validating Nx, NestJS, and file-level dependency graphs and boundaries",
   "devDependencies": {
     "@codebase/logger": "workspace:*",
     "@golevelup/ts-vitest": "catalog:",
@@ -38,6 +43,16 @@
     "LICENSE",
     "README.md"
   ],
+  "homepage": "https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/codependix/codependix-cli#readme",
+  "keywords": [
+    "architecture-linter",
+    "boundaries",
+    "cli",
+    "codependix",
+    "dependency-graph",
+    "mermaid"
+  ],
+  "license": "MIT",
   "main": "src/index.ts",
   "name": "@codependix/cli",
   "private": true,
@@ -53,6 +68,11 @@
     "main": "./dist/src/index.js",
     "registry": "https://registry.npmjs.org",
     "types": "./dist/src/index.d.ts"
+  },
+  "repository": {
+    "directory": "packages/ic-suite/codependix/codependix-cli",
+    "type": "git",
+    "url": "git+https://github.com/JimmyPaolini/codebase.git"
   },
   "type": "module",
   "typeCoverage": {

@@ -1,4 +1,8 @@
 {
+  "author": "Jimmy Paolini",
+  "bugs": {
+    "url": "https://github.com/JimmyPaolini/codebase/issues"
+  },
   "dependencies": {
     "@codometer/core": "workspace:*",
     "@nestjs/common": "catalog:",
@@ -7,6 +11,7 @@
     "reflect-metadata": "catalog:",
     "zod": "catalog:"
   },
+  "description": "Configuration loader, limit definitions, and counter resolution for Codometer",
   "devDependencies": {
     "@golevelup/ts-vitest": "catalog:",
     "@nestjs/testing": "catalog:",
@@ -26,6 +31,15 @@
     "LICENSE",
     "README.md"
   ],
+  "homepage": "https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/codometer/codometer-configuration#readme",
+  "keywords": [
+    "codometer",
+    "configuration",
+    "counters",
+    "limits",
+    "thresholds"
+  ],
+  "license": "MIT",
   "main": "src/index.ts",
   "name": "@codometer/configuration",
   "private": true,
@@ -41,6 +55,11 @@
     "main": "./dist/src/index.js",
     "registry": "https://registry.npmjs.org",
     "types": "./dist/src/index.d.ts"
+  },
+  "repository": {
+    "directory": "packages/ic-suite/codometer/codometer-configuration",
+    "type": "git",
+    "url": "git+https://github.com/JimmyPaolini/codebase.git"
   },
   "type": "module",
   "typeCoverage": {
