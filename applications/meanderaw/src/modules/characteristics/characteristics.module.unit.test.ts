@@ -2,6 +2,18 @@ import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import { CharacteristicsModule } from "./characteristics.module";
+import { TileCrossingComponentDeltaCountCharacteristicService } from "./path/tile-crossing/tile-crossing-component-delta-count-characteristic.service";
+import { TileCrossingCountCharacteristicService } from "./path/tile-crossing/tile-crossing-count-characteristic.service";
+import { TileCrossingCycleCountCharacteristicService } from "./path/tile-crossing/tile-crossing-cycle-count-characteristic.service";
+import { BettiNumber0CountCharacteristicService } from "./path/topology/betti-number-0-count-characteristic.service";
+import { BettiNumber1CountCharacteristicService } from "./path/topology/betti-number-1-count-characteristic.service";
+import { FreeEndCountCharacteristicService } from "./path/topology/free-end-count-characteristic.service";
+import { BottomBorderTouchCountCharacteristicService } from "./path/turn/bottom-border-touch-count-characteristic.service";
+import { InflectionCountCharacteristicService } from "./path/turn/inflection-count-characteristic.service";
+import { MaxMonotonicTurnLengthCharacteristicService } from "./path/turn/max-monotonic-turn-length-characteristic.service";
+import { TightestTurnCountCharacteristicService } from "./path/turn/tightest-turn-count-characteristic.service";
+import { TopBorderTouchCountCharacteristicService } from "./path/turn/top-border-touch-count-characteristic.service";
+import { TotalTurnCountCharacteristicService } from "./path/turn/total-turn-count-characteristic.service";
 import { CornerCountCharacteristicService } from "./submatrix/corner/corner-count-characteristic.service";
 import { NorthEastCornerCountCharacteristicService } from "./submatrix/corner/north-east-corner-count-characteristic.service";
 import { NorthWestCornerCountCharacteristicService } from "./submatrix/corner/north-west-corner-count-characteristic.service";
@@ -16,13 +28,25 @@ import type { Type } from "@nestjs/common";
 
 /** Every characteristic evaluator a consumer of `CharacteristicsModule` must be able to inject. */
 const CHARACTERISTIC_SERVICES: readonly Type<CharacteristicEvaluator>[] = [
+  BettiNumber0CountCharacteristicService,
+  BettiNumber1CountCharacteristicService,
+  BottomBorderTouchCountCharacteristicService,
   CornerCountCharacteristicService,
   DotCountCharacteristicService,
+  FreeEndCountCharacteristicService,
   HorizontalEdgeCountCharacteristicService,
+  InflectionCountCharacteristicService,
+  MaxMonotonicTurnLengthCharacteristicService,
   NorthEastCornerCountCharacteristicService,
   NorthWestCornerCountCharacteristicService,
   SouthEastCornerCountCharacteristicService,
   SouthWestCornerCountCharacteristicService,
+  TightestTurnCountCharacteristicService,
+  TileCrossingComponentDeltaCountCharacteristicService,
+  TileCrossingCountCharacteristicService,
+  TileCrossingCycleCountCharacteristicService,
+  TopBorderTouchCountCharacteristicService,
+  TotalTurnCountCharacteristicService,
   VerticalEdgeCountCharacteristicService,
 ];
 
