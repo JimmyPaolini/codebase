@@ -41,7 +41,6 @@
   "peerDependencies": {
     "typescript": "catalog:"
   },
-  "private": true,
   "publishConfig": {
     "access": "public",
     "exports": {

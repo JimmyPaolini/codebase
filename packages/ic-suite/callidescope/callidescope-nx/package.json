@@ -55,7 +55,6 @@
   "nx": {
     "executors": "./executors.json"
   },
-  "private": true,
   "publishConfig": {
     "access": "public",
     "exports": {
