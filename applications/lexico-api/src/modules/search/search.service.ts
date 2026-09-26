@@ -14,7 +14,7 @@ import {
   createConnection,
   paginateArray,
   toCursor,
-} from "../../main.utilities";
+} from "../../lexico-api.utilities";
 
 import {
   SCORE_FUZZY,
@@ -30,7 +30,7 @@ import {
   mergeSearchResult,
 } from "./search.utilities";
 
-import type { Connection } from "../../main.types";
+import type { Connection } from "../../lexico-api.types";
 import type {
   EncliticDecompositionResult,
   SearchCursorPayload,

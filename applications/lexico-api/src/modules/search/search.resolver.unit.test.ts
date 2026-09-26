@@ -26,7 +26,7 @@ import {
   VerbInflection,
 } from "@codebase/lexico-entities";
 
-import { createConnection, createEdge } from "../../main.utilities";
+import { createConnection, createEdge } from "../../lexico-api.utilities";
 
 import {
   LexemeSearchConnection,

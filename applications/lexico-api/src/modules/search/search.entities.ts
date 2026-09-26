@@ -4,7 +4,7 @@ import { Field, Float, ObjectType, registerEnumType } from "@nestjs/graphql";
 
 import { Lexeme } from "@codebase/lexico-entities";
 
-import { Paginated } from "../../main.utilities";
+import { Paginated } from "../../lexico-api.utilities";
 
 /**
  * Search match classification source.

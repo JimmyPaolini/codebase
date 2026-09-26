@@ -5,7 +5,7 @@ import { PaginationArguments } from "./search-pagination.entities";
 import { LexemeSearchConnection, LexemeSearchResult } from "./search.entities";
 import { SearchService } from "./search.service";
 
-import type { Connection } from "../../main.types";
+import type { Connection } from "../../lexico-api.types";
 
 /**
  * GraphQL resolver exposing Latin and English dictionary search queries.
