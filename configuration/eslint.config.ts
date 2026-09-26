@@ -402,7 +402,12 @@ export default [
       perfectionist: perfectionistPlugin,
     },
     rules: {
-      "@nx/dependency-checks": "error",
+      "@nx/dependency-checks": [
+        "error",
+        {
+          ignoredDependencies: ["@codebase/logger"],
+        },
+      ],
       "@nx/enforce-module-boundaries": [
         "error",
         {
@@ -1396,7 +1401,12 @@ export default [
     ignores: ["projectStructure.cache.json"],
     rules: {
       // Keep Nx dependency checks enabled
-      "@nx/dependency-checks": "error",
+      "@nx/dependency-checks": [
+        "error",
+        {
+          ignoredDependencies: ["@codebase/logger"],
+        },
+      ],
       // JSONC style rules
       "jsonc/comma-dangle": ["error", "never"],
       "jsonc/indent": ["error", 2],

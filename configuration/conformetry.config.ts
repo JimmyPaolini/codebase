@@ -87,6 +87,13 @@ const conformetryConfiguration: ConformetryNxConfiguration = [
           workspaceRelativePrefix: "../../../../",
         },
       },
+      {
+        patterns: ["packages/ic-suite/conformetry/conformetry-cli"],
+        substitutions: {
+          type: "packages/ic-suite/conformetry",
+          workspaceRelativePrefix: "../../../../",
+        },
+      },
     ],
     name: "nestjs-command-project",
     templatePath: "configuration/conformetry-templates/nestjs-command-project",
@@ -118,26 +125,7 @@ const conformetryConfiguration: ConformetryNxConfiguration = [
           "Relative climb from the project root back to the workspace root, e.g. ../.. two directories down or ../../../../ four directories down",
         ),
     }),
-    instances: [
-      // Every `*-core` is an ordinary instance of this template. The template
-      // ships `src/index.ts` and an empty `src/modules/.gitkeep` and requires
-      // no module and no service, so a contracts-only package satisfies it as
-      // written — what it does require is that the contracts live in
-      // `src/lib/` and that `src/modules/` stays empty. A `src/modules/<name>/`
-      // holding only types matches `nestjs-service-module`,
-      // `nestjs-dataloader-module` and `nestjs-graphql-module` equally and
-      // fails as ambiguous, which is why the two cores that had one were moved
-      // to `src/lib/` rather than given a template of their own.
-      {
-        patterns: [
-          "packages/ic-suite/conformetry/conformetry-{configuration,core,generation,languages,output,validation,nx}",
-        ],
-        substitutions: {
-          type: "packages/ic-suite/conformetry",
-          workspaceRelativePrefix: "../../../../",
-        },
-      },
-    ],
+    instances: [],
     name: "nestjs-service-project",
     templatePath: "configuration/conformetry-templates/nestjs-service-project",
   },

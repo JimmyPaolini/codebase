@@ -13,44 +13,11 @@
   ],
   "targets": {
     "build": {
-      "executor": "@nx/js:tsc",
+      "executor": "@nx/vite:build",
       "options": {
-        "assets": [
-          {
-            "glob": "README.md",
-            "input": "packages/ic-suite/conformetry/conformetry-nx",
-            "output": "."
-          },
-          {
-            "glob": "executors.json",
-            "input": "packages/ic-suite/conformetry/conformetry-nx",
-            "output": "."
-          },
-          {
-            "glob": "generators.json",
-            "input": "packages/ic-suite/conformetry/conformetry-nx",
-            "output": "."
-          },
-          {
-            "glob": "src/executors/**/schema.json",
-            "input": "packages/ic-suite/conformetry/conformetry-nx",
-            "output": "."
-          },
-          {
-            "glob": "src/generators/**/schema.json",
-            "input": "packages/ic-suite/conformetry/conformetry-nx",
-            "output": "."
-          },
-          {
-            "glob": "src/index.cjs",
-            "input": "packages/ic-suite/conformetry/conformetry-nx",
-            "output": "."
-          }
-        ],
+        "configFile": "packages/ic-suite/conformetry/conformetry-nx/vite.config.ts",
         "generatePackageJson": false,
-        "main": "packages/ic-suite/conformetry/conformetry-nx/src/index.ts",
-        "outputPath": "packages/ic-suite/conformetry/conformetry-nx/dist",
-        "tsConfig": "packages/ic-suite/conformetry/conformetry-nx/tsconfig.build.json"
+        "outputPath": "packages/ic-suite/conformetry/conformetry-nx/dist"
       },
       "outputs": ["{options.outputPath}"]
     },

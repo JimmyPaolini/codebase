@@ -3,7 +3,6 @@
     "conformetry": "./dist/src/main.js"
   },
   "dependencies": {
-    "@codebase/logger": "workspace:*",
     "@conformetry/configuration": "workspace:*",
     "@conformetry/generation": "workspace:*",
     "@conformetry/output": "workspace:*",
@@ -12,11 +11,13 @@
     "@nestjs/config": "catalog:",
     "@nestjs/core": "catalog:",
     "nest-commander": "catalog:",
+    "pino": "catalog:",
+    "pino-pretty": "catalog:",
     "reflect-metadata": "catalog:",
-    "tslib": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
+    "@codebase/logger": "workspace:*",
     "@conformetry/core": "workspace:*",
     "@golevelup/ts-vitest": "catalog:",
     "@nestjs/testing": "catalog:",

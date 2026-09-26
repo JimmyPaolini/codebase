@@ -8,7 +8,6 @@
     "mustache": "catalog:",
     "prompts": "catalog:",
     "reflect-metadata": "catalog:",
-    "tslib": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
