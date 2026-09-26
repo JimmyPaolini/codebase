@@ -67,6 +67,13 @@ const conformetryConfiguration: ConformetryNxConfiguration = [
     }),
     instances: [
       {
+        patterns: ["packages/ic-suite/callidescope/callidescope-cli"],
+        substitutions: {
+          type: "packages/ic-suite/callidescope",
+          workspaceRelativePrefix: "../../../../",
+        },
+      },
+      {
         patterns: ["packages/ic-suite/codependix/codependix-cli"],
         substitutions: {
           type: "packages/ic-suite/codependix",
@@ -114,19 +121,6 @@ const conformetryConfiguration: ConformetryNxConfiguration = [
       // `nestjs-dataloader-module` and `nestjs-graphql-module` equally and
       // fails as ambiguous, which is why the two cores that had one were moved
       // to `src/lib/` rather than given a template of their own.
-      {
-        patterns: [
-          "packages/ic-suite/callidescope/callidescope-configuration",
-          "packages/ic-suite/callidescope/callidescope-core",
-          "packages/ic-suite/callidescope/callidescope-nx",
-          "packages/ic-suite/callidescope/callidescope-graph",
-          "packages/ic-suite/callidescope/callidescope-output",
-        ],
-        substitutions: {
-          type: "packages/ic-suite/callidescope",
-          workspaceRelativePrefix: "../../../../",
-        },
-      },
       {
         patterns: ["packages/ic-suite/codometer/codometer-configuration"],
         substitutions: {

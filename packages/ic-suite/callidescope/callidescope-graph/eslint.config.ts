@@ -11,11 +11,21 @@ export default [
       "@nx/dependency-checks": [
         "error",
         {
+          // @codebase/logger: bundled into the library build output via Vite and inlined,
+          // so it is a build-time devDependency rather than a runtime dependency.
           // @golevelup/ts-vitest: a devDependency used only in test files, which
           // are outside the build dependency check's scope.
+          // pino, pino-pretty: runtime dependencies of the inlined @codebase/logger,
+          // not imported directly in this package's TypeScript source.
           // vitest: referenced via tsconfig "types" array; it's a devDependency and
           // the @nx/dependency-checks rule misidentifies it as a production dependency.
-          ignoredDependencies: ["@golevelup/ts-vitest", "vitest"],
+          ignoredDependencies: [
+            "@codebase/logger",
+            "@golevelup/ts-vitest",
+            "pino",
+            "pino-pretty",
+            "vitest",
+          ],
           ignoredFiles: ["{projectRoot}/eslint.config.{js,cjs,mjs,ts,cts,mts}"],
         },
       ],

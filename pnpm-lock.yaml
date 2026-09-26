@@ -1359,9 +1359,6 @@ importers:
       '@callidescope/output':
         specifier: workspace:*
         version: link:../callidescope-output
-      '@codebase/logger':
-        specifier: workspace:*
-        version: link:../../../logger
       '@nestjs/common':
         specifier: 'catalog:'
         version: 12.0.1(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@10.2.2)
@@ -1374,16 +1371,22 @@ importers:
       nest-commander:
         specifier: 'catalog:'
         version: 3.21.0(@nestjs/common@12.0.1(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@10.2.2))(@nestjs/core@12.0.1(@nestjs/common@12.0.1(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@10.2.2))(reflect-metadata@0.2.2)(rxjs@7.8.2))(@types/inquirer@8.2.13)(@types/node@26.5.1)(typescript@6.0.3)
+      pino:
+        specifier: 'catalog:'
+        version: 10.3.1
+      pino-pretty:
+        specifier: 'catalog:'
+        version: 13.1.3
       reflect-metadata:
         specifier: 'catalog:'
         version: 0.2.2
-      tslib:
-        specifier: 'catalog:'
-        version: 2.8.1
       zod:
         specifier: 'catalog:'
         version: 4.4.3
     devDependencies:
+      '@codebase/logger':
+        specifier: workspace:*
+        version: link:../../../logger
       '@golevelup/ts-vitest':
         specifier: 'catalog:'
         version: 4.0.0
@@ -1435,9 +1438,6 @@ importers:
       reflect-metadata:
         specifier: 'catalog:'
         version: 0.2.2
-      tslib:
-        specifier: 'catalog:'
-        version: 2.8.1
       zod:
         specifier: 'catalog:'
         version: 4.4.3
@@ -1478,9 +1478,6 @@ importers:
       reflect-metadata:
         specifier: 'catalog:'
         version: 0.2.2
-      tslib:
-        specifier: 'catalog:'
-        version: 2.8.1
     devDependencies:
       '@golevelup/ts-vitest':
         specifier: 'catalog:'
@@ -1549,19 +1546,22 @@ importers:
       '@callidescope/core':
         specifier: workspace:*
         version: link:../callidescope-core
-      '@codebase/logger':
-        specifier: workspace:*
-        version: link:../../../logger
       '@nestjs/common':
         specifier: 'catalog:'
         version: 12.0.1(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@10.2.2)
+      pino:
+        specifier: 'catalog:'
+        version: 10.3.1
+      pino-pretty:
+        specifier: 'catalog:'
+        version: 13.1.3
       reflect-metadata:
         specifier: 'catalog:'
         version: 0.2.2
-      tslib:
-        specifier: 'catalog:'
-        version: 2.8.1
     devDependencies:
+      '@codebase/logger':
+        specifier: workspace:*
+        version: link:../../../logger
       '@golevelup/ts-vitest':
         specifier: 'catalog:'
         version: 4.0.0
@@ -1604,9 +1604,6 @@ importers:
       '@callidescope/output':
         specifier: workspace:*
         version: link:../callidescope-output
-      '@codebase/logger':
-        specifier: workspace:*
-        version: link:../../../logger
       '@nestjs/common':
         specifier: 'catalog:'
         version: 12.0.1(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@10.2.2)
@@ -1616,16 +1613,19 @@ importers:
       '@nx/devkit':
         specifier: 'catalog:'
         version: 23.1.0(nx@23.2.1(@swc-node/register@1.12.1(@swc/core@1.16.2(@swc/helpers@0.5.23))(@swc/types@0.1.28)(supports-color@10.2.2)(typescript@6.0.3))(@swc/core@1.16.2(@swc/helpers@0.5.23)))
-      '@swc-node/register':
+      pino:
         specifier: 'catalog:'
-        version: 1.12.1(@swc/core@1.16.2(@swc/helpers@0.5.23))(@swc/types@0.1.28)(supports-color@10.2.2)(typescript@6.0.3)
+        version: 10.3.1
+      pino-pretty:
+        specifier: 'catalog:'
+        version: 13.1.3
       reflect-metadata:
         specifier: 'catalog:'
         version: 0.2.2
-      tslib:
-        specifier: 'catalog:'
-        version: 2.8.1
     devDependencies:
+      '@codebase/logger':
+        specifier: workspace:*
+        version: link:../../../logger
       '@golevelup/ts-vitest':
         specifier: 'catalog:'
         version: 4.0.0
@@ -1635,9 +1635,6 @@ importers:
       '@nx/eslint-plugin':
         specifier: 'catalog:'
         version: 23.1.0(@babel/traverse@7.29.7(supports-color@10.2.2))(@swc-node/register@1.12.1(@swc/core@1.16.2(@swc/helpers@0.5.23))(@swc/types@0.1.28)(supports-color@10.2.2)(typescript@6.0.3))(@swc/core@1.16.2(@swc/helpers@0.5.23))(@typescript-eslint/parser@8.65.0(eslint@10.10.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3))(eslint-config-prettier@10.1.8(eslint@10.10.0(jiti@2.7.0)(supports-color@10.2.2)))(eslint@10.10.0(jiti@2.7.0)(supports-color@10.2.2))(nx@23.2.1(@swc-node/register@1.12.1(@swc/core@1.16.2(@swc/helpers@0.5.23))(@swc/types@0.1.28)(supports-color@10.2.2)(typescript@6.0.3))(@swc/core@1.16.2(@swc/helpers@0.5.23)))(supports-color@10.2.2)(typescript@6.0.3)
-      '@swc/core':
-        specifier: 'catalog:'
-        version: 1.16.2(@swc/helpers@0.5.23)
       '@swc/helpers':
         specifier: 'catalog:'
         version: 0.5.23
@@ -1665,19 +1662,22 @@ importers:
       '@callidescope/graph':
         specifier: workspace:*
         version: link:../callidescope-graph
-      '@codebase/logger':
-        specifier: workspace:*
-        version: link:../../../logger
       '@nestjs/common':
         specifier: 'catalog:'
         version: 12.0.1(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@10.2.2)
+      pino:
+        specifier: 'catalog:'
+        version: 10.3.1
+      pino-pretty:
+        specifier: 'catalog:'
+        version: 13.1.3
       reflect-metadata:
         specifier: 'catalog:'
         version: 0.2.2
-      tslib:
-        specifier: 'catalog:'
-        version: 2.8.1
     devDependencies:
+      '@codebase/logger':
+        specifier: workspace:*
+        version: link:../../../logger
       '@golevelup/ts-vitest':
         specifier: 'catalog:'
         version: 4.0.0
