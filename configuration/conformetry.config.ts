@@ -80,6 +80,13 @@ const conformetryConfiguration: ConformetryNxConfiguration = [
           workspaceRelativePrefix: "../../../../",
         },
       },
+      {
+        patterns: ["packages/ic-suite/codometer/codometer-cli"],
+        substitutions: {
+          type: "packages/ic-suite/codometer",
+          workspaceRelativePrefix: "../../../../",
+        },
+      },
     ],
     name: "nestjs-command-project",
     templatePath: "configuration/conformetry-templates/nestjs-command-project",
@@ -121,13 +128,6 @@ const conformetryConfiguration: ConformetryNxConfiguration = [
       // `nestjs-dataloader-module` and `nestjs-graphql-module` equally and
       // fails as ambiguous, which is why the two cores that had one were moved
       // to `src/lib/` rather than given a template of their own.
-      {
-        patterns: ["packages/ic-suite/codometer/codometer-configuration"],
-        substitutions: {
-          type: "packages/ic-suite/codometer",
-          workspaceRelativePrefix: "../../../../",
-        },
-      },
       {
         patterns: [
           "packages/ic-suite/conformetry/conformetry-{configuration,core,generation,languages,output,validation,nx}",

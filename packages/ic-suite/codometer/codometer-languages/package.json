@@ -1,21 +1,22 @@
 {
   "dependencies": {
-    "@codebase/logger": "workspace:*",
     "@codometer/configuration": "workspace:*",
     "@codometer/core": "workspace:*",
     "@nestjs/common": "catalog:",
     "mdast": "catalog:",
+    "pino": "catalog:",
+    "pino-pretty": "catalog:",
     "postcss": "catalog:",
     "reflect-metadata": "catalog:",
     "remark": "catalog:",
     "remark-frontmatter": "catalog:",
     "remark-gfm": "catalog:",
-    "tslib": "catalog:",
     "typescript": "catalog:",
     "yaml": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
+    "@codebase/logger": "workspace:*",
     "@golevelup/ts-vitest": "catalog:",
     "@nestjs/testing": "catalog:",
     "@nx/eslint-plugin": "catalog:",
@@ -25,6 +26,10 @@
     "@vitest/coverage-v8": "catalog:",
     "vitest": "catalog:"
   },
+  "exports": {
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
+  },
   "files": [
     "dist",
     "LICENSE",
@@ -32,8 +37,16 @@
   ],
   "main": "src/index.ts",
   "name": "@codometer/languages",
+  "private": true,
   "publishConfig": {
     "access": "public",
+    "exports": {
+      ".": {
+        "types": "./dist/src/index.d.ts",
+        "default": "./dist/src/index.js"
+      },
+      "./package.json": "./package.json"
+    },
     "main": "./dist/src/index.js",
     "registry": "https://registry.npmjs.org",
     "types": "./dist/src/index.d.ts"

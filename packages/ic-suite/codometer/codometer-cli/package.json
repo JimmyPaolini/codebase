@@ -3,7 +3,6 @@
     "codometer": "./dist/src/main.js"
   },
   "dependencies": {
-    "@codebase/logger": "workspace:*",
     "@codometer/configuration": "workspace:*",
     "@codometer/core": "workspace:*",
     "@codometer/measurement": "workspace:*",
@@ -12,11 +11,13 @@
     "@nestjs/config": "catalog:",
     "@nestjs/core": "catalog:",
     "nest-commander": "catalog:",
+    "pino": "catalog:",
+    "pino-pretty": "catalog:",
     "reflect-metadata": "catalog:",
-    "tslib": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
+    "@codebase/logger": "workspace:*",
     "@golevelup/ts-vitest": "catalog:",
     "@nestjs/testing": "catalog:",
     "@nx/eslint-plugin": "catalog:",
@@ -42,6 +43,9 @@
   "private": true,
   "publishConfig": {
     "access": "public",
+    "bin": {
+      "codometer": "./dist/src/main.js"
+    },
     "exports": {
       ".": {
         "types": "./dist/src/index.d.ts",
