@@ -17,6 +17,9 @@ export interface MatrixPoint {
   readonly west: boolean;
 }
 
+/** One of the four directions a point's ink can leave it by. */
+export type MatrixPointArm = keyof MatrixPoint;
+
 /**
  * A submatrix kernel extracted from a larger Matrix during submatrix scanning operations.
  */

@@ -9,10 +9,12 @@ import type {
 } from "../../characteristics.types";
 
 /**
- * Counts the south-west corners of a Code — points whose ink leaves by south and west only, drawn ┐ — as a 1×1 submatrix scan. A corner is named by the two arms it carries.
+ * Counts the south-west corners of a Code — points whose ink leaves by south
+ * and west only, drawn ┐ — as a 1×1 submatrix scan. A corner is named by the
+ * two arms it carries.
  */
 @Injectable()
-export class SouthWestCornerCountCharacteristicService implements CharacteristicEvaluator {
+export class SouthWestCornerCountCharacteristicService implements CharacteristicEvaluator<number> {
   // 🏗 Dependency Injection
 
   constructor() {}

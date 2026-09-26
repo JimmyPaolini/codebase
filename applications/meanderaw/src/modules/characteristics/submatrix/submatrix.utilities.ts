@@ -1,7 +1,4 @@
-import { MATRIX_POINT_ARMS } from "./submatrix.constants";
-
-import type { Matrix } from "../../matrix/matrix.types";
-import type { MatrixPointArm } from "../characteristics.types";
+import type { Matrix, MatrixPointArm } from "../../matrix/matrix.types";
 
 /**
  * Counts the points whose ink leaves by exactly `arms` — every named arm set
@@ -13,11 +10,20 @@ export function countPointsWithExactArms(
   matrix: Matrix,
   arms: readonly MatrixPointArm[],
 ): number {
+  const east = arms.includes("east");
+  const north = arms.includes("north");
+  const south = arms.includes("south");
+  const west = arms.includes("west");
   let count = 0;
 
   for (const row of matrix) {
     for (const point of row) {
-      if (MATRIX_POINT_ARMS.every((arm) => point[arm] === arms.includes(arm))) {
+      if (
+        point.east === east &&
+        point.north === north &&
+        point.south === south &&
+        point.west === west
+      ) {
         count += 1;
       }
     }

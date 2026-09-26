@@ -9,10 +9,11 @@ import type {
 } from "../../characteristics.types";
 
 /**
- * Counts the straight vertical points of a Code — ink passing through north to south and nowhere else — as a 1×1 submatrix scan.
+ * Counts the straight vertical points of a Code — ink passing through north
+ * to south and nowhere else — as a 1×1 submatrix scan.
  */
 @Injectable()
-export class VerticalEdgeCountCharacteristicService implements CharacteristicEvaluator {
+export class VerticalEdgeCountCharacteristicService implements CharacteristicEvaluator<number> {
   // 🏗 Dependency Injection
 
   constructor() {}

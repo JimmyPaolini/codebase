@@ -9,10 +9,11 @@ import type {
 } from "../../characteristics.types";
 
 /**
- * Counts the straight horizontal points of a Code — ink passing through east to west and nowhere else — as a 1×1 submatrix scan.
+ * Counts the straight horizontal points of a Code — ink passing through east
+ * to west and nowhere else — as a 1×1 submatrix scan.
  */
 @Injectable()
-export class HorizontalEdgeCountCharacteristicService implements CharacteristicEvaluator {
+export class HorizontalEdgeCountCharacteristicService implements CharacteristicEvaluator<number> {
   // 🏗 Dependency Injection
 
   constructor() {}

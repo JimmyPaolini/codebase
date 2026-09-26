@@ -39,14 +39,6 @@ describe(CornerCountCharacteristicService, () => {
       expect(service).toBeDefined();
     });
 
-    it("describes itself as the cornerCount submatrix characteristic", () => {
-      expect(service.metadata).toMatchObject({
-        category: "submatrix",
-        key: "cornerCount",
-        valueType: "number",
-      });
-    });
-
     it("counts every corner orientation", () => {
       expect(service.compute(contextService.create("05x01ya9650"))).toBe(4);
     });

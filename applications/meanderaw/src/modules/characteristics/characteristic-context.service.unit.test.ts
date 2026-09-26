@@ -41,17 +41,30 @@ describe(CharacteristicContextService, () => {
     ]);
   });
 
-  it("accepts an already parsed Code without reducing it to its unit", () => {
-    const context = service.create({
+  it("reduces a repeating Code to its unit, as CharacteristicsService.measure does", () => {
+    const context = service.create("04x01y3c3c");
+
+    expect(context.columns).toBe(2);
+    expect(context.code).toStrictEqual({
       columns: 2,
-      digits: "3333",
+      digits: "3c",
+      repeats: 1,
+      rows: 1,
+    });
+    expect(context.matrix[0]).toHaveLength(2);
+  });
+
+  it("accepts an already parsed Code", () => {
+    const context = service.create({
+      columns: 3,
+      digits: "303330",
       repeats: 1,
       rows: 2,
     });
 
     expect(context.rows).toBe(2);
-    expect(context.columns).toBe(2);
+    expect(context.columns).toBe(3);
     expect(context.matrix).toHaveLength(2);
-    expect(context.matrix[1]).toHaveLength(2);
+    expect(context.matrix[1]).toHaveLength(3);
   });
 });

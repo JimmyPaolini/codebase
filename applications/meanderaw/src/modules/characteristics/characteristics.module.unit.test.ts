@@ -1,6 +1,5 @@
-import { Inject, Injectable } from "@nestjs/common";
 import { Test } from "@nestjs/testing";
-import { describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
 
 import { CharacteristicsModule } from "./characteristics.module";
 import { CornerCountCharacteristicService } from "./submatrix/corner/corner-count-characteristic.service";
@@ -27,42 +26,61 @@ const CHARACTERISTIC_SERVICES: readonly Type<CharacteristicEvaluator>[] = [
   VerticalEdgeCountCharacteristicService,
 ];
 
-/**
- * Resolves `service` the way a real consumer would — injected into a provider
- * of a module that imports `CharacteristicsModule` — so an evaluator that is
- * provided but never exported fails to compile rather than passing.
- */
-async function injectFromOutside(
-  service: Type<CharacteristicEvaluator>,
-): Promise<CharacteristicEvaluator> {
-  @Injectable()
-  class Consumer {
-    constructor(
-      @Inject(service) public readonly evaluator: CharacteristicEvaluator,
-    ) {}
-  }
+/** The token a consumer module gathers every evaluator under, through a factory whose `inject` list only resolves exported providers. */
+const EVALUATORS = Symbol("EVALUATORS");
 
-  const module = await Test.createTestingModule({
-    imports: [CharacteristicsModule],
-    providers: [Consumer],
-  }).compile();
+/** The metadata key a service's class name promises: `DotCountCharacteristicService` fills `dotCount`. */
+function expectedKey(service: Type<CharacteristicEvaluator>): string {
+  const stem = service.name.replace(/CharacteristicService$/u, "");
 
-  return module.get(Consumer).evaluator;
+  return stem.charAt(0).toLowerCase() + stem.slice(1);
 }
 
 describe(CharacteristicsModule, () => {
-  it.each(
-    CHARACTERISTIC_SERVICES.map((service) => ({ name: service.name, service })),
-  )("lets a consumer inject $name", async ({ service }) => {
-    await expect(injectFromOutside(service)).resolves.toBeInstanceOf(service);
+  let evaluators: readonly CharacteristicEvaluator[];
+
+  beforeAll(async () => {
+    const module = await Test.createTestingModule({
+      imports: [CharacteristicsModule],
+      providers: [
+        {
+          inject: [...CHARACTERISTIC_SERVICES],
+          provide: EVALUATORS,
+          useFactory: (
+            ...injected: CharacteristicEvaluator[]
+          ): CharacteristicEvaluator[] => injected,
+        },
+      ],
+    }).compile();
+
+    evaluators = module.get<CharacteristicEvaluator[]>(EVALUATORS);
   });
 
-  it("gives every characteristic evaluator a unique metadata key", async () => {
-    const evaluators = await Promise.all(
-      CHARACTERISTIC_SERVICES.map(async (service) =>
-        injectFromOutside(service),
-      ),
-    );
+  describe.each(
+    CHARACTERISTIC_SERVICES.map((service, index) => ({
+      index,
+      name: service.name,
+      service,
+    })),
+  )("$name", ({ index, service }) => {
+    it("is exported to a consumer that imports the module", () => {
+      expect(evaluators[index]).toBeInstanceOf(service);
+    });
+
+    it("names its metadata key after its class", () => {
+      expect(evaluators[index]?.metadata.key).toBe(expectedKey(service));
+    });
+
+    it("describes itself with a display name, a description, and a known category", () => {
+      const metadata = evaluators[index]?.metadata;
+
+      expect(metadata?.name).not.toBe("");
+      expect(metadata?.description).not.toBe("");
+      expect(["compound", "path", "submatrix"]).toContain(metadata?.category);
+    });
+  });
+
+  it("gives every characteristic evaluator a unique metadata key", () => {
     const keys = evaluators.map((evaluator) => evaluator.metadata.key);
 
     expect(new Set(keys).size).toBe(keys.length);

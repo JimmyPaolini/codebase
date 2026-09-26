@@ -9,10 +9,11 @@ import type {
 } from "../../characteristics.types";
 
 /**
- * Counts the bare points of a Code — points no ink enters or leaves — as a 1×1 submatrix scan.
+ * Counts the bare points of a Code — points no ink enters or leaves — as a
+ * 1×1 submatrix scan.
  */
 @Injectable()
-export class DotCountCharacteristicService implements CharacteristicEvaluator {
+export class DotCountCharacteristicService implements CharacteristicEvaluator<number> {
   // 🏗 Dependency Injection
 
   constructor() {}

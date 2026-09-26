@@ -9,8 +9,9 @@ import type { CharacteristicContext } from "./characteristics.types";
 /**
  * Prepares the one {@link CharacteristicContext} every characteristic
  * evaluator reads, so the Code is parsed and decoded once per meander rather
- * than once per evaluator. It measures the Code exactly as given — reducing
- * it to its repeating unit is the caller's decision, not this service's.
+ * than once per evaluator. Like `CharacteristicsService.measure`, it reduces
+ * the Code to its smallest repeating unit first, so a Code drawn at two
+ * repeats measures the same as the same Code drawn at one.
  */
 @Injectable()
 export class CharacteristicContextService {
@@ -31,16 +32,20 @@ export class CharacteristicContextService {
 
   // 🌎 Public Methods
 
-  /** Builds the context for a formatted Code string or an already parsed Code. */
+  /**
+   * Builds the context for the repeating unit of a formatted Code string or
+   * an already parsed Code.
+   */
   public create(code: Code | CodeObject): CharacteristicContext {
     const parsed =
       typeof code === "string" ? this.codeService.parse(code) : code;
+    const unit = this.codeService.reduceToUnit(parsed);
 
     return {
-      code: parsed,
-      columns: parsed.columns,
-      matrix: this.matrixService.fromCode(parsed),
-      rows: parsed.rows,
+      code: unit,
+      columns: unit.columns,
+      matrix: this.matrixService.fromCode(unit),
+      rows: unit.rows,
     };
   }
 }

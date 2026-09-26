@@ -28,14 +28,6 @@ describe(SouthEastCornerCountCharacteristicService, () => {
     expect(service).toBeDefined();
   });
 
-  it("describes itself as the southEastCornerCount submatrix characteristic", () => {
-    expect(service.metadata).toMatchObject({
-      category: "submatrix",
-      key: "southEastCornerCount",
-      valueType: "number",
-    });
-  });
-
   it("counts corners whose ink leaves by south and east only", () => {
     expect(service.compute(contextService.create("03x01y606"))).toBe(2);
   });

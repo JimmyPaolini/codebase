@@ -2,10 +2,14 @@ import { describe, expect, it } from "vitest";
 
 import { countPointsWithExactArms } from "./submatrix.utilities";
 
-import type { Matrix, MatrixPoint } from "../../matrix/matrix.types";
+import type {
+  Matrix,
+  MatrixPoint,
+  MatrixPointArm,
+} from "../../matrix/matrix.types";
 
 /** A point carrying exactly the named arms. */
-function point(...arms: (keyof MatrixPoint)[]): MatrixPoint {
+function point(...arms: MatrixPointArm[]): MatrixPoint {
   return {
     east: arms.includes("east"),
     north: arms.includes("north"),

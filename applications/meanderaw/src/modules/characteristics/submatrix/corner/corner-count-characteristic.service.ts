@@ -18,7 +18,7 @@ import type {
  * the grid itself.
  */
 @Injectable()
-export class CornerCountCharacteristicService implements CharacteristicEvaluator {
+export class CornerCountCharacteristicService implements CharacteristicEvaluator<number> {
   // 🏗 Dependency Injection
 
   constructor(

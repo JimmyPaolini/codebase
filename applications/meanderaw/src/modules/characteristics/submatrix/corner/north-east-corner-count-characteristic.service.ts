@@ -9,10 +9,12 @@ import type {
 } from "../../characteristics.types";
 
 /**
- * Counts the north-east corners of a Code — points whose ink leaves by north and east only, drawn └ — as a 1×1 submatrix scan. A corner is named by the two arms it carries.
+ * Counts the north-east corners of a Code — points whose ink leaves by north
+ * and east only, drawn └ — as a 1×1 submatrix scan. A corner is named by the
+ * two arms it carries.
  */
 @Injectable()
-export class NorthEastCornerCountCharacteristicService implements CharacteristicEvaluator {
+export class NorthEastCornerCountCharacteristicService implements CharacteristicEvaluator<number> {
   // 🏗 Dependency Injection
 
   constructor() {}

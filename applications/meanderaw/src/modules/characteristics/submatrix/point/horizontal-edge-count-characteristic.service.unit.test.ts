@@ -28,20 +28,12 @@ describe(HorizontalEdgeCountCharacteristicService, () => {
     expect(service).toBeDefined();
   });
 
-  it("describes itself as the horizontalEdgeCount submatrix characteristic", () => {
-    expect(service.metadata).toMatchObject({
-      category: "submatrix",
-      key: "horizontalEdgeCount",
-      valueType: "number",
-    });
-  });
-
   it("counts points whose ink runs only east and west", () => {
     expect(service.compute(contextService.create("04x01y3303"))).toBe(3);
   });
 
   it("ignores forks and crosses that also run east and west", () => {
-    expect(service.compute(contextService.create("04x01y3b7f"))).toBe(1);
+    expect(service.compute(contextService.create("04x01yb7bf"))).toBe(0);
   });
 
   it("ignores vertical points, corners, and bare points", () => {

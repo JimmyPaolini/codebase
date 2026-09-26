@@ -1,7 +1,7 @@
 // 🏷️ Types
 
 import type { CodeObject } from "../code/code.types";
-import type { Matrix, MatrixPoint } from "../matrix/matrix.types";
+import type { Matrix } from "../matrix/matrix.types";
 
 /**
  * The tier a characteristic is measured in: `submatrix` reads local windows
@@ -36,7 +36,7 @@ export interface CharacteristicContext {
  * evaluator's service and calls its `compute` with the same context.
  */
 export interface CharacteristicEvaluator<
-  T extends CharacteristicValue = number,
+  T extends CharacteristicValue = CharacteristicValue,
 > {
   compute(context: CharacteristicContext): T;
   readonly metadata: CharacteristicMetadata<T>;
@@ -213,9 +213,6 @@ export interface JunctionCounts {
   tJunctions: number;
   xJunctions: number;
 }
-
-/** One of the four directions a point's ink can leave it by. */
-export type MatrixPointArm = keyof MatrixPoint;
 
 /** Fields that are mutated while calculating a histogram. */
 export type MutableHistogram = Pick<

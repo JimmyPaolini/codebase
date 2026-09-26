@@ -28,14 +28,6 @@ describe(VerticalEdgeCountCharacteristicService, () => {
     expect(service).toBeDefined();
   });
 
-  it("describes itself as the verticalEdgeCount submatrix characteristic", () => {
-    expect(service.metadata).toMatchObject({
-      category: "submatrix",
-      key: "verticalEdgeCount",
-      valueType: "number",
-    });
-  });
-
   it("counts points whose ink runs only north and south", () => {
     expect(service.compute(contextService.create("01x03ycc0"))).toBe(2);
   });

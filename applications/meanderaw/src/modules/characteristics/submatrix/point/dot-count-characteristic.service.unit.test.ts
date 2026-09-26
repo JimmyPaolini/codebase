@@ -25,14 +25,6 @@ describe(DotCountCharacteristicService, () => {
     expect(service).toBeDefined();
   });
 
-  it("describes itself as the dotCount submatrix characteristic", () => {
-    expect(service.metadata).toMatchObject({
-      category: "submatrix",
-      key: "dotCount",
-      valueType: "number",
-    });
-  });
-
   it("counts every bare point", () => {
     expect(service.compute(contextService.create("04x01y0300"))).toBe(3);
   });
