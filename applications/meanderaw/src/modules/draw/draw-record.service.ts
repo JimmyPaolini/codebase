@@ -77,13 +77,13 @@ export class DrawRecordService {
     const booleanKeys = (
       Object.entries(characteristics) as [string, boolean | number][]
     )
-      .filter(([_, value]) => typeof value === "boolean" && value)
+      .filter(([, value]) => typeof value === "boolean" && value)
       .map(([key]) => key);
 
     // We only keep numbers in the returned object (the booleans are moved to the array)
     const numericCharacteristics = Object.fromEntries(
       (Object.entries(characteristics) as [string, boolean | number][]).filter(
-        ([_, value]) => typeof value === "number",
+        ([, value]) => typeof value === "number",
       ),
     );
 
