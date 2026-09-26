@@ -328,6 +328,20 @@ describe(ManualService, () => {
     });
   });
 
+  describe("buildAdjectivalForms", () => {
+    it("returns empty array when values are empty", () => {
+      const forms = manualUtilities.buildAdjectivalForms({
+        masculine: {
+          nominative: {
+            singular: [],
+          },
+        },
+      });
+
+      expect(forms).toHaveLength(0);
+    });
+  });
+
   describe("resolvePraenomenGender", () => {
     it("returns masculine when only masculine value is present", () => {
       const gender = (
