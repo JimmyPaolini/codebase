@@ -2,6 +2,9 @@ import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import { CharacteristicsModule } from "./characteristics.module";
+import { BettiNumber0CountCharacteristicService } from "./path/topology/betti-number-0-count-characteristic.service";
+import { BettiNumber1CountCharacteristicService } from "./path/topology/betti-number-1-count-characteristic.service";
+import { FreeEndCountCharacteristicService } from "./path/topology/free-end-count-characteristic.service";
 import { CornerCountCharacteristicService } from "./submatrix/corner/corner-count-characteristic.service";
 import { NorthEastCornerCountCharacteristicService } from "./submatrix/corner/north-east-corner-count-characteristic.service";
 import { NorthWestCornerCountCharacteristicService } from "./submatrix/corner/north-west-corner-count-characteristic.service";
@@ -16,8 +19,11 @@ import type { Type } from "@nestjs/common";
 
 /** Every characteristic evaluator a consumer of `CharacteristicsModule` must be able to inject. */
 const CHARACTERISTIC_SERVICES: readonly Type<CharacteristicEvaluator>[] = [
+  BettiNumber0CountCharacteristicService,
+  BettiNumber1CountCharacteristicService,
   CornerCountCharacteristicService,
   DotCountCharacteristicService,
+  FreeEndCountCharacteristicService,
   HorizontalEdgeCountCharacteristicService,
   NorthEastCornerCountCharacteristicService,
   NorthWestCornerCountCharacteristicService,
