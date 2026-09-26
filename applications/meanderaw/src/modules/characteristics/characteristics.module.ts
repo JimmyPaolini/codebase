@@ -14,6 +14,7 @@ import { CornerCharacteristicsModule } from "./submatrix/corner/corner-character
 import { CrossCharacteristicsModule } from "./submatrix/cross/cross-characteristics.module";
 import { ForkCharacteristicsModule } from "./submatrix/fork/fork-characteristics.module";
 import { PointCharacteristicsModule } from "./submatrix/point/point-characteristics.module";
+import { RectangleCharacteristicsModule } from "./submatrix/rectangle/rectangle-characteristics.module";
 
 /**
  * Wires up the Characteristic computation that reads a Code directly — no
@@ -47,6 +48,7 @@ import { PointCharacteristicsModule } from "./submatrix/point/point-characterist
     CrossCharacteristicsModule,
     ForkCharacteristicsModule,
     PointCharacteristicsModule,
+    RectangleCharacteristicsModule,
   ],
   imports: [
     CodeModule,
@@ -56,6 +58,7 @@ import { PointCharacteristicsModule } from "./submatrix/point/point-characterist
     GraphModule,
     MatrixModule,
     PointCharacteristicsModule,
+    RectangleCharacteristicsModule,
   ],
   providers: [
     CharacteristicContextService,
