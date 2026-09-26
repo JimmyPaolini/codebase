@@ -103,15 +103,13 @@ export class SearchService {
           .getMany();
 
         for (const lexeme of fuzzyLemmas) {
-          if (!resultsMap.has(lexeme.id)) {
-            mergeSearchResult(resultsMap, {
-              enclitic: null,
-              identifiers: [],
-              lexeme,
-              score: SCORE_FUZZY,
-              source: SearchMatchSource.FUZZY,
-            });
-          }
+          mergeSearchResult(resultsMap, {
+            enclitic: null,
+            identifiers: [],
+            lexeme,
+            score: SCORE_FUZZY,
+            source: SearchMatchSource.FUZZY,
+          });
         }
       }
     }
@@ -137,15 +135,13 @@ export class SearchService {
         .getMany();
 
       for (const lexeme of prefixLemmas) {
-        if (!resultsMap.has(lexeme.id)) {
-          mergeSearchResult(resultsMap, {
-            enclitic: null,
-            identifiers: [],
-            lexeme,
-            score: SCORE_PREFIX,
-            source: SearchMatchSource.PREFIX,
-          });
-        }
+        mergeSearchResult(resultsMap, {
+          enclitic: null,
+          identifiers: [],
+          lexeme,
+          score: SCORE_PREFIX,
+          source: SearchMatchSource.PREFIX,
+        });
       }
     }
   }

@@ -387,6 +387,31 @@ describe("search service suite", () => {
       );
     });
 
+    it("deduplicates prefix and fuzzy results when already present in results map", async () => {
+      expect.hasAssertions();
+
+      const lexeme = new Lexeme();
+      lexeme.id = "lex-1";
+      lexeme.lemma = "amo";
+
+      const mockLexemeRepo = createRepositoryMock<Lexeme>();
+      const mockWordRepo = createRepositoryMock<Word>();
+      const mockTranslationRepo = createRepositoryMock<Translation>();
+
+      const lexemeQb = mockLexemeRepo.createQueryBuilder();
+      vi.spyOn(lexemeQb, "getMany").mockResolvedValue([lexeme, lexeme]);
+
+      const service = new SearchService(
+        mockLexemeRepo,
+        mockWordRepo,
+        mockTranslationRepo,
+      );
+
+      const result = await service.searchLatin("amo");
+
+      expect(result.edges).toHaveLength(1);
+    });
+
     it("paginates English search results forward and backward", async () => {
       expect.hasAssertions();
 
@@ -439,6 +464,32 @@ describe("search service suite", () => {
       expect(page2.edges[0]?.node.lexeme.id).toBe("lex-3");
       expect(page2.pageInfo.hasNextPage).toBe(false);
       expect(page2.pageInfo.hasPreviousPage).toBe(true);
+    });
+
+    it("handles short queries under 3 characters without fuzzy expansion", async () => {
+      expect.hasAssertions();
+
+      const lexeme = new Lexeme();
+      lexeme.id = "lex-in";
+      lexeme.lemma = "in";
+
+      const mockLexemeRepo = createRepositoryMock<Lexeme>();
+      const mockWordRepo = createRepositoryMock<Word>();
+      const mockTranslationRepo = createRepositoryMock<Translation>();
+
+      const lexemeQb = mockLexemeRepo.createQueryBuilder();
+      vi.spyOn(lexemeQb, "getMany").mockResolvedValue([lexeme]);
+
+      const service = new SearchService(
+        mockLexemeRepo,
+        mockWordRepo,
+        mockTranslationRepo,
+      );
+
+      const result = await service.searchLatin("in");
+
+      expect(result.edges).toHaveLength(1);
+      expect(result.edges[0]?.node.lexeme.id).toBe("lex-in");
     });
   });
 });
