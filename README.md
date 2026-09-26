@@ -1,4 +1,4 @@
-# Codebase v2.23.2
+# Codebase v2.23.3
 
 [![Nx](https://img.shields.io/badge/Nx-Codebase-143055?logo=nx)](https://nx.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Strict-3178C6?logo=typescript)](https://www.typescriptlang.org/)
@@ -372,8 +372,8 @@ Repository statistics measured by [codometer](packages/ic-suite/codometer/codome
 ![Constants](https://img.shields.io/badge/Constants-87-dc2626?style=flat-square)
 ![Imports](https://img.shields.io/badge/Imports-50-0284c7?style=flat-square)
 ![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-12-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-673-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-1388-475569?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-664-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-1379-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python
@@ -394,7 +394,7 @@ Repository statistics measured by [codometer](packages/ic-suite/codometer/codome
 ### JSON
 
 ![JSON Files](https://img.shields.io/badge/JSON_Files-23-a16207?style=flat-square)
-![JSON Lines](https://img.shields.io/badge/JSON_Lines-5642-ca8a04?style=flat-square)
+![JSON Lines](https://img.shields.io/badge/JSON_Lines-5648-ca8a04?style=flat-square)
 ![JSON Objects](https://img.shields.io/badge/JSON_Objects-715-7c3aed?style=flat-square)
 ![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-262-8b5cf6?style=flat-square)
 ![JSON Properties](https://img.shields.io/badge/JSON_Properties-1807-0284c7?style=flat-square)
@@ -559,7 +559,7 @@ The workspace's call graph, traced by [callidescope](packages/ic-suite/callidesc
 | Measure | Value |
 | --- | --- |
 | Callables | 5141 |
-| Files | 1438 |
+| Files | 1457 |
 | Calls traced | 5740 |
 | Call stacks | 1336 |
 | Deepest stack | 17 |

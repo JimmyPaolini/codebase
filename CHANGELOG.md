@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.23.3](https://github.com/JimmyPaolini/codebase/compare/v2.23.2...v2.23.3) (2026-09-26)
+
+### 📦 Build System
+
+* **callidescope:** 📦️ migrate callidescope to the vite library build and inline the logger ([#1131](https://github.com/JimmyPaolini/codebase/issues/1131)) ([5be0da0](https://github.com/JimmyPaolini/codebase/commit/5be0da0e7d81a1b1106a95ab4130b4cc994e5d9d)), closes [#475](https://github.com/JimmyPaolini/codebase/issues/475) [#476](https://github.com/JimmyPaolini/codebase/issues/476) [#477](https://github.com/JimmyPaolini/codebase/issues/477) [#478](https://github.com/JimmyPaolini/codebase/issues/478) [#479](https://github.com/JimmyPaolini/codebase/issues/479) [#480](https://github.com/JimmyPaolini/codebase/issues/480)
+* **codometer:** 📦️ migrate codometer to the vite library build and inline the logger ([#1132](https://github.com/JimmyPaolini/codebase/issues/1132)) ([424ed90](https://github.com/JimmyPaolini/codebase/commit/424ed90892c3ef03ea04f5868c39d004cdae9eac)), closes [#468](https://github.com/JimmyPaolini/codebase/issues/468) [#469](https://github.com/JimmyPaolini/codebase/issues/469) [#470](https://github.com/JimmyPaolini/codebase/issues/470) [#472](https://github.com/JimmyPaolini/codebase/issues/472) [#473](https://github.com/JimmyPaolini/codebase/issues/473) [#474](https://github.com/JimmyPaolini/codebase/issues/474)
+* **conformetry:** 📦️ migrate conformetry to the vite library build and inline the logger ([#1097](https://github.com/JimmyPaolini/codebase/issues/1097)) ([7548270](https://github.com/JimmyPaolini/codebase/commit/75482707c286edc6e863fba687eae95519db519a)), closes [#462](https://github.com/JimmyPaolini/codebase/issues/462) [#463](https://github.com/JimmyPaolini/codebase/issues/463) [#464](https://github.com/JimmyPaolini/codebase/issues/464) [#465](https://github.com/JimmyPaolini/codebase/issues/465) [#466](https://github.com/JimmyPaolini/codebase/issues/466) [#467](https://github.com/JimmyPaolini/codebase/issues/467)
+
 ## [2.23.2](https://github.com/JimmyPaolini/codebase/compare/v2.23.1...v2.23.2) (2026-09-25)
 
 ### 🐛 Bug Fixes
