@@ -13,24 +13,52 @@ import { ForkCountCharacteristicService } from "./submatrix/fork/fork-count-char
 import { NorthForkCountCharacteristicService } from "./submatrix/fork/north-fork-count-characteristic.service";
 import { SouthForkCountCharacteristicService } from "./submatrix/fork/south-fork-count-characteristic.service";
 import { WestForkCountCharacteristicService } from "./submatrix/fork/west-fork-count-characteristic.service";
+import { AEastLetterCountCharacteristicService } from "./submatrix/letter/a-east-letter-count-characteristic.service";
+import { AInvertedLetterCountCharacteristicService } from "./submatrix/letter/a-inverted-letter-count-characteristic.service";
 import { ALetterCountCharacteristicService } from "./submatrix/letter/a-letter-count-characteristic.service";
+import { AWestLetterCountCharacteristicService } from "./submatrix/letter/a-west-letter-count-characteristic.service";
 import { BLetterCountCharacteristicService } from "./submatrix/letter/b-letter-count-characteristic.service";
+import { BSidewaysLetterCountCharacteristicService } from "./submatrix/letter/b-sideways-letter-count-characteristic.service";
 import { CLetterCountCharacteristicService } from "./submatrix/letter/c-letter-count-characteristic.service";
+import { CWestLetterCountCharacteristicService } from "./submatrix/letter/c-west-letter-count-characteristic.service";
+import { EDownLetterCountCharacteristicService } from "./submatrix/letter/e-down-letter-count-characteristic.service";
 import { ELetterCountCharacteristicService } from "./submatrix/letter/e-letter-count-characteristic.service";
+import { EUpLetterCountCharacteristicService } from "./submatrix/letter/e-up-letter-count-characteristic.service";
+import { EWestLetterCountCharacteristicService } from "./submatrix/letter/e-west-letter-count-characteristic.service";
+import { FDownLetterCountCharacteristicService } from "./submatrix/letter/f-down-letter-count-characteristic.service";
 import { FLetterCountCharacteristicService } from "./submatrix/letter/f-letter-count-characteristic.service";
+import { FUpLetterCountCharacteristicService } from "./submatrix/letter/f-up-letter-count-characteristic.service";
+import { FWestLetterCountCharacteristicService } from "./submatrix/letter/f-west-letter-count-characteristic.service";
 import { HLetterCountCharacteristicService } from "./submatrix/letter/h-letter-count-characteristic.service";
+import { HSidewaysLetterCountCharacteristicService } from "./submatrix/letter/h-sideways-letter-count-characteristic.service";
 import { ILetterCountCharacteristicService } from "./submatrix/letter/i-letter-count-characteristic.service";
+import { ISidewaysLetterCountCharacteristicService } from "./submatrix/letter/i-sideways-letter-count-characteristic.service";
+import { LDownLetterCountCharacteristicService } from "./submatrix/letter/l-down-letter-count-characteristic.service";
 import { LLetterCountCharacteristicService } from "./submatrix/letter/l-letter-count-characteristic.service";
+import { LUpLetterCountCharacteristicService } from "./submatrix/letter/l-up-letter-count-characteristic.service";
+import { LWestLetterCountCharacteristicService } from "./submatrix/letter/l-west-letter-count-characteristic.service";
+import { MEastLetterCountCharacteristicService } from "./submatrix/letter/m-east-letter-count-characteristic.service";
 import { MLetterCountCharacteristicService } from "./submatrix/letter/m-letter-count-characteristic.service";
+import { MWestLetterCountCharacteristicService } from "./submatrix/letter/m-west-letter-count-characteristic.service";
 import { NLetterCountCharacteristicService } from "./submatrix/letter/n-letter-count-characteristic.service";
+import { NSidewaysLetterCountCharacteristicService } from "./submatrix/letter/n-sideways-letter-count-characteristic.service";
 import { OLetterCountCharacteristicService } from "./submatrix/letter/o-letter-count-characteristic.service";
 import { SLetterCountCharacteristicService } from "./submatrix/letter/s-letter-count-characteristic.service";
+import { SSidewaysLetterCountCharacteristicService } from "./submatrix/letter/s-sideways-letter-count-characteristic.service";
+import { TEastLetterCountCharacteristicService } from "./submatrix/letter/t-east-letter-count-characteristic.service";
 import { TLetterCountCharacteristicService } from "./submatrix/letter/t-letter-count-characteristic.service";
+import { TUpLetterCountCharacteristicService } from "./submatrix/letter/t-up-letter-count-characteristic.service";
+import { TWestLetterCountCharacteristicService } from "./submatrix/letter/t-west-letter-count-characteristic.service";
+import { UInvertedLetterCountCharacteristicService } from "./submatrix/letter/u-inverted-letter-count-characteristic.service";
 import { ULetterCountCharacteristicService } from "./submatrix/letter/u-letter-count-characteristic.service";
 import { WLetterCountCharacteristicService } from "./submatrix/letter/w-letter-count-characteristic.service";
 import { XLetterCountCharacteristicService } from "./submatrix/letter/x-letter-count-characteristic.service";
+import { YEastLetterCountCharacteristicService } from "./submatrix/letter/y-east-letter-count-characteristic.service";
 import { YLetterCountCharacteristicService } from "./submatrix/letter/y-letter-count-characteristic.service";
+import { YUpLetterCountCharacteristicService } from "./submatrix/letter/y-up-letter-count-characteristic.service";
+import { YWestLetterCountCharacteristicService } from "./submatrix/letter/y-west-letter-count-characteristic.service";
 import { ZLetterCountCharacteristicService } from "./submatrix/letter/z-letter-count-characteristic.service";
+import { ZSidewaysLetterCountCharacteristicService } from "./submatrix/letter/z-sideways-letter-count-characteristic.service";
 import { DotCountCharacteristicService } from "./submatrix/point/dot-count-characteristic.service";
 import { HorizontalEdgeCountCharacteristicService } from "./submatrix/point/horizontal-edge-count-characteristic.service";
 import { VerticalEdgeCountCharacteristicService } from "./submatrix/point/vertical-edge-count-characteristic.service";
@@ -42,6 +70,34 @@ import type { Type } from "@nestjs/common";
 
 /** Every characteristic evaluator a consumer of `CharacteristicsModule` must be able to inject. */
 const CHARACTERISTIC_SERVICES: readonly Type<CharacteristicEvaluator>[] = [
+  ZSidewaysLetterCountCharacteristicService,
+  YWestLetterCountCharacteristicService,
+  YUpLetterCountCharacteristicService,
+  YEastLetterCountCharacteristicService,
+  UInvertedLetterCountCharacteristicService,
+  TWestLetterCountCharacteristicService,
+  TUpLetterCountCharacteristicService,
+  TEastLetterCountCharacteristicService,
+  SSidewaysLetterCountCharacteristicService,
+  NSidewaysLetterCountCharacteristicService,
+  MWestLetterCountCharacteristicService,
+  MEastLetterCountCharacteristicService,
+  LWestLetterCountCharacteristicService,
+  LUpLetterCountCharacteristicService,
+  LDownLetterCountCharacteristicService,
+  ISidewaysLetterCountCharacteristicService,
+  HSidewaysLetterCountCharacteristicService,
+  FWestLetterCountCharacteristicService,
+  FUpLetterCountCharacteristicService,
+  FDownLetterCountCharacteristicService,
+  EWestLetterCountCharacteristicService,
+  EUpLetterCountCharacteristicService,
+  EDownLetterCountCharacteristicService,
+  CWestLetterCountCharacteristicService,
+  BSidewaysLetterCountCharacteristicService,
+  AWestLetterCountCharacteristicService,
+  AInvertedLetterCountCharacteristicService,
+  AEastLetterCountCharacteristicService,
   ZLetterCountCharacteristicService,
   YLetterCountCharacteristicService,
   XLetterCountCharacteristicService,
