@@ -169,6 +169,14 @@ const config: KnipConfig = {
       project: "src/**/*.{ts,tsx}",
     },
 
+    // lexico-api: NestJS GraphQL API
+    "applications/lexico-api": {
+      ignoreDependencies: [
+        "typeorm", // Used by testing/mocks.ts for repository mocks
+      ],
+      project: "src/**/*.ts",
+    },
+
     // codometer-examples: A sample corpus and one configuration per behavior.
     // Nothing here is imported by anything — the configurations are read by the
     // codometer command line and the corpus exists to be counted — so knip is

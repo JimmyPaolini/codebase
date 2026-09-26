@@ -11,10 +11,10 @@
       "@golevelup/ts-vitest": [
         "./node_modules/@golevelup/ts-vitest/lib/index.d.ts"
       ],
+      "codebase/configuration/*": ["../../configuration/*"],
       "eslint-plugin-better-max-params": [
         "../../configuration/types/eslint-plugin-better-max-params/index.d.ts"
-      ],
-      "codebase/configuration/*": ["../../configuration/*"]
+      ]
     },
     "target": "esnext",
     "types": ["node", "vitest/globals"]
@@ -22,6 +22,8 @@
   "exclude": ["dist", "node_modules", "output"],
   "extends": "../../configuration/tsconfig.json",
   "include": [
+    "callidescope.config.ts",
+    "codependix.config.ts",
     "codometer.config.ts",
     "eslint.config.ts",
     "scripts/**/*.ts",

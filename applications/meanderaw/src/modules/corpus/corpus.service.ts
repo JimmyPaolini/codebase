@@ -105,12 +105,12 @@ export class CorpusService {
     const booleanKeys = (
       Object.entries(characteristics) as [string, boolean | number][]
     )
-      .filter(([_, value]) => typeof value === "boolean" && value)
+      .filter(([, value]) => typeof value === "boolean" && value)
       .map(([key]) => key);
 
     const numericCharacteristics = Object.fromEntries(
       (Object.entries(characteristics) as [string, boolean | number][]).filter(
-        ([_, value]) => typeof value === "number",
+        ([, value]) => typeof value === "number",
       ),
     );
 

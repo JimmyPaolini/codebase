@@ -8,6 +8,7 @@ packages:
   - "!packages/ic-suite"
   - tools/*
 allowBuilds:
+  '@apollo/protobufjs': true
   '@nestjs/core': true
   '@swc/core': true
   better-sqlite3: true
@@ -31,6 +32,7 @@ overrides:
   markdown-it@<=14.1.1: ^14.2.0
   ws@>=8.0.0 <8.21.0: ^8.21.0
 catalog:
+  "@apollo/server": ^5.5.1
   "@commitlint/cli": ^21.0.1
   "@commitlint/config-conventional": ^21.0.1
   "@commitlint/types": ^21.0.1
@@ -40,6 +42,7 @@ catalog:
   "@faker-js/faker": ^10.5.0
   "@microsoft/api-extractor": ^7.52.1
   "@golevelup/ts-vitest": ^4.0.0
+  "@nestjs/apollo": ^14.0.2
   "@nestjs/common": ^12.0.1
   "@nestjs/config": ^12.0.0
   "@nestjs/core": ^12.0.1
@@ -138,6 +141,7 @@ catalog:
   eslint-plugin-unicorn: ^64.0.0
   eslint-plugin-yml: ^3.3.2
   fallow: ^3.24.1
+  graphql: ^16.11.0
   husky: ^9.1.7
   input-otp: ^1.4.2
   jiti: ^2.7.0
@@ -147,6 +151,7 @@ catalog:
   jsonc-parser: ^3.3.1
   knip: ^6.14.2
   license-checker: ^25.0.1
+  lightship: ^9.0.4
   lint-staged: ^17.0.5
   lodash: ^4.18.1
   lucide-react: ^1.16.0

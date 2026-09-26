@@ -904,7 +904,7 @@ export default [
       curly: ["error", "all"],
       eqeqeq: ["error", "always"],
       "grouped-accessor-pairs": ["error", "getBeforeSet"],
-      "max-classes-per-file": ["error", { max: 1 }],
+      "max-classes-per-file": ["error", { ignoreExpressions: true, max: 1 }],
       "max-depth": ["error", { max: 4 }],
       "max-lines": ["error", { max: 512 }],
       "max-lines-per-function": ["error", { max: 128 }],
