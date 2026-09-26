@@ -156,7 +156,12 @@ function position(key: string): { column: number; row: number } {
   return { column, row };
 }
 
-/** The turn from arriving on `arrival` to leaving by `departure`. */
+/**
+ * The turn from arriving on `arrival` to leaving by `departure`. A change of
+ * two, a reversal, reads as `0`: it cannot occur, because no point has two
+ * half-edges heading the same way and {@link continuation} never leaves by
+ * the half-edge it arrived on.
+ */
 function turnBetween(arrival: Heading, departure: Heading): Turn {
   const change = (departure - arrival + 4) % 4;
   if (change === 1) return 1;

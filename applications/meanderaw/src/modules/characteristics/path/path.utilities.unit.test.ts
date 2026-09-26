@@ -58,11 +58,44 @@ describe("path utilities", () => {
         { closed: true, turns: [0] },
       ]);
     });
+
+    it("reads a two-column row's pair of edges between the same two points as one closed strand", () => {
+      expect(
+        strands([
+          { from: "0,0", to: "0,1" },
+          { from: "0,1", to: "0,0" },
+        ]),
+      ).toStrictEqual([{ closed: true, turns: [0, 0] }]);
+    });
   });
 
   describe(rowTouchCount, () => {
     it("is zero for a row no edge reaches", () => {
       expect(rowTouchCount([{ from: "0,0", to: "1,0" }], 2)).toBe(0);
+    });
+
+    it("merges a run that wraps across the tile boundary into one touch", () => {
+      expect(
+        rowTouchCount(
+          [
+            { from: "0,2", to: "0,0" },
+            { from: "0,0", to: "0,1" },
+          ],
+          0,
+        ),
+      ).toBe(1);
+    });
+
+    it("counts each separate run along the row", () => {
+      expect(
+        rowTouchCount(
+          [
+            { from: "0,0", to: "1,0" },
+            { from: "0,2", to: "1,2" },
+          ],
+          0,
+        ),
+      ).toBe(2);
     });
   });
 });
