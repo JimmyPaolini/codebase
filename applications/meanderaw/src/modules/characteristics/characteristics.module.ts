@@ -4,11 +4,13 @@ import { CodeModule } from "../code/code.module";
 import { GraphModule } from "../graph/graph.module";
 import { MatrixModule } from "../matrix/matrix.module";
 
+import { CharacteristicContextService } from "./characteristic-context.service";
 import { CharacteristicsFamilyService } from "./characteristics-family.service";
 import { CharacteristicsPathService } from "./characteristics-path.service";
 import { CharacteristicsShapeService } from "./characteristics-shape.service";
 import { CharacteristicsService } from "./characteristics.service";
 import { ConnectivityService } from "./connectivity.service";
+import { POINT_CHARACTERISTIC_SERVICES } from "./submatrix/point/point-characteristics.constants";
 
 /**
  * Wires up the Characteristic computation that reads a Code directly — no
@@ -28,17 +30,21 @@ import { ConnectivityService } from "./connectivity.service";
 @Module({
   controllers: [],
   exports: [
+    CharacteristicContextService,
     CharacteristicsFamilyService,
     CharacteristicsService,
     ConnectivityService,
+    ...POINT_CHARACTERISTIC_SERVICES,
   ],
   imports: [CodeModule, GraphModule, MatrixModule],
   providers: [
+    CharacteristicContextService,
     CharacteristicsFamilyService,
     CharacteristicsPathService,
     CharacteristicsShapeService,
     CharacteristicsService,
     ConnectivityService,
+    ...POINT_CHARACTERISTIC_SERVICES,
   ],
 })
 export class CharacteristicsModule {}

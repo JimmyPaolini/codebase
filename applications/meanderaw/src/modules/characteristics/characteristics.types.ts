@@ -1,5 +1,66 @@
 // 🏷️ Types
 
+import type { CodeObject } from "../code/code.types";
+import type { Matrix, MatrixPoint } from "../matrix/matrix.types";
+
+/**
+ * The tier a characteristic is measured in: `submatrix` reads local windows
+ * of the grid (a single point or an M×N sliding window), `path` walks the ink
+ * as a graph over the cyclic band, and `compound` combines other
+ * characteristics' values rather than reading the grid itself.
+ */
+export type CharacteristicCategory = "compound" | "path" | "submatrix";
+
+/**
+ * Everything an evaluator may read about one meander, prepared once by the
+ * caller and shared by every evaluator — so no evaluator depends on another
+ * having run first.
+ *
+ * `matrix` is the decoded grid indexed `[row][column]`; its columns wrap
+ * cyclically, which `MatrixService.pointAt` and `MatrixService.submatrices`
+ * already honour. `rows` and `columns` restate its shape so an evaluator need
+ * not guard an empty first row.
+ */
+export interface CharacteristicContext {
+  readonly code: CodeObject;
+  readonly columns: number;
+  readonly matrix: Matrix;
+  readonly rows: number;
+}
+
+/**
+ * One characteristic as a self-describing service: the metadata that names
+ * and explains it, and the pure computation of its value from a context.
+ *
+ * An evaluator that needs another characteristic's value injects that
+ * evaluator's service and calls its `compute` with the same context.
+ */
+export interface CharacteristicEvaluator<
+  T extends CharacteristicValue = number,
+> {
+  compute(context: CharacteristicContext): T;
+  readonly metadata: CharacteristicMetadata<T>;
+}
+
+/**
+ * What a characteristic is, for people and catalogs rather than for the
+ * computation: its camelCase `key` (the record field and database column it
+ * fills), a display `name`, a one-sentence `description`, its tier, and the
+ * type of value it yields. `formula` is a LaTeX expression of the definition,
+ * and `documentationUrl` links a fuller explanation where one exists.
+ */
+export interface CharacteristicMetadata<
+  T extends CharacteristicValue = CharacteristicValue,
+> {
+  readonly category: CharacteristicCategory;
+  readonly description: string;
+  readonly documentationUrl?: string;
+  readonly formula?: string;
+  readonly key: string;
+  readonly name: string;
+  readonly valueType: CharacteristicValueType<T>;
+}
+
 /**
  * Every fact `CharacteristicsService.compute` derives directly from a
  * Code: the raw ink junction counts, the boolean Characteristics built from them,
@@ -85,6 +146,13 @@ export interface Characteristics extends Connectivity {
   readonly xCount: number;
 }
 
+/** Every value a characteristic may yield. */
+export type CharacteristicValue = boolean | number;
+
+/** The name of a characteristic value's runtime type, derived from the value type itself so metadata cannot disagree with `compute`. */
+export type CharacteristicValueType<T extends CharacteristicValue> =
+  T extends boolean ? "boolean" : "number";
+
 /** One edge a Code holds, named by the two points it joins — `from` and `to` are the same point for a single-column Code's wrapped eastward edge. */
 export interface CodeEdge {
   readonly from: string;
@@ -145,6 +213,9 @@ export interface JunctionCounts {
   tJunctions: number;
   xJunctions: number;
 }
+
+/** One of the four directions a point's ink can leave it by. */
+export type MatrixPointArm = keyof MatrixPoint;
 
 /** Fields that are mutated while calculating a histogram. */
 export type MutableHistogram = Pick<
