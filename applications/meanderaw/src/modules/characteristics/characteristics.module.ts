@@ -10,6 +10,7 @@ import { CharacteristicsPathService } from "./characteristics-path.service";
 import { CharacteristicsShapeService } from "./characteristics-shape.service";
 import { CharacteristicsService } from "./characteristics.service";
 import { ConnectivityService } from "./connectivity.service";
+import { TileCrossingCharacteristicsModule } from "./path/tile-crossing/tile-crossing-characteristics.module";
 import { TopologyCharacteristicsModule } from "./path/topology/topology-characteristics.module";
 import { CornerCharacteristicsModule } from "./submatrix/corner/corner-characteristics.module";
 import { CrossCharacteristicsModule } from "./submatrix/cross/cross-characteristics.module";
@@ -52,6 +53,7 @@ import { RectangleCharacteristicsModule } from "./submatrix/rectangle/rectangle-
     LetterCharacteristicsModule,
     PointCharacteristicsModule,
     RectangleCharacteristicsModule,
+    TileCrossingCharacteristicsModule,
     TopologyCharacteristicsModule,
   ],
   imports: [
@@ -64,6 +66,7 @@ import { RectangleCharacteristicsModule } from "./submatrix/rectangle/rectangle-
     MatrixModule,
     PointCharacteristicsModule,
     RectangleCharacteristicsModule,
+    TileCrossingCharacteristicsModule,
     TopologyCharacteristicsModule,
   ],
   providers: [
