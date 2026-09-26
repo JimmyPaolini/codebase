@@ -12,6 +12,7 @@ import { CharacteristicsService } from "./characteristics.service";
 import { ConnectivityService } from "./connectivity.service";
 import { TileCrossingCharacteristicsModule } from "./path/tile-crossing/tile-crossing-characteristics.module";
 import { TopologyCharacteristicsModule } from "./path/topology/topology-characteristics.module";
+import { TurnCharacteristicsModule } from "./path/turn/turn-characteristics.module";
 import { CornerCharacteristicsModule } from "./submatrix/corner/corner-characteristics.module";
 import { PointCharacteristicsModule } from "./submatrix/point/point-characteristics.module";
 
@@ -47,6 +48,7 @@ import { PointCharacteristicsModule } from "./submatrix/point/point-characterist
     PointCharacteristicsModule,
     TileCrossingCharacteristicsModule,
     TopologyCharacteristicsModule,
+    TurnCharacteristicsModule,
   ],
   imports: [
     CodeModule,
@@ -56,6 +58,7 @@ import { PointCharacteristicsModule } from "./submatrix/point/point-characterist
     PointCharacteristicsModule,
     TileCrossingCharacteristicsModule,
     TopologyCharacteristicsModule,
+    TurnCharacteristicsModule,
   ],
   providers: [
     CharacteristicContextService,
