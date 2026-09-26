@@ -10,6 +10,7 @@ import { CharacteristicsPathService } from "./characteristics-path.service";
 import { CharacteristicsShapeService } from "./characteristics-shape.service";
 import { CharacteristicsService } from "./characteristics.service";
 import { ConnectivityService } from "./connectivity.service";
+import { TileCrossingCharacteristicsModule } from "./path/tile-crossing/tile-crossing-characteristics.module";
 import { TopologyCharacteristicsModule } from "./path/topology/topology-characteristics.module";
 import { CornerCharacteristicsModule } from "./submatrix/corner/corner-characteristics.module";
 import { PointCharacteristicsModule } from "./submatrix/point/point-characteristics.module";
@@ -44,6 +45,7 @@ import { PointCharacteristicsModule } from "./submatrix/point/point-characterist
     ConnectivityService,
     CornerCharacteristicsModule,
     PointCharacteristicsModule,
+    TileCrossingCharacteristicsModule,
     TopologyCharacteristicsModule,
   ],
   imports: [
@@ -52,6 +54,7 @@ import { PointCharacteristicsModule } from "./submatrix/point/point-characterist
     GraphModule,
     MatrixModule,
     PointCharacteristicsModule,
+    TileCrossingCharacteristicsModule,
     TopologyCharacteristicsModule,
   ],
   providers: [

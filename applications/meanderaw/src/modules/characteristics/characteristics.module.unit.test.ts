@@ -2,6 +2,9 @@ import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import { CharacteristicsModule } from "./characteristics.module";
+import { TileCrossingComponentDeltaCountCharacteristicService } from "./path/tile-crossing/tile-crossing-component-delta-count-characteristic.service";
+import { TileCrossingCountCharacteristicService } from "./path/tile-crossing/tile-crossing-count-characteristic.service";
+import { TileCrossingCycleCountCharacteristicService } from "./path/tile-crossing/tile-crossing-cycle-count-characteristic.service";
 import { BettiNumber0CountCharacteristicService } from "./path/topology/betti-number-0-count-characteristic.service";
 import { BettiNumber1CountCharacteristicService } from "./path/topology/betti-number-1-count-characteristic.service";
 import { FreeEndCountCharacteristicService } from "./path/topology/free-end-count-characteristic.service";
@@ -29,6 +32,9 @@ const CHARACTERISTIC_SERVICES: readonly Type<CharacteristicEvaluator>[] = [
   NorthWestCornerCountCharacteristicService,
   SouthEastCornerCountCharacteristicService,
   SouthWestCornerCountCharacteristicService,
+  TileCrossingComponentDeltaCountCharacteristicService,
+  TileCrossingCountCharacteristicService,
+  TileCrossingCycleCountCharacteristicService,
   VerticalEdgeCountCharacteristicService,
 ];
 
