@@ -21,3 +21,12 @@ export interface Edge<T> {
   cursor: string;
   node: T;
 }
+
+/**
+ * Parameters for finding index bounds for array pagination.
+ */
+export interface PaginationBoundsParameters<T> {
+  after?: null | string | undefined;
+  before?: null | string | undefined;
+  getCursor: (item: T) => string;
+}

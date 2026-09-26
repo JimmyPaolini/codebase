@@ -6,10 +6,29 @@ import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { GraphQLModule } from "@nestjs/graphql";
 
-import { DatabaseModule } from "@codebase/lexico-entities";
+import {
+  AdjectivalForm,
+  AdjectiveInflection,
+  AdverbForm,
+  AdverbInflection,
+  DatabaseModule,
+  FiniteVerbForm,
+  GerundForm,
+  InfinitiveForm,
+  NominalForm,
+  NounInflection,
+  ParticipleForm,
+  PrepositionInflection,
+  SupineForm,
+  UninflectedInflection,
+  VerbInflection,
+} from "@codebase/lexico-entities";
 import { LoggerModule } from "@codebase/logger";
 
 import { environmentSchema } from "./lexico-api.constants";
+import { HealthModule } from "./modules/health/health.module";
+import { LexemesModule } from "./modules/lexemes/lexemes.module";
+import { SearchModule } from "./modules/search/search.module";
 
 /**
  * Root NestJS application module for the Lexico GraphQL API.
@@ -24,12 +43,33 @@ import { environmentSchema } from "./lexico-api.constants";
     }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       autoSchemaFile: path.join(process.cwd(), "src/schema.gql"),
+      buildSchemaOptions: {
+        orphanedTypes: [
+          NominalForm,
+          FiniteVerbForm,
+          ParticipleForm,
+          AdverbForm,
+          InfinitiveForm,
+          GerundForm,
+          SupineForm,
+          AdjectivalForm,
+          NounInflection,
+          VerbInflection,
+          AdjectiveInflection,
+          AdverbInflection,
+          PrepositionInflection,
+          UninflectedInflection,
+        ],
+      },
       driver: ApolloDriver,
       playground: false,
       plugins: [ApolloServerPluginLandingPageLocalDefault()],
     }),
     DatabaseModule,
     LoggerModule,
+    HealthModule,
+    LexemesModule,
+    SearchModule,
   ],
 })
 export class LexicoApiModule {}

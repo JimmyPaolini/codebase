@@ -16,7 +16,6 @@ import type { Lexeme } from "./Lexeme.entity";
 })
 @ObjectType()
 export class PrincipalPart extends AuditableEntity {
-  @Field(() => Object)
   @Index()
   @ManyToOne("Lexeme", "principalParts", {
     onDelete: "CASCADE",

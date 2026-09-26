@@ -1,4 +1,4 @@
-import { Field, ObjectType } from "@nestjs/graphql";
+import { Field, Float, ObjectType } from "@nestjs/graphql";
 import { Column, Entity, Index, OneToMany, OneToOne, Unique } from "typeorm";
 
 import { AuditableEntity } from "../base/Auditable.entity";
@@ -28,14 +28,14 @@ export class Lexeme extends AuditableEntity {
       "Disambiguation index when multiple entries share the same lemma (0-based)",
     default: 0,
   })
-  @Field()
+  @Field(() => Float)
   disambiguator!: number;
 
   @Column("text", {
     comment: "Etymology of the word (Latin or Greek origin)",
     nullable: true,
   })
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   etymology?: string;
 
   @Field(() => [Form])
@@ -92,7 +92,6 @@ export class Lexeme extends AuditableEntity {
   translations?: null | Translation[];
 
   /** Junction rows linking this lexeme to every word string that can represent it. */
-  @Field(() => [Object], { nullable: true })
   @OneToMany("WordLexeme", "lexeme", { onDelete: "CASCADE" })
   wordLexemes?: WordLexeme[];
 }

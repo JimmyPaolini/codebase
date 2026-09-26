@@ -53,12 +53,16 @@ export const createRepositoryMock = <
           andWhere: vi.fn<() => QueryBuilder<Entity>>().mockReturnThis(),
           execute: vi.fn<never>(),
           from: vi.fn<() => QueryBuilder<Entity>>().mockReturnThis(),
-          getCount: vi.fn<() => Promise<number>>(),
-          getMany: vi.fn<() => Promise<Entity[]>>(),
-          getManyAndCount: vi.fn<() => Promise<[Entity[], number]>>(),
-          getOne: vi.fn<() => Promise<Entity | null>>(),
-          getRawMany: vi.fn<() => Promise<Entity[]>>(),
-          getRawOne: vi.fn<() => Promise<Entity>>(),
+          getCount: vi.fn<() => Promise<number>>().mockResolvedValue(0),
+          getMany: vi.fn<() => Promise<Entity[]>>().mockResolvedValue([]),
+          getManyAndCount: vi
+            .fn<() => Promise<[Entity[], number]>>()
+            .mockResolvedValue([[], 0]),
+          getOne: vi.fn<() => Promise<Entity | null>>().mockResolvedValue(null),
+          getRawMany: vi.fn<() => Promise<Entity[]>>().mockResolvedValue([]),
+          getRawOne: vi
+            .fn<() => Promise<Entity | null>>()
+            .mockResolvedValue(null),
           groupBy: vi.fn<() => QueryBuilder<Entity>>().mockReturnThis(),
           innerJoin: vi.fn<() => QueryBuilder<Entity>>().mockReturnThis(),
           innerJoinAndSelect: vi
@@ -82,5 +86,9 @@ export const createRepositoryMock = <
           where: vi.fn<() => QueryBuilder<Entity>>().mockReturnThis(),
         }),
       ),
+    find: vi.fn<Repository<Entity>["find"]>(),
+    findBy: vi.fn<Repository<Entity>["findBy"]>(),
+    findOne: vi.fn<Repository<Entity>["findOne"]>(),
+    findOneBy: vi.fn<Repository<Entity>["findOneBy"]>(),
   });
 };

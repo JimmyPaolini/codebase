@@ -83,3 +83,5 @@ export { Author } from "./modules/entities/literature/Author.entity";
 export { Line } from "./modules/entities/literature/Line.entity";
 export { Text } from "./modules/entities/literature/Text.entity";
 export { Token } from "./modules/entities/literature/Token.entity";
+export { InjectRepository, TypeOrmModule } from "@nestjs/typeorm";
+export { DataSource, In, Repository } from "typeorm";

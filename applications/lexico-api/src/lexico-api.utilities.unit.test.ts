@@ -345,5 +345,79 @@ describe("relay pagination helpers suite", () => {
       expect(result.hasNextPage).toBe(false);
       expect(result.hasPreviousPage).toBe(false);
     });
+
+    it("paginates backwards with last and before parameters", () => {
+      expect.hasAssertions();
+
+      const result = paginateArray(items, {
+        before: "cursor-4",
+        getCursor,
+        last: 2,
+      });
+
+      expect(result.edges).toHaveLength(2);
+      expect(result.edges[0]?.node).toStrictEqual({ id: "2", name: "two" });
+      expect(result.edges[1]?.node).toStrictEqual({ id: "3", name: "three" });
+      expect(result.hasNextPage).toBe(true);
+      expect(result.hasPreviousPage).toBe(true);
+    });
+
+    it("handles before cursor not found in list", () => {
+      expect.hasAssertions();
+
+      const result = paginateArray(items, {
+        before: "cursor-missing",
+        getCursor,
+        last: 2,
+      });
+
+      expect(result.edges).toHaveLength(2);
+      expect(result.edges[0]?.node).toStrictEqual({ id: "3", name: "three" });
+      expect(result.edges[1]?.node).toStrictEqual({ id: "4", name: "four" });
+    });
+
+    it("paginates within both after and before bounds", () => {
+      expect.hasAssertions();
+
+      const result = paginateArray(items, {
+        after: "cursor-1",
+        before: "cursor-4",
+        first: 1,
+        getCursor,
+      });
+
+      expect(result.edges).toHaveLength(1);
+      expect(result.edges[0]?.node).toStrictEqual({ id: "2", name: "two" });
+      expect(result.hasNextPage).toBe(true);
+      expect(result.hasPreviousPage).toBe(true);
+    });
+
+    it("handles first and last larger than array length or negative values", () => {
+      expect.hasAssertions();
+
+      const largeFirstResult = paginateArray(items, {
+        first: 100,
+        getCursor,
+      });
+
+      expect(largeFirstResult.edges).toHaveLength(4);
+      expect(largeFirstResult.hasNextPage).toBe(false);
+
+      const largeLastResult = paginateArray(items, {
+        getCursor,
+        last: 100,
+      });
+
+      expect(largeLastResult.edges).toHaveLength(4);
+      expect(largeLastResult.hasPreviousPage).toBe(false);
+
+      const negativeResult = paginateArray(items, {
+        first: -5,
+        getCursor,
+        last: -5,
+      });
+
+      expect(negativeResult.edges).toHaveLength(4);
+    });
   });
 });
