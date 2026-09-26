@@ -91,11 +91,11 @@ describe("main bootstrap suite", () => {
     expect(closeMock).toHaveBeenCalledTimes(1);
   });
 
-  it("bootstraps nest application with custom PORT and LIGHTSHIP_PORT", async () => {
+  it("bootstraps nest application with custom APPLICATION_PORT and LIGHTSHIP_PORT", async () => {
     expect.hasAssertions();
 
+    process.env["APPLICATION_PORT"] = "9999";
     process.env["LIGHTSHIP_PORT"] = "9005";
-    process.env["PORT"] = "9999";
     const listenMock = vi
       .fn<() => Promise<INestApplication>>()
       .mockResolvedValue(undefined as unknown as INestApplication);
@@ -115,7 +115,7 @@ describe("main bootstrap suite", () => {
     expect(createLightshipMock).toHaveBeenCalledWith({ port: 9005 });
     expect(listenMock).toHaveBeenCalledWith(9999);
 
+    delete process.env["APPLICATION_PORT"];
     delete process.env["LIGHTSHIP_PORT"];
-    delete process.env["PORT"];
   });
 });

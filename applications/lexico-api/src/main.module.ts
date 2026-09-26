@@ -9,7 +9,7 @@ import { GraphQLModule } from "@nestjs/graphql";
 import { DatabaseModule } from "@codebase/lexico-entities";
 import { LoggerModule } from "@codebase/logger";
 
-import { environmentSchema } from "./constants";
+import { environmentSchema } from "./main.constants";
 
 /**
  * Root NestJS application module for the Lexico GraphQL API.

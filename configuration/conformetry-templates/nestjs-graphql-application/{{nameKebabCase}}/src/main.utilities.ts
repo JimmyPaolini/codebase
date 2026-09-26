@@ -1,11 +1,8 @@
 import { Field, Int, ObjectType } from "@nestjs/graphql";
 
-import {
-  PageInfo,
-  type ClassConstructor,
-  type Connection,
-  type Edge,
-} from "./types";
+import { PageInfo } from "./main.entities";
+
+import type { ClassConstructor, Connection, Edge } from "./main.types";
 
 /**
  * Creates a Relay Edge from a node and an encoded cursor string.

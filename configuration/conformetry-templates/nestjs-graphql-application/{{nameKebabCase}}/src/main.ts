@@ -5,7 +5,7 @@ import { createLightship } from "lightship";
 
 import { LoggerService } from "@codebase/logger";
 
-import { environmentSchema } from "./constants";
+import { environmentSchema } from "./main.constants";
 import { {{namePascalCase}}Module } from "./modules/{{nameKebabCase}}/{{nameKebabCase}}.module";
 
 import type { INestApplication } from "@nestjs/common";
@@ -28,10 +28,10 @@ async function bootstrap(): Promise<void> {
     await app.close();
   });
 
-  await app.listen(environment.PORT);
+  await app.listen(environment.APPLICATION_PORT);
   lightship.signalReady();
 
-  logger.log(`GraphQL API running on http://localhost:${environment.PORT}/graphql`);
+  logger.log(`GraphQL API running on http://localhost:${environment.APPLICATION_PORT}/graphql`);
 }
 
 void bootstrap();

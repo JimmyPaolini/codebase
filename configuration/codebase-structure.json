@@ -278,7 +278,7 @@
       "name": "^(constants|index|main|repl|router|types|utilities)(.(unit|integration|end-to-end).test)?.(ts|tsx|mts|cts|js|jsx|mjs|cjs)$"
     },
     "source-entry-support-file": {
-      "name": "^main.(module|utilities)(.(unit|integration|end-to-end).test)?.(ts|tsx|mts|cts|js|jsx|mjs|cjs)$"
+      "name": "^main.(command|constants|entities|factories|module|resolver|service|types|utilities)(.(unit|integration|end-to-end).test)?.(ts|tsx|mts|cts|js|jsx|mjs|cjs)$"
     },
     "source-python-file": {
       "name": "^(py.typed|[a-z0-9_]+.(ipynb|py))$"

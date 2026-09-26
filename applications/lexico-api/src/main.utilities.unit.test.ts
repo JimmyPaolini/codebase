@@ -9,7 +9,7 @@ import {
 import { Test } from "@nestjs/testing";
 import { describe, expect, it } from "vitest";
 
-import { type Connection, PageInfo } from "./types";
+import { PageInfo } from "./main.entities";
 import {
   createConnection,
   createEdge,
@@ -20,7 +20,9 @@ import {
   paginateArray,
   Paginated,
   toCursor,
-} from "./utilities";
+} from "./main.utilities";
+
+import type { Connection } from "./main.types";
 
 @ObjectType()
 class TestItem {

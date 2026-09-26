@@ -1,28 +1,6 @@
 import { Field, ObjectType } from "@nestjs/graphql";
 
 /**
- * Constructor type for class references.
- */
-export type ClassConstructor<T> = abstract new (...arguments_: never[]) => T;
-
-/**
- * Generic Relay Connection interface.
- */
-export interface Connection<T> {
-  edges: Edge<T>[];
-  pageInfo: PageInfo;
-  totalCount: number;
-}
-
-/**
- * Generic Relay Edge interface.
- */
-export interface Edge<T> {
-  cursor: string;
-  node: T;
-}
-
-/**
  * Relay PageInfo containing pagination state.
  */
 @ObjectType({ description: "Information about pagination in a connection." })

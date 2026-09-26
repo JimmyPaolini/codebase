@@ -4,7 +4,7 @@ import { createLightship } from "lightship";
 
 import { LoggerService } from "@codebase/logger";
 
-import { environmentSchema } from "./constants";
+import { environmentSchema } from "./main.constants";
 import { MainModule } from "./main.module";
 
 import type { INestApplication } from "@nestjs/common";
@@ -30,11 +30,11 @@ async function main(): Promise<void> {
     await application.close();
   });
 
-  await application.listen(environment.PORT);
+  await application.listen(environment.APPLICATION_PORT);
   lightship.signalReady();
 
   logger.log(
-    `🌐 Serving GraphQL API on http://localhost:${environment.PORT}/graphql`,
+    `🌐 Serving GraphQL API on http://localhost:${environment.APPLICATION_PORT}/graphql`,
   );
 }
 
