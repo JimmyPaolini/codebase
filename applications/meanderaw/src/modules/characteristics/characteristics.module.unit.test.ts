@@ -16,6 +16,8 @@ import { WestForkCountCharacteristicService } from "./submatrix/fork/west-fork-c
 import { DotCountCharacteristicService } from "./submatrix/point/dot-count-characteristic.service";
 import { HorizontalEdgeCountCharacteristicService } from "./submatrix/point/horizontal-edge-count-characteristic.service";
 import { VerticalEdgeCountCharacteristicService } from "./submatrix/point/vertical-edge-count-characteristic.service";
+import { HorizontalRectangleCountCharacteristicService } from "./submatrix/rectangle/horizontal-rectangle-count-characteristic.service";
+import { VerticalRectangleCountCharacteristicService } from "./submatrix/rectangle/vertical-rectangle-count-characteristic.service";
 
 import type { CharacteristicEvaluator } from "./characteristics.types";
 import type { Type } from "@nestjs/common";
@@ -28,6 +30,7 @@ const CHARACTERISTIC_SERVICES: readonly Type<CharacteristicEvaluator>[] = [
   EastForkCountCharacteristicService,
   ForkCountCharacteristicService,
   HorizontalEdgeCountCharacteristicService,
+  HorizontalRectangleCountCharacteristicService,
   NorthEastCornerCountCharacteristicService,
   NorthForkCountCharacteristicService,
   NorthWestCornerCountCharacteristicService,
@@ -35,6 +38,7 @@ const CHARACTERISTIC_SERVICES: readonly Type<CharacteristicEvaluator>[] = [
   SouthForkCountCharacteristicService,
   SouthWestCornerCountCharacteristicService,
   VerticalEdgeCountCharacteristicService,
+  VerticalRectangleCountCharacteristicService,
   WestForkCountCharacteristicService,
 ];
 

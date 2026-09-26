@@ -1,0 +1,65 @@
+import { describe, expect, it } from "vitest";
+
+import { countIsolatedRectangles } from "./rectangle.utilities";
+
+import type {
+  Matrix,
+  MatrixPoint,
+  MatrixPointArm,
+} from "../../../matrix/matrix.types";
+
+/** Counts every isolated rectangle, whatever its proportions. */
+function countAny(matrix: Matrix): number {
+  return countIsolatedRectangles(matrix, () => true);
+}
+
+/** A point carrying exactly the named arms. */
+function point(...arms: MatrixPointArm[]): MatrixPoint {
+  return {
+    east: arms.includes("east"),
+    north: arms.includes("north"),
+    south: arms.includes("south"),
+    west: arms.includes("west"),
+  };
+}
+
+describe(countIsolatedRectangles, () => {
+  const box: Matrix = [
+    [point("south", "east"), point("east", "west"), point("south", "west")],
+    [point("north", "east"), point("east", "west"), point("north", "west")],
+  ];
+
+  it("measures a ring's width and height in edges", () => {
+    const sizes: string[] = [];
+
+    countIsolatedRectangles(box, (width, height) => {
+      sizes.push(`${String(width)}x${String(height)}`);
+
+      return true;
+    });
+
+    expect(sizes).toStrictEqual(["2x1"]);
+  });
+
+  it("finds nothing in an empty matrix", () => {
+    expect(countAny([])).toBe(0);
+  });
+
+  it("refuses a ring whose far side never closes", () => {
+    const open: Matrix = [
+      [point("south", "east"), point("east", "west"), point("east", "west")],
+      [point("north", "east"), point("east", "west"), point("east", "west")],
+    ];
+
+    expect(countAny(open)).toBe(0);
+  });
+
+  it("refuses a ring whose bottom edge is broken", () => {
+    const broken: Matrix = [
+      [point("south", "east"), point("east", "west"), point("south", "west")],
+      [point("north", "east"), point(), point("north", "west")],
+    ];
+
+    expect(countAny(broken)).toBe(0);
+  });
+});
