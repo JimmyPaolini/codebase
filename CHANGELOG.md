@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.24.0](https://github.com/JimmyPaolini/codebase/compare/v2.23.3...v2.24.0) (2026-09-26)
+
+### ✨ Features
+
+* **conformetry,lexico,lexico-ingestion,meanderaw:** ✨ scaffold lexico-api application and health probes ([#1128](https://github.com/JimmyPaolini/codebase/issues/1128)) ([d644b05](https://github.com/JimmyPaolini/codebase/commit/d644b050ca1cc2e462944f519639a004f6842be5)), closes [#1118](https://github.com/JimmyPaolini/codebase/issues/1118) [#1119](https://github.com/JimmyPaolini/codebase/issues/1119) [#1120](https://github.com/JimmyPaolini/codebase/issues/1120) [#1121](https://github.com/JimmyPaolini/codebase/issues/1121) [#1117](https://github.com/JimmyPaolini/codebase/issues/1117)
+* **lexico:** ✨ implement dictionary lexeme lookups and tiered search queries ([#1122](https://github.com/JimmyPaolini/codebase/issues/1122)) ([#1129](https://github.com/JimmyPaolini/codebase/issues/1129)) ([7c88077](https://github.com/JimmyPaolini/codebase/commit/7c88077ff50d2abe2aa016158f581b1f4a2e6d09)), closes [#1123](https://github.com/JimmyPaolini/codebase/issues/1123) [#1124](https://github.com/JimmyPaolini/codebase/issues/1124) [#1125](https://github.com/JimmyPaolini/codebase/issues/1125) [#1126](https://github.com/JimmyPaolini/codebase/issues/1126) [#1123](https://github.com/JimmyPaolini/codebase/issues/1123) [#1124](https://github.com/JimmyPaolini/codebase/issues/1124) [#1125](https://github.com/JimmyPaolini/codebase/issues/1125) [#1126](https://github.com/JimmyPaolini/codebase/issues/1126) [#1117](https://github.com/JimmyPaolini/codebase/issues/1117) [#1128](https://github.com/JimmyPaolini/codebase/issues/1128)
+
+### 🐛 Bug Fixes
+
+* **callidescope,conformetry:** 🐛 ship the nx plugins as pure esm ([#1102](https://github.com/JimmyPaolini/codebase/issues/1102)) ([4ad5aff](https://github.com/JimmyPaolini/codebase/commit/4ad5aff1a86d1f6e18d7b2ba4448545015ea71d1)), closes [#487](https://github.com/JimmyPaolini/codebase/issues/487) [#488](https://github.com/JimmyPaolini/codebase/issues/488) [#489](https://github.com/JimmyPaolini/codebase/issues/489)
+
+### 📝 Documentation
+
+* **documentation:** 📝 add human-gated step-by-step stops to agent planning workflow ([#1159](https://github.com/JimmyPaolini/codebase/issues/1159)) ([eef38d2](https://github.com/JimmyPaolini/codebase/commit/eef38d2929a715cce8a976945676b5f3729719a8))
+
 ## [2.23.3](https://github.com/JimmyPaolini/codebase/compare/v2.23.2...v2.23.3) (2026-09-26)
 
 ### 📦 Build System

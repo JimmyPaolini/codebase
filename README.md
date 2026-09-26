@@ -1,4 +1,4 @@
-# Codebase v2.23.3
+# Codebase v2.24.0
 
 [![Nx](https://img.shields.io/badge/Nx-Codebase-143055?logo=nx)](https://nx.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Strict-3178C6?logo=typescript)](https://www.typescriptlang.org/)
@@ -221,6 +221,7 @@ graph LR
   conformetry_output["conformetry-output"]
   conformetry_validation["conformetry-validation"]
   lexico["lexico"]
+  lexico_api["lexico-api"]
   lexico_components["lexico-components"]
   lexico_entities["lexico-entities"]
   lexico_ingestion["lexico-ingestion"]
@@ -326,6 +327,8 @@ graph LR
   conformetry_validation --> conformetry_core
   conformetry_validation --> conformetry_languages
   lexico --> lexico_components
+  lexico_api --> lexico_entities
+  lexico_api --> logger
   lexico_ingestion --> lexico_entities
   lexico_ingestion --> logger
   meanderaw --> logger
@@ -345,7 +348,7 @@ Repository statistics measured by [codometer](packages/ic-suite/codometer/codome
 
 ### Repository
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-6035-22c55e?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-6043-22c55e?style=flat-square)
 ![Repository Size](https://img.shields.io/badge/Repository_Size-2.06_MB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-74-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-24-3178c6?style=flat-square)
@@ -373,8 +376,8 @@ Repository statistics measured by [codometer](packages/ic-suite/codometer/codome
 ![Constants](https://img.shields.io/badge/Constants-87-dc2626?style=flat-square)
 ![Imports](https://img.shields.io/badge/Imports-50-0284c7?style=flat-square)
 ![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-12-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-664-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-1379-475569?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-666-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-1381-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python
@@ -395,27 +398,27 @@ Repository statistics measured by [codometer](packages/ic-suite/codometer/codome
 ### JSON
 
 ![JSON Files](https://img.shields.io/badge/JSON_Files-23-a16207?style=flat-square)
-![JSON Lines](https://img.shields.io/badge/JSON_Lines-5648-ca8a04?style=flat-square)
-![JSON Objects](https://img.shields.io/badge/JSON_Objects-715-7c3aed?style=flat-square)
-![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-262-8b5cf6?style=flat-square)
-![JSON Properties](https://img.shields.io/badge/JSON_Properties-1807-0284c7?style=flat-square)
-![JSON Strings](https://img.shields.io/badge/JSON_Strings-1838-16a34a?style=flat-square)
+![JSON Lines](https://img.shields.io/badge/JSON_Lines-5680-ca8a04?style=flat-square)
+![JSON Objects](https://img.shields.io/badge/JSON_Objects-718-7c3aed?style=flat-square)
+![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-263-8b5cf6?style=flat-square)
+![JSON Properties](https://img.shields.io/badge/JSON_Properties-1817-0284c7?style=flat-square)
+![JSON Strings](https://img.shields.io/badge/JSON_Strings-1853-16a34a?style=flat-square)
 ![JSON Numbers](https://img.shields.io/badge/JSON_Numbers-37-059669?style=flat-square)
 ![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-125-0ea5e9?style=flat-square)
 ![JSON Nulls](https://img.shields.io/badge/JSON_Nulls-0-64748b?style=flat-square)
-![JSON Items](https://img.shields.io/badge/JSON_Items-1154-475569?style=flat-square)
-![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-2977-dc2626?style=flat-square)
+![JSON Items](https://img.shields.io/badge/JSON_Items-1163-475569?style=flat-square)
+![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-2996-dc2626?style=flat-square)
 ![JSON Max Depth](https://img.shields.io/badge/JSON_Max_Depth-11-ea580c?style=flat-square)
 
 ### YAML
 
 ![YAML Files](https://img.shields.io/badge/YAML_Files-21-cb171e?style=flat-square)
-![YAML Lines](https://img.shields.io/badge/YAML_Lines-2764-e34c26?style=flat-square)
+![YAML Lines](https://img.shields.io/badge/YAML_Lines-2769-e34c26?style=flat-square)
 ![YAML Documents](https://img.shields.io/badge/YAML_Documents-21-f97316?style=flat-square)
 ![YAML Mappings](https://img.shields.io/badge/YAML_Mappings-400-7c3aed?style=flat-square)
 ![YAML Sequences](https://img.shields.io/badge/YAML_Sequences-87-8b5cf6?style=flat-square)
-![YAML Keys](https://img.shields.io/badge/YAML_Keys-1373-0284c7?style=flat-square)
-![YAML Scalars](https://img.shields.io/badge/YAML_Scalars-2758-16a34a?style=flat-square)
+![YAML Keys](https://img.shields.io/badge/YAML_Keys-1378-0284c7?style=flat-square)
+![YAML Scalars](https://img.shields.io/badge/YAML_Scalars-2768-16a34a?style=flat-square)
 ![YAML Anchors](https://img.shields.io/badge/YAML_Anchors-0-059669?style=flat-square)
 ![YAML Aliases](https://img.shields.io/badge/YAML_Aliases-0-10b981?style=flat-square)
 ![YAML Comments](https://img.shields.io/badge/YAML_Comments-386-64748b?style=flat-square)
@@ -529,24 +532,24 @@ Repository statistics measured by [codometer](packages/ic-suite/codometer/codome
 
 ### Markdown
 
-![Markdown Files](https://img.shields.io/badge/Markdown_Files-104-083fa1?style=flat-square)
-![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-18420-1f6feb?style=flat-square)
-![H1](https://img.shields.io/badge/H1-103-7c3aed?style=flat-square)
-![H2](https://img.shields.io/badge/H2-631-8b5cf6?style=flat-square)
+![Markdown Files](https://img.shields.io/badge/Markdown_Files-105-083fa1?style=flat-square)
+![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-18441-1f6feb?style=flat-square)
+![H1](https://img.shields.io/badge/H1-104-7c3aed?style=flat-square)
+![H2](https://img.shields.io/badge/H2-634-8b5cf6?style=flat-square)
 ![H3](https://img.shields.io/badge/H3-524-a78bfa?style=flat-square)
 ![H4](https://img.shields.io/badge/H4-78-c4b5fd?style=flat-square)
 ![H5](https://img.shields.io/badge/H5-0-ddd6fe?style=flat-square)
 ![H6](https://img.shields.io/badge/H6-0-ede9fe?style=flat-square)
-![Paragraphs](https://img.shields.io/badge/Paragraphs-5250-64748b?style=flat-square)
-![Lists](https://img.shields.io/badge/Lists-835-16a34a?style=flat-square)
-![List Items](https://img.shields.io/badge/List_Items-4066-22c55e?style=flat-square)
+![Paragraphs](https://img.shields.io/badge/Paragraphs-5267-64748b?style=flat-square)
+![Lists](https://img.shields.io/badge/Lists-840-16a34a?style=flat-square)
+![List Items](https://img.shields.io/badge/List_Items-4081-22c55e?style=flat-square)
 ![Task List Items](https://img.shields.io/badge/Task_List_Items-57-4ade80?style=flat-square)
 ![Tables](https://img.shields.io/badge/Tables-217-0284c7?style=flat-square)
 ![Table Rows](https://img.shields.io/badge/Table_Rows-1883-0ea5e9?style=flat-square)
-![Links](https://img.shields.io/badge/Links-663-059669?style=flat-square)
+![Links](https://img.shields.io/badge/Links-665-059669?style=flat-square)
 ![Images](https://img.shields.io/badge/Images-22-10b981?style=flat-square)
 ![Code Blocks](https://img.shields.io/badge/Code_Blocks-397-dc2626?style=flat-square)
-![Inline Code](https://img.shields.io/badge/Inline_Code-10179-ef4444?style=flat-square)
+![Inline Code](https://img.shields.io/badge/Inline_Code-10212-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-21-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-28-a16207?style=flat-square)
 <!-- codometer:end -->
@@ -559,13 +562,13 @@ The workspace's call graph, traced by [callidescope](packages/ic-suite/callidesc
 
 | Measure | Value |
 | --- | --- |
-| Callables | 5141 |
-| Files | 1457 |
-| Calls traced | 5740 |
-| Call stacks | 1336 |
+| Callables | 5240 |
+| Files | 1487 |
+| Calls traced | 5807 |
+| Call stacks | 1383 |
 | Deepest stack | 17 |
 | Stacks through recursion | 12 |
-| Unfollowable calls | 340 |
+| Unfollowable calls | 348 |
 
 ### Projects
 
@@ -586,7 +589,7 @@ The workspace's call graph, traced by [callidescope](packages/ic-suite/callidesc
 | `packages/lexico-components` | 3 | 3 | 0 | 7 |
 | `packages/lexico-entities` | 3 | 3 | 0 | 3 |
 | `packages/logger` | 4 | 4 | 0 | 2 |
-| `tools/synchronization` | 10 | 10 | 0 | 10 |
+| `tools/synchronization` | 10 | 10 | 0 | 11 |
 | `tools/validation` | 8 | 8 | 0 | 9 |
 | `packages/ic-suite/codependix/codependix-core` | 0 | 1 | 1 | 0 |
 | `packages/ic-suite/codometer/codometer-core` | 0 | 1 | 1 | 0 |
@@ -605,6 +608,7 @@ The workspace's call graph, traced by [callidescope](packages/ic-suite/callidesc
 | `packages/ic-suite/codometer/codometer-output` | 4 | 11 | 7 | 16 |
 | `packages/ic-suite/codependix/codependix-file-imports` | 0 | 8 | 8 | 8 |
 | `packages/ic-suite/callidescope/callidescope-output` | 4 | 13 | 9 | 7 |
+| `applications/lexico-api` | 7 | 17 | 10 | 7 |
 | `packages/ic-suite/conformetry/conformetry-validation` | 0 | 13 | 13 | 10 |
 | `configuration` | 3 | 17 | 14 | 2 |
 | `packages/ic-suite/codometer/codometer-measurement` | 0 | 14 | 14 | 9 |
@@ -618,7 +622,7 @@ The workspace's call graph, traced by [callidescope](packages/ic-suite/callidesc
 | 0 — at limit | 16 |
 | 1 | 0 |
 | 2–3 | 2 |
-| 4+ | 9 |
+| 4+ | 10 |
 | no stacks | 10 |
 
 ### Call stacks over the depth limit (1)
@@ -659,10 +663,11 @@ The workspace's call graph, traced by [callidescope](packages/ic-suite/callidesc
                                    ↳ One point's identity in the graph, which is its position and nothing else.
 ```
 
-### Callables over the breadth limit (1)
+### Callables over the breadth limit (2)
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
+| `SynchronizationCommand.synchronize` | 11 | `SynchronizationCommand.getCommands`, `ConformetryGeneratorsCommand.synchronize`, `ConventionalConfigCommand.synchronize`, `DevcontainerConfigurationCommand.synchronize`, `PackageManifestsCommand.synchronize`, `PullRequestLabelsCommand.synchronize`, `PullRequestTemplateCommand.synchronize`, `ReadmeVersionCommand.synchronize`, `SkillExclusionsCommand.synchronize`, `SynchronizationCommand.reportResults`, `SynchronizationCommand.every(…)` | `tools/synchronization/src/modules/synchronization/synchronization.command.ts:145` |
 | `ModuleGraphService.buildGraph` | 7 | `ModuleGraphService.findAmbientModuleNames`, `ModuleGraphService.collectEdgesAndNodes`, `ModuleGraphService.toSorted(…)`, `ModuleGraphService.sortNames`, `ModuleGraphService.map(…)`, `ModuleGraphService.toSorted(…)`, `ModuleGraphService.filter(…)` | `packages/ic-suite/codependix/codependix-nestjs-modules/src/modules/module-graph/module-graph.service.ts:169` |
 
 <!-- callidescope:end -->

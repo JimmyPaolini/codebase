@@ -150,6 +150,7 @@ graph LR
   codometer_output["codometer-output"]
   conformetry_cli["conformetry-cli"]
   conformetry_nx["conformetry-nx"]
+  lexico_api["lexico-api"]
   lexico_ingestion["lexico-ingestion"]
   logger["logger"]
   meanderaw["meanderaw"]
@@ -170,6 +171,7 @@ graph LR
   codometer_output --> logger
   conformetry_cli --> logger
   conformetry_nx --> logger
+  lexico_api --> logger
   lexico_ingestion --> logger
   meanderaw --> logger
   synchronization --> logger

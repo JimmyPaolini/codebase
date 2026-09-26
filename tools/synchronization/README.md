@@ -192,13 +192,13 @@ Call stacks traced through `tools/synchronization`, deepest first. Each frame sh
 
 | Measure | Value |
 | --- | --- |
-| Callables | 212 |
-| Files | 55 |
-| Calls traced | 232 |
-| Call stacks | 11 |
+| Callables | 233 |
+| Files | 60 |
+| Calls traced | 257 |
+| Call stacks | 12 |
 | Deepest stack | 10 |
 | Stacks through recursion | 0 |
-| Unfollowable calls | 10 |
+| Unfollowable calls | 11 |
 
 ### Limits
 
@@ -214,9 +214,9 @@ What this project is judged against, as declared in its own `callidescope.config
 **1. `SynchronizationCommand.run`** — depth ≥ 10 · decorated-method
 
 ```text
-🚀 SynchronizationCommand.run(passedParameters: string[]): Promise<void> [tools/synchronization/src/modules/synchronization/synchronization.command.ts:120]
+🚀 SynchronizationCommand.run(passedParameters: string[]): Promise<void> [tools/synchronization/src/modules/synchronization/synchronization.command.ts:123]
    ↳ Runs every synchronization, exiting once if any reported drift.
-  └─> SynchronizationCommand.synchronize(mode: SynchronizationMode): Promise<boolean> [tools/synchronization/src/modules/synchronization/synchronization.command.ts:142]
+  └─> SynchronizationCommand.synchronize(mode: SynchronizationMode): Promise<boolean> [tools/synchronization/src/modules/synchronization/synchronization.command.ts:145]
      ↳ Runs every synchronization and reports whether all succeeded.
     └─> ConventionalConfigCommand.synchronize(mode: SynchronizationMode): Promise<boolean> [tools/synchronization/src/modules/conventional-config/conventional-config.command.ts:70]
        ↳ Synchronizes conventional-commit config and reports success without exiting.
@@ -278,7 +278,7 @@ What this project is judged against, as declared in its own `callidescope.config
 ```
 
 <details>
-<summary>8 more call stacks</summary>
+<summary>9 more call stacks</summary>
 
 **4. `PullRequestLabelsCommand.run`** — depth 7 · decorated-method
 
@@ -314,7 +314,23 @@ What this project is judged against, as declared in its own `callidescope.config
              ↳ Walks upward from the process cwd looking for the workspace manifest.
 ```
 
-**6. `PullRequestTemplateCommand.run`** — depth 6 · decorated-method
+**6. `PackageManifestsCommand.run`** — depth 6 · decorated-method
+
+```text
+🚀 PackageManifestsCommand.run(passedParameters: string[]): Promise<void> [tools/synchronization/src/modules/package-manifests/package-manifests.command.ts:50]
+   ↳ Runs the package-manifests sync command and exits 1 on drift in check mode.
+  └─> PackageManifestsCommand.synchronize(mode: SynchronizationMode): Promise<boolean> [tools/synchronization/src/modules/package-manifests/package-manifests.command.ts:66]
+     ↳ Synchronizes package manifest metadata and reports success without exiting.
+    └─> PackageManifestsService.writeAll(workspaceRoot: string): void [tools/synchronization/src/modules/package-manifests/package-manifests.service.ts:205]
+       ↳ Writes the derived metadata across all packages in the publish set.
+      └─> PackageManifestsService.writePackageManifest(…): void [tools/synchronization/src/modules/package-manifests/package-manifests.service.ts:218]
+         ↳ Writes the derived metadata into an individual package's package.json.
+        └─> PackageManifestsService.sortKeys(object: Record<string, unknown>): Record<string, unknown> [tools/synchronization/src/modules/package-manifests/package-manifests.service.ts:83]
+           ↳ Sorts an object's keys alphabetically, ignoring case.
+          └─> PackageManifestsService.toSorted(…)(leftKey: string, rightKey: string): number [tools/synchronization/src/modules/package-manifests/package-manifests.service.ts:85]
+```
+
+**7. `PullRequestTemplateCommand.run`** — depth 6 · decorated-method
 
 ```text
 🚀 PullRequestTemplateCommand.run(passedParameters: string[], _options?: Record<string, unknown>): Promise<void> [tools/synchronization/src/modules/pull-request-template/pull-request-template.command.ts:202]
@@ -330,7 +346,7 @@ What this project is judged against, as declared in its own `callidescope.config
              ↳ Extracts the content between start and end marker comments from a file.
 ```
 
-**7. `SkillExclusionsCommand.run`** — depth ≥ 6 · decorated-method
+**8. `SkillExclusionsCommand.run`** — depth ≥ 6 · decorated-method
 
 ```text
 🚀 SkillExclusionsCommand.run(passedParameters: string[]): Promise<void> [tools/synchronization/src/modules/skill-exclusions/skill-exclusions.command.ts:165]
@@ -346,7 +362,7 @@ What this project is judged against, as declared in its own `callidescope.config
              ↳ The comment opening this file's generated block, in its own syntax.
 ```
 
-**8. `DevcontainerConfigurationCommand.run`** — depth 5 · decorated-method
+**9. `DevcontainerConfigurationCommand.run`** — depth 5 · decorated-method
 
 ```text
 🚀 DevcontainerConfigurationCommand.run(passedParameters: string[], _options?: Record<string, unknown>): Promise<void> [tools/synchronization/src/modules/devcontainer-configuration/devcontainer-configuration.command.ts:266]
@@ -361,7 +377,7 @@ What this project is judged against, as declared in its own `callidescope.config
            ↳ Returns true if the feature key refers to a Docker-in-Docker or Docker-outside-of-Docker feature.
 ```
 
-**9. `ReadmeVersionCommand.run`** — depth 5 · decorated-method
+**10. `ReadmeVersionCommand.run`** — depth 5 · decorated-method
 
 ```text
 🚀 ReadmeVersionCommand.run(passedParameters: string[], _options?: Record<string, unknown>): Promise<void> [tools/synchronization/src/modules/readme-version/readme-version.command.ts:89]
@@ -376,7 +392,7 @@ What this project is judged against, as declared in its own `callidescope.config
            ↳ Reads and parses the version string from root package.json.
 ```
 
-**10. `SynchronizationMarkersService.extractContent`** — depth 3 · orphan-root
+**11. `SynchronizationMarkersService.extractContent`** — depth 3 · orphan-root
 
 ```text
 🚀 SynchronizationMarkersService.extractContent(content: string, markerName: string): string | undefined [tools/synchronization/src/modules/synchronization/synchronization-markers.service.ts:44]
@@ -387,7 +403,7 @@ What this project is judged against, as declared in its own `callidescope.config
        ↳ Renders the opening marker comment for a marker name.
 ```
 
-**11. `SynchronizationMarkersService.replaceContent`** — depth 3 · orphan-root
+**12. `SynchronizationMarkersService.replaceContent`** — depth 3 · orphan-root
 
 ```text
 🚀 SynchronizationMarkersService.replaceContent(content: string, markerName: string, replacement: string): string [tools/synchronization/src/modules/synchronization/synchronization-markers.service.ts:65]
@@ -404,23 +420,25 @@ What this project is judged against, as declared in its own `callidescope.config
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `SynchronizationCommand.synchronize` | 10 | `SynchronizationCommand.getCommands`, `ConformetryGeneratorsCommand.synchronize`, `ConventionalConfigCommand.synchronize`, `DevcontainerConfigurationCommand.synchronize`, `PullRequestLabelsCommand.synchronize`, `PullRequestTemplateCommand.synchronize`, `ReadmeVersionCommand.synchronize`, `SkillExclusionsCommand.synchronize`, `SynchronizationCommand.reportResults`, `SynchronizationCommand.every(…)` | `tools/synchronization/src/modules/synchronization/synchronization.command.ts:142` |
+| `SynchronizationCommand.synchronize` | 11 | `SynchronizationCommand.getCommands`, `ConformetryGeneratorsCommand.synchronize`, `ConventionalConfigCommand.synchronize`, `DevcontainerConfigurationCommand.synchronize`, `PackageManifestsCommand.synchronize`, `PullRequestLabelsCommand.synchronize`, `PullRequestTemplateCommand.synchronize`, `ReadmeVersionCommand.synchronize`, `SkillExclusionsCommand.synchronize`, `SynchronizationCommand.reportResults`, `SynchronizationCommand.every(…)` | `tools/synchronization/src/modules/synchronization/synchronization.command.ts:145` |
 | `PullRequestLabelsCommand.reconcile` | 9 | `PullRequestLabelsGithubService.run`, `PullRequestLabelsCommand.appendToReport`, `PullRequestLabelsGithubService.describeFailure`, `PullRequestLabelsService.planReconciliation`, `PullRequestLabelsService.parseRepositoryLabels`, `PullRequestLabelsService.readExpectedLabels`, `PullRequestLabelsCommand.describeError`, `PullRequestLabelsCommand.reportPlan`, `PullRequestLabelsCommand.reportStaleLabels` | `tools/synchronization/src/modules/pull-request-labels/pull-request-labels.command.ts:175` |
 | `ConventionalConfigService.handleCheckMode` | 8 | `ConventionalConfigValidatorsService.checkSettingsSync`, `ConventionalConfigValidatorsService.checkAllSkillsSync`, `ConventionalConfigValidatorsService.checkAllTemplatesSync`, `ConventionalConfigService.loadReleaseConfig`, `ConventionalConfigValidatorsService.checkReleaseRulesSync`, `ConventionalConfigIoService.getReleaseRulesTypes`, `ConventionalConfigValidatorsService.checkPresetConfigSync`, `ConventionalConfigIoService.getPresetConfigTypes` | `tools/synchronization/src/modules/conventional-config/conventional-config.service.ts:126` |
 
 <details>
-<summary>93 more callables</summary>
+<summary>101 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
 | `ConventionalConfigService.handleWriteMode` | 7 | `ConventionalConfigValidatorsService.checkSettingsSync`, `ConventionalConfigService.filter(…)`, `ConventionalConfigService.filter(…)`, `ConventionalConfigIoService.writeSettingsSync`, `ConventionalConfigIoService.writeSkillSync`, `ConventionalConfigIoService.writeIssueTemplateSync`, `ConventionalConfigService.syncReleaseConfigIfNeeded` | `tools/synchronization/src/modules/conventional-config/conventional-config.service.ts:182` |
 | `ConventionalConfigIoService.writeReleaseConfigSync` | 6 | `ConventionalConfigIoService.map(…)`, `ConventionalConfigIoService.filter(…)`, `ConventionalConfigIoService.getReleaseRulesTypes`, `ConventionalConfigIoService.getPresetConfigTypes`, `ConventionalConfigIoService.appendToReleaseRules`, `ConventionalConfigIoService.appendToPresetTypes` | `tools/synchronization/src/modules/conventional-config/conventional-config-io.service.ts:290` |
 | `ConventionalConfigService.runSynchronization` | 6 | `ConventionalConfigService.loadConventionalConfig`, `ConventionalConfigService.map(…)`, `ConventionalConfigIoService.parseSettingsScopes`, `ConventionalConfigService.map(…)`, `ConventionalConfigService.handleCheckMode`, `ConventionalConfigService.handleWriteMode` | `tools/synchronization/src/modules/conventional-config/conventional-config.service.ts:240` |
+| `PackageManifestsService.checkPackageManifest` | 6 | `PackageManifestsService.readPackageManifest`, `PackageManifestsService.deriveMetadata`, `PackageManifestsService.compareStringField`, `PackageManifestsService.compareBugsField`, `PackageManifestsService.compareRepositoryField`, `PackageManifestsService.filter(…)` | `tools/synchronization/src/modules/package-manifests/package-manifests.service.ts:125` |
 | `PullRequestLabelsService.planReconciliation` | 6 | `PullRequestLabelsService.map(…)`, `PullRequestLabelsService.map(…)`, `PullRequestLabelsService.filter(…)`, `PullRequestLabelsService.map(…)`, `PullRequestLabelsService.filter(…)`, `PullRequestLabelsService.filter(…)` | `tools/synchronization/src/modules/pull-request-labels/pull-request-labels.service.ts:66` |
 | `ConventionalConfigService.syncReleaseConfigIfNeeded` | 5 | `ConventionalConfigService.loadReleaseConfig`, `ConventionalConfigService.filter(…)`, `ConventionalConfigIoService.getReleaseRulesTypes`, `ConventionalConfigIoService.getPresetConfigTypes`, `ConventionalConfigIoService.writeReleaseConfigSync` | `tools/synchronization/src/modules/conventional-config/conventional-config.service.ts:93` |
-| `SynchronizationCommand.reportResults` | 5 | `SynchronizationCommand.filter(…)`, `SynchronizationCommand.map(…)`, `SynchronizationCommand.filter(…)`, `SynchronizationCommand.map(…)`, `SynchronizationCommand.filter(…)` | `tools/synchronization/src/modules/synchronization/synchronization.command.ts:89` |
+| `SynchronizationCommand.reportResults` | 5 | `SynchronizationCommand.filter(…)`, `SynchronizationCommand.map(…)`, `SynchronizationCommand.filter(…)`, `SynchronizationCommand.map(…)`, `SynchronizationCommand.filter(…)` | `tools/synchronization/src/modules/synchronization/synchronization.command.ts:92` |
 | `IssueLabelsCommand.resolvePlan` | 4 | `IssueLabelsCommand.readIssueNumber`, `IssueLabelsService.parseFormAnswers`, `IssueLabelsCommand.readExistingLabelNames`, `IssueLabelsService.missingLabels` | `tools/synchronization/src/modules/issue-labels/issue-labels.command.ts:130` |
 | `ConventionalConfigIoService.writeSkillSync` | 4 | `ConventionalConfigIoService.map(…)`, `ConventionalConfigIoService.map(…)`, `ConventionalConfigIoService.generateMarkdownTable`, `ConventionalConfigIoService.replaceMarkerContent` | `tools/synchronization/src/modules/conventional-config/conventional-config-io.service.ts:353` |
+| `PackageManifestsService.checkAll` | 4 | `PackageManifestsService.readRootManifest`, `PackageManifestsService.map(…)`, `PackageManifestsService.filter(…)`, `PackageManifestsService.filter(…)` | `tools/synchronization/src/modules/package-manifests/package-manifests.service.ts:100` |
 | `PullRequestLabelsCommand.reportPlan` | 4 | `PullRequestLabelsCommand.appendToReport`, `PullRequestLabelsCommand.describePlan`, `PullRequestLabelsCommand.createLabels`, `PullRequestLabelsCommand.updateLabels` | `tools/synchronization/src/modules/pull-request-labels/pull-request-labels.command.ts:215` |
 | `PullRequestLabelsCommand.synchronize` | 4 | `PullRequestLabelsCommand.reconcile`, `PullRequestLabelsCommand.appendToReport`, `PullRequestLabelsCommand.describeError`, `PullRequestLabelsCommand.mirrorToStepSummary` | `tools/synchronization/src/modules/pull-request-labels/pull-request-labels.command.ts:300` |
 | `PullRequestTemplateCommand.synchronize` | 4 | `PullRequestTemplateCommand.map(…)`, `PullRequestTemplateCommand.loadTemplate`, `PullRequestTemplateCommand.handleCheckMode`, `PullRequestTemplateCommand.handleWriteMode` | `tools/synchronization/src/modules/pull-request-template/pull-request-template.command.ts:221` |
@@ -432,6 +450,8 @@ What this project is judged against, as declared in its own `callidescope.config
 | `ConventionalConfigValidatorsService.checkIssueTemplateSync` | 3 | `ConventionalConfigValidatorsService.getSourceValuesForMarker`, `ConventionalConfigIoService.parseIssueTemplateDropdown`, `ConventionalConfigValidatorsService.validateMarkerValues` | `tools/synchronization/src/modules/conventional-config/conventional-config-validators.service.ts:185` |
 | `DevcontainerConfigurationCommand.applySync` | 3 | `DevcontainerConfigurationCommand.syncVerbatimFields`, `DevcontainerConfigurationCommand.preserveRemoteEnvironment`, `DevcontainerConfigurationCommand.syncFeatures` | `tools/synchronization/src/modules/devcontainer-configuration/devcontainer-configuration.command.ts:59` |
 | `DevcontainerConfigurationCommand.synchronize` | 3 | `DevcontainerConfigurationCommand.applySync`, `DevcontainerConfigurationCommand.check`, `DevcontainerConfigurationCommand.writeWhenDrifted` | `tools/synchronization/src/modules/devcontainer-configuration/devcontainer-configuration.command.ts:285` |
+| `PackageManifestsService.writePackageManifest` | 3 | `PackageManifestsService.readPackageManifest`, `PackageManifestsService.deriveMetadata`, `PackageManifestsService.sortKeys` | `tools/synchronization/src/modules/package-manifests/package-manifests.service.ts:218` |
+| `PackageManifestsCommand.synchronize` | 3 | `PackageManifestsService.writeAll`, `PackageManifestsService.checkAll`, `PackageManifestsCommand.map(…)` | `tools/synchronization/src/modules/package-manifests/package-manifests.command.ts:66` |
 | `PullRequestLabelsCommand.createLabels` | 3 | `PullRequestLabelsGithubService.run`, `PullRequestLabelsCommand.appendToReport`, `PullRequestLabelsGithubService.describeFailure` | `tools/synchronization/src/modules/pull-request-labels/pull-request-labels.command.ts:85` |
 | `PullRequestLabelsCommand.updateLabels` | 3 | `PullRequestLabelsGithubService.run`, `PullRequestLabelsCommand.appendToReport`, `PullRequestLabelsGithubService.describeFailure` | `tools/synchronization/src/modules/pull-request-labels/pull-request-labels.command.ts:251` |
 | `ReadmeVersionService.isSynchronized` | 3 | `ReadmeVersionService.readPackageVersion`, `ReadmeVersionService.readReadme`, `ReadmeVersionService.formatTitle` | `tools/synchronization/src/modules/readme-version/readme-version.service.ts:34` |
@@ -454,6 +474,8 @@ What this project is judged against, as declared in its own `callidescope.config
 | `DevcontainerConfigurationCommand.check` | 2 | `DevcontainerConfigurationCommand.isCurrent`, `DevcontainerConfigurationCommand.reportDifferences` | `tools/synchronization/src/modules/devcontainer-configuration/devcontainer-configuration.command.ts:80` |
 | `DevcontainerConfigurationCommand.writeWhenDrifted` | 2 | `DevcontainerConfigurationCommand.isCurrent`, `DevcontainerConfigurationCommand.write` | `tools/synchronization/src/modules/devcontainer-configuration/devcontainer-configuration.command.ts:242` |
 | `DevcontainerConfigurationCommand.run` | 2 | `SynchronizationService.resolveSynchronizationModeOrExit`, `DevcontainerConfigurationCommand.synchronize` | `tools/synchronization/src/modules/devcontainer-configuration/devcontainer-configuration.command.ts:266` |
+| `PackageManifestsService.writeAll` | 2 | `PackageManifestsService.readRootManifest`, `PackageManifestsService.writePackageManifest` | `tools/synchronization/src/modules/package-manifests/package-manifests.service.ts:205` |
+| `PackageManifestsCommand.run` | 2 | `SynchronizationService.resolveSynchronizationModeOrExit`, `PackageManifestsCommand.synchronize` | `tools/synchronization/src/modules/package-manifests/package-manifests.command.ts:50` |
 | `PullRequestLabelsService.readExpectedLabels` | 2 | `PullRequestLabelsService.map(…)`, `PullRequestLabelsService.map(…)` | `tools/synchronization/src/modules/pull-request-labels/pull-request-labels.service.ts:106` |
 | `PullRequestLabelsCommand.run` | 2 | `SynchronizationService.resolveSynchronizationModeOrExit`, `PullRequestLabelsCommand.synchronize` | `tools/synchronization/src/modules/pull-request-labels/pull-request-labels.command.ts:281` |
 | `PullRequestTemplateCommand.checkTargetSync` | 2 | `PullRequestTemplateCommand.extractMarkerContent`, `PullRequestTemplateCommand.wrapInCodeBlock` | `tools/synchronization/src/modules/pull-request-template/pull-request-template.command.ts:55` |
@@ -465,7 +487,7 @@ What this project is judged against, as declared in its own `callidescope.config
 | `SkillExclusionsCommand.filter(…)` | 2 | `SkillExclusionsCommand.readExclusionFile`, `SkillExclusionsCommand.renderBlock` | `tools/synchronization/src/modules/skill-exclusions/skill-exclusions.command.ts:72` |
 | `SkillExclusionsCommand.readExclusionFile` | 2 | `SkillExclusionsCommand.renderStartMarker`, `SkillExclusionsCommand.renderEndMarker` | `tools/synchronization/src/modules/skill-exclusions/skill-exclusions.command.ts:82` |
 | `SkillExclusionsCommand.run` | 2 | `SynchronizationService.resolveSynchronizationModeOrExit`, `SkillExclusionsCommand.synchronize` | `tools/synchronization/src/modules/skill-exclusions/skill-exclusions.command.ts:165` |
-| `SynchronizationCommand.run` | 2 | `SynchronizationService.resolveSynchronizationModeOrExit`, `SynchronizationCommand.synchronize` | `tools/synchronization/src/modules/synchronization/synchronization.command.ts:120` |
+| `SynchronizationCommand.run` | 2 | `SynchronizationService.resolveSynchronizationModeOrExit`, `SynchronizationCommand.synchronize` | `tools/synchronization/src/modules/synchronization/synchronization.command.ts:123` |
 | `SynchronizationMarkersService.locateMarkers` | 2 | `SynchronizationMarkersService.getStartMarker`, `SynchronizationMarkersService.getEndMarker` | `tools/synchronization/src/modules/synchronization/synchronization-markers.service.ts:24` |
 | `IssueLabelsGithubService.describeFailure` | 1 | `IssueLabelsGithubService.filter(…)` | `tools/synchronization/src/modules/issue-labels/issue-labels-github.service.ts:43` |
 | `IssueLabelsGithubService.isAvailable` | 1 | `IssueLabelsGithubService.run` | `tools/synchronization/src/modules/issue-labels/issue-labels-github.service.ts:52` |
@@ -493,6 +515,8 @@ What this project is judged against, as declared in its own `callidescope.config
 | `ConventionalConfigService.filter(…)` | 1 | `ConventionalConfigValidatorsService.checkIssueTemplateSync` | `tools/synchronization/src/modules/conventional-config/conventional-config.service.ts:197` |
 | `ConventionalConfigCommand.synchronize` | 1 | `ConventionalConfigService.runSynchronization` | `tools/synchronization/src/modules/conventional-config/conventional-config.command.ts:70` |
 | `DevcontainerConfigurationCommand.syncFeatures` | 1 | `DevcontainerConfigurationCommand.isDockerFeatureKey` | `tools/synchronization/src/modules/devcontainer-configuration/devcontainer-configuration.command.ts:180` |
+| `PackageManifestsService.sortKeys` | 1 | `PackageManifestsService.toSorted(…)` | `tools/synchronization/src/modules/package-manifests/package-manifests.service.ts:83` |
+| `PackageManifestsService.map(…)` | 1 | `PackageManifestsService.checkPackageManifest` | `tools/synchronization/src/modules/package-manifests/package-manifests.service.ts:102` |
 | `PullRequestLabelsGithubService.describeFailure` | 1 | `PullRequestLabelsGithubService.filter(…)` | `tools/synchronization/src/modules/pull-request-labels/pull-request-labels-github.service.ts:42` |
 | `PullRequestLabelsService.isTrackedLabel` | 1 | `PullRequestLabelsService.some(…)` | `tools/synchronization/src/modules/pull-request-labels/pull-request-labels.service.ts:45` |
 | `PullRequestLabelsService.filter(…)` | 1 | `PullRequestLabelsService.isTrackedLabel` | `tools/synchronization/src/modules/pull-request-labels/pull-request-labels.service.ts:82` |
@@ -546,6 +570,7 @@ flowchart LR
   IssueLabelsModule
   LoggerModule([LoggerModule])
   MainModule
+  PackageManifestsModule
   PullRequestLabelsModule
   PullRequestTemplateModule
   ReadmeVersionModule
@@ -568,6 +593,7 @@ flowchart LR
   SynchronizationModule --> ConformetryGeneratorsModule
   SynchronizationModule --> ConventionalConfigModule
   SynchronizationModule --> DevcontainerConfigurationModule
+  SynchronizationModule --> PackageManifestsModule
   SynchronizationModule --> PullRequestLabelsModule
   SynchronizationModule --> PullRequestTemplateModule
   SynchronizationModule --> ReadmeVersionModule
@@ -624,6 +650,13 @@ graph LR
   file_src_modules_issue_labels_issue_labels_service_ts["src/modules/issue-labels/issue-labels.service.ts"]
   file_src_modules_issue_labels_issue_labels_service_unit_test_ts["src/modules/issue-labels/issue-labels.service.unit.test.ts"]
   file_src_modules_issue_labels_issue_labels_types_ts["src/modules/issue-labels/issue-labels.types.ts"]
+  file_src_modules_package_manifests_package_manifests_command_ts["src/modules/package-manifests/package-manifests.command.ts"]
+  file_src_modules_package_manifests_package_manifests_command_unit_test_ts["src/modules/package-manifests/package-manifests.command.unit.test.ts"]
+  file_src_modules_package_manifests_package_manifests_constants_ts["src/modules/package-manifests/package-manifests.constants.ts"]
+  file_src_modules_package_manifests_package_manifests_module_ts["src/modules/package-manifests/package-manifests.module.ts"]
+  file_src_modules_package_manifests_package_manifests_service_ts["src/modules/package-manifests/package-manifests.service.ts"]
+  file_src_modules_package_manifests_package_manifests_service_unit_test_ts["src/modules/package-manifests/package-manifests.service.unit.test.ts"]
+  file_src_modules_package_manifests_package_manifests_types_ts["src/modules/package-manifests/package-manifests.types.ts"]
   file_src_modules_pull_request_labels_pull_request_labels_github_service_ts["src/modules/pull-request-labels/pull-request-labels-github.service.ts"]
   file_src_modules_pull_request_labels_pull_request_labels_github_service_unit_test_ts["src/modules/pull-request-labels/pull-request-labels-github.service.unit.test.ts"]
   file_src_modules_pull_request_labels_pull_request_labels_command_ts["src/modules/pull-request-labels/pull-request-labels.command.ts"]
@@ -742,6 +775,23 @@ graph LR
   file_src_modules_issue_labels_issue_labels_service_ts --> file_src_modules_issue_labels_issue_labels_constants_ts
   file_src_modules_issue_labels_issue_labels_service_ts --> file_src_modules_issue_labels_issue_labels_types_ts
   file_src_modules_issue_labels_issue_labels_service_unit_test_ts --> file_src_modules_issue_labels_issue_labels_service_ts
+  file_src_modules_package_manifests_package_manifests_command_ts --> file_src_modules_package_manifests_package_manifests_service_ts
+  file_src_modules_package_manifests_package_manifests_command_ts --> file_src_modules_synchronization_synchronization_service_ts
+  file_src_modules_package_manifests_package_manifests_command_ts --> file_src_modules_synchronization_synchronization_types_ts
+  file_src_modules_package_manifests_package_manifests_command_unit_test_ts --> file_src_modules_package_manifests_package_manifests_command_ts
+  file_src_modules_package_manifests_package_manifests_command_unit_test_ts --> file_src_modules_package_manifests_package_manifests_service_ts
+  file_src_modules_package_manifests_package_manifests_command_unit_test_ts --> file_src_modules_package_manifests_package_manifests_types_ts
+  file_src_modules_package_manifests_package_manifests_command_unit_test_ts --> file_src_modules_synchronization_synchronization_service_ts
+  file_src_modules_package_manifests_package_manifests_command_unit_test_ts --> file_testing_mocks_ts
+  file_src_modules_package_manifests_package_manifests_module_ts --> file_src_modules_package_manifests_package_manifests_command_ts
+  file_src_modules_package_manifests_package_manifests_module_ts --> file_src_modules_package_manifests_package_manifests_service_ts
+  file_src_modules_package_manifests_package_manifests_module_ts --> file_src_modules_synchronization_synchronization_service_ts
+  file_src_modules_package_manifests_package_manifests_service_ts --> file_src_modules_package_manifests_package_manifests_constants_ts
+  file_src_modules_package_manifests_package_manifests_service_ts --> file_src_modules_package_manifests_package_manifests_types_ts
+  file_src_modules_package_manifests_package_manifests_service_unit_test_ts --> file_src_modules_package_manifests_package_manifests_constants_ts
+  file_src_modules_package_manifests_package_manifests_service_unit_test_ts --> file_src_modules_package_manifests_package_manifests_service_ts
+  file_src_modules_package_manifests_package_manifests_service_unit_test_ts --> file_src_modules_package_manifests_package_manifests_types_ts
+  file_src_modules_package_manifests_package_manifests_types_ts --> file_src_modules_package_manifests_package_manifests_constants_ts
   file_src_modules_pull_request_labels_pull_request_labels_github_service_ts --> file_src_modules_pull_request_labels_pull_request_labels_constants_ts
   file_src_modules_pull_request_labels_pull_request_labels_github_service_ts --> file_src_modules_pull_request_labels_pull_request_labels_types_ts
   file_src_modules_pull_request_labels_pull_request_labels_github_service_unit_test_ts --> file_src_modules_pull_request_labels_pull_request_labels_github_service_ts
@@ -806,6 +856,7 @@ graph LR
   file_src_modules_synchronization_synchronization_command_ts --> file_src_modules_conformetry_generators_conformetry_generators_command_ts
   file_src_modules_synchronization_synchronization_command_ts --> file_src_modules_conventional_config_conventional_config_command_ts
   file_src_modules_synchronization_synchronization_command_ts --> file_src_modules_devcontainer_configuration_devcontainer_configuration_command_ts
+  file_src_modules_synchronization_synchronization_command_ts --> file_src_modules_package_manifests_package_manifests_command_ts
   file_src_modules_synchronization_synchronization_command_ts --> file_src_modules_pull_request_labels_pull_request_labels_command_ts
   file_src_modules_synchronization_synchronization_command_ts --> file_src_modules_pull_request_template_pull_request_template_command_ts
   file_src_modules_synchronization_synchronization_command_ts --> file_src_modules_readme_version_readme_version_command_ts
@@ -815,6 +866,7 @@ graph LR
   file_src_modules_synchronization_synchronization_command_unit_test_ts --> file_src_modules_conformetry_generators_conformetry_generators_command_ts
   file_src_modules_synchronization_synchronization_command_unit_test_ts --> file_src_modules_conventional_config_conventional_config_command_ts
   file_src_modules_synchronization_synchronization_command_unit_test_ts --> file_src_modules_devcontainer_configuration_devcontainer_configuration_command_ts
+  file_src_modules_synchronization_synchronization_command_unit_test_ts --> file_src_modules_package_manifests_package_manifests_command_ts
   file_src_modules_synchronization_synchronization_command_unit_test_ts --> file_src_modules_pull_request_labels_pull_request_labels_command_ts
   file_src_modules_synchronization_synchronization_command_unit_test_ts --> file_src_modules_pull_request_template_pull_request_template_command_ts
   file_src_modules_synchronization_synchronization_command_unit_test_ts --> file_src_modules_readme_version_readme_version_command_ts
@@ -826,6 +878,7 @@ graph LR
   file_src_modules_synchronization_synchronization_module_ts --> file_src_modules_conformetry_generators_conformetry_generators_module_ts
   file_src_modules_synchronization_synchronization_module_ts --> file_src_modules_conventional_config_conventional_config_module_ts
   file_src_modules_synchronization_synchronization_module_ts --> file_src_modules_devcontainer_configuration_devcontainer_configuration_module_ts
+  file_src_modules_synchronization_synchronization_module_ts --> file_src_modules_package_manifests_package_manifests_module_ts
   file_src_modules_synchronization_synchronization_module_ts --> file_src_modules_pull_request_labels_pull_request_labels_module_ts
   file_src_modules_synchronization_synchronization_module_ts --> file_src_modules_pull_request_template_pull_request_template_module_ts
   file_src_modules_synchronization_synchronization_module_ts --> file_src_modules_readme_version_readme_version_module_ts
@@ -854,36 +907,36 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-9639-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-318.65_kB-6b7280?style=flat-square)
-![Folders](https://img.shields.io/badge/Folders-12-4a4a4a?style=flat-square)
-![Source Files](https://img.shields.io/badge/Source_Files-82-3178c6?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-10624-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-349.23_kB-6b7280?style=flat-square)
+![Folders](https://img.shields.io/badge/Folders-13-4a4a4a?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-89-3178c6?style=flat-square)
 
 ### TypeScript
 
-![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-82-3178c6?style=flat-square)
-![Interfaces](https://img.shields.io/badge/Interfaces-21-0ea5e9?style=flat-square)
+![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-89-3178c6?style=flat-square)
+![Interfaces](https://img.shields.io/badge/Interfaces-24-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-0-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
-![Decorators](https://img.shields.io/badge/Decorators-38-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-192-6366f1?style=flat-square)
+![Decorators](https://img.shields.io/badge/Decorators-42-db2777?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-210-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-0-166534?style=flat-square)
 
 ### JavaScript
 
 ![JavaScript Files](https://img.shields.io/badge/JavaScript_Files-0-f7df1e?style=flat-square)
-![Test Files](https://img.shields.io/badge/Test_Files-25-10b981?style=flat-square)
+![Test Files](https://img.shields.io/badge/Test_Files-27-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-18-8b5cf6?style=flat-square)
-![Classes](https://img.shields.io/badge/Classes-30-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-467-16a34a?style=flat-square)
-![Methods](https://img.shields.io/badge/Methods-187-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-501-4ade80?style=flat-square)
-![Async Functions](https://img.shields.io/badge/Async_Functions-153-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-501-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-395-0284c7?style=flat-square)
-![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-88-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-334-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-729-475569?style=flat-square)
+![Classes](https://img.shields.io/badge/Classes-33-7c3aed?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-507-16a34a?style=flat-square)
+![Methods](https://img.shields.io/badge/Methods-206-15803d?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-548-4ade80?style=flat-square)
+![Async Functions](https://img.shields.io/badge/Async_Functions-165-059669?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-578-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-433-0284c7?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-106-ea580c?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-369-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-768-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-3-ca8a04?style=flat-square)
 
 ### Python
@@ -904,16 +957,16 @@ graph LR
 ### JSON
 
 ![JSON Files](https://img.shields.io/badge/JSON_Files-3-a16207?style=flat-square)
-![JSON Lines](https://img.shields.io/badge/JSON_Lines-289-ca8a04?style=flat-square)
-![JSON Objects](https://img.shields.io/badge/JSON_Objects-70-7c3aed?style=flat-square)
-![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-14-8b5cf6?style=flat-square)
-![JSON Properties](https://img.shields.io/badge/JSON_Properties-177-0284c7?style=flat-square)
-![JSON Strings](https://img.shields.io/badge/JSON_Strings-138-16a34a?style=flat-square)
+![JSON Lines](https://img.shields.io/badge/JSON_Lines-312-ca8a04?style=flat-square)
+![JSON Objects](https://img.shields.io/badge/JSON_Objects-75-7c3aed?style=flat-square)
+![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-15-8b5cf6?style=flat-square)
+![JSON Properties](https://img.shields.io/badge/JSON_Properties-190-0284c7?style=flat-square)
+![JSON Strings](https://img.shields.io/badge/JSON_Strings-148-16a34a?style=flat-square)
 ![JSON Numbers](https://img.shields.io/badge/JSON_Numbers-1-059669?style=flat-square)
-![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-12-0ea5e9?style=flat-square)
+![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-13-0ea5e9?style=flat-square)
 ![JSON Nulls](https://img.shields.io/badge/JSON_Nulls-0-64748b?style=flat-square)
-![JSON Items](https://img.shields.io/badge/JSON_Items-55-475569?style=flat-square)
-![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-235-dc2626?style=flat-square)
+![JSON Items](https://img.shields.io/badge/JSON_Items-59-475569?style=flat-square)
+![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-252-dc2626?style=flat-square)
 ![JSON Max Depth](https://img.shields.io/badge/JSON_Max_Depth-6-ea580c?style=flat-square)
 
 ### YAML
@@ -994,14 +1047,14 @@ graph LR
 
 ### Conventions
 
-![Module Files](https://img.shields.io/badge/Module_Files-10-7c3aed?style=flat-square)
-![Service Files](https://img.shields.io/badge/Service_Files-10-0284c7?style=flat-square)
-![Command Files](https://img.shields.io/badge/Command_Files-9-16a34a?style=flat-square)
-![Constants Files](https://img.shields.io/badge/Constants_Files-9-ea580c?style=flat-square)
-![Types Files](https://img.shields.io/badge/Types_Files-9-db2777?style=flat-square)
+![Module Files](https://img.shields.io/badge/Module_Files-11-7c3aed?style=flat-square)
+![Service Files](https://img.shields.io/badge/Service_Files-11-0284c7?style=flat-square)
+![Command Files](https://img.shields.io/badge/Command_Files-10-16a34a?style=flat-square)
+![Constants Files](https://img.shields.io/badge/Constants_Files-10-ea580c?style=flat-square)
+![Types Files](https://img.shields.io/badge/Types_Files-10-db2777?style=flat-square)
 ![Utilities Files](https://img.shields.io/badge/Utilities_Files-0-0ea5e9?style=flat-square)
 ![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-0-059669?style=flat-square)
-![Unit Tests](https://img.shields.io/badge/Unit_Tests-23-ca8a04?style=flat-square)
+![Unit Tests](https://img.shields.io/badge/Unit_Tests-25-ca8a04?style=flat-square)
 ![Integration Tests](https://img.shields.io/badge/Integration_Tests-1-7c3aed?style=flat-square)
 ![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-1-0284c7?style=flat-square)
 ![CSS Comment Budget](https://img.shields.io/badge/CSS_Comment_Budget-0-16a34a?style=flat-square)

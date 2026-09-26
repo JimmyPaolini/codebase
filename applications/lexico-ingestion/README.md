@@ -1494,7 +1494,7 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-33539-22c55e?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-33553-22c55e?style=flat-square)
 ![Repository Size](https://img.shields.io/badge/Repository_Size-138.17_MB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-219-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-157-3178c6?style=flat-square)
@@ -1519,11 +1519,11 @@ graph LR
 ![Test Files](https://img.shields.io/badge/Test_Files-44-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-28-8b5cf6?style=flat-square)
 ![Classes](https://img.shields.io/badge/Classes-61-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-1230-16a34a?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-1232-16a34a?style=flat-square)
 ![Methods](https://img.shields.io/badge/Methods-513-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-1201-4ade80?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-1203-4ade80?style=flat-square)
 ![Async Functions](https://img.shields.io/badge/Async_Functions-542-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-2459-dc2626?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-2460-dc2626?style=flat-square)
 ![Imports](https://img.shields.io/badge/Imports-792-0284c7?style=flat-square)
 ![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-166-ea580c?style=flat-square)
 ![Comments](https://img.shields.io/badge/Comments-604-64748b?style=flat-square)

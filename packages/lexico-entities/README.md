@@ -110,7 +110,7 @@ Call stacks traced through `packages/lexico-entities`, deepest first. Each frame
 
 | Measure | Value |
 | --- | --- |
-| Callables | 93 |
+| Callables | 95 |
 | Files | 49 |
 | Calls traced | 9 |
 | Call stacks | 3 |
@@ -186,8 +186,10 @@ Dependency graphs exported by [codependix](https://github.com/JimmyPaolini/codeb
 <!-- codependix:start name="codependix-nx-projects" -->
 ```mermaid
 graph LR
+  lexico_api["lexico-api"]
   lexico_entities["lexico-entities"]
   lexico_ingestion["lexico-ingestion"]
+  lexico_api --> lexico_entities
   lexico_ingestion --> lexico_entities
   classDef subject fill:#7c3aed,color:#fff,stroke:#4c1d95,stroke-width:2px
   class lexico_entities subject
@@ -391,14 +393,14 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-5251-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-213.44_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-5250-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-213.47_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-12-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-58-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-28.27_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-28.30_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
@@ -406,7 +408,7 @@ graph LR
 ![Interfaces](https://img.shields.io/badge/Interfaces-10-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-2-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
-![Decorators](https://img.shields.io/badge/Decorators-271-db2777?style=flat-square)
+![Decorators](https://img.shields.io/badge/Decorators-268-db2777?style=flat-square)
 ![Doc Comments](https://img.shields.io/badge/Doc_Comments-92-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-0-166534?style=flat-square)
 
@@ -417,14 +419,14 @@ graph LR
 ![External Packages](https://img.shields.io/badge/External_Packages-15-8b5cf6?style=flat-square)
 ![Classes](https://img.shields.io/badge/Classes-40-7c3aed?style=flat-square)
 ![Functions](https://img.shields.io/badge/Functions-199-16a34a?style=flat-square)
-![Methods](https://img.shields.io/badge/Methods-81-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-255-4ade80?style=flat-square)
+![Methods](https://img.shields.io/badge/Methods-83-15803d?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-257-4ade80?style=flat-square)
 ![Async Functions](https://img.shields.io/badge/Async_Functions-25-059669?style=flat-square)
 ![Constants](https://img.shields.io/badge/Constants-175-dc2626?style=flat-square)
 ![Imports](https://img.shields.io/badge/Imports-214-0284c7?style=flat-square)
 ![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-115-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-113-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-200-475569?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-112-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-199-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-3-ca8a04?style=flat-square)
 
 ### Python
