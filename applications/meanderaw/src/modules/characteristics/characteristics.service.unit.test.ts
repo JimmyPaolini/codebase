@@ -129,6 +129,38 @@ describe(CharacteristicsService, () => {
     ]);
   });
 
+  it("registers every member of a discovered evaluator group as its own evaluator", async () => {
+    const grouped = new Set(["aSoutheastLatinCount", "aSouthwestLatinCount"]);
+    const members = providers
+      .filter((_provider, index) =>
+        grouped.has(CHARACTERISTIC_KEYS[index] ?? ""),
+      )
+      .map(({ instance }) => instance);
+    providers = [
+      ...providers.filter(
+        (_provider, index) => !grouped.has(CHARACTERISTIC_KEYS[index] ?? ""),
+      ),
+      { instance: { evaluators: members } },
+    ];
+    const fresh = await registry();
+
+    expect(fresh.metadata().map((metadata) => metadata.key)).toStrictEqual([
+      ...CHARACTERISTIC_KEYS,
+    ]);
+    expect(fresh.compute("02x01y2c").aSouthwestLatinCount).toBe(
+      CHARACTERISTIC_KEYS.indexOf("aSouthwestLatinCount"),
+    );
+  });
+
+  it("throws when a group and a lone evaluator claim the same key", async () => {
+    const member =
+      providers[CHARACTERISTIC_KEYS.indexOf("aSoutheastLatinCount")];
+    providers.push({ instance: { evaluators: [member?.instance] } });
+    const fresh = await registry();
+
+    expect(() => fresh.metadata()).toThrow(/aSoutheastLatinCount/u);
+  });
+
   it("skips discovered providers that are not shaped like evaluators", async () => {
     providers.push(
       { instance: undefined },
@@ -138,6 +170,10 @@ describe(CharacteristicsService, () => {
       { instance: { compute: 1, metadata: { key: "dotCount" } } },
       { instance: { compute: (): number => 1, metadata: "dotCount" } },
       { instance: { compute: (): number => 1, metadata: { key: 3 } } },
+      { instance: { evaluators: "dotCount" } },
+      {
+        instance: { evaluators: [7, null, { metadata: { key: "dotCount" } }] },
+      },
     );
     const fresh = await registry();
 
@@ -261,7 +297,7 @@ describe(CharacteristicsService, () => {
 
     expect(Object.keys(columns)).toStrictEqual([...COLUMN_CHARACTERISTIC_KEYS]);
     expect(columns).not.toHaveProperty("isDots");
-    expect(columns).not.toHaveProperty("aLetterCount");
+    expect(columns).not.toHaveProperty("aSoutheastLatinCount");
     expect(columns.dotCount).toBe(characteristics.dotCount);
   });
 
@@ -273,10 +309,12 @@ describe(CharacteristicsService, () => {
 
     const glyphs = service.glyphCounts(characteristics);
 
-    expect(letterKeys[0]).toBe("aEastLetterCount");
-    expect(characteristics.aEastLetterCount).toBe(0);
+    expect(letterKeys[0]).toBe("aNortheastHalfLatinCount");
+    expect(characteristics.aNortheastHalfLatinCount).toBe(0);
     expect(Object.keys(glyphs)).toStrictEqual(letterKeys.slice(1));
-    expect(glyphs.aLetterCount).toBe(characteristics.aLetterCount);
+    expect(glyphs.aSoutheastLatinCount).toBe(
+      characteristics.aSoutheastLatinCount,
+    );
     expect(glyphs).not.toHaveProperty("dotCount");
   });
 
@@ -294,13 +332,13 @@ describe(CharacteristicsService, () => {
 
   it("throws when a numeric evaluator with no column is not marked a letter", async () => {
     providers = providers.map((provider, index) =>
-      CHARACTERISTIC_KEYS[index] === "aLetterCount"
-        ? fake("aLetterCount", "number", 0)
+      CHARACTERISTIC_KEYS[index] === "aSoutheastLatinCount"
+        ? fake("aSoutheastLatinCount", "number", 0)
         : provider,
     );
     const fresh = await registry();
 
-    expect(() => fresh.metadata()).toThrow(/aLetterCount/u);
+    expect(() => fresh.metadata()).toThrow(/aSoutheastLatinCount/u);
   });
 
   it("throws when a boolean evaluator is marked a letter", async () => {

@@ -33,7 +33,9 @@ import type { OnApplicationBootstrap } from "@nestjs/common";
 
 /**
  * Orchestrates every registered characteristic evaluator: finds them all
- * through Nest's `DiscoveryService` rather than a hand-maintained list,
+ * through Nest's `DiscoveryService` rather than a hand-maintained list — a
+ * provider that is one evaluator, and each member of a provider that holds a
+ * group of them, such as a letter's sixteen orientations —
  * checks them against the key lists in `characteristics.constants` when the
  * application boots, and fills one {@link Characteristics} record per Code
  * from a single shared context.
@@ -123,16 +125,30 @@ export class CharacteristicsService implements OnApplicationBootstrap {
     }
   }
 
-  /** Every discovered evaluator, checked against the key lists and ordered by them. */
+  /**
+   * The evaluator candidates one discovered provider holds: itself when it
+   * is shaped like an evaluator, every evaluator-shaped member when it is a
+   * group such as a letter service, and none otherwise.
+   */
+  private candidates(instance: unknown): readonly CandidateEvaluator[] {
+    if (this.isCandidateEvaluator(instance)) return [instance];
+    if (!this.isCandidateGroup(instance)) return [];
+
+    return instance.evaluators.filter((member) =>
+      this.isCandidateEvaluator(member),
+    );
+  }
+
+  /** Every discovered evaluator, lone or grouped, checked against the key lists and ordered by them. */
   private discover(): readonly CharacteristicEvaluator[] {
     const providers: readonly { readonly instance: unknown }[] =
       this.discoveryService.getProviders();
     const byKey = new Map<string, CharacteristicEvaluator>();
 
-    for (const { instance } of providers) {
-      if (!this.isCandidateEvaluator(instance)) continue;
-
-      const evaluator = this.verify(instance);
+    for (const candidate of providers.flatMap(({ instance }) =>
+      this.candidates(instance),
+    )) {
+      const evaluator = this.verify(candidate);
       this.assertStorage(evaluator);
       if (byKey.has(evaluator.metadata.key)) {
         throw new CharacteristicRegistryError(
@@ -180,6 +196,18 @@ export class CharacteristicsService implements OnApplicationBootstrap {
       value.metadata !== null &&
       "key" in value.metadata &&
       typeof value.metadata.key === "string"
+    );
+  }
+
+  /** Whether a discovered provider is shaped like a `CharacteristicEvaluatorGroup`: an `evaluators` array, its members not yet checked. */
+  private isCandidateGroup(
+    value: unknown,
+  ): value is { readonly evaluators: readonly unknown[] } {
+    return (
+      typeof value === "object" &&
+      value !== null &&
+      "evaluators" in value &&
+      Array.isArray(value.evaluators)
     );
   }
 

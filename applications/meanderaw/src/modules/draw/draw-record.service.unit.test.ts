@@ -118,7 +118,7 @@ describe(DrawRecordService, () => {
         (key) => !COLUMN_CHARACTERISTIC_KEY_SET.has(key),
       );
 
-      expect(record.glyphs.aLetterCount).toBe(1);
+      expect(record.glyphs.aSoutheastLatinCount).toBe(1);
       expect(record.glyphs).toStrictEqual(
         Object.fromEntries(
           letterKeys

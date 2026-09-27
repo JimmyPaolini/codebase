@@ -65,6 +65,18 @@ export interface CharacteristicEvaluator<
   readonly metadata: CharacteristicMetadata<T>;
 }
 
+/**
+ * A provider holding several evaluators rather than being one — a letter
+ * service, whose sixteen orientations are each an evaluator with its own key
+ * and metadata. `CharacteristicsService` registers every member of every
+ * group it discovers exactly as it registers a lone evaluator.
+ */
+export interface CharacteristicEvaluatorGroup<
+  T extends CharacteristicValue = CharacteristicValue,
+> {
+  readonly evaluators: readonly CharacteristicEvaluator<T>[];
+}
+
 /** The key of any registered characteristic: see {@link CHARACTERISTIC_KEYS}. */
 export type CharacteristicKey = (typeof CHARACTERISTIC_KEYS)[number];
 

@@ -1,12 +1,22 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
+import { CodeModule } from "../../../code/code.module";
+import { MatrixModule } from "../../../matrix/matrix.module";
+import { CharacteristicContextService } from "../../characteristic-context.service";
 import { SubmatrixUtilitiesService } from "../submatrix-utilities.service";
 
 import { LetterCharacteristicsModule } from "./letter-characteristics.module";
 import { LetterUtilitiesService } from "./letter-utilities.service";
+import { LETTER_ORIENTATION_NAMES } from "./letter.constants";
 
-import type { LetterOrientation, LetterScript } from "./letter.types";
+import type { CharacteristicEvaluator } from "../../characteristics.types";
+import type {
+  LetterDefinition,
+  LetterOrientation,
+  LetterOrientationName,
+  LetterScript,
+} from "./letter.types";
 
 /** An L: a stem down three points with a foot east, 2 columns by 3 rows, unchanged by no flip or turn. */
 const L: readonly string[] = ["4.", "c.", "a1"];
@@ -17,19 +27,39 @@ const HOOK: readonly string[] = ["235", "..8"];
 /** The orientation named `name`, or undefined — which no expected template or window equals — when the enumeration lacks it. */
 function named(
   orientations: readonly LetterOrientation[],
-  name: string,
+  name: LetterOrientationName,
 ): LetterOrientation | undefined {
   return orientations.find((entry) => entry.name === name);
 }
 
+/** The L drawn as a Latin letter, keyed as the real L so its keys are registered ones, with one alias on its Southeast orientation and one on its SoutheastQuarter. */
+const L_LETTER: LetterDefinition = {
+  aliases: {
+    Southeast: "the hangul ㄴ (nieun)",
+    SoutheastQuarter: "the Greek Γ (gamma)",
+  },
+  glyph: "L",
+  key: (name) => `l${name}LatinCount`,
+  script: "Latin",
+  shape: "a two-unit stem with a unit foot reaching east from its bottom",
+  template: L,
+};
+
 describe(LetterUtilitiesService, () => {
   let service: LetterUtilitiesService;
+  let contextService: CharacteristicContextService;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [LetterUtilitiesService, SubmatrixUtilitiesService],
+      imports: [CodeModule, MatrixModule],
+      providers: [
+        CharacteristicContextService,
+        LetterUtilitiesService,
+        SubmatrixUtilitiesService,
+      ],
     }).compile();
 
+    contextService = await module.resolve(CharacteristicContextService);
     service = await module.resolve(LetterUtilitiesService);
   });
 
@@ -61,6 +91,13 @@ describe(LetterUtilitiesService, () => {
 
   it("turns a template a quarter clockwise, carrying each arm round", () => {
     expect(service.turnClockwise(L, "Quarter")).toStrictEqual(["631", "8.."]);
+  });
+
+  it("turns a template three quarters clockwise, the same as a quarter anticlockwise", () => {
+    expect(service.turnClockwise(L, "ThreeQuarter")).toStrictEqual([
+      "..4",
+      "239",
+    ]);
   });
 
   it("leaves a template unturned under no rotation", () => {
@@ -124,6 +161,10 @@ describe(LetterUtilitiesService, () => {
     expect(names).toContain("Southeast");
     expect(names).toContain("NorthwestThreeQuarter");
     expect(names).toContain("SouthwestHalf");
+  });
+
+  it("names the orientations in the order the letter keys list them", () => {
+    expect(service.orientationNames()).toStrictEqual(LETTER_ORIENTATION_NAMES);
   });
 
   describe("orientations from a Southeast base", () => {
@@ -224,6 +265,142 @@ describe(LetterUtilitiesService, () => {
       expect(named(orientations, "SouthwestHalf")?.template).toStrictEqual(
         named(orientations, "Northeast")?.template,
       );
+    });
+
+    it("turns the base itself, with no mirror, for the Southwest rotations", () => {
+      expect(named(orientations, "SouthwestQuarter")?.template).toStrictEqual([
+        "631",
+        "8..",
+      ]);
+      expect(
+        named(orientations, "SouthwestThreeQuarter")?.template,
+      ).toStrictEqual(["..4", "239"]);
+    });
+
+    it("turns after flipping for the other corners' rotations", () => {
+      expect(
+        named(orientations, "SoutheastThreeQuarter")?.template,
+      ).toStrictEqual(["235", "..8"]);
+      expect(named(orientations, "NorthwestQuarter")?.template).toStrictEqual(
+        service.turnClockwise(service.flipVertically(L), "Quarter"),
+      );
+      expect(named(orientations, "NortheastQuarter")?.template).toStrictEqual(
+        service.turnClockwise(
+          service.flipVertically(service.flipHorizontally(L)),
+          "Quarter",
+        ),
+      );
+    });
+
+    it("draws an asymmetric glyph in eight distinct orientations", () => {
+      expect(
+        new Set(orientations.map(({ template }) => template.join("/"))).size,
+      ).toBe(8);
+    });
+  });
+
+  describe("evaluators for a letter", () => {
+    let evaluators: readonly CharacteristicEvaluator<number>[];
+
+    /** The evaluator of the orientation `name`, which every test below expects to exist. */
+    function evaluator(
+      name: LetterOrientationName,
+    ): CharacteristicEvaluator<number> | undefined {
+      return evaluators[LETTER_ORIENTATION_NAMES.indexOf(name)];
+    }
+
+    beforeAll(() => {
+      evaluators = service.evaluators(L_LETTER);
+    });
+
+    it("keys one evaluator for each of the sixteen orientations, in orientation order", () => {
+      expect(evaluators.map(({ metadata }) => metadata.key)).toStrictEqual(
+        LETTER_ORIENTATION_NAMES.map((name) => `l${name}LatinCount`),
+      );
+    });
+
+    it("marks every evaluator a numeric letter submatrix count", () => {
+      expect(
+        evaluators.map(({ metadata }) => [
+          metadata.category,
+          metadata.letter,
+          metadata.valueType,
+        ]),
+      ).toStrictEqual(evaluators.map(() => ["submatrix", true, "number"]));
+    });
+
+    it("gives each evaluator its own orientation's window and formula", () => {
+      const orientations = service.orientations(L, "Latin");
+      const utilities = new SubmatrixUtilitiesService();
+
+      expect(
+        evaluators.map(({ metadata }) => metadata.submatrix),
+      ).toStrictEqual(orientations.map(({ window }) => window));
+      expect(evaluators.map(({ metadata }) => metadata.formula)).toStrictEqual(
+        orientations.map(({ template }) => utilities.glyphFormula(template)),
+      );
+    });
+
+    it("names each evaluator after its key, word by word", () => {
+      expect(evaluator("Southeast")?.metadata.name).toBe(
+        "L Southeast Latin Count",
+      );
+      expect(evaluator("NorthwestThreeQuarter")?.metadata.name).toBe(
+        "L Northwest Three Quarter Latin Count",
+      );
+    });
+
+    it("describes the glyph, its upright shape, and how each orientation draws it", () => {
+      expect(evaluator("Southeast")?.metadata.description).toBe(
+        "The number of minimal isolated L glyphs — a two-unit stem with a unit foot reaching east from its bottom — drawn upright. Also reads as the hangul ㄴ (nieun).",
+      );
+      expect(evaluator("SouthwestQuarter")?.metadata.description).toBe(
+        "The number of minimal isolated L glyphs — a two-unit stem with a unit foot reaching east from its bottom — mirrored east to west, then turned a quarter clockwise.",
+      );
+      expect(evaluator("NortheastHalf")?.metadata.description).toBe(
+        "The number of minimal isolated L glyphs — a two-unit stem with a unit foot reaching east from its bottom — mirrored north to south, then turned a half turn.",
+      );
+      expect(
+        evaluator("NorthwestThreeQuarter")?.metadata.description,
+      ).toContain(
+        "mirrored east to west and north to south, then turned three quarters clockwise.",
+      );
+    });
+
+    it("lists an alias on every orientation drawing the same ink as the one it was given for, and on no other", () => {
+      const withAlias = evaluators
+        .filter(({ metadata }) => metadata.description.includes("Γ (gamma)"))
+        .map(({ metadata }) => metadata.key);
+
+      expect(withAlias).toStrictEqual([
+        "lSoutheastQuarterLatinCount",
+        "lNorthwestThreeQuarterLatinCount",
+      ]);
+    });
+
+    it("counts each orientation's own ink, and the same ink under every name that draws it", () => {
+      const context = contextService.create("04x02y63108000");
+
+      expect(evaluators.map((entry) => entry.compute(context))).toStrictEqual(
+        LETTER_ORIENTATION_NAMES.map((name) =>
+          name === "SoutheastQuarter" || name === "NorthwestThreeQuarter"
+            ? 1
+            : 0,
+        ),
+      );
+    });
+
+    it("counts each context afresh rather than reusing another context's count", () => {
+      expect(
+        evaluator("Southeast")?.compute(
+          contextService.create("03x03y400c00a10"),
+        ),
+      ).toBe(1);
+      expect(
+        evaluator("Southeast")?.compute(
+          contextService.create("03x03y610c00800"),
+        ),
+      ).toBe(0);
     });
   });
 });

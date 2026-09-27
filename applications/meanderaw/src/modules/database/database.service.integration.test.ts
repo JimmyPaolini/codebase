@@ -160,7 +160,7 @@ describe(DatabaseService, () => {
       await service.save(
         meanderRecord({
           code: "glyph-round-trip",
-          glyphs: { aLetterCount: 2, yuHangulCount: 1 },
+          glyphs: { aSoutheastLatinCount: 2, yuSoutheastHangulCount: 1 },
           lattice: "glyph-round-trip",
         }),
       );
@@ -168,8 +168,8 @@ describe(DatabaseService, () => {
       const found = await service.findOneByLattice("glyph-round-trip", 2, 1);
 
       expect(found?.glyphs).toStrictEqual({
-        aLetterCount: 2,
-        yuHangulCount: 1,
+        aSoutheastLatinCount: 2,
+        yuSoutheastHangulCount: 1,
       });
     });
 
@@ -189,7 +189,7 @@ describe(DatabaseService, () => {
         (_row, index) =>
           meanderRecord({
             code: `glyph-chunk-${index}`,
-            glyphs: { oLetterCount: index + 1 },
+            glyphs: { oSoutheastLatinCount: index + 1 },
             lattice: `glyph-chunk-${index}`,
           }),
       );
@@ -200,7 +200,8 @@ describe(DatabaseService, () => {
       expect(
         rows.every(
           (row) =>
-            row.glyphs.oLetterCount === Number(row.lattice.split("-")[2]) + 1,
+            row.glyphs.oSoutheastLatinCount ===
+            Number(row.lattice.split("-")[2]) + 1,
         ),
       ).toBe(true);
       expect(rows).toHaveLength(records.length);
@@ -210,14 +211,14 @@ describe(DatabaseService, () => {
       await service.save(
         meanderRecord({
           code: "glyph-query-hit",
-          glyphs: { tLetterCount: 3 },
+          glyphs: { tSoutheastLatinCount: 3 },
           lattice: "glyph-query-hit",
         }),
       );
       await service.save(
         meanderRecord({
           code: "glyph-query-miss",
-          glyphs: { uLetterCount: 1 },
+          glyphs: { uSoutheastLatinCount: 1 },
           lattice: "glyph-query-miss",
         }),
       );
@@ -225,7 +226,7 @@ describe(DatabaseService, () => {
       const hits = await repository
         .createQueryBuilder("meander")
         .where("json_extract(meander.glyphs, :path) > 0", {
-          path: "$.tLetterCount",
+          path: "$.tSoutheastLatinCount",
         })
         .getMany();
 

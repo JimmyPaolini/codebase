@@ -1,7 +1,10 @@
+import { LETTER_CHARACTERISTIC_KEYS } from "../src/modules/characteristics/characteristics.constants";
+
 import type {
   BooleanCharacteristicKey,
   Characteristics,
   ColumnCharacteristicRecord,
+  LetterCharacteristicKey,
   NumericCharacteristicRecord,
 } from "../src/modules/characteristics/characteristics.types";
 import type { CodeObject } from "../src/modules/code/code.types";
@@ -11,9 +14,12 @@ import type { MeanderRecord } from "../src/modules/database/database.types";
  * Builds characteristic records and meander rows for the tests that need a
  * whole one written out, so a case spells out only the fields it is about.
  *
- * Each list is written out in full rather than derived from the key lists,
- * so the compiler checks it against the record types: adding a
- * characteristic key fails here until its default is added.
+ * Each column and boolean list is written out in full rather than derived
+ * from the key lists, so the compiler checks it against the record types:
+ * adding a characteristic key fails here until its default is added. The
+ * letter zeros are derived from `LETTER_CHARACTERISTIC_KEYS` instead, since
+ * sixteen keys per letter would outgrow the file, and checked complete when
+ * built.
  */
 
 // 🔧 Configuration
@@ -63,104 +69,7 @@ export const ZERO_COLUMN_CHARACTERISTICS: ColumnCharacteristicRecord = {
 /** Every numeric characteristic at zero, letters included. */
 export const ZERO_NUMERIC_CHARACTERISTICS: NumericCharacteristicRecord = {
   ...ZERO_COLUMN_CHARACTERISTICS,
-  aEastLetterCount: 0,
-  aInvertedLetterCount: 0,
-  aLetterCount: 0,
-  aoEastHanziCount: 0,
-  aoHanziCount: 0,
-  aoInvertedHanziCount: 0,
-  aoWestHanziCount: 0,
-  aWestLetterCount: 0,
-  bLetterCount: 0,
-  bSidewaysLetterCount: 0,
-  cLetterCount: 0,
-  cWestLetterCount: 0,
-  daletEastLetterCount: 0,
-  daletInvertedLetterCount: 0,
-  daletLetterCount: 0,
-  daletWestLetterCount: 0,
-  eDownLetterCount: 0,
-  eLetterCount: 0,
-  eUpLetterCount: 0,
-  eWestLetterCount: 0,
-  fDownLetterCount: 0,
-  fLetterCount: 0,
-  fUpLetterCount: 0,
-  fWestLetterCount: 0,
-  ganHanziCount: 0,
-  hLetterCount: 0,
-  hSidewaysLetterCount: 0,
-  iLetterCount: 0,
-  iSidewaysLetterCount: 0,
-  jiaHanziCount: 0,
-  jingHanziCount: 0,
-  kieukEastHangulCount: 0,
-  kieukHangulCount: 0,
-  kieukInvertedHangulCount: 0,
-  kieukWestHangulCount: 0,
-  lamedLetterCount: 0,
-  lamedSidewaysLetterCount: 0,
-  lDownLetterCount: 0,
-  lLetterCount: 0,
-  lUpLetterCount: 0,
-  lWestLetterCount: 0,
-  mEastLetterCount: 0,
-  mLetterCount: 0,
-  muHanziCount: 0,
-  mWestLetterCount: 0,
-  nLetterCount: 0,
-  nSidewaysLetterCount: 0,
-  oLetterCount: 0,
-  phiLetterCount: 0,
-  pieupHangulCount: 0,
-  pieupSidewaysHangulCount: 0,
-  psiEastLetterCount: 0,
-  psiInvertedLetterCount: 0,
-  psiLetterCount: 0,
-  psiWestLetterCount: 0,
-  rhoEastLetterCount: 0,
-  rhoInvertedLetterCount: 0,
-  rhoLetterCount: 0,
-  rhoWestLetterCount: 0,
-  shangHanziCount: 0,
-  shenHanziCount: 0,
-  sLetterCount: 0,
-  sSidewaysLetterCount: 0,
-  tavEastLetterCount: 0,
-  tavInvertedLetterCount: 0,
-  tavLetterCount: 0,
-  tavWestLetterCount: 0,
-  tEastLetterCount: 0,
-  tianHanziCount: 0,
-  tLetterCount: 0,
-  tuEastHanziCount: 0,
-  tuHanziCount: 0,
-  tuInvertedHanziCount: 0,
-  tUpLetterCount: 0,
-  tuSoilHanziCount: 0,
-  tuWestHanziCount: 0,
-  tWestLetterCount: 0,
-  uInvertedLetterCount: 0,
-  uLetterCount: 0,
-  wangHanziCount: 0,
-  wangSidewaysHanziCount: 0,
-  wLetterCount: 0,
-  xLetterCount: 0,
-  yaHangulCount: 0,
-  yEastLetterCount: 0,
-  yeoHangulCount: 0,
-  yLetterCount: 0,
-  yoHangulCount: 0,
-  youHanziCount: 0,
-  yuEastKatakanaCount: 0,
-  yuHangulCount: 0,
-  yuInvertedKatakanaCount: 0,
-  yuKatakanaCount: 0,
-  yUpLetterCount: 0,
-  yuWestKatakanaCount: 0,
-  yWestLetterCount: 0,
-  zLetterCount: 0,
-  zSidewaysLetterCount: 0,
+  ...zeroLetterCounts(),
 };
 
 /** Every boolean characteristic false. */
@@ -234,4 +143,27 @@ export function tiled(code: CodeObject, times: number): CodeObject {
   );
 
   return { ...code, columns: code.columns * times, digits: rows.join("") };
+}
+
+/** Narrows a partial letter record to a complete one, throwing if a letter key was left out. */
+function assertLetterCounts(
+  counts: Partial<Record<LetterCharacteristicKey, number>>,
+): asserts counts is Record<LetterCharacteristicKey, number> {
+  const missing = LETTER_CHARACTERISTIC_KEYS.find(
+    (key) => counts[key] === undefined,
+  );
+  if (missing !== undefined) {
+    throw new Error(`Letter count "${missing}" is missing its zero`);
+  }
+}
+
+/** Every letter glyph count at zero, built from the letter key list and checked complete. */
+function zeroLetterCounts(): Readonly<Record<LetterCharacteristicKey, number>> {
+  const counts: Partial<Record<LetterCharacteristicKey, number>> = {};
+  for (const key of LETTER_CHARACTERISTIC_KEYS) {
+    counts[key] = 0;
+  }
+
+  assertLetterCounts(counts);
+  return counts;
 }

@@ -2,8 +2,14 @@ import { Inject, Injectable } from "@nestjs/common";
 
 import { SubmatrixUtilitiesService } from "../submatrix-utilities.service";
 
+import type { Matrix } from "../../../matrix/matrix.types";
+import type {
+  CharacteristicContext,
+  CharacteristicEvaluator,
+} from "../../characteristics.types";
 import type {
   LetterCorner,
+  LetterDefinition,
   LetterOrientation,
   LetterOrientationName,
   LetterRotation,
@@ -14,7 +20,11 @@ import type {
  * The orientation arithmetic every letter shares: flipping a glyph template
  * either way, turning it clockwise, naming the sixteen corner and rotation
  * orientations, and reading each script's base corner. A letter holds one
- * base template and asks `orientations` for the other fifteen.
+ * base template and asks `evaluators` for an evaluator per orientation, each
+ * counting the template `orientations` draws that way.
+ *
+ * Counts are shared: within one context, every orientation, and every letter,
+ * drawing the same template scans the matrix for it once.
  */
 @Injectable()
 export class LetterUtilitiesService {
@@ -45,6 +55,13 @@ export class LetterUtilitiesService {
     "Northwest",
   ];
 
+  /**
+   * Each matrix's glyph counts by template, so orientations and letters
+   * drawing the same ink scan a context once between them. Keyed weakly by
+   * the context's matrix, so a count lives no longer than its context.
+   */
+  private readonly counts = new WeakMap<Matrix, Map<string, number>>();
+
   /** How many clockwise quarter turns each rotation makes. */
   private readonly quarterTurns: Readonly<Record<LetterRotation, number>> = {
     Half: 2,
@@ -61,6 +78,15 @@ export class LetterUtilitiesService {
     "ThreeQuarter",
   ];
 
+  /** How each turn is said in an orientation's description. */
+  private readonly turnWords: Readonly<
+    Record<Exclude<LetterRotation, "None">, string>
+  > = {
+    Half: "turned a half turn",
+    Quarter: "turned a quarter clockwise",
+    ThreeQuarter: "turned three quarters clockwise",
+  };
+
   // 🔑 Public Fields
 
   // 🔏 Private Methods
@@ -70,6 +96,99 @@ export class LetterUtilitiesService {
     return Array.from({ length: line.length }, (_unused, column) =>
       line.charAt(column),
     );
+  }
+
+  /** The count of `template` glyphs in a context, scanned the first time any evaluator asks for it. */
+  private count(
+    context: CharacteristicContext,
+    template: readonly string[],
+  ): number {
+    const counts = this.counts.get(context.matrix) ?? new Map<string, number>();
+    this.counts.set(context.matrix, counts);
+    const key = template.join("/");
+    const cached = counts.get(key);
+    if (cached !== undefined) {
+      return cached;
+    }
+
+    const count = this.submatrixUtilitiesService.countIsolatedGlyphs(
+      context.matrix,
+      template,
+    );
+    counts.set(key, count);
+    return count;
+  }
+
+  /**
+   * The sentence describing one orientation: the glyph, its upright shape,
+   * how the orientation draws it, and every alias given for an orientation
+   * drawing the same ink.
+   */
+  private description(
+    definition: LetterDefinition,
+    orientation: LetterOrientation,
+    aliases: readonly string[],
+  ): string {
+    const aliasSentence =
+      aliases.length === 0 ? "" : ` Also reads as ${aliases.join(", ")}.`;
+
+    return `The number of minimal isolated ${definition.glyph} glyphs — ${definition.shape} — ${this.drawing(definition.script, orientation)}.${aliasSentence}`;
+  }
+
+  /** A key spelled out word by word for display: `aSoutheastQuarterLatinCount` reads `A Southeast Quarter Latin Count`. */
+  private displayName(key: string): string {
+    const words = key.replaceAll(/(?=[A-Z])/gu, " ");
+
+    return words.charAt(0).toUpperCase() + words.slice(1);
+  }
+
+  /** How an orientation draws the upright glyph: `drawn upright`, or its flip and then its turn. */
+  private drawing(
+    script: LetterScript,
+    orientation: LetterOrientation,
+  ): string {
+    const base = this.baseCorner(script);
+    const flips = [
+      ...(orientation.corner.endsWith("east") === base.endsWith("east")
+        ? []
+        : ["east to west"]),
+      ...(orientation.corner.startsWith("North") === base.startsWith("North")
+        ? []
+        : ["north to south"]),
+    ];
+    const steps = [
+      ...(flips.length === 0 ? [] : [`mirrored ${flips.join(" and ")}`]),
+      ...(orientation.rotation === "None"
+        ? []
+        : [this.turnWords[orientation.rotation]]),
+    ];
+
+    return steps.length === 0 ? "drawn upright" : steps.join(", then ");
+  }
+
+  /** One orientation's evaluator: its own key, name, description, formula, and window, counting its own template. */
+  private evaluator(
+    definition: LetterDefinition,
+    orientation: LetterOrientation,
+    aliases: readonly string[],
+  ): CharacteristicEvaluator<number> {
+    const key = definition.key(orientation.name);
+
+    return {
+      compute: (context) => this.count(context, orientation.template),
+      metadata: {
+        category: "submatrix",
+        description: this.description(definition, orientation, aliases),
+        formula: this.submatrixUtilitiesService.glyphFormula(
+          orientation.template,
+        ),
+        key,
+        letter: true,
+        name: this.displayName(key),
+        submatrix: orientation.window,
+        valueType: "number",
+      },
+    };
   }
 
   /**
@@ -129,6 +248,38 @@ export class LetterUtilitiesService {
   /** The corner a script's glyphs face before any flip: its reading direction. */
   public baseCorner(script: LetterScript): LetterCorner {
     return this.baseCorners[script];
+  }
+
+  /**
+   * A letter's sixteen evaluators, one per orientation in
+   * {@link LetterUtilitiesService.orientationNames} order. Each has its own
+   * key, display name, description, formula, and window, is marked a letter,
+   * and counts the template its orientation draws. Orientations drawing the
+   * same ink count it alike, and share every alias given for any of them.
+   */
+  public evaluators(
+    definition: LetterDefinition,
+  ): readonly CharacteristicEvaluator<number>[] {
+    const orientations = this.orientations(
+      definition.template,
+      definition.script,
+    );
+    const aliasesByInk = new Map<string, string[]>();
+    for (const { name, template } of orientations) {
+      const alias = definition.aliases?.[name];
+      if (alias === undefined) continue;
+
+      const ink = template.join("/");
+      aliasesByInk.set(ink, [...(aliasesByInk.get(ink) ?? []), alias]);
+    }
+
+    return orientations.map((orientation) =>
+      this.evaluator(
+        definition,
+        orientation,
+        aliasesByInk.get(orientation.template.join("/")) ?? [],
+      ),
+    );
   }
 
   /**

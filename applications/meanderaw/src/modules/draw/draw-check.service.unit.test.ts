@@ -291,7 +291,7 @@ describe(DrawCheckService, () => {
         code: "a",
         drawingHash: "other",
         family: "snake",
-        glyphs: { aLetterCount: 1 },
+        glyphs: { aSoutheastLatinCount: 1 },
         id: 1,
         provenance: "enumerated",
       });
@@ -306,7 +306,7 @@ describe(DrawCheckService, () => {
             ...MEANDER_DRIFT_COMPARISON_COLUMNS.filter(
               (column) => column !== "glyphs",
             ),
-            "glyphs.aLetterCount",
+            "glyphs.aSoutheastLatinCount",
           ],
           rows: 2,
         },
@@ -324,12 +324,20 @@ describe(DrawCheckService, () => {
     it("names each letter whose count differs, reading a letter missing from either glyph map as zero", () => {
       const committedRow = meander({
         code: "a",
-        glyphs: { aLetterCount: 1, cLetterCount: 0, oLetterCount: 2 },
+        glyphs: {
+          aSoutheastLatinCount: 1,
+          cSoutheastLatinCount: 0,
+          oSoutheastLatinCount: 2,
+        },
         id: 2,
       });
       const regeneratedRow = meander({
         code: "a",
-        glyphs: { aLetterCount: 1, oLetterCount: 3, tLetterCount: 1 },
+        glyphs: {
+          aSoutheastLatinCount: 1,
+          oSoutheastLatinCount: 3,
+          tSoutheastLatinCount: 1,
+        },
         id: 1,
       });
 
@@ -339,7 +347,10 @@ describe(DrawCheckService, () => {
         {
           code: "a",
           columns: 1,
-          differences: ["glyphs.oLetterCount", "glyphs.tLetterCount"],
+          differences: [
+            "glyphs.oSoutheastLatinCount",
+            "glyphs.tSoutheastLatinCount",
+          ],
           rows: 2,
         },
       ]);
@@ -348,12 +359,12 @@ describe(DrawCheckService, () => {
     it("reports no drift between glyph maps that differ only in a zero count", () => {
       const committedRow = meander({
         code: "a",
-        glyphs: { aLetterCount: 1, cLetterCount: 0 },
+        glyphs: { aSoutheastLatinCount: 1, cSoutheastLatinCount: 0 },
         id: 2,
       });
       const regeneratedRow = meander({
         code: "a",
-        glyphs: { aLetterCount: 1 },
+        glyphs: { aSoutheastLatinCount: 1 },
         id: 1,
       });
 

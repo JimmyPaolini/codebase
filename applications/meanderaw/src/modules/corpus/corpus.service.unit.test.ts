@@ -44,7 +44,7 @@ describe(CorpusService, () => {
     forkCount: 1,
     freeEndCount: 2,
   };
-  const glyphs = { aLetterCount: 2 };
+  const glyphs = { aSoutheastLatinCount: 2 };
   const savedMeander = createMock<Meander>({ id: 1 });
 
   beforeAll(async () => {
@@ -188,7 +188,7 @@ describe(CorpusService, () => {
           family: "boxes",
           forkCount: 1,
           freeEndCount: 2,
-          glyphs: { aLetterCount: 2 },
+          glyphs: { aSoutheastLatinCount: 2 },
           lattice: "3",
           provenance: "hardcoded",
           repeats: 1,
