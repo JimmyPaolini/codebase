@@ -18,6 +18,8 @@ import type {
  * ├┤
  * └┘
  * ```
+ *
+ * Also reads as the hangul ㅂ (bieup).
  */
 @Injectable()
 export class AInvertedLetterCountCharacteristicService implements CharacteristicEvaluator<number> {
@@ -30,7 +32,7 @@ export class AInvertedLetterCountCharacteristicService implements Characteristic
     this.metadata = {
       category: "submatrix",
       description:
-        "The number of minimal isolated A glyphs — a closed end, a crossbar, and two legs, legs pointing north.",
+        "The number of minimal isolated A glyphs — a closed end, a crossbar, and two legs, legs pointing north. Also reads as the hangul ㅂ (bieup).",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "aInvertedLetterCount",
       name: "A Inverted Letter Count",

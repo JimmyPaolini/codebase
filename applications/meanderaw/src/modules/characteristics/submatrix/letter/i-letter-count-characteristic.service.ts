@@ -17,6 +17,8 @@ import type {
  * ╷
  * ╵
  * ```
+ *
+ * Also reads as the hangul ㅣ (i).
  */
 @Injectable()
 export class ILetterCountCharacteristicService implements CharacteristicEvaluator<number> {
@@ -29,7 +31,7 @@ export class ILetterCountCharacteristicService implements CharacteristicEvaluato
     this.metadata = {
       category: "submatrix",
       description:
-        "The number of minimal isolated I glyphs — a single straight edge, drawn vertically.",
+        "The number of minimal isolated I glyphs — a single straight edge, drawn vertically. Also reads as the hangul ㅣ (i).",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "iLetterCount",
       name: "I Letter Count",

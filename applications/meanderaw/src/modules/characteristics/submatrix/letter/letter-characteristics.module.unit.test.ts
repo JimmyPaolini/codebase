@@ -9,10 +9,18 @@ import { AEastLetterCountCharacteristicService } from "./a-east-letter-count-cha
 import { AInvertedLetterCountCharacteristicService } from "./a-inverted-letter-count-characteristic.service";
 import { ALetterCountCharacteristicService } from "./a-letter-count-characteristic.service";
 import { AWestLetterCountCharacteristicService } from "./a-west-letter-count-characteristic.service";
+import { AoEastHanziCountCharacteristicService } from "./ao-east-hanzi-count-characteristic.service";
+import { AoHanziCountCharacteristicService } from "./ao-hanzi-count-characteristic.service";
+import { AoInvertedHanziCountCharacteristicService } from "./ao-inverted-hanzi-count-characteristic.service";
+import { AoWestHanziCountCharacteristicService } from "./ao-west-hanzi-count-characteristic.service";
 import { BLetterCountCharacteristicService } from "./b-letter-count-characteristic.service";
 import { BSidewaysLetterCountCharacteristicService } from "./b-sideways-letter-count-characteristic.service";
 import { CLetterCountCharacteristicService } from "./c-letter-count-characteristic.service";
 import { CWestLetterCountCharacteristicService } from "./c-west-letter-count-characteristic.service";
+import { DaletEastLetterCountCharacteristicService } from "./dalet-east-letter-count-characteristic.service";
+import { DaletInvertedLetterCountCharacteristicService } from "./dalet-inverted-letter-count-characteristic.service";
+import { DaletLetterCountCharacteristicService } from "./dalet-letter-count-characteristic.service";
+import { DaletWestLetterCountCharacteristicService } from "./dalet-west-letter-count-characteristic.service";
 import { EDownLetterCountCharacteristicService } from "./e-down-letter-count-characteristic.service";
 import { ELetterCountCharacteristicService } from "./e-letter-count-characteristic.service";
 import { EUpLetterCountCharacteristicService } from "./e-up-letter-count-characteristic.service";
@@ -25,10 +33,16 @@ import { HLetterCountCharacteristicService } from "./h-letter-count-characterist
 import { HSidewaysLetterCountCharacteristicService } from "./h-sideways-letter-count-characteristic.service";
 import { ILetterCountCharacteristicService } from "./i-letter-count-characteristic.service";
 import { ISidewaysLetterCountCharacteristicService } from "./i-sideways-letter-count-characteristic.service";
+import { KieukEastHangulCountCharacteristicService } from "./kieuk-east-hangul-count-characteristic.service";
+import { KieukHangulCountCharacteristicService } from "./kieuk-hangul-count-characteristic.service";
+import { KieukInvertedHangulCountCharacteristicService } from "./kieuk-inverted-hangul-count-characteristic.service";
+import { KieukWestHangulCountCharacteristicService } from "./kieuk-west-hangul-count-characteristic.service";
 import { LDownLetterCountCharacteristicService } from "./l-down-letter-count-characteristic.service";
 import { LLetterCountCharacteristicService } from "./l-letter-count-characteristic.service";
 import { LUpLetterCountCharacteristicService } from "./l-up-letter-count-characteristic.service";
 import { LWestLetterCountCharacteristicService } from "./l-west-letter-count-characteristic.service";
+import { LamedLetterCountCharacteristicService } from "./lamed-letter-count-characteristic.service";
+import { LamedSidewaysLetterCountCharacteristicService } from "./lamed-sideways-letter-count-characteristic.service";
 import { LetterCharacteristicsModule } from "./letter-characteristics.module";
 import { MEastLetterCountCharacteristicService } from "./m-east-letter-count-characteristic.service";
 import { MLetterCountCharacteristicService } from "./m-letter-count-characteristic.service";
@@ -36,27 +50,44 @@ import { MWestLetterCountCharacteristicService } from "./m-west-letter-count-cha
 import { NLetterCountCharacteristicService } from "./n-letter-count-characteristic.service";
 import { NSidewaysLetterCountCharacteristicService } from "./n-sideways-letter-count-characteristic.service";
 import { OLetterCountCharacteristicService } from "./o-letter-count-characteristic.service";
+import { PieupHangulCountCharacteristicService } from "./pieup-hangul-count-characteristic.service";
+import { PieupSidewaysHangulCountCharacteristicService } from "./pieup-sideways-hangul-count-characteristic.service";
 import { SLetterCountCharacteristicService } from "./s-letter-count-characteristic.service";
 import { SSidewaysLetterCountCharacteristicService } from "./s-sideways-letter-count-characteristic.service";
 import { TEastLetterCountCharacteristicService } from "./t-east-letter-count-characteristic.service";
 import { TLetterCountCharacteristicService } from "./t-letter-count-characteristic.service";
 import { TUpLetterCountCharacteristicService } from "./t-up-letter-count-characteristic.service";
 import { TWestLetterCountCharacteristicService } from "./t-west-letter-count-characteristic.service";
+import { TavEastLetterCountCharacteristicService } from "./tav-east-letter-count-characteristic.service";
+import { TavInvertedLetterCountCharacteristicService } from "./tav-inverted-letter-count-characteristic.service";
+import { TavLetterCountCharacteristicService } from "./tav-letter-count-characteristic.service";
+import { TavWestLetterCountCharacteristicService } from "./tav-west-letter-count-characteristic.service";
+import { TianHanziCountCharacteristicService } from "./tian-hanzi-count-characteristic.service";
+import { TuEastHanziCountCharacteristicService } from "./tu-east-hanzi-count-characteristic.service";
+import { TuHanziCountCharacteristicService } from "./tu-hanzi-count-characteristic.service";
+import { TuInvertedHanziCountCharacteristicService } from "./tu-inverted-hanzi-count-characteristic.service";
+import { TuWestHanziCountCharacteristicService } from "./tu-west-hanzi-count-characteristic.service";
 import { UInvertedLetterCountCharacteristicService } from "./u-inverted-letter-count-characteristic.service";
 import { ULetterCountCharacteristicService } from "./u-letter-count-characteristic.service";
 import { WLetterCountCharacteristicService } from "./w-letter-count-characteristic.service";
+import { WangHanziCountCharacteristicService } from "./wang-hanzi-count-characteristic.service";
+import { WangSidewaysHanziCountCharacteristicService } from "./wang-sideways-hanzi-count-characteristic.service";
 import { XLetterCountCharacteristicService } from "./x-letter-count-characteristic.service";
 import { YEastLetterCountCharacteristicService } from "./y-east-letter-count-characteristic.service";
 import { YLetterCountCharacteristicService } from "./y-letter-count-characteristic.service";
 import { YUpLetterCountCharacteristicService } from "./y-up-letter-count-characteristic.service";
 import { YWestLetterCountCharacteristicService } from "./y-west-letter-count-characteristic.service";
+import { YuEastKatakanaCountCharacteristicService } from "./yu-east-katakana-count-characteristic.service";
+import { YuInvertedKatakanaCountCharacteristicService } from "./yu-inverted-katakana-count-characteristic.service";
+import { YuKatakanaCountCharacteristicService } from "./yu-katakana-count-characteristic.service";
+import { YuWestKatakanaCountCharacteristicService } from "./yu-west-katakana-count-characteristic.service";
 import { ZLetterCountCharacteristicService } from "./z-letter-count-characteristic.service";
 import { ZSidewaysLetterCountCharacteristicService } from "./z-sideways-letter-count-characteristic.service";
 
 import type { CharacteristicEvaluator } from "../../characteristics.types";
 import type { Type } from "@nestjs/common";
 
-/** Every letter glyph evaluator beside a Code holding one isolated copy of its glyph and nothing else. */
+/** Every letter glyph evaluator — Latin, Greek, Hebrew, and CJK — beside a Code holding one isolated copy of its glyph and nothing else. */
 const LETTERS: readonly {
   readonly fixture: string;
   readonly service: Type<CharacteristicEvaluator<number>>;
@@ -155,6 +186,124 @@ const LETTERS: readonly {
     fixture: "04x02y65408a90",
     service: ZSidewaysLetterCountCharacteristicService,
   },
+  { fixture: "04x02y25002b10", service: YuKatakanaCountCharacteristicService },
+  {
+    fixture: "03x03y440e90800",
+    service: YuEastKatakanaCountCharacteristicService,
+  },
+  {
+    fixture: "04x02y27100a10",
+    service: YuInvertedKatakanaCountCharacteristicService,
+  },
+  {
+    fixture: "03x03y0406d0880",
+    service: YuWestKatakanaCountCharacteristicService,
+  },
+  {
+    fixture: "04x03y6750efd0ab90",
+    service: TianHanziCountCharacteristicService,
+  },
+  {
+    fixture: "04x03y27102f102b10",
+    service: WangHanziCountCharacteristicService,
+  },
+  {
+    fixture: "04x03y4440efd08880",
+    service: WangSidewaysHanziCountCharacteristicService,
+  },
+  {
+    fixture: "05x03y0650069a50a3390",
+    service: TuHanziCountCharacteristicService,
+  },
+  {
+    fixture: "04x04y6500ca50c690a900",
+    service: TuEastHanziCountCharacteristicService,
+  },
+  {
+    fixture: "05x03y63350a56900a900",
+    service: TuInvertedHanziCountCharacteristicService,
+  },
+  {
+    fixture: "04x04y065069c0a5c00a90",
+    service: TuWestHanziCountCharacteristicService,
+  },
+  {
+    fixture: "05x03y65650ca9c0a3390",
+    service: AoHanziCountCharacteristicService,
+  },
+  {
+    fixture: "04x04y6350c690ca50a390",
+    service: AoEastHanziCountCharacteristicService,
+  },
+  {
+    fixture: "05x03y63350c65c0a9a90",
+    service: AoInvertedHanziCountCharacteristicService,
+  },
+  {
+    fixture: "04x04y6350a5c069c0a390",
+    service: AoWestHanziCountCharacteristicService,
+  },
+  {
+    fixture: "05x02y277102bb10",
+    service: PieupHangulCountCharacteristicService,
+  },
+  {
+    fixture: "03x04y440ed0ed0880",
+    service: PieupSidewaysHangulCountCharacteristicService,
+  },
+  {
+    fixture: "03x03y2502d0080",
+    service: KieukHangulCountCharacteristicService,
+  },
+  {
+    fixture: "04x02y04402b90",
+    service: KieukEastHangulCountCharacteristicService,
+  },
+  {
+    fixture: "03x03y400e10a10",
+    service: KieukInvertedHangulCountCharacteristicService,
+  },
+  {
+    fixture: "04x02y67108800",
+    service: KieukWestHangulCountCharacteristicService,
+  },
+  {
+    fixture: "05x02y2371000800",
+    service: DaletLetterCountCharacteristicService,
+  },
+  {
+    fixture: "03x04y0400c02d0080",
+    service: DaletEastLetterCountCharacteristicService,
+  },
+  {
+    fixture: "05x02y040002b310",
+    service: DaletInvertedLetterCountCharacteristicService,
+  },
+  {
+    fixture: "03x04y400e10c00800",
+    service: DaletWestLetterCountCharacteristicService,
+  },
+  {
+    fixture: "03x03y400a50080",
+    service: LamedLetterCountCharacteristicService,
+  },
+  {
+    fixture: "04x02y06102900",
+    service: LamedSidewaysLetterCountCharacteristicService,
+  },
+  { fixture: "04x02y06502980", service: TavLetterCountCharacteristicService },
+  {
+    fixture: "03x03y400a50290",
+    service: TavEastLetterCountCharacteristicService,
+  },
+  {
+    fixture: "04x02y4610a900",
+    service: TavInvertedLetterCountCharacteristicService,
+  },
+  {
+    fixture: "03x03y610a50080",
+    service: TavWestLetterCountCharacteristicService,
+  },
 ];
 
 describe(LetterCharacteristicsModule, () => {
@@ -210,5 +359,13 @@ describe(LetterCharacteristicsModule, () => {
 
       expect(evaluators.get(service)?.metadata.submatrix).toStrictEqual(window);
     });
+  });
+
+  it("gives every letter glyph evaluator its own template, so no ink is counted twice", () => {
+    const formulas = LETTERS.map(
+      ({ service }) => evaluators.get(service)?.metadata.formula,
+    );
+
+    expect(new Set(formulas).size).toBe(LETTERS.length);
   });
 });

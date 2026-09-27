@@ -17,6 +17,8 @@ import type {
  * ╶┐
  * ╶┘
  * ```
+ *
+ * Also reads as the katakana コ (ko) and the Hebrew כ (kaf).
  */
 @Injectable()
 export class CWestLetterCountCharacteristicService implements CharacteristicEvaluator<number> {
@@ -29,7 +31,7 @@ export class CWestLetterCountCharacteristicService implements CharacteristicEval
     this.metadata = {
       category: "submatrix",
       description:
-        "The number of minimal isolated C glyphs — a unit square missing one side, open to the west.",
+        "The number of minimal isolated C glyphs — a unit square missing one side, open to the west. Also reads as the katakana コ (ko) and the Hebrew כ (kaf).",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "cWestLetterCount",
       name: "C West Letter Count",

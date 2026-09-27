@@ -17,6 +17,8 @@ import type {
  * ┌┐
  * ╵╵
  * ```
+ *
+ * Also reads as the Greek Π (pi) and the Hebrew ח (het).
  */
 @Injectable()
 export class UInvertedLetterCountCharacteristicService implements CharacteristicEvaluator<number> {
@@ -29,7 +31,7 @@ export class UInvertedLetterCountCharacteristicService implements Characteristic
     this.metadata = {
       category: "submatrix",
       description:
-        "The number of minimal isolated U glyphs — a unit square missing one side, open to the south.",
+        "The number of minimal isolated U glyphs — a unit square missing one side, open to the south. Also reads as the Greek Π (pi) and the Hebrew ח (het).",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "uInvertedLetterCount",
       name: "U Inverted Letter Count",

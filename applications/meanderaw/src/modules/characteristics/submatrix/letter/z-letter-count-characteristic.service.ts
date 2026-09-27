@@ -18,6 +18,8 @@ import type {
  * ┌┘
  * └╴
  * ```
+ *
+ * Also reads as the hangul ㄹ (rieul).
  */
 @Injectable()
 export class ZLetterCountCharacteristicService implements CharacteristicEvaluator<number> {
@@ -30,7 +32,7 @@ export class ZLetterCountCharacteristicService implements CharacteristicEvaluato
     this.metadata = {
       category: "submatrix",
       description:
-        "The number of minimal isolated Z glyphs — three bars joined into a serpentine, mirroring S, bars horizontal.",
+        "The number of minimal isolated Z glyphs — three bars joined into a serpentine, mirroring S, bars horizontal. Also reads as the hangul ㄹ (rieul).",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "zLetterCount",
       name: "Z Letter Count",

@@ -17,6 +17,8 @@ import type {
  * ╷
  * └╴
  * ```
+ *
+ * Also reads as the hangul ㄴ (nieun).
  */
 @Injectable()
 export class LLetterCountCharacteristicService implements CharacteristicEvaluator<number> {
@@ -29,7 +31,7 @@ export class LLetterCountCharacteristicService implements CharacteristicEvaluato
     this.metadata = {
       category: "submatrix",
       description:
-        "The number of minimal isolated L glyphs — two unit strokes meeting at a corner, foot pointing east.",
+        "The number of minimal isolated L glyphs — two unit strokes meeting at a corner, foot pointing east. Also reads as the hangul ㄴ (nieun).",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "lLetterCount",
       name: "L Letter Count",

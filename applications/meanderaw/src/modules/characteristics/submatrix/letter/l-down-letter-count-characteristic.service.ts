@@ -17,6 +17,8 @@ import type {
  * ┌╴
  * ╵
  * ```
+ *
+ * Also reads as the Greek Γ (gamma).
  */
 @Injectable()
 export class LDownLetterCountCharacteristicService implements CharacteristicEvaluator<number> {
@@ -29,7 +31,7 @@ export class LDownLetterCountCharacteristicService implements CharacteristicEval
     this.metadata = {
       category: "submatrix",
       description:
-        "The number of minimal isolated L glyphs — two unit strokes meeting at a corner, foot pointing south.",
+        "The number of minimal isolated L glyphs — two unit strokes meeting at a corner, foot pointing south. Also reads as the Greek Γ (gamma).",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "lDownLetterCount",
       name: "L Down Letter Count",

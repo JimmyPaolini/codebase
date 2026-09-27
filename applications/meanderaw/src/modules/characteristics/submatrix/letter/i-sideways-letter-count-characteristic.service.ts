@@ -16,6 +16,8 @@ import type {
  * ```text
  * ╶╴
  * ```
+ *
+ * Also reads as the hangul ㅡ (eu) and the hanzi 一 (yi).
  */
 @Injectable()
 export class ISidewaysLetterCountCharacteristicService implements CharacteristicEvaluator<number> {
@@ -28,7 +30,7 @@ export class ISidewaysLetterCountCharacteristicService implements Characteristic
     this.metadata = {
       category: "submatrix",
       description:
-        "The number of minimal isolated I glyphs — a single straight edge, drawn horizontally.",
+        "The number of minimal isolated I glyphs — a single straight edge, drawn horizontally. Also reads as the hangul ㅡ (eu) and the hanzi 一 (yi).",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "iSidewaysLetterCount",
       name: "I Sideways Letter Count",

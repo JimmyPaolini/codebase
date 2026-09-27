@@ -18,6 +18,8 @@ import type {
  * ╶┤
  * ╶┘
  * ```
+ *
+ * Also reads as the katakana ヨ (yo).
  */
 @Injectable()
 export class EWestLetterCountCharacteristicService implements CharacteristicEvaluator<number> {
@@ -30,7 +32,7 @@ export class EWestLetterCountCharacteristicService implements CharacteristicEval
     this.metadata = {
       category: "submatrix",
       description:
-        "The number of minimal isolated E glyphs — a spine with three equal prongs, prongs pointing west.",
+        "The number of minimal isolated E glyphs — a spine with three equal prongs, prongs pointing west. Also reads as the katakana ヨ (yo).",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "eWestLetterCount",
       name: "E West Letter Count",

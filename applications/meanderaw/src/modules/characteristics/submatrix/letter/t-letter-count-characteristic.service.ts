@@ -17,6 +17,8 @@ import type {
  * ╶┬╴
  *  ╵
  * ```
+ *
+ * Also reads as the hangul ㅜ (u).
  */
 @Injectable()
 export class TLetterCountCharacteristicService implements CharacteristicEvaluator<number> {
@@ -29,7 +31,7 @@ export class TLetterCountCharacteristicService implements CharacteristicEvaluato
     this.metadata = {
       category: "submatrix",
       description:
-        "The number of minimal isolated T glyphs — a bar with a unit stem from its middle, stem pointing south.",
+        "The number of minimal isolated T glyphs — a bar with a unit stem from its middle, stem pointing south. Also reads as the hangul ㅜ (u).",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "tLetterCount",
       name: "T Letter Count",

@@ -36,6 +36,18 @@ export class Meander implements NumericCharacteristicRecord {
   aLetterCount!: number;
 
   @Column({ default: 0, type: "int" })
+  aoEastHanziCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  aoHanziCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  aoInvertedHanziCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  aoWestHanziCount!: number;
+
+  @Column({ default: 0, type: "int" })
   aWestLetterCount!: number;
 
   @Column({ default: 0, type: "int" })
@@ -79,6 +91,18 @@ export class Meander implements NumericCharacteristicRecord {
 
   @Column({ default: 0, type: "int" })
   cWestLetterCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  daletEastLetterCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  daletInvertedLetterCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  daletLetterCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  daletWestLetterCount!: number;
 
   @Column({ default: 0, type: "float" })
   density!: number;
@@ -164,6 +188,24 @@ export class Meander implements NumericCharacteristicRecord {
   @Column({ default: 0, type: "int" })
   iSidewaysLetterCount!: number;
 
+  @Column({ default: 0, type: "int" })
+  kieukEastHangulCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  kieukHangulCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  kieukInvertedHangulCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  kieukWestHangulCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  lamedLetterCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  lamedSidewaysLetterCount!: number;
+
   @Column({ type: "text" })
   lattice!: string;
 
@@ -218,6 +260,12 @@ export class Meander implements NumericCharacteristicRecord {
   @Column({ default: 0, type: "int" })
   oLetterCount!: number;
 
+  @Column({ default: 0, type: "int" })
+  pieupHangulCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  pieupSidewaysHangulCount!: number;
+
   @Column({ enum: MEANDER_PROVENANCES, type: "simple-enum" })
   provenance!: "enumerated" | "hardcoded";
 
@@ -246,7 +294,22 @@ export class Meander implements NumericCharacteristicRecord {
   sSidewaysLetterCount!: number;
 
   @Column({ default: 0, type: "int" })
+  tavEastLetterCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  tavInvertedLetterCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  tavLetterCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  tavWestLetterCount!: number;
+
+  @Column({ default: 0, type: "int" })
   tEastLetterCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  tianHanziCount!: number;
 
   @Column({ default: 0, type: "int" })
   tightestTurnCount!: number;
@@ -270,7 +333,19 @@ export class Meander implements NumericCharacteristicRecord {
   totalTurnCount!: number;
 
   @Column({ default: 0, type: "int" })
+  tuEastHanziCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  tuHanziCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  tuInvertedHanziCount!: number;
+
+  @Column({ default: 0, type: "int" })
   tUpLetterCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  tuWestHanziCount!: number;
 
   @Column({ default: 0, type: "int" })
   tWestLetterCount!: number;
@@ -283,6 +358,12 @@ export class Meander implements NumericCharacteristicRecord {
 
   @Column({ default: 0, type: "int" })
   verticalRectangleCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  wangHanziCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  wangSidewaysHanziCount!: number;
 
   @Column({ default: 0, type: "int" })
   westEdgeCount!: number;
@@ -303,7 +384,19 @@ export class Meander implements NumericCharacteristicRecord {
   yLetterCount!: number;
 
   @Column({ default: 0, type: "int" })
+  yuEastKatakanaCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  yuInvertedKatakanaCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  yuKatakanaCount!: number;
+
+  @Column({ default: 0, type: "int" })
   yUpLetterCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  yuWestKatakanaCount!: number;
 
   @Column({ default: 0, type: "int" })
   yWestLetterCount!: number;
