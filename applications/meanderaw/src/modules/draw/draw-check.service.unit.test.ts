@@ -356,6 +356,49 @@ describe(DrawCheckService, () => {
       ]);
     });
 
+    it("reports drift when a letter the committed row counted disappears from the regenerated row", () => {
+      const committedRow = meander({
+        code: "a",
+        glyphs: { oSoutheastLatinCount: 2 },
+        id: 2,
+      });
+      const regeneratedRow = meander({ code: "a", glyphs: {}, id: 1 });
+
+      const report = service.diff([regeneratedRow], [committedRow]);
+
+      expect(report.changed).toStrictEqual([
+        {
+          code: "a",
+          columns: 1,
+          differences: ["glyphs.oSoutheastLatinCount"],
+          rows: 2,
+        },
+      ]);
+    });
+
+    it("lists differing letters in key order, whatever order either glyph map holds them in", () => {
+      const committedRow = meander({ code: "a", glyphs: {}, id: 2 });
+      const regeneratedRow = meander({
+        code: "a",
+        glyphs: Object.fromEntries(
+          [
+            "zSoutheastLatinCount",
+            "aSoutheastLatinCount",
+            "mSoutheastLatinCount",
+          ].map((key) => [key, 1]),
+        ),
+        id: 1,
+      });
+
+      const report = service.diff([regeneratedRow], [committedRow]);
+
+      expect(report.changed[0]?.differences).toStrictEqual([
+        "glyphs.aSoutheastLatinCount",
+        "glyphs.mSoutheastLatinCount",
+        "glyphs.zSoutheastLatinCount",
+      ]);
+    });
+
     it("reports no drift between glyph maps that differ only in a zero count", () => {
       const committedRow = meander({
         code: "a",
