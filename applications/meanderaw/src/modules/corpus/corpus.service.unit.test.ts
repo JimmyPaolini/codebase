@@ -3,7 +3,6 @@ import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { characteristicRecord } from "../../../testing/meanders";
-import { CharacteristicRegistryService } from "../characteristics/characteristic-registry.service";
 import { CharacteristicsService } from "../characteristics/characteristics.service";
 import { ClassificationService } from "../classification/classification.service";
 import { CodeService } from "../code/code.service";
@@ -14,7 +13,6 @@ import { EnumerationService } from "../enumeration/enumeration.service";
 import { DuplicateCorpusCodeError } from "./corpus.constants";
 import { CorpusService } from "./corpus.service";
 
-import type { Characteristics } from "../characteristics/characteristics.types";
 import type { Meander } from "../database/entities/Meander.entity";
 import type { Tile } from "../tile/tile.types";
 import type { CorpusEntry } from "./corpus.types";
@@ -24,7 +22,6 @@ import type { CorpusEntry } from "./corpus.types";
 describe(CorpusService, () => {
   let service: CorpusService;
   let characteristicsService: CharacteristicsService;
-  let characteristicRegistryService: CharacteristicRegistryService;
   let classificationService: ClassificationService;
   let databaseService: DatabaseService;
   let codeService: CodeService;
@@ -32,9 +29,6 @@ describe(CorpusService, () => {
   let enumerationService: EnumerationService;
 
   const tile = createMock<Tile>({ columns: 1, rows: 2 });
-  const characteristics = createMock<Characteristics>({
-    isClosedLoop: false,
-  });
   const record = characteristicRecord({
     bettiNumber0Count: 1,
     forkCount: 1,
@@ -47,10 +41,6 @@ describe(CorpusService, () => {
     const module = await Test.createTestingModule({
       providers: [
         CorpusService,
-        {
-          provide: CharacteristicRegistryService,
-          useValue: createMock<CharacteristicRegistryService>(),
-        },
         {
           provide: CharacteristicsService,
           useValue: createMock<CharacteristicsService>(),
@@ -80,9 +70,6 @@ describe(CorpusService, () => {
 
     service = await module.resolve(CorpusService);
     characteristicsService = await module.resolve(CharacteristicsService);
-    characteristicRegistryService = await module.resolve(
-      CharacteristicRegistryService,
-    );
     classificationService = await module.resolve(ClassificationService);
     databaseService = await module.resolve(DatabaseService);
     codeService = await module.resolve(CodeService);
@@ -106,9 +93,8 @@ describe(CorpusService, () => {
     );
     vi.mocked(codeService.tile).mockReturnValue(tile);
     vi.mocked(drawingService.render).mockReturnValue("<svg>fixture</svg>\n");
-    vi.mocked(characteristicsService.compute).mockReturnValue(characteristics);
-    vi.mocked(characteristicRegistryService.record).mockReturnValue(record);
-    vi.mocked(characteristicRegistryService.isReducible).mockReturnValue(false);
+    vi.mocked(characteristicsService.compute).mockReturnValue(record);
+    vi.mocked(characteristicsService.isReducible).mockReturnValue(false);
     vi.mocked(classificationService.classify).mockReturnValue("snake");
     vi.mocked(enumerationService.isAdmitted).mockReturnValue(false);
     vi.mocked(databaseService.findOneByLattice).mockResolvedValue(null);
@@ -144,12 +130,12 @@ describe(CorpusService, () => {
     it("computes the characteristic record of the Code it read", async () => {
       await service.ingest([entry]);
 
-      expect(characteristicRegistryService.record).toHaveBeenCalledWith(
+      expect(characteristicsService.compute).toHaveBeenCalledWith(
         expect.objectContaining({ columns: 1, digits: "2", rows: 4 }),
       );
     });
 
-    it("scores each phase by the registry's tile-crossing component delta", async () => {
+    it("scores each phase by its tile-crossing component delta", async () => {
       vi.mocked(codeService.canonicalPhase).mockImplementation(
         (parsed, score) => {
           score(parsed);
@@ -160,9 +146,7 @@ describe(CorpusService, () => {
       await service.ingest([entry]);
 
       expect(
-        vi.mocked(
-          characteristicRegistryService.tileCrossingComponentDeltaCount,
-        ),
+        vi.mocked(characteristicsService.tileCrossingComponentDeltaCount),
       ).toHaveBeenCalledWith(
         expect.objectContaining({ columns: 1, digits: "2", rows: 4 }),
       );
@@ -194,10 +178,22 @@ describe(CorpusService, () => {
       );
     });
 
+    it("tells the classifier an entry filed under branch reduces when its Code is wider than its unit", async () => {
+      vi.mocked(characteristicsService.isReducible).mockReturnValue(true);
+
+      await service.ingest([
+        { code: "3", columns: 3, filedUnder: ["branch"], rows: 4 },
+      ]);
+
+      expect(classificationService.classify).toHaveBeenCalledWith(record, {
+        columns: 3,
+        isReducible: true,
+        rows: 4,
+      });
+    });
+
     it("lists isReducible after the true booleans when the filed Code reduces to a narrower unit", async () => {
-      vi.mocked(characteristicRegistryService.isReducible).mockReturnValue(
-        true,
-      );
+      vi.mocked(characteristicsService.isReducible).mockReturnValue(true);
 
       await service.ingest([entry]);
 
@@ -208,15 +204,16 @@ describe(CorpusService, () => {
       );
     });
 
-    it("classifies an entry filed under branch from the legacy characteristics", async () => {
+    it("classifies an entry filed under branch from its computed record and filed shape", async () => {
       await service.ingest([
         { code: "3", columns: 3, filedUnder: ["branch"], rows: 4 },
       ]);
 
-      expect(classificationService.classify).toHaveBeenCalledWith(
-        characteristics,
-        { columns: 3, rows: 4 },
-      );
+      expect(classificationService.classify).toHaveBeenCalledWith(record, {
+        columns: 3,
+        isReducible: false,
+        rows: 4,
+      });
       expect(databaseService.save).toHaveBeenCalledWith(
         expect.objectContaining({ family: "snake" }),
       );

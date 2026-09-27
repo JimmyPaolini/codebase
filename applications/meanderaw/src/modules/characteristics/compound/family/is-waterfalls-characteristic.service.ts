@@ -58,7 +58,7 @@ export class IsWaterfallsCharacteristicService implements CharacteristicEvaluato
   public readonly metadata: CharacteristicMetadata<boolean> = {
     category: "compound",
     description:
-      "Whether the repeating unit is junction-free, acyclic, dot-free open strands with two free ends each that cross the tile edge, end on the border rules with ends that are not lattice neighbors, hold no embedded U, and run at most one point vertically.",
+      "Whether the repeating unit is junction-free, acyclic, dot-free open strands with two free ends each that cross the tile edge, end on the border rules with ends that are not lattice neighbors, hold no embedded U, and run exactly one point vertically.",
     formula: String.raw`n_{\text{fork}} = n_{\text{cross}} = 0 \wedge n_{\text{dot}} = 0 \wedge \beta_1 = 0 \wedge \left|V_1\right| = 2\beta_0 \wedge n_{\text{tile}} > 0 \wedge \text{endsOnBorderRules} \wedge \neg\,\text{endsAreLatticeNeighbors} \wedge n_{\text{U}} = 0 \wedge \ell_v = 1`,
     key: "isWaterfalls",
     name: "Is Waterfalls",

@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 
-import type { CodeEdge } from "../../characteristics.types";
+import type { CodeEdge } from "../../connectivity/connectivity.types";
 import type { FreeEndPoint } from "./end.types";
 
 /**

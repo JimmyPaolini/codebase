@@ -4,9 +4,9 @@ import { beforeAll, describe, expect, it } from "vitest";
 import {
   BOOLEAN_CHARACTERISTIC_KEYS,
   NUMERIC_CHARACTERISTIC_KEYS,
-} from "../characteristics/characteristic-registry.constants";
-import { CharacteristicRegistryService } from "../characteristics/characteristic-registry.service";
+} from "../characteristics/characteristics.constants";
 import { CharacteristicsModule } from "../characteristics/characteristics.module";
+import { CharacteristicsService } from "../characteristics/characteristics.service";
 import { ClassificationModule } from "../classification/classification.module";
 import { CodeModule } from "../code/code.module";
 import { CodeService } from "../code/code.service";
@@ -24,7 +24,7 @@ import { DrawRecordService } from "./draw-record.service";
 describe(DrawRecordService, () => {
   let service: DrawRecordService;
   let codeService: CodeService;
-  let registryService: CharacteristicRegistryService;
+  let characteristicsService: CharacteristicsService;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
@@ -39,7 +39,7 @@ describe(DrawRecordService, () => {
 
     service = await module.resolve(DrawRecordService);
     codeService = module.get(CodeService);
-    registryService = module.get(CharacteristicRegistryService);
+    characteristicsService = module.get(CharacteristicsService);
   });
 
   it("is defined", () => {
@@ -86,11 +86,11 @@ describe(DrawRecordService, () => {
       expect(record).not.toHaveProperty("pitch");
     });
 
-    it("stores every numeric characteristic of the registry's record under its own key, and the true booleans in key-list order", () => {
+    it("stores every numeric characteristic of the computed record under its own key, and the true booleans in key-list order", () => {
       const code = "2335635cc29ca339";
       const record = service.record(code, { columns: 4, rows: 4 }, "hardcoded");
       const canonical = codeService.parse(record.code);
-      const expected = registryService.record(canonical);
+      const expected = characteristicsService.compute(canonical);
 
       expect(
         NUMERIC_CHARACTERISTIC_KEYS.map((key) => [key, record[key]]),
@@ -100,7 +100,9 @@ describe(DrawRecordService, () => {
 
       expect(record.characteristics).toStrictEqual([
         ...BOOLEAN_CHARACTERISTIC_KEYS.filter((key) => expected[key]),
-        ...(registryService.isReducible(canonical) ? ["isReducible"] : []),
+        ...(characteristicsService.isReducible(canonical)
+          ? ["isReducible"]
+          : []),
       ]);
     });
 

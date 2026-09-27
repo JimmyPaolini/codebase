@@ -41,7 +41,7 @@ describe(CharacteristicContextService, () => {
     ]);
   });
 
-  it("reduces a repeating Code to its unit, as CharacteristicsService.measure does", () => {
+  it("reduces a repeating Code to its unit", () => {
     const context = service.create("04x01y3c3c");
 
     expect(context.columns).toBe(2);
@@ -68,7 +68,7 @@ describe(CharacteristicContextService, () => {
     expect(context.matrix[1]).toHaveLength(3);
   });
 
-  it("re-spells an uppercase parsed Code in lowercase, as the legacy grid predicates read it", () => {
+  it("re-spells an uppercase parsed Code in lowercase, as the grid predicates read it", () => {
     const context = service.create({
       columns: 3,
       digits: "3C0303",

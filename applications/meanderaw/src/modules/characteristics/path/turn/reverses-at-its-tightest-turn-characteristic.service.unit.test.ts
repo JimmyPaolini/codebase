@@ -5,7 +5,7 @@ import { CodeModule } from "../../../code/code.module";
 import { GraphModule } from "../../../graph/graph.module";
 import { MatrixModule } from "../../../matrix/matrix.module";
 import { CharacteristicContextService } from "../../characteristic-context.service";
-import { ConnectivityService } from "../../connectivity.service";
+import { ConnectivityService } from "../../connectivity/connectivity.service";
 import { PointUtilitiesService } from "../../submatrix/point/point-utilities.service";
 
 import { ReversesAtItsTightestTurnCharacteristicService } from "./reverses-at-its-tightest-turn-characteristic.service";

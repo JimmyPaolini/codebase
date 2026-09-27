@@ -1,6 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
 
-import { ConnectivityService } from "../../connectivity.service";
+import { ConnectivityService } from "../../connectivity/connectivity.service";
 import { PointUtilitiesService } from "../../submatrix/point/point-utilities.service";
 
 import type { Matrix } from "../../../matrix/matrix.types";
@@ -8,8 +8,8 @@ import type {
   CharacteristicContext,
   CharacteristicEvaluator,
   CharacteristicMetadata,
-  CodeEdge,
 } from "../../characteristics.types";
+import type { CodeEdge } from "../../connectivity/connectivity.types";
 import type { TurnTraceMetrics } from "./reverses-at-its-tightest-turn.types";
 
 /**

@@ -179,6 +179,11 @@ describe(IsWaterfallsCharacteristicService, () => {
         reason: "an embedded U",
       },
       {
+        change: { longestVerticalRunLength: 0 },
+        expected: false,
+        reason: "no vertical run",
+      },
+      {
         change: { longestVerticalRunLength: 2 },
         expected: false,
         reason: "a vertical run of two",

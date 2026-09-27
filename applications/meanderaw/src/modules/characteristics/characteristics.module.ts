@@ -2,18 +2,12 @@ import { Module } from "@nestjs/common";
 import { DiscoveryModule } from "@nestjs/core";
 
 import { CodeModule } from "../code/code.module";
-import { GraphModule } from "../graph/graph.module";
 import { MatrixModule } from "../matrix/matrix.module";
 
 import { CharacteristicContextService } from "./characteristic-context.service";
-import { CharacteristicRegistryService } from "./characteristic-registry.service";
-import { CharacteristicsFamilyService } from "./characteristics-family.service";
-import { CharacteristicsPathService } from "./characteristics-path.service";
-import { CharacteristicsShapeService } from "./characteristics-shape.service";
 import { CharacteristicsService } from "./characteristics.service";
 import { FamilyCharacteristicsModule } from "./compound/family/family-characteristics.module";
 import { StructureCharacteristicsModule } from "./compound/structure/structure-characteristics.module";
-import { ConnectivityService } from "./connectivity.service";
 import { EndCharacteristicsModule } from "./path/end/end-characteristics.module";
 import { TileCrossingCharacteristicsModule } from "./path/tile-crossing/tile-crossing-characteristics.module";
 import { TopologyCharacteristicsModule } from "./path/topology/topology-characteristics.module";
@@ -30,35 +24,24 @@ import { RunCharacteristicsModule } from "./submatrix/run/run-characteristics.mo
 /**
  * Wires up the Characteristic computation that reads a Code directly — no
  * grid, no SVG, no filesystem, no database — which is what lets
- * `DrawCodeService` populate a row's junction counts and boolean
- * Characteristics from the same reading it already renders from, with
- * nothing rendered in between.
+ * `DrawRecordService` fill a row's Characteristics from the same reading it
+ * already renders from, with nothing rendered in between.
  *
- * It imports `CodeModule` for the reading of a point's bits at a position,
- * `MatrixModule` for 2D matrix representations and sliding window analysis,
- * and `GraphModule` for one thing: the graph walk
- * `ConnectivityService` counts a repeat's pieces with. That service
- * is written against `InkAdjacency` rather than against a document or a
- * tile, precisely so a third caller can bring its own vocabulary — see its
- * own doc comment — and this is that third caller.
- *
- * Each modular characteristic evaluator lives in its own service under a
- * category folder (`submatrix/`, `path/`, `compound/`) and a group folder
- * beneath it. Each group folder holds one small module that provides and
- * exports its services, and this module imports and re-exports every group
- * module, so a consumer of `CharacteristicsModule` can inject any evaluator.
- * `CharacteristicRegistryService` finds every one of them through
- * `DiscoveryModule` rather than through a hand-maintained list, and fills a
- * whole record from one context.
+ * Each characteristic evaluator lives in its own service under a category
+ * folder (`submatrix/`, `path/`, `compound/`) and a group folder beneath it.
+ * Each group folder holds one small module that provides and exports its
+ * services, and this module imports and re-exports every group module, so a
+ * consumer of `CharacteristicsModule` can inject any evaluator.
+ * `CharacteristicsService` finds every one of them through `DiscoveryModule`
+ * rather than through a hand-maintained list, and fills a whole
+ * `Characteristics` record from one context built by
+ * `CharacteristicContextService` over `CodeModule` and `MatrixModule`.
  */
 @Module({
   controllers: [],
   exports: [
     CharacteristicContextService,
-    CharacteristicRegistryService,
-    CharacteristicsFamilyService,
     CharacteristicsService,
-    ConnectivityService,
     CornerCharacteristicsModule,
     CrossCharacteristicsModule,
     EmbeddedCharacteristicsModule,
@@ -83,7 +66,6 @@ import { RunCharacteristicsModule } from "./submatrix/run/run-characteristics.mo
     EndCharacteristicsModule,
     FamilyCharacteristicsModule,
     ForkCharacteristicsModule,
-    GraphModule,
     LetterCharacteristicsModule,
     MatrixModule,
     PointCharacteristicsModule,
@@ -94,14 +76,6 @@ import { RunCharacteristicsModule } from "./submatrix/run/run-characteristics.mo
     TopologyCharacteristicsModule,
     TurnCharacteristicsModule,
   ],
-  providers: [
-    CharacteristicContextService,
-    CharacteristicRegistryService,
-    CharacteristicsFamilyService,
-    CharacteristicsPathService,
-    CharacteristicsShapeService,
-    CharacteristicsService,
-    ConnectivityService,
-  ],
+  providers: [CharacteristicContextService, CharacteristicsService],
 })
 export class CharacteristicsModule {}

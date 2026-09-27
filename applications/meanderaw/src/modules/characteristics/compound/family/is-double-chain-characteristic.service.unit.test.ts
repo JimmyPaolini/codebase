@@ -144,6 +144,16 @@ describe(IsDoubleChainCharacteristicService, () => {
         expected: false,
         reason: "a vertical run of rows - 1",
       },
+      {
+        change: { longestVerticalRunLength: 1 },
+        expected: false,
+        reason: "a vertical run of rows - 3",
+      },
+      {
+        change: { longestVerticalRunLength: 0 },
+        expected: false,
+        reason: "no vertical run",
+      },
     ])("reports $expected for $reason", ({ change, expected }) => {
       Object.assign(values, change);
       const { columns, rows } = values;

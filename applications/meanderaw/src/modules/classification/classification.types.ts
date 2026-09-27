@@ -36,14 +36,19 @@ export interface MeanderFamilyRule {
   readonly name: MeanderFamily;
 }
 
-/** How wide and how deep one repeat is. */
+/**
+ * How wide and how deep one repeat is as filed, and whether it reduces to a
+ * narrower repeating unit — facts about the filed Code rather than about the
+ * unit its {@link Characteristics} are measured on.
+ */
 export interface MeanderShape {
   readonly columns: number;
+  readonly isReducible: boolean;
   readonly rows: number;
 }
 
 /**
- * Everything a family rule reads: the tile's measured Characteristics and its shape.
+ * Everything a family rule reads: the tile's measured Characteristics record and its shape.
  */
 export interface MeanderStructure extends MeanderShape {
   readonly characteristics: Characteristics;

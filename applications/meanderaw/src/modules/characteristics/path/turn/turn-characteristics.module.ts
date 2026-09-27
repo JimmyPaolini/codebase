@@ -1,7 +1,6 @@
 import { Module } from "@nestjs/common";
 
-import { GraphModule } from "../../../graph/graph.module";
-import { ConnectivityService } from "../../connectivity.service";
+import { ConnectivityModule } from "../../connectivity/connectivity.module";
 import { PointCharacteristicsModule } from "../../submatrix/point/point-characteristics.module";
 
 import { BottomBorderTouchCountCharacteristicService } from "./bottom-border-touch-count-characteristic.service";
@@ -16,10 +15,10 @@ import { TotalTurnCountCharacteristicService } from "./total-turn-count-characte
  * Provides and exports every turn-dynamics path characteristic evaluator —
  * how the ink turns along its strands and how often it touches the band's
  * two border rules — as one group `CharacteristicsModule` imports and
- * re-exports. It provides its own stateless `ConnectivityService` rather
- * than importing `CharacteristicsModule`, which imports this module. It
- * imports `PointCharacteristicsModule` for the shared `PointUtilitiesService`
- * arm count rather than duplicating that read.
+ * re-exports. It imports `ConnectivityModule` for the one shared
+ * `ConnectivityService` rather than providing its own. It imports
+ * `PointCharacteristicsModule` for the shared `PointUtilitiesService` arm
+ * count rather than duplicating that read.
  */
 @Module({
   controllers: [],
@@ -32,10 +31,9 @@ import { TotalTurnCountCharacteristicService } from "./total-turn-count-characte
     TopBorderTouchCountCharacteristicService,
     TotalTurnCountCharacteristicService,
   ],
-  imports: [GraphModule, PointCharacteristicsModule],
+  imports: [ConnectivityModule, PointCharacteristicsModule],
   providers: [
     BottomBorderTouchCountCharacteristicService,
-    ConnectivityService,
     InflectionCountCharacteristicService,
     MaximumMonotonicTurnLengthCharacteristicService,
     ReversesAtItsTightestTurnCharacteristicService,

@@ -1,6 +1,6 @@
 import type {
   BooleanCharacteristicKey,
-  CharacteristicRecord,
+  Characteristics,
   NumericCharacteristicRecord,
 } from "../src/modules/characteristics/characteristics.types";
 import type { MeanderRecord } from "../src/modules/database/database.types";
@@ -134,8 +134,8 @@ const FALSE_BOOLEAN_CHARACTERISTICS: Readonly<
 
 /** A whole characteristic record: every number zero and every boolean false, except the fields `overrides` names. */
 export function characteristicRecord(
-  overrides: Partial<CharacteristicRecord> = {},
-): CharacteristicRecord {
+  overrides: Partial<Characteristics> = {},
+): Characteristics {
   return {
     ...ZERO_NUMERIC_CHARACTERISTICS,
     ...FALSE_BOOLEAN_CHARACTERISTICS,

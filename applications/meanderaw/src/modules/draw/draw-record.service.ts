@@ -2,8 +2,7 @@ import * as crypto from "node:crypto";
 
 import { Inject, Injectable } from "@nestjs/common";
 
-import { BOOLEAN_CHARACTERISTIC_KEYS } from "../characteristics/characteristic-registry.constants";
-import { CharacteristicRegistryService } from "../characteristics/characteristic-registry.service";
+import { BOOLEAN_CHARACTERISTIC_KEYS } from "../characteristics/characteristics.constants";
 import { CharacteristicsService } from "../characteristics/characteristics.service";
 import { ClassificationService } from "../classification/classification.service";
 import { CodeService } from "../code/code.service";
@@ -27,20 +26,17 @@ import type {
  * passes, which is a fact about where the Code came from rather than
  * anything this can read off it.
  *
- * Every numeric Characteristic of `CharacteristicRegistryService.record` is
+ * Every numeric Characteristic of `CharacteristicsService.compute` is
  * stored under its own column, and every boolean one that holds is listed in
  * `characteristics`, followed by `"isReducible"` when the filed Code is
- * wider than its unit. The family still comes from the legacy
- * `CharacteristicsService.compute` until `ClassificationService` reads the
- * registry's record.
+ * wider than its unit. The family is `ClassificationService`'s verdict on
+ * that same record.
  */
 @Injectable()
 export class DrawRecordService {
   // 🏗 Dependency Injection
 
   constructor(
-    @Inject(CharacteristicRegistryService)
-    private readonly characteristicRegistryService: CharacteristicRegistryService,
     @Inject(CharacteristicsService)
     private readonly characteristicsService: CharacteristicsService,
     @Inject(ClassificationService)
@@ -73,19 +69,18 @@ export class DrawRecordService {
     const repeats = shape.repeats ?? parsed.repeats;
     const withRepeats = { ...parsed, repeats };
     const canonical = this.codeService.canonicalPhase(withRepeats, (phase) =>
-      this.characteristicRegistryService.tileCrossingComponentDeltaCount(phase),
+      this.characteristicsService.tileCrossingComponentDeltaCount(phase),
     );
-    const family = this.classificationService.classify(
-      this.characteristicsService.compute(canonical),
-      { columns: canonical.columns, rows: canonical.rows },
-    );
-    const characteristics =
-      this.characteristicRegistryService.record(canonical);
+    const characteristics = this.characteristicsService.compute(canonical);
+    const isReducible = this.characteristicsService.isReducible(canonical);
+    const family = this.classificationService.classify(characteristics, {
+      columns: canonical.columns,
+      isReducible,
+      rows: canonical.rows,
+    });
     const booleanKeys = [
       ...BOOLEAN_CHARACTERISTIC_KEYS.filter((key) => characteristics[key]),
-      ...(this.characteristicRegistryService.isReducible(canonical)
-        ? ["isReducible"]
-        : []),
+      ...(isReducible ? ["isReducible"] : []),
     ];
 
     const svg = this.drawingService.render(canonical);

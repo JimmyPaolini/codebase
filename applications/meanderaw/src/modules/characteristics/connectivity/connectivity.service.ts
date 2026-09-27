@@ -1,11 +1,11 @@
 import { Inject, Injectable } from "@nestjs/common";
 
-import { GraphService } from "../graph/graph.service";
-import { BARE_MATRIX_POINT } from "../matrix/matrix.constants";
+import { GraphService } from "../../graph/graph.service";
+import { BARE_MATRIX_POINT } from "../../matrix/matrix.constants";
 
-import type { InkAdjacency } from "../graph/graph.types";
-import type { Matrix } from "../matrix/matrix.types";
-import type { CodeEdge, Connectivity } from "./characteristics.types";
+import type { InkAdjacency } from "../../graph/graph.types";
+import type { Matrix } from "../../matrix/matrix.types";
+import type { CodeEdge, Connectivity } from "./connectivity.types";
 
 /**
  * Reads a meander Matrix as a graph, and reports the three numbers no

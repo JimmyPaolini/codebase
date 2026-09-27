@@ -4,7 +4,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 import {
   BOOLEAN_CHARACTERISTIC_KEY_SET,
   CHARACTERISTIC_KEYS,
-} from "./characteristic-registry.constants";
+} from "./characteristics.constants";
 import { CharacteristicsModule } from "./characteristics.module";
 import { IsArcadeCharacteristicService } from "./compound/family/is-arcade-characteristic.service";
 import { IsBarsCharacteristicService } from "./compound/family/is-bars-characteristic.service";

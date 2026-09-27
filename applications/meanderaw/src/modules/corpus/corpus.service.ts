@@ -2,8 +2,7 @@ import * as crypto from "node:crypto";
 
 import { Inject, Injectable } from "@nestjs/common";
 
-import { BOOLEAN_CHARACTERISTIC_KEYS } from "../characteristics/characteristic-registry.constants";
-import { CharacteristicRegistryService } from "../characteristics/characteristic-registry.service";
+import { BOOLEAN_CHARACTERISTIC_KEYS } from "../characteristics/characteristics.constants";
 import { CharacteristicsService } from "../characteristics/characteristics.service";
 import { ClassificationService } from "../classification/classification.service";
 import { CodeService } from "../code/code.service";
@@ -51,7 +50,7 @@ import type { CorpusEntry, CorpusFamily } from "./corpus.types";
  * what was extracted.
  *
  * The stored Characteristics are `DrawRecordService`'s: every numeric one
- * of `CharacteristicRegistryService.record` under its own column, and every
+ * of `CharacteristicsService.compute` under its own column, and every
  * boolean one that holds in `characteristics`, then `"isReducible"` when the
  * filed Code is wider than its unit.
  *
@@ -66,8 +65,6 @@ export class CorpusService {
   // 🏗 Dependency Injection
 
   constructor(
-    @Inject(CharacteristicRegistryService)
-    private readonly characteristicRegistryService: CharacteristicRegistryService,
     @Inject(CharacteristicsService)
     private readonly characteristicsService: CharacteristicsService,
     @Inject(ClassificationService)
@@ -96,7 +93,7 @@ export class CorpusService {
     const { code, columns, rows } = entry;
     const parsed = this.codeService.parse(code, rows, columns);
     const canonical = this.codeService.canonicalPhase(parsed, (phase) =>
-      this.characteristicRegistryService.tileCrossingComponentDeltaCount(phase),
+      this.characteristicsService.tileCrossingComponentDeltaCount(phase),
     );
 
     const svg = this.drawingService.render(canonical);
@@ -104,13 +101,11 @@ export class CorpusService {
     // cspell:ignore hex
     const drawingHash = crypto.createHash("sha256").update(svg).digest("hex");
 
-    const characteristics =
-      this.characteristicRegistryService.record(canonical);
+    const characteristics = this.characteristicsService.compute(canonical);
+    const isReducible = this.characteristicsService.isReducible(canonical);
     const booleanKeys = [
       ...BOOLEAN_CHARACTERISTIC_KEYS.filter((key) => characteristics[key]),
-      ...(this.characteristicRegistryService.isReducible(canonical)
-        ? ["isReducible"]
-        : []),
+      ...(isReducible ? ["isReducible"] : []),
     ];
 
     try {
@@ -128,10 +123,11 @@ export class CorpusService {
         filedFamily === "negative"
           ? "unclassified"
           : filedFamily === "branch"
-            ? this.classificationService.classify(
-                this.characteristicsService.compute(canonical),
-                { columns, rows },
-              )
+            ? this.classificationService.classify(characteristics, {
+                columns,
+                isReducible,
+                rows,
+              })
             : filedFamily;
 
       return await this.databaseService.save({

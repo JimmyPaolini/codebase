@@ -281,27 +281,13 @@ export class CodeService {
 
   /**
    * Names a tile as a self-contained Code string in the format
-   * `{columns}x{rows}y{digits}r{repeats}`: one hexadecimal character per point,
-   * in reading order, worth `8` for `north`, `4` for `south`, `2` for `east`
-   * and `1` for `west`, with 2-digit zero-padding on columns, rows, and repeats.
+   * `{columns}x{rows}y{digits}r{repeats}`: its {@link spellDigits}, with
+   * 2-digit zero-padding on columns, rows, and repeats.
    */
   spell(tile: Tile, repeats = 1): string {
-    const digits = tile.points
-      .flatMap((row) =>
-        row.map((point) =>
-          (
-            (point.north ? 8 : 0) +
-            (point.south ? 4 : 0) +
-            (point.east ? 2 : 0) +
-            (point.west ? 1 : 0)
-          ).toString(16),
-        ),
-      )
-      .join("");
-
     return this.format({
       columns: tile.columns,
-      digits,
+      digits: this.spellDigits(tile),
       repeats,
       rows: tile.rows,
     });
@@ -314,6 +300,27 @@ export class CodeService {
    */
   spellCanonical(tile: Tile, repeats = 1): string {
     return this.spell(this.symmetryService.canonicalTile(tile), repeats);
+  }
+
+  /**
+   * A tile's digits alone: one lowercase hexadecimal character per point, in
+   * reading order, worth `8` for `north`, `4` for `south`, `2` for `east` and
+   * `1` for `west` — exactly `rows × columns` of them, whatever the Code the
+   * tile was read from spelled.
+   */
+  spellDigits(tile: Tile): string {
+    return tile.points
+      .flatMap((row) =>
+        row.map((point) =>
+          (
+            (point.north ? 8 : 0) +
+            (point.south ? 4 : 0) +
+            (point.east ? 2 : 0) +
+            (point.west ? 1 : 0)
+          ).toString(16),
+        ),
+      )
+      .join("");
   }
 
   /**
