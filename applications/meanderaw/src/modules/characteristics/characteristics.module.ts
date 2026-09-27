@@ -10,15 +10,18 @@ import { CharacteristicsPathService } from "./characteristics-path.service";
 import { CharacteristicsShapeService } from "./characteristics-shape.service";
 import { CharacteristicsService } from "./characteristics.service";
 import { ConnectivityService } from "./connectivity.service";
+import { EndCharacteristicsModule } from "./path/end/end-characteristics.module";
 import { TileCrossingCharacteristicsModule } from "./path/tile-crossing/tile-crossing-characteristics.module";
 import { TopologyCharacteristicsModule } from "./path/topology/topology-characteristics.module";
 import { TurnCharacteristicsModule } from "./path/turn/turn-characteristics.module";
 import { CornerCharacteristicsModule } from "./submatrix/corner/corner-characteristics.module";
 import { CrossCharacteristicsModule } from "./submatrix/cross/cross-characteristics.module";
+import { EmbeddedCharacteristicsModule } from "./submatrix/embedded/embedded-characteristics.module";
 import { ForkCharacteristicsModule } from "./submatrix/fork/fork-characteristics.module";
 import { LetterCharacteristicsModule } from "./submatrix/letter/letter-characteristics.module";
 import { PointCharacteristicsModule } from "./submatrix/point/point-characteristics.module";
 import { RectangleCharacteristicsModule } from "./submatrix/rectangle/rectangle-characteristics.module";
+import { RunCharacteristicsModule } from "./submatrix/run/run-characteristics.module";
 
 /**
  * Wires up the Characteristic computation that reads a Code directly — no
@@ -50,10 +53,13 @@ import { RectangleCharacteristicsModule } from "./submatrix/rectangle/rectangle-
     ConnectivityService,
     CornerCharacteristicsModule,
     CrossCharacteristicsModule,
+    EmbeddedCharacteristicsModule,
+    EndCharacteristicsModule,
     ForkCharacteristicsModule,
     LetterCharacteristicsModule,
     PointCharacteristicsModule,
     RectangleCharacteristicsModule,
+    RunCharacteristicsModule,
     TileCrossingCharacteristicsModule,
     TopologyCharacteristicsModule,
     TurnCharacteristicsModule,
@@ -62,12 +68,15 @@ import { RectangleCharacteristicsModule } from "./submatrix/rectangle/rectangle-
     CodeModule,
     CornerCharacteristicsModule,
     CrossCharacteristicsModule,
+    EmbeddedCharacteristicsModule,
+    EndCharacteristicsModule,
     ForkCharacteristicsModule,
     GraphModule,
     LetterCharacteristicsModule,
     MatrixModule,
     PointCharacteristicsModule,
     RectangleCharacteristicsModule,
+    RunCharacteristicsModule,
     TileCrossingCharacteristicsModule,
     TopologyCharacteristicsModule,
     TurnCharacteristicsModule,
