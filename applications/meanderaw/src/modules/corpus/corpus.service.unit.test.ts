@@ -2,8 +2,10 @@ import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { characteristicRecord } from "../../../testing/meanders";
-import { NUMERIC_CHARACTERISTIC_KEYS } from "../characteristics/characteristics.constants";
+import {
+  characteristicRecord,
+  ZERO_NUMERIC_CHARACTERISTICS,
+} from "../../../testing/meanders";
 import { CharacteristicsService } from "../characteristics/characteristics.service";
 import { ClassificationService } from "../classification/classification.service";
 import { CodeService } from "../code/code.service";
@@ -14,7 +16,6 @@ import { EnumerationService } from "../enumeration/enumeration.service";
 import { DuplicateCorpusCodeError } from "./corpus.constants";
 import { CorpusService } from "./corpus.service";
 
-import type { NumericCharacteristicRecord } from "../characteristics/characteristics.types";
 import type { Meander } from "../database/entities/Meander.entity";
 import type { Tile } from "../tile/tile.types";
 import type { CorpusEntry } from "./corpus.types";
@@ -37,6 +38,12 @@ describe(CorpusService, () => {
     freeEndCount: 2,
     isSingleArc: true,
   });
+  const numericRecord = {
+    ...ZERO_NUMERIC_CHARACTERISTICS,
+    bettiNumber0Count: 1,
+    forkCount: 1,
+    freeEndCount: 2,
+  };
   const savedMeander = createMock<Meander>({ id: 1 });
 
   beforeAll(async () => {
@@ -97,11 +104,12 @@ describe(CorpusService, () => {
     vi.mocked(drawingService.render).mockReturnValue("<svg>fixture</svg>\n");
     vi.mocked(characteristicsService.compute).mockReturnValue(record);
     vi.mocked(characteristicsService.isReducible).mockReturnValue(false);
-    vi.mocked(characteristicsService.numericRecord).mockImplementation(
-      (characteristics) =>
-        Object.fromEntries(
-          NUMERIC_CHARACTERISTIC_KEYS.map((key) => [key, characteristics[key]]),
-        ) as NumericCharacteristicRecord,
+    vi.mocked(characteristicsService.numericRecord).mockReturnValue(
+      numericRecord,
+    );
+    vi.mocked(characteristicsService.trueBooleanKeys).mockImplementation(
+      (_characteristics, isReducible) =>
+        isReducible ? ["isSingleArc", "isReducible"] : ["isSingleArc"],
     );
     vi.mocked(classificationService.classify).mockReturnValue("snake");
     vi.mocked(enumerationService.isAdmitted).mockReturnValue(false);

@@ -2,7 +2,6 @@ import * as crypto from "node:crypto";
 
 import { Inject, Injectable } from "@nestjs/common";
 
-import { BOOLEAN_CHARACTERISTIC_KEYS } from "../characteristics/characteristics.constants";
 import { CharacteristicsService } from "../characteristics/characteristics.service";
 import { ClassificationService } from "../classification/classification.service";
 import { CodeService } from "../code/code.service";
@@ -103,10 +102,10 @@ export class CorpusService {
 
     const characteristics = this.characteristicsService.compute(canonical);
     const isReducible = this.characteristicsService.isReducible(canonical);
-    const booleanKeys = [
-      ...BOOLEAN_CHARACTERISTIC_KEYS.filter((key) => characteristics[key]),
-      ...(isReducible ? ["isReducible"] : []),
-    ];
+    const booleanKeys = this.characteristicsService.trueBooleanKeys(
+      characteristics,
+      isReducible,
+    );
 
     try {
       const existing = await this.databaseService.findOneByLattice(

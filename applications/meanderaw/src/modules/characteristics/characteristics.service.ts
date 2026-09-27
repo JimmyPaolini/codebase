@@ -6,6 +6,7 @@ import { CodeService } from "../code/code.service";
 import { CharacteristicContextService } from "./characteristic-context.service";
 import {
   BOOLEAN_CHARACTERISTIC_KEY_SET,
+  BOOLEAN_CHARACTERISTIC_KEYS,
   CHARACTERISTIC_KEY_SET,
   CHARACTERISTIC_KEYS,
   CharacteristicRegistryError,
@@ -256,5 +257,16 @@ export class CharacteristicsService implements OnApplicationBootstrap {
     return this.tileCrossingComponentDeltaCountService.compute(
       this.contextService.createUnreduced(code),
     );
+  }
+
+  /** The boolean half of a computed record that holds, as the `characteristics` column stores it: every key from {@link BOOLEAN_CHARACTERISTIC_KEYS} whose value is `true`, followed by `"isReducible"` when the filed Code is wider than its unit. */
+  public trueBooleanKeys(
+    characteristics: Characteristics,
+    isReducible: boolean,
+  ): string[] {
+    return [
+      ...BOOLEAN_CHARACTERISTIC_KEYS.filter((key) => characteristics[key]),
+      ...(isReducible ? ["isReducible"] : []),
+    ];
   }
 }

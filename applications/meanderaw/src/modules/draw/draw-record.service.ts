@@ -2,7 +2,6 @@ import * as crypto from "node:crypto";
 
 import { Inject, Injectable } from "@nestjs/common";
 
-import { BOOLEAN_CHARACTERISTIC_KEYS } from "../characteristics/characteristics.constants";
 import { CharacteristicsService } from "../characteristics/characteristics.service";
 import { ClassificationService } from "../classification/classification.service";
 import { CodeService } from "../code/code.service";
@@ -77,10 +76,10 @@ export class DrawRecordService {
       isReducible,
       rows: canonical.rows,
     });
-    const booleanKeys = [
-      ...BOOLEAN_CHARACTERISTIC_KEYS.filter((key) => characteristics[key]),
-      ...(isReducible ? ["isReducible"] : []),
-    ];
+    const booleanKeys = this.characteristicsService.trueBooleanKeys(
+      characteristics,
+      isReducible,
+    );
 
     const svg = this.drawingService.render(canonical);
     // Node crypto API requires "hex" string

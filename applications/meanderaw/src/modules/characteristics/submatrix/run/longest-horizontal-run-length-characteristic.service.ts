@@ -10,8 +10,8 @@ import type {
 
 /**
  * The longest straight horizontal run of ink anywhere in the Code, wrapping
- * each row around its own column span so a run may cross the tile's seam,
- * and capped at the Code's column count.
+ * each row around its own column span so a run may continue across the tile
+ * crossing, and capped at the Code's column count.
  */
 @Injectable()
 export class LongestHorizontalRunLengthCharacteristicService implements CharacteristicEvaluator<number> {

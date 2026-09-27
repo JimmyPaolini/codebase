@@ -100,7 +100,7 @@ describe(ReversesAtItsTightestTurnCharacteristicService, () => {
     {
       code: { columns: 3, digits: "50690a", repeats: 1, rows: 2 },
       expected: true,
-      shape: "a loop whose turn lands one step after crossing the seam",
+      shape: "a loop whose turn lands one step after the tile crossing",
     },
     {
       code: { columns: 4, digits: "235000c000a1", repeats: 1, rows: 3 },

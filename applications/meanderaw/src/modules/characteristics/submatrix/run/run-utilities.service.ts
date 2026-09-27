@@ -60,9 +60,9 @@ export class RunUtilitiesService {
 
   /**
    * The longest straight horizontal run of ink anywhere in the Code,
-   * wrapping each row around its own column span so a run may cross the
-   * tile's seam. Capped at `columns`, since a longer run would double back
-   * over ground it already covered.
+   * wrapping each row around its own column span so a run may continue
+   * across the tile crossing. Capped at `columns`, since a longer run would
+   * double back over ground it already covered.
    */
   public longestHorizontalRunLength(matrix: Matrix): number {
     const columns = matrix[0]?.length ?? 0;

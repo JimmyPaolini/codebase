@@ -256,4 +256,31 @@ describe(CharacteristicsService, () => {
     expect(numeric).not.toHaveProperty("isDots");
     expect(numeric.dotCount).toBe(characteristics.dotCount);
   });
+
+  it("lists no boolean key when none of them hold and the Code is not reducible", () => {
+    const characteristics = service.compute("02x01y2c");
+
+    expect(service.trueBooleanKeys(characteristics, false)).toStrictEqual([]);
+    expect(service.trueBooleanKeys(characteristics, true)).toStrictEqual([
+      "isReducible",
+    ]);
+  });
+
+  it("lists every true boolean key, then isReducible last when the Code is wider than its unit", async () => {
+    providers = providers.map((provider, index) =>
+      CHARACTERISTIC_KEYS[index] === "isDots"
+        ? fake("isDots", "boolean", true)
+        : provider,
+    );
+    const fresh = await registry();
+    const characteristics = fresh.compute("02x01y2c");
+
+    expect(fresh.trueBooleanKeys(characteristics, false)).toStrictEqual([
+      "isDots",
+    ]);
+    expect(fresh.trueBooleanKeys(characteristics, true)).toStrictEqual([
+      "isDots",
+      "isReducible",
+    ]);
+  });
 });

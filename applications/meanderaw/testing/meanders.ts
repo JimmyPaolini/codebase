@@ -18,7 +18,7 @@ import type { MeanderRecord } from "../src/modules/database/database.types";
 // 🔧 Configuration
 
 /** Every numeric characteristic at zero. */
-const ZERO_NUMERIC_CHARACTERISTICS: NumericCharacteristicRecord = {
+export const ZERO_NUMERIC_CHARACTERISTICS: NumericCharacteristicRecord = {
   aEastLetterCount: 0,
   aInvertedLetterCount: 0,
   aLetterCount: 0,
