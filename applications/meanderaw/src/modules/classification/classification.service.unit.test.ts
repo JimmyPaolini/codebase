@@ -55,12 +55,12 @@ const OUTRANKING_PAIRS = FAMILY_RULES.flatMap((higher, index) =>
   FAMILY_RULES.slice(index + 1).map((lower) => ({ higher, lower })),
 );
 
-/** A shape `rows` deep, four columns wide, and not reducible, except where `overrides` says otherwise. */
+/** A shape `rows` deep and not reducible, except where `overrides` says otherwise. */
 function shape(
   rows: number,
   overrides: Partial<MeanderShape> = {},
 ): MeanderShape {
-  return { columns: 4, isReducible: false, rows, ...overrides };
+  return { isReducible: false, rows, ...overrides };
 }
 
 describe(ClassificationService, () => {
@@ -165,7 +165,7 @@ describe(ClassificationService, () => {
       expect(
         service.classify(
           characteristicRecord({ [key]: true }),
-          shape(DEEPEST_MINIMUM, { columns: 8, isReducible: true }),
+          shape(DEEPEST_MINIMUM, { isReducible: true }),
         ),
       ).toBe(family);
     });
@@ -178,7 +178,7 @@ describe(ClassificationService, () => {
         expect(
           service.classify(
             characteristicRecord({ [key]: true }),
-            shape(DEEPEST_MINIMUM, { columns: 8, isReducible: true }),
+            shape(DEEPEST_MINIMUM, { isReducible: true }),
           ),
         ).toBe("unclassified");
       });
@@ -187,7 +187,7 @@ describe(ClassificationService, () => {
         expect(
           service.classify(
             characteristicRecord({ isWaterfalls: true, [key]: true }),
-            shape(DEEPEST_MINIMUM, { columns: 8, isReducible: true }),
+            shape(DEEPEST_MINIMUM, { isReducible: true }),
           ),
         ).toBe("waterfalls");
       });
@@ -196,7 +196,7 @@ describe(ClassificationService, () => {
         expect(
           service.classify(
             characteristicRecord({ [key]: true }),
-            shape(DEEPEST_MINIMUM, { columns: 4, isReducible: false }),
+            shape(DEEPEST_MINIMUM),
           ),
         ).toBe(family);
       });

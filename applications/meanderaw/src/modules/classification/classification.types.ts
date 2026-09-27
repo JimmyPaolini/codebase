@@ -37,12 +37,12 @@ export interface MeanderFamilyRule {
 }
 
 /**
- * How wide and how deep one repeat is as filed, and whether it reduces to a
- * narrower repeating unit — facts about the filed Code rather than about the
- * unit its {@link Characteristics} are measured on.
+ * How deep one repeat is as filed, and whether it reduces to a narrower
+ * repeating unit — facts about the filed Code rather than about the unit
+ * its {@link Characteristics} are measured on. `classify` needs no column
+ * count: every rule reads only `rows` and `isReducible`.
  */
 export interface MeanderShape {
-  readonly columns: number;
   readonly isReducible: boolean;
   readonly rows: number;
 }

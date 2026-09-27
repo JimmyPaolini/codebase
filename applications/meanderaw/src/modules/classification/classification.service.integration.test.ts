@@ -2,6 +2,7 @@ import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import { LEGACY_FAMILIES } from "../../../testing/legacy-characteristics";
+import { tiled } from "../../../testing/meanders";
 import { CharacteristicsModule } from "../characteristics/characteristics.module";
 import { CharacteristicsService } from "../characteristics/characteristics.service";
 import { CodeModule } from "../code/code.module";
@@ -19,17 +20,6 @@ const DOUBLE_CHAIN = "04x03y35634884a339";
 /** How many times side by side each fixture is drawn when its tilings are classified. */
 const TILINGS = [1, 2, 3] as const;
 
-/** The Code drawn `times` over side by side: each row repeated, columns multiplied. */
-function tiled(code: CodeObject, times: number): CodeObject {
-  const rows = Array.from({ length: code.rows }, (_unused, row) =>
-    code.digits
-      .slice(row * code.columns, (row + 1) * code.columns)
-      .repeat(times),
-  );
-
-  return { ...code, columns: code.columns * times, digits: rows.join("") };
-}
-
 /**
  * Classifies real Codes through the real characteristic evaluators, pinned
  * to the families the retired classifier gave the same Codes before the
@@ -43,7 +33,6 @@ describe(ClassificationService, () => {
   /** The family of a Code as filed, from its record and its filed shape. */
   function familyOf(code: CodeObject): MeanderFamily {
     return service.classify(characteristicsService.compute(code), {
-      columns: code.columns,
       isReducible: characteristicsService.isReducible(code),
       rows: code.rows,
     });

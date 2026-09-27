@@ -74,7 +74,6 @@ export class DrawRecordService {
     const characteristics = this.characteristicsService.compute(canonical);
     const isReducible = this.characteristicsService.isReducible(canonical);
     const family = this.classificationService.classify(characteristics, {
-      columns: canonical.columns,
       isReducible,
       rows: canonical.rows,
     });

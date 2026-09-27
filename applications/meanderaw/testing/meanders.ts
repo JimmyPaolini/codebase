@@ -3,6 +3,7 @@ import type {
   Characteristics,
   NumericCharacteristicRecord,
 } from "../src/modules/characteristics/characteristics.types";
+import type { CodeObject } from "../src/modules/code/code.types";
 import type { MeanderRecord } from "../src/modules/database/database.types";
 
 /**
@@ -159,4 +160,15 @@ export function meanderRecord(
     rows: 2,
     ...overrides,
   };
+}
+
+/** The Code drawn `times` over side by side: each row repeated, columns multiplied. */
+export function tiled(code: CodeObject, times: number): CodeObject {
+  const rows = Array.from({ length: code.rows }, (_unused, row) =>
+    code.digits
+      .slice(row * code.columns, (row + 1) * code.columns)
+      .repeat(times),
+  );
+
+  return { ...code, columns: code.columns * times, digits: rows.join("") };
 }

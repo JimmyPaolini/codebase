@@ -205,7 +205,6 @@ describe(CorpusService, () => {
       ]);
 
       expect(classificationService.classify).toHaveBeenCalledWith(record, {
-        columns: 3,
         isReducible: true,
         rows: 4,
       });
@@ -229,7 +228,6 @@ describe(CorpusService, () => {
       ]);
 
       expect(classificationService.classify).toHaveBeenCalledWith(record, {
-        columns: 3,
         isReducible: false,
         rows: 4,
       });

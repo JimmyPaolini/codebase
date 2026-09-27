@@ -55,7 +55,13 @@ export class CharacteristicsService implements OnApplicationBootstrap {
 
   // 🔐 Private Fields
 
-  /** Every evaluator in key-list order, discovered and checked once — at bootstrap in the application, or on first use in a module that is compiled but never initialized. */
+  /**
+   * Every evaluator in key-list order, discovered and checked once. The
+   * real application always reaches this through
+   * {@link onApplicationBootstrap}; the `??=` here only serves a module
+   * that is compiled but never initialized, such as a test that never
+   * calls `module.init()`.
+   */
   private registered: readonly CharacteristicEvaluator[] | undefined;
 
   // 🔑 Public Fields
@@ -232,7 +238,10 @@ export class CharacteristicsService implements OnApplicationBootstrap {
    * Discovers and checks every evaluator as the application boots, so a key
    * with no evaluator, an unknown or doubly claimed key, or a mistyped
    * declaration stops the application before the first Code is measured
-   * rather than partway through a sweep.
+   * rather than partway through a sweep. This is the path the real
+   * application always takes; {@link evaluators}'s lazy `??=` is not a
+   * second production path, only what lets a test compile this module
+   * without booting it.
    */
   public onApplicationBootstrap(): void {
     this.evaluators();

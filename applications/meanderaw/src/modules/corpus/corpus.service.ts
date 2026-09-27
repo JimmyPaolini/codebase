@@ -124,7 +124,6 @@ export class CorpusService {
           ? "unclassified"
           : filedFamily === "branch"
             ? this.classificationService.classify(characteristics, {
-                columns,
                 isReducible,
                 rows,
               })

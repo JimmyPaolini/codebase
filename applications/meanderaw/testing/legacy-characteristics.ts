@@ -269,7 +269,17 @@ export const LEGACY_REDUCIBILITY: Readonly<Record<string, string>> = {
   "06x02y2525251a1a1a": "true true true",
 };
 
-/** Each fixture Code drawn 1, 2, and 3 times side by side: the family the retired classifier gave the tiling at its filed shape. */
+/**
+ * Each fixture Code drawn 1, 2, and 3 times side by side: the family the
+ * retired classifier gave the tiling at its filed shape.
+ *
+ * `chain`, `boxes`, `snake`, and `swirl` have no positive fixture here: the
+ * retired classifier filed the smallest hardcoded Code of each under a
+ * different name (double-chain, whirl, unclassified, and arcade
+ * respectively), so no real Code pins those four rules at this level —
+ * only the mocked truth tables in `classification.service.unit.test.ts` and
+ * the compound evaluators' own tests, plus the full-database parity check.
+ */
 export const LEGACY_FAMILIES: Readonly<Record<string, string>> = {
   "01x02y00": "dots dots dots",
   "01x02y03": "unclassified unclassified unclassified",

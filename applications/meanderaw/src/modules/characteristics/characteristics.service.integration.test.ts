@@ -7,13 +7,14 @@ import {
   LEGACY_REDUCIBILITY,
   LEGACY_TILE_CROSSING_COMPONENT_DELTAS,
 } from "../../../testing/legacy-characteristics";
+import { tiled } from "../../../testing/meanders";
 import { CodeService } from "../code/code.service";
+import { HISTORICAL_CORPUS } from "../corpus/historical-corpus.constants";
 
 import { CHARACTERISTIC_KEYS } from "./characteristics.constants";
 import { CharacteristicsModule } from "./characteristics.module";
 import { CharacteristicsService } from "./characteristics.service";
 
-import type { CodeObject } from "../code/code.types";
 import type { Characteristics } from "./characteristics.types";
 
 /** The Codes the retired computation's values were captured for. */
@@ -59,17 +60,6 @@ function recordFields(
         : characteristics[key],
     ]),
   );
-}
-
-/** The Code drawn `times` over side by side: each row repeated, columns multiplied. */
-function tiled(code: CodeObject, times: number): CodeObject {
-  const rows = Array.from({ length: code.rows }, (_unused, row) =>
-    code.digits
-      .slice(row * code.columns, (row + 1) * code.columns)
-      .repeat(times),
-  );
-
-  return { ...code, columns: code.columns * times, digits: rows.join("") };
 }
 
 /**
@@ -131,6 +121,15 @@ describe(CharacteristicsService, () => {
     });
 
     it.each(TILINGS)(
+      "computes the same record for the Code drawn %i times side by side",
+      (times) => {
+        const filed = tiled(codeService.parse(code), times);
+
+        expect(service.compute(filed)).toStrictEqual(service.compute(code));
+      },
+    );
+
+    it.each(TILINGS)(
       "scores the tile-crossing component delta of every column rotation as the retired computation did, tiled %i times",
       (times) => {
         const filed = tiled(codeService.parse(code), times);
@@ -159,4 +158,19 @@ describe(CharacteristicsService, () => {
       },
     );
   });
+
+  /**
+   * Restores the breadth the retired `compute` unit test's "historical
+   * corpus" suite gave the tiling invariance, over the whole committed
+   * corpus rather than the handful of fixtures above.
+   */
+  it.each(HISTORICAL_CORPUS)(
+    "computes the same record for $code drawn twice side by side",
+    (entry) => {
+      const parsed = codeService.parse(entry.code, entry.rows, entry.columns);
+      const doubled = tiled(parsed, 2);
+
+      expect(service.compute(doubled)).toStrictEqual(service.compute(parsed));
+    },
+  );
 });
