@@ -96,7 +96,7 @@ Call stacks traced through `packages/ic-suite/conformetry/conformetry-languages`
 | Measure | Value |
 | --- | --- |
 | Callables | 159 |
-| Files | 54 |
+| Files | 55 |
 | Calls traced | 199 |
 | Call stacks | 14 |
 | Deepest stack | 13 |
@@ -559,6 +559,7 @@ graph LR
   file_src_modules_typescript_typescript_types_ts["src/modules/typescript/typescript.types.ts"]
   file_testing_mocks_ts["testing/mocks.ts"]
   file_testing_setup_ts["testing/setup.ts"]
+  file_vite_config_ts["vite.config.ts"]
   file_vitest_config_ts["vitest.config.ts"]
   file_src_modules_differences_differences_module_ts --> file_src_modules_differences_differences_service_ts
   file_src_modules_differences_differences_module_unit_test_ts --> file_src_modules_differences_differences_module_ts

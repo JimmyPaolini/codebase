@@ -23,6 +23,7 @@ export default [
           ignoredDependencies: [
             "@codebase/logger",
             "@golevelup/ts-vitest",
+            "ignore",
             "pino",
             "pino-pretty",
             "vitest",

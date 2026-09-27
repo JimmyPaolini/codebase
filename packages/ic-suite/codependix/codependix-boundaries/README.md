@@ -241,6 +241,7 @@ graph LR
   file_src_modules_run_context_run_context_types_ts["src/modules/run-context/run-context.types.ts"]
   file_testing_mocks_ts["testing/mocks.ts"]
   file_testing_setup_ts["testing/setup.ts"]
+  file_vite_config_ts["vite.config.ts"]
   file_vitest_config_ts["vitest.config.ts"]
   file_src_modules_boundaries_boundaries_module_ts --> file_src_modules_boundaries_boundaries_service_ts
   file_src_modules_boundaries_boundaries_module_ts --> file_src_modules_boundaries_boundary_cycles_service_ts
@@ -521,7 +522,7 @@ Call stacks traced through `packages/ic-suite/codependix/codependix-boundaries`,
 | Measure | Value |
 | --- | --- |
 | Callables | 77 |
-| Files | 22 |
+| Files | 23 |
 | Calls traced | 83 |
 | Call stacks | 7 |
 | Deepest stack | 12 |
@@ -677,14 +678,14 @@ What this project is judged against, as declared in its own `callidescope.config
 
 ```text
 🚀 BoundaryCheckService.buildGraph(project: NestjsProject): Promise<BoundaryGraph> [packages/ic-suite/codependix/codependix-boundaries/src/modules/boundary-check/boundary-check.service.ts:162]
-  └─> NestjsProjectService.exploreProject(project: NestjsProject): Promise<SpelunkedTree[]> [packages/ic-suite/codependix/codependix-nestjs-modules/src/modules/nestjs-project/nestjs-project.service.ts:153]
+  └─> NestjsProjectService.exploreProject(project: NestjsProject): Promise<NestjsSpelunkedTree[]> [packages/ic-suite/codependix/codependix-nestjs-modules/src/modules/nestjs-project/nestjs-project.service.ts:190]
      ↳ Explores a project's container in preview mode and returns its tree.
-    └─> NestjsProjectService.buildSyntheticRootModule(project: NestjsProject): Promise<DynamicModule> [packages/ic-suite/codependix/codependix-nestjs-modules/src/modules/nestjs-project/nestjs-project.service.ts:54]
+    └─> NestjsProjectService.buildSyntheticRootModule(project: NestjsProject): Promise<DynamicModule> [packages/ic-suite/codependix/codependix-nestjs-modules/src/modules/nestjs-project/nestjs-project.service.ts:57]
        ↳ Roots a package that bootstraps nothing in every module it defines.
-      └─> NestjsProjectService.map(…)(file: string): Promise<Type<unknown>[]> [packages/ic-suite/codependix/codependix-nestjs-modules/src/modules/nestjs-project/nestjs-project.service.ts:61]
-        └─> NestjsProjectService.loadModuleClasses(file: string): Promise<Type<unknown>[]> [packages/ic-suite/codependix/codependix-nestjs-modules/src/modules/nestjs-project/nestjs-project.service.ts:87]
+      └─> NestjsProjectService.map(…)(file: string): Promise<Type<unknown>[]> [packages/ic-suite/codependix/codependix-nestjs-modules/src/modules/nestjs-project/nestjs-project.service.ts:64]
+        └─> NestjsProjectService.loadModuleClasses(file: string): Promise<Type<unknown>[]> [packages/ic-suite/codependix/codependix-nestjs-modules/src/modules/nestjs-project/nestjs-project.service.ts:124]
            ↳ Imports a module file and returns every module class it exports.
-          └─> NestjsProjectService.map(…)([, moduleClass]: [string, Type<unknown>]): Type<unknown> [packages/ic-suite/codependix/codependix-nestjs-modules/src/modules/nestjs-project/nestjs-project.service.ts:98]
+          └─> NestjsProjectService.map(…)([, moduleClass]: [string, Type<unknown>]): Type<unknown> [packages/ic-suite/codependix/codependix-nestjs-modules/src/modules/nestjs-project/nestjs-project.service.ts:135]
 ```
 
 </details>
@@ -711,7 +712,7 @@ What this project is judged against, as declared in its own `callidescope.config
 | `BoundarySelectorService.matches` | 2 | `BoundarySelectorService.matchesGlobs`, `BoundarySelectorService.matchesTags` | `packages/ic-suite/codependix/codependix-boundaries/src/modules/boundaries/boundary-selector.service.ts:86` |
 | `BoundariesService.map(…)` | 2 | `BoundariesService.buildMessage`, `describeCycle` | `packages/ic-suite/codependix/codependix-boundaries/src/modules/boundaries/boundaries.service.ts:151` |
 | `BoundariesService.flatMap(…)` | 2 | `BoundariesService.evaluateAcyclicRule`, `BoundariesService.evaluateAccessRule` | `packages/ic-suite/codependix/codependix-boundaries/src/modules/boundaries/boundaries.service.ts:223` |
-| `BoundaryGraphService.buildNxGraph` | 2 | `BoundaryGraphService.map(…)`, `BoundaryGraphService.map(…)` | `packages/ic-suite/codependix/codependix-boundaries/src/modules/boundary-check/boundary-graph.service.ts:100` |
+| `BoundaryGraphService.buildNxGraph` | 2 | `BoundaryGraphService.map(…)`, `BoundaryGraphService.map(…)` | `packages/ic-suite/codependix/codependix-boundaries/src/modules/boundary-check/boundary-graph.service.ts:101` |
 | `BoundaryCheckService.runNestjsLevel` | 2 | `BoundaryCheckService.runProjectLevel`, `NestjsProjectService.discoverProjects` | `packages/ic-suite/codependix/codependix-boundaries/src/modules/boundary-check/boundary-check.service.ts:158` |
 | `BoundaryCheckService.runProjectLevel` | 2 | `BoundariesService.evaluate`, `BoundaryCheckService.collectProjectFailure` | `packages/ic-suite/codependix/codependix-boundaries/src/modules/boundary-check/boundary-check.service.ts:213` |
 | `BoundaryCheckService.runPythonImportsLevel` | 2 | `BoundaryCheckService.runProjectLevel`, `PythonService.discoverProjects` | `packages/ic-suite/codependix/codependix-boundaries/src/modules/boundary-check/boundary-check.service.ts:237` |
@@ -729,10 +730,10 @@ What this project is judged against, as declared in its own `callidescope.config
 | `BoundaryReportService.renderSummary` | 1 | `BoundaryReportService.map(…)` | `packages/ic-suite/codependix/codependix-boundaries/src/modules/boundaries/boundary-report.service.ts:36` |
 | `BoundaryReportService.renderViolations` | 1 | `BoundaryReportService.map(…)` | `packages/ic-suite/codependix/codependix-boundaries/src/modules/boundaries/boundary-report.service.ts:56` |
 | `BoundaryGraphService.buildFileNodes` | 1 | `BoundaryGraphService.map(…)` | `packages/ic-suite/codependix/codependix-boundaries/src/modules/boundary-check/boundary-graph.service.ts:45` |
-| `BoundaryGraphService.buildNestjsGraph` | 1 | `BoundaryGraphService.map(…)` | `packages/ic-suite/codependix/codependix-boundaries/src/modules/boundary-check/boundary-graph.service.ts:80` |
-| `BoundaryGraphService.map(…)` | 1 | `BoundaryGraphService.resolveProjectRoot` | `packages/ic-suite/codependix/codependix-boundaries/src/modules/boundary-check/boundary-graph.service.ts:113` |
-| `BoundaryGraphService.buildPythonImportGraph` | 1 | `BoundaryGraphService.buildFileNodes` | `packages/ic-suite/codependix/codependix-boundaries/src/modules/boundary-check/boundary-graph.service.ts:127` |
-| `BoundaryGraphService.buildTypescriptImportGraph` | 1 | `BoundaryGraphService.buildFileNodes` | `packages/ic-suite/codependix/codependix-boundaries/src/modules/boundary-check/boundary-graph.service.ts:140` |
+| `BoundaryGraphService.buildNestjsGraph` | 1 | `BoundaryGraphService.map(…)` | `packages/ic-suite/codependix/codependix-boundaries/src/modules/boundary-check/boundary-graph.service.ts:77` |
+| `BoundaryGraphService.map(…)` | 1 | `BoundaryGraphService.resolveProjectRoot` | `packages/ic-suite/codependix/codependix-boundaries/src/modules/boundary-check/boundary-graph.service.ts:114` |
+| `BoundaryGraphService.buildPythonImportGraph` | 1 | `BoundaryGraphService.buildFileNodes` | `packages/ic-suite/codependix/codependix-boundaries/src/modules/boundary-check/boundary-graph.service.ts:128` |
+| `BoundaryGraphService.buildTypescriptImportGraph` | 1 | `BoundaryGraphService.buildFileNodes` | `packages/ic-suite/codependix/codependix-boundaries/src/modules/boundary-check/boundary-graph.service.ts:141` |
 | `BoundaryCheckService.nestjsModules` | 1 | `BoundaryCheckService.runNestjsLevel` | `packages/ic-suite/codependix/codependix-boundaries/src/modules/boundary-check/boundary-check.service.ts:145` |
 | `BoundaryCheckService.nxProjects` | 1 | `BoundaryCheckService.runNxLevel` | `packages/ic-suite/codependix/codependix-boundaries/src/modules/boundary-check/boundary-check.service.ts:147` |
 | `BoundaryCheckService.python` | 1 | `BoundaryCheckService.runPythonImportsLevel` | `packages/ic-suite/codependix/codependix-boundaries/src/modules/boundary-check/boundary-check.service.ts:148` |

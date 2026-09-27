@@ -76,6 +76,7 @@ graph LR
   file_src_modules_override_resolution_override_resolution_types_ts["src/modules/override-resolution/override-resolution.types.ts"]
   file_testing_mocks_ts["testing/mocks.ts"]
   file_testing_setup_ts["testing/setup.ts"]
+  file_vite_config_ts["vite.config.ts"]
   file_vitest_config_ts["vitest.config.ts"]
   file_src_index_unit_test_ts --> file_src_index_ts
   file_src_modules_configuration_configuration_loader_service_ts --> file_src_modules_configuration_configuration_constants_ts
@@ -136,7 +137,7 @@ Call stacks traced through `packages/ic-suite/codependix/codependix-configuratio
 | Measure | Value |
 | --- | --- |
 | Callables | 68 |
-| Files | 20 |
+| Files | 21 |
 | Calls traced | 64 |
 | Call stacks | 1 |
 | Deepest stack | 2 |

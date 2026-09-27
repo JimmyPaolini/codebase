@@ -42,7 +42,6 @@
   "license": "MIT",
   "main": "src/index.ts",
   "name": "@codometer/configuration",
-  "private": true,
   "publishConfig": {
     "access": "public",
     "exports": {

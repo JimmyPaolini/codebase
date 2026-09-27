@@ -32,7 +32,7 @@ export interface ViteLibraryConfigOptions {
 }
 
 /**
- * Creates a shared Vite library build configuration for publish-set packages.
+ * Creates a shared Vite library build configuration for publishable packages.
  *
  * Emits ESM output into each project's own `dist/` directory, bundles declaration
  * files using API Extractor, and bundles internal utilities like `@codebase/logger`.

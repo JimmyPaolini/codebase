@@ -3,11 +3,11 @@
 /**
  * Generates the success message logged when all tarballs and CLI binaries pass verification.
  */
-export const formatPublishSetSuccessMessage = (
+export const formatPublishablePackagesSuccessMessage = (
   packageCount: number,
   binaryCount: number,
 ): string =>
-  `✔ Verified all ${String(packageCount)} publish set package tarballs and ${String(binaryCount)} CLI binaries cleanly`;
+  `✔ Verified all ${String(packageCount)} publishable package tarballs and ${String(binaryCount)} CLI binaries cleanly`;
 
 /**
  * Message logged when tarballs directory is missing.

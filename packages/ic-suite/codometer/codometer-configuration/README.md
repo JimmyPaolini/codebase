@@ -449,7 +449,7 @@ Call stacks traced through `packages/ic-suite/codometer/codometer-configuration`
 | Measure | Value |
 | --- | --- |
 | Callables | 73 |
-| Files | 18 |
+| Files | 19 |
 | Calls traced | 68 |
 | Call stacks | 6 |
 | Deepest stack | 3 |
@@ -639,6 +639,7 @@ graph LR
   file_src_modules_configuration_resolved_types_ts["src/modules/configuration/resolved.types.ts"]
   file_testing_mocks_ts["testing/mocks.ts"]
   file_testing_setup_ts["testing/setup.ts"]
+  file_vite_config_ts["vite.config.ts"]
   file_vitest_config_ts["vitest.config.ts"]
   file_src_index_unit_test_ts --> file_src_index_ts
   file_src_modules_configuration_configuration_flags_service_ts --> file_src_modules_configuration_configuration_flags_constants_ts

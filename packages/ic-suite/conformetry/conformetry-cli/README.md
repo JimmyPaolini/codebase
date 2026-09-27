@@ -566,7 +566,7 @@ Call stacks traced through `packages/ic-suite/conformetry/conformetry-cli`, deep
 | Measure | Value |
 | --- | --- |
 | Callables | 59 |
-| Files | 26 |
+| Files | 27 |
 | Calls traced | 72 |
 | Call stacks | 16 |
 | Deepest stack | 15 |
@@ -1047,6 +1047,7 @@ graph LR
   file_src_repl_unit_test_ts["src/repl.unit.test.ts"]
   file_testing_mocks_ts["testing/mocks.ts"]
   file_testing_setup_ts["testing/setup.ts"]
+  file_vite_config_ts["vite.config.ts"]
   file_vitest_config_ts["vitest.config.ts"]
   file_src_main_end_to_end_test_ts --> file_src_constants_ts
   file_src_main_integration_test_ts --> file_src_main_module_ts

@@ -1,6 +1,10 @@
 {
+  "author": "Jimmy Paolini",
   "bin": {
     "conformetry-nx-bootstrap": "./src/main.mjs"
+  },
+  "bugs": {
+    "url": "https://github.com/JimmyPaolini/codebase/issues"
   },
   "dependencies": {
     "@conformetry/configuration": "workspace:*",
@@ -62,7 +66,6 @@
     "executors": "./executors.json",
     "generators": "./generators.json"
   },
-  "private": true,
   "publishConfig": {
     "access": "public",
     "exports": {
@@ -79,6 +82,11 @@
     "main": "./dist/src/index.js",
     "registry": "https://registry.npmjs.org",
     "types": "./dist/src/index.d.ts"
+  },
+  "repository": {
+    "directory": "packages/ic-suite/conformetry/conformetry-nx",
+    "type": "git",
+    "url": "git+https://github.com/JimmyPaolini/codebase.git"
   },
   "type": "module",
   "typeCoverage": {

@@ -634,7 +634,7 @@ Call stacks traced through `packages/ic-suite/codometer/codometer-cli`, deepest 
 | Measure | Value |
 | --- | --- |
 | Callables | 40 |
-| Files | 23 |
+| Files | 24 |
 | Calls traced | 45 |
 | Call stacks | 11 |
 | Deepest stack | 15 |
@@ -1017,6 +1017,7 @@ graph LR
   file_testing_mocks_ts["testing/mocks.ts"]
   file_testing_setup_ts["testing/setup.ts"]
   file_testing_target_tree_ts["testing/target-tree.ts"]
+  file_vite_config_ts["vite.config.ts"]
   file_vitest_config_ts["vitest.config.ts"]
   file_src_main_end_to_end_test_ts --> file_src_constants_ts
   file_src_main_end_to_end_test_ts --> file_testing_fixture_tree_ts

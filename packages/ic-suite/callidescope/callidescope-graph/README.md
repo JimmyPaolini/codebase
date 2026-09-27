@@ -43,7 +43,7 @@ Call stacks traced through `packages/ic-suite/callidescope/callidescope-graph`, 
 | Measure | Value |
 | --- | --- |
 | Callables | 207 |
-| Files | 62 |
+| Files | 63 |
 | Calls traced | 197 |
 | Call stacks | 4 |
 | Deepest stack | 5 |
@@ -375,6 +375,7 @@ graph LR
   file_testing_modules_ts["testing/modules.ts"]
   file_testing_programs_ts["testing/programs.ts"]
   file_testing_setup_ts["testing/setup.ts"]
+  file_vite_config_ts["vite.config.ts"]
   file_vitest_config_ts["vitest.config.ts"]
   file_src_modules_callables_address_service_ts --> file_src_modules_callables_address_constants_ts
   file_src_modules_callables_address_service_ts --> file_src_modules_callables_address_types_ts

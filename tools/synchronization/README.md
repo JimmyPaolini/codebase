@@ -322,7 +322,7 @@ What this project is judged against, as declared in its own `callidescope.config
   └─> PackageManifestsCommand.synchronize(mode: SynchronizationMode): Promise<boolean> [tools/synchronization/src/modules/package-manifests/package-manifests.command.ts:66]
      ↳ Synchronizes package manifest metadata and reports success without exiting.
     └─> PackageManifestsService.writeAll(workspaceRoot: string): void [tools/synchronization/src/modules/package-manifests/package-manifests.service.ts:205]
-       ↳ Writes the derived metadata across all packages in the publish set.
+       ↳ Writes the derived metadata across all publishable packages.
       └─> PackageManifestsService.writePackageManifest(…): void [tools/synchronization/src/modules/package-manifests/package-manifests.service.ts:218]
          ↳ Writes the derived metadata into an individual package's package.json.
         └─> PackageManifestsService.sortKeys(object: Record<string, unknown>): Record<string, unknown> [tools/synchronization/src/modules/package-manifests/package-manifests.service.ts:83]

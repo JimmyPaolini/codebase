@@ -14,7 +14,7 @@ import type {
 
 /**
  * CLI command that synchronizes package manifest metadata (license, repository,
- * homepage, and issue tracker) across all 28 publishable packages in the publish set.
+ * homepage, and issue tracker) across all 28 publishable packages.
  */
 @Command({
   description: "Run the package-manifests command",
@@ -71,7 +71,7 @@ export class PackageManifestsCommand
       if (mode === "write") {
         this.packageManifestsService.writeAll(workspaceRoot);
         this.logger.info(
-          "📦 Synchronized manifest metadata across the publish set",
+          "📦 Synchronized manifest metadata across publishable packages",
           undefined,
           {
             mode: "write",
@@ -84,7 +84,7 @@ export class PackageManifestsCommand
 
       if (summary.isSynchronized) {
         this.logger.info(
-          "📦 Verified manifest metadata across the publish set",
+          "📦 Verified manifest metadata across publishable packages",
           undefined,
           {
             checkedCount: summary.checkedCount,

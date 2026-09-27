@@ -222,6 +222,8 @@ flowchart LR
   NestjsModulesWorkspaceGraphModule
   NestjsProjectModule
   OverrideResolutionModule
+  PathModule
+  PathQueryModule
   ProjectGraphsModule
   PythonImportsModule
   PythonModule
@@ -246,12 +248,24 @@ flowchart LR
   GraphRunModule --> WorkspaceGraphsModule
   MainModule --> DiscoveryModule
   MainModule --> MapModule
+  MainModule --> PathModule
   MapModule --> BoundaryCheckModule
   MapModule --> CombinedOutputModule
   MapModule --> ConfigurationModule
   MapModule --> GraphRunModule
   MapModule --> ReportingModule
   MapModule --> RunContextModule
+  PathModule --> ConfigurationModule
+  PathModule --> PathQueryModule
+  PathModule --> ReportingModule
+  PathModule --> RunContextModule
+  PathQueryModule --> FileImportsWorkspaceGraphModule
+  PathQueryModule --> ModuleGraphModule
+  PathQueryModule --> NestjsModulesWorkspaceGraphModule
+  PathQueryModule --> NestjsProjectModule
+  PathQueryModule --> PythonModule
+  PathQueryModule --> TypescriptModule
+  PathQueryModule --> WorkspaceGraphModule
   ProjectGraphsModule --> ConfigurationModule
   ProjectGraphsModule --> DeliveryModule
   ProjectGraphsModule --> ModuleGraphModule
@@ -301,15 +315,24 @@ graph LR
   file_src_modules_map_map_module_ts["src/modules/map/map.module.ts"]
   file_src_modules_map_map_module_unit_test_ts["src/modules/map/map.module.unit.test.ts"]
   file_src_modules_map_map_types_ts["src/modules/map/map.types.ts"]
+  file_src_modules_path_path_command_integration_test_ts["src/modules/path/path.command.integration.test.ts"]
+  file_src_modules_path_path_command_ts["src/modules/path/path.command.ts"]
+  file_src_modules_path_path_command_unit_test_ts["src/modules/path/path.command.unit.test.ts"]
+  file_src_modules_path_path_constants_ts["src/modules/path/path.constants.ts"]
+  file_src_modules_path_path_module_ts["src/modules/path/path.module.ts"]
+  file_src_modules_path_path_module_unit_test_ts["src/modules/path/path.module.unit.test.ts"]
+  file_src_modules_path_path_types_ts["src/modules/path/path.types.ts"]
   file_src_repl_ts["src/repl.ts"]
   file_src_repl_unit_test_ts["src/repl.unit.test.ts"]
   file_testing_mocks_ts["testing/mocks.ts"]
   file_testing_setup_ts["testing/setup.ts"]
+  file_vite_config_ts["vite.config.ts"]
   file_vitest_config_ts["vitest.config.ts"]
   file_src_index_unit_test_ts --> file_src_index_ts
   file_src_main_end_to_end_test_ts --> file_src_constants_ts
   file_src_main_module_ts --> file_src_constants_ts
   file_src_main_module_ts --> file_src_modules_map_map_module_ts
+  file_src_main_module_ts --> file_src_modules_path_path_module_ts
   file_src_main_ts --> file_src_main_module_ts
   file_src_modules_map_map_command_integration_test_ts --> file_src_main_module_ts
   file_src_modules_map_map_command_integration_test_ts --> file_src_modules_map_map_command_ts
@@ -317,6 +340,16 @@ graph LR
   file_src_modules_map_map_module_ts --> file_src_modules_map_map_command_ts
   file_src_modules_map_map_module_unit_test_ts --> file_src_modules_map_map_command_ts
   file_src_modules_map_map_module_unit_test_ts --> file_src_modules_map_map_module_ts
+  file_src_modules_path_path_command_integration_test_ts --> file_src_main_module_ts
+  file_src_modules_path_path_command_integration_test_ts --> file_src_modules_path_path_command_ts
+  file_src_modules_path_path_command_integration_test_ts --> file_src_modules_path_path_types_ts
+  file_src_modules_path_path_command_ts --> file_src_modules_path_path_constants_ts
+  file_src_modules_path_path_command_ts --> file_src_modules_path_path_types_ts
+  file_src_modules_path_path_command_unit_test_ts --> file_src_modules_path_path_command_ts
+  file_src_modules_path_path_command_unit_test_ts --> file_src_modules_path_path_constants_ts
+  file_src_modules_path_path_module_ts --> file_src_modules_path_path_command_ts
+  file_src_modules_path_path_module_unit_test_ts --> file_src_modules_path_path_command_ts
+  file_src_modules_path_path_module_unit_test_ts --> file_src_modules_path_path_module_ts
   file_src_repl_ts --> file_src_main_module_ts
 ```
 <!-- codependix:end name="codependix-file-imports" -->
@@ -329,13 +362,13 @@ Call stacks traced through `packages/ic-suite/codependix/codependix-cli`, deepes
 
 | Measure | Value |
 | --- | --- |
-| Callables | 26 |
-| Files | 14 |
-| Calls traced | 24 |
-| Call stacks | 11 |
+| Callables | 42 |
+| Files | 19 |
+| Calls traced | 37 |
+| Call stacks | 19 |
 | Deepest stack | 15 |
 | Stacks through recursion | 0 |
-| Unfollowable calls | 1 |
+| Unfollowable calls | 2 |
 
 ### Limits
 
@@ -351,12 +384,12 @@ What this project is judged against, as declared in its own `callidescope.config
 **1. `MapCommand.run`** — depth ≥ 15 · decorated-method
 
 ```text
-🚀 MapCommand.run(_passedParameters: string[], options?: MapCommandOptions): Promise<void> [packages/ic-suite/codependix/codependix-cli/src/modules/map/map.command.ts:373]
+🚀 MapCommand.run(_passedParameters: string[], options?: MapCommandOptions): Promise<void> [packages/ic-suite/codependix/codependix-cli/src/modules/map/map.command.ts:377]
    ↳ Runs whatever the command line asked for: exports, boundaries, or both.
-  └─> MapCommand.runMode(…): Promise<void> [packages/ic-suite/codependix/codependix-cli/src/modules/map/map.command.ts:121]
+  └─> MapCommand.runMode(…): Promise<void> [packages/ic-suite/codependix/codependix-cli/src/modules/map/map.command.ts:125]
      ↳ Runs the passes a resolved mode selected, and reports what they found.
     └─> MapCommand.runExports(context: GraphRunContext): Promise<MapRunResult> [packages/ic-suite/codependix/codependix-cli/src/modules/map/map.command.ts:106]
-       ↳ Runs the export pass, warning first when it can select nothing.
+       ↳ Runs the export pass, warning when nothing was selected.
       └─> GraphRunService.run(context: GraphRunContext): Promise<MapRunResult> [packages/ic-suite/codependix/codependix-output/src/modules/graph-run/graph-run.service.ts:144]
          ↳ Runs every configured graph export against an already-resolved context.
         └─> GraphRunService.runPythonImportGraphs(context: GraphRunContext): GraphRunOutcome [packages/ic-suite/codependix/codependix-output/src/modules/graph-run/graph-run.service.ts:266]
@@ -381,10 +414,36 @@ What this project is judged against, as declared in its own `callidescope.config
                             └─> PythonImportParserService.map(…)(modulePath: string): { level: number; modulePath: string; } [packages/ic-suite/codependix/codependix-file-imports/src/modules/python/python-import-parser.service.ts:122]
 ```
 
-**2. `MapCommand.parseDirectory`** — depth 4 · decorated-method
+**2. `PathCommand.run`** — depth ≥ 12 · decorated-method
 
 ```text
-🚀 MapCommand.parseDirectory(value: string | undefined): string [packages/ic-suite/codependix/codependix-cli/src/modules/map/map.command.ts:187]
+🚀 PathCommand.run(passedParameters: string[], options?: PathCommandOptions): Promise<void> [packages/ic-suite/codependix/codependix-cli/src/modules/path/path.command.ts:214]
+   ↳ Runs the path query between two nodes across active graph levels.
+  └─> PathQueryService.query(args: PathQueryArguments): Promise<CombinedPathResults> [packages/ic-suite/codependix/codependix-output/src/modules/path-query/path-query.service.ts:296]
+     ↳ Queries every enabled graph type for a connecting path between two nodes.
+    └─> PathQueryService.queryFileImports(args: PathQueryArguments): null | string[] [packages/ic-suite/codependix/codependix-output/src/modules/path-query/path-query.service.ts:115]
+       ↳ Queries the file-imports workspace graph for a path between two files.
+      └─> PathQueryService.map(…)(project: PythonProject): PythonImportGraph [packages/ic-suite/codependix/codependix-output/src/modules/path-query/path-query.service.ts:118]
+        └─> PythonService.buildGraph(project: PythonProject): PythonImportGraph [packages/ic-suite/codependix/codependix-file-imports/src/modules/python/python.service.ts:39]
+           ↳ Builds a Python project's internal file-level import Graph.
+          └─> PythonImportGraphService.buildGraph(project: PythonProject): PythonImportGraph [packages/ic-suite/codependix/codependix-file-imports/src/modules/python/python-import-graph.service.ts:180]
+             ↳ Builds a Python project's internal file-level import Graph.
+            └─> PythonImportGraphService.flatMap(…)(this: undefined, sourceFileName: string): PythonImportGraphEdge[] [packages/ic-suite/codependix/codependix-file-imports/src/modules/python/python-import-graph.service.ts:185]
+              └─> PythonImportGraphService.collectEdgesForFile(…): PythonImportGraphEdge[] [packages/ic-suite/codependix/codependix-file-imports/src/modules/python/python-import-graph.service.ts:64]
+                 ↳ Collects every internal import edge one source file declares.
+                └─> PythonImportParserService.parseImportSpecifiers(source: string): PythonImportSpecifier[] [packages/ic-suite/codependix/codependix-file-imports/src/modules/python/python-import-parser.service.ts:158]
+                   ↳ Parses every module-level import statement in a Python source file.
+                  └─> PythonImportParserService.parseStatement(statement: string): PythonImportSpecifier[] [packages/ic-suite/codependix/codependix-file-imports/src/modules/python/python-import-parser.service.ts:126]
+                     ↳ Parses one joined statement into the module(s) it names.
+                    └─> PythonImportParserService.parseImportStatement(statement: string): PythonImportSpecifier[] [packages/ic-suite/codependix/codependix-file-imports/src/modules/python/python-import-parser.service.ts:105]
+                       ↳ Parses a joined `import <specifiers>` statement.
+                      └─> PythonImportParserService.map(…)(modulePath: string): { level: number; modulePath: string; } [packages/ic-suite/codependix/codependix-file-imports/src/modules/python/python-import-parser.service.ts:122]
+```
+
+**3. `MapCommand.parseDirectory`** — depth 4 · decorated-method
+
+```text
+🚀 MapCommand.parseDirectory(value: string | undefined): string [packages/ic-suite/codependix/codependix-cli/src/modules/map/map.command.ts:191]
    ↳ Parses the directory whose Nx workspace this run reads.
   └─> ConfigurationService.parsePathOption(value: string | undefined): string [packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:294]
      ↳ Parses a path option that falls back to the working directory.
@@ -394,10 +453,13 @@ What this project is judged against, as declared in its own `callidescope.config
          ↳ Trims an optional string option, treating blank as absent.
 ```
 
-**3. `MapCommand.parseExclude`** — depth 4 · decorated-method
+<details>
+<summary>16 more call stacks</summary>
+
+**4. `MapCommand.parseExclude`** — depth 4 · decorated-method
 
 ```text
-🚀 MapCommand.parseExclude(value: string | undefined): string[] [packages/ic-suite/codependix/codependix-cli/src/modules/map/map.command.ts:203]
+🚀 MapCommand.parseExclude(value: string | undefined): string[] [packages/ic-suite/codependix/codependix-cli/src/modules/map/map.command.ts:207]
    ↳ Parses `--exclude`, a comma-separated list of globs overriding the configured `exclude`.
   └─> ConfigurationService.parseCommaDelimitedOption(value: string | undefined): string[] [packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:279]
      ↳ Parses a comma-separated list option, dropping blank entries.
@@ -406,13 +468,10 @@ What this project is judged against, as declared in its own `callidescope.config
       └─> InputService.map(…)(entry: string): string [packages/ic-suite/codependix/codependix-configuration/src/modules/input/input.service.ts:59]
 ```
 
-<details>
-<summary>8 more call stacks</summary>
-
-**4. `MapCommand.parseInclude`** — depth 4 · decorated-method
+**5. `MapCommand.parseInclude`** — depth 4 · decorated-method
 
 ```text
-🚀 MapCommand.parseInclude(value: string | undefined): string[] [packages/ic-suite/codependix/codependix-cli/src/modules/map/map.command.ts:242]
+🚀 MapCommand.parseInclude(value: string | undefined): string[] [packages/ic-suite/codependix/codependix-cli/src/modules/map/map.command.ts:246]
    ↳ Parses `--include`, a comma-separated list of globs overriding the configured `include`.
   └─> ConfigurationService.parseCommaDelimitedOption(value: string | undefined): string[] [packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:279]
      ↳ Parses a comma-separated list option, dropping blank entries.
@@ -421,10 +480,47 @@ What this project is judged against, as declared in its own `callidescope.config
       └─> InputService.map(…)(entry: string): string [packages/ic-suite/codependix/codependix-configuration/src/modules/input/input.service.ts:59]
 ```
 
-**5. `MapCommand.parseConfig`** — depth 3 · decorated-method
+**6. `PathCommand.parseDirectory`** — depth 4 · decorated-method
 
 ```text
-🚀 MapCommand.parseConfig(value: string | undefined): string | undefined [packages/ic-suite/codependix/codependix-cli/src/modules/map/map.command.ts:178]
+🚀 PathCommand.parseDirectory(value: string | undefined): string [packages/ic-suite/codependix/codependix-cli/src/modules/path/path.command.ts:98]
+   ↳ Parses the directory whose Nx workspace this run reads.
+  └─> ConfigurationService.parsePathOption(value: string | undefined): string [packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:294]
+     ↳ Parses a path option that falls back to the working directory.
+    └─> InputService.parsePathOption(value: string | undefined): string [packages/ic-suite/codependix/codependix-configuration/src/modules/input/input.service.ts:87]
+       ↳ Parses a path option that falls back to the working directory.
+      └─> InputService.parseOptionalOption(value: string | undefined): string | undefined [packages/ic-suite/codependix/codependix-configuration/src/modules/input/input.service.ts:75]
+         ↳ Trims an optional string option, treating blank as absent.
+```
+
+**7. `PathCommand.parseExclude`** — depth 4 · decorated-method
+
+```text
+🚀 PathCommand.parseExclude(value: string | undefined): string[] [packages/ic-suite/codependix/codependix-cli/src/modules/path/path.command.ts:107]
+   ↳ Parses `--exclude`, a comma-separated list of globs overriding the configured `exclude`.
+  └─> ConfigurationService.parseCommaDelimitedOption(value: string | undefined): string[] [packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:279]
+     ↳ Parses a comma-separated list option, dropping blank entries.
+    └─> InputService.parseCommaDelimitedOption(value: string | undefined): string[] [packages/ic-suite/codependix/codependix-configuration/src/modules/input/input.service.ts:54]
+       ↳ Parses a comma-separated list option, dropping blank entries.
+      └─> InputService.map(…)(entry: string): string [packages/ic-suite/codependix/codependix-configuration/src/modules/input/input.service.ts:59]
+```
+
+**8. `PathCommand.parseInclude`** — depth 4 · decorated-method
+
+```text
+🚀 PathCommand.parseInclude(value: string | undefined): string[] [packages/ic-suite/codependix/codependix-cli/src/modules/path/path.command.ts:139]
+   ↳ Parses `--include`, a comma-separated list of globs overriding the configured `include`.
+  └─> ConfigurationService.parseCommaDelimitedOption(value: string | undefined): string[] [packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:279]
+     ↳ Parses a comma-separated list option, dropping blank entries.
+    └─> InputService.parseCommaDelimitedOption(value: string | undefined): string[] [packages/ic-suite/codependix/codependix-configuration/src/modules/input/input.service.ts:54]
+       ↳ Parses a comma-separated list option, dropping blank entries.
+      └─> InputService.map(…)(entry: string): string [packages/ic-suite/codependix/codependix-configuration/src/modules/input/input.service.ts:59]
+```
+
+**9. `MapCommand.parseConfig`** — depth 3 · decorated-method
+
+```text
+🚀 MapCommand.parseConfig(value: string | undefined): string | undefined [packages/ic-suite/codependix/codependix-cli/src/modules/map/map.command.ts:182]
    ↳ Parses the optional configuration path from command-line input.
   └─> ConfigurationService.parseOptionalOption(value: string | undefined): string | undefined [packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:289]
      ↳ Trims an optional string option, treating blank as absent.
@@ -432,10 +528,10 @@ What this project is judged against, as declared in its own `callidescope.config
        ↳ Trims an optional string option, treating blank as absent.
 ```
 
-**6. `MapCommand.parseFormat`** — depth 3 · decorated-method
+**10. `MapCommand.parseFormat`** — depth 3 · decorated-method
 
 ```text
-🚀 MapCommand.parseFormat(value: string | undefined): string | undefined [packages/ic-suite/codependix/codependix-cli/src/modules/map/map.command.ts:227]
+🚀 MapCommand.parseFormat(value: string | undefined): string | undefined [packages/ic-suite/codependix/codependix-cli/src/modules/map/map.command.ts:231]
    ↳ Parses what `--format` prints to standard output.
   └─> ConfigurationService.parseOptionalOption(value: string | undefined): string | undefined [packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:289]
      ↳ Trims an optional string option, treating blank as absent.
@@ -443,10 +539,10 @@ What this project is judged against, as declared in its own `callidescope.config
        ↳ Trims an optional string option, treating blank as absent.
 ```
 
-**7. `MapCommand.parseJsonOutput`** — depth 3 · decorated-method
+**11. `MapCommand.parseJsonOutput`** — depth 3 · decorated-method
 
 ```text
-🚀 MapCommand.parseJsonOutput(value: string | undefined): string | undefined [packages/ic-suite/codependix/codependix-cli/src/modules/map/map.command.ts:255]
+🚀 MapCommand.parseJsonOutput(value: string | undefined): string | undefined [packages/ic-suite/codependix/codependix-cli/src/modules/map/map.command.ts:259]
    ↳ Parses `--json-output`, the path to write every active graph type's combined JSON data to, keyed by graph type name.
   └─> ConfigurationService.parseOptionalOption(value: string | undefined): string | undefined [packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:289]
      ↳ Trims an optional string option, treating blank as absent.
@@ -454,10 +550,10 @@ What this project is judged against, as declared in its own `callidescope.config
        ↳ Trims an optional string option, treating blank as absent.
 ```
 
-**8. `MapCommand.parseMarkdownOutput`** — depth 3 · decorated-method
+**12. `MapCommand.parseMarkdownOutput`** — depth 3 · decorated-method
 
 ```text
-🚀 MapCommand.parseMarkdownOutput(value: string | undefined): string | undefined [packages/ic-suite/codependix/codependix-cli/src/modules/map/map.command.ts:268]
+🚀 MapCommand.parseMarkdownOutput(value: string | undefined): string | undefined [packages/ic-suite/codependix/codependix-cli/src/modules/map/map.command.ts:272]
    ↳ Parses `--markdown-output`, the path to write every active graph type's combined, anchor-spliced Markdown diagram to.
   └─> ConfigurationService.parseOptionalOption(value: string | undefined): string | undefined [packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:289]
      ↳ Trims an optional string option, treating blank as absent.
@@ -465,10 +561,10 @@ What this project is judged against, as declared in its own `callidescope.config
        ↳ Trims an optional string option, treating blank as absent.
 ```
 
-**9. `MapCommand.parseProjects`** — depth 3 · decorated-method
+**13. `MapCommand.parseProjects`** — depth 3 · decorated-method
 
 ```text
-🚀 MapCommand.parseProjects(value: string | undefined): string | undefined [packages/ic-suite/codependix/codependix-cli/src/modules/map/map.command.ts:332]
+🚀 MapCommand.parseProjects(value: string | undefined): string | undefined [packages/ic-suite/codependix/codependix-cli/src/modules/map/map.command.ts:336]
    ↳ Parses the projects a run exports for beyond `include`. **Widening, and narrowing.** A named project is added to…
   └─> ConfigurationService.parseOptionalOption(value: string | undefined): string | undefined [packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:289]
      ↳ Trims an optional string option, treating blank as absent.
@@ -476,10 +572,10 @@ What this project is judged against, as declared in its own `callidescope.config
        ↳ Trims an optional string option, treating blank as absent.
 ```
 
-**10. `MapCommand.parseTags`** — depth 3 · decorated-method
+**14. `MapCommand.parseTags`** — depth 3 · decorated-method
 
 ```text
-🚀 MapCommand.parseTags(value: string | undefined): string | undefined [packages/ic-suite/codependix/codependix-cli/src/modules/map/map.command.ts:345]
+🚀 MapCommand.parseTags(value: string | undefined): string | undefined [packages/ic-suite/codependix/codependix-cli/src/modules/map/map.command.ts:349]
    ↳ Parses the Nx tags a run exports for, matched exactly against a project's own tags.
   └─> ConfigurationService.parseOptionalOption(value: string | undefined): string | undefined [packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:289]
      ↳ Trims an optional string option, treating blank as absent.
@@ -487,15 +583,59 @@ What this project is judged against, as declared in its own `callidescope.config
        ↳ Trims an optional string option, treating blank as absent.
 ```
 
-**11. `MapCommand.parseWrite`** — depth 3 · decorated-method
+**15. `MapCommand.parseWrite`** — depth 3 · decorated-method
 
 ```text
-🚀 MapCommand.parseWrite(value: boolean | undefined): boolean [packages/ic-suite/codependix/codependix-cli/src/modules/map/map.command.ts:355]
+🚀 MapCommand.parseWrite(value: boolean | undefined): boolean [packages/ic-suite/codependix/codependix-cli/src/modules/map/map.command.ts:359]
    ↳ Parses the `--write` flag from command-line input.
   └─> ConfigurationService.parseFlagOption(value: boolean | undefined): boolean [packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:284]
      ↳ Parses a valueless boolean flag, which is present or it is not.
     └─> InputService.parseFlagOption(value: boolean | undefined): boolean [packages/ic-suite/codependix/codependix-configuration/src/modules/input/input.service.ts:70]
        ↳ Parses a valueless boolean flag, which is present or it is not.
+```
+
+**16. `PathCommand.parseConfig`** — depth 3 · decorated-method
+
+```text
+🚀 PathCommand.parseConfig(value: string | undefined): string | undefined [packages/ic-suite/codependix/codependix-cli/src/modules/path/path.command.ts:89]
+   ↳ Parses the optional configuration path from command-line input.
+  └─> ConfigurationService.parseOptionalOption(value: string | undefined): string | undefined [packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:289]
+     ↳ Trims an optional string option, treating blank as absent.
+    └─> InputService.parseOptionalOption(value: string | undefined): string | undefined [packages/ic-suite/codependix/codependix-configuration/src/modules/input/input.service.ts:75]
+       ↳ Trims an optional string option, treating blank as absent.
+```
+
+**17. `PathCommand.parseFormat`** — depth 3 · decorated-method
+
+```text
+🚀 PathCommand.parseFormat(value: string | undefined): string | undefined [packages/ic-suite/codependix/codependix-cli/src/modules/path/path.command.ts:130]
+   ↳ Parses what `--format` prints to standard output. Defaults to Markdown when the flag was left off entirely.
+  └─> ConfigurationService.parseOptionalOption(value: string | undefined): string | undefined [packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:289]
+     ↳ Trims an optional string option, treating blank as absent.
+    └─> InputService.parseOptionalOption(value: string | undefined): string | undefined [packages/ic-suite/codependix/codependix-configuration/src/modules/input/input.service.ts:75]
+       ↳ Trims an optional string option, treating blank as absent.
+```
+
+**18. `PathCommand.parseProjects`** — depth 3 · decorated-method
+
+```text
+🚀 PathCommand.parseProjects(value: string | undefined): string | undefined [packages/ic-suite/codependix/codependix-cli/src/modules/path/path.command.ts:194]
+   ↳ Parses the projects a query searches across beyond `include`.
+  └─> ConfigurationService.parseOptionalOption(value: string | undefined): string | undefined [packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:289]
+     ↳ Trims an optional string option, treating blank as absent.
+    └─> InputService.parseOptionalOption(value: string | undefined): string | undefined [packages/ic-suite/codependix/codependix-configuration/src/modules/input/input.service.ts:75]
+       ↳ Trims an optional string option, treating blank as absent.
+```
+
+**19. `PathCommand.parseTags`** — depth 3 · decorated-method
+
+```text
+🚀 PathCommand.parseTags(value: string | undefined): string | undefined [packages/ic-suite/codependix/codependix-cli/src/modules/path/path.command.ts:204]
+   ↳ Parses the Nx tags a query searches across, matched exactly against project tags.
+  └─> ConfigurationService.parseOptionalOption(value: string | undefined): string | undefined [packages/ic-suite/codependix/codependix-configuration/src/modules/configuration/configuration.service.ts:289]
+     ↳ Trims an optional string option, treating blank as absent.
+    └─> InputService.parseOptionalOption(value: string | undefined): string | undefined [packages/ic-suite/codependix/codependix-configuration/src/modules/input/input.service.ts:75]
+       ↳ Trims an optional string option, treating blank as absent.
 ```
 
 </details>
@@ -504,26 +644,35 @@ What this project is judged against, as declared in its own `callidescope.config
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `MapCommand.runMode` | 7 | `RunContextService.build`, `ConfigurationService.touchesFiles`, `MapCommand.runExports`, `BoundaryCheckService.run`, `MapCommand.runCombinedOutput`, `ReportingService.reportPassOutcomes`, `ReportingService.reportSuccess` | `packages/ic-suite/codependix/codependix-cli/src/modules/map/map.command.ts:121` |
-| `MapCommand.run` | 4 | `ConfigurationService.selectMode`, `CombinedOutputService.resolveFormat`, `MapCommand.runMode`, `ReportingService.reportFailure` | `packages/ic-suite/codependix/codependix-cli/src/modules/map/map.command.ts:373` |
-| `MapCommand.runExports` | 2 | `ReportingService.reportEmptySelection`, `GraphRunService.run` | `packages/ic-suite/codependix/codependix-cli/src/modules/map/map.command.ts:106` |
+| `MapCommand.runMode` | 7 | `RunContextService.build`, `ConfigurationService.touchesFiles`, `MapCommand.runExports`, `BoundaryCheckService.run`, `MapCommand.runCombinedOutput`, `ReportingService.reportPassOutcomes`, `ReportingService.reportSuccess` | `packages/ic-suite/codependix/codependix-cli/src/modules/map/map.command.ts:125` |
+| `PathCommand.run` | 5 | `PathCommand.validateInputs`, `RunContextService.build`, `PathQueryService.query`, `PathQueryService.render`, `ReportingService.reportFailure` | `packages/ic-suite/codependix/codependix-cli/src/modules/path/path.command.ts:214` |
+| `MapCommand.run` | 4 | `ConfigurationService.selectMode`, `CombinedOutputService.resolveFormat`, `MapCommand.runMode`, `ReportingService.reportFailure` | `packages/ic-suite/codependix/codependix-cli/src/modules/map/map.command.ts:377` |
 
 <details>
-<summary>11 more callables</summary>
+<summary>20 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
+| `MapCommand.runExports` | 2 | `GraphRunService.run`, `ReportingService.reportEmptySelection` | `packages/ic-suite/codependix/codependix-cli/src/modules/map/map.command.ts:106` |
 | `MapCommand.runCombinedOutput` | 1 | `CombinedOutputService.run` | `packages/ic-suite/codependix/codependix-cli/src/modules/map/map.command.ts:82` |
-| `MapCommand.parseConfig` | 1 | `ConfigurationService.parseOptionalOption` | `packages/ic-suite/codependix/codependix-cli/src/modules/map/map.command.ts:178` |
-| `MapCommand.parseDirectory` | 1 | `ConfigurationService.parsePathOption` | `packages/ic-suite/codependix/codependix-cli/src/modules/map/map.command.ts:187` |
-| `MapCommand.parseExclude` | 1 | `ConfigurationService.parseCommaDelimitedOption` | `packages/ic-suite/codependix/codependix-cli/src/modules/map/map.command.ts:203` |
-| `MapCommand.parseFormat` | 1 | `ConfigurationService.parseOptionalOption` | `packages/ic-suite/codependix/codependix-cli/src/modules/map/map.command.ts:227` |
-| `MapCommand.parseInclude` | 1 | `ConfigurationService.parseCommaDelimitedOption` | `packages/ic-suite/codependix/codependix-cli/src/modules/map/map.command.ts:242` |
-| `MapCommand.parseJsonOutput` | 1 | `ConfigurationService.parseOptionalOption` | `packages/ic-suite/codependix/codependix-cli/src/modules/map/map.command.ts:255` |
-| `MapCommand.parseMarkdownOutput` | 1 | `ConfigurationService.parseOptionalOption` | `packages/ic-suite/codependix/codependix-cli/src/modules/map/map.command.ts:268` |
-| `MapCommand.parseProjects` | 1 | `ConfigurationService.parseOptionalOption` | `packages/ic-suite/codependix/codependix-cli/src/modules/map/map.command.ts:332` |
-| `MapCommand.parseTags` | 1 | `ConfigurationService.parseOptionalOption` | `packages/ic-suite/codependix/codependix-cli/src/modules/map/map.command.ts:345` |
-| `MapCommand.parseWrite` | 1 | `ConfigurationService.parseFlagOption` | `packages/ic-suite/codependix/codependix-cli/src/modules/map/map.command.ts:355` |
+| `MapCommand.parseConfig` | 1 | `ConfigurationService.parseOptionalOption` | `packages/ic-suite/codependix/codependix-cli/src/modules/map/map.command.ts:182` |
+| `MapCommand.parseDirectory` | 1 | `ConfigurationService.parsePathOption` | `packages/ic-suite/codependix/codependix-cli/src/modules/map/map.command.ts:191` |
+| `MapCommand.parseExclude` | 1 | `ConfigurationService.parseCommaDelimitedOption` | `packages/ic-suite/codependix/codependix-cli/src/modules/map/map.command.ts:207` |
+| `MapCommand.parseFormat` | 1 | `ConfigurationService.parseOptionalOption` | `packages/ic-suite/codependix/codependix-cli/src/modules/map/map.command.ts:231` |
+| `MapCommand.parseInclude` | 1 | `ConfigurationService.parseCommaDelimitedOption` | `packages/ic-suite/codependix/codependix-cli/src/modules/map/map.command.ts:246` |
+| `MapCommand.parseJsonOutput` | 1 | `ConfigurationService.parseOptionalOption` | `packages/ic-suite/codependix/codependix-cli/src/modules/map/map.command.ts:259` |
+| `MapCommand.parseMarkdownOutput` | 1 | `ConfigurationService.parseOptionalOption` | `packages/ic-suite/codependix/codependix-cli/src/modules/map/map.command.ts:272` |
+| `MapCommand.parseProjects` | 1 | `ConfigurationService.parseOptionalOption` | `packages/ic-suite/codependix/codependix-cli/src/modules/map/map.command.ts:336` |
+| `MapCommand.parseTags` | 1 | `ConfigurationService.parseOptionalOption` | `packages/ic-suite/codependix/codependix-cli/src/modules/map/map.command.ts:349` |
+| `MapCommand.parseWrite` | 1 | `ConfigurationService.parseFlagOption` | `packages/ic-suite/codependix/codependix-cli/src/modules/map/map.command.ts:359` |
+| `PathCommand.validateInputs` | 1 | `PathQueryService.resolveFormat` | `packages/ic-suite/codependix/codependix-cli/src/modules/path/path.command.ts:53` |
+| `PathCommand.parseConfig` | 1 | `ConfigurationService.parseOptionalOption` | `packages/ic-suite/codependix/codependix-cli/src/modules/path/path.command.ts:89` |
+| `PathCommand.parseDirectory` | 1 | `ConfigurationService.parsePathOption` | `packages/ic-suite/codependix/codependix-cli/src/modules/path/path.command.ts:98` |
+| `PathCommand.parseExclude` | 1 | `ConfigurationService.parseCommaDelimitedOption` | `packages/ic-suite/codependix/codependix-cli/src/modules/path/path.command.ts:107` |
+| `PathCommand.parseFormat` | 1 | `ConfigurationService.parseOptionalOption` | `packages/ic-suite/codependix/codependix-cli/src/modules/path/path.command.ts:130` |
+| `PathCommand.parseInclude` | 1 | `ConfigurationService.parseCommaDelimitedOption` | `packages/ic-suite/codependix/codependix-cli/src/modules/path/path.command.ts:139` |
+| `PathCommand.parseProjects` | 1 | `ConfigurationService.parseOptionalOption` | `packages/ic-suite/codependix/codependix-cli/src/modules/path/path.command.ts:194` |
+| `PathCommand.parseTags` | 1 | `ConfigurationService.parseOptionalOption` | `packages/ic-suite/codependix/codependix-cli/src/modules/path/path.command.ts:204` |
 
 </details>
 <!-- callidescope:end -->

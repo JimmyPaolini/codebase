@@ -56,7 +56,6 @@
   "license": "MIT",
   "main": "src/index.ts",
   "name": "@conformetry/cli",
-  "private": true,
   "publishConfig": {
     "access": "public",
     "exports": {

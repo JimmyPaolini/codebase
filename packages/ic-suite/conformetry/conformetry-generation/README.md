@@ -97,7 +97,7 @@ Call stacks traced through `packages/ic-suite/conformetry/conformetry-generation
 | Measure | Value |
 | --- | --- |
 | Callables | 13 |
-| Files | 10 |
+| Files | 11 |
 | Calls traced | 10 |
 | Call stacks | 1 |
 | Deepest stack | 2 |
@@ -207,6 +207,7 @@ graph LR
   file_src_modules_generation_generation_types_ts["src/modules/generation/generation.types.ts"]
   file_testing_mocks_ts["testing/mocks.ts"]
   file_testing_setup_ts["testing/setup.ts"]
+  file_vite_config_ts["vite.config.ts"]
   file_vitest_config_ts["vitest.config.ts"]
   file_src_modules_generation_generation_module_ts --> file_src_modules_generation_generation_service_ts
   file_src_modules_generation_generation_module_unit_test_ts --> file_src_modules_generation_generation_module_ts

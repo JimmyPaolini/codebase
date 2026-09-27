@@ -13,7 +13,7 @@ Call stacks traced through `packages/ic-suite/codometer/codometer-output`, deepe
 | Measure | Value |
 | --- | --- |
 | Callables | 166 |
-| Files | 45 |
+| Files | 46 |
 | Calls traced | 346 |
 | Call stacks | 2 |
 | Deepest stack | 4 |
@@ -272,6 +272,7 @@ graph LR
   file_src_modules_report_report_types_ts["src/modules/report/report.types.ts"]
   file_testing_mocks_ts["testing/mocks.ts"]
   file_testing_setup_ts["testing/setup.ts"]
+  file_vite_config_ts["vite.config.ts"]
   file_vitest_config_ts["vitest.config.ts"]
   file_src_modules_changes_changes_module_ts --> file_src_modules_changes_changes_service_ts
   file_src_modules_changes_changes_module_unit_test_ts --> file_src_modules_changes_changes_module_ts

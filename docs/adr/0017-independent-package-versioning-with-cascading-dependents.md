@@ -5,7 +5,7 @@ The 28 publishable packages across the four IC suites (`conformetry`,
 Nx Release (`nx release`), rather than in lockstep across the repository or per
 suite. Conventional commits scoped to individual package boundaries determine
 semver bump specifiers, and Nx Release automatically cascades patch version bumps
-to internal dependent packages within the publish set.
+to internal dependent packages within the publishable packages.
 
 This decouples the release cycle of public npm packages from the monorepo's
 internal applications, tools, and root fixed-version releases, while guaranteeing
@@ -19,7 +19,7 @@ Releases in this repository operate at two distinct tiers:
    merges to `main` for fixed-version repository releases, generating root
    changelogs and GitHub release tags (e.g. `v2.20.0`). No packages are
    published to the public npm registry at this tier.
-2. **Package publish set release:** The 28 publishable library packages use
+2. **Publishable packages release:** The 28 publishable library packages use
    `nx release` with independent versioning (`projectsRelationship: "independent"`)
    and per-package release tags (e.g. `conformetry-cli@0.1.0`).
 
@@ -52,7 +52,7 @@ Releases in this repository operate at two distinct tiers:
 
 ## Consequences
 
-- **Per-package git tags and changelogs:** Every package in the publish set
+- **Per-package git tags and changelogs:** Every package in the publishable packages
   generates an independent git tag matching pattern `{projectName}@{version}`
   (such as `codometer-core@0.1.0`) and maintains its own release notes.
 - **Automated suite consistency:** Changing a core library (such as

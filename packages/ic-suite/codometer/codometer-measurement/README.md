@@ -157,6 +157,7 @@ graph LR
   file_testing_mocks_ts["testing/mocks.ts"]
   file_testing_setup_ts["testing/setup.ts"]
   file_testing_target_tree_ts["testing/target-tree.ts"]
+  file_vite_config_ts["vite.config.ts"]
   file_vitest_config_ts["vitest.config.ts"]
   file_src_modules_customization_customization_module_ts --> file_src_modules_customization_customization_service_ts
   file_src_modules_customization_customization_module_unit_test_ts --> file_src_modules_customization_customization_module_ts
@@ -247,6 +248,7 @@ graph LR
 <!-- codependix:end name="codependix-file-imports" -->
 
 <!-- callidescope:start -->
+
 ## 🔭 Callidescope
 
 Call stacks traced through `packages/ic-suite/codometer/codometer-measurement`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
@@ -254,7 +256,7 @@ Call stacks traced through `packages/ic-suite/codometer/codometer-measurement`, 
 | Measure | Value |
 | --- | --- |
 | Callables | 106 |
-| Files | 33 |
+| Files | 34 |
 | Calls traced | 121 |
 | Call stacks | 0 |
 | Deepest stack | 0 |
