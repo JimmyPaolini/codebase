@@ -2004,10 +2004,10 @@ Call stacks traced through `applications/meanderaw`, deepest first. Each frame s
 
 | Measure | Value |
 | --- | --- |
-| Callables | 671 |
-| Files | 232 |
-| Calls traced | 689 |
-| Call stacks | 88 |
+| Callables | 686 |
+| Files | 237 |
+| Calls traced | 694 |
+| Call stacks | 93 |
 | Deepest stack | 16 |
 | Stacks through recursion | 0 |
 | Unfollowable calls | 20 |
@@ -2103,7 +2103,7 @@ What this project is judged against, as declared in its own `callidescope.config
 ```
 
 <details>
-<summary>85 more call stacks</summary>
+<summary>90 more call stacks</summary>
 
 **4. `BLatinLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
@@ -2174,7 +2174,30 @@ What this project is judged against, as declared in its own `callidescope.config
                       └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
-**7. `ELatinLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
+**7. `DeltaGreekLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
+
+```text
+🚀 DeltaGreekLetterCharacteristicsService.constructor(…): DeltaGreekLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/delta-greek-letter-characteristics.service.ts:28]
+  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:284]
+     ↳ A letter's sixteen evaluators, one per orientation in {@link LetterUtilitiesService.orientationNames} order.
+    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:357]
+       ↳ A base template drawn in all sixteen orientations, in {@link LetterUtilitiesService.orientationNames} order.
+      └─> LetterUtilitiesService.map(…)(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:362]
+        └─> LetterUtilitiesService.orientation(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:203]
+           ↳ A base template facing `base` drawn in the orientation `name`: flipped to its corner, then turned.
+          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:371]
+             ↳ Turns a template clockwise by `rotation`, carrying each arm round with it; a quarter or three-quarter turn swaps its…
+            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:377]
+              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:257]
+                 ↳ Turns a template one quarter clockwise: its west column becomes its top row, and each arm moves round — north to east,…
+                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:262]
+                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:187]
+                       ↳ Rewrites a template digit's arms through `arms`, which maps each arm bit — north 8, south 4, east 2, west 1 — to the…
+                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
+```
+
+**8. `ELatinLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 ELatinLetterCharacteristicsService.constructor(…): ELatinLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/e-latin-letter-characteristics.service.ts:26]
@@ -2197,7 +2220,7 @@ What this project is judged against, as declared in its own `callidescope.config
                       └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
-**8. `FLatinLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
+**9. `FLatinLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 FLatinLetterCharacteristicsService.constructor(…): FLatinLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/f-latin-letter-characteristics.service.ts:26]
@@ -2220,7 +2243,7 @@ What this project is judged against, as declared in its own `callidescope.config
                       └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
-**9. `GanHanziLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
+**10. `GanHanziLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 GanHanziLetterCharacteristicsService.constructor(…): GanHanziLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/gan-hanzi-letter-characteristics.service.ts:26]
@@ -2243,7 +2266,7 @@ What this project is judged against, as declared in its own `callidescope.config
                       └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
-**10. `HLatinLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
+**11. `HLatinLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 HLatinLetterCharacteristicsService.constructor(…): HLatinLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/h-latin-letter-characteristics.service.ts:26]
@@ -2266,7 +2289,7 @@ What this project is judged against, as declared in its own `callidescope.config
                       └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
-**11. `ILatinLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
+**12. `ILatinLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 ILatinLetterCharacteristicsService.constructor(…): ILatinLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/i-latin-letter-characteristics.service.ts:25]
@@ -2289,7 +2312,7 @@ What this project is judged against, as declared in its own `callidescope.config
                       └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
-**12. `JiaHanziLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
+**13. `JiaHanziLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 JiaHanziLetterCharacteristicsService.constructor(…): JiaHanziLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/jia-hanzi-letter-characteristics.service.ts:27]
@@ -2312,7 +2335,7 @@ What this project is judged against, as declared in its own `callidescope.config
                       └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
-**13. `JingHanziLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
+**14. `JingHanziLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 JingHanziLetterCharacteristicsService.constructor(…): JingHanziLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/jing-hanzi-letter-characteristics.service.ts:27]
@@ -2335,7 +2358,30 @@ What this project is judged against, as declared in its own `callidescope.config
                       └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
-**14. `KieukHangulLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
+**15. `KappaGreekLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
+
+```text
+🚀 KappaGreekLetterCharacteristicsService.constructor(…): KappaGreekLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/kappa-greek-letter-characteristics.service.ts:29]
+  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:284]
+     ↳ A letter's sixteen evaluators, one per orientation in {@link LetterUtilitiesService.orientationNames} order.
+    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:357]
+       ↳ A base template drawn in all sixteen orientations, in {@link LetterUtilitiesService.orientationNames} order.
+      └─> LetterUtilitiesService.map(…)(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:362]
+        └─> LetterUtilitiesService.orientation(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:203]
+           ↳ A base template facing `base` drawn in the orientation `name`: flipped to its corner, then turned.
+          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:371]
+             ↳ Turns a template clockwise by `rotation`, carrying each arm round with it; a quarter or three-quarter turn swaps its…
+            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:377]
+              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:257]
+                 ↳ Turns a template one quarter clockwise: its west column becomes its top row, and each arm moves round — north to east,…
+                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:262]
+                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:187]
+                       ↳ Rewrites a template digit's arms through `arms`, which maps each arm bit — north 8, south 4, east 2, west 1 — to the…
+                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
+```
+
+**16. `KieukHangulLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 KieukHangulLetterCharacteristicsService.constructor(…): KieukHangulLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/kieuk-hangul-letter-characteristics.service.ts:26]
@@ -2358,7 +2404,7 @@ What this project is judged against, as declared in its own `callidescope.config
                       └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
-**15. `LLatinLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
+**17. `LLatinLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 LLatinLetterCharacteristicsService.constructor(…): LLatinLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/l-latin-letter-characteristics.service.ts:25]
@@ -2381,7 +2427,30 @@ What this project is judged against, as declared in its own `callidescope.config
                       └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
-**16. `LamedHebrewLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
+**18. `LambdaGreekLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
+
+```text
+🚀 LambdaGreekLetterCharacteristicsService.constructor(…): LambdaGreekLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/lambda-greek-letter-characteristics.service.ts:27]
+  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:284]
+     ↳ A letter's sixteen evaluators, one per orientation in {@link LetterUtilitiesService.orientationNames} order.
+    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:357]
+       ↳ A base template drawn in all sixteen orientations, in {@link LetterUtilitiesService.orientationNames} order.
+      └─> LetterUtilitiesService.map(…)(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:362]
+        └─> LetterUtilitiesService.orientation(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:203]
+           ↳ A base template facing `base` drawn in the orientation `name`: flipped to its corner, then turned.
+          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:371]
+             ↳ Turns a template clockwise by `rotation`, carrying each arm round with it; a quarter or three-quarter turn swaps its…
+            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:377]
+              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:257]
+                 ↳ Turns a template one quarter clockwise: its west column becomes its top row, and each arm moves round — north to east,…
+                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:262]
+                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:187]
+                       ↳ Rewrites a template digit's arms through `arms`, which maps each arm bit — north 8, south 4, east 2, west 1 — to the…
+                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
+```
+
+**19. `LamedHebrewLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 LamedHebrewLetterCharacteristicsService.constructor(…): LamedHebrewLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/lamed-hebrew-letter-characteristics.service.ts:27]
@@ -2404,7 +2473,7 @@ What this project is judged against, as declared in its own `callidescope.config
                       └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
-**17. `MLatinLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
+**20. `MLatinLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 MLatinLetterCharacteristicsService.constructor(…): MLatinLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/m-latin-letter-characteristics.service.ts:26]
@@ -2427,7 +2496,7 @@ What this project is judged against, as declared in its own `callidescope.config
                       └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
-**18. `MuHanziLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
+**21. `MuHanziLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 MuHanziLetterCharacteristicsService.constructor(…): MuHanziLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/mu-hanzi-letter-characteristics.service.ts:27]
@@ -2450,7 +2519,7 @@ What this project is judged against, as declared in its own `callidescope.config
                       └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
-**19. `NLatinLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
+**22. `NLatinLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 NLatinLetterCharacteristicsService.constructor(…): NLatinLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/n-latin-letter-characteristics.service.ts:26]
@@ -2473,7 +2542,7 @@ What this project is judged against, as declared in its own `callidescope.config
                       └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
-**20. `OLatinLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
+**23. `OLatinLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 OLatinLetterCharacteristicsService.constructor(…): OLatinLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/o-latin-letter-characteristics.service.ts:24]
@@ -2496,7 +2565,30 @@ What this project is judged against, as declared in its own `callidescope.config
                       └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
-**21. `PhiGreekLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
+**24. `OmegaGreekLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
+
+```text
+🚀 OmegaGreekLetterCharacteristicsService.constructor(…): OmegaGreekLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/omega-greek-letter-characteristics.service.ts:26]
+  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:284]
+     ↳ A letter's sixteen evaluators, one per orientation in {@link LetterUtilitiesService.orientationNames} order.
+    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:357]
+       ↳ A base template drawn in all sixteen orientations, in {@link LetterUtilitiesService.orientationNames} order.
+      └─> LetterUtilitiesService.map(…)(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:362]
+        └─> LetterUtilitiesService.orientation(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:203]
+           ↳ A base template facing `base` drawn in the orientation `name`: flipped to its corner, then turned.
+          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:371]
+             ↳ Turns a template clockwise by `rotation`, carrying each arm round with it; a quarter or three-quarter turn swaps its…
+            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:377]
+              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:257]
+                 ↳ Turns a template one quarter clockwise: its west column becomes its top row, and each arm moves round — north to east,…
+                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:262]
+                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:187]
+                       ↳ Rewrites a template digit's arms through `arms`, which maps each arm bit — north 8, south 4, east 2, west 1 — to the…
+                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
+```
+
+**25. `PhiGreekLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 PhiGreekLetterCharacteristicsService.constructor(…): PhiGreekLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/phi-greek-letter-characteristics.service.ts:28]
@@ -2519,7 +2611,7 @@ What this project is judged against, as declared in its own `callidescope.config
                       └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
-**22. `PieupHangulLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
+**26. `PieupHangulLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 PieupHangulLetterCharacteristicsService.constructor(…): PieupHangulLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/pieup-hangul-letter-characteristics.service.ts:25]
@@ -2542,7 +2634,7 @@ What this project is judged against, as declared in its own `callidescope.config
                       └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
-**23. `PsiGreekLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
+**27. `PsiGreekLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 PsiGreekLetterCharacteristicsService.constructor(…): PsiGreekLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/psi-greek-letter-characteristics.service.ts:27]
@@ -2565,7 +2657,7 @@ What this project is judged against, as declared in its own `callidescope.config
                       └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
-**24. `RhoGreekLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
+**28. `RhoGreekLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 RhoGreekLetterCharacteristicsService.constructor(…): RhoGreekLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/rho-greek-letter-characteristics.service.ts:26]
@@ -2588,7 +2680,7 @@ What this project is judged against, as declared in its own `callidescope.config
                       └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
-**25. `SLatinLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
+**29. `SLatinLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 SLatinLetterCharacteristicsService.constructor(…): SLatinLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/s-latin-letter-characteristics.service.ts:26]
@@ -2611,7 +2703,7 @@ What this project is judged against, as declared in its own `callidescope.config
                       └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
-**26. `ShangHanziLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
+**30. `ShangHanziLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 ShangHanziLetterCharacteristicsService.constructor(…): ShangHanziLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/shang-hanzi-letter-characteristics.service.ts:27]
@@ -2634,7 +2726,7 @@ What this project is judged against, as declared in its own `callidescope.config
                       └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
-**27. `ShenHanziLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
+**31. `ShenHanziLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 ShenHanziLetterCharacteristicsService.constructor(…): ShenHanziLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/shen-hanzi-letter-characteristics.service.ts:28]
@@ -2657,7 +2749,30 @@ What this project is judged against, as declared in its own `callidescope.config
                       └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
-**28. `TLatinLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
+**32. `SigmaGreekLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
+
+```text
+🚀 SigmaGreekLetterCharacteristicsService.constructor(…): SigmaGreekLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/sigma-greek-letter-characteristics.service.ts:28]
+  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:284]
+     ↳ A letter's sixteen evaluators, one per orientation in {@link LetterUtilitiesService.orientationNames} order.
+    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:357]
+       ↳ A base template drawn in all sixteen orientations, in {@link LetterUtilitiesService.orientationNames} order.
+      └─> LetterUtilitiesService.map(…)(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:362]
+        └─> LetterUtilitiesService.orientation(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:203]
+           ↳ A base template facing `base` drawn in the orientation `name`: flipped to its corner, then turned.
+          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:371]
+             ↳ Turns a template clockwise by `rotation`, carrying each arm round with it; a quarter or three-quarter turn swaps its…
+            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:377]
+              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:257]
+                 ↳ Turns a template one quarter clockwise: its west column becomes its top row, and each arm moves round — north to east,…
+                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:262]
+                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:187]
+                       ↳ Rewrites a template digit's arms through `arms`, which maps each arm bit — north 8, south 4, east 2, west 1 — to the…
+                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
+```
+
+**33. `TLatinLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 TLatinLetterCharacteristicsService.constructor(…): TLatinLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/t-latin-letter-characteristics.service.ts:25]
@@ -2680,7 +2795,7 @@ What this project is judged against, as declared in its own `callidescope.config
                       └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
-**29. `TavHebrewLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
+**34. `TavHebrewLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 TavHebrewLetterCharacteristicsService.constructor(…): TavHebrewLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/tav-hebrew-letter-characteristics.service.ts:25]
@@ -2703,7 +2818,7 @@ What this project is judged against, as declared in its own `callidescope.config
                       └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
-**30. `TianHanziLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
+**35. `TianHanziLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 TianHanziLetterCharacteristicsService.constructor(…): TianHanziLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/tian-hanzi-letter-characteristics.service.ts:26]
@@ -2726,7 +2841,7 @@ What this project is judged against, as declared in its own `callidescope.config
                       └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
-**31. `TuHanziLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
+**36. `TuHanziLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 TuHanziLetterCharacteristicsService.constructor(…): TuHanziLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/tu-hanzi-letter-characteristics.service.ts:26]
@@ -2749,7 +2864,7 @@ What this project is judged against, as declared in its own `callidescope.config
                       └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
-**32. `TuSoilHanziLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
+**37. `TuSoilHanziLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 TuSoilHanziLetterCharacteristicsService.constructor(…): TuSoilHanziLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/tu-soil-hanzi-letter-characteristics.service.ts:27]
@@ -2772,7 +2887,7 @@ What this project is judged against, as declared in its own `callidescope.config
                       └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
-**33. `ULatinLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
+**38. `ULatinLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 ULatinLetterCharacteristicsService.constructor(…): ULatinLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/u-latin-letter-characteristics.service.ts:25]
@@ -2795,7 +2910,7 @@ What this project is judged against, as declared in its own `callidescope.config
                       └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
-**34. `WLatinLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
+**39. `WLatinLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 WLatinLetterCharacteristicsService.constructor(…): WLatinLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/w-latin-letter-characteristics.service.ts:26]
@@ -2818,7 +2933,7 @@ What this project is judged against, as declared in its own `callidescope.config
                       └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
-**35. `WangHanziLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
+**40. `WangHanziLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 WangHanziLetterCharacteristicsService.constructor(…): WangHanziLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/wang-hanzi-letter-characteristics.service.ts:26]
@@ -2841,7 +2956,7 @@ What this project is judged against, as declared in its own `callidescope.config
                       └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
-**36. `XLatinLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
+**41. `XLatinLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 XLatinLetterCharacteristicsService.constructor(…): XLatinLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/x-latin-letter-characteristics.service.ts:25]
@@ -2864,7 +2979,7 @@ What this project is judged against, as declared in its own `callidescope.config
                       └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
-**37. `YLatinLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
+**42. `YLatinLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 YLatinLetterCharacteristicsService.constructor(…): YLatinLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/y-latin-letter-characteristics.service.ts:26]
@@ -2887,7 +3002,7 @@ What this project is judged against, as declared in its own `callidescope.config
                       └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
-**38. `YaHangulLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
+**43. `YaHangulLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 YaHangulLetterCharacteristicsService.constructor(…): YaHangulLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/ya-hangul-letter-characteristics.service.ts:27]
@@ -2910,7 +3025,7 @@ What this project is judged against, as declared in its own `callidescope.config
                       └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
-**39. `YeoHangulLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
+**44. `YeoHangulLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 YeoHangulLetterCharacteristicsService.constructor(…): YeoHangulLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/yeo-hangul-letter-characteristics.service.ts:27]
@@ -2933,7 +3048,7 @@ What this project is judged against, as declared in its own `callidescope.config
                       └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
-**40. `YoHangulLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
+**45. `YoHangulLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 YoHangulLetterCharacteristicsService.constructor(…): YoHangulLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/yo-hangul-letter-characteristics.service.ts:25]
@@ -2956,7 +3071,7 @@ What this project is judged against, as declared in its own `callidescope.config
                       └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
-**41. `YouHanziLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
+**46. `YouHanziLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 YouHanziLetterCharacteristicsService.constructor(…): YouHanziLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/you-hanzi-letter-characteristics.service.ts:27]
@@ -2979,7 +3094,7 @@ What this project is judged against, as declared in its own `callidescope.config
                       └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
-**42. `YuHangulLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
+**47. `YuHangulLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 YuHangulLetterCharacteristicsService.constructor(…): YuHangulLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/yu-hangul-letter-characteristics.service.ts:25]
@@ -3002,7 +3117,7 @@ What this project is judged against, as declared in its own `callidescope.config
                       └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
-**43. `YuKatakanaLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
+**48. `YuKatakanaLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 YuKatakanaLetterCharacteristicsService.constructor(…): YuKatakanaLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/yu-katakana-letter-characteristics.service.ts:25]
@@ -3025,7 +3140,7 @@ What this project is judged against, as declared in its own `callidescope.config
                       └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
-**44. `ZLatinLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
+**49. `ZLatinLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 ZLatinLetterCharacteristicsService.constructor(…): ZLatinLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/z-latin-letter-characteristics.service.ts:26]
@@ -3048,7 +3163,7 @@ What this project is judged against, as declared in its own `callidescope.config
                       └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
-**45. `IsBoxesCharacteristicService.compute`** — depth ≥ 10 · orphan-root
+**50. `IsBoxesCharacteristicService.compute`** — depth ≥ 10 · orphan-root
 
 ```text
 🚀 IsBoxesCharacteristicService.compute(context: CharacteristicContext): boolean [applications/meanderaw/src/modules/characteristics/compound/family/is-boxes-characteristic.service.ts:56]
@@ -3071,7 +3186,7 @@ What this project is judged against, as declared in its own `callidescope.config
                      ↳ One point's identity in the graph, which is its position and nothing else.
 ```
 
-**46. `IsWhirlCharacteristicService.compute`** — depth ≥ 10 · orphan-root
+**51. `IsWhirlCharacteristicService.compute`** — depth ≥ 10 · orphan-root
 
 ```text
 🚀 IsWhirlCharacteristicService.compute(context: CharacteristicContext): boolean [applications/meanderaw/src/modules/characteristics/compound/family/is-whirl-characteristic.service.ts:66]
@@ -3094,7 +3209,7 @@ What this project is judged against, as declared in its own `callidescope.config
                      ↳ One point's identity in the graph, which is its position and nothing else.
 ```
 
-**47. `IsChainCharacteristicService.compute`** — depth ≥ 9 · orphan-root
+**52. `IsChainCharacteristicService.compute`** — depth ≥ 9 · orphan-root
 
 ```text
 🚀 IsChainCharacteristicService.compute(context: CharacteristicContext): boolean [applications/meanderaw/src/modules/characteristics/compound/family/is-chain-characteristic.service.ts:57]
@@ -3115,7 +3230,7 @@ What this project is judged against, as declared in its own `callidescope.config
                    ↳ One point's identity in the graph, which is its position and nothing else.
 ```
 
-**48. `IsClaspsCharacteristicService.compute`** — depth ≥ 9 · orphan-root
+**53. `IsClaspsCharacteristicService.compute`** — depth ≥ 9 · orphan-root
 
 ```text
 🚀 IsClaspsCharacteristicService.compute(context: CharacteristicContext): boolean [applications/meanderaw/src/modules/characteristics/compound/family/is-clasps-characteristic.service.ts:50]
@@ -3136,7 +3251,7 @@ What this project is judged against, as declared in its own `callidescope.config
                    ↳ One point's identity in the graph, which is its position and nothing else.
 ```
 
-**49. `IsDoubleChainCharacteristicService.compute`** — depth ≥ 9 · orphan-root
+**54. `IsDoubleChainCharacteristicService.compute`** — depth ≥ 9 · orphan-root
 
 ```text
 🚀 IsDoubleChainCharacteristicService.compute(context: CharacteristicContext): boolean [applications/meanderaw/src/modules/characteristics/compound/family/is-double-chain-characteristic.service.ts:60]
@@ -3157,7 +3272,7 @@ What this project is judged against, as declared in its own `callidescope.config
                    ↳ One point's identity in the graph, which is its position and nothing else.
 ```
 
-**50. `IsSnakeCharacteristicService.compute`** — depth ≥ 9 · orphan-root
+**55. `IsSnakeCharacteristicService.compute`** — depth ≥ 9 · orphan-root
 
 ```text
 🚀 IsSnakeCharacteristicService.compute(context: CharacteristicContext): boolean [applications/meanderaw/src/modules/characteristics/compound/family/is-snake-characteristic.service.ts:45]
@@ -3178,7 +3293,7 @@ What this project is judged against, as declared in its own `callidescope.config
                    ↳ One point's identity in the graph, which is its position and nothing else.
 ```
 
-**51. `IsSwirlCharacteristicService.compute`** — depth ≥ 9 · orphan-root
+**56. `IsSwirlCharacteristicService.compute`** — depth ≥ 9 · orphan-root
 
 ```text
 🚀 IsSwirlCharacteristicService.compute(context: CharacteristicContext): boolean [applications/meanderaw/src/modules/characteristics/compound/family/is-swirl-characteristic.service.ts:50]
@@ -3199,7 +3314,7 @@ What this project is judged against, as declared in its own `callidescope.config
                    ↳ One point's identity in the graph, which is its position and nothing else.
 ```
 
-**52. `CodeService.spellCanonical`** — depth 8 · orphan-root
+**57. `CodeService.spellCanonical`** — depth 8 · orphan-root
 
 ```text
 🚀 CodeService.spellCanonical(tile: Tile, repeats?: number): string [applications/meanderaw/src/modules/code/code.service.ts:303]
@@ -3217,7 +3332,7 @@ What this project is judged against, as declared in its own `callidescope.config
               └─> TileService.from(…)(): boolean [applications/meanderaw/src/modules/tile/tile.service.ts:147]
 ```
 
-**53. `IsForkCharacteristicService.compute`** — depth ≥ 8 · orphan-root
+**58. `IsForkCharacteristicService.compute`** — depth ≥ 8 · orphan-root
 
 ```text
 🚀 IsForkCharacteristicService.compute(context: CharacteristicContext): boolean [applications/meanderaw/src/modules/characteristics/compound/family/is-fork-characteristic.service.ts:64]
@@ -3236,7 +3351,7 @@ What this project is judged against, as declared in its own `callidescope.config
                  ↳ One point's identity in the graph, which is its position and nothing else.
 ```
 
-**54. `IsParallelCharacteristicService.compute`** — depth ≥ 8 · orphan-root
+**59. `IsParallelCharacteristicService.compute`** — depth ≥ 8 · orphan-root
 
 ```text
 🚀 IsParallelCharacteristicService.compute(context: CharacteristicContext): boolean [applications/meanderaw/src/modules/characteristics/compound/family/is-parallel-characteristic.service.ts:55]
@@ -3255,7 +3370,7 @@ What this project is judged against, as declared in its own `callidescope.config
                  ↳ One point's identity in the graph, which is its position and nothing else.
 ```
 
-**55. `IsPureTreeCharacteristicService.compute`** — depth ≥ 8 · orphan-root
+**60. `IsPureTreeCharacteristicService.compute`** — depth ≥ 8 · orphan-root
 
 ```text
 🚀 IsPureTreeCharacteristicService.compute(context: CharacteristicContext): boolean [applications/meanderaw/src/modules/characteristics/compound/family/is-pure-tree-characteristic.service.ts:64]
@@ -3274,7 +3389,7 @@ What this project is judged against, as declared in its own `callidescope.config
                  ↳ One point's identity in the graph, which is its position and nothing else.
 ```
 
-**56. `IsStippledCharacteristicService.compute`** — depth ≥ 8 · orphan-root
+**61. `IsStippledCharacteristicService.compute`** — depth ≥ 8 · orphan-root
 
 ```text
 🚀 IsStippledCharacteristicService.compute(context: CharacteristicContext): boolean [applications/meanderaw/src/modules/characteristics/compound/family/is-stippled-characteristic.service.ts:50]
@@ -3293,7 +3408,7 @@ What this project is judged against, as declared in its own `callidescope.config
                  ↳ One point's identity in the graph, which is its position and nothing else.
 ```
 
-**57. `CharacteristicsService.onApplicationBootstrap`** — depth ≥ 7 · lifecycle
+**62. `CharacteristicsService.onApplicationBootstrap`** — depth ≥ 7 · lifecycle
 
 ```text
 🚀 CharacteristicsService.onApplicationBootstrap(): void [applications/meanderaw/src/modules/characteristics/characteristics.service.ts:328]
@@ -3310,7 +3425,7 @@ What this project is judged against, as declared in its own `callidescope.config
                ↳ Whether a discovered provider has an evaluator's shape: a `compute` method and metadata naming a string key.
 ```
 
-**58. `SymmetryService.variants`** — depth 7 · orphan-root
+**63. `SymmetryService.variants`** — depth 7 · orphan-root
 
 ```text
 🚀 SymmetryService.variants(tile: Tile): Tile[] [applications/meanderaw/src/modules/symmetry/symmetry.service.ts:217]
@@ -3326,7 +3441,7 @@ What this project is judged against, as declared in its own `callidescope.config
             └─> TileService.from(…)(): boolean [applications/meanderaw/src/modules/tile/tile.service.ts:147]
 ```
 
-**59. `CharacteristicsService.metadata`** — depth ≥ 7 · orphan-root
+**64. `CharacteristicsService.metadata`** — depth ≥ 7 · orphan-root
 
 ```text
 🚀 CharacteristicsService.metadata(): readonly CharacteristicMetadata[] [applications/meanderaw/src/modules/characteristics/characteristics.service.ts:315]
@@ -3343,7 +3458,7 @@ What this project is judged against, as declared in its own `callidescope.config
                ↳ Whether a discovered provider has an evaluator's shape: a `compute` method and metadata naming a string key.
 ```
 
-**60. `TileCrossingCycleCountCharacteristicService.compute`** — depth ≥ 7 · orphan-root
+**65. `TileCrossingCycleCountCharacteristicService.compute`** — depth ≥ 7 · orphan-root
 
 ```text
 🚀 TileCrossingCycleCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/path/tile-crossing/tile-crossing-cycle-count-characteristic.service.ts:45]
@@ -3360,7 +3475,7 @@ What this project is judged against, as declared in its own `callidescope.config
                ↳ One point's identity in the graph, which is its position and nothing else.
 ```
 
-**61. `InflectionCountCharacteristicService.compute`** — depth 6 · orphan-root
+**66. `InflectionCountCharacteristicService.compute`** — depth 6 · orphan-root
 
 ```text
 🚀 InflectionCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/path/turn/inflection-count-characteristic.service.ts:49]
@@ -3376,7 +3491,7 @@ What this project is judged against, as declared in its own `callidescope.config
              ↳ The heading pointing the other way.
 ```
 
-**62. `MaxMonotonicTurnLengthCharacteristicService.compute`** — depth 6 · orphan-root
+**67. `MaxMonotonicTurnLengthCharacteristicService.compute`** — depth 6 · orphan-root
 
 ```text
 🚀 MaxMonotonicTurnLengthCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/path/turn/max-monotonic-turn-length-characteristic.service.ts:48]
@@ -3392,7 +3507,7 @@ What this project is judged against, as declared in its own `callidescope.config
              ↳ The heading pointing the other way.
 ```
 
-**63. `TightestTurnCountCharacteristicService.compute`** — depth 6 · orphan-root
+**68. `TightestTurnCountCharacteristicService.compute`** — depth 6 · orphan-root
 
 ```text
 🚀 TightestTurnCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/path/turn/tightest-turn-count-characteristic.service.ts:49]
@@ -3408,7 +3523,7 @@ What this project is judged against, as declared in its own `callidescope.config
              ↳ The heading pointing the other way.
 ```
 
-**64. `TotalTurnCountCharacteristicService.compute`** — depth 6 · orphan-root
+**69. `TotalTurnCountCharacteristicService.compute`** — depth 6 · orphan-root
 
 ```text
 🚀 TotalTurnCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/path/turn/total-turn-count-characteristic.service.ts:48]
@@ -3424,7 +3539,7 @@ What this project is judged against, as declared in its own `callidescope.config
              ↳ The heading pointing the other way.
 ```
 
-**65. `LetterUtilitiesService.compute`** — depth 6 · orphan-root
+**70. `LetterUtilitiesService.compute`** — depth 6 · orphan-root
 
 ```text
 🚀 LetterUtilitiesService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:145]
@@ -3438,7 +3553,7 @@ What this project is judged against, as declared in its own `callidescope.config
           └─> SubmatrixUtilitiesService.map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:39]
 ```
 
-**66. `HorizontalRectangleCountCharacteristicService.compute`** — depth ≥ 6 · orphan-root
+**71. `HorizontalRectangleCountCharacteristicService.compute`** — depth ≥ 6 · orphan-root
 
 ```text
 🚀 HorizontalRectangleCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/rectangle/horizontal-rectangle-count-characteristic.service.ts:48]
@@ -3454,7 +3569,7 @@ What this project is judged against, as declared in its own `callidescope.config
              ↳ The hexadecimal Code digit of the point at `(row, column)` — north 8, south 4, east 2, west 1 — with columns wrapping,…
 ```
 
-**67. `VerticalRectangleCountCharacteristicService.compute`** — depth ≥ 6 · orphan-root
+**72. `VerticalRectangleCountCharacteristicService.compute`** — depth ≥ 6 · orphan-root
 
 ```text
 🚀 VerticalRectangleCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/rectangle/vertical-rectangle-count-characteristic.service.ts:48]
@@ -3470,7 +3585,7 @@ What this project is judged against, as declared in its own `callidescope.config
              ↳ The hexadecimal Code digit of the point at `(row, column)` — north 8, south 4, east 2, west 1 — with columns wrapping,…
 ```
 
-**68. `CodeService.tile`** — depth 5 · orphan-root
+**73. `CodeService.tile`** — depth 5 · orphan-root
 
 ```text
 🚀 CodeService.tile(code: CodeObject): Tile [applications/meanderaw/src/modules/code/code.service.ts:339]
@@ -3483,7 +3598,7 @@ What this project is judged against, as declared in its own `callidescope.config
            ↳ One digit's four direction bits, worth `8` north, `4` south, `2` east, `1` west.
 ```
 
-**69. `TileService.assertWellFormed`** — depth ≥ 4 · orphan-root
+**74. `TileService.assertWellFormed`** — depth ≥ 4 · orphan-root
 
 ```text
 🚀 TileService.assertWellFormed(tile: Tile): void [applications/meanderaw/src/modules/tile/tile.service.ts:120]
@@ -3495,7 +3610,7 @@ What this project is judged against, as declared in its own `callidescope.config
       └─> MalformedTileError.constructor(reason: string): MalformedTileError [applications/meanderaw/src/modules/tile/tile.constants.ts:31]
 ```
 
-**70. `CodeService.anonymous`** — depth 4 · orphan-root
+**75. `CodeService.anonymous`** — depth 4 · orphan-root
 
 ```text
 🚀 CodeService.anonymous(c: CodeObject): CodeObject[] [applications/meanderaw/src/modules/code/code.service.ts:149]
@@ -3505,7 +3620,7 @@ What this project is judged against, as declared in its own `callidescope.config
       └─> CodeService.from(…)(_unused: unknown, row: number): string [applications/meanderaw/src/modules/code/code.service.ts:275]
 ```
 
-**71. `MatrixService.submatrices`** — depth 4 · orphan-root
+**76. `MatrixService.submatrices`** — depth 4 · orphan-root
 
 ```text
 🚀 MatrixService.submatrices(matrix: Matrix, height: number, width: number): Submatrix[] [applications/meanderaw/src/modules/matrix/matrix.service.ts:119]
@@ -3516,7 +3631,7 @@ What this project is judged against, as declared in its own `callidescope.config
       └─> MatrixService.from(…)(_unusedColumn: unknown, deltaColumn: number): MatrixPoint [applications/meanderaw/src/modules/matrix/matrix.service.ts:47]
 ```
 
-**72. `MatrixService.toCode`** — depth 3 · orphan-root
+**77. `MatrixService.toCode`** — depth 3 · orphan-root
 
 ```text
 🚀 MatrixService.toCode(matrix: Matrix, repeats?: number): Code [applications/meanderaw/src/modules/matrix/matrix.service.ts:157]
@@ -3525,7 +3640,7 @@ What this project is judged against, as declared in its own `callidescope.config
     └─> MatrixService.map(…)(point: MatrixPoint): string [applications/meanderaw/src/modules/matrix/matrix.service.ts:167]
 ```
 
-**73. `BottomBorderTouchCountCharacteristicService.compute`** — depth 3 · orphan-root
+**78. `BottomBorderTouchCountCharacteristicService.compute`** — depth 3 · orphan-root
 
 ```text
 🚀 BottomBorderTouchCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/path/turn/bottom-border-touch-count-characteristic.service.ts:49]
@@ -3536,7 +3651,7 @@ What this project is judged against, as declared in its own `callidescope.config
        ↳ The row and column a `row,column` point key names.
 ```
 
-**74. `TopBorderTouchCountCharacteristicService.compute`** — depth 3 · orphan-root
+**79. `TopBorderTouchCountCharacteristicService.compute`** — depth 3 · orphan-root
 
 ```text
 🚀 TopBorderTouchCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/path/turn/top-border-touch-count-characteristic.service.ts:49]
@@ -3547,7 +3662,7 @@ What this project is judged against, as declared in its own `callidescope.config
        ↳ The row and column a `row,column` point key names.
 ```
 
-**75. `IsCrossCharacteristicService.compute`** — depth 3 · orphan-root
+**80. `IsCrossCharacteristicService.compute`** — depth 3 · orphan-root
 
 ```text
 🚀 IsCrossCharacteristicService.compute(context: CharacteristicContext): boolean [applications/meanderaw/src/modules/characteristics/compound/family/is-cross-characteristic.service.ts:49]
@@ -3558,7 +3673,7 @@ What this project is judged against, as declared in its own `callidescope.config
        ↳ Counts the points whose ink leaves by exactly `arms` — every named arm set and every other arm clear — which is the…
 ```
 
-**76. `CornerCountCharacteristicService.compute`** — depth 3 · orphan-root
+**81. `CornerCountCharacteristicService.compute`** — depth 3 · orphan-root
 
 ```text
 🚀 CornerCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/corner/corner-count-characteristic.service.ts:56]
@@ -3569,7 +3684,7 @@ What this project is judged against, as declared in its own `callidescope.config
        ↳ Counts the points whose ink leaves by exactly `arms` — every named arm set and every other arm clear — which is the…
 ```
 
-**77. `TileEnumerationService.isMatching`** — depth 3 · orphan-root
+**82. `TileEnumerationService.isMatching`** — depth 3 · orphan-root
 
 ```text
 🚀 TileEnumerationService.isMatching(tile: Tile): boolean [applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:235]
@@ -3580,7 +3695,7 @@ What this project is judged against, as declared in its own `callidescope.config
        ↳ How many of a point's four direction bits are set — the point's degree as the drawing shows it.
 ```
 
-**78. `ClassificationService.matches`** — depth 2 · orphan-root
+**83. `ClassificationService.matches`** — depth 2 · orphan-root
 
 ```text
 🚀 ClassificationService.matches(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:64]
@@ -3588,7 +3703,7 @@ What this project is judged against, as declared in its own `callidescope.config
      ↳ Whether a repeat's family predicate holds and its band is deep enough for that family.
 ```
 
-**79. `ClassificationService.matches`** — depth 2 · orphan-root
+**84. `ClassificationService.matches`** — depth 2 · orphan-root
 
 ```text
 🚀 ClassificationService.matches(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:75]
@@ -3596,7 +3711,7 @@ What this project is judged against, as declared in its own `callidescope.config
      ↳ Whether a repeat's family predicate holds and its band is deep enough for that family.
 ```
 
-**80. `TileService.isBare`** — depth 2 · orphan-root
+**85. `TileService.isBare`** — depth 2 · orphan-root
 
 ```text
 🚀 TileService.isBare(directions: Directions): boolean [applications/meanderaw/src/modules/tile/tile.service.ts:231]
@@ -3605,7 +3720,7 @@ What this project is judged against, as declared in its own `callidescope.config
      ↳ How many of a point's four direction bits are set — the point's degree as the drawing shows it.
 ```
 
-**81. `MatrixService.rotate`** — depth 2 · orphan-root
+**86. `MatrixService.rotate`** — depth 2 · orphan-root
 
 ```text
 🚀 MatrixService.rotate(matrix: Matrix, step: number): Matrix [applications/meanderaw/src/modules/matrix/matrix.service.ts:101]
@@ -3613,7 +3728,7 @@ What this project is judged against, as declared in its own `callidescope.config
   └─> MatrixService.map(…)(row: readonly MatrixPoint[]): MatrixPoint[] [applications/meanderaw/src/modules/matrix/matrix.service.ts:113]
 ```
 
-**82. `DoubleHorizontalEdgeCountCharacteristicService.compute`** — depth 2 · orphan-root
+**87. `DoubleHorizontalEdgeCountCharacteristicService.compute`** — depth 2 · orphan-root
 
 ```text
 🚀 DoubleHorizontalEdgeCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/point/double-horizontal-edge-count-characteristic.service.ts:47]
@@ -3622,7 +3737,7 @@ What this project is judged against, as declared in its own `callidescope.config
      ↳ Counts the points whose ink leaves by exactly `arms` — every named arm set and every other arm clear — which is the…
 ```
 
-**83. `DoubleVerticalEdgeCountCharacteristicService.compute`** — depth 2 · orphan-root
+**88. `DoubleVerticalEdgeCountCharacteristicService.compute`** — depth 2 · orphan-root
 
 ```text
 🚀 DoubleVerticalEdgeCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/point/double-vertical-edge-count-characteristic.service.ts:47]
@@ -3631,7 +3746,7 @@ What this project is judged against, as declared in its own `callidescope.config
      ↳ Counts the points whose ink leaves by exactly `arms` — every named arm set and every other arm clear — which is the…
 ```
 
-**84. `EastEdgeCountCharacteristicService.compute`** — depth 2 · orphan-root
+**89. `EastEdgeCountCharacteristicService.compute`** — depth 2 · orphan-root
 
 ```text
 🚀 EastEdgeCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/point/east-edge-count-characteristic.service.ts:46]
@@ -3640,7 +3755,7 @@ What this project is judged against, as declared in its own `callidescope.config
      ↳ Counts the points whose ink leaves by `arm`, whatever other arms they carry — a lone arm, a straight edge, a corner, a…
 ```
 
-**85. `EdgeCountCharacteristicService.compute`** — depth 2 · orphan-root
+**90. `EdgeCountCharacteristicService.compute`** — depth 2 · orphan-root
 
 ```text
 🚀 EdgeCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/point/edge-count-characteristic.service.ts:48]
@@ -3649,7 +3764,7 @@ What this project is judged against, as declared in its own `callidescope.config
      ↳ How many of a point's four arms carry ink — its raw digit degree, read directly off the point rather than through the…
 ```
 
-**86. `NorthEdgeCountCharacteristicService.compute`** — depth 2 · orphan-root
+**91. `NorthEdgeCountCharacteristicService.compute`** — depth 2 · orphan-root
 
 ```text
 🚀 NorthEdgeCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/point/north-edge-count-characteristic.service.ts:46]
@@ -3658,7 +3773,7 @@ What this project is judged against, as declared in its own `callidescope.config
      ↳ Counts the points whose ink leaves by `arm`, whatever other arms they carry — a lone arm, a straight edge, a corner, a…
 ```
 
-**87. `SouthEdgeCountCharacteristicService.compute`** — depth 2 · orphan-root
+**92. `SouthEdgeCountCharacteristicService.compute`** — depth 2 · orphan-root
 
 ```text
 🚀 SouthEdgeCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/point/south-edge-count-characteristic.service.ts:46]
@@ -3667,7 +3782,7 @@ What this project is judged against, as declared in its own `callidescope.config
      ↳ Counts the points whose ink leaves by `arm`, whatever other arms they carry — a lone arm, a straight edge, a corner, a…
 ```
 
-**88. `WestEdgeCountCharacteristicService.compute`** — depth 2 · orphan-root
+**93. `WestEdgeCountCharacteristicService.compute`** — depth 2 · orphan-root
 
 ```text
 🚀 WestEdgeCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/point/west-edge-count-characteristic.service.ts:46]
@@ -3687,7 +3802,7 @@ What this project is judged against, as declared in its own `callidescope.config
 | `IsCombCharacteristicService.compute` | 8 | `FamilyUtilitiesService.hasValidDimensions`, `IsBarsCharacteristicService.compute`, `IsLinesCharacteristicService.compute`, `IsMeshCharacteristicService.compute`, `FamilyUtilitiesService.grid`, `IsCombCharacteristicService.isVerticalComb`, `IsCombCharacteristicService.isHorizontalComb`, `IsCombCharacteristicService.isReversingComb` | `applications/meanderaw/src/modules/characteristics/compound/family/is-comb-characteristic.service.ts:161` |
 
 <details>
-<summary>337 more callables</summary>
+<summary>342 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
@@ -3953,6 +4068,7 @@ What this project is judged against, as declared in its own `callidescope.config
 | `BLatinLetterCharacteristicsService.constructor` | 1 | `LetterUtilitiesService.evaluators` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/b-latin-letter-characteristics.service.ts:26` |
 | `CLatinLetterCharacteristicsService.constructor` | 1 | `LetterUtilitiesService.evaluators` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/c-latin-letter-characteristics.service.ts:25` |
 | `DaletHebrewLetterCharacteristicsService.constructor` | 1 | `LetterUtilitiesService.evaluators` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/dalet-hebrew-letter-characteristics.service.ts:25` |
+| `DeltaGreekLetterCharacteristicsService.constructor` | 1 | `LetterUtilitiesService.evaluators` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/delta-greek-letter-characteristics.service.ts:28` |
 | `ELatinLetterCharacteristicsService.constructor` | 1 | `LetterUtilitiesService.evaluators` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/e-latin-letter-characteristics.service.ts:26` |
 | `FLatinLetterCharacteristicsService.constructor` | 1 | `LetterUtilitiesService.evaluators` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/f-latin-letter-characteristics.service.ts:26` |
 | `GanHanziLetterCharacteristicsService.constructor` | 1 | `LetterUtilitiesService.evaluators` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/gan-hanzi-letter-characteristics.service.ts:26` |
@@ -3960,13 +4076,16 @@ What this project is judged against, as declared in its own `callidescope.config
 | `ILatinLetterCharacteristicsService.constructor` | 1 | `LetterUtilitiesService.evaluators` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/i-latin-letter-characteristics.service.ts:25` |
 | `JiaHanziLetterCharacteristicsService.constructor` | 1 | `LetterUtilitiesService.evaluators` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/jia-hanzi-letter-characteristics.service.ts:27` |
 | `JingHanziLetterCharacteristicsService.constructor` | 1 | `LetterUtilitiesService.evaluators` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/jing-hanzi-letter-characteristics.service.ts:27` |
+| `KappaGreekLetterCharacteristicsService.constructor` | 1 | `LetterUtilitiesService.evaluators` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/kappa-greek-letter-characteristics.service.ts:29` |
 | `KieukHangulLetterCharacteristicsService.constructor` | 1 | `LetterUtilitiesService.evaluators` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/kieuk-hangul-letter-characteristics.service.ts:26` |
 | `LLatinLetterCharacteristicsService.constructor` | 1 | `LetterUtilitiesService.evaluators` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/l-latin-letter-characteristics.service.ts:25` |
+| `LambdaGreekLetterCharacteristicsService.constructor` | 1 | `LetterUtilitiesService.evaluators` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/lambda-greek-letter-characteristics.service.ts:27` |
 | `LamedHebrewLetterCharacteristicsService.constructor` | 1 | `LetterUtilitiesService.evaluators` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/lamed-hebrew-letter-characteristics.service.ts:27` |
 | `MLatinLetterCharacteristicsService.constructor` | 1 | `LetterUtilitiesService.evaluators` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/m-latin-letter-characteristics.service.ts:26` |
 | `MuHanziLetterCharacteristicsService.constructor` | 1 | `LetterUtilitiesService.evaluators` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/mu-hanzi-letter-characteristics.service.ts:27` |
 | `NLatinLetterCharacteristicsService.constructor` | 1 | `LetterUtilitiesService.evaluators` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/n-latin-letter-characteristics.service.ts:26` |
 | `OLatinLetterCharacteristicsService.constructor` | 1 | `LetterUtilitiesService.evaluators` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/o-latin-letter-characteristics.service.ts:24` |
+| `OmegaGreekLetterCharacteristicsService.constructor` | 1 | `LetterUtilitiesService.evaluators` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/omega-greek-letter-characteristics.service.ts:26` |
 | `PhiGreekLetterCharacteristicsService.constructor` | 1 | `LetterUtilitiesService.evaluators` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/phi-greek-letter-characteristics.service.ts:28` |
 | `PieupHangulLetterCharacteristicsService.constructor` | 1 | `LetterUtilitiesService.evaluators` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/pieup-hangul-letter-characteristics.service.ts:25` |
 | `PsiGreekLetterCharacteristicsService.constructor` | 1 | `LetterUtilitiesService.evaluators` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/psi-greek-letter-characteristics.service.ts:27` |
@@ -3974,6 +4093,7 @@ What this project is judged against, as declared in its own `callidescope.config
 | `SLatinLetterCharacteristicsService.constructor` | 1 | `LetterUtilitiesService.evaluators` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/s-latin-letter-characteristics.service.ts:26` |
 | `ShangHanziLetterCharacteristicsService.constructor` | 1 | `LetterUtilitiesService.evaluators` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/shang-hanzi-letter-characteristics.service.ts:27` |
 | `ShenHanziLetterCharacteristicsService.constructor` | 1 | `LetterUtilitiesService.evaluators` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/shen-hanzi-letter-characteristics.service.ts:28` |
+| `SigmaGreekLetterCharacteristicsService.constructor` | 1 | `LetterUtilitiesService.evaluators` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/sigma-greek-letter-characteristics.service.ts:28` |
 | `TLatinLetterCharacteristicsService.constructor` | 1 | `LetterUtilitiesService.evaluators` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/t-latin-letter-characteristics.service.ts:25` |
 | `TavHebrewLetterCharacteristicsService.constructor` | 1 | `LetterUtilitiesService.evaluators` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/tav-hebrew-letter-characteristics.service.ts:25` |
 | `TianHanziLetterCharacteristicsService.constructor` | 1 | `LetterUtilitiesService.evaluators` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/tian-hanzi-letter-characteristics.service.ts:26` |
@@ -4334,6 +4454,8 @@ graph LR
   file_src_modules_characteristics_submatrix_letter_c_latin_letter_characteristics_service_unit_test_ts["src/modules/characteristics/submatrix/letter/c-latin-letter-characteristics.service.unit.test.ts"]
   file_src_modules_characteristics_submatrix_letter_dalet_hebrew_letter_characteristics_service_ts["src/modules/characteristics/submatrix/letter/dalet-hebrew-letter-characteristics.service.ts"]
   file_src_modules_characteristics_submatrix_letter_dalet_hebrew_letter_characteristics_service_unit_test_ts["src/modules/characteristics/submatrix/letter/dalet-hebrew-letter-characteristics.service.unit.test.ts"]
+  file_src_modules_characteristics_submatrix_letter_delta_greek_letter_characteristics_service_ts["src/modules/characteristics/submatrix/letter/delta-greek-letter-characteristics.service.ts"]
+  file_src_modules_characteristics_submatrix_letter_delta_greek_letter_characteristics_service_unit_test_ts["src/modules/characteristics/submatrix/letter/delta-greek-letter-characteristics.service.unit.test.ts"]
   file_src_modules_characteristics_submatrix_letter_e_latin_letter_characteristics_service_ts["src/modules/characteristics/submatrix/letter/e-latin-letter-characteristics.service.ts"]
   file_src_modules_characteristics_submatrix_letter_e_latin_letter_characteristics_service_unit_test_ts["src/modules/characteristics/submatrix/letter/e-latin-letter-characteristics.service.unit.test.ts"]
   file_src_modules_characteristics_submatrix_letter_f_latin_letter_characteristics_service_ts["src/modules/characteristics/submatrix/letter/f-latin-letter-characteristics.service.ts"]
@@ -4348,10 +4470,14 @@ graph LR
   file_src_modules_characteristics_submatrix_letter_jia_hanzi_letter_characteristics_service_unit_test_ts["src/modules/characteristics/submatrix/letter/jia-hanzi-letter-characteristics.service.unit.test.ts"]
   file_src_modules_characteristics_submatrix_letter_jing_hanzi_letter_characteristics_service_ts["src/modules/characteristics/submatrix/letter/jing-hanzi-letter-characteristics.service.ts"]
   file_src_modules_characteristics_submatrix_letter_jing_hanzi_letter_characteristics_service_unit_test_ts["src/modules/characteristics/submatrix/letter/jing-hanzi-letter-characteristics.service.unit.test.ts"]
+  file_src_modules_characteristics_submatrix_letter_kappa_greek_letter_characteristics_service_ts["src/modules/characteristics/submatrix/letter/kappa-greek-letter-characteristics.service.ts"]
+  file_src_modules_characteristics_submatrix_letter_kappa_greek_letter_characteristics_service_unit_test_ts["src/modules/characteristics/submatrix/letter/kappa-greek-letter-characteristics.service.unit.test.ts"]
   file_src_modules_characteristics_submatrix_letter_kieuk_hangul_letter_characteristics_service_ts["src/modules/characteristics/submatrix/letter/kieuk-hangul-letter-characteristics.service.ts"]
   file_src_modules_characteristics_submatrix_letter_kieuk_hangul_letter_characteristics_service_unit_test_ts["src/modules/characteristics/submatrix/letter/kieuk-hangul-letter-characteristics.service.unit.test.ts"]
   file_src_modules_characteristics_submatrix_letter_l_latin_letter_characteristics_service_ts["src/modules/characteristics/submatrix/letter/l-latin-letter-characteristics.service.ts"]
   file_src_modules_characteristics_submatrix_letter_l_latin_letter_characteristics_service_unit_test_ts["src/modules/characteristics/submatrix/letter/l-latin-letter-characteristics.service.unit.test.ts"]
+  file_src_modules_characteristics_submatrix_letter_lambda_greek_letter_characteristics_service_ts["src/modules/characteristics/submatrix/letter/lambda-greek-letter-characteristics.service.ts"]
+  file_src_modules_characteristics_submatrix_letter_lambda_greek_letter_characteristics_service_unit_test_ts["src/modules/characteristics/submatrix/letter/lambda-greek-letter-characteristics.service.unit.test.ts"]
   file_src_modules_characteristics_submatrix_letter_lamed_hebrew_letter_characteristics_service_ts["src/modules/characteristics/submatrix/letter/lamed-hebrew-letter-characteristics.service.ts"]
   file_src_modules_characteristics_submatrix_letter_lamed_hebrew_letter_characteristics_service_unit_test_ts["src/modules/characteristics/submatrix/letter/lamed-hebrew-letter-characteristics.service.unit.test.ts"]
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_ts["src/modules/characteristics/submatrix/letter/letter-characteristics.module.ts"]
@@ -4368,6 +4494,8 @@ graph LR
   file_src_modules_characteristics_submatrix_letter_n_latin_letter_characteristics_service_unit_test_ts["src/modules/characteristics/submatrix/letter/n-latin-letter-characteristics.service.unit.test.ts"]
   file_src_modules_characteristics_submatrix_letter_o_latin_letter_characteristics_service_ts["src/modules/characteristics/submatrix/letter/o-latin-letter-characteristics.service.ts"]
   file_src_modules_characteristics_submatrix_letter_o_latin_letter_characteristics_service_unit_test_ts["src/modules/characteristics/submatrix/letter/o-latin-letter-characteristics.service.unit.test.ts"]
+  file_src_modules_characteristics_submatrix_letter_omega_greek_letter_characteristics_service_ts["src/modules/characteristics/submatrix/letter/omega-greek-letter-characteristics.service.ts"]
+  file_src_modules_characteristics_submatrix_letter_omega_greek_letter_characteristics_service_unit_test_ts["src/modules/characteristics/submatrix/letter/omega-greek-letter-characteristics.service.unit.test.ts"]
   file_src_modules_characteristics_submatrix_letter_phi_greek_letter_characteristics_service_ts["src/modules/characteristics/submatrix/letter/phi-greek-letter-characteristics.service.ts"]
   file_src_modules_characteristics_submatrix_letter_phi_greek_letter_characteristics_service_unit_test_ts["src/modules/characteristics/submatrix/letter/phi-greek-letter-characteristics.service.unit.test.ts"]
   file_src_modules_characteristics_submatrix_letter_pieup_hangul_letter_characteristics_service_ts["src/modules/characteristics/submatrix/letter/pieup-hangul-letter-characteristics.service.ts"]
@@ -4382,6 +4510,8 @@ graph LR
   file_src_modules_characteristics_submatrix_letter_shang_hanzi_letter_characteristics_service_unit_test_ts["src/modules/characteristics/submatrix/letter/shang-hanzi-letter-characteristics.service.unit.test.ts"]
   file_src_modules_characteristics_submatrix_letter_shen_hanzi_letter_characteristics_service_ts["src/modules/characteristics/submatrix/letter/shen-hanzi-letter-characteristics.service.ts"]
   file_src_modules_characteristics_submatrix_letter_shen_hanzi_letter_characteristics_service_unit_test_ts["src/modules/characteristics/submatrix/letter/shen-hanzi-letter-characteristics.service.unit.test.ts"]
+  file_src_modules_characteristics_submatrix_letter_sigma_greek_letter_characteristics_service_ts["src/modules/characteristics/submatrix/letter/sigma-greek-letter-characteristics.service.ts"]
+  file_src_modules_characteristics_submatrix_letter_sigma_greek_letter_characteristics_service_unit_test_ts["src/modules/characteristics/submatrix/letter/sigma-greek-letter-characteristics.service.unit.test.ts"]
   file_src_modules_characteristics_submatrix_letter_t_latin_letter_characteristics_service_ts["src/modules/characteristics/submatrix/letter/t-latin-letter-characteristics.service.ts"]
   file_src_modules_characteristics_submatrix_letter_t_latin_letter_characteristics_service_unit_test_ts["src/modules/characteristics/submatrix/letter/t-latin-letter-characteristics.service.unit.test.ts"]
   file_src_modules_characteristics_submatrix_letter_tav_hebrew_letter_characteristics_service_ts["src/modules/characteristics/submatrix/letter/tav-hebrew-letter-characteristics.service.ts"]
@@ -4661,6 +4791,7 @@ graph LR
   file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_b_latin_letter_characteristics_service_ts
   file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_c_latin_letter_characteristics_service_ts
   file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_dalet_hebrew_letter_characteristics_service_ts
+  file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_delta_greek_letter_characteristics_service_ts
   file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_e_latin_letter_characteristics_service_ts
   file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_f_latin_letter_characteristics_service_ts
   file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_gan_hanzi_letter_characteristics_service_ts
@@ -4668,14 +4799,17 @@ graph LR
   file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_i_latin_letter_characteristics_service_ts
   file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_jia_hanzi_letter_characteristics_service_ts
   file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_jing_hanzi_letter_characteristics_service_ts
+  file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_kappa_greek_letter_characteristics_service_ts
   file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_kieuk_hangul_letter_characteristics_service_ts
   file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_l_latin_letter_characteristics_service_ts
+  file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_lambda_greek_letter_characteristics_service_ts
   file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_lamed_hebrew_letter_characteristics_service_ts
   file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_letter_constants_ts
   file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_m_latin_letter_characteristics_service_ts
   file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_mu_hanzi_letter_characteristics_service_ts
   file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_n_latin_letter_characteristics_service_ts
   file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_o_latin_letter_characteristics_service_ts
+  file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_omega_greek_letter_characteristics_service_ts
   file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_phi_greek_letter_characteristics_service_ts
   file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_pieup_hangul_letter_characteristics_service_ts
   file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_psi_greek_letter_characteristics_service_ts
@@ -4683,6 +4817,7 @@ graph LR
   file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_s_latin_letter_characteristics_service_ts
   file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_shang_hanzi_letter_characteristics_service_ts
   file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_shen_hanzi_letter_characteristics_service_ts
+  file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_sigma_greek_letter_characteristics_service_ts
   file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_t_latin_letter_characteristics_service_ts
   file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_tav_hebrew_letter_characteristics_service_ts
   file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_tian_hanzi_letter_characteristics_service_ts
@@ -5443,6 +5578,11 @@ graph LR
   file_src_modules_characteristics_submatrix_letter_dalet_hebrew_letter_characteristics_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_dalet_hebrew_letter_characteristics_service_ts
   file_src_modules_characteristics_submatrix_letter_dalet_hebrew_letter_characteristics_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_letter_constants_ts
   file_src_modules_characteristics_submatrix_letter_dalet_hebrew_letter_characteristics_service_unit_test_ts --> file_testing_letters_ts
+  file_src_modules_characteristics_submatrix_letter_delta_greek_letter_characteristics_service_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_submatrix_letter_delta_greek_letter_characteristics_service_ts --> file_src_modules_characteristics_submatrix_letter_letter_utilities_service_ts
+  file_src_modules_characteristics_submatrix_letter_delta_greek_letter_characteristics_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_delta_greek_letter_characteristics_service_ts
+  file_src_modules_characteristics_submatrix_letter_delta_greek_letter_characteristics_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_letter_constants_ts
+  file_src_modules_characteristics_submatrix_letter_delta_greek_letter_characteristics_service_unit_test_ts --> file_testing_letters_ts
   file_src_modules_characteristics_submatrix_letter_e_latin_letter_characteristics_service_ts --> file_src_modules_characteristics_characteristics_types_ts
   file_src_modules_characteristics_submatrix_letter_e_latin_letter_characteristics_service_ts --> file_src_modules_characteristics_submatrix_letter_letter_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_e_latin_letter_characteristics_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_e_latin_letter_characteristics_service_ts
@@ -5478,6 +5618,11 @@ graph LR
   file_src_modules_characteristics_submatrix_letter_jing_hanzi_letter_characteristics_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_jing_hanzi_letter_characteristics_service_ts
   file_src_modules_characteristics_submatrix_letter_jing_hanzi_letter_characteristics_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_letter_constants_ts
   file_src_modules_characteristics_submatrix_letter_jing_hanzi_letter_characteristics_service_unit_test_ts --> file_testing_letters_ts
+  file_src_modules_characteristics_submatrix_letter_kappa_greek_letter_characteristics_service_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_submatrix_letter_kappa_greek_letter_characteristics_service_ts --> file_src_modules_characteristics_submatrix_letter_letter_utilities_service_ts
+  file_src_modules_characteristics_submatrix_letter_kappa_greek_letter_characteristics_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_kappa_greek_letter_characteristics_service_ts
+  file_src_modules_characteristics_submatrix_letter_kappa_greek_letter_characteristics_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_letter_constants_ts
+  file_src_modules_characteristics_submatrix_letter_kappa_greek_letter_characteristics_service_unit_test_ts --> file_testing_letters_ts
   file_src_modules_characteristics_submatrix_letter_kieuk_hangul_letter_characteristics_service_ts --> file_src_modules_characteristics_characteristics_types_ts
   file_src_modules_characteristics_submatrix_letter_kieuk_hangul_letter_characteristics_service_ts --> file_src_modules_characteristics_submatrix_letter_letter_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_kieuk_hangul_letter_characteristics_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_kieuk_hangul_letter_characteristics_service_ts
@@ -5488,6 +5633,11 @@ graph LR
   file_src_modules_characteristics_submatrix_letter_l_latin_letter_characteristics_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_l_latin_letter_characteristics_service_ts
   file_src_modules_characteristics_submatrix_letter_l_latin_letter_characteristics_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_letter_constants_ts
   file_src_modules_characteristics_submatrix_letter_l_latin_letter_characteristics_service_unit_test_ts --> file_testing_letters_ts
+  file_src_modules_characteristics_submatrix_letter_lambda_greek_letter_characteristics_service_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_submatrix_letter_lambda_greek_letter_characteristics_service_ts --> file_src_modules_characteristics_submatrix_letter_letter_utilities_service_ts
+  file_src_modules_characteristics_submatrix_letter_lambda_greek_letter_characteristics_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_lambda_greek_letter_characteristics_service_ts
+  file_src_modules_characteristics_submatrix_letter_lambda_greek_letter_characteristics_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_letter_constants_ts
+  file_src_modules_characteristics_submatrix_letter_lambda_greek_letter_characteristics_service_unit_test_ts --> file_testing_letters_ts
   file_src_modules_characteristics_submatrix_letter_lamed_hebrew_letter_characteristics_service_ts --> file_src_modules_characteristics_characteristics_types_ts
   file_src_modules_characteristics_submatrix_letter_lamed_hebrew_letter_characteristics_service_ts --> file_src_modules_characteristics_submatrix_letter_letter_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_lamed_hebrew_letter_characteristics_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_lamed_hebrew_letter_characteristics_service_ts
@@ -5498,6 +5648,7 @@ graph LR
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_ts --> file_src_modules_characteristics_submatrix_letter_b_latin_letter_characteristics_service_ts
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_ts --> file_src_modules_characteristics_submatrix_letter_c_latin_letter_characteristics_service_ts
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_ts --> file_src_modules_characteristics_submatrix_letter_dalet_hebrew_letter_characteristics_service_ts
+  file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_ts --> file_src_modules_characteristics_submatrix_letter_delta_greek_letter_characteristics_service_ts
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_ts --> file_src_modules_characteristics_submatrix_letter_e_latin_letter_characteristics_service_ts
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_ts --> file_src_modules_characteristics_submatrix_letter_f_latin_letter_characteristics_service_ts
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_ts --> file_src_modules_characteristics_submatrix_letter_gan_hanzi_letter_characteristics_service_ts
@@ -5505,14 +5656,17 @@ graph LR
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_ts --> file_src_modules_characteristics_submatrix_letter_i_latin_letter_characteristics_service_ts
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_ts --> file_src_modules_characteristics_submatrix_letter_jia_hanzi_letter_characteristics_service_ts
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_ts --> file_src_modules_characteristics_submatrix_letter_jing_hanzi_letter_characteristics_service_ts
+  file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_ts --> file_src_modules_characteristics_submatrix_letter_kappa_greek_letter_characteristics_service_ts
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_ts --> file_src_modules_characteristics_submatrix_letter_kieuk_hangul_letter_characteristics_service_ts
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_ts --> file_src_modules_characteristics_submatrix_letter_l_latin_letter_characteristics_service_ts
+  file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_ts --> file_src_modules_characteristics_submatrix_letter_lambda_greek_letter_characteristics_service_ts
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_ts --> file_src_modules_characteristics_submatrix_letter_lamed_hebrew_letter_characteristics_service_ts
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_ts --> file_src_modules_characteristics_submatrix_letter_letter_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_ts --> file_src_modules_characteristics_submatrix_letter_m_latin_letter_characteristics_service_ts
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_ts --> file_src_modules_characteristics_submatrix_letter_mu_hanzi_letter_characteristics_service_ts
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_ts --> file_src_modules_characteristics_submatrix_letter_n_latin_letter_characteristics_service_ts
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_ts --> file_src_modules_characteristics_submatrix_letter_o_latin_letter_characteristics_service_ts
+  file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_ts --> file_src_modules_characteristics_submatrix_letter_omega_greek_letter_characteristics_service_ts
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_ts --> file_src_modules_characteristics_submatrix_letter_phi_greek_letter_characteristics_service_ts
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_ts --> file_src_modules_characteristics_submatrix_letter_pieup_hangul_letter_characteristics_service_ts
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_ts --> file_src_modules_characteristics_submatrix_letter_psi_greek_letter_characteristics_service_ts
@@ -5520,6 +5674,7 @@ graph LR
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_ts --> file_src_modules_characteristics_submatrix_letter_s_latin_letter_characteristics_service_ts
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_ts --> file_src_modules_characteristics_submatrix_letter_shang_hanzi_letter_characteristics_service_ts
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_ts --> file_src_modules_characteristics_submatrix_letter_shen_hanzi_letter_characteristics_service_ts
+  file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_ts --> file_src_modules_characteristics_submatrix_letter_sigma_greek_letter_characteristics_service_ts
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_ts --> file_src_modules_characteristics_submatrix_letter_t_latin_letter_characteristics_service_ts
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_ts --> file_src_modules_characteristics_submatrix_letter_tav_hebrew_letter_characteristics_service_ts
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_ts --> file_src_modules_characteristics_submatrix_letter_tian_hanzi_letter_characteristics_service_ts
@@ -5544,6 +5699,7 @@ graph LR
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_b_latin_letter_characteristics_service_ts
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_c_latin_letter_characteristics_service_ts
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_dalet_hebrew_letter_characteristics_service_ts
+  file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_delta_greek_letter_characteristics_service_ts
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_e_latin_letter_characteristics_service_ts
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_f_latin_letter_characteristics_service_ts
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_gan_hanzi_letter_characteristics_service_ts
@@ -5551,16 +5707,20 @@ graph LR
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_i_latin_letter_characteristics_service_ts
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_jia_hanzi_letter_characteristics_service_ts
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_jing_hanzi_letter_characteristics_service_ts
+  file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_kappa_greek_letter_characteristics_service_ts
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_kieuk_hangul_letter_characteristics_service_ts
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_l_latin_letter_characteristics_service_ts
+  file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_lambda_greek_letter_characteristics_service_ts
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_lamed_hebrew_letter_characteristics_service_ts
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_ts
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_letter_utilities_service_ts
+  file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_letter_constants_ts
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_letter_types_ts
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_m_latin_letter_characteristics_service_ts
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_mu_hanzi_letter_characteristics_service_ts
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_n_latin_letter_characteristics_service_ts
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_o_latin_letter_characteristics_service_ts
+  file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_omega_greek_letter_characteristics_service_ts
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_phi_greek_letter_characteristics_service_ts
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_pieup_hangul_letter_characteristics_service_ts
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_psi_greek_letter_characteristics_service_ts
@@ -5568,6 +5728,7 @@ graph LR
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_s_latin_letter_characteristics_service_ts
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_shang_hanzi_letter_characteristics_service_ts
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_shen_hanzi_letter_characteristics_service_ts
+  file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_sigma_greek_letter_characteristics_service_ts
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_t_latin_letter_characteristics_service_ts
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_tav_hebrew_letter_characteristics_service_ts
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_tian_hanzi_letter_characteristics_service_ts
@@ -5587,6 +5748,7 @@ graph LR
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_z_latin_letter_characteristics_service_ts
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_letter_utilities_service_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_submatrix_letter_letter_utilities_service_ts --> file_src_modules_characteristics_submatrix_letter_letter_constants_ts
   file_src_modules_characteristics_submatrix_letter_letter_utilities_service_ts --> file_src_modules_characteristics_submatrix_letter_letter_types_ts
   file_src_modules_characteristics_submatrix_letter_letter_utilities_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_letter_utilities_service_ts --> file_src_modules_matrix_matrix_types_ts
@@ -5600,6 +5762,7 @@ graph LR
   file_src_modules_characteristics_submatrix_letter_letter_utilities_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_letter_letter_utilities_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_letter_letter_types_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_submatrix_letter_letter_types_ts --> file_src_modules_characteristics_submatrix_letter_letter_constants_ts
   file_src_modules_characteristics_submatrix_letter_m_latin_letter_characteristics_service_ts --> file_src_modules_characteristics_characteristics_types_ts
   file_src_modules_characteristics_submatrix_letter_m_latin_letter_characteristics_service_ts --> file_src_modules_characteristics_submatrix_letter_letter_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_m_latin_letter_characteristics_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_letter_constants_ts
@@ -5620,6 +5783,11 @@ graph LR
   file_src_modules_characteristics_submatrix_letter_o_latin_letter_characteristics_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_letter_constants_ts
   file_src_modules_characteristics_submatrix_letter_o_latin_letter_characteristics_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_o_latin_letter_characteristics_service_ts
   file_src_modules_characteristics_submatrix_letter_o_latin_letter_characteristics_service_unit_test_ts --> file_testing_letters_ts
+  file_src_modules_characteristics_submatrix_letter_omega_greek_letter_characteristics_service_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_submatrix_letter_omega_greek_letter_characteristics_service_ts --> file_src_modules_characteristics_submatrix_letter_letter_utilities_service_ts
+  file_src_modules_characteristics_submatrix_letter_omega_greek_letter_characteristics_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_letter_constants_ts
+  file_src_modules_characteristics_submatrix_letter_omega_greek_letter_characteristics_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_omega_greek_letter_characteristics_service_ts
+  file_src_modules_characteristics_submatrix_letter_omega_greek_letter_characteristics_service_unit_test_ts --> file_testing_letters_ts
   file_src_modules_characteristics_submatrix_letter_phi_greek_letter_characteristics_service_ts --> file_src_modules_characteristics_characteristics_types_ts
   file_src_modules_characteristics_submatrix_letter_phi_greek_letter_characteristics_service_ts --> file_src_modules_characteristics_submatrix_letter_letter_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_phi_greek_letter_characteristics_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_letter_constants_ts
@@ -5655,6 +5823,11 @@ graph LR
   file_src_modules_characteristics_submatrix_letter_shen_hanzi_letter_characteristics_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_letter_constants_ts
   file_src_modules_characteristics_submatrix_letter_shen_hanzi_letter_characteristics_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_shen_hanzi_letter_characteristics_service_ts
   file_src_modules_characteristics_submatrix_letter_shen_hanzi_letter_characteristics_service_unit_test_ts --> file_testing_letters_ts
+  file_src_modules_characteristics_submatrix_letter_sigma_greek_letter_characteristics_service_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_submatrix_letter_sigma_greek_letter_characteristics_service_ts --> file_src_modules_characteristics_submatrix_letter_letter_utilities_service_ts
+  file_src_modules_characteristics_submatrix_letter_sigma_greek_letter_characteristics_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_letter_constants_ts
+  file_src_modules_characteristics_submatrix_letter_sigma_greek_letter_characteristics_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_sigma_greek_letter_characteristics_service_ts
+  file_src_modules_characteristics_submatrix_letter_sigma_greek_letter_characteristics_service_unit_test_ts --> file_testing_letters_ts
   file_src_modules_characteristics_submatrix_letter_t_latin_letter_characteristics_service_ts --> file_src_modules_characteristics_characteristics_types_ts
   file_src_modules_characteristics_submatrix_letter_t_latin_letter_characteristics_service_ts --> file_src_modules_characteristics_submatrix_letter_letter_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_t_latin_letter_characteristics_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_letter_constants_ts
