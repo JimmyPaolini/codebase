@@ -478,7 +478,6 @@
         "check-lockfile",
         "check-readme-projects",
         "conformetry-validate",
-        "meanderaw-check",
         "sync-vscode-extensions"
       ],
       "description": "Aggregator for guard-code",

@@ -13,6 +13,7 @@ with no arguments. What it draws is decided by whether a Code was named:
 | ---------- | ------------- |
 | `nx run meanderaw:start` | Every meander the application can draw, as rows in `output/meanders.sqlite` |
 | `nx run meanderaw:start --args="--rows <n> --columns <n> --code <code>"` | That one, as a single row in the same database |
+| `nx run meanderaw:start:check` | Nothing — regenerates the sweep into a throwaway database and fails if it disagrees with the committed one. `guard-code` runs this on every commit |
 
 The three flags of the single-drawing mode go together: `--code` is what selects that
 mode over the sweep, and it is refused without both `--rows` and `--columns`, since
