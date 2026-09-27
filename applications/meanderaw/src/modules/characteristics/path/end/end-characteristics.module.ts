@@ -3,6 +3,7 @@ import { Module } from "@nestjs/common";
 import { GraphModule } from "../../../graph/graph.module";
 import { ConnectivityService } from "../../connectivity.service";
 
+import { EndUtilitiesService } from "./end-utilities.service";
 import { EndsAreLatticeNeighborsCharacteristicService } from "./ends-are-lattice-neighbors-characteristic.service";
 import { EndsOnBorderRulesCharacteristicService } from "./ends-on-border-rules-characteristic.service";
 
@@ -24,6 +25,7 @@ import { EndsOnBorderRulesCharacteristicService } from "./ends-on-border-rules-c
     ConnectivityService,
     EndsAreLatticeNeighborsCharacteristicService,
     EndsOnBorderRulesCharacteristicService,
+    EndUtilitiesService,
   ],
 })
 export class EndCharacteristicsModule {}

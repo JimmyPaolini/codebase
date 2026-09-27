@@ -5,6 +5,7 @@ import { DotCountCharacteristicService } from "./dot-count-characteristic.servic
 import { EdgeCountCharacteristicService } from "./edge-count-characteristic.service";
 import { HorizontalEdgeCountCharacteristicService } from "./horizontal-edge-count-characteristic.service";
 import { InkPointCountCharacteristicService } from "./ink-point-count-characteristic.service";
+import { PointUtilitiesService } from "./point-utilities.service";
 import { VerticalEdgeCountCharacteristicService } from "./vertical-edge-count-characteristic.service";
 
 /**
@@ -30,6 +31,7 @@ import { VerticalEdgeCountCharacteristicService } from "./vertical-edge-count-ch
     EdgeCountCharacteristicService,
     HorizontalEdgeCountCharacteristicService,
     InkPointCountCharacteristicService,
+    PointUtilitiesService,
     VerticalEdgeCountCharacteristicService,
   ],
 })

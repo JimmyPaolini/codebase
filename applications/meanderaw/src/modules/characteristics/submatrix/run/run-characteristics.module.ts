@@ -2,6 +2,7 @@ import { Module } from "@nestjs/common";
 
 import { LongestHorizontalRunLengthCharacteristicService } from "./longest-horizontal-run-length-characteristic.service";
 import { LongestVerticalRunLengthCharacteristicService } from "./longest-vertical-run-length-characteristic.service";
+import { RunUtilitiesService } from "./run-utilities.service";
 
 /**
  * Provides and exports every straight-run characteristic evaluator — the
@@ -18,6 +19,7 @@ import { LongestVerticalRunLengthCharacteristicService } from "./longest-vertica
   providers: [
     LongestHorizontalRunLengthCharacteristicService,
     LongestVerticalRunLengthCharacteristicService,
+    RunUtilitiesService,
   ],
 })
 export class RunCharacteristicsModule {}

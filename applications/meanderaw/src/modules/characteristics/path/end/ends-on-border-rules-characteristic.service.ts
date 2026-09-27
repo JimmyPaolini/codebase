@@ -2,7 +2,7 @@ import { Inject, Injectable } from "@nestjs/common";
 
 import { ConnectivityService } from "../../connectivity.service";
 
-import { freeEndPoints } from "./end.utilities";
+import { EndUtilitiesService } from "./end-utilities.service";
 
 import type {
   CharacteristicContext,
@@ -23,6 +23,8 @@ export class EndsOnBorderRulesCharacteristicService implements CharacteristicEva
   constructor(
     @Inject(ConnectivityService)
     private readonly connectivityService: ConnectivityService,
+    @Inject(EndUtilitiesService)
+    private readonly endUtilitiesService: EndUtilitiesService,
   ) {}
 
   // 🔐 Private Fields
@@ -46,7 +48,7 @@ export class EndsOnBorderRulesCharacteristicService implements CharacteristicEva
 
   /** Checks whether the Code's two free ends, if it has exactly two, both sit on the first or last row. */
   public compute(context: CharacteristicContext): boolean {
-    const points = freeEndPoints(
+    const points = this.endUtilitiesService.freeEndPoints(
       this.connectivityService.edges(context.matrix, false),
     );
 

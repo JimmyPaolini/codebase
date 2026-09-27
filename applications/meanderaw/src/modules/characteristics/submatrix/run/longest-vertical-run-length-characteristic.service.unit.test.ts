@@ -6,6 +6,7 @@ import { MatrixModule } from "../../../matrix/matrix.module";
 import { CharacteristicContextService } from "../../characteristic-context.service";
 
 import { LongestVerticalRunLengthCharacteristicService } from "./longest-vertical-run-length-characteristic.service";
+import { RunUtilitiesService } from "./run-utilities.service";
 
 describe(LongestVerticalRunLengthCharacteristicService, () => {
   let contextService: CharacteristicContextService;
@@ -17,6 +18,7 @@ describe(LongestVerticalRunLengthCharacteristicService, () => {
       providers: [
         CharacteristicContextService,
         LongestVerticalRunLengthCharacteristicService,
+        RunUtilitiesService,
       ],
     }).compile();
 

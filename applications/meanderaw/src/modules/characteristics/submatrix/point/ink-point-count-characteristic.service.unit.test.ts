@@ -6,6 +6,7 @@ import { MatrixModule } from "../../../matrix/matrix.module";
 import { CharacteristicContextService } from "../../characteristic-context.service";
 
 import { InkPointCountCharacteristicService } from "./ink-point-count-characteristic.service";
+import { PointUtilitiesService } from "./point-utilities.service";
 
 describe(InkPointCountCharacteristicService, () => {
   let contextService: CharacteristicContextService;
@@ -17,6 +18,7 @@ describe(InkPointCountCharacteristicService, () => {
       providers: [
         CharacteristicContextService,
         InkPointCountCharacteristicService,
+        PointUtilitiesService,
       ],
     }).compile();
 

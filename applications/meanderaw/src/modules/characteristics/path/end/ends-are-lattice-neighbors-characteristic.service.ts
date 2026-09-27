@@ -2,7 +2,7 @@ import { Inject, Injectable } from "@nestjs/common";
 
 import { ConnectivityService } from "../../connectivity.service";
 
-import { freeEndPoints } from "./end.utilities";
+import { EndUtilitiesService } from "./end-utilities.service";
 
 import type {
   CharacteristicContext,
@@ -24,6 +24,8 @@ export class EndsAreLatticeNeighborsCharacteristicService implements Characteris
   constructor(
     @Inject(ConnectivityService)
     private readonly connectivityService: ConnectivityService,
+    @Inject(EndUtilitiesService)
+    private readonly endUtilitiesService: EndUtilitiesService,
   ) {}
 
   // 🔐 Private Fields
@@ -47,7 +49,7 @@ export class EndsAreLatticeNeighborsCharacteristicService implements Characteris
 
   /** Checks whether the Code's two free ends, if it has exactly two, are one lattice step apart. */
   public compute(context: CharacteristicContext): boolean {
-    const points = freeEndPoints(
+    const points = this.endUtilitiesService.freeEndPoints(
       this.connectivityService.edges(context.matrix, false),
     );
     if (points.length !== 2) {

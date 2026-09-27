@@ -7,6 +7,7 @@ import { MatrixModule } from "../../../matrix/matrix.module";
 import { CharacteristicContextService } from "../../characteristic-context.service";
 import { ConnectivityService } from "../../connectivity.service";
 
+import { EndUtilitiesService } from "./end-utilities.service";
 import { EndsOnBorderRulesCharacteristicService } from "./ends-on-border-rules-characteristic.service";
 
 describe(EndsOnBorderRulesCharacteristicService, () => {
@@ -20,6 +21,7 @@ describe(EndsOnBorderRulesCharacteristicService, () => {
         CharacteristicContextService,
         ConnectivityService,
         EndsOnBorderRulesCharacteristicService,
+        EndUtilitiesService,
       ],
     }).compile();
 

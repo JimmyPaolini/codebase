@@ -7,6 +7,7 @@ import { CharacteristicContextService } from "../../characteristic-context.servi
 
 import { DensityCharacteristicService } from "./density-characteristic.service";
 import { InkPointCountCharacteristicService } from "./ink-point-count-characteristic.service";
+import { PointUtilitiesService } from "./point-utilities.service";
 
 import type { CharacteristicContext } from "../../characteristics.types";
 
@@ -22,6 +23,7 @@ describe(DensityCharacteristicService, () => {
           CharacteristicContextService,
           DensityCharacteristicService,
           InkPointCountCharacteristicService,
+          PointUtilitiesService,
         ],
       }).compile();
 
@@ -82,7 +84,7 @@ describe(DensityCharacteristicService, () => {
     });
   });
 
-  it("reports zero density for a Code with no points", () => {
+  it("reports zero density for a Code with no points", async () => {
     const context: CharacteristicContext = {
       code: { columns: 1, digits: "", repeats: 1, rows: 0 },
       columns: 1,
@@ -90,16 +92,17 @@ describe(DensityCharacteristicService, () => {
       rows: 0,
     };
 
-    const service = new DensityCharacteristicService({
-      compute: (): number => 0,
-      metadata: {
-        category: "submatrix",
-        description: "",
-        key: "inkPointCount",
-        name: "",
-        valueType: "number",
-      },
-    });
+    const module = await Test.createTestingModule({
+      providers: [
+        DensityCharacteristicService,
+        {
+          provide: InkPointCountCharacteristicService,
+          useValue: { compute: (): number => 0 },
+        },
+      ],
+    }).compile();
+
+    const service = await module.resolve(DensityCharacteristicService);
 
     expect(service.compute(context)).toBe(0);
   });

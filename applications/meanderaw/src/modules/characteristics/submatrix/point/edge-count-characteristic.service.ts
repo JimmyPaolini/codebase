@@ -1,6 +1,6 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 
-import { armCount } from "./point.utilities";
+import { PointUtilitiesService } from "./point-utilities.service";
 
 import type {
   CharacteristicContext,
@@ -19,7 +19,10 @@ import type {
 export class EdgeCountCharacteristicService implements CharacteristicEvaluator<number> {
   // 🏗 Dependency Injection
 
-  constructor() {}
+  constructor(
+    @Inject(PointUtilitiesService)
+    private readonly pointUtilitiesService: PointUtilitiesService,
+  ) {}
 
   // 🔐 Private Fields
 
@@ -46,7 +49,7 @@ export class EdgeCountCharacteristicService implements CharacteristicEvaluator<n
 
     for (const row of context.matrix) {
       for (const point of row) {
-        degreeSum += armCount(point);
+        degreeSum += this.pointUtilitiesService.armCount(point);
       }
     }
 

@@ -6,6 +6,7 @@ import { MatrixModule } from "../../../matrix/matrix.module";
 import { CharacteristicContextService } from "../../characteristic-context.service";
 
 import { EdgeCountCharacteristicService } from "./edge-count-characteristic.service";
+import { PointUtilitiesService } from "./point-utilities.service";
 
 describe(EdgeCountCharacteristicService, () => {
   let contextService: CharacteristicContextService;
@@ -14,7 +15,11 @@ describe(EdgeCountCharacteristicService, () => {
   beforeAll(async () => {
     const module = await Test.createTestingModule({
       imports: [CodeModule, MatrixModule],
-      providers: [CharacteristicContextService, EdgeCountCharacteristicService],
+      providers: [
+        CharacteristicContextService,
+        EdgeCountCharacteristicService,
+        PointUtilitiesService,
+      ],
     }).compile();
 
     contextService = await module.resolve(CharacteristicContextService);

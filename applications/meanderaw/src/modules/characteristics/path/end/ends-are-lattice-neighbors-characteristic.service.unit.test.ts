@@ -7,6 +7,7 @@ import { MatrixModule } from "../../../matrix/matrix.module";
 import { CharacteristicContextService } from "../../characteristic-context.service";
 import { ConnectivityService } from "../../connectivity.service";
 
+import { EndUtilitiesService } from "./end-utilities.service";
 import { EndsAreLatticeNeighborsCharacteristicService } from "./ends-are-lattice-neighbors-characteristic.service";
 
 describe(EndsAreLatticeNeighborsCharacteristicService, () => {
@@ -20,6 +21,7 @@ describe(EndsAreLatticeNeighborsCharacteristicService, () => {
         CharacteristicContextService,
         ConnectivityService,
         EndsAreLatticeNeighborsCharacteristicService,
+        EndUtilitiesService,
       ],
     }).compile();
 

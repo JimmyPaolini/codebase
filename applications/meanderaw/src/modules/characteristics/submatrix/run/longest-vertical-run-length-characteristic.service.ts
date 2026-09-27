@@ -1,6 +1,6 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 
-import { longestVerticalRunLength } from "./run.utilities";
+import { RunUtilitiesService } from "./run-utilities.service";
 
 import type {
   CharacteristicContext,
@@ -17,7 +17,10 @@ import type {
 export class LongestVerticalRunLengthCharacteristicService implements CharacteristicEvaluator<number> {
   // 🏗 Dependency Injection
 
-  constructor() {}
+  constructor(
+    @Inject(RunUtilitiesService)
+    private readonly runUtilitiesService: RunUtilitiesService,
+  ) {}
 
   // 🔐 Private Fields
 
@@ -40,6 +43,6 @@ export class LongestVerticalRunLengthCharacteristicService implements Characteri
 
   /** Finds the longest vertical run over every column. */
   public compute(context: CharacteristicContext): number {
-    return longestVerticalRunLength(context.matrix);
+    return this.runUtilitiesService.longestVerticalRunLength(context.matrix);
   }
 }

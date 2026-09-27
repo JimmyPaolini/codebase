@@ -1,6 +1,6 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 
-import { longestHorizontalRunLength } from "./run.utilities";
+import { RunUtilitiesService } from "./run-utilities.service";
 
 import type {
   CharacteristicContext,
@@ -17,7 +17,10 @@ import type {
 export class LongestHorizontalRunLengthCharacteristicService implements CharacteristicEvaluator<number> {
   // 🏗 Dependency Injection
 
-  constructor() {}
+  constructor(
+    @Inject(RunUtilitiesService)
+    private readonly runUtilitiesService: RunUtilitiesService,
+  ) {}
 
   // 🔐 Private Fields
 
@@ -40,6 +43,6 @@ export class LongestHorizontalRunLengthCharacteristicService implements Characte
 
   /** Finds the longest wrapped horizontal run over every row. */
   public compute(context: CharacteristicContext): number {
-    return longestHorizontalRunLength(context.matrix);
+    return this.runUtilitiesService.longestHorizontalRunLength(context.matrix);
   }
 }

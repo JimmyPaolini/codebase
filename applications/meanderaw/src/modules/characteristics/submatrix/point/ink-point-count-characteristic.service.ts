@@ -1,6 +1,6 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 
-import { armCount } from "./point.utilities";
+import { PointUtilitiesService } from "./point-utilities.service";
 
 import type {
   CharacteristicContext,
@@ -16,7 +16,10 @@ import type {
 export class InkPointCountCharacteristicService implements CharacteristicEvaluator<number> {
   // 🏗 Dependency Injection
 
-  constructor() {}
+  constructor(
+    @Inject(PointUtilitiesService)
+    private readonly pointUtilitiesService: PointUtilitiesService,
+  ) {}
 
   // 🔐 Private Fields
 
@@ -43,7 +46,7 @@ export class InkPointCountCharacteristicService implements CharacteristicEvaluat
 
     for (const row of context.matrix) {
       for (const point of row) {
-        if (armCount(point) > 0) {
+        if (this.pointUtilitiesService.armCount(point) > 0) {
           count += 1;
         }
       }
