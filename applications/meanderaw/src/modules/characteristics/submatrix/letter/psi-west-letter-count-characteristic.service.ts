@@ -35,6 +35,7 @@ export class PsiWestLetterCountCharacteristicService implements CharacteristicEv
         "The number of minimal isolated Ψ (Greek psi) glyphs — a two-unit bar with a unit prong rising from each end and from its middle, the middle prong running on a unit below the bar as a stem, turned a quarter clockwise so its stem faces west.",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "psiWestLetterCount",
+      letter: true,
       name: "Psi West Letter Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

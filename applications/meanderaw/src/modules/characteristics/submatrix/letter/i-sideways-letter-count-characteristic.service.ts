@@ -33,6 +33,7 @@ export class ISidewaysLetterCountCharacteristicService implements Characteristic
         "The number of minimal isolated I glyphs — a single straight edge, drawn horizontally. Also reads as the hangul ㅡ (eu) and the hanzi 一 (yi).",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "iSidewaysLetterCount",
+      letter: true,
       name: "I Sideways Letter Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

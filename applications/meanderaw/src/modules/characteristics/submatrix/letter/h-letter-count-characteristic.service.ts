@@ -35,6 +35,7 @@ export class HLetterCountCharacteristicService implements CharacteristicEvaluato
         "The number of minimal isolated H glyphs — two parallel posts joined at their middles, posts vertical. Also reads as the Greek Η (eta) and the hangul ㅐ (ae).",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "hLetterCount",
+      letter: true,
       name: "H Letter Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

@@ -34,6 +34,7 @@ export class TavEastLetterCountCharacteristicService implements CharacteristicEv
         "The number of minimal isolated ת (Hebrew tav) glyphs — a unit roof on two unit legs, the west leg kicking a unit foot out to the west, turned a quarter anticlockwise so its base faces east.",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "tavEastLetterCount",
+      letter: true,
       name: "Tav East Letter Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

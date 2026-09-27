@@ -35,6 +35,7 @@ export class ILetterCountCharacteristicService implements CharacteristicEvaluato
         "The number of minimal isolated I glyphs — a single straight edge, drawn vertically. Also reads as the Greek Ι (iota), the hangul ㅣ (i), the Hebrew ו (vav), and the Hebrew ן (final nun).",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "iLetterCount",
+      letter: true,
       name: "I Letter Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

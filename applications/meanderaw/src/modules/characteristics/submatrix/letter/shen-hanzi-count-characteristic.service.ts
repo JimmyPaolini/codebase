@@ -35,6 +35,7 @@ export class ShenHanziCountCharacteristicService implements CharacteristicEvalua
         "The number of minimal isolated 申 (hanzi shen) glyphs — a two-by-two grid of unit squares whose middle vertical stroke runs a unit past its top and bottom.",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "shenHanziCount",
+      letter: true,
       name: "Shen Hanzi Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

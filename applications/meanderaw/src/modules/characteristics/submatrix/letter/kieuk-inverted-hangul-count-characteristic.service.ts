@@ -36,6 +36,7 @@ export class KieukInvertedHangulCountCharacteristicService implements Characteri
         "The number of minimal isolated ㅋ (hangul kieuk) glyphs — two unit strokes reaching west from a two-unit stem, one from its top and one from its middle, turned upside down. Also reads as the katakana ヒ (hi).",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "kieukInvertedHangulCount",
+      letter: true,
       name: "Kieuk Inverted Hangul Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

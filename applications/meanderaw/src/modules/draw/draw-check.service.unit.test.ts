@@ -4,7 +4,7 @@ import { getRepositoryToken } from "@nestjs/typeorm";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
 import { meanderRecord } from "../../../testing/meanders";
-import { NUMERIC_CHARACTERISTIC_KEYS } from "../characteristics/characteristics.constants";
+import { COLUMN_CHARACTERISTIC_KEYS } from "../characteristics/characteristics.constants";
 import { CorpusService } from "../corpus/corpus.service";
 import { Meander } from "../database/entities/Meander.entity";
 
@@ -280,10 +280,10 @@ describe(DrawCheckService, () => {
       ]);
     });
 
-    it("compares every numeric characteristic column, along with characteristics, family, provenance, and drawingHash", () => {
+    it("compares every numeric characteristic column, along with characteristics, family, provenance, drawingHash, and glyphs", () => {
       const committedRow = meander({ code: "a", id: 2 });
       const everyNumericColumnChanged = Object.fromEntries(
-        NUMERIC_CHARACTERISTIC_KEYS.map((key) => [key, 99]),
+        COLUMN_CHARACTERISTIC_KEYS.map((key) => [key, 99]),
       ) as Partial<Meander>;
       const regeneratedRow = meander({
         ...everyNumericColumnChanged,
@@ -291,6 +291,7 @@ describe(DrawCheckService, () => {
         code: "a",
         drawingHash: "other",
         family: "snake",
+        glyphs: { aLetterCount: 1 },
         id: 1,
         provenance: "enumerated",
       });
@@ -301,17 +302,64 @@ describe(DrawCheckService, () => {
         {
           code: "a",
           columns: 1,
-          differences: [...MEANDER_DRIFT_COMPARISON_COLUMNS],
+          differences: [
+            ...MEANDER_DRIFT_COMPARISON_COLUMNS.filter(
+              (column) => column !== "glyphs",
+            ),
+            "glyphs.aLetterCount",
+          ],
           rows: 2,
         },
       ]);
       expect(MEANDER_DRIFT_COMPARISON_COLUMNS).toStrictEqual([
-        ...NUMERIC_CHARACTERISTIC_KEYS,
+        ...COLUMN_CHARACTERISTIC_KEYS,
         "characteristics",
         "family",
         "provenance",
         "drawingHash",
+        "glyphs",
       ]);
+    });
+
+    it("names each letter whose count differs, reading a letter missing from either glyph map as zero", () => {
+      const committedRow = meander({
+        code: "a",
+        glyphs: { aLetterCount: 1, cLetterCount: 0, oLetterCount: 2 },
+        id: 2,
+      });
+      const regeneratedRow = meander({
+        code: "a",
+        glyphs: { aLetterCount: 1, oLetterCount: 3, tLetterCount: 1 },
+        id: 1,
+      });
+
+      const report = service.diff([regeneratedRow], [committedRow]);
+
+      expect(report.changed).toStrictEqual([
+        {
+          code: "a",
+          columns: 1,
+          differences: ["glyphs.oLetterCount", "glyphs.tLetterCount"],
+          rows: 2,
+        },
+      ]);
+    });
+
+    it("reports no drift between glyph maps that differ only in a zero count", () => {
+      const committedRow = meander({
+        code: "a",
+        glyphs: { aLetterCount: 1, cLetterCount: 0 },
+        id: 2,
+      });
+      const regeneratedRow = meander({
+        code: "a",
+        glyphs: { aLetterCount: 1 },
+        id: 1,
+      });
+
+      expect(
+        service.diff([regeneratedRow], [committedRow]).changed,
+      ).toStrictEqual([]);
     });
 
     it("does not compare lattice or repeats, which are not drift comparison columns", () => {

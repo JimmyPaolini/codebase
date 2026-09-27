@@ -34,6 +34,7 @@ export class TuSoilHanziCountCharacteristicService implements CharacteristicEval
         "The number of minimal isolated 土 (hanzi tu, soil or earth) glyphs — two two-unit bars threaded on a vertical stroke that runs a unit above the upper bar and stops at the lower. Also reads as the hanzi 士 (shi).",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "tuSoilHanziCount",
+      letter: true,
       name: "Tu Soil Hanzi Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

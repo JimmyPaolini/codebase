@@ -34,6 +34,7 @@ export class ShangHanziCountCharacteristicService implements CharacteristicEvalu
         "The number of minimal isolated 上 (hanzi shang) glyphs — a two-unit base with a two-unit stem rising from its middle and a unit stroke reaching east from the stem's middle.",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "shangHanziCount",
+      letter: true,
       name: "Shang Hanzi Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

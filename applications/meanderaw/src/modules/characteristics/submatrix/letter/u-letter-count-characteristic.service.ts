@@ -34,6 +34,7 @@ export class ULetterCountCharacteristicService implements CharacteristicEvaluato
         "The number of minimal isolated U glyphs — a unit square missing one side, open to the north. Also reads as the hanzi 凵 (kan).",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "uLetterCount",
+      letter: true,
       name: "U Letter Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

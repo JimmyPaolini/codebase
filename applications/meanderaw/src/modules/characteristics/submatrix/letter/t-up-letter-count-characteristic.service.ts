@@ -34,6 +34,7 @@ export class TUpLetterCountCharacteristicService implements CharacteristicEvalua
         "The number of minimal isolated T glyphs — a bar with a unit stem from its middle, stem pointing north. Also reads as the hangul ㅗ (o).",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "tUpLetterCount",
+      letter: true,
       name: "T Up Letter Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

@@ -33,6 +33,7 @@ export class YWestLetterCountCharacteristicService implements CharacteristicEval
         "The number of minimal isolated Y glyphs — two arms joining into a unit stem, stem pointing west.",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "yWestLetterCount",
+      letter: true,
       name: "Y West Letter Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

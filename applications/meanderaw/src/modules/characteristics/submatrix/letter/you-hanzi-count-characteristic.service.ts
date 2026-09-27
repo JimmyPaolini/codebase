@@ -34,6 +34,7 @@ export class YouHanziCountCharacteristicService implements CharacteristicEvaluat
         "The number of minimal isolated 由 (hanzi you) glyphs — a two-by-two grid of unit squares whose middle vertical stroke runs a unit above its top.",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "youHanziCount",
+      letter: true,
       name: "You Hanzi Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

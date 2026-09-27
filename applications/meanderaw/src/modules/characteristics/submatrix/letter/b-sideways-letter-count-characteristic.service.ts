@@ -32,6 +32,7 @@ export class BSidewaysLetterCountCharacteristicService implements Characteristic
         "The number of minimal isolated B glyphs — two unit squares sharing an edge, squares side by side.",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "bSidewaysLetterCount",
+      letter: true,
       name: "B Sideways Letter Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

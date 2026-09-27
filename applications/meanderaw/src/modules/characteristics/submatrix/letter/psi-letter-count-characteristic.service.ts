@@ -34,6 +34,7 @@ export class PsiLetterCountCharacteristicService implements CharacteristicEvalua
         "The number of minimal isolated Ψ (Greek psi) glyphs — a two-unit bar with a unit prong rising from each end and from its middle, the middle prong running on a unit below the bar as a stem.",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "psiLetterCount",
+      letter: true,
       name: "Psi Letter Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

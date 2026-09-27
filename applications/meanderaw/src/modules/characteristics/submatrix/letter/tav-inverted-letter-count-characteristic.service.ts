@@ -32,6 +32,7 @@ export class TavInvertedLetterCountCharacteristicService implements Characterist
         "The number of minimal isolated ת (Hebrew tav) glyphs — a unit roof on two unit legs, the west leg kicking a unit foot out to the west, turned upside down.",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "tavInvertedLetterCount",
+      letter: true,
       name: "Tav Inverted Letter Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

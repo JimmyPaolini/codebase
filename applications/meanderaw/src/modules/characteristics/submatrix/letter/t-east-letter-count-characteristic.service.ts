@@ -35,6 +35,7 @@ export class TEastLetterCountCharacteristicService implements CharacteristicEval
         "The number of minimal isolated T glyphs — a bar with a unit stem from its middle, stem pointing east. Also reads as the katakana ト (to) and the hangul ㅏ (a).",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "tEastLetterCount",
+      letter: true,
       name: "T East Letter Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

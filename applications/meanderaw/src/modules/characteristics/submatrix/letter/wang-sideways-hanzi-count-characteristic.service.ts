@@ -33,6 +33,7 @@ export class WangSidewaysHanziCountCharacteristicService implements Characterist
         "The number of minimal isolated 王 (hanzi wang) glyphs — three two-unit bars threaded on one vertical stroke, turned on its side.",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "wangSidewaysHanziCount",
+      letter: true,
       name: "Wang Sideways Hanzi Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

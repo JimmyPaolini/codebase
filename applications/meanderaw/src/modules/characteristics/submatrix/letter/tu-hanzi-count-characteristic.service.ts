@@ -33,6 +33,7 @@ export class TuHanziCountCharacteristicService implements CharacteristicEvaluato
         "The number of minimal isolated 凸 (hanzi tu) glyphs — the outline of a unit square standing on the middle of a three-unit bar.",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "tuHanziCount",
+      letter: true,
       name: "Tu Hanzi Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

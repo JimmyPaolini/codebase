@@ -4,6 +4,10 @@ import { DataSource, Like, type Repository } from "typeorm";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import { meanderRecord } from "../../../testing/meanders";
+import {
+  COLUMN_CHARACTERISTIC_KEYS,
+  NUMERIC_CHARACTERISTIC_KEYS,
+} from "../characteristics/characteristics.constants";
 
 import { MEANDER_INSERT_CHUNK_SIZE } from "./database.constants";
 import { DatabaseService } from "./database.service";
@@ -135,6 +139,97 @@ describe(DatabaseService, () => {
       expect(crossingRows.map((row) => row.code)).toStrictEqual([
         "crossing-row",
       ]);
+    });
+  });
+
+  describe("glyphs", () => {
+    it("stores every numeric characteristic but a letter under a column of its own, and no letter in one", () => {
+      const columns = new Set(
+        dataSource
+          .getMetadata(Meander)
+          .columns.map((column) => column.propertyName),
+      );
+
+      expect(
+        NUMERIC_CHARACTERISTIC_KEYS.filter((key) => columns.has(key)),
+      ).toStrictEqual([...COLUMN_CHARACTERISTIC_KEYS]);
+      expect(columns.has("glyphs")).toBe(true);
+    });
+
+    it("round-trips a meander's letter counts through save and a lattice lookup", async () => {
+      await service.save(
+        meanderRecord({
+          code: "glyph-round-trip",
+          glyphs: { aLetterCount: 2, yuHangulCount: 1 },
+          lattice: "glyph-round-trip",
+        }),
+      );
+
+      const found = await service.findOneByLattice("glyph-round-trip", 2, 1);
+
+      expect(found?.glyphs).toStrictEqual({
+        aLetterCount: 2,
+        yuHangulCount: 1,
+      });
+    });
+
+    it("round-trips an empty glyph map as empty", async () => {
+      await service.save(
+        meanderRecord({ code: "glyph-empty", lattice: "glyph-empty" }),
+      );
+
+      const found = await service.findOneByLattice("glyph-empty", 2, 1);
+
+      expect(found?.glyphs).toStrictEqual({});
+    });
+
+    it("round-trips letter counts written in chunks, every row keeping its own", async () => {
+      const records = Array.from(
+        { length: MEANDER_INSERT_CHUNK_SIZE + 1 },
+        (_row, index) =>
+          meanderRecord({
+            code: `glyph-chunk-${index}`,
+            glyphs: { oLetterCount: index + 1 },
+            lattice: `glyph-chunk-${index}`,
+          }),
+      );
+
+      await service.saveAll(records);
+      const rows = await repository.findBy({ code: Like("glyph-chunk-%") });
+
+      expect(
+        rows.every(
+          (row) =>
+            row.glyphs.oLetterCount === Number(row.lattice.split("-")[2]) + 1,
+        ),
+      ).toBe(true);
+      expect(rows).toHaveLength(records.length);
+    });
+
+    it("is queryable by one letter's count, which a missing letter never matches", async () => {
+      await service.save(
+        meanderRecord({
+          code: "glyph-query-hit",
+          glyphs: { tLetterCount: 3 },
+          lattice: "glyph-query-hit",
+        }),
+      );
+      await service.save(
+        meanderRecord({
+          code: "glyph-query-miss",
+          glyphs: { uLetterCount: 1 },
+          lattice: "glyph-query-miss",
+        }),
+      );
+
+      const hits = await repository
+        .createQueryBuilder("meander")
+        .where("json_extract(meander.glyphs, :path) > 0", {
+          path: "$.tLetterCount",
+        })
+        .getMany();
+
+      expect(hits.map((row) => row.code)).toStrictEqual(["glyph-query-hit"]);
     });
   });
 

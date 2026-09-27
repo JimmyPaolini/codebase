@@ -35,6 +35,7 @@ export class YLetterCountCharacteristicService implements CharacteristicEvaluato
         "The number of minimal isolated Y glyphs — two arms joining into a unit stem, stem pointing south. Also reads as the Greek Υ (upsilon).",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "yLetterCount",
+      letter: true,
       name: "Y Letter Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

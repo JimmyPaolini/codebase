@@ -35,6 +35,7 @@ export class BLetterCountCharacteristicService implements CharacteristicEvaluato
         "The number of minimal isolated B glyphs — two unit squares sharing an edge, squares stacked north to south. Also reads as the Greek Β (beta), the Greek Θ (theta), and the hanzi 日 (ri).",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "bLetterCount",
+      letter: true,
       name: "B Letter Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

@@ -32,6 +32,7 @@ export class PieupHangulCountCharacteristicService implements CharacteristicEval
         "The number of minimal isolated ㅍ (hangul pieup) glyphs — a unit square whose top and bottom strokes run a unit past both sides.",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "pieupHangulCount",
+      letter: true,
       name: "Pieup Hangul Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

@@ -35,6 +35,7 @@ export class TuEastHanziCountCharacteristicService implements CharacteristicEval
         "The number of minimal isolated 凸 (hanzi tu) glyphs — the outline of a unit square standing on the middle of a three-unit bar, turned a quarter anticlockwise so its base faces east.",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "tuEastHanziCount",
+      letter: true,
       name: "Tu East Hanzi Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

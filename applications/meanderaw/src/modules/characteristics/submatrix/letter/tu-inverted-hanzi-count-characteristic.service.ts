@@ -33,6 +33,7 @@ export class TuInvertedHanziCountCharacteristicService implements Characteristic
         "The number of minimal isolated 凸 (hanzi tu) glyphs — the outline of a unit square standing on the middle of a three-unit bar, turned upside down.",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "tuInvertedHanziCount",
+      letter: true,
       name: "Tu Inverted Hanzi Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

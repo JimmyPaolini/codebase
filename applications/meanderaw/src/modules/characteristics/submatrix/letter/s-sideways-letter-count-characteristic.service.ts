@@ -32,6 +32,7 @@ export class SSidewaysLetterCountCharacteristicService implements Characteristic
         "The number of minimal isolated S glyphs — three bars joined into a serpentine, bars vertical.",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "sSidewaysLetterCount",
+      letter: true,
       name: "S Sideways Letter Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

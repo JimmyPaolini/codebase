@@ -3,7 +3,10 @@ import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
 import { MEANDER_FAMILIES } from "../../classification/classification.constants";
 import { MEANDER_PROVENANCES } from "../database.constants";
 
-import type { NumericCharacteristicRecord } from "../../characteristics/characteristics.types";
+import type {
+  ColumnCharacteristicRecord,
+  GlyphCounts,
+} from "../../characteristics/characteristics.types";
 import type { MeanderFamily } from "../../classification/classification.types";
 
 /**
@@ -25,31 +28,7 @@ import type { MeanderFamily } from "../../classification/classification.types";
  */
 @Entity({ name: "meanders" })
 @Index(["code"], { unique: true })
-export class Meander implements NumericCharacteristicRecord {
-  @Column({ default: 0, type: "int" })
-  aEastLetterCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  aInvertedLetterCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  aLetterCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  aoEastHanziCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  aoHanziCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  aoInvertedHanziCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  aoWestHanziCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  aWestLetterCount!: number;
-
+export class Meander implements ColumnCharacteristicRecord {
   @Column({ default: 0, type: "int" })
   bettiNumber0Count!: number;
 
@@ -57,25 +36,17 @@ export class Meander implements NumericCharacteristicRecord {
   bettiNumber1Count!: number;
 
   @Column({ default: 0, type: "int" })
-  bLetterCount!: number;
-
-  @Column({ default: 0, type: "int" })
   bottomBorderTouchCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  bSidewaysLetterCount!: number;
 
   /**
    * Every boolean Characteristic that holds, in `BOOLEAN_CHARACTERISTIC_KEYS`
    * order, then `"isReducible"` when the filed Code is a whole number of
-   * repeats of a narrower unit. Each numeric Characteristic has its own
-   * column instead, named exactly its key, which `implements` holds complete.
+   * repeats of a narrower unit. Each numeric Characteristic but a letter has
+   * its own column instead, named exactly its key, which `implements` holds
+   * complete; the letters share {@link glyphs}.
    */
   @Column({ type: "simple-array" })
   characteristics!: string[];
-
-  @Column({ default: 0, type: "int" })
-  cLetterCount!: number;
 
   @Column({ type: "text" })
   code!: string;
@@ -88,21 +59,6 @@ export class Meander implements NumericCharacteristicRecord {
 
   @Column({ default: 0, type: "int" })
   crossCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  cWestLetterCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  daletEastLetterCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  daletInvertedLetterCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  daletLetterCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  daletWestLetterCount!: number;
 
   @Column({ default: 0, type: "float" })
   density!: number;
@@ -129,28 +85,10 @@ export class Meander implements NumericCharacteristicRecord {
   edgeCount!: number;
 
   @Column({ default: 0, type: "int" })
-  eDownLetterCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  eLetterCount!: number;
-
-  @Column({ default: 0, type: "int" })
   embeddedUCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  eUpLetterCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  eWestLetterCount!: number;
 
   @Column({ enum: MEANDER_FAMILIES, type: "simple-enum" })
   family!: MeanderFamily;
-
-  @Column({ default: 0, type: "int" })
-  fDownLetterCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  fLetterCount!: number;
 
   @Column({ default: 0, type: "int" })
   forkCount!: number;
@@ -158,29 +96,23 @@ export class Meander implements NumericCharacteristicRecord {
   @Column({ default: 0, type: "int" })
   freeEndCount!: number;
 
-  @Column({ default: 0, type: "int" })
-  fUpLetterCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  fWestLetterCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  ganHanziCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  hLetterCount!: number;
+  /**
+   * Every letter glyph count the meander has, keyed by its characteristic
+   * key and holding only nonzero counts, as one JSON object: see
+   * {@link GlyphCounts}. Letters live here rather than in a column each
+   * because a full orientation set outnumbers the 2,000 columns one SQLite
+   * table holds, and because one JSON column measured faster to write and
+   * to query than a 1:1 table per script. Being keyed rather than declared,
+   * it takes a new or renamed letter with no schema change.
+   */
+  @Column({ type: "simple-json" })
+  glyphs!: GlyphCounts;
 
   @Column({ default: 0, type: "int" })
   horizontalRectangleCount!: number;
 
-  @Column({ default: 0, type: "int" })
-  hSidewaysLetterCount!: number;
-
   @PrimaryGeneratedColumn()
   id!: number;
-
-  @Column({ default: 0, type: "int" })
-  iLetterCount!: number;
 
   @Column({ default: 0, type: "int" })
   inflectionCount!: number;
@@ -188,41 +120,8 @@ export class Meander implements NumericCharacteristicRecord {
   @Column({ default: 0, type: "int" })
   inkPointCount!: number;
 
-  @Column({ default: 0, type: "int" })
-  iSidewaysLetterCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  jiaHanziCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  jingHanziCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  kieukEastHangulCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  kieukHangulCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  kieukInvertedHangulCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  kieukWestHangulCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  lamedLetterCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  lamedSidewaysLetterCount!: number;
-
   @Column({ type: "text" })
   lattice!: string;
-
-  @Column({ default: 0, type: "int" })
-  lDownLetterCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  lLetterCount!: number;
 
   @Column({ default: 0, type: "int" })
   longestHorizontalRunLength!: number;
@@ -231,28 +130,7 @@ export class Meander implements NumericCharacteristicRecord {
   longestVerticalRunLength!: number;
 
   @Column({ default: 0, type: "int" })
-  lUpLetterCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  lWestLetterCount!: number;
-
-  @Column({ default: 0, type: "int" })
   maxMonotonicTurnLength!: number;
-
-  @Column({ default: 0, type: "int" })
-  mEastLetterCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  mLetterCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  muHanziCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  mWestLetterCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  nLetterCount!: number;
 
   @Column({ default: 0, type: "int" })
   northEastCornerCount!: number;
@@ -266,62 +144,14 @@ export class Meander implements NumericCharacteristicRecord {
   @Column({ default: 0, type: "int" })
   northWestCornerCount!: number;
 
-  @Column({ default: 0, type: "int" })
-  nSidewaysLetterCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  oLetterCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  phiLetterCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  pieupHangulCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  pieupSidewaysHangulCount!: number;
-
   @Column({ enum: MEANDER_PROVENANCES, type: "simple-enum" })
   provenance!: "enumerated" | "hardcoded";
-
-  @Column({ default: 0, type: "int" })
-  psiEastLetterCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  psiInvertedLetterCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  psiLetterCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  psiWestLetterCount!: number;
 
   @Column({ default: 1, type: "int" })
   repeats!: number;
 
-  @Column({ default: 0, type: "int" })
-  rhoEastLetterCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  rhoInvertedLetterCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  rhoLetterCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  rhoWestLetterCount!: number;
-
   @Column({ type: "int" })
   rows!: number;
-
-  @Column({ default: 0, type: "int" })
-  shangHanziCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  shenHanziCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  sLetterCount!: number;
 
   @Column({ default: 0, type: "int" })
   southEastCornerCount!: number;
@@ -336,27 +166,6 @@ export class Meander implements NumericCharacteristicRecord {
   southWestCornerCount!: number;
 
   @Column({ default: 0, type: "int" })
-  sSidewaysLetterCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  tavEastLetterCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  tavInvertedLetterCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  tavLetterCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  tavWestLetterCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  tEastLetterCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  tianHanziCount!: number;
-
-  @Column({ default: 0, type: "int" })
   tightestTurnCount!: number;
 
   @Column({ default: 0, type: "int" })
@@ -369,104 +178,17 @@ export class Meander implements NumericCharacteristicRecord {
   tileCrossingCycleCount!: number;
 
   @Column({ default: 0, type: "int" })
-  tLetterCount!: number;
-
-  @Column({ default: 0, type: "int" })
   topBorderTouchCount!: number;
 
   @Column({ default: 0, type: "int" })
   totalTurnCount!: number;
 
   @Column({ default: 0, type: "int" })
-  tuEastHanziCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  tuHanziCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  tuInvertedHanziCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  tUpLetterCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  tuSoilHanziCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  tuWestHanziCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  tWestLetterCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  uInvertedLetterCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  uLetterCount!: number;
-
-  @Column({ default: 0, type: "int" })
   verticalRectangleCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  wangHanziCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  wangSidewaysHanziCount!: number;
 
   @Column({ default: 0, type: "int" })
   westEdgeCount!: number;
 
   @Column({ default: 0, type: "int" })
   westForkCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  wLetterCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  xLetterCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  yaHangulCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  yEastLetterCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  yeoHangulCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  yLetterCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  yoHangulCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  youHanziCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  yuEastKatakanaCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  yuHangulCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  yuInvertedKatakanaCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  yuKatakanaCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  yUpLetterCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  yuWestKatakanaCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  yWestLetterCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  zLetterCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  zSidewaysLetterCount!: number;
 }

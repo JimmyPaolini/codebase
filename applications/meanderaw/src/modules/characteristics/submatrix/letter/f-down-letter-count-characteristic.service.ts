@@ -32,6 +32,7 @@ export class FDownLetterCountCharacteristicService implements CharacteristicEval
         "The number of minimal isolated F glyphs — a spine with prongs at one end and the middle, prongs pointing south.",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "fDownLetterCount",
+      letter: true,
       name: "F Down Letter Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

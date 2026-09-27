@@ -11,11 +11,11 @@ export const DEFAULT_DATABASE_PATH = "output/meanders.sqlite";
 /**
  * How many rows `DatabaseService.saveAll` writes per statement.
  *
- * A bound rather than a tuning knob. A row carries about ninety columns,
- * one per numeric Characteristic, and one statement's parameter count is
- * limited, so a whole shape's worth of rows in one statement would be
- * reaching a limit nobody declared — the sweep's widest shape alone holds
- * 16,512 of them. Five hundred rows bind under fifty thousand parameters,
+ * A bound rather than a tuning knob. A row carries about fifty columns,
+ * one per non-letter numeric Characteristic plus the one `glyphs` map every
+ * letter shares, and one statement's parameter count is limited, so a
+ * whole shape's worth of rows in one statement would be reaching a limit
+ * nobody declared — the sweep's widest shape alone holds 16,512 of them. Five hundred rows bind under thirty thousand parameters,
  * which the `better-sqlite3` driver admits; `DatabaseService`'s integration
  * test writes more than two chunks to hold that true as columns are added.
  */

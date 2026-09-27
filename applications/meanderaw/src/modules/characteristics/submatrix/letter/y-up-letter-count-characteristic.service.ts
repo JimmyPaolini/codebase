@@ -33,6 +33,7 @@ export class YUpLetterCountCharacteristicService implements CharacteristicEvalua
         "The number of minimal isolated Y glyphs — two arms joining into a unit stem, stem pointing north.",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "yUpLetterCount",
+      letter: true,
       name: "Y Up Letter Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

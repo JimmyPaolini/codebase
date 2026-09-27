@@ -34,6 +34,7 @@ export class YuEastKatakanaCountCharacteristicService implements CharacteristicE
         "The number of minimal isolated ユ (katakana yu) glyphs — a unit stroke turning down into a base stroke that runs a unit past the turn, turned a quarter anticlockwise so its base faces east.",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "yuEastKatakanaCount",
+      letter: true,
       name: "Yu East Katakana Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

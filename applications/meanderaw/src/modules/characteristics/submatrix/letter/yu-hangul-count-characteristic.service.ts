@@ -32,6 +32,7 @@ export class YuHangulCountCharacteristicService implements CharacteristicEvaluat
         "The number of minimal isolated ㅠ (hangul yu) glyphs — two unit strokes dropping from the middle two points of a three-unit bar.",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "yuHangulCount",
+      letter: true,
       name: "Yu Hangul Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

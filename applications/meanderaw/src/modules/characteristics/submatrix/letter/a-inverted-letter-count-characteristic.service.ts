@@ -35,6 +35,7 @@ export class AInvertedLetterCountCharacteristicService implements Characteristic
         "The number of minimal isolated A glyphs — a closed end, a crossbar, and two legs, legs pointing north. Also reads as the hangul ㅂ (bieup).",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "aInvertedLetterCount",
+      letter: true,
       name: "A Inverted Letter Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

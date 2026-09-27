@@ -35,6 +35,7 @@ export class NLetterCountCharacteristicService implements CharacteristicEvaluato
         "The number of minimal isolated N glyphs — two posts joined by a stepped diagonal, posts vertical. Also reads as the Greek Ν (nu).",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "nLetterCount",
+      letter: true,
       name: "N Letter Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

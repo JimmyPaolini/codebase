@@ -34,6 +34,7 @@ export class YaHangulCountCharacteristicService implements CharacteristicEvaluat
         "The number of minimal isolated ㅑ (hangul ya) glyphs — two unit strokes reaching east from the middle two points of a three-unit stem.",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "yaHangulCount",
+      letter: true,
       name: "Ya Hangul Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

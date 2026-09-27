@@ -34,6 +34,7 @@ export class YeoHangulCountCharacteristicService implements CharacteristicEvalua
         "The number of minimal isolated ㅕ (hangul yeo) glyphs — two unit strokes reaching west from the middle two points of a three-unit stem.",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "yeoHangulCount",
+      letter: true,
       name: "Yeo Hangul Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

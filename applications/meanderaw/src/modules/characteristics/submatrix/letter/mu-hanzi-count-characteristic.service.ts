@@ -34,6 +34,7 @@ export class MuHanziCountCharacteristicService implements CharacteristicEvaluato
         "The number of minimal isolated 目 (hanzi mu) glyphs — three unit squares stacked north to south, each sharing an edge with the next.",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "muHanziCount",
+      letter: true,
       name: "Mu Hanzi Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

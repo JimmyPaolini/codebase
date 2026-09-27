@@ -32,6 +32,7 @@ export class FUpLetterCountCharacteristicService implements CharacteristicEvalua
         "The number of minimal isolated F glyphs — a spine with prongs at one end and the middle, prongs pointing north.",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "fUpLetterCount",
+      letter: true,
       name: "F Up Letter Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

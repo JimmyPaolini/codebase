@@ -33,6 +33,7 @@ export class WLetterCountCharacteristicService implements CharacteristicEvaluato
         "The number of minimal isolated W glyphs — three legs rising from a bar, the middle one half as long, legs pointing north.",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "wLetterCount",
+      letter: true,
       name: "W Letter Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

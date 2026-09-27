@@ -35,6 +35,7 @@ export class MLetterCountCharacteristicService implements CharacteristicEvaluato
         "The number of minimal isolated M glyphs — three legs hanging from a bar, the middle one half as long, legs pointing south. Also reads as the Greek Μ (mu).",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "mLetterCount",
+      letter: true,
       name: "M Letter Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

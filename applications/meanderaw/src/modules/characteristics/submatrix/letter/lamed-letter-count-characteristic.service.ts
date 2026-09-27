@@ -34,6 +34,7 @@ export class LamedLetterCountCharacteristicService implements CharacteristicEval
         "The number of minimal isolated ל (Hebrew lamed) glyphs — a unit step, a unit stroke rising from the west end of a unit stroke and another dropping from its east end.",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "lamedLetterCount",
+      letter: true,
       name: "Lamed Letter Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

@@ -33,6 +33,7 @@ export class RhoInvertedLetterCountCharacteristicService implements Characterist
         "The number of minimal isolated Ρ (Greek rho) glyphs — a closed unit square whose west side runs on a unit below it as a stem, turned upside down. Also reads as the Latin d.",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "rhoInvertedLetterCount",
+      letter: true,
       name: "Rho Inverted Letter Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

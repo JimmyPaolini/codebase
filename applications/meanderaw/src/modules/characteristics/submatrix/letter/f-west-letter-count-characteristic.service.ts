@@ -33,6 +33,7 @@ export class FWestLetterCountCharacteristicService implements CharacteristicEval
         "The number of minimal isolated F glyphs — a spine with prongs at one end and the middle, prongs pointing west.",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "fWestLetterCount",
+      letter: true,
       name: "F West Letter Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

@@ -147,6 +147,60 @@ export const NUMERIC_CHARACTERISTIC_KEYS = [
 ] as const;
 
 /**
+ * The key of every numeric characteristic stored under a column of its own
+ * on a meander row, in alphabetical order: every numeric key but a letter's.
+ *
+ * A letter glyph count — any script, hanzi and hangul included — is instead
+ * marked `letter: true` in its evaluator's metadata and stored in the row's
+ * `glyphs` map, because the letters alone outnumber the columns one table
+ * holds. `CharacteristicsService` refuses to boot unless the two agree: a
+ * numeric evaluator is marked a letter exactly when its key is missing here.
+ * So a new letter needs no entry here and no storage change, and a new
+ * non-letter numeric characteristic needs an entry here and a `Meander`
+ * column, which the entity's `implements` clause holds complete.
+ */
+export const COLUMN_CHARACTERISTIC_KEYS = [
+  "bettiNumber0Count",
+  "bettiNumber1Count",
+  "bottomBorderTouchCount",
+  "cornerCount",
+  "crossCount",
+  "density",
+  "dotCount",
+  "doubleHorizontalEdgeCount",
+  "doubleVerticalEdgeCount",
+  "eastEdgeCount",
+  "eastForkCount",
+  "edgeCount",
+  "embeddedUCount",
+  "forkCount",
+  "freeEndCount",
+  "horizontalRectangleCount",
+  "inflectionCount",
+  "inkPointCount",
+  "longestHorizontalRunLength",
+  "longestVerticalRunLength",
+  "maxMonotonicTurnLength",
+  "northEastCornerCount",
+  "northEdgeCount",
+  "northForkCount",
+  "northWestCornerCount",
+  "southEastCornerCount",
+  "southEdgeCount",
+  "southForkCount",
+  "southWestCornerCount",
+  "tightestTurnCount",
+  "tileCrossingComponentDeltaCount",
+  "tileCrossingCount",
+  "tileCrossingCycleCount",
+  "topBorderTouchCount",
+  "totalTurnCount",
+  "verticalRectangleCount",
+  "westEdgeCount",
+  "westForkCount",
+] as const satisfies readonly (typeof NUMERIC_CHARACTERISTIC_KEYS)[number][];
+
+/**
  * The key of every boolean characteristic, in alphabetical order — the
  * `metadata.key` of exactly one registered evaluator whose `valueType` is
  * `"boolean"`.
@@ -195,6 +249,11 @@ export const CHARACTERISTIC_KEYS = [
  */
 export const BOOLEAN_CHARACTERISTIC_KEY_SET: ReadonlySet<string> = new Set(
   BOOLEAN_CHARACTERISTIC_KEYS,
+);
+
+/** {@link COLUMN_CHARACTERISTIC_KEYS} as a set of plain strings, for the same reason as {@link BOOLEAN_CHARACTERISTIC_KEY_SET}. */
+export const COLUMN_CHARACTERISTIC_KEY_SET: ReadonlySet<string> = new Set(
+  COLUMN_CHARACTERISTIC_KEYS,
 );
 
 /** {@link CHARACTERISTIC_KEYS} as a set of plain strings, for the same reason. */

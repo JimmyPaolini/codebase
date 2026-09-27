@@ -35,6 +35,7 @@ export class ALetterCountCharacteristicService implements CharacteristicEvaluato
         "The number of minimal isolated A glyphs — a closed end, a crossbar, and two legs, legs pointing south. Also reads as the Greek Α (alpha).",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "aLetterCount",
+      letter: true,
       name: "A Letter Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

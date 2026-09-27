@@ -32,6 +32,7 @@ export class ZSidewaysLetterCountCharacteristicService implements Characteristic
         "The number of minimal isolated Z glyphs — three bars joined into a serpentine, mirroring S, bars vertical.",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "zSidewaysLetterCount",
+      letter: true,
       name: "Z Sideways Letter Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

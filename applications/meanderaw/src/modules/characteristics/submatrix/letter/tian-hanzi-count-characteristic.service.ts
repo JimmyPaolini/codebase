@@ -33,6 +33,7 @@ export class TianHanziCountCharacteristicService implements CharacteristicEvalua
         "The number of minimal isolated 田 (hanzi tian) glyphs — a two-by-two grid of unit squares.",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "tianHanziCount",
+      letter: true,
       name: "Tian Hanzi Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

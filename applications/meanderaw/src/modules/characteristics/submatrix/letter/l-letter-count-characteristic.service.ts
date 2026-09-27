@@ -34,6 +34,7 @@ export class LLetterCountCharacteristicService implements CharacteristicEvaluato
         "The number of minimal isolated L glyphs — two unit strokes meeting at a corner, foot pointing east. Also reads as the hangul ㄴ (nieun).",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "lLetterCount",
+      letter: true,
       name: "L Letter Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

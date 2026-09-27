@@ -10,7 +10,8 @@ import {
   CHARACTERISTIC_KEY_SET,
   CHARACTERISTIC_KEYS,
   CharacteristicRegistryError,
-  NUMERIC_CHARACTERISTIC_KEYS,
+  COLUMN_CHARACTERISTIC_KEY_SET,
+  COLUMN_CHARACTERISTIC_KEYS,
 } from "./characteristics.constants";
 import { TileCrossingComponentDeltaCountCharacteristicService } from "./path/tile-crossing/tile-crossing-component-delta-count-characteristic.service";
 
@@ -24,7 +25,9 @@ import type {
   Characteristics,
   CharacteristicValue,
   CharacteristicValueType,
-  NumericCharacteristicRecord,
+  ColumnCharacteristicRecord,
+  GlyphCounts,
+  LetterCharacteristicKey,
 } from "./characteristics.types";
 import type { OnApplicationBootstrap } from "@nestjs/common";
 
@@ -34,6 +37,11 @@ import type { OnApplicationBootstrap } from "@nestjs/common";
  * checks them against the key lists in `characteristics.constants` when the
  * application boots, and fills one {@link Characteristics} record per Code
  * from a single shared context.
+ *
+ * It splits a record the way a meander row stores it, too: the column half
+ * ({@link CharacteristicsService.columnRecord}) and the letter half
+ * ({@link CharacteristicsService.glyphCounts}), told apart by each
+ * evaluator's own `letter` mark.
  *
  * It also answers the two questions about a Code as filed rather than about
  * its repeating unit — whether it reduces, and the canonical-phase
@@ -55,6 +63,9 @@ export class CharacteristicsService implements OnApplicationBootstrap {
   ) {}
 
   // 🔐 Private Fields
+
+  /** {@link letterKeys}'s answer, read off the evaluators the first time it is asked for. */
+  private letters: readonly LetterCharacteristicKey[] | undefined;
 
   /**
    * Every evaluator in key-list order, discovered and checked once. The
@@ -84,17 +95,30 @@ export class CharacteristicsService implements OnApplicationBootstrap {
     }
   }
 
-  /** Narrows a record built from {@link NUMERIC_CHARACTERISTIC_KEYS} to {@link NumericCharacteristicRecord}, throwing if a key was left out. */
-  private assertNumericRecord(
+  /** Narrows a record built from {@link COLUMN_CHARACTERISTIC_KEYS} to {@link ColumnCharacteristicRecord}, throwing if a key was left out. */
+  private assertColumnRecord(
     values: Readonly<Record<string, number>>,
-  ): asserts values is NumericCharacteristicRecord {
-    const missing = NUMERIC_CHARACTERISTIC_KEYS.find(
+  ): asserts values is ColumnCharacteristicRecord {
+    const missing = COLUMN_CHARACTERISTIC_KEYS.find(
       (key) => typeof values[key] !== "number",
     );
 
     if (missing !== undefined) {
       throw new CharacteristicRegistryError(
         `Numeric characteristic "${missing}" is missing from the record`,
+      );
+    }
+  }
+
+  /** Throws unless an evaluator is marked a letter exactly when its key is numeric and has no column of its own, so no value is stored twice or nowhere. */
+  private assertStorage(evaluator: CharacteristicEvaluator): void {
+    const { key, letter } = evaluator.metadata;
+
+    if ((letter === true) !== this.isLetterKey(key)) {
+      throw new CharacteristicRegistryError(
+        letter === true
+          ? `Characteristic "${key}" is marked a letter, but only a numeric key without a column of its own may be`
+          : `Characteristic "${key}" has no column of its own, but is not marked a letter`,
       );
     }
   }
@@ -109,6 +133,7 @@ export class CharacteristicsService implements OnApplicationBootstrap {
       if (!this.isCandidateEvaluator(instance)) continue;
 
       const evaluator = this.verify(instance);
+      this.assertStorage(evaluator);
       if (byKey.has(evaluator.metadata.key)) {
         throw new CharacteristicRegistryError(
           `Two evaluators claim characteristic "${evaluator.metadata.key}"`,
@@ -172,6 +197,25 @@ export class CharacteristicsService implements OnApplicationBootstrap {
     return CHARACTERISTIC_KEY_SET.has(key);
   }
 
+  /** Whether a key names a letter glyph count: a numeric key without a column of its own. */
+  private isLetterKey(key: string): key is LetterCharacteristicKey {
+    return (
+      this.valueTypeOf(key) === "number" &&
+      !COLUMN_CHARACTERISTIC_KEY_SET.has(key)
+    );
+  }
+
+  /** Every letter glyph count's key, in key-list order, read off the metadata of the evaluators marked `letter`. */
+  private letterKeys(): readonly LetterCharacteristicKey[] {
+    this.letters ??= this.evaluators()
+      .map((evaluator) => evaluator.metadata)
+      .filter((metadata) => metadata.letter === true)
+      .map((metadata) => metadata.key)
+      .filter((key) => this.isLetterKey(key));
+
+    return this.letters;
+  }
+
   /** The value type a key's list promises. */
   private valueTypeOf(
     key: string,
@@ -197,6 +241,19 @@ export class CharacteristicsService implements OnApplicationBootstrap {
 
   // 🌎 Public Methods
 
+  /** The column half of a computed record: every numeric characteristic a meander row stores under a column of its own, with every letter and boolean key left out. */
+  public columnRecord(
+    characteristics: Characteristics,
+  ): ColumnCharacteristicRecord {
+    const values: Readonly<Record<string, number>> = Object.fromEntries(
+      COLUMN_CHARACTERISTIC_KEYS.map((key) => [key, characteristics[key]]),
+    );
+
+    this.assertColumnRecord(values);
+
+    return values;
+  }
+
   /** Every characteristic of a Code's repeating unit, computed by every evaluator from one shared context. */
   public compute(code: Code | CodeObject): Characteristics {
     const context = this.contextService.create(code);
@@ -207,6 +264,15 @@ export class CharacteristicsService implements OnApplicationBootstrap {
     this.assertCharacteristics(values);
 
     return values;
+  }
+
+  /** The letter half of a computed record, as a meander row's `glyphs` map stores it: every letter the Code contains, under its key, and no letter it does not. */
+  public glyphCounts(characteristics: Characteristics): GlyphCounts {
+    return Object.fromEntries(
+      this.letterKeys()
+        .filter((key) => characteristics[key] !== 0)
+        .map((key) => [key, characteristics[key]]),
+    );
   }
 
   /** Whether the Code as filed is wider than its repeating unit — a property of the filing, not of the unit, so not a record field. */
@@ -220,19 +286,6 @@ export class CharacteristicsService implements OnApplicationBootstrap {
   /** Every registered characteristic's metadata, in key-list order. */
   public metadata(): readonly CharacteristicMetadata[] {
     return this.evaluators().map((evaluator) => evaluator.metadata);
-  }
-
-  /** The numeric half of a computed record — exactly the columns a stored meander row carries — with every boolean key left out. */
-  public numericRecord(
-    characteristics: Characteristics,
-  ): NumericCharacteristicRecord {
-    const values: Readonly<Record<string, number>> = Object.fromEntries(
-      NUMERIC_CHARACTERISTIC_KEYS.map((key) => [key, characteristics[key]]),
-    );
-
-    this.assertNumericRecord(values);
-
-    return values;
   }
 
   /**

@@ -33,6 +33,7 @@ export class AoInvertedHanziCountCharacteristicService implements Characteristic
         "The number of minimal isolated 凹 (hanzi ao) glyphs — the outline of a three-unit bar with a unit notch cut into the middle of its top, turned upside down.",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "aoInvertedHanziCount",
+      letter: true,
       name: "Ao Inverted Hanzi Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

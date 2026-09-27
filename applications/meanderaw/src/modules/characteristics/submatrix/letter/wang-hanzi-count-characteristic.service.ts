@@ -33,6 +33,7 @@ export class WangHanziCountCharacteristicService implements CharacteristicEvalua
         "The number of minimal isolated 王 (hanzi wang) glyphs — three two-unit bars threaded on one vertical stroke.",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "wangHanziCount",
+      letter: true,
       name: "Wang Hanzi Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

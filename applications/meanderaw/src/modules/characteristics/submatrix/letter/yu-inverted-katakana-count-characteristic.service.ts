@@ -32,6 +32,7 @@ export class YuInvertedKatakanaCountCharacteristicService implements Characteris
         "The number of minimal isolated ユ (katakana yu) glyphs — a unit stroke turning down into a base stroke that runs a unit past the turn, turned upside down.",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "yuInvertedKatakanaCount",
+      letter: true,
       name: "Yu Inverted Katakana Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

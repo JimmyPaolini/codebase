@@ -32,6 +32,7 @@ export class DaletLetterCountCharacteristicService implements CharacteristicEval
         "The number of minimal isolated ד (Hebrew dalet) glyphs — a three-unit roof with a unit leg dropping a unit short of its east end.",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "daletLetterCount",
+      letter: true,
       name: "Dalet Letter Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

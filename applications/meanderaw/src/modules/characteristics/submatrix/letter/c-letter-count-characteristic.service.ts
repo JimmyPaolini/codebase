@@ -34,6 +34,7 @@ export class CLetterCountCharacteristicService implements CharacteristicEvaluato
         "The number of minimal isolated C glyphs — a unit square missing one side, open to the east. Also reads as the hanzi 匚 (fang) and the hangul ㄷ (digeut).",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "cLetterCount",
+      letter: true,
       name: "C Letter Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

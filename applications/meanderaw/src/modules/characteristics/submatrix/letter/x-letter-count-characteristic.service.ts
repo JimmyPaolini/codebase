@@ -34,6 +34,7 @@ export class XLetterCountCharacteristicService implements CharacteristicEvaluato
         "The number of minimal isolated X glyphs — four unit arms from one crossing. Also reads as the Greek Χ (chi) and the hanzi 十 (shi).",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "xLetterCount",
+      letter: true,
       name: "X Letter Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

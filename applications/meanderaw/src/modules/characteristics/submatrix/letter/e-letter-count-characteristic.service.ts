@@ -35,6 +35,7 @@ export class ELetterCountCharacteristicService implements CharacteristicEvaluato
         "The number of minimal isolated E glyphs — a spine with three equal prongs, prongs pointing east. Also reads as the Greek Ε (epsilon) and the hangul ㅌ (tieut).",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "eLetterCount",
+      letter: true,
       name: "E Letter Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

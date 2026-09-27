@@ -35,6 +35,7 @@ export class DaletWestLetterCountCharacteristicService implements Characteristic
         "The number of minimal isolated ד (Hebrew dalet) glyphs — a three-unit roof with a unit leg dropping a unit short of its east end, turned a quarter clockwise so its base faces west.",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "daletWestLetterCount",
+      letter: true,
       name: "Dalet West Letter Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

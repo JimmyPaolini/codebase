@@ -32,6 +32,7 @@ export class LUpLetterCountCharacteristicService implements CharacteristicEvalua
         "The number of minimal isolated L glyphs — two unit strokes meeting at a corner, foot pointing north.",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "lUpLetterCount",
+      letter: true,
       name: "L Up Letter Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

@@ -4,7 +4,7 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   characteristicRecord,
-  ZERO_NUMERIC_CHARACTERISTICS,
+  ZERO_COLUMN_CHARACTERISTICS,
 } from "../../../testing/meanders";
 import { CharacteristicsService } from "../characteristics/characteristics.service";
 import { ClassificationService } from "../classification/classification.service";
@@ -38,12 +38,13 @@ describe(CorpusService, () => {
     freeEndCount: 2,
     isSingleArc: true,
   });
-  const numericRecord = {
-    ...ZERO_NUMERIC_CHARACTERISTICS,
+  const columnRecord = {
+    ...ZERO_COLUMN_CHARACTERISTICS,
     bettiNumber0Count: 1,
     forkCount: 1,
     freeEndCount: 2,
   };
+  const glyphs = { aLetterCount: 2 };
   const savedMeander = createMock<Meander>({ id: 1 });
 
   beforeAll(async () => {
@@ -104,9 +105,10 @@ describe(CorpusService, () => {
     vi.mocked(drawingService.render).mockReturnValue("<svg>fixture</svg>\n");
     vi.mocked(characteristicsService.compute).mockReturnValue(record);
     vi.mocked(characteristicsService.isReducible).mockReturnValue(false);
-    vi.mocked(characteristicsService.numericRecord).mockReturnValue(
-      numericRecord,
+    vi.mocked(characteristicsService.columnRecord).mockReturnValue(
+      columnRecord,
     );
+    vi.mocked(characteristicsService.glyphCounts).mockReturnValue(glyphs);
     vi.mocked(characteristicsService.trueBooleanKeys).mockImplementation(
       (_characteristics, isReducible) =>
         isReducible ? ["isSingleArc", "isReducible"] : ["isSingleArc"],
@@ -168,7 +170,7 @@ describe(CorpusService, () => {
       );
     });
 
-    it("persists each entry's numeric characteristics under their own columns, its true booleans, hardcoded provenance, and the first family it was filed under", async () => {
+    it("persists each entry's non-letter numeric characteristics under their own columns, its letter counts in glyphs, its true booleans, hardcoded provenance, and the first family it was filed under", async () => {
       await service.ingest([
         { code: "3", columns: 3, filedUnder: ["boxes", "parallel"], rows: 4 },
       ]);
@@ -186,6 +188,7 @@ describe(CorpusService, () => {
           family: "boxes",
           forkCount: 1,
           freeEndCount: 2,
+          glyphs: { aLetterCount: 2 },
           lattice: "3",
           provenance: "hardcoded",
           repeats: 1,

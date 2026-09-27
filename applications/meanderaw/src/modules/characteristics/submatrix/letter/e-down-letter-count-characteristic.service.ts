@@ -32,6 +32,7 @@ export class EDownLetterCountCharacteristicService implements CharacteristicEval
         "The number of minimal isolated E glyphs — a spine with three equal prongs, prongs pointing south.",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "eDownLetterCount",
+      letter: true,
       name: "E Down Letter Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

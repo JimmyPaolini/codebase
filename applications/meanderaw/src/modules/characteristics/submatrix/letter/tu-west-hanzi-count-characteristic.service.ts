@@ -35,6 +35,7 @@ export class TuWestHanziCountCharacteristicService implements CharacteristicEval
         "The number of minimal isolated 凸 (hanzi tu) glyphs — the outline of a unit square standing on the middle of a three-unit bar, turned a quarter clockwise so its base faces west.",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "tuWestHanziCount",
+      letter: true,
       name: "Tu West Hanzi Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

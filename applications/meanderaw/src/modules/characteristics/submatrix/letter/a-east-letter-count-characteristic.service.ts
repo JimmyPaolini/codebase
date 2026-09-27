@@ -32,6 +32,7 @@ export class AEastLetterCountCharacteristicService implements CharacteristicEval
         "The number of minimal isolated A glyphs — a closed end, a crossbar, and two legs, legs pointing east.",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "aEastLetterCount",
+      letter: true,
       name: "A East Letter Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

@@ -34,6 +34,7 @@ export class LDownLetterCountCharacteristicService implements CharacteristicEval
         "The number of minimal isolated L glyphs — two unit strokes meeting at a corner, foot pointing south. Also reads as the Greek Γ (gamma).",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "lDownLetterCount",
+      letter: true,
       name: "L Down Letter Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

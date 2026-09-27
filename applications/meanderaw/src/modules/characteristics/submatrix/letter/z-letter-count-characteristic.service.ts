@@ -35,6 +35,7 @@ export class ZLetterCountCharacteristicService implements CharacteristicEvaluato
         "The number of minimal isolated Z glyphs — three bars joined into a serpentine, mirroring S, bars horizontal. Also reads as the Greek Ζ (zeta) and the hangul ㄹ (rieul).",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "zLetterCount",
+      letter: true,
       name: "Z Letter Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

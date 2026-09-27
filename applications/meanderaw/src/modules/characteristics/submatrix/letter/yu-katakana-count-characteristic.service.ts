@@ -34,6 +34,7 @@ export class YuKatakanaCountCharacteristicService implements CharacteristicEvalu
         "The number of minimal isolated ユ (katakana yu) glyphs — a unit stroke turning down into a base stroke that runs a unit past the turn. Also reads as the Hebrew ב (bet).",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "yuKatakanaCount",
+      letter: true,
       name: "Yu Katakana Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

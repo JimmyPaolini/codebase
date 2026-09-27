@@ -34,6 +34,7 @@ export class EUpLetterCountCharacteristicService implements CharacteristicEvalua
         "The number of minimal isolated E glyphs — a spine with three equal prongs, prongs pointing north. Also reads as the hanzi 山 (shan).",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "eUpLetterCount",
+      letter: true,
       name: "E Up Letter Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

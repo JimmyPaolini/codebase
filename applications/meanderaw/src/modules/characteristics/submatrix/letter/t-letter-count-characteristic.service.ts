@@ -34,6 +34,7 @@ export class TLetterCountCharacteristicService implements CharacteristicEvaluato
         "The number of minimal isolated T glyphs — a bar with a unit stem from its middle, stem pointing south. Also reads as the Greek Τ (tau), the hanzi 丁 (ding), and the hangul ㅜ (u).",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "tLetterCount",
+      letter: true,
       name: "T Letter Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

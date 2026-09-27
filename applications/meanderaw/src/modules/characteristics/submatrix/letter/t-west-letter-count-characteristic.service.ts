@@ -35,6 +35,7 @@ export class TWestLetterCountCharacteristicService implements CharacteristicEval
         "The number of minimal isolated T glyphs — a bar with a unit stem from its middle, stem pointing west. Also reads as the hangul ㅓ (eo).",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "tWestLetterCount",
+      letter: true,
       name: "T West Letter Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

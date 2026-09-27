@@ -34,6 +34,7 @@ export class PsiInvertedLetterCountCharacteristicService implements Characterist
         "The number of minimal isolated Ψ (Greek psi) glyphs — a two-unit bar with a unit prong rising from each end and from its middle, the middle prong running on a unit below the bar as a stem, turned upside down.",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "psiInvertedLetterCount",
+      letter: true,
       name: "Psi Inverted Letter Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

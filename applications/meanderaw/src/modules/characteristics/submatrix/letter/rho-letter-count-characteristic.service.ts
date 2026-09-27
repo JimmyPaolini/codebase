@@ -33,6 +33,7 @@ export class RhoLetterCountCharacteristicService implements CharacteristicEvalua
         "The number of minimal isolated Ρ (Greek rho) glyphs — a closed unit square whose west side runs on a unit below it as a stem. Also reads as the Latin P.",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "rhoLetterCount",
+      letter: true,
       name: "Rho Letter Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

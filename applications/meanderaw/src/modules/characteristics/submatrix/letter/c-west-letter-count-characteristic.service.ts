@@ -34,6 +34,7 @@ export class CWestLetterCountCharacteristicService implements CharacteristicEval
         "The number of minimal isolated C glyphs — a unit square missing one side, open to the west. Also reads as the katakana コ (ko) and the Hebrew כ (kaf).",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "cWestLetterCount",
+      letter: true,
       name: "C West Letter Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

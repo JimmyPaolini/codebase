@@ -33,6 +33,7 @@ export class NSidewaysLetterCountCharacteristicService implements Characteristic
         "The number of minimal isolated N glyphs — two posts joined by a stepped diagonal, posts horizontal.",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "nSidewaysLetterCount",
+      letter: true,
       name: "N Sideways Letter Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

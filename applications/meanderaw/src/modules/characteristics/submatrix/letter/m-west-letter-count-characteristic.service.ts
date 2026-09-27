@@ -33,6 +33,7 @@ export class MWestLetterCountCharacteristicService implements CharacteristicEval
         "The number of minimal isolated M glyphs — three legs hanging from a bar, the middle one half as long, legs pointing west.",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "mWestLetterCount",
+      letter: true,
       name: "M West Letter Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

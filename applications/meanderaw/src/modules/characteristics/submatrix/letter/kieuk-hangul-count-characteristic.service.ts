@@ -33,6 +33,7 @@ export class KieukHangulCountCharacteristicService implements CharacteristicEval
         "The number of minimal isolated ㅋ (hangul kieuk) glyphs — two unit strokes reaching west from a two-unit stem, one from its top and one from its middle.",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "kieukHangulCount",
+      letter: true,
       name: "Kieuk Hangul Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

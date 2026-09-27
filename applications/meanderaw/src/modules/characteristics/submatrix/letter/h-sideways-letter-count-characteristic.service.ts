@@ -34,6 +34,7 @@ export class HSidewaysLetterCountCharacteristicService implements Characteristic
         "The number of minimal isolated H glyphs — two parallel posts joined at their middles, posts horizontal. Also reads as the hanzi 工 (gong) and the katakana エ (e).",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "hSidewaysLetterCount",
+      letter: true,
       name: "H Sideways Letter Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

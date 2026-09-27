@@ -33,6 +33,7 @@ export class RhoWestLetterCountCharacteristicService implements CharacteristicEv
         "The number of minimal isolated Ρ (Greek rho) glyphs — a closed unit square whose west side runs on a unit below it as a stem, turned a quarter clockwise so its stem faces west.",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "rhoWestLetterCount",
+      letter: true,
       name: "Rho West Letter Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

@@ -34,6 +34,7 @@ export class GanHanziCountCharacteristicService implements CharacteristicEvaluat
         "The number of minimal isolated 干 (hanzi gan) glyphs — two two-unit bars threaded on a vertical stroke that starts at the upper bar and runs a unit below the lower.",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "ganHanziCount",
+      letter: true,
       name: "Gan Hanzi Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

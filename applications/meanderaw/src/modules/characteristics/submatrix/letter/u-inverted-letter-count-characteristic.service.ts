@@ -34,6 +34,7 @@ export class UInvertedLetterCountCharacteristicService implements Characteristic
         "The number of minimal isolated U glyphs — a unit square missing one side, open to the south. Also reads as the Greek Π (pi) and the Hebrew ח (het).",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "uInvertedLetterCount",
+      letter: true,
       name: "U Inverted Letter Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

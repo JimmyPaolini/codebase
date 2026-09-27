@@ -34,6 +34,7 @@ export class LWestLetterCountCharacteristicService implements CharacteristicEval
         "The number of minimal isolated L glyphs — two unit strokes meeting at a corner, foot pointing west. Also reads as the hangul ㄱ (giyeok) and the Hebrew ר (resh).",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "lWestLetterCount",
+      letter: true,
       name: "L West Letter Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

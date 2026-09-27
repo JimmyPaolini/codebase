@@ -35,6 +35,7 @@ export class EWestLetterCountCharacteristicService implements CharacteristicEval
         "The number of minimal isolated E glyphs — a spine with three equal prongs, prongs pointing west. Also reads as the katakana ヨ (yo).",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "eWestLetterCount",
+      letter: true,
       name: "E West Letter Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

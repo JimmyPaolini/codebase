@@ -32,6 +32,7 @@ export class DaletInvertedLetterCountCharacteristicService implements Characteri
         "The number of minimal isolated ד (Hebrew dalet) glyphs — a three-unit roof with a unit leg dropping a unit short of its east end, turned upside down.",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "daletInvertedLetterCount",
+      letter: true,
       name: "Dalet Inverted Letter Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

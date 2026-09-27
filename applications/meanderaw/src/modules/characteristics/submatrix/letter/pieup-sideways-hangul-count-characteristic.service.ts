@@ -36,6 +36,7 @@ export class PieupSidewaysHangulCountCharacteristicService implements Characteri
         "The number of minimal isolated ㅍ (hangul pieup) glyphs — a unit square whose top and bottom strokes run a unit past both sides, turned on its side. Also reads as the hangul ㅒ (yae).",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "pieupSidewaysHangulCount",
+      letter: true,
       name: "Pieup Sideways Hangul Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

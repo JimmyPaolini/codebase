@@ -35,6 +35,7 @@ export class PhiLetterCountCharacteristicService implements CharacteristicEvalua
         "The number of minimal isolated Φ (Greek phi) glyphs — a two-unit-wide, unit-tall box threaded through its middle by a vertical stroke that runs a unit past its top and bottom. Also reads as the hanzi 中 (zhong).",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "phiLetterCount",
+      letter: true,
       name: "Phi Letter Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

@@ -33,6 +33,7 @@ export class SLetterCountCharacteristicService implements CharacteristicEvaluato
         "The number of minimal isolated S glyphs — three bars joined into a serpentine, bars horizontal.",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "sLetterCount",
+      letter: true,
       name: "S Letter Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

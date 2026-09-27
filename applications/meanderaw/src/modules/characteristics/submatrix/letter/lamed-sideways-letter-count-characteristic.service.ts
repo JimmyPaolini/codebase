@@ -33,6 +33,7 @@ export class LamedSidewaysLetterCountCharacteristicService implements Characteri
         "The number of minimal isolated ל (Hebrew lamed) glyphs — a unit step, a unit stroke rising from the west end of a unit stroke and another dropping from its east end, turned on its side.",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "lamedSidewaysLetterCount",
+      letter: true,
       name: "Lamed Sideways Letter Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

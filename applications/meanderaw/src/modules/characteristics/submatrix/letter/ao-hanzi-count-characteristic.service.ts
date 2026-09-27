@@ -33,6 +33,7 @@ export class AoHanziCountCharacteristicService implements CharacteristicEvaluato
         "The number of minimal isolated 凹 (hanzi ao) glyphs — the outline of a three-unit bar with a unit notch cut into the middle of its top.",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "aoHanziCount",
+      letter: true,
       name: "Ao Hanzi Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

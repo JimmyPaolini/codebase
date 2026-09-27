@@ -34,6 +34,7 @@ export class OLetterCountCharacteristicService implements CharacteristicEvaluato
         "The number of minimal isolated O glyphs — a closed unit square. Also reads as the Greek Ο (omicron), the katakana ロ (ro), the hanzi 口 (kou), the hangul ㅁ (mieum), and the Hebrew ם (final mem).",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "oLetterCount",
+      letter: true,
       name: "O Letter Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

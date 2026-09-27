@@ -32,6 +32,7 @@ export class YoHangulCountCharacteristicService implements CharacteristicEvaluat
         "The number of minimal isolated ㅛ (hangul yo) glyphs — two unit strokes rising from the middle two points of a three-unit base.",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "yoHangulCount",
+      letter: true,
       name: "Yo Hangul Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

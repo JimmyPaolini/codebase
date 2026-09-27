@@ -34,6 +34,7 @@ export class JiaHanziCountCharacteristicService implements CharacteristicEvaluat
         "The number of minimal isolated 甲 (hanzi jia) glyphs — a two-by-two grid of unit squares whose middle vertical stroke runs a unit below its bottom.",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "jiaHanziCount",
+      letter: true,
       name: "Jia Hanzi Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",

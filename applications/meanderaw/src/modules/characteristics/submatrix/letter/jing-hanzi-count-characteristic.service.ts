@@ -34,6 +34,7 @@ export class JingHanziCountCharacteristicService implements CharacteristicEvalua
         "The number of minimal isolated 井 (hanzi jing) glyphs — a unit square whose four sides each run a unit past both ends.",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "jingHanziCount",
+      letter: true,
       name: "Jing Hanzi Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",
