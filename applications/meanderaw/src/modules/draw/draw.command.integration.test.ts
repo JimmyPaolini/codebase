@@ -6,11 +6,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { LoggerService } from "@codebase/logger";
 
-import { CharacteristicsFamilyService } from "../characteristics/characteristics-family.service";
-import { CharacteristicsPathService } from "../characteristics/characteristics-path.service";
-import { CharacteristicsShapeService } from "../characteristics/characteristics-shape.service";
-import { CharacteristicsService } from "../characteristics/characteristics.service";
-import { ConnectivityService } from "../characteristics/connectivity.service";
+import { CharacteristicsModule } from "../characteristics/characteristics.module";
 import { ClassificationModule } from "../classification/classification.module";
 import { CodeModule } from "../code/code.module";
 import { CorpusService } from "../corpus/corpus.service";
@@ -57,6 +53,7 @@ describe("drawCommand --code mode", () => {
           type: "better-sqlite3",
         }),
         TypeOrmModule.forFeature([Meander]),
+        CharacteristicsModule,
         ClassificationModule,
         CodeModule,
         DrawingModule,
@@ -71,11 +68,6 @@ describe("drawCommand --code mode", () => {
           useValue: createMock<DrawCheckService>(),
         },
         GeometryService,
-        CharacteristicsService,
-        CharacteristicsFamilyService,
-        CharacteristicsPathService,
-        CharacteristicsShapeService,
-        ConnectivityService,
         DatabaseService,
         GraphService,
         TileService,
@@ -123,15 +115,15 @@ describe("drawCommand --code mode", () => {
     expect(rows[0]).toMatchObject({
       code: "02x02y3c9a",
       columns: 2,
-      inkTJunctions: 0,
-      inkXJunctions: 0,
+      crossCount: 0,
+      forkCount: 0,
       lattice: "3c9a",
-      pitch: 2,
       provenance: "hardcoded",
       repeats: 1,
       rows: 2,
     });
     expect(rows[0]?.drawingHash).toBeDefined();
+    expect(rows[0]).not.toHaveProperty("pitch");
   });
 
   it("writes a self-contained formatted code directly without requiring --rows and --columns", async () => {
@@ -162,10 +154,9 @@ describe("drawCommand --code mode", () => {
 
     expect(rows).toHaveLength(1);
     expect(rows[0]).toMatchObject({
-      characteristics: expect.arrayContaining(["hasBranching"]) as string[],
       code: "01x01ye",
-      inkTJunctions: 1,
-      inkXJunctions: 0,
+      crossCount: 0,
+      forkCount: 1,
       lattice: "e",
       repeats: 1,
     });

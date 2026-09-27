@@ -2,6 +2,8 @@ import * as crypto from "node:crypto";
 
 import { Inject, Injectable } from "@nestjs/common";
 
+import { BOOLEAN_CHARACTERISTIC_KEYS } from "../characteristics/characteristic-registry.constants";
+import { CharacteristicRegistryService } from "../characteristics/characteristic-registry.service";
 import { CharacteristicsService } from "../characteristics/characteristics.service";
 import { ClassificationService } from "../classification/classification.service";
 import { CodeService } from "../code/code.service";
@@ -12,7 +14,6 @@ import { EnumerationService } from "../enumeration/enumeration.service";
 
 import { CORPUS_FAMILIES, DuplicateCorpusCodeError } from "./corpus.constants";
 
-import type { MeanderRecord } from "../database/database.types";
 import type { Meander } from "../database/entities/Meander.entity";
 import type { CorpusEntry, CorpusFamily } from "./corpus.types";
 
@@ -49,10 +50,10 @@ import type { CorpusEntry, CorpusFamily } from "./corpus.types";
  * an Enumerated row, so nothing derived is stored in the corpus alongside
  * what was extracted.
  *
- * `pitch` is recorded equal to `columns`, the same convention
- * `DrawCodeService` follows: a historical entry is extracted as one true
- * repeat span, with no wider drawing behind it for a database row to record
- * a separate pitch for.
+ * The stored Characteristics are `DrawRecordService`'s: every numeric one
+ * of `CharacteristicRegistryService.record` under its own column, and every
+ * boolean one that holds in `characteristics`, then `"isReducible"` when the
+ * filed Code is wider than its unit.
  *
  * A Code that collides with one already committed — an Enumerated row, or
  * another entry ingested earlier in the same sweep — fails loudly through
@@ -65,6 +66,8 @@ export class CorpusService {
   // 🏗 Dependency Injection
 
   constructor(
+    @Inject(CharacteristicRegistryService)
+    private readonly characteristicRegistryService: CharacteristicRegistryService,
     @Inject(CharacteristicsService)
     private readonly characteristicsService: CharacteristicsService,
     @Inject(ClassificationService)
@@ -93,7 +96,7 @@ export class CorpusService {
     const { code, columns, rows } = entry;
     const parsed = this.codeService.parse(code, rows, columns);
     const canonical = this.codeService.canonicalPhase(parsed, (phase) =>
-      this.characteristicsService.seamComponents(phase),
+      this.characteristicRegistryService.tileCrossingComponentDeltaCount(phase),
     );
 
     const svg = this.drawingService.render(canonical);
@@ -101,18 +104,14 @@ export class CorpusService {
     // cspell:ignore hex
     const drawingHash = crypto.createHash("sha256").update(svg).digest("hex");
 
-    const characteristics = this.characteristicsService.compute(canonical);
-    const booleanKeys = (
-      Object.entries(characteristics) as [string, boolean | number][]
-    )
-      .filter(([, value]) => typeof value === "boolean" && value)
-      .map(([key]) => key);
-
-    const numericCharacteristics = Object.fromEntries(
-      (Object.entries(characteristics) as [string, boolean | number][]).filter(
-        ([, value]) => typeof value === "number",
-      ),
-    );
+    const characteristics =
+      this.characteristicRegistryService.record(canonical);
+    const booleanKeys = [
+      ...BOOLEAN_CHARACTERISTIC_KEYS.filter((key) => characteristics[key]),
+      ...(this.characteristicRegistryService.isReducible(canonical)
+        ? ["isReducible"]
+        : []),
+    ];
 
     try {
       const existing = await this.databaseService.findOneByLattice(
@@ -129,22 +128,20 @@ export class CorpusService {
         filedFamily === "negative"
           ? "unclassified"
           : filedFamily === "branch"
-            ? this.classificationService.classify(characteristics, {
-                columns,
-                rows,
-              })
+            ? this.classificationService.classify(
+                this.characteristicsService.compute(canonical),
+                { columns, rows },
+              )
             : filedFamily;
 
       return await this.databaseService.save({
-        // type-coverage:ignore-next-line
-        ...(numericCharacteristics as unknown as MeanderRecord),
+        ...characteristics,
         characteristics: booleanKeys,
         code: this.codeService.format(canonical),
         columns,
         drawingHash,
         family: entityFamily,
         lattice: canonical.digits,
-        pitch: columns,
         provenance: "hardcoded" as const,
         repeats: canonical.repeats,
         rows,

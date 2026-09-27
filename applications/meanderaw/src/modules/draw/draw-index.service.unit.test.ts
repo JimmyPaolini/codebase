@@ -2,6 +2,7 @@ import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
+import { meanderRecord } from "../../../testing/meanders";
 import { CodeService } from "../code/code.service";
 import { DatabaseService } from "../database/database.service";
 import { DrawingService } from "../drawing/drawing.service";
@@ -25,56 +26,7 @@ describe(DrawIndexService, () => {
   const meander = (
     overrides: Partial<Meander> & Pick<Meander, "code" | "id">,
   ): Meander => ({
-    arcadePillarCount: 0,
-    bifurcationCount: 0,
-    columns: 1,
-    combSpineCount: 0,
-    componentCount: 0,
-    components: 1,
-    cornerCount: 0,
-
-    cycleCount: 0,
-    cycles: 0,
-    density: 0,
-    dotCount: 0,
-    edgeCount: 0,
-    embeddedOCount: 0,
-    embeddedUCount: 0,
-
-    family: "unclassified",
-    freeEnds: 0,
-
-    horizontalDashCount: 0,
-    horizontalPointCount: 0,
-    inkPointCount: 0,
-    inkTJunctions: 0,
-    inkXJunctions: 0,
-
-    lattice: "3c9a",
-    lCount: 0,
-    longestHorizontalRun: 0,
-    longestVerticalRun: 0,
-
-    oCount: 0,
-    pitch: 1,
-    plusCount: 0,
-    provenance: "hardcoded",
-    repeats: 1,
-
-    characteristics: [],
-    drawingHash: "hash",
-    rows: 2,
-    seamComponents: 0,
-    seamCycles: 0,
-    seamTJunctions: 0,
-    seamXJunctions: 0,
-    shapeICount: 0,
-    tCount: 0,
-
-    uCount: 0,
-    verticalDashCount: 0,
-    verticalPointCount: 0,
-    xCount: 0,
+    ...meanderRecord({ code: overrides.code, lattice: "3c9a" }),
     ...overrides,
   });
 
@@ -328,7 +280,6 @@ describe(DrawIndexService, () => {
           drawingHash: "hash",
           family: "snake",
           id: 7,
-          pitch: 3,
           rows: 4,
         }),
       ]);
@@ -339,14 +290,13 @@ describe(DrawIndexService, () => {
       expect(page.split('<use href="#meander-7"')).toHaveLength(7);
     });
 
-    it("steps each repeat one pitch further along the band, so the tiles meet rather than overlap or gap", () => {
+    it("steps each repeat one tile width (its columns) further along the band, so the tiles meet rather than overlap or gap", () => {
       const pages = service.render([
         meander({
           code: "a",
           columns: 3,
           family: "snake",
           id: 1,
-          pitch: 3,
           rows: 3,
         }),
       ]);
@@ -365,7 +315,6 @@ describe(DrawIndexService, () => {
           columns: 3,
           family: "snake",
           id: 1,
-          pitch: 3,
           rows: 3,
         }),
       ]);

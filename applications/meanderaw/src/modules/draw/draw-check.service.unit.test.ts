@@ -3,10 +3,14 @@ import { Test } from "@nestjs/testing";
 import { getRepositoryToken } from "@nestjs/typeorm";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
+import { meanderRecord } from "../../../testing/meanders";
 import { CorpusService } from "../corpus/corpus.service";
 import { Meander } from "../database/entities/Meander.entity";
 
-import { MeanderDriftDetectedError } from "./draw-check.constants";
+import {
+  MEANDER_DRIFT_COMPARISON_COLUMNS,
+  MeanderDriftDetectedError,
+} from "./draw-check.constants";
 import { DrawCheckService } from "./draw-check.service";
 import { DrawEnumerationService } from "./draw-enumeration.service";
 
@@ -52,21 +56,7 @@ describe(DrawCheckService, () => {
     overrides: Partial<Meander> & Pick<Meander, "id">,
   ): Meander =>
     createMock<Meander>({
-      characteristics: [],
-      code: "code",
-      columns: 1,
-      components: 1,
-      cycles: 0,
-      drawingHash: "hash",
-      family: "unclassified",
-      freeEnds: 0,
-      inkTJunctions: 0,
-      inkXJunctions: 0,
-      lattice: "0",
-      pitch: 1,
-      provenance: "hardcoded",
-      repeats: 1,
-      rows: 2,
+      ...meanderRecord({ bettiNumber0Count: 1, code: "code" }),
       ...overrides,
     });
 
@@ -167,12 +157,12 @@ describe(DrawCheckService, () => {
 
     it("identifies array value differences in differingColumns", () => {
       const regeneratedRow = meander({
-        characteristics: ["hasBranching"],
+        characteristics: ["isArcade"],
         code: "a",
         id: 1,
       });
       const committedRow = meander({
-        characteristics: ["hasDots"],
+        characteristics: ["isDots"],
         code: "a",
         id: 2,
       });
@@ -226,12 +216,12 @@ describe(DrawCheckService, () => {
 
     it("identifies array length differences in differingColumns", () => {
       const regeneratedRow = meander({
-        characteristics: ["hasBranching"],
+        characteristics: ["isArcade"],
         code: "a",
         id: 1,
       });
       const committedRow = meander({
-        characteristics: ["hasBranching", "hasDots"],
+        characteristics: ["isArcade", "isDots"],
         code: "a",
         id: 2,
       });
@@ -250,12 +240,12 @@ describe(DrawCheckService, () => {
 
     it("identifies object drift with matching arrays (no difference)", () => {
       const regeneratedRow = meander({
-        characteristics: ["hasBranching"],
+        characteristics: ["isArcade"],
         code: "a",
         id: 1,
       });
       const committedRow = meander({
-        characteristics: ["hasBranching"],
+        characteristics: ["isArcade"],
         code: "a",
         id: 2,
       });
@@ -267,13 +257,13 @@ describe(DrawCheckService, () => {
 
     it("evaluates a primitive difference", () => {
       const regeneratedRow = meander({
+        bettiNumber0Count: 2,
         code: "a",
-        components: 2,
         id: 1,
       });
       const committedRow = meander({
+        bettiNumber0Count: 1,
         code: "a",
-        components: 1,
         id: 2,
       });
 
@@ -283,9 +273,50 @@ describe(DrawCheckService, () => {
         {
           code: "a",
           columns: 1,
-          differences: ["components"],
+          differences: ["bettiNumber0Count"],
           rows: 2,
         },
+      ]);
+    });
+
+    it("compares exactly the drift comparison columns, ignoring every other characteristic column", () => {
+      const committedRow = meander({ code: "a", id: 2 });
+      const regeneratedRow = meander({
+        aLetterCount: 3,
+        bettiNumber0Count: 2,
+        bettiNumber1Count: 1,
+        characteristics: ["isArcade"],
+        code: "a",
+        crossCount: 1,
+        drawingHash: "other",
+        family: "snake",
+        forkCount: 1,
+        freeEndCount: 2,
+        id: 1,
+        provenance: "enumerated",
+        repeats: 2,
+      });
+
+      const report = service.diff([regeneratedRow], [committedRow]);
+
+      expect(report.changed).toStrictEqual([
+        {
+          code: "a",
+          columns: 1,
+          differences: [...MEANDER_DRIFT_COMPARISON_COLUMNS],
+          rows: 2,
+        },
+      ]);
+      expect(MEANDER_DRIFT_COMPARISON_COLUMNS).toStrictEqual([
+        "bettiNumber0Count",
+        "bettiNumber1Count",
+        "characteristics",
+        "family",
+        "freeEndCount",
+        "forkCount",
+        "crossCount",
+        "provenance",
+        "drawingHash",
       ]);
     });
 

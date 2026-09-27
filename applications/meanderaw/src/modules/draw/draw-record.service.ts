@@ -2,6 +2,8 @@ import * as crypto from "node:crypto";
 
 import { Inject, Injectable } from "@nestjs/common";
 
+import { BOOLEAN_CHARACTERISTIC_KEYS } from "../characteristics/characteristic-registry.constants";
+import { CharacteristicRegistryService } from "../characteristics/characteristic-registry.service";
 import { CharacteristicsService } from "../characteristics/characteristics.service";
 import { ClassificationService } from "../classification/classification.service";
 import { CodeService } from "../code/code.service";
@@ -25,16 +27,20 @@ import type {
  * passes, which is a fact about where the Code came from rather than
  * anything this can read off it.
  *
- * `pitch` is recorded equal to `columns`: both an enumerated repeat and a
- * Code named directly by `--rows`/`--columns`/`--code` are one repeat wide
- * by construction, so their whole grid is one pitch. See `Meander`'s own doc
- * comment for why the two columns are still held separately.
+ * Every numeric Characteristic of `CharacteristicRegistryService.record` is
+ * stored under its own column, and every boolean one that holds is listed in
+ * `characteristics`, followed by `"isReducible"` when the filed Code is
+ * wider than its unit. The family still comes from the legacy
+ * `CharacteristicsService.compute` until `ClassificationService` reads the
+ * registry's record.
  */
 @Injectable()
 export class DrawRecordService {
   // 🏗 Dependency Injection
 
   constructor(
+    @Inject(CharacteristicRegistryService)
+    private readonly characteristicRegistryService: CharacteristicRegistryService,
     @Inject(CharacteristicsService)
     private readonly characteristicsService: CharacteristicsService,
     @Inject(ClassificationService)
@@ -67,25 +73,20 @@ export class DrawRecordService {
     const repeats = shape.repeats ?? parsed.repeats;
     const withRepeats = { ...parsed, repeats };
     const canonical = this.codeService.canonicalPhase(withRepeats, (phase) =>
-      this.characteristicsService.seamComponents(phase),
+      this.characteristicRegistryService.tileCrossingComponentDeltaCount(phase),
     );
-    const characteristics = this.characteristicsService.compute(canonical);
-    const family = this.classificationService.classify(characteristics, {
-      columns: canonical.columns,
-      rows: canonical.rows,
-    });
-    const booleanKeys = (
-      Object.entries(characteristics) as [string, boolean | number][]
-    )
-      .filter(([, value]) => typeof value === "boolean" && value)
-      .map(([key]) => key);
-
-    // We only keep numbers in the returned object (the booleans are moved to the array)
-    const numericCharacteristics = Object.fromEntries(
-      (Object.entries(characteristics) as [string, boolean | number][]).filter(
-        ([, value]) => typeof value === "number",
-      ),
+    const family = this.classificationService.classify(
+      this.characteristicsService.compute(canonical),
+      { columns: canonical.columns, rows: canonical.rows },
     );
+    const characteristics =
+      this.characteristicRegistryService.record(canonical);
+    const booleanKeys = [
+      ...BOOLEAN_CHARACTERISTIC_KEYS.filter((key) => characteristics[key]),
+      ...(this.characteristicRegistryService.isReducible(canonical)
+        ? ["isReducible"]
+        : []),
+    ];
 
     const svg = this.drawingService.render(canonical);
     // Node crypto API requires "hex" string
@@ -93,15 +94,13 @@ export class DrawRecordService {
     const drawingHash = crypto.createHash("sha256").update(svg).digest("hex");
 
     return {
-      // type-coverage:ignore-next-line
-      ...(numericCharacteristics as unknown as MeanderRecord),
+      ...characteristics,
       characteristics: booleanKeys,
       code: this.codeService.format(canonical),
       columns: canonical.columns,
       drawingHash,
       family,
       lattice: canonical.digits,
-      pitch: canonical.columns,
       provenance,
       repeats: canonical.repeats,
       rows: canonical.rows,

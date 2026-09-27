@@ -3,85 +3,67 @@ import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
 import { MEANDER_FAMILIES } from "../../classification/classification.constants";
 import { MEANDER_PROVENANCES } from "../database.constants";
 
+import type { NumericCharacteristicRecord } from "../../characteristics/characteristics.types";
 import type { MeanderFamily } from "../../classification/classification.types";
 
 /**
  * One row of the committed `output/meanders.sqlite` database: a single
  * meander addressed by its Code, decoded and rendered by the generic,
- * family-agnostic pipeline rather than by any per-family procedural motif
- * service.
+ * family-agnostic pipeline.
  *
- * `code` is a hexadecimal string, one character per interior lattice point,
- * in the same `8`/`4`/`2`/`1` north/south/east/west encoding
- * `CodeService.spell` writes, and is declared unbounded, which is the whole reason this migration exists: a
- * filesystem path component caps out at 255 bytes and several families' full
- * Codes do not, so a database row replaces the file a Code could not always
- * be a name for.
+ * `code` is unbounded text, because several families' full Codes outgrow
+ * the 255-byte filesystem path component a file per Code once needed.
  *
- * **A meander's identity is that Code together with its `rows` and
- * `columns`, and the unique index says so.** It was `code` alone until the
- * generalized enumeration swept more than one shape, and the sweep found the
- * collision immediately: `identify` names a tile by its points and
- * deliberately does not name the shape — its own doc comment says "two tiles
- * of different shapes may share a string" — so the four characters `0000`
- * are two inked dots over two columns of a three-row band and also four down
- * one column of a five-row band. Those are different drawings. The triple is
- * what CONTEXT.md already calls a **lattice address**, and it is also
- * exactly what spec #813's sixteenth user story says reproduces an SVG, so
- * indexing it rather than the Code alone makes the key the identity the
- * domain already had. A second row at the same address is still refused, so
- * that spec's thirty-second story — a duplicate is a build failure rather
- * than a convention nobody checks — holds unchanged.
+ * A meander's identity is its lattice address: the Code together with its
+ * `rows` and `columns`. `identify` names a tile by its points, not by its
+ * shape, so the same four characters can be two different drawings.
  *
- * `columns` and `pitch` are held separately even though this ticket's own
- * single-drawing path always writes them equal: a Code named directly by
- * `--rows`/`--columns`/`--code` has no repeat structure of its own, so its
- * whole grid is one pitch wide — but a later Enumerated or Hardcoded row
- * drawn from a family with a real repeating motif will not agree, and the
- * column exists now so that row does not need a migration to state it.
- *
- * `provenance` distinguishes a row produced by the generalized enumerator
- * from one ingested from the historical corpus's hardcoded constants. This
- * ticket's own single-drawing rows are recorded `"hardcoded"` too: a Code
- * typed at the command line is authored the same way a corpus constant is,
- * named by a person rather than found by a search.
- * null when no family's Characteristic combination matches its structure,
- * and a Hardcoded row carries whichever of the two the historical corpus
- * already recorded for it, trusted rather than re-derived — see
- * `CorpusService`'s own doc comment for why a Hardcoded row's
- * metadata is trusted rather than classified.
- * A `family` is null where a meander's structure satisfies no family's
- * defining combination — most of the enumerated space is like that, and
- * the named regions of the unit space, which is a separate question with a
- * separate answer: `docs/adr/0007-address-every-meander-by-its-lattice.md`
- * measured 85 drawings earning a region's name from outside `mosaic`, so
- * the two columns are filled in independently and a row may carry either,
- * both, or neither. `ClassificationService` decides both.
- *
- * `components`, `cycles`, and `freeEnds` are the three counts that say what
- * shape a repeat's ink is as a graph — how many pieces it falls into, how
- * many loops it closes, and how many of its points terminate. No charter
- * invariant fixes any of them, which is why they are Characteristics rather
- * than gates, and they are what most of the family definitions are stated
- * in: the junction counts alone read a `snake` repeat, a `boxes` repeat and
- * a `parallel` repeat identically.
- * `negativeXJunctions` are the raw junction counts
- * `CharacteristicsService.compute` derives directly from the row's
- * Code, and `hasBranching`/`hasCrossing` are the first two of a
- * growing set of boolean Characteristic columns built from them — see that
- * service's own doc comment for what each one means.
+ * `provenance` says whether the enumerator found the row or it was ingested
+ * from the historical corpus, which is also how a Code named at the command
+ * line is recorded. `family` is `ClassificationService`'s verdict for an
+ * Enumerated row and the filed family for a Hardcoded one.
  */
 @Entity({ name: "meanders" })
 @Index(["code"], { unique: true })
-export class Meander {
+export class Meander implements NumericCharacteristicRecord {
   @Column({ default: 0, type: "int" })
-  arcadePillarCount!: number;
+  aEastLetterCount!: number;
 
   @Column({ default: 0, type: "int" })
-  bifurcationCount!: number;
+  aInvertedLetterCount!: number;
 
+  @Column({ default: 0, type: "int" })
+  aLetterCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  aWestLetterCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  bettiNumber0Count!: number;
+
+  @Column({ default: 0, type: "int" })
+  bettiNumber1Count!: number;
+
+  @Column({ default: 0, type: "int" })
+  bLetterCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  bottomBorderTouchCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  bSidewaysLetterCount!: number;
+
+  /**
+   * Every boolean Characteristic that holds, in `BOOLEAN_CHARACTERISTIC_KEYS`
+   * order, then `"isReducible"` when the filed Code is a whole number of
+   * repeats of a narrower unit. Each numeric Characteristic has its own
+   * column instead, named exactly its key, which `implements` holds complete.
+   */
   @Column({ type: "simple-array" })
   characteristics!: string[];
+
+  @Column({ default: 0, type: "int" })
+  cLetterCount!: number;
 
   @Column({ type: "text" })
   code!: string;
@@ -90,22 +72,13 @@ export class Meander {
   columns!: number;
 
   @Column({ default: 0, type: "int" })
-  combSpineCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  componentCount!: number;
-
-  @Column({ type: "int" })
-  components!: number;
-
-  @Column({ default: 0, type: "int" })
   cornerCount!: number;
 
   @Column({ default: 0, type: "int" })
-  cycleCount!: number;
+  crossCount!: number;
 
-  @Column({ type: "int" })
-  cycles!: number;
+  @Column({ default: 0, type: "int" })
+  cWestLetterCount!: number;
 
   @Column({ default: 0, type: "float" })
   density!: number;
@@ -117,58 +90,124 @@ export class Meander {
   drawingHash!: string;
 
   @Column({ default: 0, type: "int" })
+  eastForkCount!: number;
+
+  @Column({ default: 0, type: "int" })
   edgeCount!: number;
 
   @Column({ default: 0, type: "int" })
-  embeddedOCount!: number;
+  eDownLetterCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  eLetterCount!: number;
 
   @Column({ default: 0, type: "int" })
   embeddedUCount!: number;
 
+  @Column({ default: 0, type: "int" })
+  eUpLetterCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  eWestLetterCount!: number;
+
   @Column({ enum: MEANDER_FAMILIES, type: "simple-enum" })
   family!: MeanderFamily;
 
-  @Column({ type: "int" })
-  freeEnds!: number;
+  @Column({ default: 0, type: "int" })
+  fDownLetterCount!: number;
 
   @Column({ default: 0, type: "int" })
-  horizontalDashCount!: number;
+  fLetterCount!: number;
 
   @Column({ default: 0, type: "int" })
-  horizontalPointCount!: number;
+  forkCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  freeEndCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  fUpLetterCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  fWestLetterCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  hLetterCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  horizontalEdgeCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  horizontalRectangleCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  hSidewaysLetterCount!: number;
 
   @PrimaryGeneratedColumn()
   id!: number;
 
   @Column({ default: 0, type: "int" })
+  iLetterCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  inflectionCount!: number;
+
+  @Column({ default: 0, type: "int" })
   inkPointCount!: number;
 
-  @Column({ type: "int" })
-  inkTJunctions!: number;
-
-  @Column({ type: "int" })
-  inkXJunctions!: number;
+  @Column({ default: 0, type: "int" })
+  iSidewaysLetterCount!: number;
 
   @Column({ type: "text" })
   lattice!: string;
 
   @Column({ default: 0, type: "int" })
-  lCount!: number;
+  lDownLetterCount!: number;
 
   @Column({ default: 0, type: "int" })
-  longestHorizontalRun!: number;
+  lLetterCount!: number;
 
   @Column({ default: 0, type: "int" })
-  longestVerticalRun!: number;
+  longestHorizontalRunLength!: number;
 
   @Column({ default: 0, type: "int" })
-  oCount!: number;
-
-  @Column({ type: "int" })
-  pitch!: number;
+  longestVerticalRunLength!: number;
 
   @Column({ default: 0, type: "int" })
-  plusCount!: number;
+  lUpLetterCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  lWestLetterCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  maxMonotonicTurnLength!: number;
+
+  @Column({ default: 0, type: "int" })
+  mEastLetterCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  mLetterCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  mWestLetterCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  nLetterCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  northEastCornerCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  northForkCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  northWestCornerCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  nSidewaysLetterCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  oLetterCount!: number;
 
   @Column({ enum: MEANDER_PROVENANCES, type: "simple-enum" })
   provenance!: "enumerated" | "hardcoded";
@@ -180,32 +219,86 @@ export class Meander {
   rows!: number;
 
   @Column({ default: 0, type: "int" })
-  seamComponents!: number;
+  sLetterCount!: number;
 
   @Column({ default: 0, type: "int" })
-  seamCycles!: number;
+  southEastCornerCount!: number;
 
   @Column({ default: 0, type: "int" })
-  seamTJunctions!: number;
+  southForkCount!: number;
 
   @Column({ default: 0, type: "int" })
-  seamXJunctions!: number;
+  southWestCornerCount!: number;
 
   @Column({ default: 0, type: "int" })
-  shapeICount!: number;
+  sSidewaysLetterCount!: number;
 
   @Column({ default: 0, type: "int" })
-  tCount!: number;
+  tEastLetterCount!: number;
 
   @Column({ default: 0, type: "int" })
-  uCount!: number;
+  tightestTurnCount!: number;
 
   @Column({ default: 0, type: "int" })
-  verticalDashCount!: number;
+  tileCrossingComponentDeltaCount!: number;
 
   @Column({ default: 0, type: "int" })
-  verticalPointCount!: number;
+  tileCrossingCount!: number;
 
   @Column({ default: 0, type: "int" })
-  xCount!: number;
+  tileCrossingCycleCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  tLetterCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  topBorderTouchCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  totalTurnCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  tUpLetterCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  tWestLetterCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  uInvertedLetterCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  uLetterCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  verticalEdgeCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  verticalRectangleCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  westForkCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  wLetterCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  xLetterCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  yEastLetterCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  yLetterCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  yUpLetterCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  yWestLetterCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  zLetterCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  zSidewaysLetterCount!: number;
 }

@@ -141,16 +141,16 @@ export class DrawIndexService {
    * row's markup would multiply an already large document by six for a
    * drawing each copy is identical in.
    *
-   * Each placement steps one pitch further along, which is the distance that
-   * makes consecutive tiles meet: a tile's own drawing runs from `offset` to
-   * `offset + columns * unit`, so a step of `pitch * unit` lands the next
+   * Each placement steps one tile width (`columns`) further along, which is
+   * the distance that makes consecutive tiles meet: a tile's own drawing runs
+   * from `offset` to `offset + columns * unit`, so a step of `columns * unit` lands the next
    * tile's first lattice column exactly on the last one's right edge. The
    * half-stroke gutters either side of that edge overlap, and both tiles ink
    * the same square cap there, so the seam paints over itself.
    */
   private renderBand(meander: Meander): string {
     const geometry = this.geometryService.compute(meander.rows);
-    const pitch = meander.pitch * geometry.unit;
+    const pitch = meander.columns * geometry.unit;
     const height = this.format(geometry.height + geometry.strokeWidth);
     const width = this.format(
       (BAND_REPEAT_COUNT - 1) * pitch +

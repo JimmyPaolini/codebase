@@ -33,14 +33,13 @@ export const DRAW_CHECK_SWEEP_CONNECTION_NAME = "draw-check-sweep";
  * Characteristic column added later only has to be added here to be covered.
  */
 export const MEANDER_DRIFT_COMPARISON_COLUMNS = [
-  "components",
-  "cycles",
+  "bettiNumber0Count",
+  "bettiNumber1Count",
   "characteristics",
   "family",
-  "freeEnds",
-  "inkTJunctions",
-  "inkXJunctions",
-  "pitch",
+  "freeEndCount",
+  "forkCount",
+  "crossCount",
   "provenance",
   "drawingHash",
 ] as const satisfies readonly (keyof MeanderRecord)[];

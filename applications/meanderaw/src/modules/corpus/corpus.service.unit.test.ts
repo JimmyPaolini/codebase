@@ -2,6 +2,8 @@ import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { characteristicRecord } from "../../../testing/meanders";
+import { CharacteristicRegistryService } from "../characteristics/characteristic-registry.service";
 import { CharacteristicsService } from "../characteristics/characteristics.service";
 import { ClassificationService } from "../classification/classification.service";
 import { CodeService } from "../code/code.service";
@@ -22,6 +24,8 @@ import type { CorpusEntry } from "./corpus.types";
 describe(CorpusService, () => {
   let service: CorpusService;
   let characteristicsService: CharacteristicsService;
+  let characteristicRegistryService: CharacteristicRegistryService;
+  let classificationService: ClassificationService;
   let databaseService: DatabaseService;
   let codeService: CodeService;
   let drawingService: DrawingService;
@@ -29,13 +33,13 @@ describe(CorpusService, () => {
 
   const tile = createMock<Tile>({ columns: 1, rows: 2 });
   const characteristics = createMock<Characteristics>({
-    components: 1,
-    cycles: 0,
-    freeEnds: 2,
-    inkTJunctions: 1,
-    inkXJunctions: 0,
     isClosedLoop: false,
-    isJunctionFree: true,
+  });
+  const record = characteristicRecord({
+    bettiNumber0Count: 1,
+    forkCount: 1,
+    freeEndCount: 2,
+    isSingleArc: true,
   });
   const savedMeander = createMock<Meander>({ id: 1 });
 
@@ -43,6 +47,10 @@ describe(CorpusService, () => {
     const module = await Test.createTestingModule({
       providers: [
         CorpusService,
+        {
+          provide: CharacteristicRegistryService,
+          useValue: createMock<CharacteristicRegistryService>(),
+        },
         {
           provide: CharacteristicsService,
           useValue: createMock<CharacteristicsService>(),
@@ -72,6 +80,10 @@ describe(CorpusService, () => {
 
     service = await module.resolve(CorpusService);
     characteristicsService = await module.resolve(CharacteristicsService);
+    characteristicRegistryService = await module.resolve(
+      CharacteristicRegistryService,
+    );
+    classificationService = await module.resolve(ClassificationService);
     databaseService = await module.resolve(DatabaseService);
     codeService = await module.resolve(CodeService);
     drawingService = await module.resolve(DrawingService);
@@ -95,7 +107,9 @@ describe(CorpusService, () => {
     vi.mocked(codeService.tile).mockReturnValue(tile);
     vi.mocked(drawingService.render).mockReturnValue("<svg>fixture</svg>\n");
     vi.mocked(characteristicsService.compute).mockReturnValue(characteristics);
-    vi.mocked(characteristicsService.classifyFamilies).mockReturnValue([]);
+    vi.mocked(characteristicRegistryService.record).mockReturnValue(record);
+    vi.mocked(characteristicRegistryService.isReducible).mockReturnValue(false);
+    vi.mocked(classificationService.classify).mockReturnValue("snake");
     vi.mocked(enumerationService.isAdmitted).mockReturnValue(false);
     vi.mocked(databaseService.findOneByLattice).mockResolvedValue(null);
     vi.mocked(databaseService.save).mockResolvedValue(savedMeander);
@@ -127,40 +141,84 @@ describe(CorpusService, () => {
       );
     });
 
-    it("computes the Characteristics of the Code it read", async () => {
+    it("computes the characteristic record of the Code it read", async () => {
       await service.ingest([entry]);
 
-      expect(characteristicsService.compute).toHaveBeenCalledWith(
+      expect(characteristicRegistryService.record).toHaveBeenCalledWith(
         expect.objectContaining({ columns: 1, digits: "2", rows: 4 }),
       );
     });
 
-    it("persists each entry with pitch equal to columns, hardcoded provenance, and the first family it was filed under", async () => {
+    it("scores each phase by the registry's tile-crossing component delta", async () => {
+      vi.mocked(codeService.canonicalPhase).mockImplementation(
+        (parsed, score) => {
+          score(parsed);
+          return parsed;
+        },
+      );
+
+      await service.ingest([entry]);
+
+      expect(
+        vi.mocked(
+          characteristicRegistryService.tileCrossingComponentDeltaCount,
+        ),
+      ).toHaveBeenCalledWith(
+        expect.objectContaining({ columns: 1, digits: "2", rows: 4 }),
+      );
+    });
+
+    it("persists each entry's numeric characteristics under their own columns, its true booleans, hardcoded provenance, and the first family it was filed under", async () => {
       await service.ingest([
         { code: "3", columns: 3, filedUnder: ["boxes", "parallel"], rows: 4 },
       ]);
 
       expect(databaseService.save).toHaveBeenCalledWith(
         expect.objectContaining({
+          bettiNumber0Count: 1,
+          bettiNumber1Count: 0,
+          characteristics: ["isSingleArc"],
           code: "03x04y3",
           columns: 3,
-          components: 1,
-          cycles: 0,
-          family: "boxes",
-          freeEnds: 2,
-
-          inkTJunctions: 1,
-          inkXJunctions: 0,
-
-          characteristics: ["isJunctionFree"],
+          crossCount: 0,
           drawingHash:
             "8fa0825a9fafc5c9cc0fa1377d44f9c63d0113001d1fe09388da64ebb410dd7d",
+          family: "boxes",
+          forkCount: 1,
+          freeEndCount: 2,
           lattice: "3",
-          pitch: 3,
           provenance: "hardcoded",
           repeats: 1,
           rows: 4,
         }),
+      );
+    });
+
+    it("lists isReducible after the true booleans when the filed Code reduces to a narrower unit", async () => {
+      vi.mocked(characteristicRegistryService.isReducible).mockReturnValue(
+        true,
+      );
+
+      await service.ingest([entry]);
+
+      expect(databaseService.save).toHaveBeenCalledWith(
+        expect.objectContaining({
+          characteristics: ["isSingleArc", "isReducible"],
+        }),
+      );
+    });
+
+    it("classifies an entry filed under branch from the legacy characteristics", async () => {
+      await service.ingest([
+        { code: "3", columns: 3, filedUnder: ["branch"], rows: 4 },
+      ]);
+
+      expect(classificationService.classify).toHaveBeenCalledWith(
+        characteristics,
+        { columns: 3, rows: 4 },
+      );
+      expect(databaseService.save).toHaveBeenCalledWith(
+        expect.objectContaining({ family: "snake" }),
       );
     });
 

@@ -95,10 +95,8 @@ export interface CharacteristicMetadata<
  * registered evaluator: a number under each numeric key and a boolean under
  * each boolean key. `CharacteristicRegistryService.record` fills it.
  */
-export type CharacteristicRecord = Readonly<
-  Record<BooleanCharacteristicKey, boolean>
-> &
-  Readonly<Record<NumericCharacteristicKey, number>>;
+export type CharacteristicRecord = NumericCharacteristicRecord &
+  Readonly<Record<BooleanCharacteristicKey, boolean>>;
 
 /**
  * Every fact `CharacteristicsService.compute` derives directly from a
@@ -269,6 +267,15 @@ export type MutableHistogram = Pick<
 /** The key of a characteristic whose value is a number: see {@link NUMERIC_CHARACTERISTIC_KEYS}. */
 export type NumericCharacteristicKey =
   (typeof NUMERIC_CHARACTERISTIC_KEYS)[number];
+
+/**
+ * The numeric half of a {@link CharacteristicRecord}: a number under each
+ * numeric key, which is exactly the set of numeric columns a stored meander
+ * row carries.
+ */
+export type NumericCharacteristicRecord = Readonly<
+  Record<NumericCharacteristicKey, number>
+>;
 
 /** Counts for exactly matched shapes in 2x2 windows. */
 export interface UnitShapeCounts {

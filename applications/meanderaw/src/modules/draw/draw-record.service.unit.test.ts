@@ -1,20 +1,16 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { CharacteristicsFamilyService } from "../characteristics/characteristics-family.service";
-import { CharacteristicsPathService } from "../characteristics/characteristics-path.service";
-import { CharacteristicsShapeService } from "../characteristics/characteristics-shape.service";
-import { CharacteristicsService } from "../characteristics/characteristics.service";
-import { ConnectivityService } from "../characteristics/connectivity.service";
-import { ClassificationService } from "../classification/classification.service";
+import {
+  BOOLEAN_CHARACTERISTIC_KEYS,
+  NUMERIC_CHARACTERISTIC_KEYS,
+} from "../characteristics/characteristic-registry.constants";
+import { CharacteristicRegistryService } from "../characteristics/characteristic-registry.service";
+import { CharacteristicsModule } from "../characteristics/characteristics.module";
+import { ClassificationModule } from "../classification/classification.module";
+import { CodeModule } from "../code/code.module";
 import { CodeService } from "../code/code.service";
-import { DrawingService } from "../drawing/drawing.service";
-import { GeometryService } from "../geometry/geometry.service";
-import { GraphService } from "../graph/graph.service";
-import { MatrixService } from "../matrix/matrix.service";
-import { SvgService } from "../svg/svg.service";
-import { SymmetryService } from "../symmetry/symmetry.service";
-import { TileService } from "../tile/tile.service";
+import { DrawingModule } from "../drawing/drawing.module";
 
 import { DrawRecordService } from "./draw-record.service";
 
@@ -27,29 +23,23 @@ import { DrawRecordService } from "./draw-record.service";
  */
 describe(DrawRecordService, () => {
   let service: DrawRecordService;
+  let codeService: CodeService;
+  let registryService: CharacteristicRegistryService;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      providers: [
-        DrawRecordService,
-        GeometryService,
-        CharacteristicsService,
-        CharacteristicsFamilyService,
-        CharacteristicsPathService,
-        CharacteristicsShapeService,
-        ClassificationService,
-        ConnectivityService,
-        CodeService,
-        MatrixService,
-        SymmetryService,
-        DrawingService,
-        GraphService,
-        TileService,
-        SvgService,
+      imports: [
+        CharacteristicsModule,
+        ClassificationModule,
+        CodeModule,
+        DrawingModule,
       ],
+      providers: [DrawRecordService],
     }).compile();
 
     service = await module.resolve(DrawRecordService);
+    codeService = module.get(CodeService);
+    registryService = module.get(CharacteristicRegistryService);
   });
 
   it("is defined", () => {
@@ -64,63 +54,54 @@ describe(DrawRecordService, () => {
         "enumerated",
       );
 
-      expect({ ...record, drawingHash: record.drawingHash.slice(0, 4) })
-        .toMatchInlineSnapshot(`
-          {
-            "arcadePillarCount": 0,
-            "bifurcationCount": 0,
-            "characteristics": [
-              "isJunctionFree",
-              "isBars",
-              "endsAreLatticeNeighbors",
-              "endsOnBorderRules",
-              "isConnected",
-              "isReducible",
-              "isSingleArc",
-            ],
-            "code": "02x02y4488",
-            "columns": 2,
-            "combSpineCount": 0,
-            "componentCount": 1,
-            "components": 1,
-            "cornerCount": 0,
-            "cycleCount": 0,
-            "cycles": 0,
-            "density": 1,
-            "dotCount": 0,
-            "drawingHash": "8fba",
-            "edgeCount": 1,
-            "embeddedOCount": 0,
-            "embeddedUCount": 0,
-            "family": "bars",
-            "freeEnds": 2,
-            "horizontalDashCount": 0,
-            "horizontalPointCount": 0,
-            "inkPointCount": 2,
-            "inkTJunctions": 0,
-            "inkXJunctions": 0,
-            "lCount": 0,
-            "lattice": "4488",
-            "longestHorizontalRun": 0,
-            "longestVerticalRun": 1,
-            "oCount": 0,
-            "pitch": 2,
-            "plusCount": 0,
-            "provenance": "enumerated",
-            "repeats": 1,
-            "rows": 2,
-            "seamComponents": 0,
-            "seamCycles": 0,
-            "seamTJunctions": 0,
-            "seamXJunctions": 0,
-            "shapeICount": 1,
-            "tCount": 0,
-            "uCount": 0,
-            "verticalDashCount": 0,
-            "verticalPointCount": 0,
-            "xCount": 0,
-          }
-        `);
+      expect(record).toMatchObject({
+        bettiNumber0Count: 1,
+        bettiNumber1Count: 0,
+        characteristics: [
+          "endsAreLatticeNeighbors",
+          "endsOnBorderRules",
+          "isBars",
+          "isSingleArc",
+          "isReducible",
+        ],
+        code: "02x02y4488",
+        columns: 2,
+        crossCount: 0,
+        density: 1,
+        edgeCount: 1,
+        family: "bars",
+        forkCount: 0,
+        freeEndCount: 2,
+        inkPointCount: 2,
+        lattice: "4488",
+        longestHorizontalRunLength: 0,
+        longestVerticalRunLength: 1,
+        provenance: "enumerated",
+        repeats: 1,
+        rows: 2,
+        tileCrossingComponentDeltaCount: 0,
+        tileCrossingCount: 0,
+      });
+      expect(record.drawingHash).toMatch(/^8fba/u);
+      expect(record).not.toHaveProperty("pitch");
+    });
+
+    it("stores every numeric characteristic of the registry's record under its own key, and the true booleans in key-list order", () => {
+      const code = "2335635cc29ca339";
+      const record = service.record(code, { columns: 4, rows: 4 }, "hardcoded");
+      const canonical = codeService.parse(record.code);
+      const expected = registryService.record(canonical);
+
+      expect(
+        NUMERIC_CHARACTERISTIC_KEYS.map((key) => [key, record[key]]),
+      ).toStrictEqual(
+        NUMERIC_CHARACTERISTIC_KEYS.map((key) => [key, expected[key]]),
+      );
+
+      expect(record.characteristics).toStrictEqual([
+        ...BOOLEAN_CHARACTERISTIC_KEYS.filter((key) => expected[key]),
+        ...(registryService.isReducible(canonical) ? ["isReducible"] : []),
+      ]);
     });
 
     it("records family and specific characteristics where a Code's structure earns them", () => {
@@ -131,7 +112,7 @@ describe(DrawRecordService, () => {
       );
 
       expect(record.family).toBe("whirl");
-      expect(record.characteristics).toContain("isJunctionFree");
+      expect(record).toMatchObject({ crossCount: 0, forkCount: 0 });
 
       const waterfallRecord = service.record(
         "255aa1",
@@ -140,7 +121,7 @@ describe(DrawRecordService, () => {
       );
 
       expect(waterfallRecord.family).toBe("waterfalls");
-      expect(waterfallRecord.characteristics).toContain("isJunctionFree");
+      expect(waterfallRecord.characteristics).toContain("isWaterfalls");
 
       const wideWaterfallRecord = service.record(
         "23531a",
@@ -149,7 +130,7 @@ describe(DrawRecordService, () => {
       );
 
       expect(wideWaterfallRecord.family).toBe("waterfalls");
-      expect(wideWaterfallRecord.characteristics).toContain("isJunctionFree");
+      expect(wideWaterfallRecord.characteristics).toContain("isWaterfalls");
     });
 
     it("records the provenance it was given rather than deriving one, since where a Code came from is no property of the Code", () => {
