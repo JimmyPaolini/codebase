@@ -264,6 +264,10 @@ jobs:
           matrix.target.id == 'push-releases'
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           GIT_COMMITTER_EMAIL: jimmypaolini@gmail.com
           GIT_COMMITTER_NAME: Jimmy Paolini
-        run: pnpm semantic-release
+        run: |
+          pnpm semantic-release
+          pnpm exec nx release publish --registry=https://registry.npmjs.org
