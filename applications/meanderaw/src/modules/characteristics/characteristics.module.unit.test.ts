@@ -78,10 +78,13 @@ import { FDownLetterCountCharacteristicService } from "./submatrix/letter/f-down
 import { FLetterCountCharacteristicService } from "./submatrix/letter/f-letter-count-characteristic.service";
 import { FUpLetterCountCharacteristicService } from "./submatrix/letter/f-up-letter-count-characteristic.service";
 import { FWestLetterCountCharacteristicService } from "./submatrix/letter/f-west-letter-count-characteristic.service";
+import { GanHanziCountCharacteristicService } from "./submatrix/letter/gan-hanzi-count-characteristic.service";
 import { HLetterCountCharacteristicService } from "./submatrix/letter/h-letter-count-characteristic.service";
 import { HSidewaysLetterCountCharacteristicService } from "./submatrix/letter/h-sideways-letter-count-characteristic.service";
 import { ILetterCountCharacteristicService } from "./submatrix/letter/i-letter-count-characteristic.service";
 import { ISidewaysLetterCountCharacteristicService } from "./submatrix/letter/i-sideways-letter-count-characteristic.service";
+import { JiaHanziCountCharacteristicService } from "./submatrix/letter/jia-hanzi-count-characteristic.service";
+import { JingHanziCountCharacteristicService } from "./submatrix/letter/jing-hanzi-count-characteristic.service";
 import { KieukEastHangulCountCharacteristicService } from "./submatrix/letter/kieuk-east-hangul-count-characteristic.service";
 import { KieukHangulCountCharacteristicService } from "./submatrix/letter/kieuk-hangul-count-characteristic.service";
 import { KieukInvertedHangulCountCharacteristicService } from "./submatrix/letter/kieuk-inverted-hangul-count-characteristic.service";
@@ -95,13 +98,25 @@ import { LamedSidewaysLetterCountCharacteristicService } from "./submatrix/lette
 import { MEastLetterCountCharacteristicService } from "./submatrix/letter/m-east-letter-count-characteristic.service";
 import { MLetterCountCharacteristicService } from "./submatrix/letter/m-letter-count-characteristic.service";
 import { MWestLetterCountCharacteristicService } from "./submatrix/letter/m-west-letter-count-characteristic.service";
+import { MuHanziCountCharacteristicService } from "./submatrix/letter/mu-hanzi-count-characteristic.service";
 import { NLetterCountCharacteristicService } from "./submatrix/letter/n-letter-count-characteristic.service";
 import { NSidewaysLetterCountCharacteristicService } from "./submatrix/letter/n-sideways-letter-count-characteristic.service";
 import { OLetterCountCharacteristicService } from "./submatrix/letter/o-letter-count-characteristic.service";
+import { PhiLetterCountCharacteristicService } from "./submatrix/letter/phi-letter-count-characteristic.service";
 import { PieupHangulCountCharacteristicService } from "./submatrix/letter/pieup-hangul-count-characteristic.service";
 import { PieupSidewaysHangulCountCharacteristicService } from "./submatrix/letter/pieup-sideways-hangul-count-characteristic.service";
+import { PsiEastLetterCountCharacteristicService } from "./submatrix/letter/psi-east-letter-count-characteristic.service";
+import { PsiInvertedLetterCountCharacteristicService } from "./submatrix/letter/psi-inverted-letter-count-characteristic.service";
+import { PsiLetterCountCharacteristicService } from "./submatrix/letter/psi-letter-count-characteristic.service";
+import { PsiWestLetterCountCharacteristicService } from "./submatrix/letter/psi-west-letter-count-characteristic.service";
+import { RhoEastLetterCountCharacteristicService } from "./submatrix/letter/rho-east-letter-count-characteristic.service";
+import { RhoInvertedLetterCountCharacteristicService } from "./submatrix/letter/rho-inverted-letter-count-characteristic.service";
+import { RhoLetterCountCharacteristicService } from "./submatrix/letter/rho-letter-count-characteristic.service";
+import { RhoWestLetterCountCharacteristicService } from "./submatrix/letter/rho-west-letter-count-characteristic.service";
 import { SLetterCountCharacteristicService } from "./submatrix/letter/s-letter-count-characteristic.service";
 import { SSidewaysLetterCountCharacteristicService } from "./submatrix/letter/s-sideways-letter-count-characteristic.service";
+import { ShangHanziCountCharacteristicService } from "./submatrix/letter/shang-hanzi-count-characteristic.service";
+import { ShenHanziCountCharacteristicService } from "./submatrix/letter/shen-hanzi-count-characteristic.service";
 import { TEastLetterCountCharacteristicService } from "./submatrix/letter/t-east-letter-count-characteristic.service";
 import { TLetterCountCharacteristicService } from "./submatrix/letter/t-letter-count-characteristic.service";
 import { TUpLetterCountCharacteristicService } from "./submatrix/letter/t-up-letter-count-characteristic.service";
@@ -111,6 +126,7 @@ import { TavInvertedLetterCountCharacteristicService } from "./submatrix/letter/
 import { TavLetterCountCharacteristicService } from "./submatrix/letter/tav-letter-count-characteristic.service";
 import { TavWestLetterCountCharacteristicService } from "./submatrix/letter/tav-west-letter-count-characteristic.service";
 import { TianHanziCountCharacteristicService } from "./submatrix/letter/tian-hanzi-count-characteristic.service";
+import { TuEarthHanziCountCharacteristicService } from "./submatrix/letter/tu-earth-hanzi-count-characteristic.service";
 import { TuEastHanziCountCharacteristicService } from "./submatrix/letter/tu-east-hanzi-count-characteristic.service";
 import { TuHanziCountCharacteristicService } from "./submatrix/letter/tu-hanzi-count-characteristic.service";
 import { TuInvertedHanziCountCharacteristicService } from "./submatrix/letter/tu-inverted-hanzi-count-characteristic.service";
@@ -125,7 +141,12 @@ import { YEastLetterCountCharacteristicService } from "./submatrix/letter/y-east
 import { YLetterCountCharacteristicService } from "./submatrix/letter/y-letter-count-characteristic.service";
 import { YUpLetterCountCharacteristicService } from "./submatrix/letter/y-up-letter-count-characteristic.service";
 import { YWestLetterCountCharacteristicService } from "./submatrix/letter/y-west-letter-count-characteristic.service";
+import { YaHangulCountCharacteristicService } from "./submatrix/letter/ya-hangul-count-characteristic.service";
+import { YeoHangulCountCharacteristicService } from "./submatrix/letter/yeo-hangul-count-characteristic.service";
+import { YoHangulCountCharacteristicService } from "./submatrix/letter/yo-hangul-count-characteristic.service";
+import { YouHanziCountCharacteristicService } from "./submatrix/letter/you-hanzi-count-characteristic.service";
 import { YuEastKatakanaCountCharacteristicService } from "./submatrix/letter/yu-east-katakana-count-characteristic.service";
+import { YuHangulCountCharacteristicService } from "./submatrix/letter/yu-hangul-count-characteristic.service";
 import { YuInvertedKatakanaCountCharacteristicService } from "./submatrix/letter/yu-inverted-katakana-count-characteristic.service";
 import { YuKatakanaCountCharacteristicService } from "./submatrix/letter/yu-katakana-count-characteristic.service";
 import { YuWestKatakanaCountCharacteristicService } from "./submatrix/letter/yu-west-katakana-count-characteristic.service";
@@ -185,6 +206,27 @@ const CHARACTERISTIC_SERVICES: readonly Type<CharacteristicEvaluator>[] = [
   TavEastLetterCountCharacteristicService,
   TavInvertedLetterCountCharacteristicService,
   TavWestLetterCountCharacteristicService,
+  PhiLetterCountCharacteristicService,
+  PsiLetterCountCharacteristicService,
+  PsiEastLetterCountCharacteristicService,
+  PsiInvertedLetterCountCharacteristicService,
+  PsiWestLetterCountCharacteristicService,
+  RhoLetterCountCharacteristicService,
+  RhoEastLetterCountCharacteristicService,
+  RhoInvertedLetterCountCharacteristicService,
+  RhoWestLetterCountCharacteristicService,
+  YaHangulCountCharacteristicService,
+  YeoHangulCountCharacteristicService,
+  YoHangulCountCharacteristicService,
+  YuHangulCountCharacteristicService,
+  TuEarthHanziCountCharacteristicService,
+  GanHanziCountCharacteristicService,
+  ShangHanziCountCharacteristicService,
+  MuHanziCountCharacteristicService,
+  YouHanziCountCharacteristicService,
+  JiaHanziCountCharacteristicService,
+  ShenHanziCountCharacteristicService,
+  JingHanziCountCharacteristicService,
   ZSidewaysLetterCountCharacteristicService,
   YWestLetterCountCharacteristicService,
   YUpLetterCountCharacteristicService,

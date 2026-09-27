@@ -3,6 +3,7 @@ describal
 digeut
 giyeok
 hanzi
+jing
 kieuk
 lexicalized
 mieum
@@ -13,6 +14,8 @@ pieup
 pseudoword
 rieul
 sempientor
+shen
 stratifiability
 tian
 tieut
+zhong
