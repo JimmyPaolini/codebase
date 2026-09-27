@@ -101,9 +101,12 @@ export class Meander implements ColumnCharacteristicRecord {
    * key and holding only nonzero counts, as one JSON object: see
    * {@link GlyphCounts}. Letters live here rather than in a column each
    * because a full orientation set outnumbers the 2,000 columns one SQLite
-   * table holds, and because one JSON column measured faster to write and
-   * to query than a 1:1 table per script. Being keyed rather than declared,
-   * it takes a new or renamed letter with no schema change.
+   * table holds, and because one JSON column measured about three times
+   * faster to write and a quarter the size of a 1:1 table per script, with
+   * a single-letter filter a tie. Being keyed rather than declared, it takes
+   * a new or renamed letter with no schema change. A raw SQL reader filtering
+   * on zero or less than must read `COALESCE(json_extract(glyphs, '$.key'), 0)`,
+   * since a missing letter extracts as NULL.
    */
   @Column({ type: "simple-json" })
   glyphs!: GlyphCounts;

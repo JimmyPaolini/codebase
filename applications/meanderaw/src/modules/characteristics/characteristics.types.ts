@@ -150,7 +150,8 @@ export type ColumnCharacteristicRecord = Readonly<
 /**
  * A meander's letter glyph counts, holding only the letters it contains: a
  * count of zero is left out, so a reader takes a missing letter as zero.
- * This is the whole of a stored row's `glyphs` map.
+ * This is the whole of a stored row's `glyphs` map; raw SQL reads a letter
+ * as `COALESCE(json_extract(glyphs, '$.key'), 0)` for the same reason.
  */
 export type GlyphCounts = Readonly<
   Partial<Record<LetterCharacteristicKey, number>>
