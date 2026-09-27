@@ -9,11 +9,13 @@ import type {
 } from "../../characteristics.types";
 
 /**
- * Counts the straight vertical points of a Code — ink passing through north
- * to south and nowhere else — as a 1×1 submatrix scan.
+ * Counts the points of a Code carrying both vertical arms and nothing else —
+ * ink passing straight through north to south — as a 1×1 submatrix scan,
+ * unlike `northEdgeCount` and `southEdgeCount`, which count one arm whatever else
+ * the point carries.
  */
 @Injectable()
-export class VerticalEdgeCountCharacteristicService implements CharacteristicEvaluator<number> {
+export class DoubleVerticalEdgeCountCharacteristicService implements CharacteristicEvaluator<number> {
   // 🏗 Dependency Injection
 
   constructor(
@@ -25,14 +27,14 @@ export class VerticalEdgeCountCharacteristicService implements CharacteristicEva
 
   // 🔑 Public Fields
 
-  /** Names and explains `verticalEdgeCount` for catalogs and inspectors. */
+  /** Names and explains `doubleVerticalEdgeCount` for catalogs and inspectors. */
   public readonly metadata: CharacteristicMetadata<number> = {
     category: "submatrix",
     description:
       "The number of points whose ink runs straight through north and south, with no east or west arm.",
     formula: String.raw`\left|\{\, p \in M : \text{arms}(p) = \{N, S\} \,\}\right|`,
-    key: "verticalEdgeCount",
-    name: "Vertical Edge Count",
+    key: "doubleVerticalEdgeCount",
+    name: "Double Vertical Edge Count",
     submatrix: { columns: 1, rows: 1 },
     valueType: "number",
   };

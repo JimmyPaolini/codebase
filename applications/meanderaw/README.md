@@ -2004,10 +2004,10 @@ Call stacks traced through `applications/meanderaw`, deepest first. Each frame s
 
 | Measure | Value |
 | --- | --- |
-| Callables | 564 |
-| Files | 226 |
-| Calls traced | 620 |
-| Call stacks | 87 |
+| Callables | 578 |
+| Files | 232 |
+| Calls traced | 717 |
+| Call stacks | 136 |
 | Deepest stack | 16 |
 | Stacks through recursion | 0 |
 | Unfollowable calls | 19 |
@@ -2103,7 +2103,7 @@ What this project is judged against, as declared in its own `callidescope.config
 ```
 
 <details>
-<summary>84 more call stacks</summary>
+<summary>133 more call stacks</summary>
 
 **4. `IsChainCharacteristicService.compute`** — depth ≥ 9 · orphan-root
 
@@ -2374,96 +2374,96 @@ What this project is judged against, as declared in its own `callidescope.config
 **18. `InflectionCountCharacteristicService.compute`** — depth 6 · orphan-root
 
 ```text
-🚀 InflectionCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/path/turn/inflection-count-characteristic.service.ts:47]
+🚀 InflectionCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/path/turn/inflection-count-characteristic.service.ts:49]
    ↳ Counts neighboring turn pairs of opposite hand across every strand.
-  └─> strands(edges: readonly CodeEdge[]): Strand[] [applications/meanderaw/src/modules/characteristics/path/path.utilities.ts:83]
+  └─> PathUtilitiesService.strands(edges: readonly CodeEdge[]): Strand[] [applications/meanderaw/src/modules/characteristics/path/path-utilities.service.ts:205]
      ↳ Cuts one repeat's ink into strands — maximal runs through degree-two points — over the cyclic band `edges` describes.
-    └─> walk(graph: HalfEdgeGraph, start: HalfEdge, visited: Set<number>): Turn[] [applications/meanderaw/src/modules/characteristics/path/path.utilities.ts:173]
+    └─> PathUtilitiesService.walk(graph: HalfEdgeGraph, start: HalfEdge, visited: Set<number>): Turn[] [applications/meanderaw/src/modules/characteristics/path/path-utilities.service.ts:107]
        ↳ Walks one strand from `start` until it ends or returns to an edge already walked, marking every edge it crosses.
-      └─> continuation(graph: HalfEdgeGraph, arrival: HalfEdge): HalfEdge | undefined [applications/meanderaw/src/modules/characteristics/path/path.utilities.ts:112]
+      └─> PathUtilitiesService.continuation(graph: HalfEdgeGraph, arrival: HalfEdge): HalfEdge | undefined [applications/meanderaw/src/modules/characteristics/path/path-utilities.service.ts:39]
          ↳ The half-edge a strand leaves by after arriving along `arrival`, or `undefined` when it arrives at a free end or a…
-        └─> find(…)(halfEdge: HalfEdge): boolean [applications/meanderaw/src/modules/characteristics/path/path.utilities.ts:120]
-          └─> opposite(heading: Heading): Heading [applications/meanderaw/src/modules/characteristics/path/path.utilities.ts:146]
+        └─> PathUtilitiesService.find(…)(halfEdge: HalfEdge): boolean [applications/meanderaw/src/modules/characteristics/path/path-utilities.service.ts:47]
+          └─> PathUtilitiesService.opposite(heading: Heading): Heading [applications/meanderaw/src/modules/characteristics/path/path-utilities.service.ts:78]
              ↳ The heading pointing the other way.
 ```
 
 **19. `MaxMonotonicTurnLengthCharacteristicService.compute`** — depth 6 · orphan-root
 
 ```text
-🚀 MaxMonotonicTurnLengthCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/path/turn/max-monotonic-turn-length-characteristic.service.ts:46]
+🚀 MaxMonotonicTurnLengthCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/path/turn/max-monotonic-turn-length-characteristic.service.ts:48]
    ↳ Finds the longest same-handed run of turns over every strand.
-  └─> strands(edges: readonly CodeEdge[]): Strand[] [applications/meanderaw/src/modules/characteristics/path/path.utilities.ts:83]
+  └─> PathUtilitiesService.strands(edges: readonly CodeEdge[]): Strand[] [applications/meanderaw/src/modules/characteristics/path/path-utilities.service.ts:205]
      ↳ Cuts one repeat's ink into strands — maximal runs through degree-two points — over the cyclic band `edges` describes.
-    └─> walk(graph: HalfEdgeGraph, start: HalfEdge, visited: Set<number>): Turn[] [applications/meanderaw/src/modules/characteristics/path/path.utilities.ts:173]
+    └─> PathUtilitiesService.walk(graph: HalfEdgeGraph, start: HalfEdge, visited: Set<number>): Turn[] [applications/meanderaw/src/modules/characteristics/path/path-utilities.service.ts:107]
        ↳ Walks one strand from `start` until it ends or returns to an edge already walked, marking every edge it crosses.
-      └─> continuation(graph: HalfEdgeGraph, arrival: HalfEdge): HalfEdge | undefined [applications/meanderaw/src/modules/characteristics/path/path.utilities.ts:112]
+      └─> PathUtilitiesService.continuation(graph: HalfEdgeGraph, arrival: HalfEdge): HalfEdge | undefined [applications/meanderaw/src/modules/characteristics/path/path-utilities.service.ts:39]
          ↳ The half-edge a strand leaves by after arriving along `arrival`, or `undefined` when it arrives at a free end or a…
-        └─> find(…)(halfEdge: HalfEdge): boolean [applications/meanderaw/src/modules/characteristics/path/path.utilities.ts:120]
-          └─> opposite(heading: Heading): Heading [applications/meanderaw/src/modules/characteristics/path/path.utilities.ts:146]
+        └─> PathUtilitiesService.find(…)(halfEdge: HalfEdge): boolean [applications/meanderaw/src/modules/characteristics/path/path-utilities.service.ts:47]
+          └─> PathUtilitiesService.opposite(heading: Heading): Heading [applications/meanderaw/src/modules/characteristics/path/path-utilities.service.ts:78]
              ↳ The heading pointing the other way.
 ```
 
 **20. `TightestTurnCountCharacteristicService.compute`** — depth 6 · orphan-root
 
 ```text
-🚀 TightestTurnCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/path/turn/tightest-turn-count-characteristic.service.ts:47]
+🚀 TightestTurnCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/path/turn/tightest-turn-count-characteristic.service.ts:49]
    ↳ Counts neighboring points that both turn the same way across every strand.
-  └─> strands(edges: readonly CodeEdge[]): Strand[] [applications/meanderaw/src/modules/characteristics/path/path.utilities.ts:83]
+  └─> PathUtilitiesService.strands(edges: readonly CodeEdge[]): Strand[] [applications/meanderaw/src/modules/characteristics/path/path-utilities.service.ts:205]
      ↳ Cuts one repeat's ink into strands — maximal runs through degree-two points — over the cyclic band `edges` describes.
-    └─> walk(graph: HalfEdgeGraph, start: HalfEdge, visited: Set<number>): Turn[] [applications/meanderaw/src/modules/characteristics/path/path.utilities.ts:173]
+    └─> PathUtilitiesService.walk(graph: HalfEdgeGraph, start: HalfEdge, visited: Set<number>): Turn[] [applications/meanderaw/src/modules/characteristics/path/path-utilities.service.ts:107]
        ↳ Walks one strand from `start` until it ends or returns to an edge already walked, marking every edge it crosses.
-      └─> continuation(graph: HalfEdgeGraph, arrival: HalfEdge): HalfEdge | undefined [applications/meanderaw/src/modules/characteristics/path/path.utilities.ts:112]
+      └─> PathUtilitiesService.continuation(graph: HalfEdgeGraph, arrival: HalfEdge): HalfEdge | undefined [applications/meanderaw/src/modules/characteristics/path/path-utilities.service.ts:39]
          ↳ The half-edge a strand leaves by after arriving along `arrival`, or `undefined` when it arrives at a free end or a…
-        └─> find(…)(halfEdge: HalfEdge): boolean [applications/meanderaw/src/modules/characteristics/path/path.utilities.ts:120]
-          └─> opposite(heading: Heading): Heading [applications/meanderaw/src/modules/characteristics/path/path.utilities.ts:146]
+        └─> PathUtilitiesService.find(…)(halfEdge: HalfEdge): boolean [applications/meanderaw/src/modules/characteristics/path/path-utilities.service.ts:47]
+          └─> PathUtilitiesService.opposite(heading: Heading): Heading [applications/meanderaw/src/modules/characteristics/path/path-utilities.service.ts:78]
              ↳ The heading pointing the other way.
 ```
 
 **21. `TotalTurnCountCharacteristicService.compute`** — depth 6 · orphan-root
 
 ```text
-🚀 TotalTurnCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/path/turn/total-turn-count-characteristic.service.ts:46]
+🚀 TotalTurnCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/path/turn/total-turn-count-characteristic.service.ts:48]
    ↳ Counts the nonzero turns across every strand of the repeat.
-  └─> strands(edges: readonly CodeEdge[]): Strand[] [applications/meanderaw/src/modules/characteristics/path/path.utilities.ts:83]
+  └─> PathUtilitiesService.strands(edges: readonly CodeEdge[]): Strand[] [applications/meanderaw/src/modules/characteristics/path/path-utilities.service.ts:205]
      ↳ Cuts one repeat's ink into strands — maximal runs through degree-two points — over the cyclic band `edges` describes.
-    └─> walk(graph: HalfEdgeGraph, start: HalfEdge, visited: Set<number>): Turn[] [applications/meanderaw/src/modules/characteristics/path/path.utilities.ts:173]
+    └─> PathUtilitiesService.walk(graph: HalfEdgeGraph, start: HalfEdge, visited: Set<number>): Turn[] [applications/meanderaw/src/modules/characteristics/path/path-utilities.service.ts:107]
        ↳ Walks one strand from `start` until it ends or returns to an edge already walked, marking every edge it crosses.
-      └─> continuation(graph: HalfEdgeGraph, arrival: HalfEdge): HalfEdge | undefined [applications/meanderaw/src/modules/characteristics/path/path.utilities.ts:112]
+      └─> PathUtilitiesService.continuation(graph: HalfEdgeGraph, arrival: HalfEdge): HalfEdge | undefined [applications/meanderaw/src/modules/characteristics/path/path-utilities.service.ts:39]
          ↳ The half-edge a strand leaves by after arriving along `arrival`, or `undefined` when it arrives at a free end or a…
-        └─> find(…)(halfEdge: HalfEdge): boolean [applications/meanderaw/src/modules/characteristics/path/path.utilities.ts:120]
-          └─> opposite(heading: Heading): Heading [applications/meanderaw/src/modules/characteristics/path/path.utilities.ts:146]
+        └─> PathUtilitiesService.find(…)(halfEdge: HalfEdge): boolean [applications/meanderaw/src/modules/characteristics/path/path-utilities.service.ts:47]
+          └─> PathUtilitiesService.opposite(heading: Heading): Heading [applications/meanderaw/src/modules/characteristics/path/path-utilities.service.ts:78]
              ↳ The heading pointing the other way.
 ```
 
 **22. `HorizontalRectangleCountCharacteristicService.compute`** — depth ≥ 6 · orphan-root
 
 ```text
-🚀 HorizontalRectangleCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/rectangle/horizontal-rectangle-count-characteristic.service.ts:44]
+🚀 HorizontalRectangleCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/rectangle/horizontal-rectangle-count-characteristic.service.ts:48]
    ↳ Counts the isolated rings whose width and height compare as `w > h`.
-  └─> countIsolatedRectangles(matrix: Matrix, isCounted: (width: number, height: number) => boolean): number [applications/meanderaw/src/modules/characteristics/submatrix/rectangle/rectangle.utilities.ts:23]
+  └─> RectangleUtilitiesService.countIsolatedRectangles(matrix: Matrix, isCounted: (width: number, height: number) => boolean): number [applications/meanderaw/src/modules/characteristics/submatrix/rectangle/rectangle-utilities.service.ts:158]
      ↳ Counts the isolated rectangles of a matrix whose size `isCounted` accepts.
-    └─> isIsolatedRectangleAt(…): boolean [applications/meanderaw/src/modules/characteristics/submatrix/rectangle/rectangle.utilities.ts:46]
+    └─> RectangleUtilitiesService.isIsolatedRectangleAt(…): boolean [applications/meanderaw/src/modules/characteristics/submatrix/rectangle/rectangle-utilities.service.ts:32]
        ↳ Whether an isolated rectangle has its north-west corner at `origin` and a size `isCounted` accepts: the top and left…
-      └─> ringCloses(…): boolean [applications/meanderaw/src/modules/characteristics/submatrix/rectangle/rectangle.utilities.ts:81]
+      └─> RectangleUtilitiesService.ringCloses(…): boolean [applications/meanderaw/src/modules/characteristics/submatrix/rectangle/rectangle-utilities.service.ts:73]
          ↳ Whether the bottom and right sides of a ring whose top and left sides already reach their corners are exactly straights…
-        └─> from(…)(_unused: unknown, offset: number): number [applications/meanderaw/src/modules/characteristics/submatrix/rectangle/rectangle.utilities.ts:88]
-          └─> pointDigitAt(matrix: Matrix, row: number, column: number): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:104]
+        └─> RectangleUtilitiesService.from(…)(_unused: unknown, offset: number): number [applications/meanderaw/src/modules/characteristics/submatrix/rectangle/rectangle-utilities.service.ts:80]
+          └─> SubmatrixUtilitiesService.pointDigitAt(matrix: Matrix, row: number, column: number): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:177]
              ↳ The hexadecimal Code digit of the point at `(row, column)` — north 8, south 4, east 2, west 1 — with columns wrapping,…
 ```
 
 **23. `VerticalRectangleCountCharacteristicService.compute`** — depth ≥ 6 · orphan-root
 
 ```text
-🚀 VerticalRectangleCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/rectangle/vertical-rectangle-count-characteristic.service.ts:44]
+🚀 VerticalRectangleCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/rectangle/vertical-rectangle-count-characteristic.service.ts:48]
    ↳ Counts the isolated rings whose width and height compare as `w < h`.
-  └─> countIsolatedRectangles(matrix: Matrix, isCounted: (width: number, height: number) => boolean): number [applications/meanderaw/src/modules/characteristics/submatrix/rectangle/rectangle.utilities.ts:23]
+  └─> RectangleUtilitiesService.countIsolatedRectangles(matrix: Matrix, isCounted: (width: number, height: number) => boolean): number [applications/meanderaw/src/modules/characteristics/submatrix/rectangle/rectangle-utilities.service.ts:158]
      ↳ Counts the isolated rectangles of a matrix whose size `isCounted` accepts.
-    └─> isIsolatedRectangleAt(…): boolean [applications/meanderaw/src/modules/characteristics/submatrix/rectangle/rectangle.utilities.ts:46]
+    └─> RectangleUtilitiesService.isIsolatedRectangleAt(…): boolean [applications/meanderaw/src/modules/characteristics/submatrix/rectangle/rectangle-utilities.service.ts:32]
        ↳ Whether an isolated rectangle has its north-west corner at `origin` and a size `isCounted` accepts: the top and left…
-      └─> ringCloses(…): boolean [applications/meanderaw/src/modules/characteristics/submatrix/rectangle/rectangle.utilities.ts:81]
+      └─> RectangleUtilitiesService.ringCloses(…): boolean [applications/meanderaw/src/modules/characteristics/submatrix/rectangle/rectangle-utilities.service.ts:73]
          ↳ Whether the bottom and right sides of a ring whose top and left sides already reach their corners are exactly straights…
-        └─> from(…)(_unused: unknown, offset: number): number [applications/meanderaw/src/modules/characteristics/submatrix/rectangle/rectangle.utilities.ts:88]
-          └─> pointDigitAt(matrix: Matrix, row: number, column: number): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:104]
+        └─> RectangleUtilitiesService.from(…)(_unused: unknown, offset: number): number [applications/meanderaw/src/modules/characteristics/submatrix/rectangle/rectangle-utilities.service.ts:80]
+          └─> SubmatrixUtilitiesService.pointDigitAt(matrix: Matrix, row: number, column: number): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:177]
              ↳ The hexadecimal Code digit of the point at `(row, column)` — north 8, south 4, east 2, west 1 — with columns wrapping,…
 ```
 
@@ -2483,599 +2483,599 @@ What this project is judged against, as declared in its own `callidescope.config
 **25. `AEastLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
-🚀 AEastLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/a-east-letter-count-characteristic.service.ts:50]
+🚀 AEastLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/a-east-letter-count-characteristic.service.ts:56]
    ↳ Counts the pieces of ink drawn exactly as the template.
-  └─> countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:21]
+  └─> SubmatrixUtilitiesService.countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:59]
      ↳ Counts the minimal isolated glyphs of a matrix drawn exactly as `template`.
-    └─> glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:125]
-       ↳ The glyph points of a {@link countIsolatedGlyphs} template, with each blank `.` left out.
-      └─> flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:126]
-        └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
+    └─> SubmatrixUtilitiesService.glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:25]
+       ↳ The glyph points of a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template, with each blank `.` left out.
+      └─> SubmatrixUtilitiesService.flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:26]
+        └─> SubmatrixUtilitiesService.map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:32]
 ```
 
 **26. `AInvertedLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
-🚀 AInvertedLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/a-inverted-letter-count-characteristic.service.ts:51]
+🚀 AInvertedLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/a-inverted-letter-count-characteristic.service.ts:57]
    ↳ Counts the pieces of ink drawn exactly as the template.
-  └─> countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:21]
+  └─> SubmatrixUtilitiesService.countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:59]
      ↳ Counts the minimal isolated glyphs of a matrix drawn exactly as `template`.
-    └─> glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:125]
-       ↳ The glyph points of a {@link countIsolatedGlyphs} template, with each blank `.` left out.
-      └─> flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:126]
-        └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
+    └─> SubmatrixUtilitiesService.glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:25]
+       ↳ The glyph points of a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template, with each blank `.` left out.
+      └─> SubmatrixUtilitiesService.flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:26]
+        └─> SubmatrixUtilitiesService.map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:32]
 ```
 
 **27. `ALetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
-🚀 ALetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/a-letter-count-characteristic.service.ts:51]
+🚀 ALetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/a-letter-count-characteristic.service.ts:57]
    ↳ Counts the pieces of ink drawn exactly as the template.
-  └─> countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:21]
+  └─> SubmatrixUtilitiesService.countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:59]
      ↳ Counts the minimal isolated glyphs of a matrix drawn exactly as `template`.
-    └─> glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:125]
-       ↳ The glyph points of a {@link countIsolatedGlyphs} template, with each blank `.` left out.
-      └─> flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:126]
-        └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
+    └─> SubmatrixUtilitiesService.glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:25]
+       ↳ The glyph points of a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template, with each blank `.` left out.
+      └─> SubmatrixUtilitiesService.flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:26]
+        └─> SubmatrixUtilitiesService.map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:32]
 ```
 
 **28. `AWestLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
-🚀 AWestLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/a-west-letter-count-characteristic.service.ts:50]
+🚀 AWestLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/a-west-letter-count-characteristic.service.ts:56]
    ↳ Counts the pieces of ink drawn exactly as the template.
-  └─> countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:21]
+  └─> SubmatrixUtilitiesService.countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:59]
      ↳ Counts the minimal isolated glyphs of a matrix drawn exactly as `template`.
-    └─> glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:125]
-       ↳ The glyph points of a {@link countIsolatedGlyphs} template, with each blank `.` left out.
-      └─> flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:126]
-        └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
+    └─> SubmatrixUtilitiesService.glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:25]
+       ↳ The glyph points of a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template, with each blank `.` left out.
+      └─> SubmatrixUtilitiesService.flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:26]
+        └─> SubmatrixUtilitiesService.map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:32]
 ```
 
 **29. `BLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
-🚀 BLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/b-letter-count-characteristic.service.ts:51]
+🚀 BLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/b-letter-count-characteristic.service.ts:57]
    ↳ Counts the pieces of ink drawn exactly as the template.
-  └─> countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:21]
+  └─> SubmatrixUtilitiesService.countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:59]
      ↳ Counts the minimal isolated glyphs of a matrix drawn exactly as `template`.
-    └─> glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:125]
-       ↳ The glyph points of a {@link countIsolatedGlyphs} template, with each blank `.` left out.
-      └─> flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:126]
-        └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
+    └─> SubmatrixUtilitiesService.glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:25]
+       ↳ The glyph points of a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template, with each blank `.` left out.
+      └─> SubmatrixUtilitiesService.flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:26]
+        └─> SubmatrixUtilitiesService.map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:32]
 ```
 
 **30. `BSidewaysLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
-🚀 BSidewaysLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/b-sideways-letter-count-characteristic.service.ts:50]
+🚀 BSidewaysLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/b-sideways-letter-count-characteristic.service.ts:56]
    ↳ Counts the pieces of ink drawn exactly as the template.
-  └─> countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:21]
+  └─> SubmatrixUtilitiesService.countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:59]
      ↳ Counts the minimal isolated glyphs of a matrix drawn exactly as `template`.
-    └─> glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:125]
-       ↳ The glyph points of a {@link countIsolatedGlyphs} template, with each blank `.` left out.
-      └─> flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:126]
-        └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
+    └─> SubmatrixUtilitiesService.glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:25]
+       ↳ The glyph points of a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template, with each blank `.` left out.
+      └─> SubmatrixUtilitiesService.flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:26]
+        └─> SubmatrixUtilitiesService.map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:32]
 ```
 
 **31. `CLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
-🚀 CLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/c-letter-count-characteristic.service.ts:50]
+🚀 CLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/c-letter-count-characteristic.service.ts:56]
    ↳ Counts the pieces of ink drawn exactly as the template.
-  └─> countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:21]
+  └─> SubmatrixUtilitiesService.countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:59]
      ↳ Counts the minimal isolated glyphs of a matrix drawn exactly as `template`.
-    └─> glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:125]
-       ↳ The glyph points of a {@link countIsolatedGlyphs} template, with each blank `.` left out.
-      └─> flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:126]
-        └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
+    └─> SubmatrixUtilitiesService.glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:25]
+       ↳ The glyph points of a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template, with each blank `.` left out.
+      └─> SubmatrixUtilitiesService.flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:26]
+        └─> SubmatrixUtilitiesService.map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:32]
 ```
 
 **32. `CWestLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
-🚀 CWestLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/c-west-letter-count-characteristic.service.ts:50]
+🚀 CWestLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/c-west-letter-count-characteristic.service.ts:56]
    ↳ Counts the pieces of ink drawn exactly as the template.
-  └─> countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:21]
+  └─> SubmatrixUtilitiesService.countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:59]
      ↳ Counts the minimal isolated glyphs of a matrix drawn exactly as `template`.
-    └─> glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:125]
-       ↳ The glyph points of a {@link countIsolatedGlyphs} template, with each blank `.` left out.
-      └─> flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:126]
-        └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
+    └─> SubmatrixUtilitiesService.glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:25]
+       ↳ The glyph points of a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template, with each blank `.` left out.
+      └─> SubmatrixUtilitiesService.flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:26]
+        └─> SubmatrixUtilitiesService.map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:32]
 ```
 
 **33. `EDownLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
-🚀 EDownLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/e-down-letter-count-characteristic.service.ts:50]
+🚀 EDownLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/e-down-letter-count-characteristic.service.ts:56]
    ↳ Counts the pieces of ink drawn exactly as the template.
-  └─> countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:21]
+  └─> SubmatrixUtilitiesService.countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:59]
      ↳ Counts the minimal isolated glyphs of a matrix drawn exactly as `template`.
-    └─> glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:125]
-       ↳ The glyph points of a {@link countIsolatedGlyphs} template, with each blank `.` left out.
-      └─> flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:126]
-        └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
+    └─> SubmatrixUtilitiesService.glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:25]
+       ↳ The glyph points of a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template, with each blank `.` left out.
+      └─> SubmatrixUtilitiesService.flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:26]
+        └─> SubmatrixUtilitiesService.map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:32]
 ```
 
 **34. `ELetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
-🚀 ELetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/e-letter-count-characteristic.service.ts:51]
+🚀 ELetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/e-letter-count-characteristic.service.ts:57]
    ↳ Counts the pieces of ink drawn exactly as the template.
-  └─> countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:21]
+  └─> SubmatrixUtilitiesService.countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:59]
      ↳ Counts the minimal isolated glyphs of a matrix drawn exactly as `template`.
-    └─> glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:125]
-       ↳ The glyph points of a {@link countIsolatedGlyphs} template, with each blank `.` left out.
-      └─> flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:126]
-        └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
+    └─> SubmatrixUtilitiesService.glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:25]
+       ↳ The glyph points of a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template, with each blank `.` left out.
+      └─> SubmatrixUtilitiesService.flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:26]
+        └─> SubmatrixUtilitiesService.map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:32]
 ```
 
 **35. `EUpLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
-🚀 EUpLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/e-up-letter-count-characteristic.service.ts:50]
+🚀 EUpLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/e-up-letter-count-characteristic.service.ts:56]
    ↳ Counts the pieces of ink drawn exactly as the template.
-  └─> countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:21]
+  └─> SubmatrixUtilitiesService.countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:59]
      ↳ Counts the minimal isolated glyphs of a matrix drawn exactly as `template`.
-    └─> glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:125]
-       ↳ The glyph points of a {@link countIsolatedGlyphs} template, with each blank `.` left out.
-      └─> flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:126]
-        └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
+    └─> SubmatrixUtilitiesService.glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:25]
+       ↳ The glyph points of a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template, with each blank `.` left out.
+      └─> SubmatrixUtilitiesService.flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:26]
+        └─> SubmatrixUtilitiesService.map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:32]
 ```
 
 **36. `EWestLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
-🚀 EWestLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/e-west-letter-count-characteristic.service.ts:51]
+🚀 EWestLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/e-west-letter-count-characteristic.service.ts:57]
    ↳ Counts the pieces of ink drawn exactly as the template.
-  └─> countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:21]
+  └─> SubmatrixUtilitiesService.countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:59]
      ↳ Counts the minimal isolated glyphs of a matrix drawn exactly as `template`.
-    └─> glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:125]
-       ↳ The glyph points of a {@link countIsolatedGlyphs} template, with each blank `.` left out.
-      └─> flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:126]
-        └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
+    └─> SubmatrixUtilitiesService.glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:25]
+       ↳ The glyph points of a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template, with each blank `.` left out.
+      └─> SubmatrixUtilitiesService.flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:26]
+        └─> SubmatrixUtilitiesService.map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:32]
 ```
 
 **37. `FDownLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
-🚀 FDownLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/f-down-letter-count-characteristic.service.ts:50]
+🚀 FDownLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/f-down-letter-count-characteristic.service.ts:56]
    ↳ Counts the pieces of ink drawn exactly as the template.
-  └─> countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:21]
+  └─> SubmatrixUtilitiesService.countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:59]
      ↳ Counts the minimal isolated glyphs of a matrix drawn exactly as `template`.
-    └─> glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:125]
-       ↳ The glyph points of a {@link countIsolatedGlyphs} template, with each blank `.` left out.
-      └─> flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:126]
-        └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
+    └─> SubmatrixUtilitiesService.glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:25]
+       ↳ The glyph points of a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template, with each blank `.` left out.
+      └─> SubmatrixUtilitiesService.flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:26]
+        └─> SubmatrixUtilitiesService.map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:32]
 ```
 
 **38. `FLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
-🚀 FLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/f-letter-count-characteristic.service.ts:51]
+🚀 FLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/f-letter-count-characteristic.service.ts:57]
    ↳ Counts the pieces of ink drawn exactly as the template.
-  └─> countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:21]
+  └─> SubmatrixUtilitiesService.countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:59]
      ↳ Counts the minimal isolated glyphs of a matrix drawn exactly as `template`.
-    └─> glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:125]
-       ↳ The glyph points of a {@link countIsolatedGlyphs} template, with each blank `.` left out.
-      └─> flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:126]
-        └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
+    └─> SubmatrixUtilitiesService.glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:25]
+       ↳ The glyph points of a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template, with each blank `.` left out.
+      └─> SubmatrixUtilitiesService.flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:26]
+        └─> SubmatrixUtilitiesService.map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:32]
 ```
 
 **39. `FUpLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
-🚀 FUpLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/f-up-letter-count-characteristic.service.ts:50]
+🚀 FUpLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/f-up-letter-count-characteristic.service.ts:56]
    ↳ Counts the pieces of ink drawn exactly as the template.
-  └─> countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:21]
+  └─> SubmatrixUtilitiesService.countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:59]
      ↳ Counts the minimal isolated glyphs of a matrix drawn exactly as `template`.
-    └─> glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:125]
-       ↳ The glyph points of a {@link countIsolatedGlyphs} template, with each blank `.` left out.
-      └─> flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:126]
-        └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
+    └─> SubmatrixUtilitiesService.glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:25]
+       ↳ The glyph points of a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template, with each blank `.` left out.
+      └─> SubmatrixUtilitiesService.flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:26]
+        └─> SubmatrixUtilitiesService.map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:32]
 ```
 
 **40. `FWestLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
-🚀 FWestLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/f-west-letter-count-characteristic.service.ts:51]
+🚀 FWestLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/f-west-letter-count-characteristic.service.ts:57]
    ↳ Counts the pieces of ink drawn exactly as the template.
-  └─> countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:21]
+  └─> SubmatrixUtilitiesService.countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:59]
      ↳ Counts the minimal isolated glyphs of a matrix drawn exactly as `template`.
-    └─> glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:125]
-       ↳ The glyph points of a {@link countIsolatedGlyphs} template, with each blank `.` left out.
-      └─> flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:126]
-        └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
+    └─> SubmatrixUtilitiesService.glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:25]
+       ↳ The glyph points of a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template, with each blank `.` left out.
+      └─> SubmatrixUtilitiesService.flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:26]
+        └─> SubmatrixUtilitiesService.map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:32]
 ```
 
 **41. `HLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
-🚀 HLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/h-letter-count-characteristic.service.ts:51]
+🚀 HLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/h-letter-count-characteristic.service.ts:57]
    ↳ Counts the pieces of ink drawn exactly as the template.
-  └─> countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:21]
+  └─> SubmatrixUtilitiesService.countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:59]
      ↳ Counts the minimal isolated glyphs of a matrix drawn exactly as `template`.
-    └─> glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:125]
-       ↳ The glyph points of a {@link countIsolatedGlyphs} template, with each blank `.` left out.
-      └─> flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:126]
-        └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
+    └─> SubmatrixUtilitiesService.glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:25]
+       ↳ The glyph points of a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template, with each blank `.` left out.
+      └─> SubmatrixUtilitiesService.flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:26]
+        └─> SubmatrixUtilitiesService.map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:32]
 ```
 
 **42. `HSidewaysLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
-🚀 HSidewaysLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/h-sideways-letter-count-characteristic.service.ts:50]
+🚀 HSidewaysLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/h-sideways-letter-count-characteristic.service.ts:56]
    ↳ Counts the pieces of ink drawn exactly as the template.
-  └─> countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:21]
+  └─> SubmatrixUtilitiesService.countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:59]
      ↳ Counts the minimal isolated glyphs of a matrix drawn exactly as `template`.
-    └─> glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:125]
-       ↳ The glyph points of a {@link countIsolatedGlyphs} template, with each blank `.` left out.
-      └─> flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:126]
-        └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
+    └─> SubmatrixUtilitiesService.glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:25]
+       ↳ The glyph points of a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template, with each blank `.` left out.
+      └─> SubmatrixUtilitiesService.flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:26]
+        └─> SubmatrixUtilitiesService.map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:32]
 ```
 
 **43. `ILetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
-🚀 ILetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/i-letter-count-characteristic.service.ts:50]
+🚀 ILetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/i-letter-count-characteristic.service.ts:56]
    ↳ Counts the pieces of ink drawn exactly as the template.
-  └─> countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:21]
+  └─> SubmatrixUtilitiesService.countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:59]
      ↳ Counts the minimal isolated glyphs of a matrix drawn exactly as `template`.
-    └─> glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:125]
-       ↳ The glyph points of a {@link countIsolatedGlyphs} template, with each blank `.` left out.
-      └─> flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:126]
-        └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
+    └─> SubmatrixUtilitiesService.glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:25]
+       ↳ The glyph points of a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template, with each blank `.` left out.
+      └─> SubmatrixUtilitiesService.flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:26]
+        └─> SubmatrixUtilitiesService.map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:32]
 ```
 
 **44. `ISidewaysLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
-🚀 ISidewaysLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/i-sideways-letter-count-characteristic.service.ts:49]
+🚀 ISidewaysLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/i-sideways-letter-count-characteristic.service.ts:55]
    ↳ Counts the pieces of ink drawn exactly as the template.
-  └─> countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:21]
+  └─> SubmatrixUtilitiesService.countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:59]
      ↳ Counts the minimal isolated glyphs of a matrix drawn exactly as `template`.
-    └─> glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:125]
-       ↳ The glyph points of a {@link countIsolatedGlyphs} template, with each blank `.` left out.
-      └─> flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:126]
-        └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
+    └─> SubmatrixUtilitiesService.glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:25]
+       ↳ The glyph points of a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template, with each blank `.` left out.
+      └─> SubmatrixUtilitiesService.flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:26]
+        └─> SubmatrixUtilitiesService.map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:32]
 ```
 
 **45. `LDownLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
-🚀 LDownLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/l-down-letter-count-characteristic.service.ts:50]
+🚀 LDownLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/l-down-letter-count-characteristic.service.ts:56]
    ↳ Counts the pieces of ink drawn exactly as the template.
-  └─> countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:21]
+  └─> SubmatrixUtilitiesService.countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:59]
      ↳ Counts the minimal isolated glyphs of a matrix drawn exactly as `template`.
-    └─> glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:125]
-       ↳ The glyph points of a {@link countIsolatedGlyphs} template, with each blank `.` left out.
-      └─> flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:126]
-        └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
+    └─> SubmatrixUtilitiesService.glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:25]
+       ↳ The glyph points of a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template, with each blank `.` left out.
+      └─> SubmatrixUtilitiesService.flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:26]
+        └─> SubmatrixUtilitiesService.map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:32]
 ```
 
 **46. `LLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
-🚀 LLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/l-letter-count-characteristic.service.ts:50]
+🚀 LLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/l-letter-count-characteristic.service.ts:56]
    ↳ Counts the pieces of ink drawn exactly as the template.
-  └─> countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:21]
+  └─> SubmatrixUtilitiesService.countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:59]
      ↳ Counts the minimal isolated glyphs of a matrix drawn exactly as `template`.
-    └─> glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:125]
-       ↳ The glyph points of a {@link countIsolatedGlyphs} template, with each blank `.` left out.
-      └─> flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:126]
-        └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
+    └─> SubmatrixUtilitiesService.glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:25]
+       ↳ The glyph points of a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template, with each blank `.` left out.
+      └─> SubmatrixUtilitiesService.flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:26]
+        └─> SubmatrixUtilitiesService.map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:32]
 ```
 
 **47. `LUpLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
-🚀 LUpLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/l-up-letter-count-characteristic.service.ts:50]
+🚀 LUpLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/l-up-letter-count-characteristic.service.ts:56]
    ↳ Counts the pieces of ink drawn exactly as the template.
-  └─> countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:21]
+  └─> SubmatrixUtilitiesService.countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:59]
      ↳ Counts the minimal isolated glyphs of a matrix drawn exactly as `template`.
-    └─> glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:125]
-       ↳ The glyph points of a {@link countIsolatedGlyphs} template, with each blank `.` left out.
-      └─> flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:126]
-        └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
+    └─> SubmatrixUtilitiesService.glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:25]
+       ↳ The glyph points of a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template, with each blank `.` left out.
+      └─> SubmatrixUtilitiesService.flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:26]
+        └─> SubmatrixUtilitiesService.map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:32]
 ```
 
 **48. `LWestLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
-🚀 LWestLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/l-west-letter-count-characteristic.service.ts:50]
+🚀 LWestLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/l-west-letter-count-characteristic.service.ts:56]
    ↳ Counts the pieces of ink drawn exactly as the template.
-  └─> countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:21]
+  └─> SubmatrixUtilitiesService.countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:59]
      ↳ Counts the minimal isolated glyphs of a matrix drawn exactly as `template`.
-    └─> glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:125]
-       ↳ The glyph points of a {@link countIsolatedGlyphs} template, with each blank `.` left out.
-      └─> flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:126]
-        └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
+    └─> SubmatrixUtilitiesService.glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:25]
+       ↳ The glyph points of a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template, with each blank `.` left out.
+      └─> SubmatrixUtilitiesService.flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:26]
+        └─> SubmatrixUtilitiesService.map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:32]
 ```
 
 **49. `MEastLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
-🚀 MEastLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/m-east-letter-count-characteristic.service.ts:51]
+🚀 MEastLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/m-east-letter-count-characteristic.service.ts:57]
    ↳ Counts the pieces of ink drawn exactly as the template.
-  └─> countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:21]
+  └─> SubmatrixUtilitiesService.countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:59]
      ↳ Counts the minimal isolated glyphs of a matrix drawn exactly as `template`.
-    └─> glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:125]
-       ↳ The glyph points of a {@link countIsolatedGlyphs} template, with each blank `.` left out.
-      └─> flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:126]
-        └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
+    └─> SubmatrixUtilitiesService.glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:25]
+       ↳ The glyph points of a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template, with each blank `.` left out.
+      └─> SubmatrixUtilitiesService.flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:26]
+        └─> SubmatrixUtilitiesService.map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:32]
 ```
 
 **50. `MLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
-🚀 MLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/m-letter-count-characteristic.service.ts:51]
+🚀 MLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/m-letter-count-characteristic.service.ts:57]
    ↳ Counts the pieces of ink drawn exactly as the template.
-  └─> countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:21]
+  └─> SubmatrixUtilitiesService.countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:59]
      ↳ Counts the minimal isolated glyphs of a matrix drawn exactly as `template`.
-    └─> glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:125]
-       ↳ The glyph points of a {@link countIsolatedGlyphs} template, with each blank `.` left out.
-      └─> flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:126]
-        └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
+    └─> SubmatrixUtilitiesService.glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:25]
+       ↳ The glyph points of a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template, with each blank `.` left out.
+      └─> SubmatrixUtilitiesService.flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:26]
+        └─> SubmatrixUtilitiesService.map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:32]
 ```
 
 **51. `MWestLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
-🚀 MWestLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/m-west-letter-count-characteristic.service.ts:51]
+🚀 MWestLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/m-west-letter-count-characteristic.service.ts:57]
    ↳ Counts the pieces of ink drawn exactly as the template.
-  └─> countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:21]
+  └─> SubmatrixUtilitiesService.countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:59]
      ↳ Counts the minimal isolated glyphs of a matrix drawn exactly as `template`.
-    └─> glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:125]
-       ↳ The glyph points of a {@link countIsolatedGlyphs} template, with each blank `.` left out.
-      └─> flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:126]
-        └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
+    └─> SubmatrixUtilitiesService.glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:25]
+       ↳ The glyph points of a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template, with each blank `.` left out.
+      └─> SubmatrixUtilitiesService.flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:26]
+        └─> SubmatrixUtilitiesService.map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:32]
 ```
 
 **52. `NLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
-🚀 NLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/n-letter-count-characteristic.service.ts:51]
+🚀 NLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/n-letter-count-characteristic.service.ts:57]
    ↳ Counts the pieces of ink drawn exactly as the template.
-  └─> countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:21]
+  └─> SubmatrixUtilitiesService.countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:59]
      ↳ Counts the minimal isolated glyphs of a matrix drawn exactly as `template`.
-    └─> glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:125]
-       ↳ The glyph points of a {@link countIsolatedGlyphs} template, with each blank `.` left out.
-      └─> flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:126]
-        └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
+    └─> SubmatrixUtilitiesService.glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:25]
+       ↳ The glyph points of a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template, with each blank `.` left out.
+      └─> SubmatrixUtilitiesService.flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:26]
+        └─> SubmatrixUtilitiesService.map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:32]
 ```
 
 **53. `NSidewaysLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
-🚀 NSidewaysLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/n-sideways-letter-count-characteristic.service.ts:51]
+🚀 NSidewaysLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/n-sideways-letter-count-characteristic.service.ts:57]
    ↳ Counts the pieces of ink drawn exactly as the template.
-  └─> countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:21]
+  └─> SubmatrixUtilitiesService.countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:59]
      ↳ Counts the minimal isolated glyphs of a matrix drawn exactly as `template`.
-    └─> glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:125]
-       ↳ The glyph points of a {@link countIsolatedGlyphs} template, with each blank `.` left out.
-      └─> flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:126]
-        └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
+    └─> SubmatrixUtilitiesService.glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:25]
+       ↳ The glyph points of a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template, with each blank `.` left out.
+      └─> SubmatrixUtilitiesService.flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:26]
+        └─> SubmatrixUtilitiesService.map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:32]
 ```
 
 **54. `OLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
-🚀 OLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/o-letter-count-characteristic.service.ts:49]
+🚀 OLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/o-letter-count-characteristic.service.ts:55]
    ↳ Counts the pieces of ink drawn exactly as the template.
-  └─> countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:21]
+  └─> SubmatrixUtilitiesService.countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:59]
      ↳ Counts the minimal isolated glyphs of a matrix drawn exactly as `template`.
-    └─> glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:125]
-       ↳ The glyph points of a {@link countIsolatedGlyphs} template, with each blank `.` left out.
-      └─> flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:126]
-        └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
+    └─> SubmatrixUtilitiesService.glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:25]
+       ↳ The glyph points of a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template, with each blank `.` left out.
+      └─> SubmatrixUtilitiesService.flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:26]
+        └─> SubmatrixUtilitiesService.map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:32]
 ```
 
 **55. `SLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
-🚀 SLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/s-letter-count-characteristic.service.ts:51]
+🚀 SLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/s-letter-count-characteristic.service.ts:57]
    ↳ Counts the pieces of ink drawn exactly as the template.
-  └─> countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:21]
+  └─> SubmatrixUtilitiesService.countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:59]
      ↳ Counts the minimal isolated glyphs of a matrix drawn exactly as `template`.
-    └─> glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:125]
-       ↳ The glyph points of a {@link countIsolatedGlyphs} template, with each blank `.` left out.
-      └─> flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:126]
-        └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
+    └─> SubmatrixUtilitiesService.glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:25]
+       ↳ The glyph points of a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template, with each blank `.` left out.
+      └─> SubmatrixUtilitiesService.flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:26]
+        └─> SubmatrixUtilitiesService.map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:32]
 ```
 
 **56. `SSidewaysLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
-🚀 SSidewaysLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/s-sideways-letter-count-characteristic.service.ts:50]
+🚀 SSidewaysLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/s-sideways-letter-count-characteristic.service.ts:56]
    ↳ Counts the pieces of ink drawn exactly as the template.
-  └─> countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:21]
+  └─> SubmatrixUtilitiesService.countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:59]
      ↳ Counts the minimal isolated glyphs of a matrix drawn exactly as `template`.
-    └─> glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:125]
-       ↳ The glyph points of a {@link countIsolatedGlyphs} template, with each blank `.` left out.
-      └─> flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:126]
-        └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
+    └─> SubmatrixUtilitiesService.glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:25]
+       ↳ The glyph points of a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template, with each blank `.` left out.
+      └─> SubmatrixUtilitiesService.flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:26]
+        └─> SubmatrixUtilitiesService.map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:32]
 ```
 
 **57. `TEastLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
-🚀 TEastLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/t-east-letter-count-characteristic.service.ts:51]
+🚀 TEastLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/t-east-letter-count-characteristic.service.ts:57]
    ↳ Counts the pieces of ink drawn exactly as the template.
-  └─> countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:21]
+  └─> SubmatrixUtilitiesService.countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:59]
      ↳ Counts the minimal isolated glyphs of a matrix drawn exactly as `template`.
-    └─> glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:125]
-       ↳ The glyph points of a {@link countIsolatedGlyphs} template, with each blank `.` left out.
-      └─> flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:126]
-        └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
+    └─> SubmatrixUtilitiesService.glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:25]
+       ↳ The glyph points of a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template, with each blank `.` left out.
+      └─> SubmatrixUtilitiesService.flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:26]
+        └─> SubmatrixUtilitiesService.map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:32]
 ```
 
 **58. `TLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
-🚀 TLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/t-letter-count-characteristic.service.ts:50]
+🚀 TLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/t-letter-count-characteristic.service.ts:56]
    ↳ Counts the pieces of ink drawn exactly as the template.
-  └─> countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:21]
+  └─> SubmatrixUtilitiesService.countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:59]
      ↳ Counts the minimal isolated glyphs of a matrix drawn exactly as `template`.
-    └─> glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:125]
-       ↳ The glyph points of a {@link countIsolatedGlyphs} template, with each blank `.` left out.
-      └─> flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:126]
-        └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
+    └─> SubmatrixUtilitiesService.glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:25]
+       ↳ The glyph points of a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template, with each blank `.` left out.
+      └─> SubmatrixUtilitiesService.flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:26]
+        └─> SubmatrixUtilitiesService.map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:32]
 ```
 
 **59. `TUpLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
-🚀 TUpLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/t-up-letter-count-characteristic.service.ts:50]
+🚀 TUpLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/t-up-letter-count-characteristic.service.ts:56]
    ↳ Counts the pieces of ink drawn exactly as the template.
-  └─> countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:21]
+  └─> SubmatrixUtilitiesService.countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:59]
      ↳ Counts the minimal isolated glyphs of a matrix drawn exactly as `template`.
-    └─> glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:125]
-       ↳ The glyph points of a {@link countIsolatedGlyphs} template, with each blank `.` left out.
-      └─> flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:126]
-        └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
+    └─> SubmatrixUtilitiesService.glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:25]
+       ↳ The glyph points of a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template, with each blank `.` left out.
+      └─> SubmatrixUtilitiesService.flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:26]
+        └─> SubmatrixUtilitiesService.map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:32]
 ```
 
 **60. `TWestLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
-🚀 TWestLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/t-west-letter-count-characteristic.service.ts:51]
+🚀 TWestLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/t-west-letter-count-characteristic.service.ts:57]
    ↳ Counts the pieces of ink drawn exactly as the template.
-  └─> countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:21]
+  └─> SubmatrixUtilitiesService.countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:59]
      ↳ Counts the minimal isolated glyphs of a matrix drawn exactly as `template`.
-    └─> glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:125]
-       ↳ The glyph points of a {@link countIsolatedGlyphs} template, with each blank `.` left out.
-      └─> flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:126]
-        └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
+    └─> SubmatrixUtilitiesService.glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:25]
+       ↳ The glyph points of a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template, with each blank `.` left out.
+      └─> SubmatrixUtilitiesService.flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:26]
+        └─> SubmatrixUtilitiesService.map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:32]
 ```
 
 **61. `UInvertedLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
-🚀 UInvertedLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/u-inverted-letter-count-characteristic.service.ts:50]
+🚀 UInvertedLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/u-inverted-letter-count-characteristic.service.ts:56]
    ↳ Counts the pieces of ink drawn exactly as the template.
-  └─> countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:21]
+  └─> SubmatrixUtilitiesService.countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:59]
      ↳ Counts the minimal isolated glyphs of a matrix drawn exactly as `template`.
-    └─> glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:125]
-       ↳ The glyph points of a {@link countIsolatedGlyphs} template, with each blank `.` left out.
-      └─> flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:126]
-        └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
+    └─> SubmatrixUtilitiesService.glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:25]
+       ↳ The glyph points of a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template, with each blank `.` left out.
+      └─> SubmatrixUtilitiesService.flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:26]
+        └─> SubmatrixUtilitiesService.map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:32]
 ```
 
 **62. `ULetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
-🚀 ULetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/u-letter-count-characteristic.service.ts:50]
+🚀 ULetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/u-letter-count-characteristic.service.ts:56]
    ↳ Counts the pieces of ink drawn exactly as the template.
-  └─> countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:21]
+  └─> SubmatrixUtilitiesService.countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:59]
      ↳ Counts the minimal isolated glyphs of a matrix drawn exactly as `template`.
-    └─> glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:125]
-       ↳ The glyph points of a {@link countIsolatedGlyphs} template, with each blank `.` left out.
-      └─> flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:126]
-        └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
+    └─> SubmatrixUtilitiesService.glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:25]
+       ↳ The glyph points of a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template, with each blank `.` left out.
+      └─> SubmatrixUtilitiesService.flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:26]
+        └─> SubmatrixUtilitiesService.map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:32]
 ```
 
 **63. `WLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
-🚀 WLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/w-letter-count-characteristic.service.ts:51]
+🚀 WLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/w-letter-count-characteristic.service.ts:57]
    ↳ Counts the pieces of ink drawn exactly as the template.
-  └─> countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:21]
+  └─> SubmatrixUtilitiesService.countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:59]
      ↳ Counts the minimal isolated glyphs of a matrix drawn exactly as `template`.
-    └─> glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:125]
-       ↳ The glyph points of a {@link countIsolatedGlyphs} template, with each blank `.` left out.
-      └─> flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:126]
-        └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
+    └─> SubmatrixUtilitiesService.glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:25]
+       ↳ The glyph points of a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template, with each blank `.` left out.
+      └─> SubmatrixUtilitiesService.flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:26]
+        └─> SubmatrixUtilitiesService.map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:32]
 ```
 
 **64. `XLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
-🚀 XLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/x-letter-count-characteristic.service.ts:50]
+🚀 XLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/x-letter-count-characteristic.service.ts:56]
    ↳ Counts the pieces of ink drawn exactly as the template.
-  └─> countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:21]
+  └─> SubmatrixUtilitiesService.countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:59]
      ↳ Counts the minimal isolated glyphs of a matrix drawn exactly as `template`.
-    └─> glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:125]
-       ↳ The glyph points of a {@link countIsolatedGlyphs} template, with each blank `.` left out.
-      └─> flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:126]
-        └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
+    └─> SubmatrixUtilitiesService.glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:25]
+       ↳ The glyph points of a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template, with each blank `.` left out.
+      └─> SubmatrixUtilitiesService.flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:26]
+        └─> SubmatrixUtilitiesService.map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:32]
 ```
 
 **65. `YEastLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
-🚀 YEastLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/y-east-letter-count-characteristic.service.ts:51]
+🚀 YEastLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/y-east-letter-count-characteristic.service.ts:57]
    ↳ Counts the pieces of ink drawn exactly as the template.
-  └─> countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:21]
+  └─> SubmatrixUtilitiesService.countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:59]
      ↳ Counts the minimal isolated glyphs of a matrix drawn exactly as `template`.
-    └─> glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:125]
-       ↳ The glyph points of a {@link countIsolatedGlyphs} template, with each blank `.` left out.
-      └─> flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:126]
-        └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
+    └─> SubmatrixUtilitiesService.glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:25]
+       ↳ The glyph points of a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template, with each blank `.` left out.
+      └─> SubmatrixUtilitiesService.flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:26]
+        └─> SubmatrixUtilitiesService.map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:32]
 ```
 
 **66. `YLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
-🚀 YLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/y-letter-count-characteristic.service.ts:51]
+🚀 YLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/y-letter-count-characteristic.service.ts:57]
    ↳ Counts the pieces of ink drawn exactly as the template.
-  └─> countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:21]
+  └─> SubmatrixUtilitiesService.countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:59]
      ↳ Counts the minimal isolated glyphs of a matrix drawn exactly as `template`.
-    └─> glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:125]
-       ↳ The glyph points of a {@link countIsolatedGlyphs} template, with each blank `.` left out.
-      └─> flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:126]
-        └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
+    └─> SubmatrixUtilitiesService.glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:25]
+       ↳ The glyph points of a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template, with each blank `.` left out.
+      └─> SubmatrixUtilitiesService.flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:26]
+        └─> SubmatrixUtilitiesService.map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:32]
 ```
 
 **67. `YUpLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
-🚀 YUpLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/y-up-letter-count-characteristic.service.ts:51]
+🚀 YUpLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/y-up-letter-count-characteristic.service.ts:57]
    ↳ Counts the pieces of ink drawn exactly as the template.
-  └─> countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:21]
+  └─> SubmatrixUtilitiesService.countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:59]
      ↳ Counts the minimal isolated glyphs of a matrix drawn exactly as `template`.
-    └─> glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:125]
-       ↳ The glyph points of a {@link countIsolatedGlyphs} template, with each blank `.` left out.
-      └─> flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:126]
-        └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
+    └─> SubmatrixUtilitiesService.glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:25]
+       ↳ The glyph points of a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template, with each blank `.` left out.
+      └─> SubmatrixUtilitiesService.flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:26]
+        └─> SubmatrixUtilitiesService.map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:32]
 ```
 
 **68. `YWestLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
-🚀 YWestLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/y-west-letter-count-characteristic.service.ts:51]
+🚀 YWestLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/y-west-letter-count-characteristic.service.ts:57]
    ↳ Counts the pieces of ink drawn exactly as the template.
-  └─> countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:21]
+  └─> SubmatrixUtilitiesService.countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:59]
      ↳ Counts the minimal isolated glyphs of a matrix drawn exactly as `template`.
-    └─> glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:125]
-       ↳ The glyph points of a {@link countIsolatedGlyphs} template, with each blank `.` left out.
-      └─> flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:126]
-        └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
+    └─> SubmatrixUtilitiesService.glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:25]
+       ↳ The glyph points of a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template, with each blank `.` left out.
+      └─> SubmatrixUtilitiesService.flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:26]
+        └─> SubmatrixUtilitiesService.map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:32]
 ```
 
 **69. `ZLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
-🚀 ZLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/z-letter-count-characteristic.service.ts:51]
+🚀 ZLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/z-letter-count-characteristic.service.ts:57]
    ↳ Counts the pieces of ink drawn exactly as the template.
-  └─> countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:21]
+  └─> SubmatrixUtilitiesService.countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:59]
      ↳ Counts the minimal isolated glyphs of a matrix drawn exactly as `template`.
-    └─> glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:125]
-       ↳ The glyph points of a {@link countIsolatedGlyphs} template, with each blank `.` left out.
-      └─> flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:126]
-        └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
+    └─> SubmatrixUtilitiesService.glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:25]
+       ↳ The glyph points of a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template, with each blank `.` left out.
+      └─> SubmatrixUtilitiesService.flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:26]
+        └─> SubmatrixUtilitiesService.map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:32]
 ```
 
 **70. `ZSidewaysLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
-🚀 ZSidewaysLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/z-sideways-letter-count-characteristic.service.ts:50]
+🚀 ZSidewaysLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/z-sideways-letter-count-characteristic.service.ts:56]
    ↳ Counts the pieces of ink drawn exactly as the template.
-  └─> countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:21]
+  └─> SubmatrixUtilitiesService.countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:59]
      ↳ Counts the minimal isolated glyphs of a matrix drawn exactly as `template`.
-    └─> glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:125]
-       ↳ The glyph points of a {@link countIsolatedGlyphs} template, with each blank `.` left out.
-      └─> flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:126]
-        └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
+    └─> SubmatrixUtilitiesService.glyphCells(template: readonly string[]): GlyphCell[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:25]
+       ↳ The glyph points of a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template, with each blank `.` left out.
+      └─> SubmatrixUtilitiesService.flatMap(…)(…): { column: number; digit: number; row: number; }[] [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:26]
+        └─> SubmatrixUtilitiesService.map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:32]
 ```
 
 **71. `TileService.assertWellFormed`** — depth ≥ 4 · orphan-root
@@ -3111,7 +3111,467 @@ What this project is judged against, as declared in its own `callidescope.config
       └─> MatrixService.from(…)(_unusedColumn: unknown, deltaColumn: number): MatrixPoint [applications/meanderaw/src/modules/matrix/matrix.service.ts:47]
 ```
 
-**74. `MatrixService.toCode`** — depth 3 · orphan-root
+**74. `AEastLetterCountCharacteristicService.constructor`** — depth 4 · orphan-root
+
+```text
+🚀 AEastLetterCountCharacteristicService.constructor(…): AEastLetterCountCharacteristicService [applications/meanderaw/src/modules/characteristics/submatrix/letter/a-east-letter-count-characteristic.service.ts:25]
+  └─> SubmatrixUtilitiesService.glyphFormula(template: readonly string[]): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:147]
+     ↳ Typesets a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template as the LaTeX definition of its characteristic…
+    └─> SubmatrixUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:149]
+      └─> SubmatrixUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:150]
+```
+
+**75. `AInvertedLetterCountCharacteristicService.constructor`** — depth 4 · orphan-root
+
+```text
+🚀 AInvertedLetterCountCharacteristicService.constructor(…): AInvertedLetterCountCharacteristicService [applications/meanderaw/src/modules/characteristics/submatrix/letter/a-inverted-letter-count-characteristic.service.ts:26]
+  └─> SubmatrixUtilitiesService.glyphFormula(template: readonly string[]): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:147]
+     ↳ Typesets a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template as the LaTeX definition of its characteristic…
+    └─> SubmatrixUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:149]
+      └─> SubmatrixUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:150]
+```
+
+**76. `ALetterCountCharacteristicService.constructor`** — depth 4 · orphan-root
+
+```text
+🚀 ALetterCountCharacteristicService.constructor(…): ALetterCountCharacteristicService [applications/meanderaw/src/modules/characteristics/submatrix/letter/a-letter-count-characteristic.service.ts:26]
+  └─> SubmatrixUtilitiesService.glyphFormula(template: readonly string[]): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:147]
+     ↳ Typesets a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template as the LaTeX definition of its characteristic…
+    └─> SubmatrixUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:149]
+      └─> SubmatrixUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:150]
+```
+
+**77. `AWestLetterCountCharacteristicService.constructor`** — depth 4 · orphan-root
+
+```text
+🚀 AWestLetterCountCharacteristicService.constructor(…): AWestLetterCountCharacteristicService [applications/meanderaw/src/modules/characteristics/submatrix/letter/a-west-letter-count-characteristic.service.ts:25]
+  └─> SubmatrixUtilitiesService.glyphFormula(template: readonly string[]): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:147]
+     ↳ Typesets a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template as the LaTeX definition of its characteristic…
+    └─> SubmatrixUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:149]
+      └─> SubmatrixUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:150]
+```
+
+**78. `BLetterCountCharacteristicService.constructor`** — depth 4 · orphan-root
+
+```text
+🚀 BLetterCountCharacteristicService.constructor(…): BLetterCountCharacteristicService [applications/meanderaw/src/modules/characteristics/submatrix/letter/b-letter-count-characteristic.service.ts:26]
+  └─> SubmatrixUtilitiesService.glyphFormula(template: readonly string[]): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:147]
+     ↳ Typesets a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template as the LaTeX definition of its characteristic…
+    └─> SubmatrixUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:149]
+      └─> SubmatrixUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:150]
+```
+
+**79. `BSidewaysLetterCountCharacteristicService.constructor`** — depth 4 · orphan-root
+
+```text
+🚀 BSidewaysLetterCountCharacteristicService.constructor(…): BSidewaysLetterCountCharacteristicService [applications/meanderaw/src/modules/characteristics/submatrix/letter/b-sideways-letter-count-characteristic.service.ts:25]
+  └─> SubmatrixUtilitiesService.glyphFormula(template: readonly string[]): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:147]
+     ↳ Typesets a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template as the LaTeX definition of its characteristic…
+    └─> SubmatrixUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:149]
+      └─> SubmatrixUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:150]
+```
+
+**80. `CLetterCountCharacteristicService.constructor`** — depth 4 · orphan-root
+
+```text
+🚀 CLetterCountCharacteristicService.constructor(…): CLetterCountCharacteristicService [applications/meanderaw/src/modules/characteristics/submatrix/letter/c-letter-count-characteristic.service.ts:25]
+  └─> SubmatrixUtilitiesService.glyphFormula(template: readonly string[]): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:147]
+     ↳ Typesets a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template as the LaTeX definition of its characteristic…
+    └─> SubmatrixUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:149]
+      └─> SubmatrixUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:150]
+```
+
+**81. `CWestLetterCountCharacteristicService.constructor`** — depth 4 · orphan-root
+
+```text
+🚀 CWestLetterCountCharacteristicService.constructor(…): CWestLetterCountCharacteristicService [applications/meanderaw/src/modules/characteristics/submatrix/letter/c-west-letter-count-characteristic.service.ts:25]
+  └─> SubmatrixUtilitiesService.glyphFormula(template: readonly string[]): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:147]
+     ↳ Typesets a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template as the LaTeX definition of its characteristic…
+    └─> SubmatrixUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:149]
+      └─> SubmatrixUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:150]
+```
+
+**82. `EDownLetterCountCharacteristicService.constructor`** — depth 4 · orphan-root
+
+```text
+🚀 EDownLetterCountCharacteristicService.constructor(…): EDownLetterCountCharacteristicService [applications/meanderaw/src/modules/characteristics/submatrix/letter/e-down-letter-count-characteristic.service.ts:25]
+  └─> SubmatrixUtilitiesService.glyphFormula(template: readonly string[]): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:147]
+     ↳ Typesets a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template as the LaTeX definition of its characteristic…
+    └─> SubmatrixUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:149]
+      └─> SubmatrixUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:150]
+```
+
+**83. `ELetterCountCharacteristicService.constructor`** — depth 4 · orphan-root
+
+```text
+🚀 ELetterCountCharacteristicService.constructor(…): ELetterCountCharacteristicService [applications/meanderaw/src/modules/characteristics/submatrix/letter/e-letter-count-characteristic.service.ts:26]
+  └─> SubmatrixUtilitiesService.glyphFormula(template: readonly string[]): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:147]
+     ↳ Typesets a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template as the LaTeX definition of its characteristic…
+    └─> SubmatrixUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:149]
+      └─> SubmatrixUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:150]
+```
+
+**84. `EUpLetterCountCharacteristicService.constructor`** — depth 4 · orphan-root
+
+```text
+🚀 EUpLetterCountCharacteristicService.constructor(…): EUpLetterCountCharacteristicService [applications/meanderaw/src/modules/characteristics/submatrix/letter/e-up-letter-count-characteristic.service.ts:25]
+  └─> SubmatrixUtilitiesService.glyphFormula(template: readonly string[]): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:147]
+     ↳ Typesets a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template as the LaTeX definition of its characteristic…
+    └─> SubmatrixUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:149]
+      └─> SubmatrixUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:150]
+```
+
+**85. `EWestLetterCountCharacteristicService.constructor`** — depth 4 · orphan-root
+
+```text
+🚀 EWestLetterCountCharacteristicService.constructor(…): EWestLetterCountCharacteristicService [applications/meanderaw/src/modules/characteristics/submatrix/letter/e-west-letter-count-characteristic.service.ts:26]
+  └─> SubmatrixUtilitiesService.glyphFormula(template: readonly string[]): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:147]
+     ↳ Typesets a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template as the LaTeX definition of its characteristic…
+    └─> SubmatrixUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:149]
+      └─> SubmatrixUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:150]
+```
+
+**86. `FDownLetterCountCharacteristicService.constructor`** — depth 4 · orphan-root
+
+```text
+🚀 FDownLetterCountCharacteristicService.constructor(…): FDownLetterCountCharacteristicService [applications/meanderaw/src/modules/characteristics/submatrix/letter/f-down-letter-count-characteristic.service.ts:25]
+  └─> SubmatrixUtilitiesService.glyphFormula(template: readonly string[]): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:147]
+     ↳ Typesets a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template as the LaTeX definition of its characteristic…
+    └─> SubmatrixUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:149]
+      └─> SubmatrixUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:150]
+```
+
+**87. `FLetterCountCharacteristicService.constructor`** — depth 4 · orphan-root
+
+```text
+🚀 FLetterCountCharacteristicService.constructor(…): FLetterCountCharacteristicService [applications/meanderaw/src/modules/characteristics/submatrix/letter/f-letter-count-characteristic.service.ts:26]
+  └─> SubmatrixUtilitiesService.glyphFormula(template: readonly string[]): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:147]
+     ↳ Typesets a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template as the LaTeX definition of its characteristic…
+    └─> SubmatrixUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:149]
+      └─> SubmatrixUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:150]
+```
+
+**88. `FUpLetterCountCharacteristicService.constructor`** — depth 4 · orphan-root
+
+```text
+🚀 FUpLetterCountCharacteristicService.constructor(…): FUpLetterCountCharacteristicService [applications/meanderaw/src/modules/characteristics/submatrix/letter/f-up-letter-count-characteristic.service.ts:25]
+  └─> SubmatrixUtilitiesService.glyphFormula(template: readonly string[]): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:147]
+     ↳ Typesets a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template as the LaTeX definition of its characteristic…
+    └─> SubmatrixUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:149]
+      └─> SubmatrixUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:150]
+```
+
+**89. `FWestLetterCountCharacteristicService.constructor`** — depth 4 · orphan-root
+
+```text
+🚀 FWestLetterCountCharacteristicService.constructor(…): FWestLetterCountCharacteristicService [applications/meanderaw/src/modules/characteristics/submatrix/letter/f-west-letter-count-characteristic.service.ts:26]
+  └─> SubmatrixUtilitiesService.glyphFormula(template: readonly string[]): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:147]
+     ↳ Typesets a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template as the LaTeX definition of its characteristic…
+    └─> SubmatrixUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:149]
+      └─> SubmatrixUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:150]
+```
+
+**90. `HLetterCountCharacteristicService.constructor`** — depth 4 · orphan-root
+
+```text
+🚀 HLetterCountCharacteristicService.constructor(…): HLetterCountCharacteristicService [applications/meanderaw/src/modules/characteristics/submatrix/letter/h-letter-count-characteristic.service.ts:26]
+  └─> SubmatrixUtilitiesService.glyphFormula(template: readonly string[]): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:147]
+     ↳ Typesets a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template as the LaTeX definition of its characteristic…
+    └─> SubmatrixUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:149]
+      └─> SubmatrixUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:150]
+```
+
+**91. `HSidewaysLetterCountCharacteristicService.constructor`** — depth 4 · orphan-root
+
+```text
+🚀 HSidewaysLetterCountCharacteristicService.constructor(…): HSidewaysLetterCountCharacteristicService [applications/meanderaw/src/modules/characteristics/submatrix/letter/h-sideways-letter-count-characteristic.service.ts:25]
+  └─> SubmatrixUtilitiesService.glyphFormula(template: readonly string[]): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:147]
+     ↳ Typesets a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template as the LaTeX definition of its characteristic…
+    └─> SubmatrixUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:149]
+      └─> SubmatrixUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:150]
+```
+
+**92. `ILetterCountCharacteristicService.constructor`** — depth 4 · orphan-root
+
+```text
+🚀 ILetterCountCharacteristicService.constructor(…): ILetterCountCharacteristicService [applications/meanderaw/src/modules/characteristics/submatrix/letter/i-letter-count-characteristic.service.ts:25]
+  └─> SubmatrixUtilitiesService.glyphFormula(template: readonly string[]): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:147]
+     ↳ Typesets a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template as the LaTeX definition of its characteristic…
+    └─> SubmatrixUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:149]
+      └─> SubmatrixUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:150]
+```
+
+**93. `ISidewaysLetterCountCharacteristicService.constructor`** — depth 4 · orphan-root
+
+```text
+🚀 ISidewaysLetterCountCharacteristicService.constructor(…): ISidewaysLetterCountCharacteristicService [applications/meanderaw/src/modules/characteristics/submatrix/letter/i-sideways-letter-count-characteristic.service.ts:24]
+  └─> SubmatrixUtilitiesService.glyphFormula(template: readonly string[]): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:147]
+     ↳ Typesets a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template as the LaTeX definition of its characteristic…
+    └─> SubmatrixUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:149]
+      └─> SubmatrixUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:150]
+```
+
+**94. `LDownLetterCountCharacteristicService.constructor`** — depth 4 · orphan-root
+
+```text
+🚀 LDownLetterCountCharacteristicService.constructor(…): LDownLetterCountCharacteristicService [applications/meanderaw/src/modules/characteristics/submatrix/letter/l-down-letter-count-characteristic.service.ts:25]
+  └─> SubmatrixUtilitiesService.glyphFormula(template: readonly string[]): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:147]
+     ↳ Typesets a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template as the LaTeX definition of its characteristic…
+    └─> SubmatrixUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:149]
+      └─> SubmatrixUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:150]
+```
+
+**95. `LLetterCountCharacteristicService.constructor`** — depth 4 · orphan-root
+
+```text
+🚀 LLetterCountCharacteristicService.constructor(…): LLetterCountCharacteristicService [applications/meanderaw/src/modules/characteristics/submatrix/letter/l-letter-count-characteristic.service.ts:25]
+  └─> SubmatrixUtilitiesService.glyphFormula(template: readonly string[]): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:147]
+     ↳ Typesets a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template as the LaTeX definition of its characteristic…
+    └─> SubmatrixUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:149]
+      └─> SubmatrixUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:150]
+```
+
+**96. `LUpLetterCountCharacteristicService.constructor`** — depth 4 · orphan-root
+
+```text
+🚀 LUpLetterCountCharacteristicService.constructor(…): LUpLetterCountCharacteristicService [applications/meanderaw/src/modules/characteristics/submatrix/letter/l-up-letter-count-characteristic.service.ts:25]
+  └─> SubmatrixUtilitiesService.glyphFormula(template: readonly string[]): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:147]
+     ↳ Typesets a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template as the LaTeX definition of its characteristic…
+    └─> SubmatrixUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:149]
+      └─> SubmatrixUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:150]
+```
+
+**97. `LWestLetterCountCharacteristicService.constructor`** — depth 4 · orphan-root
+
+```text
+🚀 LWestLetterCountCharacteristicService.constructor(…): LWestLetterCountCharacteristicService [applications/meanderaw/src/modules/characteristics/submatrix/letter/l-west-letter-count-characteristic.service.ts:25]
+  └─> SubmatrixUtilitiesService.glyphFormula(template: readonly string[]): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:147]
+     ↳ Typesets a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template as the LaTeX definition of its characteristic…
+    └─> SubmatrixUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:149]
+      └─> SubmatrixUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:150]
+```
+
+**98. `MEastLetterCountCharacteristicService.constructor`** — depth 4 · orphan-root
+
+```text
+🚀 MEastLetterCountCharacteristicService.constructor(…): MEastLetterCountCharacteristicService [applications/meanderaw/src/modules/characteristics/submatrix/letter/m-east-letter-count-characteristic.service.ts:26]
+  └─> SubmatrixUtilitiesService.glyphFormula(template: readonly string[]): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:147]
+     ↳ Typesets a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template as the LaTeX definition of its characteristic…
+    └─> SubmatrixUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:149]
+      └─> SubmatrixUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:150]
+```
+
+**99. `MLetterCountCharacteristicService.constructor`** — depth 4 · orphan-root
+
+```text
+🚀 MLetterCountCharacteristicService.constructor(…): MLetterCountCharacteristicService [applications/meanderaw/src/modules/characteristics/submatrix/letter/m-letter-count-characteristic.service.ts:26]
+  └─> SubmatrixUtilitiesService.glyphFormula(template: readonly string[]): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:147]
+     ↳ Typesets a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template as the LaTeX definition of its characteristic…
+    └─> SubmatrixUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:149]
+      └─> SubmatrixUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:150]
+```
+
+**100. `MWestLetterCountCharacteristicService.constructor`** — depth 4 · orphan-root
+
+```text
+🚀 MWestLetterCountCharacteristicService.constructor(…): MWestLetterCountCharacteristicService [applications/meanderaw/src/modules/characteristics/submatrix/letter/m-west-letter-count-characteristic.service.ts:26]
+  └─> SubmatrixUtilitiesService.glyphFormula(template: readonly string[]): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:147]
+     ↳ Typesets a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template as the LaTeX definition of its characteristic…
+    └─> SubmatrixUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:149]
+      └─> SubmatrixUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:150]
+```
+
+**101. `NLetterCountCharacteristicService.constructor`** — depth 4 · orphan-root
+
+```text
+🚀 NLetterCountCharacteristicService.constructor(…): NLetterCountCharacteristicService [applications/meanderaw/src/modules/characteristics/submatrix/letter/n-letter-count-characteristic.service.ts:26]
+  └─> SubmatrixUtilitiesService.glyphFormula(template: readonly string[]): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:147]
+     ↳ Typesets a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template as the LaTeX definition of its characteristic…
+    └─> SubmatrixUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:149]
+      └─> SubmatrixUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:150]
+```
+
+**102. `NSidewaysLetterCountCharacteristicService.constructor`** — depth 4 · orphan-root
+
+```text
+🚀 NSidewaysLetterCountCharacteristicService.constructor(…): NSidewaysLetterCountCharacteristicService [applications/meanderaw/src/modules/characteristics/submatrix/letter/n-sideways-letter-count-characteristic.service.ts:26]
+  └─> SubmatrixUtilitiesService.glyphFormula(template: readonly string[]): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:147]
+     ↳ Typesets a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template as the LaTeX definition of its characteristic…
+    └─> SubmatrixUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:149]
+      └─> SubmatrixUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:150]
+```
+
+**103. `OLetterCountCharacteristicService.constructor`** — depth 4 · orphan-root
+
+```text
+🚀 OLetterCountCharacteristicService.constructor(…): OLetterCountCharacteristicService [applications/meanderaw/src/modules/characteristics/submatrix/letter/o-letter-count-characteristic.service.ts:24]
+  └─> SubmatrixUtilitiesService.glyphFormula(template: readonly string[]): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:147]
+     ↳ Typesets a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template as the LaTeX definition of its characteristic…
+    └─> SubmatrixUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:149]
+      └─> SubmatrixUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:150]
+```
+
+**104. `SLetterCountCharacteristicService.constructor`** — depth 4 · orphan-root
+
+```text
+🚀 SLetterCountCharacteristicService.constructor(…): SLetterCountCharacteristicService [applications/meanderaw/src/modules/characteristics/submatrix/letter/s-letter-count-characteristic.service.ts:26]
+  └─> SubmatrixUtilitiesService.glyphFormula(template: readonly string[]): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:147]
+     ↳ Typesets a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template as the LaTeX definition of its characteristic…
+    └─> SubmatrixUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:149]
+      └─> SubmatrixUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:150]
+```
+
+**105. `SSidewaysLetterCountCharacteristicService.constructor`** — depth 4 · orphan-root
+
+```text
+🚀 SSidewaysLetterCountCharacteristicService.constructor(…): SSidewaysLetterCountCharacteristicService [applications/meanderaw/src/modules/characteristics/submatrix/letter/s-sideways-letter-count-characteristic.service.ts:25]
+  └─> SubmatrixUtilitiesService.glyphFormula(template: readonly string[]): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:147]
+     ↳ Typesets a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template as the LaTeX definition of its characteristic…
+    └─> SubmatrixUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:149]
+      └─> SubmatrixUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:150]
+```
+
+**106. `TEastLetterCountCharacteristicService.constructor`** — depth 4 · orphan-root
+
+```text
+🚀 TEastLetterCountCharacteristicService.constructor(…): TEastLetterCountCharacteristicService [applications/meanderaw/src/modules/characteristics/submatrix/letter/t-east-letter-count-characteristic.service.ts:26]
+  └─> SubmatrixUtilitiesService.glyphFormula(template: readonly string[]): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:147]
+     ↳ Typesets a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template as the LaTeX definition of its characteristic…
+    └─> SubmatrixUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:149]
+      └─> SubmatrixUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:150]
+```
+
+**107. `TLetterCountCharacteristicService.constructor`** — depth 4 · orphan-root
+
+```text
+🚀 TLetterCountCharacteristicService.constructor(…): TLetterCountCharacteristicService [applications/meanderaw/src/modules/characteristics/submatrix/letter/t-letter-count-characteristic.service.ts:25]
+  └─> SubmatrixUtilitiesService.glyphFormula(template: readonly string[]): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:147]
+     ↳ Typesets a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template as the LaTeX definition of its characteristic…
+    └─> SubmatrixUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:149]
+      └─> SubmatrixUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:150]
+```
+
+**108. `TUpLetterCountCharacteristicService.constructor`** — depth 4 · orphan-root
+
+```text
+🚀 TUpLetterCountCharacteristicService.constructor(…): TUpLetterCountCharacteristicService [applications/meanderaw/src/modules/characteristics/submatrix/letter/t-up-letter-count-characteristic.service.ts:25]
+  └─> SubmatrixUtilitiesService.glyphFormula(template: readonly string[]): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:147]
+     ↳ Typesets a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template as the LaTeX definition of its characteristic…
+    └─> SubmatrixUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:149]
+      └─> SubmatrixUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:150]
+```
+
+**109. `TWestLetterCountCharacteristicService.constructor`** — depth 4 · orphan-root
+
+```text
+🚀 TWestLetterCountCharacteristicService.constructor(…): TWestLetterCountCharacteristicService [applications/meanderaw/src/modules/characteristics/submatrix/letter/t-west-letter-count-characteristic.service.ts:26]
+  └─> SubmatrixUtilitiesService.glyphFormula(template: readonly string[]): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:147]
+     ↳ Typesets a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template as the LaTeX definition of its characteristic…
+    └─> SubmatrixUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:149]
+      └─> SubmatrixUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:150]
+```
+
+**110. `UInvertedLetterCountCharacteristicService.constructor`** — depth 4 · orphan-root
+
+```text
+🚀 UInvertedLetterCountCharacteristicService.constructor(…): UInvertedLetterCountCharacteristicService [applications/meanderaw/src/modules/characteristics/submatrix/letter/u-inverted-letter-count-characteristic.service.ts:25]
+  └─> SubmatrixUtilitiesService.glyphFormula(template: readonly string[]): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:147]
+     ↳ Typesets a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template as the LaTeX definition of its characteristic…
+    └─> SubmatrixUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:149]
+      └─> SubmatrixUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:150]
+```
+
+**111. `ULetterCountCharacteristicService.constructor`** — depth 4 · orphan-root
+
+```text
+🚀 ULetterCountCharacteristicService.constructor(…): ULetterCountCharacteristicService [applications/meanderaw/src/modules/characteristics/submatrix/letter/u-letter-count-characteristic.service.ts:25]
+  └─> SubmatrixUtilitiesService.glyphFormula(template: readonly string[]): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:147]
+     ↳ Typesets a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template as the LaTeX definition of its characteristic…
+    └─> SubmatrixUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:149]
+      └─> SubmatrixUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:150]
+```
+
+**112. `WLetterCountCharacteristicService.constructor`** — depth 4 · orphan-root
+
+```text
+🚀 WLetterCountCharacteristicService.constructor(…): WLetterCountCharacteristicService [applications/meanderaw/src/modules/characteristics/submatrix/letter/w-letter-count-characteristic.service.ts:26]
+  └─> SubmatrixUtilitiesService.glyphFormula(template: readonly string[]): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:147]
+     ↳ Typesets a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template as the LaTeX definition of its characteristic…
+    └─> SubmatrixUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:149]
+      └─> SubmatrixUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:150]
+```
+
+**113. `XLetterCountCharacteristicService.constructor`** — depth 4 · orphan-root
+
+```text
+🚀 XLetterCountCharacteristicService.constructor(…): XLetterCountCharacteristicService [applications/meanderaw/src/modules/characteristics/submatrix/letter/x-letter-count-characteristic.service.ts:25]
+  └─> SubmatrixUtilitiesService.glyphFormula(template: readonly string[]): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:147]
+     ↳ Typesets a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template as the LaTeX definition of its characteristic…
+    └─> SubmatrixUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:149]
+      └─> SubmatrixUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:150]
+```
+
+**114. `YEastLetterCountCharacteristicService.constructor`** — depth 4 · orphan-root
+
+```text
+🚀 YEastLetterCountCharacteristicService.constructor(…): YEastLetterCountCharacteristicService [applications/meanderaw/src/modules/characteristics/submatrix/letter/y-east-letter-count-characteristic.service.ts:26]
+  └─> SubmatrixUtilitiesService.glyphFormula(template: readonly string[]): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:147]
+     ↳ Typesets a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template as the LaTeX definition of its characteristic…
+    └─> SubmatrixUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:149]
+      └─> SubmatrixUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:150]
+```
+
+**115. `YLetterCountCharacteristicService.constructor`** — depth 4 · orphan-root
+
+```text
+🚀 YLetterCountCharacteristicService.constructor(…): YLetterCountCharacteristicService [applications/meanderaw/src/modules/characteristics/submatrix/letter/y-letter-count-characteristic.service.ts:26]
+  └─> SubmatrixUtilitiesService.glyphFormula(template: readonly string[]): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:147]
+     ↳ Typesets a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template as the LaTeX definition of its characteristic…
+    └─> SubmatrixUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:149]
+      └─> SubmatrixUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:150]
+```
+
+**116. `YUpLetterCountCharacteristicService.constructor`** — depth 4 · orphan-root
+
+```text
+🚀 YUpLetterCountCharacteristicService.constructor(…): YUpLetterCountCharacteristicService [applications/meanderaw/src/modules/characteristics/submatrix/letter/y-up-letter-count-characteristic.service.ts:26]
+  └─> SubmatrixUtilitiesService.glyphFormula(template: readonly string[]): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:147]
+     ↳ Typesets a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template as the LaTeX definition of its characteristic…
+    └─> SubmatrixUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:149]
+      └─> SubmatrixUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:150]
+```
+
+**117. `YWestLetterCountCharacteristicService.constructor`** — depth 4 · orphan-root
+
+```text
+🚀 YWestLetterCountCharacteristicService.constructor(…): YWestLetterCountCharacteristicService [applications/meanderaw/src/modules/characteristics/submatrix/letter/y-west-letter-count-characteristic.service.ts:26]
+  └─> SubmatrixUtilitiesService.glyphFormula(template: readonly string[]): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:147]
+     ↳ Typesets a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template as the LaTeX definition of its characteristic…
+    └─> SubmatrixUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:149]
+      └─> SubmatrixUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:150]
+```
+
+**118. `ZLetterCountCharacteristicService.constructor`** — depth 4 · orphan-root
+
+```text
+🚀 ZLetterCountCharacteristicService.constructor(…): ZLetterCountCharacteristicService [applications/meanderaw/src/modules/characteristics/submatrix/letter/z-letter-count-characteristic.service.ts:26]
+  └─> SubmatrixUtilitiesService.glyphFormula(template: readonly string[]): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:147]
+     ↳ Typesets a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template as the LaTeX definition of its characteristic…
+    └─> SubmatrixUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:149]
+      └─> SubmatrixUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:150]
+```
+
+**119. `ZSidewaysLetterCountCharacteristicService.constructor`** — depth 4 · orphan-root
+
+```text
+🚀 ZSidewaysLetterCountCharacteristicService.constructor(…): ZSidewaysLetterCountCharacteristicService [applications/meanderaw/src/modules/characteristics/submatrix/letter/z-sideways-letter-count-characteristic.service.ts:25]
+  └─> SubmatrixUtilitiesService.glyphFormula(template: readonly string[]): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:147]
+     ↳ Typesets a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template as the LaTeX definition of its characteristic…
+    └─> SubmatrixUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:149]
+      └─> SubmatrixUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:150]
+```
+
+**120. `MatrixService.toCode`** — depth 3 · orphan-root
 
 ```text
 🚀 MatrixService.toCode(matrix: Matrix, repeats?: number): Code [applications/meanderaw/src/modules/matrix/matrix.service.ts:157]
@@ -3120,60 +3580,51 @@ What this project is judged against, as declared in its own `callidescope.config
     └─> MatrixService.map(…)(point: MatrixPoint): string [applications/meanderaw/src/modules/matrix/matrix.service.ts:167]
 ```
 
-**75. `glyphFormula`** — depth 3 · orphan-root
+**121. `BottomBorderTouchCountCharacteristicService.compute`** — depth 3 · orphan-root
 
 ```text
-🚀 glyphFormula(template: readonly string[]): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:87]
-   ↳ Typesets a {@link countIsolatedGlyphs} template as the LaTeX definition of its characteristic — the count of isolated…
-  └─> map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:89]
-    └─> from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:90]
-```
-
-**76. `BottomBorderTouchCountCharacteristicService.compute`** — depth 3 · orphan-root
-
-```text
-🚀 BottomBorderTouchCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/path/turn/bottom-border-touch-count-characteristic.service.ts:47]
+🚀 BottomBorderTouchCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/path/turn/bottom-border-touch-count-characteristic.service.ts:49]
    ↳ Counts the separate runs of ink on the last row.
-  └─> rowTouchCount(edges: readonly CodeEdge[], row: number): number [applications/meanderaw/src/modules/characteristics/path/path.utilities.ts:54]
+  └─> PathUtilitiesService.rowTouchCount(edges: readonly CodeEdge[], row: number): number [applications/meanderaw/src/modules/characteristics/path/path-utilities.service.ts:176]
      ↳ How many separate runs of ink touch `row`: its inked points, grouped by the eastward edges joining neighbors within…
-    └─> position(key: string): { column: number; row: number; } [applications/meanderaw/src/modules/characteristics/path/path.utilities.ts:153]
+    └─> PathUtilitiesService.position(key: string): { column: number; row: number; } [applications/meanderaw/src/modules/characteristics/path/path-utilities.service.ts:87]
        ↳ The row and column a `row,column` point key names.
 ```
 
-**77. `TopBorderTouchCountCharacteristicService.compute`** — depth 3 · orphan-root
+**122. `TopBorderTouchCountCharacteristicService.compute`** — depth 3 · orphan-root
 
 ```text
-🚀 TopBorderTouchCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/path/turn/top-border-touch-count-characteristic.service.ts:47]
+🚀 TopBorderTouchCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/path/turn/top-border-touch-count-characteristic.service.ts:49]
    ↳ Counts the separate runs of ink on the first row.
-  └─> rowTouchCount(edges: readonly CodeEdge[], row: number): number [applications/meanderaw/src/modules/characteristics/path/path.utilities.ts:54]
+  └─> PathUtilitiesService.rowTouchCount(edges: readonly CodeEdge[], row: number): number [applications/meanderaw/src/modules/characteristics/path/path-utilities.service.ts:176]
      ↳ How many separate runs of ink touch `row`: its inked points, grouped by the eastward edges joining neighbors within…
-    └─> position(key: string): { column: number; row: number; } [applications/meanderaw/src/modules/characteristics/path/path.utilities.ts:153]
+    └─> PathUtilitiesService.position(key: string): { column: number; row: number; } [applications/meanderaw/src/modules/characteristics/path/path-utilities.service.ts:87]
        ↳ The row and column a `row,column` point key names.
 ```
 
-**78. `IsCrossCharacteristicService.compute`** — depth 3 · orphan-root
+**123. `IsCrossCharacteristicService.compute`** — depth 3 · orphan-root
 
 ```text
 🚀 IsCrossCharacteristicService.compute(context: CharacteristicContext): boolean [applications/meanderaw/src/modules/characteristics/compound/family/is-cross-characteristic.service.ts:49]
    ↳ Checks the unit has a cross and is not the mesh template.
-  └─> CrossCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/cross/cross-count-characteristic.service.ts:41]
+  └─> CrossCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/cross/cross-count-characteristic.service.ts:45]
      ↳ Counts the points that carry all four arms.
-    └─> countPointsWithExactArms(matrix: Matrix, arms: readonly MatrixPointArm[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:56]
+    └─> SubmatrixUtilitiesService.countPointsWithExactArms(matrix: Matrix, arms: readonly MatrixPointArm[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:116]
        ↳ Counts the points whose ink leaves by exactly `arms` — every named arm set and every other arm clear — which is the…
 ```
 
-**79. `CornerCountCharacteristicService.compute`** — depth 3 · orphan-root
+**124. `CornerCountCharacteristicService.compute`** — depth 3 · orphan-root
 
 ```text
-🚀 CornerCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/corner/corner-count-characteristic.service.ts:55]
+🚀 CornerCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/corner/corner-count-characteristic.service.ts:56]
    ↳ Sums the four directional corner counts over the same context.
-  └─> NorthEastCornerCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/corner/north-east-corner-count-characteristic.service.ts:42]
+  └─> NorthEastCornerCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/corner/north-east-corner-count-characteristic.service.ts:46]
      ↳ Counts the points whose only arms are north and east.
-    └─> countPointsWithExactArms(matrix: Matrix, arms: readonly MatrixPointArm[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:56]
+    └─> SubmatrixUtilitiesService.countPointsWithExactArms(matrix: Matrix, arms: readonly MatrixPointArm[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:116]
        ↳ Counts the points whose ink leaves by exactly `arms` — every named arm set and every other arm clear — which is the…
 ```
 
-**80. `TileEnumerationService.isMatching`** — depth 3 · orphan-root
+**125. `TileEnumerationService.isMatching`** — depth 3 · orphan-root
 
 ```text
 🚀 TileEnumerationService.isMatching(tile: Tile): boolean [applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:235]
@@ -3184,7 +3635,7 @@ What this project is judged against, as declared in its own `callidescope.config
        ↳ How many of a point's four direction bits are set — the point's degree as the drawing shows it.
 ```
 
-**81. `ClassificationService.matches`** — depth 2 · orphan-root
+**126. `ClassificationService.matches`** — depth 2 · orphan-root
 
 ```text
 🚀 ClassificationService.matches(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:64]
@@ -3192,7 +3643,7 @@ What this project is judged against, as declared in its own `callidescope.config
      ↳ Whether a repeat's family predicate holds and its band is deep enough for that family.
 ```
 
-**82. `ClassificationService.matches`** — depth 2 · orphan-root
+**127. `ClassificationService.matches`** — depth 2 · orphan-root
 
 ```text
 🚀 ClassificationService.matches(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:75]
@@ -3200,7 +3651,7 @@ What this project is judged against, as declared in its own `callidescope.config
      ↳ Whether a repeat's family predicate holds and its band is deep enough for that family.
 ```
 
-**83. `TileService.isBare`** — depth 2 · orphan-root
+**128. `TileService.isBare`** — depth 2 · orphan-root
 
 ```text
 🚀 TileService.isBare(directions: Directions): boolean [applications/meanderaw/src/modules/tile/tile.service.ts:231]
@@ -3209,7 +3660,7 @@ What this project is judged against, as declared in its own `callidescope.config
      ↳ How many of a point's four direction bits are set — the point's degree as the drawing shows it.
 ```
 
-**84. `MatrixService.rotate`** — depth 2 · orphan-root
+**129. `MatrixService.rotate`** — depth 2 · orphan-root
 
 ```text
 🚀 MatrixService.rotate(matrix: Matrix, step: number): Matrix [applications/meanderaw/src/modules/matrix/matrix.service.ts:101]
@@ -3217,31 +3668,67 @@ What this project is judged against, as declared in its own `callidescope.config
   └─> MatrixService.map(…)(row: readonly MatrixPoint[]): MatrixPoint[] [applications/meanderaw/src/modules/matrix/matrix.service.ts:113]
 ```
 
-**85. `EdgeCountCharacteristicService.compute`** — depth 2 · orphan-root
+**130. `DoubleHorizontalEdgeCountCharacteristicService.compute`** — depth 2 · orphan-root
 
 ```text
-🚀 EdgeCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/point/edge-count-characteristic.service.ts:47]
+🚀 DoubleHorizontalEdgeCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/point/double-horizontal-edge-count-characteristic.service.ts:47]
+   ↳ Counts the points whose only arms are east and west.
+  └─> SubmatrixUtilitiesService.countPointsWithExactArms(matrix: Matrix, arms: readonly MatrixPointArm[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:116]
+     ↳ Counts the points whose ink leaves by exactly `arms` — every named arm set and every other arm clear — which is the…
+```
+
+**131. `DoubleVerticalEdgeCountCharacteristicService.compute`** — depth 2 · orphan-root
+
+```text
+🚀 DoubleVerticalEdgeCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/point/double-vertical-edge-count-characteristic.service.ts:47]
+   ↳ Counts the points whose only arms are north and south.
+  └─> SubmatrixUtilitiesService.countPointsWithExactArms(matrix: Matrix, arms: readonly MatrixPointArm[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:116]
+     ↳ Counts the points whose ink leaves by exactly `arms` — every named arm set and every other arm clear — which is the…
+```
+
+**132. `EastEdgeCountCharacteristicService.compute`** — depth 2 · orphan-root
+
+```text
+🚀 EastEdgeCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/point/east-edge-count-characteristic.service.ts:46]
+   ↳ Counts the points with an east arm.
+  └─> SubmatrixUtilitiesService.countPointsWithArm(matrix: Matrix, arm: MatrixPointArm): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:96]
+     ↳ Counts the points whose ink leaves by `arm`, whatever other arms they carry — a lone arm, a straight edge, a corner, a…
+```
+
+**133. `EdgeCountCharacteristicService.compute`** — depth 2 · orphan-root
+
+```text
+🚀 EdgeCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/point/edge-count-characteristic.service.ts:48]
    ↳ Sums every point's arm count and halves it.
   └─> PointUtilitiesService.armCount(point: MatrixPoint): number [applications/meanderaw/src/modules/characteristics/submatrix/point/point-utilities.service.ts:31]
      ↳ How many of a point's four arms carry ink — its raw digit degree, read directly off the point rather than through the…
 ```
 
-**86. `HorizontalEdgeCountCharacteristicService.compute`** — depth 2 · orphan-root
+**134. `NorthEdgeCountCharacteristicService.compute`** — depth 2 · orphan-root
 
 ```text
-🚀 HorizontalEdgeCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/point/horizontal-edge-count-characteristic.service.ts:41]
-   ↳ Counts the points whose only arms are east and west.
-  └─> countPointsWithExactArms(matrix: Matrix, arms: readonly MatrixPointArm[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:56]
-     ↳ Counts the points whose ink leaves by exactly `arms` — every named arm set and every other arm clear — which is the…
+🚀 NorthEdgeCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/point/north-edge-count-characteristic.service.ts:46]
+   ↳ Counts the points with a north arm.
+  └─> SubmatrixUtilitiesService.countPointsWithArm(matrix: Matrix, arm: MatrixPointArm): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:96]
+     ↳ Counts the points whose ink leaves by `arm`, whatever other arms they carry — a lone arm, a straight edge, a corner, a…
 ```
 
-**87. `VerticalEdgeCountCharacteristicService.compute`** — depth 2 · orphan-root
+**135. `SouthEdgeCountCharacteristicService.compute`** — depth 2 · orphan-root
 
 ```text
-🚀 VerticalEdgeCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/point/vertical-edge-count-characteristic.service.ts:41]
-   ↳ Counts the points whose only arms are north and south.
-  └─> countPointsWithExactArms(matrix: Matrix, arms: readonly MatrixPointArm[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:56]
-     ↳ Counts the points whose ink leaves by exactly `arms` — every named arm set and every other arm clear — which is the…
+🚀 SouthEdgeCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/point/south-edge-count-characteristic.service.ts:46]
+   ↳ Counts the points with a south arm.
+  └─> SubmatrixUtilitiesService.countPointsWithArm(matrix: Matrix, arm: MatrixPointArm): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:96]
+     ↳ Counts the points whose ink leaves by `arm`, whatever other arms they carry — a lone arm, a straight edge, a corner, a…
+```
+
+**136. `WestEdgeCountCharacteristicService.compute`** — depth 2 · orphan-root
+
+```text
+🚀 WestEdgeCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/point/west-edge-count-characteristic.service.ts:46]
+   ↳ Counts the points with a west arm.
+  └─> SubmatrixUtilitiesService.countPointsWithArm(matrix: Matrix, arm: MatrixPointArm): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:96]
+     ↳ Counts the points whose ink leaves by `arm`, whatever other arms they carry — a lone arm, a straight edge, a corner, a…
 ```
 
 </details>
@@ -3255,7 +3742,7 @@ What this project is judged against, as declared in its own `callidescope.config
 | `IsCombCharacteristicService.compute` | 8 | `FamilyUtilitiesService.hasValidDimensions`, `IsBarsCharacteristicService.compute`, `IsLinesCharacteristicService.compute`, `IsMeshCharacteristicService.compute`, `FamilyUtilitiesService.grid`, `IsCombCharacteristicService.isVerticalComb`, `IsCombCharacteristicService.isHorizontalComb`, `IsCombCharacteristicService.isReversingComb` | `applications/meanderaw/src/modules/characteristics/compound/family/is-comb-characteristic.service.ts:161` |
 
 <details>
-<summary>301 more callables</summary>
+<summary>352 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
@@ -3267,7 +3754,7 @@ What this project is judged against, as declared in its own `callidescope.config
 | `StrandUtilitiesService.isTileBoundCoil` | 6 | `CompoundUtilitiesService.isJunctionFree`, `BettiNumber1CountCharacteristicService.compute`, `TileCrossingCountCharacteristicService.compute`, `StrandUtilitiesService.isFullInkWithoutDots`, `LongestHorizontalRunLengthCharacteristicService.compute`, `LongestVerticalRunLengthCharacteristicService.compute` | `applications/meanderaw/src/modules/characteristics/compound/family/strand-utilities.service.ts:80` |
 | `IsDoubleChainCharacteristicService.compute` | 6 | `CompoundUtilitiesService.isJunctionFree`, `StrandUtilitiesService.hasStrandEnds`, `BettiNumber1CountCharacteristicService.compute`, `StrandUtilitiesService.isWrappingReversal`, `LongestHorizontalRunLengthCharacteristicService.compute`, `LongestVerticalRunLengthCharacteristicService.compute` | `applications/meanderaw/src/modules/characteristics/compound/family/is-double-chain-characteristic.service.ts:60` |
 | `IsWaterfallsCharacteristicService.isDotFreeOpenStrandSet` | 5 | `CompoundUtilitiesService.isJunctionFree`, `DotCountCharacteristicService.compute`, `BettiNumber1CountCharacteristicService.compute`, `FreeEndCountCharacteristicService.compute`, `BettiNumber0CountCharacteristicService.compute` | `applications/meanderaw/src/modules/characteristics/compound/family/is-waterfalls-characteristic.service.ts:71` |
-| `ringCloses` | 5 | `from(…)`, `from(…)`, `pointDigitAt`, `every(…)`, `every(…)` | `applications/meanderaw/src/modules/characteristics/submatrix/rectangle/rectangle.utilities.ts:81` |
+| `RectangleUtilitiesService.ringCloses` | 5 | `RectangleUtilitiesService.from(…)`, `RectangleUtilitiesService.from(…)`, `SubmatrixUtilitiesService.pointDigitAt`, `RectangleUtilitiesService.every(…)`, `RectangleUtilitiesService.every(…)` | `applications/meanderaw/src/modules/characteristics/submatrix/rectangle/rectangle-utilities.service.ts:73` |
 | `DrawingService.render` | 5 | `GeometryService.compute`, `DrawingService.codeSegments`, `GeometryService.borderPath`, `SvgService.render`, `DrawingService.format` | `applications/meanderaw/src/modules/drawing/drawing.service.ts:125` |
 | `DrawCheckService.check` | 5 | `DrawEnumerationService.sweep`, `CorpusService.ingest`, `DrawCheckService.diff`, `DrawCheckService.hasDrift`, `MeanderDriftDetectedError.constructor` | `applications/meanderaw/src/modules/draw/draw-check.service.ts:162` |
 | `DrawIndexService.renderBand` | 5 | `GeometryService.compute`, `DrawIndexService.format`, `CodeService.parse`, `DrawingService.render`, `DrawIndexService.renderRepeats` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:151` |
@@ -3279,14 +3766,14 @@ What this project is judged against, as declared in its own `callidescope.config
 | `CharacteristicsService.compute` | 4 | `CharacteristicContextService.create`, `CharacteristicsService.map(…)`, `CharacteristicsService.evaluators`, `CharacteristicsService.assertCharacteristics` | `applications/meanderaw/src/modules/characteristics/characteristics.service.ts:201` |
 | `ReversesAtItsTightestTurnCharacteristicService.traceSinglePath` | 4 | `ReversesAtItsTightestTurnCharacteristicService.findStartNode`, `ReversesAtItsTightestTurnCharacteristicService.findNextNode`, `ReversesAtItsTightestTurnCharacteristicService.advancePath`, `ReversesAtItsTightestTurnCharacteristicService.checkFinalLoopTurn` | `applications/meanderaw/src/modules/characteristics/path/turn/reverses-at-its-tightest-turn-characteristic.service.ts:265` |
 | `ReversesAtItsTightestTurnCharacteristicService.compute` | 4 | `ReversesAtItsTightestTurnCharacteristicService.isJunctionFree`, `ConnectivityService.edges`, `ReversesAtItsTightestTurnCharacteristicService.buildAdjacencyGraph`, `ReversesAtItsTightestTurnCharacteristicService.tracePaths` | `applications/meanderaw/src/modules/characteristics/path/turn/reverses-at-its-tightest-turn-characteristic.service.ts:317` |
-| `ForkCountCharacteristicService.compute` | 4 | `NorthForkCountCharacteristicService.compute`, `SouthForkCountCharacteristicService.compute`, `EastForkCountCharacteristicService.compute`, `WestForkCountCharacteristicService.compute` | `applications/meanderaw/src/modules/characteristics/submatrix/fork/fork-count-characteristic.service.ts:54` |
+| `ForkCountCharacteristicService.compute` | 4 | `NorthForkCountCharacteristicService.compute`, `SouthForkCountCharacteristicService.compute`, `EastForkCountCharacteristicService.compute`, `WestForkCountCharacteristicService.compute` | `applications/meanderaw/src/modules/characteristics/submatrix/fork/fork-count-characteristic.service.ts:55` |
 | `IsClosedLoopCharacteristicService.compute` | 4 | `BettiNumber0CountCharacteristicService.compute`, `BettiNumber1CountCharacteristicService.compute`, `FreeEndCountCharacteristicService.compute`, `CompoundUtilitiesService.isJunctionFree` | `applications/meanderaw/src/modules/characteristics/compound/structure/is-closed-loop-characteristic.service.ts:53` |
 | `IsSingleArcCharacteristicService.compute` | 4 | `BettiNumber0CountCharacteristicService.compute`, `BettiNumber1CountCharacteristicService.compute`, `FreeEndCountCharacteristicService.compute`, `CompoundUtilitiesService.isJunctionFree` | `applications/meanderaw/src/modules/characteristics/compound/structure/is-single-arc-characteristic.service.ts:53` |
 | `IsBoxesCharacteristicService.compute` | 4 | `IsSingleArcCharacteristicService.compute`, `TileCrossingCountCharacteristicService.compute`, `EndsAreLatticeNeighborsCharacteristicService.compute`, `IsWaterfallsCharacteristicService.compute` | `applications/meanderaw/src/modules/characteristics/compound/family/is-boxes-characteristic.service.ts:56` |
 | `StrandUtilitiesService.isWrappingReversal` | 4 | `TileCrossingCountCharacteristicService.compute`, `ReversesAtItsTightestTurnCharacteristicService.compute`, `EndsOnBorderRulesCharacteristicService.compute`, `StrandUtilitiesService.isFullInkWithoutDots` | `applications/meanderaw/src/modules/characteristics/compound/family/strand-utilities.service.ts:94` |
 | `IsChainCharacteristicService.compute` | 4 | `IsSingleArcCharacteristicService.compute`, `StrandUtilitiesService.isWrappingReversal`, `LongestHorizontalRunLengthCharacteristicService.compute`, `LongestVerticalRunLengthCharacteristicService.compute` | `applications/meanderaw/src/modules/characteristics/compound/family/is-chain-characteristic.service.ts:57` |
 | `IsParallelCharacteristicService.compute` | 4 | `BettiNumber0CountCharacteristicService.compute`, `CompoundUtilitiesService.isJunctionFree`, `BettiNumber1CountCharacteristicService.compute`, `FreeEndCountCharacteristicService.compute` | `applications/meanderaw/src/modules/characteristics/compound/family/is-parallel-characteristic.service.ts:55` |
-| `CornerCountCharacteristicService.compute` | 4 | `NorthEastCornerCountCharacteristicService.compute`, `NorthWestCornerCountCharacteristicService.compute`, `SouthEastCornerCountCharacteristicService.compute`, `SouthWestCornerCountCharacteristicService.compute` | `applications/meanderaw/src/modules/characteristics/submatrix/corner/corner-count-characteristic.service.ts:55` |
+| `CornerCountCharacteristicService.compute` | 4 | `NorthEastCornerCountCharacteristicService.compute`, `NorthWestCornerCountCharacteristicService.compute`, `SouthEastCornerCountCharacteristicService.compute`, `SouthWestCornerCountCharacteristicService.compute` | `applications/meanderaw/src/modules/characteristics/submatrix/corner/corner-count-characteristic.service.ts:56` |
 | `TileEnumerationService.assign` | 4 | `TileEnumerationService.edges`, `TileEnumerationService.record`, `TileEnumerationService.set`, `TileEnumerationService.clear` | `applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:113` |
 | `DrawIndexService.renderSection` | 4 | `DrawIndexService.escape`, `DrawIndexService.label`, `DrawIndexService.renderUnclassifiedSection`, `DrawIndexService.map(…)` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:196` |
 | `CodeService.parse` | 3 | `CodeService.parseFormatted`, `CodeService.parseBare`, `InvalidCodeFormatError.constructor` | `applications/meanderaw/src/modules/code/code.service.ts:215` |
@@ -3294,23 +3781,23 @@ What this project is judged against, as declared in its own `callidescope.config
 | `ConnectivityService.edges` | 3 | `ConnectivityService.key`, `ConnectivityService.joinsEast`, `ConnectivityService.joinsSouth` | `applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:152` |
 | `CharacteristicsService.assertCharacteristics` | 3 | `CharacteristicsService.find(…)`, `CharacteristicRegistryError.constructor`, `CharacteristicsService.valueTypeOf` | `applications/meanderaw/src/modules/characteristics/characteristics.service.ts:73` |
 | `EndsOnBorderRulesCharacteristicService.compute` | 3 | `EndUtilitiesService.freeEndPoints`, `ConnectivityService.edges`, `EndsOnBorderRulesCharacteristicService.every(…)` | `applications/meanderaw/src/modules/characteristics/path/end/ends-on-border-rules-characteristic.service.ts:50` |
-| `countIsolatedGlyphs` | 3 | `glyphCells`, `map(…)`, `every(…)` | `applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:21` |
-| `flatMap(…)` | 3 | `map(…)`, `filter(…)`, `from(…)` | `applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:126` |
-| `strands` | 3 | `halfEdgeGraph`, `flatMap(…)`, `walk` | `applications/meanderaw/src/modules/characteristics/path/path.utilities.ts:83` |
-| `halfEdgeGraph` | 3 | `position`, `attach`, `opposite` | `applications/meanderaw/src/modules/characteristics/path/path.utilities.ts:132` |
-| `InflectionCountCharacteristicService.compute` | 3 | `InflectionCountCharacteristicService.reduce(…)`, `strands`, `ConnectivityService.edges` | `applications/meanderaw/src/modules/characteristics/path/turn/inflection-count-characteristic.service.ts:47` |
-| `InflectionCountCharacteristicService.reduce(…)` | 3 | `InflectionCountCharacteristicService.filter(…)`, `neighborPairs`, `signedTurns` | `applications/meanderaw/src/modules/characteristics/path/turn/inflection-count-characteristic.service.ts:51` |
-| `MaxMonotonicTurnLengthCharacteristicService.compute` | 3 | `MaxMonotonicTurnLengthCharacteristicService.map(…)`, `strands`, `ConnectivityService.edges` | `applications/meanderaw/src/modules/characteristics/path/turn/max-monotonic-turn-length-characteristic.service.ts:46` |
+| `SubmatrixUtilitiesService.flatMap(…)` | 3 | `SubmatrixUtilitiesService.map(…)`, `SubmatrixUtilitiesService.filter(…)`, `SubmatrixUtilitiesService.from(…)` | `applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:26` |
+| `SubmatrixUtilitiesService.countIsolatedGlyphs` | 3 | `SubmatrixUtilitiesService.glyphCells`, `SubmatrixUtilitiesService.map(…)`, `SubmatrixUtilitiesService.every(…)` | `applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:59` |
+| `PathUtilitiesService.halfEdgeGraph` | 3 | `PathUtilitiesService.position`, `PathUtilitiesService.attach`, `PathUtilitiesService.opposite` | `applications/meanderaw/src/modules/characteristics/path/path-utilities.service.ts:59` |
+| `PathUtilitiesService.strands` | 3 | `PathUtilitiesService.halfEdgeGraph`, `PathUtilitiesService.flatMap(…)`, `PathUtilitiesService.walk` | `applications/meanderaw/src/modules/characteristics/path/path-utilities.service.ts:205` |
+| `InflectionCountCharacteristicService.compute` | 3 | `InflectionCountCharacteristicService.reduce(…)`, `PathUtilitiesService.strands`, `ConnectivityService.edges` | `applications/meanderaw/src/modules/characteristics/path/turn/inflection-count-characteristic.service.ts:49` |
+| `InflectionCountCharacteristicService.reduce(…)` | 3 | `InflectionCountCharacteristicService.filter(…)`, `PathUtilitiesService.neighborPairs`, `PathUtilitiesService.signedTurns` | `applications/meanderaw/src/modules/characteristics/path/turn/inflection-count-characteristic.service.ts:53` |
+| `MaxMonotonicTurnLengthCharacteristicService.compute` | 3 | `MaxMonotonicTurnLengthCharacteristicService.map(…)`, `PathUtilitiesService.strands`, `ConnectivityService.edges` | `applications/meanderaw/src/modules/characteristics/path/turn/max-monotonic-turn-length-characteristic.service.ts:48` |
 | `ReversesAtItsTightestTurnCharacteristicService.advancePath` | 3 | `ReversesAtItsTightestTurnCharacteristicService.getDirection`, `ReversesAtItsTightestTurnCharacteristicService.applyTurn`, `ReversesAtItsTightestTurnCharacteristicService.findNextNode` | `applications/meanderaw/src/modules/characteristics/path/turn/reverses-at-its-tightest-turn-characteristic.service.ts:56` |
 | `ReversesAtItsTightestTurnCharacteristicService.findNextNode` | 3 | `ReversesAtItsTightestTurnCharacteristicService.getNeighbors`, `ReversesAtItsTightestTurnCharacteristicService.find(…)`, `ReversesAtItsTightestTurnCharacteristicService.find(…)` | `applications/meanderaw/src/modules/characteristics/path/turn/reverses-at-its-tightest-turn-characteristic.service.ts:156` |
-| `TightestTurnCountCharacteristicService.compute` | 3 | `TightestTurnCountCharacteristicService.reduce(…)`, `strands`, `ConnectivityService.edges` | `applications/meanderaw/src/modules/characteristics/path/turn/tightest-turn-count-characteristic.service.ts:47` |
-| `TotalTurnCountCharacteristicService.compute` | 3 | `TotalTurnCountCharacteristicService.reduce(…)`, `strands`, `ConnectivityService.edges` | `applications/meanderaw/src/modules/characteristics/path/turn/total-turn-count-characteristic.service.ts:46` |
+| `TightestTurnCountCharacteristicService.compute` | 3 | `TightestTurnCountCharacteristicService.reduce(…)`, `PathUtilitiesService.strands`, `ConnectivityService.edges` | `applications/meanderaw/src/modules/characteristics/path/turn/tightest-turn-count-characteristic.service.ts:49` |
+| `TotalTurnCountCharacteristicService.compute` | 3 | `TotalTurnCountCharacteristicService.reduce(…)`, `PathUtilitiesService.strands`, `ConnectivityService.edges` | `applications/meanderaw/src/modules/characteristics/path/turn/total-turn-count-characteristic.service.ts:48` |
 | `IsCombCharacteristicService.isVerticalComb` | 3 | `IsCombCharacteristicService.from(…)`, `IsCombCharacteristicService.map(…)`, `IsCombCharacteristicService.map(…)` | `applications/meanderaw/src/modules/characteristics/compound/family/is-comb-characteristic.service.ts:138` |
 | `IsClaspsCharacteristicService.compute` | 3 | `StrandUtilitiesService.isTileBoundCoil`, `ReversesAtItsTightestTurnCharacteristicService.compute`, `StrandUtilitiesService.hasStrandEnds` | `applications/meanderaw/src/modules/characteristics/compound/family/is-clasps-characteristic.service.ts:50` |
 | `IsStippledCharacteristicService.compute` | 3 | `BettiNumber0CountCharacteristicService.compute`, `DotCountCharacteristicService.compute`, `ForkCountCharacteristicService.compute` | `applications/meanderaw/src/modules/characteristics/compound/family/is-stippled-characteristic.service.ts:50` |
 | `IsSwirlCharacteristicService.compute` | 3 | `StrandUtilitiesService.isTileBoundCoil`, `EndsOnBorderRulesCharacteristicService.compute`, `StrandUtilitiesService.hasStrandEnds` | `applications/meanderaw/src/modules/characteristics/compound/family/is-swirl-characteristic.service.ts:50` |
 | `IsWhirlCharacteristicService.compute` | 3 | `StrandUtilitiesService.isTileBoundCoil`, `IsWhirlCharacteristicService.isSingleWhirl`, `IsWhirlCharacteristicService.isDoubleWhirl` | `applications/meanderaw/src/modules/characteristics/compound/family/is-whirl-characteristic.service.ts:66` |
-| `isIsolatedRectangleAt` | 3 | `pointDigitAt`, `sideLength`, `ringCloses` | `applications/meanderaw/src/modules/characteristics/submatrix/rectangle/rectangle.utilities.ts:46` |
+| `RectangleUtilitiesService.isIsolatedRectangleAt` | 3 | `SubmatrixUtilitiesService.pointDigitAt`, `RectangleUtilitiesService.sideLength`, `RectangleUtilitiesService.ringCloses` | `applications/meanderaw/src/modules/characteristics/submatrix/rectangle/rectangle-utilities.service.ts:32` |
 | `TileEnumerationService.record` | 3 | `TileService.build`, `SymmetryService.canonicalTile`, `SymmetryService.edgeKey` | `applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:148` |
 | `MeanderDriftDetectedError.describe` | 3 | `MeanderDriftDetectedError.map(…)`, `MeanderDriftDetectedError.map(…)`, `MeanderDriftDetectedError.map(…)` | `applications/meanderaw/src/modules/draw/draw-check.constants.ts:74` |
 | `DrawCheckService.diff` | 3 | `DrawCheckService.index`, `DrawCheckService.findNewAndChanged`, `DrawCheckService.findMissing` | `applications/meanderaw/src/modules/draw/draw-check.service.ts:204` |
@@ -3342,14 +3829,14 @@ What this project is judged against, as declared in its own `callidescope.config
 | `CharacteristicsService.tileCrossingComponentDeltaCount` | 2 | `TileCrossingComponentDeltaCountCharacteristicService.compute`, `CharacteristicContextService.createUnreduced` | `applications/meanderaw/src/modules/characteristics/characteristics.service.ts:256` |
 | `EndUtilitiesService.freeEndPoints` | 2 | `EndUtilitiesService.bump`, `EndUtilitiesService.position` | `applications/meanderaw/src/modules/characteristics/path/end/end-utilities.service.ts:41` |
 | `EndsAreLatticeNeighborsCharacteristicService.compute` | 2 | `EndUtilitiesService.freeEndPoints`, `ConnectivityService.edges` | `applications/meanderaw/src/modules/characteristics/path/end/ends-are-lattice-neighbors-characteristic.service.ts:51` |
-| `longestRun` | 2 | `findIndex(…)`, `neighborPairs` | `applications/meanderaw/src/modules/characteristics/path/path.utilities.ts:11` |
-| `rowTouchCount` | 2 | `position`, `filter(…)` | `applications/meanderaw/src/modules/characteristics/path/path.utilities.ts:54` |
-| `walk` | 2 | `continuation`, `turnBetween` | `applications/meanderaw/src/modules/characteristics/path/path.utilities.ts:173` |
-| `BottomBorderTouchCountCharacteristicService.compute` | 2 | `rowTouchCount`, `ConnectivityService.edges` | `applications/meanderaw/src/modules/characteristics/path/turn/bottom-border-touch-count-characteristic.service.ts:47` |
-| `MaxMonotonicTurnLengthCharacteristicService.map(…)` | 2 | `longestRun`, `signedTurns` | `applications/meanderaw/src/modules/characteristics/path/turn/max-monotonic-turn-length-characteristic.service.ts:50` |
-| `TightestTurnCountCharacteristicService.reduce(…)` | 2 | `TightestTurnCountCharacteristicService.filter(…)`, `neighborPairs` | `applications/meanderaw/src/modules/characteristics/path/turn/tightest-turn-count-characteristic.service.ts:51` |
-| `TopBorderTouchCountCharacteristicService.compute` | 2 | `rowTouchCount`, `ConnectivityService.edges` | `applications/meanderaw/src/modules/characteristics/path/turn/top-border-touch-count-characteristic.service.ts:47` |
-| `EmbeddedUCountCharacteristicService.compute` | 2 | `EmbeddedUCountCharacteristicService.isEmbeddedU`, `EmbeddedUCountCharacteristicService.windowDigits` | `applications/meanderaw/src/modules/characteristics/submatrix/embedded/embedded-u-count-characteristic.service.ts:84` |
+| `PathUtilitiesService.walk` | 2 | `PathUtilitiesService.continuation`, `PathUtilitiesService.turnBetween` | `applications/meanderaw/src/modules/characteristics/path/path-utilities.service.ts:107` |
+| `PathUtilitiesService.longestRun` | 2 | `PathUtilitiesService.findIndex(…)`, `PathUtilitiesService.neighborPairs` | `applications/meanderaw/src/modules/characteristics/path/path-utilities.service.ts:133` |
+| `PathUtilitiesService.rowTouchCount` | 2 | `PathUtilitiesService.position`, `PathUtilitiesService.filter(…)` | `applications/meanderaw/src/modules/characteristics/path/path-utilities.service.ts:176` |
+| `BottomBorderTouchCountCharacteristicService.compute` | 2 | `PathUtilitiesService.rowTouchCount`, `ConnectivityService.edges` | `applications/meanderaw/src/modules/characteristics/path/turn/bottom-border-touch-count-characteristic.service.ts:49` |
+| `MaxMonotonicTurnLengthCharacteristicService.map(…)` | 2 | `PathUtilitiesService.longestRun`, `PathUtilitiesService.signedTurns` | `applications/meanderaw/src/modules/characteristics/path/turn/max-monotonic-turn-length-characteristic.service.ts:53` |
+| `TightestTurnCountCharacteristicService.reduce(…)` | 2 | `TightestTurnCountCharacteristicService.filter(…)`, `PathUtilitiesService.neighborPairs` | `applications/meanderaw/src/modules/characteristics/path/turn/tightest-turn-count-characteristic.service.ts:53` |
+| `TopBorderTouchCountCharacteristicService.compute` | 2 | `PathUtilitiesService.rowTouchCount`, `ConnectivityService.edges` | `applications/meanderaw/src/modules/characteristics/path/turn/top-border-touch-count-characteristic.service.ts:49` |
+| `EmbeddedUCountCharacteristicService.compute` | 2 | `EmbeddedUCountCharacteristicService.isEmbeddedU`, `EmbeddedUCountCharacteristicService.windowDigits` | `applications/meanderaw/src/modules/characteristics/submatrix/embedded/embedded-u-count-characteristic.service.ts:92` |
 | `CompoundUtilitiesService.isJunctionFree` | 2 | `ForkCountCharacteristicService.compute`, `CrossCountCharacteristicService.compute` | `applications/meanderaw/src/modules/characteristics/compound/compound-utilities.service.ts:33` |
 | `IsCombCharacteristicService.isHorizontalComb` | 2 | `IsCombCharacteristicService.from(…)`, `IsCombCharacteristicService.filter(…)` | `applications/meanderaw/src/modules/characteristics/compound/family/is-comb-characteristic.service.ts:101` |
 | `IsCombCharacteristicService.isReversingComb` | 2 | `IsCombCharacteristicService.hasDownTeeth`, `IsCombCharacteristicService.hasUpTeeth` | `applications/meanderaw/src/modules/characteristics/compound/family/is-comb-characteristic.service.ts:120` |
@@ -3357,8 +3844,54 @@ What this project is judged against, as declared in its own `callidescope.config
 | `StrandUtilitiesService.hasStrandEnds` | 2 | `BettiNumber0CountCharacteristicService.compute`, `FreeEndCountCharacteristicService.compute` | `applications/meanderaw/src/modules/characteristics/compound/family/strand-utilities.service.ts:61` |
 | `StrandUtilitiesService.isFullInkWithoutDots` | 2 | `DensityCharacteristicService.compute`, `DotCountCharacteristicService.compute` | `applications/meanderaw/src/modules/characteristics/compound/family/strand-utilities.service.ts:72` |
 | `IsCrossCharacteristicService.compute` | 2 | `CrossCountCharacteristicService.compute`, `IsMeshCharacteristicService.compute` | `applications/meanderaw/src/modules/characteristics/compound/family/is-cross-characteristic.service.ts:49` |
-| `HorizontalRectangleCountCharacteristicService.compute` | 2 | `HorizontalRectangleCountCharacteristicService.countIsolatedRectangles(…)`, `countIsolatedRectangles` | `applications/meanderaw/src/modules/characteristics/submatrix/rectangle/horizontal-rectangle-count-characteristic.service.ts:44` |
-| `VerticalRectangleCountCharacteristicService.compute` | 2 | `VerticalRectangleCountCharacteristicService.countIsolatedRectangles(…)`, `countIsolatedRectangles` | `applications/meanderaw/src/modules/characteristics/submatrix/rectangle/vertical-rectangle-count-characteristic.service.ts:44` |
+| `AEastLetterCountCharacteristicService.constructor` | 2 | `SubmatrixUtilitiesService.glyphFormula`, `SubmatrixUtilitiesService.glyphWindow` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/a-east-letter-count-characteristic.service.ts:25` |
+| `AInvertedLetterCountCharacteristicService.constructor` | 2 | `SubmatrixUtilitiesService.glyphFormula`, `SubmatrixUtilitiesService.glyphWindow` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/a-inverted-letter-count-characteristic.service.ts:26` |
+| `ALetterCountCharacteristicService.constructor` | 2 | `SubmatrixUtilitiesService.glyphFormula`, `SubmatrixUtilitiesService.glyphWindow` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/a-letter-count-characteristic.service.ts:26` |
+| `AWestLetterCountCharacteristicService.constructor` | 2 | `SubmatrixUtilitiesService.glyphFormula`, `SubmatrixUtilitiesService.glyphWindow` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/a-west-letter-count-characteristic.service.ts:25` |
+| `BLetterCountCharacteristicService.constructor` | 2 | `SubmatrixUtilitiesService.glyphFormula`, `SubmatrixUtilitiesService.glyphWindow` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/b-letter-count-characteristic.service.ts:26` |
+| `BSidewaysLetterCountCharacteristicService.constructor` | 2 | `SubmatrixUtilitiesService.glyphFormula`, `SubmatrixUtilitiesService.glyphWindow` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/b-sideways-letter-count-characteristic.service.ts:25` |
+| `CLetterCountCharacteristicService.constructor` | 2 | `SubmatrixUtilitiesService.glyphFormula`, `SubmatrixUtilitiesService.glyphWindow` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/c-letter-count-characteristic.service.ts:25` |
+| `CWestLetterCountCharacteristicService.constructor` | 2 | `SubmatrixUtilitiesService.glyphFormula`, `SubmatrixUtilitiesService.glyphWindow` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/c-west-letter-count-characteristic.service.ts:25` |
+| `EDownLetterCountCharacteristicService.constructor` | 2 | `SubmatrixUtilitiesService.glyphFormula`, `SubmatrixUtilitiesService.glyphWindow` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/e-down-letter-count-characteristic.service.ts:25` |
+| `ELetterCountCharacteristicService.constructor` | 2 | `SubmatrixUtilitiesService.glyphFormula`, `SubmatrixUtilitiesService.glyphWindow` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/e-letter-count-characteristic.service.ts:26` |
+| `EUpLetterCountCharacteristicService.constructor` | 2 | `SubmatrixUtilitiesService.glyphFormula`, `SubmatrixUtilitiesService.glyphWindow` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/e-up-letter-count-characteristic.service.ts:25` |
+| `EWestLetterCountCharacteristicService.constructor` | 2 | `SubmatrixUtilitiesService.glyphFormula`, `SubmatrixUtilitiesService.glyphWindow` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/e-west-letter-count-characteristic.service.ts:26` |
+| `FDownLetterCountCharacteristicService.constructor` | 2 | `SubmatrixUtilitiesService.glyphFormula`, `SubmatrixUtilitiesService.glyphWindow` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/f-down-letter-count-characteristic.service.ts:25` |
+| `FLetterCountCharacteristicService.constructor` | 2 | `SubmatrixUtilitiesService.glyphFormula`, `SubmatrixUtilitiesService.glyphWindow` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/f-letter-count-characteristic.service.ts:26` |
+| `FUpLetterCountCharacteristicService.constructor` | 2 | `SubmatrixUtilitiesService.glyphFormula`, `SubmatrixUtilitiesService.glyphWindow` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/f-up-letter-count-characteristic.service.ts:25` |
+| `FWestLetterCountCharacteristicService.constructor` | 2 | `SubmatrixUtilitiesService.glyphFormula`, `SubmatrixUtilitiesService.glyphWindow` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/f-west-letter-count-characteristic.service.ts:26` |
+| `HLetterCountCharacteristicService.constructor` | 2 | `SubmatrixUtilitiesService.glyphFormula`, `SubmatrixUtilitiesService.glyphWindow` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/h-letter-count-characteristic.service.ts:26` |
+| `HSidewaysLetterCountCharacteristicService.constructor` | 2 | `SubmatrixUtilitiesService.glyphFormula`, `SubmatrixUtilitiesService.glyphWindow` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/h-sideways-letter-count-characteristic.service.ts:25` |
+| `ILetterCountCharacteristicService.constructor` | 2 | `SubmatrixUtilitiesService.glyphFormula`, `SubmatrixUtilitiesService.glyphWindow` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/i-letter-count-characteristic.service.ts:25` |
+| `ISidewaysLetterCountCharacteristicService.constructor` | 2 | `SubmatrixUtilitiesService.glyphFormula`, `SubmatrixUtilitiesService.glyphWindow` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/i-sideways-letter-count-characteristic.service.ts:24` |
+| `LDownLetterCountCharacteristicService.constructor` | 2 | `SubmatrixUtilitiesService.glyphFormula`, `SubmatrixUtilitiesService.glyphWindow` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/l-down-letter-count-characteristic.service.ts:25` |
+| `LLetterCountCharacteristicService.constructor` | 2 | `SubmatrixUtilitiesService.glyphFormula`, `SubmatrixUtilitiesService.glyphWindow` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/l-letter-count-characteristic.service.ts:25` |
+| `LUpLetterCountCharacteristicService.constructor` | 2 | `SubmatrixUtilitiesService.glyphFormula`, `SubmatrixUtilitiesService.glyphWindow` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/l-up-letter-count-characteristic.service.ts:25` |
+| `LWestLetterCountCharacteristicService.constructor` | 2 | `SubmatrixUtilitiesService.glyphFormula`, `SubmatrixUtilitiesService.glyphWindow` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/l-west-letter-count-characteristic.service.ts:25` |
+| `MEastLetterCountCharacteristicService.constructor` | 2 | `SubmatrixUtilitiesService.glyphFormula`, `SubmatrixUtilitiesService.glyphWindow` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/m-east-letter-count-characteristic.service.ts:26` |
+| `MLetterCountCharacteristicService.constructor` | 2 | `SubmatrixUtilitiesService.glyphFormula`, `SubmatrixUtilitiesService.glyphWindow` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/m-letter-count-characteristic.service.ts:26` |
+| `MWestLetterCountCharacteristicService.constructor` | 2 | `SubmatrixUtilitiesService.glyphFormula`, `SubmatrixUtilitiesService.glyphWindow` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/m-west-letter-count-characteristic.service.ts:26` |
+| `NLetterCountCharacteristicService.constructor` | 2 | `SubmatrixUtilitiesService.glyphFormula`, `SubmatrixUtilitiesService.glyphWindow` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/n-letter-count-characteristic.service.ts:26` |
+| `NSidewaysLetterCountCharacteristicService.constructor` | 2 | `SubmatrixUtilitiesService.glyphFormula`, `SubmatrixUtilitiesService.glyphWindow` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/n-sideways-letter-count-characteristic.service.ts:26` |
+| `OLetterCountCharacteristicService.constructor` | 2 | `SubmatrixUtilitiesService.glyphFormula`, `SubmatrixUtilitiesService.glyphWindow` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/o-letter-count-characteristic.service.ts:24` |
+| `SLetterCountCharacteristicService.constructor` | 2 | `SubmatrixUtilitiesService.glyphFormula`, `SubmatrixUtilitiesService.glyphWindow` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/s-letter-count-characteristic.service.ts:26` |
+| `SSidewaysLetterCountCharacteristicService.constructor` | 2 | `SubmatrixUtilitiesService.glyphFormula`, `SubmatrixUtilitiesService.glyphWindow` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/s-sideways-letter-count-characteristic.service.ts:25` |
+| `TEastLetterCountCharacteristicService.constructor` | 2 | `SubmatrixUtilitiesService.glyphFormula`, `SubmatrixUtilitiesService.glyphWindow` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/t-east-letter-count-characteristic.service.ts:26` |
+| `TLetterCountCharacteristicService.constructor` | 2 | `SubmatrixUtilitiesService.glyphFormula`, `SubmatrixUtilitiesService.glyphWindow` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/t-letter-count-characteristic.service.ts:25` |
+| `TUpLetterCountCharacteristicService.constructor` | 2 | `SubmatrixUtilitiesService.glyphFormula`, `SubmatrixUtilitiesService.glyphWindow` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/t-up-letter-count-characteristic.service.ts:25` |
+| `TWestLetterCountCharacteristicService.constructor` | 2 | `SubmatrixUtilitiesService.glyphFormula`, `SubmatrixUtilitiesService.glyphWindow` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/t-west-letter-count-characteristic.service.ts:26` |
+| `UInvertedLetterCountCharacteristicService.constructor` | 2 | `SubmatrixUtilitiesService.glyphFormula`, `SubmatrixUtilitiesService.glyphWindow` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/u-inverted-letter-count-characteristic.service.ts:25` |
+| `ULetterCountCharacteristicService.constructor` | 2 | `SubmatrixUtilitiesService.glyphFormula`, `SubmatrixUtilitiesService.glyphWindow` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/u-letter-count-characteristic.service.ts:25` |
+| `WLetterCountCharacteristicService.constructor` | 2 | `SubmatrixUtilitiesService.glyphFormula`, `SubmatrixUtilitiesService.glyphWindow` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/w-letter-count-characteristic.service.ts:26` |
+| `XLetterCountCharacteristicService.constructor` | 2 | `SubmatrixUtilitiesService.glyphFormula`, `SubmatrixUtilitiesService.glyphWindow` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/x-letter-count-characteristic.service.ts:25` |
+| `YEastLetterCountCharacteristicService.constructor` | 2 | `SubmatrixUtilitiesService.glyphFormula`, `SubmatrixUtilitiesService.glyphWindow` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/y-east-letter-count-characteristic.service.ts:26` |
+| `YLetterCountCharacteristicService.constructor` | 2 | `SubmatrixUtilitiesService.glyphFormula`, `SubmatrixUtilitiesService.glyphWindow` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/y-letter-count-characteristic.service.ts:26` |
+| `YUpLetterCountCharacteristicService.constructor` | 2 | `SubmatrixUtilitiesService.glyphFormula`, `SubmatrixUtilitiesService.glyphWindow` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/y-up-letter-count-characteristic.service.ts:26` |
+| `YWestLetterCountCharacteristicService.constructor` | 2 | `SubmatrixUtilitiesService.glyphFormula`, `SubmatrixUtilitiesService.glyphWindow` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/y-west-letter-count-characteristic.service.ts:26` |
+| `ZLetterCountCharacteristicService.constructor` | 2 | `SubmatrixUtilitiesService.glyphFormula`, `SubmatrixUtilitiesService.glyphWindow` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/z-letter-count-characteristic.service.ts:26` |
+| `ZSidewaysLetterCountCharacteristicService.constructor` | 2 | `SubmatrixUtilitiesService.glyphFormula`, `SubmatrixUtilitiesService.glyphWindow` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/z-sideways-letter-count-characteristic.service.ts:25` |
+| `HorizontalRectangleCountCharacteristicService.compute` | 2 | `HorizontalRectangleCountCharacteristicService.countIsolatedRectangles(…)`, `RectangleUtilitiesService.countIsolatedRectangles` | `applications/meanderaw/src/modules/characteristics/submatrix/rectangle/horizontal-rectangle-count-characteristic.service.ts:48` |
+| `VerticalRectangleCountCharacteristicService.compute` | 2 | `VerticalRectangleCountCharacteristicService.countIsolatedRectangles(…)`, `RectangleUtilitiesService.countIsolatedRectangles` | `applications/meanderaw/src/modules/characteristics/submatrix/rectangle/vertical-rectangle-count-characteristic.service.ts:48` |
 | `DrawingService.codeSegments` | 2 | `CodeService.directionsAt`, `DrawingService.pointSegments` | `applications/meanderaw/src/modules/drawing/drawing.service.ts:54` |
 | `DrawingService.pointSegments` | 2 | `DrawingService.format`, `DrawingService.isBare` | `applications/meanderaw/src/modules/drawing/drawing.service.ts:95` |
 | `TileEnumerationService.set` | 2 | `TileEnumerationService.address`, `TileService.mark` | `applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:160` |
@@ -3431,38 +3964,43 @@ What this project is judged against, as declared in its own `callidescope.config
 | `BettiNumber0CountCharacteristicService.compute` | 1 | `ConnectivityService.connectivity` | `applications/meanderaw/src/modules/characteristics/path/topology/betti-number-0-count-characteristic.service.ts:46` |
 | `BettiNumber1CountCharacteristicService.compute` | 1 | `ConnectivityService.connectivity` | `applications/meanderaw/src/modules/characteristics/path/topology/betti-number-1-count-characteristic.service.ts:46` |
 | `FreeEndCountCharacteristicService.compute` | 1 | `ConnectivityService.connectivity` | `applications/meanderaw/src/modules/characteristics/path/topology/free-end-count-characteristic.service.ts:46` |
-| `InkPointCountCharacteristicService.compute` | 1 | `PointUtilitiesService.armCount` | `applications/meanderaw/src/modules/characteristics/submatrix/point/ink-point-count-characteristic.service.ts:44` |
-| `DensityCharacteristicService.compute` | 1 | `InkPointCountCharacteristicService.compute` | `applications/meanderaw/src/modules/characteristics/submatrix/point/density-characteristic.service.ts:45` |
-| `every(…)` | 1 | `pointDigitAt` | `applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:37` |
-| `glyphFormula` | 1 | `map(…)` | `applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:87` |
-| `map(…)` | 1 | `from(…)` | `applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:89` |
-| `glyphCells` | 1 | `flatMap(…)` | `applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:125` |
-| `DotCountCharacteristicService.compute` | 1 | `countPointsWithExactArms` | `applications/meanderaw/src/modules/characteristics/submatrix/point/dot-count-characteristic.service.ts:40` |
-| `EdgeCountCharacteristicService.compute` | 1 | `PointUtilitiesService.armCount` | `applications/meanderaw/src/modules/characteristics/submatrix/point/edge-count-characteristic.service.ts:47` |
-| `HorizontalEdgeCountCharacteristicService.compute` | 1 | `countPointsWithExactArms` | `applications/meanderaw/src/modules/characteristics/submatrix/point/horizontal-edge-count-characteristic.service.ts:41` |
-| `VerticalEdgeCountCharacteristicService.compute` | 1 | `countPointsWithExactArms` | `applications/meanderaw/src/modules/characteristics/submatrix/point/vertical-edge-count-characteristic.service.ts:41` |
-| `neighborPairs` | 1 | `map(…)` | `applications/meanderaw/src/modules/characteristics/path/path.utilities.ts:31` |
-| `signedTurns` | 1 | `filter(…)` | `applications/meanderaw/src/modules/characteristics/path/path.utilities.ts:74` |
-| `continuation` | 1 | `find(…)` | `applications/meanderaw/src/modules/characteristics/path/path.utilities.ts:112` |
-| `find(…)` | 1 | `opposite` | `applications/meanderaw/src/modules/characteristics/path/path.utilities.ts:120` |
+| `SubmatrixUtilitiesService.glyphCells` | 1 | `SubmatrixUtilitiesService.flatMap(…)` | `applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:25` |
+| `SubmatrixUtilitiesService.every(…)` | 1 | `SubmatrixUtilitiesService.pointDigitAt` | `applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:75` |
+| `SubmatrixUtilitiesService.glyphFormula` | 1 | `SubmatrixUtilitiesService.map(…)` | `applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:147` |
+| `SubmatrixUtilitiesService.map(…)` | 1 | `SubmatrixUtilitiesService.from(…)` | `applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:149` |
+| `SubmatrixUtilitiesService.glyphWindow` | 1 | `SubmatrixUtilitiesService.map(…)` | `applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:165` |
+| `InkPointCountCharacteristicService.compute` | 1 | `PointUtilitiesService.armCount` | `applications/meanderaw/src/modules/characteristics/submatrix/point/ink-point-count-characteristic.service.ts:45` |
+| `DensityCharacteristicService.compute` | 1 | `InkPointCountCharacteristicService.compute` | `applications/meanderaw/src/modules/characteristics/submatrix/point/density-characteristic.service.ts:46` |
+| `DotCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countPointsWithExactArms` | `applications/meanderaw/src/modules/characteristics/submatrix/point/dot-count-characteristic.service.ts:44` |
+| `DoubleHorizontalEdgeCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countPointsWithExactArms` | `applications/meanderaw/src/modules/characteristics/submatrix/point/double-horizontal-edge-count-characteristic.service.ts:47` |
+| `DoubleVerticalEdgeCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countPointsWithExactArms` | `applications/meanderaw/src/modules/characteristics/submatrix/point/double-vertical-edge-count-characteristic.service.ts:47` |
+| `EastEdgeCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countPointsWithArm` | `applications/meanderaw/src/modules/characteristics/submatrix/point/east-edge-count-characteristic.service.ts:46` |
+| `EdgeCountCharacteristicService.compute` | 1 | `PointUtilitiesService.armCount` | `applications/meanderaw/src/modules/characteristics/submatrix/point/edge-count-characteristic.service.ts:48` |
+| `NorthEdgeCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countPointsWithArm` | `applications/meanderaw/src/modules/characteristics/submatrix/point/north-edge-count-characteristic.service.ts:46` |
+| `SouthEdgeCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countPointsWithArm` | `applications/meanderaw/src/modules/characteristics/submatrix/point/south-edge-count-characteristic.service.ts:46` |
+| `WestEdgeCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countPointsWithArm` | `applications/meanderaw/src/modules/characteristics/submatrix/point/west-edge-count-characteristic.service.ts:46` |
+| `PathUtilitiesService.continuation` | 1 | `PathUtilitiesService.find(…)` | `applications/meanderaw/src/modules/characteristics/path/path-utilities.service.ts:39` |
+| `PathUtilitiesService.find(…)` | 1 | `PathUtilitiesService.opposite` | `applications/meanderaw/src/modules/characteristics/path/path-utilities.service.ts:47` |
+| `PathUtilitiesService.neighborPairs` | 1 | `PathUtilitiesService.map(…)` | `applications/meanderaw/src/modules/characteristics/path/path-utilities.service.ts:153` |
+| `PathUtilitiesService.signedTurns` | 1 | `PathUtilitiesService.filter(…)` | `applications/meanderaw/src/modules/characteristics/path/path-utilities.service.ts:196` |
 | `ReversesAtItsTightestTurnCharacteristicService.checkFinalLoopTurn` | 1 | `ReversesAtItsTightestTurnCharacteristicService.applyTurn` | `applications/meanderaw/src/modules/characteristics/path/turn/reverses-at-its-tightest-turn-characteristic.service.ts:134` |
 | `ReversesAtItsTightestTurnCharacteristicService.findStartNode` | 1 | `ReversesAtItsTightestTurnCharacteristicService.getNeighbors` | `applications/meanderaw/src/modules/characteristics/path/turn/reverses-at-its-tightest-turn-characteristic.service.ts:171` |
 | `ReversesAtItsTightestTurnCharacteristicService.getDirection` | 1 | `ReversesAtItsTightestTurnCharacteristicService.parseKey` | `applications/meanderaw/src/modules/characteristics/path/turn/reverses-at-its-tightest-turn-characteristic.service.ts:197` |
 | `ReversesAtItsTightestTurnCharacteristicService.isJunctionFree` | 1 | `PointUtilitiesService.armCount` | `applications/meanderaw/src/modules/characteristics/path/turn/reverses-at-its-tightest-turn-characteristic.service.ts:223` |
 | `ReversesAtItsTightestTurnCharacteristicService.tracePaths` | 1 | `ReversesAtItsTightestTurnCharacteristicService.traceSinglePath` | `applications/meanderaw/src/modules/characteristics/path/turn/reverses-at-its-tightest-turn-characteristic.service.ts:242` |
-| `TotalTurnCountCharacteristicService.reduce(…)` | 1 | `signedTurns` | `applications/meanderaw/src/modules/characteristics/path/turn/total-turn-count-characteristic.service.ts:49` |
-| `CrossCountCharacteristicService.compute` | 1 | `countPointsWithExactArms` | `applications/meanderaw/src/modules/characteristics/submatrix/cross/cross-count-characteristic.service.ts:41` |
-| `EmbeddedUCountCharacteristicService.windowDigits` | 1 | `pointDigitAt` | `applications/meanderaw/src/modules/characteristics/submatrix/embedded/embedded-u-count-characteristic.service.ts:68` |
-| `EastForkCountCharacteristicService.compute` | 1 | `countPointsWithExactArms` | `applications/meanderaw/src/modules/characteristics/submatrix/fork/east-fork-count-characteristic.service.ts:42` |
-| `NorthForkCountCharacteristicService.compute` | 1 | `countPointsWithExactArms` | `applications/meanderaw/src/modules/characteristics/submatrix/fork/north-fork-count-characteristic.service.ts:42` |
-| `SouthForkCountCharacteristicService.compute` | 1 | `countPointsWithExactArms` | `applications/meanderaw/src/modules/characteristics/submatrix/fork/south-fork-count-characteristic.service.ts:42` |
-| `WestForkCountCharacteristicService.compute` | 1 | `countPointsWithExactArms` | `applications/meanderaw/src/modules/characteristics/submatrix/fork/west-fork-count-characteristic.service.ts:42` |
+| `TotalTurnCountCharacteristicService.reduce(…)` | 1 | `PathUtilitiesService.signedTurns` | `applications/meanderaw/src/modules/characteristics/path/turn/total-turn-count-characteristic.service.ts:52` |
+| `CrossCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countPointsWithExactArms` | `applications/meanderaw/src/modules/characteristics/submatrix/cross/cross-count-characteristic.service.ts:45` |
+| `EmbeddedUCountCharacteristicService.windowDigits` | 1 | `SubmatrixUtilitiesService.pointDigitAt` | `applications/meanderaw/src/modules/characteristics/submatrix/embedded/embedded-u-count-characteristic.service.ts:72` |
+| `EastForkCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countPointsWithExactArms` | `applications/meanderaw/src/modules/characteristics/submatrix/fork/east-fork-count-characteristic.service.ts:46` |
+| `NorthForkCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countPointsWithExactArms` | `applications/meanderaw/src/modules/characteristics/submatrix/fork/north-fork-count-characteristic.service.ts:46` |
+| `SouthForkCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countPointsWithExactArms` | `applications/meanderaw/src/modules/characteristics/submatrix/fork/south-fork-count-characteristic.service.ts:46` |
+| `WestForkCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countPointsWithExactArms` | `applications/meanderaw/src/modules/characteristics/submatrix/fork/west-fork-count-characteristic.service.ts:46` |
 | `RunUtilitiesService.longestHorizontalRunLength` | 1 | `RunUtilitiesService.map(…)` | `applications/meanderaw/src/modules/characteristics/submatrix/run/run-utilities.service.ts:67` |
 | `RunUtilitiesService.map(…)` | 1 | `RunUtilitiesService.longestRowRunLength` | `applications/meanderaw/src/modules/characteristics/submatrix/run/run-utilities.service.ts:74` |
 | `RunUtilitiesService.longestVerticalRunLength` | 1 | `RunUtilitiesService.from(…)` | `applications/meanderaw/src/modules/characteristics/submatrix/run/run-utilities.service.ts:84` |
 | `RunUtilitiesService.from(…)` | 1 | `RunUtilitiesService.longestColumnRunLength` | `applications/meanderaw/src/modules/characteristics/submatrix/run/run-utilities.service.ts:91` |
-| `LongestHorizontalRunLengthCharacteristicService.compute` | 1 | `RunUtilitiesService.longestHorizontalRunLength` | `applications/meanderaw/src/modules/characteristics/submatrix/run/longest-horizontal-run-length-characteristic.service.ts:45` |
-| `LongestVerticalRunLengthCharacteristicService.compute` | 1 | `RunUtilitiesService.longestVerticalRunLength` | `applications/meanderaw/src/modules/characteristics/submatrix/run/longest-vertical-run-length-characteristic.service.ts:45` |
+| `LongestHorizontalRunLengthCharacteristicService.compute` | 1 | `RunUtilitiesService.longestHorizontalRunLength` | `applications/meanderaw/src/modules/characteristics/submatrix/run/longest-horizontal-run-length-characteristic.service.ts:46` |
+| `LongestVerticalRunLengthCharacteristicService.compute` | 1 | `RunUtilitiesService.longestVerticalRunLength` | `applications/meanderaw/src/modules/characteristics/submatrix/run/longest-vertical-run-length-characteristic.service.ts:46` |
 | `FamilyUtilitiesService.grid` | 1 | `FamilyUtilitiesService.from(…)` | `applications/meanderaw/src/modules/characteristics/compound/family/family-utilities.service.ts:26` |
 | `IsBarsCharacteristicService.compute` | 1 | `FamilyUtilitiesService.matchesRails` | `applications/meanderaw/src/modules/characteristics/compound/family/is-bars-characteristic.service.ts:45` |
 | `IsMeshCharacteristicService.compute` | 1 | `FamilyUtilitiesService.matchesRails` | `applications/meanderaw/src/modules/characteristics/compound/family/is-mesh-characteristic.service.ts:45` |
@@ -3472,60 +4010,60 @@ What this project is judged against, as declared in its own `callidescope.config
 | `IsSnakeCharacteristicService.compute` | 1 | `IsClosedLoopCharacteristicService.compute` | `applications/meanderaw/src/modules/characteristics/compound/family/is-snake-characteristic.service.ts:45` |
 | `IsWhirlCharacteristicService.isDoubleWhirl` | 1 | `StrandUtilitiesService.hasStrandEnds` | `applications/meanderaw/src/modules/characteristics/compound/family/is-whirl-characteristic.service.ts:44` |
 | `IsWhirlCharacteristicService.isSingleWhirl` | 1 | `StrandUtilitiesService.hasStrandEnds` | `applications/meanderaw/src/modules/characteristics/compound/family/is-whirl-characteristic.service.ts:54` |
-| `NorthEastCornerCountCharacteristicService.compute` | 1 | `countPointsWithExactArms` | `applications/meanderaw/src/modules/characteristics/submatrix/corner/north-east-corner-count-characteristic.service.ts:42` |
-| `NorthWestCornerCountCharacteristicService.compute` | 1 | `countPointsWithExactArms` | `applications/meanderaw/src/modules/characteristics/submatrix/corner/north-west-corner-count-characteristic.service.ts:42` |
-| `SouthEastCornerCountCharacteristicService.compute` | 1 | `countPointsWithExactArms` | `applications/meanderaw/src/modules/characteristics/submatrix/corner/south-east-corner-count-characteristic.service.ts:42` |
-| `SouthWestCornerCountCharacteristicService.compute` | 1 | `countPointsWithExactArms` | `applications/meanderaw/src/modules/characteristics/submatrix/corner/south-west-corner-count-characteristic.service.ts:42` |
-| `AEastLetterCountCharacteristicService.compute` | 1 | `countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/a-east-letter-count-characteristic.service.ts:50` |
-| `AInvertedLetterCountCharacteristicService.compute` | 1 | `countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/a-inverted-letter-count-characteristic.service.ts:51` |
-| `ALetterCountCharacteristicService.compute` | 1 | `countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/a-letter-count-characteristic.service.ts:51` |
-| `AWestLetterCountCharacteristicService.compute` | 1 | `countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/a-west-letter-count-characteristic.service.ts:50` |
-| `BLetterCountCharacteristicService.compute` | 1 | `countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/b-letter-count-characteristic.service.ts:51` |
-| `BSidewaysLetterCountCharacteristicService.compute` | 1 | `countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/b-sideways-letter-count-characteristic.service.ts:50` |
-| `CLetterCountCharacteristicService.compute` | 1 | `countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/c-letter-count-characteristic.service.ts:50` |
-| `CWestLetterCountCharacteristicService.compute` | 1 | `countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/c-west-letter-count-characteristic.service.ts:50` |
-| `EDownLetterCountCharacteristicService.compute` | 1 | `countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/e-down-letter-count-characteristic.service.ts:50` |
-| `ELetterCountCharacteristicService.compute` | 1 | `countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/e-letter-count-characteristic.service.ts:51` |
-| `EUpLetterCountCharacteristicService.compute` | 1 | `countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/e-up-letter-count-characteristic.service.ts:50` |
-| `EWestLetterCountCharacteristicService.compute` | 1 | `countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/e-west-letter-count-characteristic.service.ts:51` |
-| `FDownLetterCountCharacteristicService.compute` | 1 | `countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/f-down-letter-count-characteristic.service.ts:50` |
-| `FLetterCountCharacteristicService.compute` | 1 | `countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/f-letter-count-characteristic.service.ts:51` |
-| `FUpLetterCountCharacteristicService.compute` | 1 | `countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/f-up-letter-count-characteristic.service.ts:50` |
-| `FWestLetterCountCharacteristicService.compute` | 1 | `countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/f-west-letter-count-characteristic.service.ts:51` |
-| `HLetterCountCharacteristicService.compute` | 1 | `countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/h-letter-count-characteristic.service.ts:51` |
-| `HSidewaysLetterCountCharacteristicService.compute` | 1 | `countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/h-sideways-letter-count-characteristic.service.ts:50` |
-| `ILetterCountCharacteristicService.compute` | 1 | `countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/i-letter-count-characteristic.service.ts:50` |
-| `ISidewaysLetterCountCharacteristicService.compute` | 1 | `countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/i-sideways-letter-count-characteristic.service.ts:49` |
-| `LDownLetterCountCharacteristicService.compute` | 1 | `countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/l-down-letter-count-characteristic.service.ts:50` |
-| `LLetterCountCharacteristicService.compute` | 1 | `countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/l-letter-count-characteristic.service.ts:50` |
-| `LUpLetterCountCharacteristicService.compute` | 1 | `countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/l-up-letter-count-characteristic.service.ts:50` |
-| `LWestLetterCountCharacteristicService.compute` | 1 | `countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/l-west-letter-count-characteristic.service.ts:50` |
-| `MEastLetterCountCharacteristicService.compute` | 1 | `countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/m-east-letter-count-characteristic.service.ts:51` |
-| `MLetterCountCharacteristicService.compute` | 1 | `countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/m-letter-count-characteristic.service.ts:51` |
-| `MWestLetterCountCharacteristicService.compute` | 1 | `countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/m-west-letter-count-characteristic.service.ts:51` |
-| `NLetterCountCharacteristicService.compute` | 1 | `countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/n-letter-count-characteristic.service.ts:51` |
-| `NSidewaysLetterCountCharacteristicService.compute` | 1 | `countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/n-sideways-letter-count-characteristic.service.ts:51` |
-| `OLetterCountCharacteristicService.compute` | 1 | `countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/o-letter-count-characteristic.service.ts:49` |
-| `SLetterCountCharacteristicService.compute` | 1 | `countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/s-letter-count-characteristic.service.ts:51` |
-| `SSidewaysLetterCountCharacteristicService.compute` | 1 | `countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/s-sideways-letter-count-characteristic.service.ts:50` |
-| `TEastLetterCountCharacteristicService.compute` | 1 | `countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/t-east-letter-count-characteristic.service.ts:51` |
-| `TLetterCountCharacteristicService.compute` | 1 | `countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/t-letter-count-characteristic.service.ts:50` |
-| `TUpLetterCountCharacteristicService.compute` | 1 | `countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/t-up-letter-count-characteristic.service.ts:50` |
-| `TWestLetterCountCharacteristicService.compute` | 1 | `countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/t-west-letter-count-characteristic.service.ts:51` |
-| `UInvertedLetterCountCharacteristicService.compute` | 1 | `countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/u-inverted-letter-count-characteristic.service.ts:50` |
-| `ULetterCountCharacteristicService.compute` | 1 | `countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/u-letter-count-characteristic.service.ts:50` |
-| `WLetterCountCharacteristicService.compute` | 1 | `countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/w-letter-count-characteristic.service.ts:51` |
-| `XLetterCountCharacteristicService.compute` | 1 | `countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/x-letter-count-characteristic.service.ts:50` |
-| `YEastLetterCountCharacteristicService.compute` | 1 | `countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/y-east-letter-count-characteristic.service.ts:51` |
-| `YLetterCountCharacteristicService.compute` | 1 | `countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/y-letter-count-characteristic.service.ts:51` |
-| `YUpLetterCountCharacteristicService.compute` | 1 | `countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/y-up-letter-count-characteristic.service.ts:51` |
-| `YWestLetterCountCharacteristicService.compute` | 1 | `countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/y-west-letter-count-characteristic.service.ts:51` |
-| `ZLetterCountCharacteristicService.compute` | 1 | `countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/z-letter-count-characteristic.service.ts:51` |
-| `ZSidewaysLetterCountCharacteristicService.compute` | 1 | `countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/z-sideways-letter-count-characteristic.service.ts:50` |
-| `countIsolatedRectangles` | 1 | `isIsolatedRectangleAt` | `applications/meanderaw/src/modules/characteristics/submatrix/rectangle/rectangle.utilities.ts:23` |
-| `from(…)` | 1 | `pointDigitAt` | `applications/meanderaw/src/modules/characteristics/submatrix/rectangle/rectangle.utilities.ts:88` |
-| `from(…)` | 1 | `pointDigitAt` | `applications/meanderaw/src/modules/characteristics/submatrix/rectangle/rectangle.utilities.ts:91` |
-| `sideLength` | 1 | `pointDigitAt` | `applications/meanderaw/src/modules/characteristics/submatrix/rectangle/rectangle.utilities.ts:108` |
+| `NorthEastCornerCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countPointsWithExactArms` | `applications/meanderaw/src/modules/characteristics/submatrix/corner/north-east-corner-count-characteristic.service.ts:46` |
+| `NorthWestCornerCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countPointsWithExactArms` | `applications/meanderaw/src/modules/characteristics/submatrix/corner/north-west-corner-count-characteristic.service.ts:46` |
+| `SouthEastCornerCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countPointsWithExactArms` | `applications/meanderaw/src/modules/characteristics/submatrix/corner/south-east-corner-count-characteristic.service.ts:46` |
+| `SouthWestCornerCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countPointsWithExactArms` | `applications/meanderaw/src/modules/characteristics/submatrix/corner/south-west-corner-count-characteristic.service.ts:46` |
+| `AEastLetterCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/a-east-letter-count-characteristic.service.ts:56` |
+| `AInvertedLetterCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/a-inverted-letter-count-characteristic.service.ts:57` |
+| `ALetterCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/a-letter-count-characteristic.service.ts:57` |
+| `AWestLetterCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/a-west-letter-count-characteristic.service.ts:56` |
+| `BLetterCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/b-letter-count-characteristic.service.ts:57` |
+| `BSidewaysLetterCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/b-sideways-letter-count-characteristic.service.ts:56` |
+| `CLetterCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/c-letter-count-characteristic.service.ts:56` |
+| `CWestLetterCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/c-west-letter-count-characteristic.service.ts:56` |
+| `EDownLetterCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/e-down-letter-count-characteristic.service.ts:56` |
+| `ELetterCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/e-letter-count-characteristic.service.ts:57` |
+| `EUpLetterCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/e-up-letter-count-characteristic.service.ts:56` |
+| `EWestLetterCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/e-west-letter-count-characteristic.service.ts:57` |
+| `FDownLetterCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/f-down-letter-count-characteristic.service.ts:56` |
+| `FLetterCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/f-letter-count-characteristic.service.ts:57` |
+| `FUpLetterCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/f-up-letter-count-characteristic.service.ts:56` |
+| `FWestLetterCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/f-west-letter-count-characteristic.service.ts:57` |
+| `HLetterCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/h-letter-count-characteristic.service.ts:57` |
+| `HSidewaysLetterCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/h-sideways-letter-count-characteristic.service.ts:56` |
+| `ILetterCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/i-letter-count-characteristic.service.ts:56` |
+| `ISidewaysLetterCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/i-sideways-letter-count-characteristic.service.ts:55` |
+| `LDownLetterCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/l-down-letter-count-characteristic.service.ts:56` |
+| `LLetterCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/l-letter-count-characteristic.service.ts:56` |
+| `LUpLetterCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/l-up-letter-count-characteristic.service.ts:56` |
+| `LWestLetterCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/l-west-letter-count-characteristic.service.ts:56` |
+| `MEastLetterCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/m-east-letter-count-characteristic.service.ts:57` |
+| `MLetterCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/m-letter-count-characteristic.service.ts:57` |
+| `MWestLetterCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/m-west-letter-count-characteristic.service.ts:57` |
+| `NLetterCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/n-letter-count-characteristic.service.ts:57` |
+| `NSidewaysLetterCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/n-sideways-letter-count-characteristic.service.ts:57` |
+| `OLetterCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/o-letter-count-characteristic.service.ts:55` |
+| `SLetterCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/s-letter-count-characteristic.service.ts:57` |
+| `SSidewaysLetterCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/s-sideways-letter-count-characteristic.service.ts:56` |
+| `TEastLetterCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/t-east-letter-count-characteristic.service.ts:57` |
+| `TLetterCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/t-letter-count-characteristic.service.ts:56` |
+| `TUpLetterCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/t-up-letter-count-characteristic.service.ts:56` |
+| `TWestLetterCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/t-west-letter-count-characteristic.service.ts:57` |
+| `UInvertedLetterCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/u-inverted-letter-count-characteristic.service.ts:56` |
+| `ULetterCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/u-letter-count-characteristic.service.ts:56` |
+| `WLetterCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/w-letter-count-characteristic.service.ts:57` |
+| `XLetterCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/x-letter-count-characteristic.service.ts:56` |
+| `YEastLetterCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/y-east-letter-count-characteristic.service.ts:57` |
+| `YLetterCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/y-letter-count-characteristic.service.ts:57` |
+| `YUpLetterCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/y-up-letter-count-characteristic.service.ts:57` |
+| `YWestLetterCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/y-west-letter-count-characteristic.service.ts:57` |
+| `ZLetterCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/z-letter-count-characteristic.service.ts:57` |
+| `ZSidewaysLetterCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/z-sideways-letter-count-characteristic.service.ts:56` |
+| `RectangleUtilitiesService.from(…)` | 1 | `SubmatrixUtilitiesService.pointDigitAt` | `applications/meanderaw/src/modules/characteristics/submatrix/rectangle/rectangle-utilities.service.ts:80` |
+| `RectangleUtilitiesService.from(…)` | 1 | `SubmatrixUtilitiesService.pointDigitAt` | `applications/meanderaw/src/modules/characteristics/submatrix/rectangle/rectangle-utilities.service.ts:87` |
+| `RectangleUtilitiesService.sideLength` | 1 | `SubmatrixUtilitiesService.pointDigitAt` | `applications/meanderaw/src/modules/characteristics/submatrix/rectangle/rectangle-utilities.service.ts:112` |
+| `RectangleUtilitiesService.countIsolatedRectangles` | 1 | `RectangleUtilitiesService.isIsolatedRectangleAt` | `applications/meanderaw/src/modules/characteristics/submatrix/rectangle/rectangle-utilities.service.ts:158` |
 | `DatabaseService.saveAll` | 1 | `DatabaseService.transaction(…)` | `applications/meanderaw/src/modules/database/database.service.ts:98` |
 | `GeometryService.borderPath` | 1 | `GeometryService.formatCoordinate` | `applications/meanderaw/src/modules/geometry/geometry.service.ts:41` |
 | `SvgService.render` | 1 | `SvgService.map(…)` | `applications/meanderaw/src/modules/svg/svg.service.ts:27` |
@@ -3610,10 +4148,12 @@ flowchart LR
   LoggerModule([LoggerModule])
   MainModule
   MatrixModule
+  PathUtilitiesModule
   PointCharacteristicsModule
   RectangleCharacteristicsModule
   RunCharacteristicsModule
   StructureCharacteristicsModule
+  SubmatrixUtilitiesModule
   SvgModule
   SymmetryModule
   TileCrossingCharacteristicsModule
@@ -3642,12 +4182,14 @@ flowchart LR
   CompoundUtilitiesModule --> CrossCharacteristicsModule
   CompoundUtilitiesModule --> ForkCharacteristicsModule
   ConnectivityModule --> GraphModule
+  CornerCharacteristicsModule --> SubmatrixUtilitiesModule
   CorpusModule --> CharacteristicsModule
   CorpusModule --> ClassificationModule
   CorpusModule --> CodeModule
   CorpusModule --> DatabaseModule
   CorpusModule --> DrawingModule
   CorpusModule --> EnumerationModule
+  CrossCharacteristicsModule --> SubmatrixUtilitiesModule
   DatabaseModule --> TypeOrmModule
   DatabaseModule --> TypeOrmModule
   DrawingModule --> CodeModule
@@ -3661,6 +4203,7 @@ flowchart LR
   DrawModule --> DrawingModule
   DrawModule --> EnumerationModule
   DrawModule --> GeometryModule
+  EmbeddedCharacteristicsModule --> SubmatrixUtilitiesModule
   EndCharacteristicsModule --> ConnectivityModule
   EnumerationModule --> CodeModule
   EnumerationModule --> SymmetryModule
@@ -3676,18 +4219,23 @@ flowchart LR
   FamilyCharacteristicsModule --> TileCrossingCharacteristicsModule
   FamilyCharacteristicsModule --> TopologyCharacteristicsModule
   FamilyCharacteristicsModule --> TurnCharacteristicsModule
+  ForkCharacteristicsModule --> SubmatrixUtilitiesModule
+  LetterCharacteristicsModule --> SubmatrixUtilitiesModule
   MainModule --> ClassificationModule
   MainModule --> DiscoveryModule
   MainModule --> DrawingModule
   MainModule --> DrawModule
   MainModule --> MatrixModule
   MatrixModule --> CodeModule
+  PointCharacteristicsModule --> SubmatrixUtilitiesModule
+  RectangleCharacteristicsModule --> SubmatrixUtilitiesModule
   StructureCharacteristicsModule --> CompoundUtilitiesModule
   StructureCharacteristicsModule --> TopologyCharacteristicsModule
   SymmetryModule --> TileModule
   TileCrossingCharacteristicsModule --> ConnectivityModule
   TopologyCharacteristicsModule --> ConnectivityModule
   TurnCharacteristicsModule --> ConnectivityModule
+  TurnCharacteristicsModule --> PathUtilitiesModule
   TurnCharacteristicsModule --> PointCharacteristicsModule
 ```
 
@@ -3783,9 +4331,11 @@ graph LR
   file_src_modules_characteristics_path_end_ends_are_lattice_neighbors_characteristic_service_unit_test_ts["src/modules/characteristics/path/end/ends-are-lattice-neighbors-characteristic.service.unit.test.ts"]
   file_src_modules_characteristics_path_end_ends_on_border_rules_characteristic_service_ts["src/modules/characteristics/path/end/ends-on-border-rules-characteristic.service.ts"]
   file_src_modules_characteristics_path_end_ends_on_border_rules_characteristic_service_unit_test_ts["src/modules/characteristics/path/end/ends-on-border-rules-characteristic.service.unit.test.ts"]
+  file_src_modules_characteristics_path_path_utilities_module_ts["src/modules/characteristics/path/path-utilities.module.ts"]
+  file_src_modules_characteristics_path_path_utilities_module_unit_test_ts["src/modules/characteristics/path/path-utilities.module.unit.test.ts"]
+  file_src_modules_characteristics_path_path_utilities_service_ts["src/modules/characteristics/path/path-utilities.service.ts"]
+  file_src_modules_characteristics_path_path_utilities_service_unit_test_ts["src/modules/characteristics/path/path-utilities.service.unit.test.ts"]
   file_src_modules_characteristics_path_path_types_ts["src/modules/characteristics/path/path.types.ts"]
-  file_src_modules_characteristics_path_path_utilities_ts["src/modules/characteristics/path/path.utilities.ts"]
-  file_src_modules_characteristics_path_path_utilities_unit_test_ts["src/modules/characteristics/path/path.utilities.unit.test.ts"]
   file_src_modules_characteristics_path_tile_crossing_tile_crossing_characteristics_module_ts["src/modules/characteristics/path/tile-crossing/tile-crossing-characteristics.module.ts"]
   file_src_modules_characteristics_path_tile_crossing_tile_crossing_component_delta_count_characteristic_service_ts["src/modules/characteristics/path/tile-crossing/tile-crossing-component-delta-count-characteristic.service.ts"]
   file_src_modules_characteristics_path_tile_crossing_tile_crossing_component_delta_count_characteristic_service_unit_test_ts["src/modules/characteristics/path/tile-crossing/tile-crossing-component-delta-count-characteristic.service.unit.test.ts"]
@@ -3942,22 +4492,31 @@ graph LR
   file_src_modules_characteristics_submatrix_point_density_characteristic_service_unit_test_ts["src/modules/characteristics/submatrix/point/density-characteristic.service.unit.test.ts"]
   file_src_modules_characteristics_submatrix_point_dot_count_characteristic_service_ts["src/modules/characteristics/submatrix/point/dot-count-characteristic.service.ts"]
   file_src_modules_characteristics_submatrix_point_dot_count_characteristic_service_unit_test_ts["src/modules/characteristics/submatrix/point/dot-count-characteristic.service.unit.test.ts"]
+  file_src_modules_characteristics_submatrix_point_double_horizontal_edge_count_characteristic_service_ts["src/modules/characteristics/submatrix/point/double-horizontal-edge-count-characteristic.service.ts"]
+  file_src_modules_characteristics_submatrix_point_double_horizontal_edge_count_characteristic_service_unit_test_ts["src/modules/characteristics/submatrix/point/double-horizontal-edge-count-characteristic.service.unit.test.ts"]
+  file_src_modules_characteristics_submatrix_point_double_vertical_edge_count_characteristic_service_ts["src/modules/characteristics/submatrix/point/double-vertical-edge-count-characteristic.service.ts"]
+  file_src_modules_characteristics_submatrix_point_double_vertical_edge_count_characteristic_service_unit_test_ts["src/modules/characteristics/submatrix/point/double-vertical-edge-count-characteristic.service.unit.test.ts"]
+  file_src_modules_characteristics_submatrix_point_east_edge_count_characteristic_service_ts["src/modules/characteristics/submatrix/point/east-edge-count-characteristic.service.ts"]
+  file_src_modules_characteristics_submatrix_point_east_edge_count_characteristic_service_unit_test_ts["src/modules/characteristics/submatrix/point/east-edge-count-characteristic.service.unit.test.ts"]
   file_src_modules_characteristics_submatrix_point_edge_count_characteristic_service_ts["src/modules/characteristics/submatrix/point/edge-count-characteristic.service.ts"]
   file_src_modules_characteristics_submatrix_point_edge_count_characteristic_service_unit_test_ts["src/modules/characteristics/submatrix/point/edge-count-characteristic.service.unit.test.ts"]
-  file_src_modules_characteristics_submatrix_point_horizontal_edge_count_characteristic_service_ts["src/modules/characteristics/submatrix/point/horizontal-edge-count-characteristic.service.ts"]
-  file_src_modules_characteristics_submatrix_point_horizontal_edge_count_characteristic_service_unit_test_ts["src/modules/characteristics/submatrix/point/horizontal-edge-count-characteristic.service.unit.test.ts"]
   file_src_modules_characteristics_submatrix_point_ink_point_count_characteristic_service_ts["src/modules/characteristics/submatrix/point/ink-point-count-characteristic.service.ts"]
   file_src_modules_characteristics_submatrix_point_ink_point_count_characteristic_service_unit_test_ts["src/modules/characteristics/submatrix/point/ink-point-count-characteristic.service.unit.test.ts"]
+  file_src_modules_characteristics_submatrix_point_north_edge_count_characteristic_service_ts["src/modules/characteristics/submatrix/point/north-edge-count-characteristic.service.ts"]
+  file_src_modules_characteristics_submatrix_point_north_edge_count_characteristic_service_unit_test_ts["src/modules/characteristics/submatrix/point/north-edge-count-characteristic.service.unit.test.ts"]
   file_src_modules_characteristics_submatrix_point_point_characteristics_module_ts["src/modules/characteristics/submatrix/point/point-characteristics.module.ts"]
+  file_src_modules_characteristics_submatrix_point_point_characteristics_module_unit_test_ts["src/modules/characteristics/submatrix/point/point-characteristics.module.unit.test.ts"]
   file_src_modules_characteristics_submatrix_point_point_utilities_service_ts["src/modules/characteristics/submatrix/point/point-utilities.service.ts"]
   file_src_modules_characteristics_submatrix_point_point_utilities_service_unit_test_ts["src/modules/characteristics/submatrix/point/point-utilities.service.unit.test.ts"]
-  file_src_modules_characteristics_submatrix_point_vertical_edge_count_characteristic_service_ts["src/modules/characteristics/submatrix/point/vertical-edge-count-characteristic.service.ts"]
-  file_src_modules_characteristics_submatrix_point_vertical_edge_count_characteristic_service_unit_test_ts["src/modules/characteristics/submatrix/point/vertical-edge-count-characteristic.service.unit.test.ts"]
+  file_src_modules_characteristics_submatrix_point_south_edge_count_characteristic_service_ts["src/modules/characteristics/submatrix/point/south-edge-count-characteristic.service.ts"]
+  file_src_modules_characteristics_submatrix_point_south_edge_count_characteristic_service_unit_test_ts["src/modules/characteristics/submatrix/point/south-edge-count-characteristic.service.unit.test.ts"]
+  file_src_modules_characteristics_submatrix_point_west_edge_count_characteristic_service_ts["src/modules/characteristics/submatrix/point/west-edge-count-characteristic.service.ts"]
+  file_src_modules_characteristics_submatrix_point_west_edge_count_characteristic_service_unit_test_ts["src/modules/characteristics/submatrix/point/west-edge-count-characteristic.service.unit.test.ts"]
   file_src_modules_characteristics_submatrix_rectangle_horizontal_rectangle_count_characteristic_service_ts["src/modules/characteristics/submatrix/rectangle/horizontal-rectangle-count-characteristic.service.ts"]
   file_src_modules_characteristics_submatrix_rectangle_horizontal_rectangle_count_characteristic_service_unit_test_ts["src/modules/characteristics/submatrix/rectangle/horizontal-rectangle-count-characteristic.service.unit.test.ts"]
   file_src_modules_characteristics_submatrix_rectangle_rectangle_characteristics_module_ts["src/modules/characteristics/submatrix/rectangle/rectangle-characteristics.module.ts"]
-  file_src_modules_characteristics_submatrix_rectangle_rectangle_utilities_ts["src/modules/characteristics/submatrix/rectangle/rectangle.utilities.ts"]
-  file_src_modules_characteristics_submatrix_rectangle_rectangle_utilities_unit_test_ts["src/modules/characteristics/submatrix/rectangle/rectangle.utilities.unit.test.ts"]
+  file_src_modules_characteristics_submatrix_rectangle_rectangle_utilities_service_ts["src/modules/characteristics/submatrix/rectangle/rectangle-utilities.service.ts"]
+  file_src_modules_characteristics_submatrix_rectangle_rectangle_utilities_service_unit_test_ts["src/modules/characteristics/submatrix/rectangle/rectangle-utilities.service.unit.test.ts"]
   file_src_modules_characteristics_submatrix_rectangle_vertical_rectangle_count_characteristic_service_ts["src/modules/characteristics/submatrix/rectangle/vertical-rectangle-count-characteristic.service.ts"]
   file_src_modules_characteristics_submatrix_rectangle_vertical_rectangle_count_characteristic_service_unit_test_ts["src/modules/characteristics/submatrix/rectangle/vertical-rectangle-count-characteristic.service.unit.test.ts"]
   file_src_modules_characteristics_submatrix_run_longest_horizontal_run_length_characteristic_service_ts["src/modules/characteristics/submatrix/run/longest-horizontal-run-length-characteristic.service.ts"]
@@ -3967,9 +4526,11 @@ graph LR
   file_src_modules_characteristics_submatrix_run_run_characteristics_module_ts["src/modules/characteristics/submatrix/run/run-characteristics.module.ts"]
   file_src_modules_characteristics_submatrix_run_run_utilities_service_ts["src/modules/characteristics/submatrix/run/run-utilities.service.ts"]
   file_src_modules_characteristics_submatrix_run_run_utilities_service_unit_test_ts["src/modules/characteristics/submatrix/run/run-utilities.service.unit.test.ts"]
+  file_src_modules_characteristics_submatrix_submatrix_utilities_module_ts["src/modules/characteristics/submatrix/submatrix-utilities.module.ts"]
+  file_src_modules_characteristics_submatrix_submatrix_utilities_module_unit_test_ts["src/modules/characteristics/submatrix/submatrix-utilities.module.unit.test.ts"]
+  file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts["src/modules/characteristics/submatrix/submatrix-utilities.service.ts"]
+  file_src_modules_characteristics_submatrix_submatrix_utilities_service_unit_test_ts["src/modules/characteristics/submatrix/submatrix-utilities.service.unit.test.ts"]
   file_src_modules_characteristics_submatrix_submatrix_types_ts["src/modules/characteristics/submatrix/submatrix.types.ts"]
-  file_src_modules_characteristics_submatrix_submatrix_utilities_ts["src/modules/characteristics/submatrix/submatrix.utilities.ts"]
-  file_src_modules_characteristics_submatrix_submatrix_utilities_unit_test_ts["src/modules/characteristics/submatrix/submatrix.utilities.unit.test.ts"]
   file_src_modules_classification_classification_constants_ts["src/modules/classification/classification.constants.ts"]
   file_src_modules_classification_classification_module_ts["src/modules/classification/classification.module.ts"]
   file_src_modules_classification_classification_service_integration_test_ts["src/modules/classification/classification.service.integration.test.ts"]
@@ -4213,10 +4774,14 @@ graph LR
   file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_z_sideways_letter_count_characteristic_service_ts
   file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_point_density_characteristic_service_ts
   file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_point_dot_count_characteristic_service_ts
+  file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_point_double_horizontal_edge_count_characteristic_service_ts
+  file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_point_double_vertical_edge_count_characteristic_service_ts
+  file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_point_east_edge_count_characteristic_service_ts
   file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_point_edge_count_characteristic_service_ts
-  file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_point_horizontal_edge_count_characteristic_service_ts
   file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_point_ink_point_count_characteristic_service_ts
-  file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_point_vertical_edge_count_characteristic_service_ts
+  file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_point_north_edge_count_characteristic_service_ts
+  file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_point_south_edge_count_characteristic_service_ts
+  file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_point_west_edge_count_characteristic_service_ts
   file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_rectangle_horizontal_rectangle_count_characteristic_service_ts
   file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_rectangle_vertical_rectangle_count_characteristic_service_ts
   file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_run_longest_horizontal_run_length_characteristic_service_ts
@@ -4662,9 +5227,13 @@ graph LR
   file_src_modules_characteristics_path_end_ends_on_border_rules_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_path_end_ends_on_border_rules_characteristic_service_unit_test_ts --> file_src_modules_graph_graph_module_ts
   file_src_modules_characteristics_path_end_ends_on_border_rules_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
-  file_src_modules_characteristics_path_path_utilities_ts --> file_src_modules_characteristics_connectivity_connectivity_types_ts
-  file_src_modules_characteristics_path_path_utilities_ts --> file_src_modules_characteristics_path_path_types_ts
-  file_src_modules_characteristics_path_path_utilities_unit_test_ts --> file_src_modules_characteristics_path_path_utilities_ts
+  file_src_modules_characteristics_path_path_utilities_module_ts --> file_src_modules_characteristics_path_path_utilities_service_ts
+  file_src_modules_characteristics_path_path_utilities_module_unit_test_ts --> file_src_modules_characteristics_characteristics_module_ts
+  file_src_modules_characteristics_path_path_utilities_module_unit_test_ts --> file_src_modules_characteristics_path_path_utilities_module_ts
+  file_src_modules_characteristics_path_path_utilities_module_unit_test_ts --> file_src_modules_characteristics_path_path_utilities_service_ts
+  file_src_modules_characteristics_path_path_utilities_service_ts --> file_src_modules_characteristics_connectivity_connectivity_types_ts
+  file_src_modules_characteristics_path_path_utilities_service_ts --> file_src_modules_characteristics_path_path_types_ts
+  file_src_modules_characteristics_path_path_utilities_service_unit_test_ts --> file_src_modules_characteristics_path_path_utilities_service_ts
   file_src_modules_characteristics_path_tile_crossing_tile_crossing_characteristics_module_ts --> file_src_modules_characteristics_connectivity_connectivity_module_ts
   file_src_modules_characteristics_path_tile_crossing_tile_crossing_characteristics_module_ts --> file_src_modules_characteristics_path_tile_crossing_tile_crossing_component_delta_count_characteristic_service_ts
   file_src_modules_characteristics_path_tile_crossing_tile_crossing_characteristics_module_ts --> file_src_modules_characteristics_path_tile_crossing_tile_crossing_count_characteristic_service_ts
@@ -4723,27 +5292,30 @@ graph LR
   file_src_modules_characteristics_path_topology_topology_characteristics_module_ts --> file_src_modules_characteristics_path_topology_free_end_count_characteristic_service_ts
   file_src_modules_characteristics_path_turn_bottom_border_touch_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
   file_src_modules_characteristics_path_turn_bottom_border_touch_count_characteristic_service_ts --> file_src_modules_characteristics_connectivity_connectivity_service_ts
-  file_src_modules_characteristics_path_turn_bottom_border_touch_count_characteristic_service_ts --> file_src_modules_characteristics_path_path_utilities_ts
+  file_src_modules_characteristics_path_turn_bottom_border_touch_count_characteristic_service_ts --> file_src_modules_characteristics_path_path_utilities_service_ts
   file_src_modules_characteristics_path_turn_bottom_border_touch_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_src_modules_characteristics_path_turn_bottom_border_touch_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_connectivity_connectivity_service_ts
+  file_src_modules_characteristics_path_turn_bottom_border_touch_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_path_path_utilities_service_ts
   file_src_modules_characteristics_path_turn_bottom_border_touch_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_path_turn_bottom_border_touch_count_characteristic_service_ts
   file_src_modules_characteristics_path_turn_bottom_border_touch_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_path_turn_bottom_border_touch_count_characteristic_service_unit_test_ts --> file_src_modules_graph_graph_module_ts
   file_src_modules_characteristics_path_turn_bottom_border_touch_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_path_turn_inflection_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
   file_src_modules_characteristics_path_turn_inflection_count_characteristic_service_ts --> file_src_modules_characteristics_connectivity_connectivity_service_ts
-  file_src_modules_characteristics_path_turn_inflection_count_characteristic_service_ts --> file_src_modules_characteristics_path_path_utilities_ts
+  file_src_modules_characteristics_path_turn_inflection_count_characteristic_service_ts --> file_src_modules_characteristics_path_path_utilities_service_ts
   file_src_modules_characteristics_path_turn_inflection_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_src_modules_characteristics_path_turn_inflection_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_connectivity_connectivity_service_ts
+  file_src_modules_characteristics_path_turn_inflection_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_path_path_utilities_service_ts
   file_src_modules_characteristics_path_turn_inflection_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_path_turn_inflection_count_characteristic_service_ts
   file_src_modules_characteristics_path_turn_inflection_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_path_turn_inflection_count_characteristic_service_unit_test_ts --> file_src_modules_graph_graph_module_ts
   file_src_modules_characteristics_path_turn_inflection_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_path_turn_max_monotonic_turn_length_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
   file_src_modules_characteristics_path_turn_max_monotonic_turn_length_characteristic_service_ts --> file_src_modules_characteristics_connectivity_connectivity_service_ts
-  file_src_modules_characteristics_path_turn_max_monotonic_turn_length_characteristic_service_ts --> file_src_modules_characteristics_path_path_utilities_ts
+  file_src_modules_characteristics_path_turn_max_monotonic_turn_length_characteristic_service_ts --> file_src_modules_characteristics_path_path_utilities_service_ts
   file_src_modules_characteristics_path_turn_max_monotonic_turn_length_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_src_modules_characteristics_path_turn_max_monotonic_turn_length_characteristic_service_unit_test_ts --> file_src_modules_characteristics_connectivity_connectivity_service_ts
+  file_src_modules_characteristics_path_turn_max_monotonic_turn_length_characteristic_service_unit_test_ts --> file_src_modules_characteristics_path_path_utilities_service_ts
   file_src_modules_characteristics_path_turn_max_monotonic_turn_length_characteristic_service_unit_test_ts --> file_src_modules_characteristics_path_turn_max_monotonic_turn_length_characteristic_service_ts
   file_src_modules_characteristics_path_turn_max_monotonic_turn_length_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_path_turn_max_monotonic_turn_length_characteristic_service_unit_test_ts --> file_src_modules_graph_graph_module_ts
@@ -4763,32 +5335,36 @@ graph LR
   file_src_modules_characteristics_path_turn_reverses_at_its_tightest_turn_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_path_turn_tightest_turn_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
   file_src_modules_characteristics_path_turn_tightest_turn_count_characteristic_service_ts --> file_src_modules_characteristics_connectivity_connectivity_service_ts
-  file_src_modules_characteristics_path_turn_tightest_turn_count_characteristic_service_ts --> file_src_modules_characteristics_path_path_utilities_ts
+  file_src_modules_characteristics_path_turn_tightest_turn_count_characteristic_service_ts --> file_src_modules_characteristics_path_path_utilities_service_ts
   file_src_modules_characteristics_path_turn_tightest_turn_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_src_modules_characteristics_path_turn_tightest_turn_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_connectivity_connectivity_service_ts
+  file_src_modules_characteristics_path_turn_tightest_turn_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_path_path_utilities_service_ts
   file_src_modules_characteristics_path_turn_tightest_turn_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_path_turn_tightest_turn_count_characteristic_service_ts
   file_src_modules_characteristics_path_turn_tightest_turn_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_path_turn_tightest_turn_count_characteristic_service_unit_test_ts --> file_src_modules_graph_graph_module_ts
   file_src_modules_characteristics_path_turn_tightest_turn_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_path_turn_top_border_touch_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
   file_src_modules_characteristics_path_turn_top_border_touch_count_characteristic_service_ts --> file_src_modules_characteristics_connectivity_connectivity_service_ts
-  file_src_modules_characteristics_path_turn_top_border_touch_count_characteristic_service_ts --> file_src_modules_characteristics_path_path_utilities_ts
+  file_src_modules_characteristics_path_turn_top_border_touch_count_characteristic_service_ts --> file_src_modules_characteristics_path_path_utilities_service_ts
   file_src_modules_characteristics_path_turn_top_border_touch_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_src_modules_characteristics_path_turn_top_border_touch_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_connectivity_connectivity_service_ts
+  file_src_modules_characteristics_path_turn_top_border_touch_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_path_path_utilities_service_ts
   file_src_modules_characteristics_path_turn_top_border_touch_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_path_turn_top_border_touch_count_characteristic_service_ts
   file_src_modules_characteristics_path_turn_top_border_touch_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_path_turn_top_border_touch_count_characteristic_service_unit_test_ts --> file_src_modules_graph_graph_module_ts
   file_src_modules_characteristics_path_turn_top_border_touch_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_path_turn_total_turn_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
   file_src_modules_characteristics_path_turn_total_turn_count_characteristic_service_ts --> file_src_modules_characteristics_connectivity_connectivity_service_ts
-  file_src_modules_characteristics_path_turn_total_turn_count_characteristic_service_ts --> file_src_modules_characteristics_path_path_utilities_ts
+  file_src_modules_characteristics_path_turn_total_turn_count_characteristic_service_ts --> file_src_modules_characteristics_path_path_utilities_service_ts
   file_src_modules_characteristics_path_turn_total_turn_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_src_modules_characteristics_path_turn_total_turn_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_connectivity_connectivity_service_ts
+  file_src_modules_characteristics_path_turn_total_turn_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_path_path_utilities_service_ts
   file_src_modules_characteristics_path_turn_total_turn_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_path_turn_total_turn_count_characteristic_service_ts
   file_src_modules_characteristics_path_turn_total_turn_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_path_turn_total_turn_count_characteristic_service_unit_test_ts --> file_src_modules_graph_graph_module_ts
   file_src_modules_characteristics_path_turn_total_turn_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_path_turn_turn_characteristics_module_ts --> file_src_modules_characteristics_connectivity_connectivity_module_ts
+  file_src_modules_characteristics_path_turn_turn_characteristics_module_ts --> file_src_modules_characteristics_path_path_utilities_module_ts
   file_src_modules_characteristics_path_turn_turn_characteristics_module_ts --> file_src_modules_characteristics_path_turn_bottom_border_touch_count_characteristic_service_ts
   file_src_modules_characteristics_path_turn_turn_characteristics_module_ts --> file_src_modules_characteristics_path_turn_inflection_count_characteristic_service_ts
   file_src_modules_characteristics_path_turn_turn_characteristics_module_ts --> file_src_modules_characteristics_path_turn_max_monotonic_turn_length_characteristic_service_ts
@@ -4802,6 +5378,7 @@ graph LR
   file_src_modules_characteristics_submatrix_corner_corner_characteristics_module_ts --> file_src_modules_characteristics_submatrix_corner_north_west_corner_count_characteristic_service_ts
   file_src_modules_characteristics_submatrix_corner_corner_characteristics_module_ts --> file_src_modules_characteristics_submatrix_corner_south_east_corner_count_characteristic_service_ts
   file_src_modules_characteristics_submatrix_corner_corner_characteristics_module_ts --> file_src_modules_characteristics_submatrix_corner_south_west_corner_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_corner_corner_characteristics_module_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_module_ts
   file_src_modules_characteristics_submatrix_corner_corner_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
   file_src_modules_characteristics_submatrix_corner_corner_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_corner_north_east_corner_count_characteristic_service_ts
   file_src_modules_characteristics_submatrix_corner_corner_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_corner_north_west_corner_count_characteristic_service_ts
@@ -4814,51 +5391,61 @@ graph LR
   file_src_modules_characteristics_submatrix_corner_corner_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_corner_north_west_corner_count_characteristic_service_ts
   file_src_modules_characteristics_submatrix_corner_corner_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_corner_south_east_corner_count_characteristic_service_ts
   file_src_modules_characteristics_submatrix_corner_corner_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_corner_south_west_corner_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_corner_corner_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_corner_corner_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_corner_corner_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_corner_north_east_corner_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_submatrix_corner_north_east_corner_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_ts
+  file_src_modules_characteristics_submatrix_corner_north_east_corner_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_corner_north_east_corner_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_src_modules_characteristics_submatrix_corner_north_east_corner_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_corner_north_east_corner_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_corner_north_east_corner_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_corner_north_east_corner_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_corner_north_east_corner_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_corner_north_west_corner_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_submatrix_corner_north_west_corner_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_ts
+  file_src_modules_characteristics_submatrix_corner_north_west_corner_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_corner_north_west_corner_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_src_modules_characteristics_submatrix_corner_north_west_corner_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_corner_north_west_corner_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_corner_north_west_corner_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_corner_north_west_corner_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_corner_north_west_corner_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_corner_south_east_corner_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_submatrix_corner_south_east_corner_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_ts
+  file_src_modules_characteristics_submatrix_corner_south_east_corner_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_corner_south_east_corner_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_src_modules_characteristics_submatrix_corner_south_east_corner_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_corner_south_east_corner_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_corner_south_east_corner_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_corner_south_east_corner_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_corner_south_east_corner_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_corner_south_west_corner_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_submatrix_corner_south_west_corner_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_ts
+  file_src_modules_characteristics_submatrix_corner_south_west_corner_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_corner_south_west_corner_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_src_modules_characteristics_submatrix_corner_south_west_corner_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_corner_south_west_corner_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_corner_south_west_corner_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_corner_south_west_corner_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_corner_south_west_corner_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_cross_cross_characteristics_module_ts --> file_src_modules_characteristics_submatrix_cross_cross_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_cross_cross_characteristics_module_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_module_ts
   file_src_modules_characteristics_submatrix_cross_cross_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_submatrix_cross_cross_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_ts
+  file_src_modules_characteristics_submatrix_cross_cross_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_cross_cross_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_src_modules_characteristics_submatrix_cross_cross_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_cross_cross_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_cross_cross_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_cross_cross_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_cross_cross_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_embedded_embedded_characteristics_module_ts --> file_src_modules_characteristics_submatrix_embedded_embedded_u_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_embedded_embedded_characteristics_module_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_module_ts
   file_src_modules_characteristics_submatrix_embedded_embedded_u_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_submatrix_embedded_embedded_u_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_ts
+  file_src_modules_characteristics_submatrix_embedded_embedded_u_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_embedded_embedded_u_count_characteristic_service_ts --> file_src_modules_matrix_matrix_types_ts
   file_src_modules_characteristics_submatrix_embedded_embedded_u_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_src_modules_characteristics_submatrix_embedded_embedded_u_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_embedded_embedded_u_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_embedded_embedded_u_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_embedded_embedded_u_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_embedded_embedded_u_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_fork_east_fork_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_submatrix_fork_east_fork_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_ts
+  file_src_modules_characteristics_submatrix_fork_east_fork_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_fork_east_fork_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_src_modules_characteristics_submatrix_fork_east_fork_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_fork_east_fork_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_fork_east_fork_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_fork_east_fork_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_fork_east_fork_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_fork_fork_characteristics_module_ts --> file_src_modules_characteristics_submatrix_fork_east_fork_count_characteristic_service_ts
@@ -4866,6 +5453,7 @@ graph LR
   file_src_modules_characteristics_submatrix_fork_fork_characteristics_module_ts --> file_src_modules_characteristics_submatrix_fork_north_fork_count_characteristic_service_ts
   file_src_modules_characteristics_submatrix_fork_fork_characteristics_module_ts --> file_src_modules_characteristics_submatrix_fork_south_fork_count_characteristic_service_ts
   file_src_modules_characteristics_submatrix_fork_fork_characteristics_module_ts --> file_src_modules_characteristics_submatrix_fork_west_fork_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_fork_fork_characteristics_module_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_module_ts
   file_src_modules_characteristics_submatrix_fork_fork_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
   file_src_modules_characteristics_submatrix_fork_fork_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_fork_east_fork_count_characteristic_service_ts
   file_src_modules_characteristics_submatrix_fork_fork_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_fork_north_fork_count_characteristic_service_ts
@@ -4878,168 +5466,196 @@ graph LR
   file_src_modules_characteristics_submatrix_fork_fork_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_fork_north_fork_count_characteristic_service_ts
   file_src_modules_characteristics_submatrix_fork_fork_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_fork_south_fork_count_characteristic_service_ts
   file_src_modules_characteristics_submatrix_fork_fork_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_fork_west_fork_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_fork_fork_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_fork_fork_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_fork_fork_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_fork_north_fork_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_submatrix_fork_north_fork_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_ts
+  file_src_modules_characteristics_submatrix_fork_north_fork_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_fork_north_fork_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_src_modules_characteristics_submatrix_fork_north_fork_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_fork_north_fork_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_fork_north_fork_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_fork_north_fork_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_fork_north_fork_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_fork_south_fork_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_submatrix_fork_south_fork_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_ts
+  file_src_modules_characteristics_submatrix_fork_south_fork_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_fork_south_fork_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_src_modules_characteristics_submatrix_fork_south_fork_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_fork_south_fork_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_fork_south_fork_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_fork_south_fork_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_fork_south_fork_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_fork_west_fork_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_submatrix_fork_west_fork_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_ts
+  file_src_modules_characteristics_submatrix_fork_west_fork_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_fork_west_fork_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_src_modules_characteristics_submatrix_fork_west_fork_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_fork_west_fork_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_fork_west_fork_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_fork_west_fork_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_fork_west_fork_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_letter_a_east_letter_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_submatrix_letter_a_east_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_ts
+  file_src_modules_characteristics_submatrix_letter_a_east_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_a_east_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_src_modules_characteristics_submatrix_letter_a_east_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_a_east_letter_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_letter_a_east_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_a_east_letter_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_letter_a_east_letter_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_letter_a_inverted_letter_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_submatrix_letter_a_inverted_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_ts
+  file_src_modules_characteristics_submatrix_letter_a_inverted_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_a_inverted_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_src_modules_characteristics_submatrix_letter_a_inverted_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_a_inverted_letter_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_letter_a_inverted_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_a_inverted_letter_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_letter_a_inverted_letter_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_letter_a_letter_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_submatrix_letter_a_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_ts
+  file_src_modules_characteristics_submatrix_letter_a_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_a_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_src_modules_characteristics_submatrix_letter_a_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_a_letter_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_letter_a_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_a_letter_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_letter_a_letter_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_letter_a_west_letter_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_submatrix_letter_a_west_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_ts
+  file_src_modules_characteristics_submatrix_letter_a_west_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_a_west_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_src_modules_characteristics_submatrix_letter_a_west_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_a_west_letter_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_letter_a_west_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_a_west_letter_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_letter_a_west_letter_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_letter_b_letter_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_submatrix_letter_b_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_ts
+  file_src_modules_characteristics_submatrix_letter_b_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_b_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_src_modules_characteristics_submatrix_letter_b_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_b_letter_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_letter_b_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_b_letter_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_letter_b_letter_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_letter_b_sideways_letter_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_submatrix_letter_b_sideways_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_ts
+  file_src_modules_characteristics_submatrix_letter_b_sideways_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_b_sideways_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_src_modules_characteristics_submatrix_letter_b_sideways_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_b_sideways_letter_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_letter_b_sideways_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_b_sideways_letter_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_letter_b_sideways_letter_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_letter_c_letter_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_submatrix_letter_c_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_ts
+  file_src_modules_characteristics_submatrix_letter_c_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_c_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_src_modules_characteristics_submatrix_letter_c_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_c_letter_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_letter_c_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_c_letter_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_letter_c_letter_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_letter_c_west_letter_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_submatrix_letter_c_west_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_ts
+  file_src_modules_characteristics_submatrix_letter_c_west_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_c_west_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_src_modules_characteristics_submatrix_letter_c_west_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_c_west_letter_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_letter_c_west_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_c_west_letter_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_letter_c_west_letter_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_letter_e_down_letter_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_submatrix_letter_e_down_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_ts
+  file_src_modules_characteristics_submatrix_letter_e_down_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_e_down_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_src_modules_characteristics_submatrix_letter_e_down_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_e_down_letter_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_letter_e_down_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_e_down_letter_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_letter_e_down_letter_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_letter_e_letter_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_submatrix_letter_e_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_ts
+  file_src_modules_characteristics_submatrix_letter_e_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_e_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_src_modules_characteristics_submatrix_letter_e_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_e_letter_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_letter_e_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_e_letter_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_letter_e_letter_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_letter_e_up_letter_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_submatrix_letter_e_up_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_ts
+  file_src_modules_characteristics_submatrix_letter_e_up_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_e_up_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_src_modules_characteristics_submatrix_letter_e_up_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_e_up_letter_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_letter_e_up_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_e_up_letter_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_letter_e_up_letter_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_letter_e_west_letter_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_submatrix_letter_e_west_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_ts
+  file_src_modules_characteristics_submatrix_letter_e_west_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_e_west_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_src_modules_characteristics_submatrix_letter_e_west_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_e_west_letter_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_letter_e_west_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_e_west_letter_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_letter_e_west_letter_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_letter_f_down_letter_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_submatrix_letter_f_down_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_ts
+  file_src_modules_characteristics_submatrix_letter_f_down_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_f_down_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_src_modules_characteristics_submatrix_letter_f_down_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_f_down_letter_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_letter_f_down_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_f_down_letter_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_letter_f_down_letter_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_letter_f_letter_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_submatrix_letter_f_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_ts
+  file_src_modules_characteristics_submatrix_letter_f_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_f_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_src_modules_characteristics_submatrix_letter_f_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_f_letter_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_letter_f_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_f_letter_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_letter_f_letter_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_letter_f_up_letter_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_submatrix_letter_f_up_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_ts
+  file_src_modules_characteristics_submatrix_letter_f_up_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_f_up_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_src_modules_characteristics_submatrix_letter_f_up_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_f_up_letter_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_letter_f_up_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_f_up_letter_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_letter_f_up_letter_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_letter_f_west_letter_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_submatrix_letter_f_west_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_ts
+  file_src_modules_characteristics_submatrix_letter_f_west_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_f_west_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_src_modules_characteristics_submatrix_letter_f_west_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_f_west_letter_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_letter_f_west_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_f_west_letter_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_letter_f_west_letter_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_letter_h_letter_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_submatrix_letter_h_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_ts
+  file_src_modules_characteristics_submatrix_letter_h_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_h_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_src_modules_characteristics_submatrix_letter_h_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_h_letter_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_letter_h_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_h_letter_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_letter_h_letter_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_letter_h_sideways_letter_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_submatrix_letter_h_sideways_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_ts
+  file_src_modules_characteristics_submatrix_letter_h_sideways_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_h_sideways_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_src_modules_characteristics_submatrix_letter_h_sideways_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_h_sideways_letter_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_letter_h_sideways_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_h_sideways_letter_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_letter_h_sideways_letter_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_letter_i_letter_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_submatrix_letter_i_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_ts
+  file_src_modules_characteristics_submatrix_letter_i_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_i_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_src_modules_characteristics_submatrix_letter_i_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_i_letter_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_letter_i_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_i_letter_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_letter_i_letter_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_letter_i_sideways_letter_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_submatrix_letter_i_sideways_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_ts
+  file_src_modules_characteristics_submatrix_letter_i_sideways_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_i_sideways_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_src_modules_characteristics_submatrix_letter_i_sideways_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_i_sideways_letter_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_letter_i_sideways_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_i_sideways_letter_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_letter_i_sideways_letter_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_letter_l_down_letter_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_submatrix_letter_l_down_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_ts
+  file_src_modules_characteristics_submatrix_letter_l_down_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_l_down_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_src_modules_characteristics_submatrix_letter_l_down_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_l_down_letter_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_letter_l_down_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_l_down_letter_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_letter_l_down_letter_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_letter_l_letter_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_submatrix_letter_l_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_ts
+  file_src_modules_characteristics_submatrix_letter_l_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_l_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_src_modules_characteristics_submatrix_letter_l_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_l_letter_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_letter_l_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_l_letter_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_letter_l_letter_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_letter_l_up_letter_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_submatrix_letter_l_up_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_ts
+  file_src_modules_characteristics_submatrix_letter_l_up_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_l_up_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_src_modules_characteristics_submatrix_letter_l_up_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_l_up_letter_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_letter_l_up_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_l_up_letter_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_letter_l_up_letter_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_letter_l_west_letter_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_submatrix_letter_l_west_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_ts
+  file_src_modules_characteristics_submatrix_letter_l_west_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_l_west_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_src_modules_characteristics_submatrix_letter_l_west_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_l_west_letter_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_letter_l_west_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_l_west_letter_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_letter_l_west_letter_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_ts --> file_src_modules_characteristics_submatrix_letter_a_east_letter_count_characteristic_service_ts
@@ -5088,6 +5704,7 @@ graph LR
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_ts --> file_src_modules_characteristics_submatrix_letter_y_west_letter_count_characteristic_service_ts
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_ts --> file_src_modules_characteristics_submatrix_letter_z_letter_count_characteristic_service_ts
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_ts --> file_src_modules_characteristics_submatrix_letter_z_sideways_letter_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_module_ts
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_unit_test_ts --> file_src_modules_characteristics_characteristics_types_ts
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_a_east_letter_count_characteristic_service_ts
@@ -5140,135 +5757,157 @@ graph LR
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_letter_m_east_letter_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_submatrix_letter_m_east_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_ts
+  file_src_modules_characteristics_submatrix_letter_m_east_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_m_east_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_src_modules_characteristics_submatrix_letter_m_east_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_m_east_letter_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_letter_m_east_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_m_east_letter_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_letter_m_east_letter_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_letter_m_letter_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_submatrix_letter_m_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_ts
+  file_src_modules_characteristics_submatrix_letter_m_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_m_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_src_modules_characteristics_submatrix_letter_m_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_m_letter_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_letter_m_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_m_letter_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_letter_m_letter_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_letter_m_west_letter_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_submatrix_letter_m_west_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_ts
+  file_src_modules_characteristics_submatrix_letter_m_west_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_m_west_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_src_modules_characteristics_submatrix_letter_m_west_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_m_west_letter_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_letter_m_west_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_m_west_letter_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_letter_m_west_letter_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_letter_n_letter_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_submatrix_letter_n_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_ts
+  file_src_modules_characteristics_submatrix_letter_n_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_n_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_src_modules_characteristics_submatrix_letter_n_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_n_letter_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_letter_n_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_n_letter_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_letter_n_letter_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_letter_n_sideways_letter_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_submatrix_letter_n_sideways_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_ts
+  file_src_modules_characteristics_submatrix_letter_n_sideways_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_n_sideways_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_src_modules_characteristics_submatrix_letter_n_sideways_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_n_sideways_letter_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_letter_n_sideways_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_n_sideways_letter_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_letter_n_sideways_letter_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_letter_o_letter_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_submatrix_letter_o_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_ts
+  file_src_modules_characteristics_submatrix_letter_o_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_o_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_src_modules_characteristics_submatrix_letter_o_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_o_letter_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_letter_o_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_o_letter_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_letter_o_letter_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_letter_s_letter_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_submatrix_letter_s_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_ts
+  file_src_modules_characteristics_submatrix_letter_s_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_s_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_src_modules_characteristics_submatrix_letter_s_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_s_letter_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_letter_s_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_s_letter_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_letter_s_letter_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_letter_s_sideways_letter_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_submatrix_letter_s_sideways_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_ts
+  file_src_modules_characteristics_submatrix_letter_s_sideways_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_s_sideways_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_src_modules_characteristics_submatrix_letter_s_sideways_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_s_sideways_letter_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_letter_s_sideways_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_s_sideways_letter_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_letter_s_sideways_letter_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_letter_t_east_letter_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_submatrix_letter_t_east_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_ts
+  file_src_modules_characteristics_submatrix_letter_t_east_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_t_east_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_src_modules_characteristics_submatrix_letter_t_east_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_t_east_letter_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_letter_t_east_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_t_east_letter_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_letter_t_east_letter_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_letter_t_letter_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_submatrix_letter_t_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_ts
+  file_src_modules_characteristics_submatrix_letter_t_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_t_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_src_modules_characteristics_submatrix_letter_t_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_t_letter_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_letter_t_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_t_letter_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_letter_t_letter_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_letter_t_up_letter_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_submatrix_letter_t_up_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_ts
+  file_src_modules_characteristics_submatrix_letter_t_up_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_t_up_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_src_modules_characteristics_submatrix_letter_t_up_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_t_up_letter_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_letter_t_up_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_t_up_letter_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_letter_t_up_letter_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_letter_t_west_letter_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_submatrix_letter_t_west_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_ts
+  file_src_modules_characteristics_submatrix_letter_t_west_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_t_west_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_src_modules_characteristics_submatrix_letter_t_west_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_t_west_letter_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_letter_t_west_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_t_west_letter_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_letter_t_west_letter_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_letter_u_inverted_letter_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_submatrix_letter_u_inverted_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_ts
+  file_src_modules_characteristics_submatrix_letter_u_inverted_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_u_inverted_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_src_modules_characteristics_submatrix_letter_u_inverted_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_u_inverted_letter_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_letter_u_inverted_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_u_inverted_letter_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_letter_u_inverted_letter_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_letter_u_letter_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_submatrix_letter_u_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_ts
+  file_src_modules_characteristics_submatrix_letter_u_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_u_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_src_modules_characteristics_submatrix_letter_u_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_u_letter_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_letter_u_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_u_letter_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_letter_u_letter_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_letter_w_letter_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_submatrix_letter_w_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_ts
+  file_src_modules_characteristics_submatrix_letter_w_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_w_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_src_modules_characteristics_submatrix_letter_w_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_w_letter_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_letter_w_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_w_letter_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_letter_w_letter_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_letter_x_letter_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_submatrix_letter_x_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_ts
+  file_src_modules_characteristics_submatrix_letter_x_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_x_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_src_modules_characteristics_submatrix_letter_x_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_x_letter_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_letter_x_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_x_letter_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_letter_x_letter_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_letter_y_east_letter_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_submatrix_letter_y_east_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_ts
+  file_src_modules_characteristics_submatrix_letter_y_east_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_y_east_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_src_modules_characteristics_submatrix_letter_y_east_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_y_east_letter_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_letter_y_east_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_y_east_letter_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_letter_y_east_letter_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_letter_y_letter_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_submatrix_letter_y_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_ts
+  file_src_modules_characteristics_submatrix_letter_y_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_y_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_src_modules_characteristics_submatrix_letter_y_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_y_letter_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_letter_y_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_y_letter_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_letter_y_letter_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_letter_y_up_letter_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_submatrix_letter_y_up_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_ts
+  file_src_modules_characteristics_submatrix_letter_y_up_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_y_up_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_src_modules_characteristics_submatrix_letter_y_up_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_y_up_letter_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_letter_y_up_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_y_up_letter_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_letter_y_up_letter_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_letter_y_west_letter_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_submatrix_letter_y_west_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_ts
+  file_src_modules_characteristics_submatrix_letter_y_west_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_y_west_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_src_modules_characteristics_submatrix_letter_y_west_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_y_west_letter_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_letter_y_west_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_y_west_letter_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_letter_y_west_letter_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_letter_z_letter_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_submatrix_letter_z_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_ts
+  file_src_modules_characteristics_submatrix_letter_z_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_z_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_src_modules_characteristics_submatrix_letter_z_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_z_letter_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_letter_z_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_z_letter_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_letter_z_letter_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_letter_z_sideways_letter_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_submatrix_letter_z_sideways_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_ts
+  file_src_modules_characteristics_submatrix_letter_z_sideways_letter_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_z_sideways_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_src_modules_characteristics_submatrix_letter_z_sideways_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_z_sideways_letter_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_letter_z_sideways_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_z_sideways_letter_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_letter_z_sideways_letter_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_point_density_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
@@ -5281,11 +5920,33 @@ graph LR
   file_src_modules_characteristics_submatrix_point_density_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_point_density_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_point_dot_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_submatrix_point_dot_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_ts
+  file_src_modules_characteristics_submatrix_point_dot_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_point_dot_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_src_modules_characteristics_submatrix_point_dot_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_point_dot_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_point_dot_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_point_dot_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_point_dot_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
+  file_src_modules_characteristics_submatrix_point_double_horizontal_edge_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_submatrix_point_double_horizontal_edge_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
+  file_src_modules_characteristics_submatrix_point_double_horizontal_edge_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
+  file_src_modules_characteristics_submatrix_point_double_horizontal_edge_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_point_double_horizontal_edge_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_point_double_horizontal_edge_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
+  file_src_modules_characteristics_submatrix_point_double_horizontal_edge_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
+  file_src_modules_characteristics_submatrix_point_double_horizontal_edge_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
+  file_src_modules_characteristics_submatrix_point_double_vertical_edge_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_submatrix_point_double_vertical_edge_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
+  file_src_modules_characteristics_submatrix_point_double_vertical_edge_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
+  file_src_modules_characteristics_submatrix_point_double_vertical_edge_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_point_double_vertical_edge_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_point_double_vertical_edge_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
+  file_src_modules_characteristics_submatrix_point_double_vertical_edge_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
+  file_src_modules_characteristics_submatrix_point_double_vertical_edge_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
+  file_src_modules_characteristics_submatrix_point_east_edge_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_submatrix_point_east_edge_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
+  file_src_modules_characteristics_submatrix_point_east_edge_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
+  file_src_modules_characteristics_submatrix_point_east_edge_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_point_east_edge_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_point_east_edge_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
+  file_src_modules_characteristics_submatrix_point_east_edge_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
+  file_src_modules_characteristics_submatrix_point_east_edge_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_point_edge_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
   file_src_modules_characteristics_submatrix_point_edge_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_point_point_utilities_service_ts
   file_src_modules_characteristics_submatrix_point_edge_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
@@ -5293,12 +5954,6 @@ graph LR
   file_src_modules_characteristics_submatrix_point_edge_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_point_point_utilities_service_ts
   file_src_modules_characteristics_submatrix_point_edge_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_point_edge_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
-  file_src_modules_characteristics_submatrix_point_horizontal_edge_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_submatrix_point_horizontal_edge_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_ts
-  file_src_modules_characteristics_submatrix_point_horizontal_edge_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
-  file_src_modules_characteristics_submatrix_point_horizontal_edge_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_point_horizontal_edge_count_characteristic_service_ts
-  file_src_modules_characteristics_submatrix_point_horizontal_edge_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
-  file_src_modules_characteristics_submatrix_point_horizontal_edge_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_point_ink_point_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
   file_src_modules_characteristics_submatrix_point_ink_point_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_point_point_utilities_service_ts
   file_src_modules_characteristics_submatrix_point_ink_point_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
@@ -5306,38 +5961,75 @@ graph LR
   file_src_modules_characteristics_submatrix_point_ink_point_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_point_point_utilities_service_ts
   file_src_modules_characteristics_submatrix_point_ink_point_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_point_ink_point_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
+  file_src_modules_characteristics_submatrix_point_north_edge_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_submatrix_point_north_edge_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
+  file_src_modules_characteristics_submatrix_point_north_edge_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
+  file_src_modules_characteristics_submatrix_point_north_edge_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_point_north_edge_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_point_north_edge_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
+  file_src_modules_characteristics_submatrix_point_north_edge_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
+  file_src_modules_characteristics_submatrix_point_north_edge_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_point_point_characteristics_module_ts --> file_src_modules_characteristics_submatrix_point_density_characteristic_service_ts
   file_src_modules_characteristics_submatrix_point_point_characteristics_module_ts --> file_src_modules_characteristics_submatrix_point_dot_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_point_point_characteristics_module_ts --> file_src_modules_characteristics_submatrix_point_double_horizontal_edge_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_point_point_characteristics_module_ts --> file_src_modules_characteristics_submatrix_point_double_vertical_edge_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_point_point_characteristics_module_ts --> file_src_modules_characteristics_submatrix_point_east_edge_count_characteristic_service_ts
   file_src_modules_characteristics_submatrix_point_point_characteristics_module_ts --> file_src_modules_characteristics_submatrix_point_edge_count_characteristic_service_ts
-  file_src_modules_characteristics_submatrix_point_point_characteristics_module_ts --> file_src_modules_characteristics_submatrix_point_horizontal_edge_count_characteristic_service_ts
   file_src_modules_characteristics_submatrix_point_point_characteristics_module_ts --> file_src_modules_characteristics_submatrix_point_ink_point_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_point_point_characteristics_module_ts --> file_src_modules_characteristics_submatrix_point_north_edge_count_characteristic_service_ts
   file_src_modules_characteristics_submatrix_point_point_characteristics_module_ts --> file_src_modules_characteristics_submatrix_point_point_utilities_service_ts
-  file_src_modules_characteristics_submatrix_point_point_characteristics_module_ts --> file_src_modules_characteristics_submatrix_point_vertical_edge_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_point_point_characteristics_module_ts --> file_src_modules_characteristics_submatrix_point_south_edge_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_point_point_characteristics_module_ts --> file_src_modules_characteristics_submatrix_point_west_edge_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_point_point_characteristics_module_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_module_ts
+  file_src_modules_characteristics_submatrix_point_point_characteristics_module_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
+  file_src_modules_characteristics_submatrix_point_point_characteristics_module_unit_test_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_submatrix_point_point_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_point_east_edge_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_point_point_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_point_edge_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_point_point_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_point_north_edge_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_point_point_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_point_point_characteristics_module_ts
+  file_src_modules_characteristics_submatrix_point_point_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_point_south_edge_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_point_point_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_point_west_edge_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_point_point_characteristics_module_unit_test_ts --> file_src_modules_code_code_module_ts
+  file_src_modules_characteristics_submatrix_point_point_characteristics_module_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_point_point_utilities_service_ts --> file_src_modules_matrix_matrix_types_ts
   file_src_modules_characteristics_submatrix_point_point_utilities_service_unit_test_ts --> file_src_modules_characteristics_submatrix_point_point_utilities_service_ts
-  file_src_modules_characteristics_submatrix_point_vertical_edge_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_submatrix_point_vertical_edge_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_ts
-  file_src_modules_characteristics_submatrix_point_vertical_edge_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
-  file_src_modules_characteristics_submatrix_point_vertical_edge_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_point_vertical_edge_count_characteristic_service_ts
-  file_src_modules_characteristics_submatrix_point_vertical_edge_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
-  file_src_modules_characteristics_submatrix_point_vertical_edge_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
+  file_src_modules_characteristics_submatrix_point_south_edge_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_submatrix_point_south_edge_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
+  file_src_modules_characteristics_submatrix_point_south_edge_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
+  file_src_modules_characteristics_submatrix_point_south_edge_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_point_south_edge_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_point_south_edge_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
+  file_src_modules_characteristics_submatrix_point_south_edge_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
+  file_src_modules_characteristics_submatrix_point_south_edge_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
+  file_src_modules_characteristics_submatrix_point_west_edge_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_submatrix_point_west_edge_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
+  file_src_modules_characteristics_submatrix_point_west_edge_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
+  file_src_modules_characteristics_submatrix_point_west_edge_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_point_west_edge_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_point_west_edge_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
+  file_src_modules_characteristics_submatrix_point_west_edge_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
+  file_src_modules_characteristics_submatrix_point_west_edge_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_rectangle_horizontal_rectangle_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_submatrix_rectangle_horizontal_rectangle_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_rectangle_rectangle_utilities_ts
+  file_src_modules_characteristics_submatrix_rectangle_horizontal_rectangle_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_rectangle_rectangle_utilities_service_ts
   file_src_modules_characteristics_submatrix_rectangle_horizontal_rectangle_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_src_modules_characteristics_submatrix_rectangle_horizontal_rectangle_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_rectangle_horizontal_rectangle_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_rectangle_horizontal_rectangle_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_rectangle_rectangle_utilities_service_ts
+  file_src_modules_characteristics_submatrix_rectangle_horizontal_rectangle_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_rectangle_horizontal_rectangle_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_rectangle_horizontal_rectangle_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_rectangle_rectangle_characteristics_module_ts --> file_src_modules_characteristics_submatrix_rectangle_horizontal_rectangle_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_rectangle_rectangle_characteristics_module_ts --> file_src_modules_characteristics_submatrix_rectangle_rectangle_utilities_service_ts
   file_src_modules_characteristics_submatrix_rectangle_rectangle_characteristics_module_ts --> file_src_modules_characteristics_submatrix_rectangle_vertical_rectangle_count_characteristic_service_ts
-  file_src_modules_characteristics_submatrix_rectangle_rectangle_utilities_ts --> file_src_modules_characteristics_submatrix_submatrix_types_ts
-  file_src_modules_characteristics_submatrix_rectangle_rectangle_utilities_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_ts
-  file_src_modules_characteristics_submatrix_rectangle_rectangle_utilities_ts --> file_src_modules_matrix_matrix_types_ts
-  file_src_modules_characteristics_submatrix_rectangle_rectangle_utilities_unit_test_ts --> file_src_modules_characteristics_submatrix_rectangle_rectangle_utilities_ts
-  file_src_modules_characteristics_submatrix_rectangle_rectangle_utilities_unit_test_ts --> file_src_modules_matrix_matrix_types_ts
+  file_src_modules_characteristics_submatrix_rectangle_rectangle_characteristics_module_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_module_ts
+  file_src_modules_characteristics_submatrix_rectangle_rectangle_utilities_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
+  file_src_modules_characteristics_submatrix_rectangle_rectangle_utilities_service_ts --> file_src_modules_characteristics_submatrix_submatrix_types_ts
+  file_src_modules_characteristics_submatrix_rectangle_rectangle_utilities_service_ts --> file_src_modules_matrix_matrix_types_ts
+  file_src_modules_characteristics_submatrix_rectangle_rectangle_utilities_service_unit_test_ts --> file_src_modules_characteristics_submatrix_rectangle_rectangle_utilities_service_ts
+  file_src_modules_characteristics_submatrix_rectangle_rectangle_utilities_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
+  file_src_modules_characteristics_submatrix_rectangle_rectangle_utilities_service_unit_test_ts --> file_src_modules_matrix_matrix_types_ts
   file_src_modules_characteristics_submatrix_rectangle_vertical_rectangle_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_submatrix_rectangle_vertical_rectangle_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_rectangle_rectangle_utilities_ts
+  file_src_modules_characteristics_submatrix_rectangle_vertical_rectangle_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_rectangle_rectangle_utilities_service_ts
   file_src_modules_characteristics_submatrix_rectangle_vertical_rectangle_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
+  file_src_modules_characteristics_submatrix_rectangle_vertical_rectangle_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_rectangle_rectangle_utilities_service_ts
   file_src_modules_characteristics_submatrix_rectangle_vertical_rectangle_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_rectangle_vertical_rectangle_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_rectangle_vertical_rectangle_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_rectangle_vertical_rectangle_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_rectangle_vertical_rectangle_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_run_longest_horizontal_run_length_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
@@ -5363,10 +6055,15 @@ graph LR
   file_src_modules_characteristics_submatrix_run_run_utilities_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_run_run_utilities_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_run_run_utilities_service_unit_test_ts --> file_src_modules_matrix_matrix_service_ts
-  file_src_modules_characteristics_submatrix_submatrix_utilities_ts --> file_src_modules_characteristics_submatrix_submatrix_types_ts
-  file_src_modules_characteristics_submatrix_submatrix_utilities_ts --> file_src_modules_matrix_matrix_types_ts
-  file_src_modules_characteristics_submatrix_submatrix_utilities_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_ts
-  file_src_modules_characteristics_submatrix_submatrix_utilities_unit_test_ts --> file_src_modules_matrix_matrix_types_ts
+  file_src_modules_characteristics_submatrix_submatrix_utilities_module_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
+  file_src_modules_characteristics_submatrix_submatrix_utilities_module_unit_test_ts --> file_src_modules_characteristics_characteristics_module_ts
+  file_src_modules_characteristics_submatrix_submatrix_utilities_module_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_module_ts
+  file_src_modules_characteristics_submatrix_submatrix_utilities_module_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
+  file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts --> file_src_modules_characteristics_submatrix_submatrix_types_ts
+  file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts --> file_src_modules_matrix_matrix_types_ts
+  file_src_modules_characteristics_submatrix_submatrix_utilities_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
+  file_src_modules_characteristics_submatrix_submatrix_utilities_service_unit_test_ts --> file_src_modules_matrix_matrix_types_ts
   file_src_modules_classification_classification_constants_ts --> file_src_modules_classification_classification_types_ts
   file_src_modules_classification_classification_module_ts --> file_src_modules_classification_classification_service_ts
   file_src_modules_classification_classification_service_integration_test_ts --> file_src_modules_characteristics_characteristics_module_ts

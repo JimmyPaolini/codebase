@@ -102,10 +102,14 @@ import { ZLetterCountCharacteristicService } from "./submatrix/letter/z-letter-c
 import { ZSidewaysLetterCountCharacteristicService } from "./submatrix/letter/z-sideways-letter-count-characteristic.service";
 import { DensityCharacteristicService } from "./submatrix/point/density-characteristic.service";
 import { DotCountCharacteristicService } from "./submatrix/point/dot-count-characteristic.service";
+import { DoubleHorizontalEdgeCountCharacteristicService } from "./submatrix/point/double-horizontal-edge-count-characteristic.service";
+import { DoubleVerticalEdgeCountCharacteristicService } from "./submatrix/point/double-vertical-edge-count-characteristic.service";
+import { EastEdgeCountCharacteristicService } from "./submatrix/point/east-edge-count-characteristic.service";
 import { EdgeCountCharacteristicService } from "./submatrix/point/edge-count-characteristic.service";
-import { HorizontalEdgeCountCharacteristicService } from "./submatrix/point/horizontal-edge-count-characteristic.service";
 import { InkPointCountCharacteristicService } from "./submatrix/point/ink-point-count-characteristic.service";
-import { VerticalEdgeCountCharacteristicService } from "./submatrix/point/vertical-edge-count-characteristic.service";
+import { NorthEdgeCountCharacteristicService } from "./submatrix/point/north-edge-count-characteristic.service";
+import { SouthEdgeCountCharacteristicService } from "./submatrix/point/south-edge-count-characteristic.service";
+import { WestEdgeCountCharacteristicService } from "./submatrix/point/west-edge-count-characteristic.service";
 import { HorizontalRectangleCountCharacteristicService } from "./submatrix/rectangle/horizontal-rectangle-count-characteristic.service";
 import { VerticalRectangleCountCharacteristicService } from "./submatrix/rectangle/vertical-rectangle-count-characteristic.service";
 import { LongestHorizontalRunLengthCharacteristicService } from "./submatrix/run/longest-horizontal-run-length-characteristic.service";
@@ -172,6 +176,9 @@ const CHARACTERISTIC_SERVICES: readonly Type<CharacteristicEvaluator>[] = [
   CrossCountCharacteristicService,
   DensityCharacteristicService,
   DotCountCharacteristicService,
+  DoubleHorizontalEdgeCountCharacteristicService,
+  DoubleVerticalEdgeCountCharacteristicService,
+  EastEdgeCountCharacteristicService,
   EastForkCountCharacteristicService,
   EdgeCountCharacteristicService,
   EmbeddedUCountCharacteristicService,
@@ -179,7 +186,6 @@ const CHARACTERISTIC_SERVICES: readonly Type<CharacteristicEvaluator>[] = [
   EndsOnBorderRulesCharacteristicService,
   ForkCountCharacteristicService,
   FreeEndCountCharacteristicService,
-  HorizontalEdgeCountCharacteristicService,
   HorizontalRectangleCountCharacteristicService,
   InflectionCountCharacteristicService,
   InkPointCountCharacteristicService,
@@ -208,10 +214,12 @@ const CHARACTERISTIC_SERVICES: readonly Type<CharacteristicEvaluator>[] = [
   LongestVerticalRunLengthCharacteristicService,
   MaxMonotonicTurnLengthCharacteristicService,
   NorthEastCornerCountCharacteristicService,
+  NorthEdgeCountCharacteristicService,
   NorthForkCountCharacteristicService,
   NorthWestCornerCountCharacteristicService,
   ReversesAtItsTightestTurnCharacteristicService,
   SouthEastCornerCountCharacteristicService,
+  SouthEdgeCountCharacteristicService,
   SouthForkCountCharacteristicService,
   SouthWestCornerCountCharacteristicService,
   TightestTurnCountCharacteristicService,
@@ -220,8 +228,8 @@ const CHARACTERISTIC_SERVICES: readonly Type<CharacteristicEvaluator>[] = [
   TileCrossingCycleCountCharacteristicService,
   TopBorderTouchCountCharacteristicService,
   TotalTurnCountCharacteristicService,
-  VerticalEdgeCountCharacteristicService,
   VerticalRectangleCountCharacteristicService,
+  WestEdgeCountCharacteristicService,
   WestForkCountCharacteristicService,
 ];
 
@@ -236,23 +244,27 @@ const WINDOWS: Readonly<Record<string, SubmatrixWindow>> = {
   crossCount: { columns: 1, rows: 1 },
   density: { columns: 1, rows: 1 },
   dotCount: { columns: 1, rows: 1 },
+  doubleHorizontalEdgeCount: { columns: 1, rows: 1 },
+  doubleVerticalEdgeCount: { columns: 1, rows: 1 },
+  eastEdgeCount: { columns: 1, rows: 1 },
   eastForkCount: { columns: 1, rows: 1 },
   edgeCount: { columns: 1, rows: 1 },
   embeddedUCount: { columns: 2, rows: 2 },
   forkCount: { columns: 1, rows: 1 },
-  horizontalEdgeCount: { columns: 1, rows: 1 },
   horizontalRectangleCount: { columns: 3, rows: 2, variable: true },
   inkPointCount: { columns: 1, rows: 1 },
   longestHorizontalRunLength: { columns: 2, rows: 1, variable: true },
   longestVerticalRunLength: { columns: 1, rows: 2, variable: true },
   northEastCornerCount: { columns: 1, rows: 1 },
+  northEdgeCount: { columns: 1, rows: 1 },
   northForkCount: { columns: 1, rows: 1 },
   northWestCornerCount: { columns: 1, rows: 1 },
   southEastCornerCount: { columns: 1, rows: 1 },
+  southEdgeCount: { columns: 1, rows: 1 },
   southForkCount: { columns: 1, rows: 1 },
   southWestCornerCount: { columns: 1, rows: 1 },
-  verticalEdgeCount: { columns: 1, rows: 1 },
   verticalRectangleCount: { columns: 2, rows: 3, variable: true },
+  westEdgeCount: { columns: 1, rows: 1 },
   westForkCount: { columns: 1, rows: 1 },
 };
 

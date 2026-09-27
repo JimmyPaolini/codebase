@@ -89,6 +89,25 @@ export class SubmatrixUtilitiesService {
   }
 
   /**
+   * Counts the points whose ink leaves by `arm`, whatever other arms they
+   * carry — a lone arm, a straight edge, a corner, a fork, and a cross all
+   * count once — which is every directional edge count.
+   */
+  public countPointsWithArm(matrix: Matrix, arm: MatrixPointArm): number {
+    let count = 0;
+
+    for (const row of matrix) {
+      for (const point of row) {
+        if (point[arm]) {
+          count += 1;
+        }
+      }
+    }
+
+    return count;
+  }
+
+  /**
    * Counts the points whose ink leaves by exactly `arms` — every named arm set
    * and every other arm clear — which is the whole of every 1×1 submatrix
    * characteristic: a bare point is `[]`, a corner two perpendicular arms, a

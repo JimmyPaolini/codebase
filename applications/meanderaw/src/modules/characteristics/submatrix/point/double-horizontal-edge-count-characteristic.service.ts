@@ -9,11 +9,13 @@ import type {
 } from "../../characteristics.types";
 
 /**
- * Counts the straight horizontal points of a Code — ink passing through east
- * to west and nowhere else — as a 1×1 submatrix scan.
+ * Counts the points of a Code carrying both horizontal arms and nothing else —
+ * ink passing straight through east to west — as a 1×1 submatrix scan,
+ * unlike `eastEdgeCount` and `westEdgeCount`, which count one arm whatever else
+ * the point carries.
  */
 @Injectable()
-export class HorizontalEdgeCountCharacteristicService implements CharacteristicEvaluator<number> {
+export class DoubleHorizontalEdgeCountCharacteristicService implements CharacteristicEvaluator<number> {
   // 🏗 Dependency Injection
 
   constructor(
@@ -25,14 +27,14 @@ export class HorizontalEdgeCountCharacteristicService implements CharacteristicE
 
   // 🔑 Public Fields
 
-  /** Names and explains `horizontalEdgeCount` for catalogs and inspectors. */
+  /** Names and explains `doubleHorizontalEdgeCount` for catalogs and inspectors. */
   public readonly metadata: CharacteristicMetadata<number> = {
     category: "submatrix",
     description:
       "The number of points whose ink runs straight through east and west, with no north or south arm.",
     formula: String.raw`\left|\{\, p \in M : \text{arms}(p) = \{E, W\} \,\}\right|`,
-    key: "horizontalEdgeCount",
-    name: "Horizontal Edge Count",
+    key: "doubleHorizontalEdgeCount",
+    name: "Double Horizontal Edge Count",
     submatrix: { columns: 1, rows: 1 },
     valueType: "number",
   };

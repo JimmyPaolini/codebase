@@ -64,6 +64,31 @@ describe(SubmatrixUtilitiesService, () => {
     });
   });
 
+  describe("countPointsWithArm", () => {
+    const matrix: Matrix = [
+      [point("north"), point("north", "south"), point("east")],
+      [
+        point("north", "east", "west"),
+        point(),
+        point("north", "east", "south", "west"),
+      ],
+    ];
+
+    it("counts every point carrying the arm, whatever its other arms", () => {
+      expect(service.countPointsWithArm(matrix, "north")).toBe(4);
+      expect(service.countPointsWithArm(matrix, "east")).toBe(3);
+    });
+
+    it("skips points without the arm", () => {
+      expect(service.countPointsWithArm(matrix, "south")).toBe(2);
+      expect(service.countPointsWithArm(matrix, "west")).toBe(2);
+    });
+
+    it("counts nothing in an empty matrix", () => {
+      expect(service.countPointsWithArm([], "north")).toBe(0);
+    });
+  });
+
   describe("pointDigitAt", () => {
     const matrix: Matrix = [[point("north", "east"), point("south", "west")]];
 
