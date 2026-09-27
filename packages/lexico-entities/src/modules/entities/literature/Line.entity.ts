@@ -3,9 +3,9 @@ import { Column, Entity, Index, ManyToOne, OneToMany } from "typeorm";
 
 import { AuditableEntity } from "../base/Auditable.entity";
 
-import type { Author } from "./Author.entity";
-import type { Text } from "./Text.entity";
-import type { Token } from "./Token.entity";
+import { Author } from "./Author.entity";
+import { Text } from "./Text.entity";
+import { Token } from "./Token.entity";
 
 /**
  * Represents a single line of text from a classical Latin work.
@@ -18,7 +18,7 @@ import type { Token } from "./Token.entity";
 @Index(["text", "index"], { unique: true })
 @ObjectType()
 export class Line extends AuditableEntity {
-  @Field(() => Object)
+  @Field(() => Author)
   @Index()
   @ManyToOne("Author", { eager: false, onDelete: "CASCADE" })
   author!: Author;
@@ -41,11 +41,11 @@ export class Line extends AuditableEntity {
   @Field()
   label!: string;
 
-  @Field(() => Object)
+  @Field(() => Text)
   @ManyToOne("Text", "lines", { eager: true, onDelete: "CASCADE" })
   text!: Text;
 
-  @Field(() => [Object])
+  @Field(() => [Token])
   @OneToMany("Token", "line", { cascade: true })
   tokens!: Token[];
 }

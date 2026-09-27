@@ -126,32 +126,17 @@ export class LoggerService extends ConsoleLogger {
     context: string | undefined;
     parsed: ParsedLogMessage;
   }): void {
-    if (LoggerService.isProduction) {
-      return;
-    }
-
     if (
-      args.context !== undefined &&
-      UNVALIDATED_LOG_CONTEXTS.has(args.context)
+      LoggerService.isProduction ||
+      this.shouldSkipConventionalMessageValidation(args.context)
     ) {
       return;
     }
 
-    const emoji = args.parsed.emoji;
-    const text = args.parsed.text;
+    const violation = this.getConventionalMessageViolation(args.parsed);
 
-    if (emoji === undefined) {
-      throw new Error(
-        `Log message must start with an emoji naming its subject, then a verb: "${text}"`,
-      );
-    }
-
-    const firstWord = FIRST_WORD_PATTERN.exec(text)?.[1];
-
-    if (firstWord === undefined || !this.isConventionalVerb(firstWord)) {
-      throw new Error(
-        `Log message must begin with a verb in present progressive or past tense, got "${firstWord ?? ""}": "${emoji} ${text}"`,
-      );
+    if (violation !== undefined) {
+      throw new Error(violation);
     }
   }
 
@@ -172,6 +157,25 @@ export class LoggerService extends ConsoleLogger {
       // Telemetry gets prose; only the console-bound transport reads this.
       ...(LoggerService.isProduction ? {} : { emoji: args.parsed.emoji }),
     };
+  }
+
+  /** Returns a human-readable explanation when the message format is invalid. */
+  private getConventionalMessageViolation(
+    parsed: ParsedLogMessage,
+  ): string | undefined {
+    const { emoji, text } = parsed;
+
+    if (emoji === undefined) {
+      return `Log message must start with an emoji naming its subject, then a verb: "${text}"`;
+    }
+
+    const firstWord = FIRST_WORD_PATTERN.exec(text)?.[1];
+
+    if (firstWord === undefined || !this.isConventionalVerb(firstWord)) {
+      return `Log message must begin with a verb in present progressive or past tense, got "${firstWord ?? ""}": "${emoji} ${text}"`;
+    }
+
+    return undefined;
   }
 
   /**
@@ -200,6 +204,13 @@ export class LoggerService extends ConsoleLogger {
     return emoji === undefined
       ? { emoji: undefined, text }
       : { emoji, text: text.slice(match?.[0].length) };
+  }
+
+  /** Whether a context is intentionally exempt from the validation rule. */
+  private shouldSkipConventionalMessageValidation(
+    context: string | undefined,
+  ): boolean {
+    return context !== undefined && UNVALIDATED_LOG_CONTEXTS.has(context);
   }
 
   // 🌎 Public Methods
