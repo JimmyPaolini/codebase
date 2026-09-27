@@ -84,6 +84,9 @@ export default [
       // Agent scratch space — gitignored (`.superpowers/sdd/.gitignore` is a
       // bare `*`) and never source, the same reason as the Python caches above
       "**/.superpowers/**",
+      // Nested local worktrees created by agent tooling; untracked scratch
+      // repositories that should never be linted as part of this workspace.
+      "**/.claude/worktrees/**",
       "**/vite.config.*.timestamp*",
       "**/vitest.config.*.timestamp*",
       "**/codometer-report.json",
