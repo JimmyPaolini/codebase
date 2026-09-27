@@ -69,7 +69,10 @@ import { JingHanziLetterCharacteristicsService } from "./submatrix/letter/jing-h
 import { KieukHangulLetterCharacteristicsService } from "./submatrix/letter/kieuk-hangul-letter-characteristics.service";
 import { LLatinLetterCharacteristicsService } from "./submatrix/letter/l-latin-letter-characteristics.service";
 import { LamedHebrewLetterCharacteristicsService } from "./submatrix/letter/lamed-hebrew-letter-characteristics.service";
-import { LETTER_ORIENTATION_NAMES } from "./submatrix/letter/letter.constants";
+import {
+  LETTER_ORIENTATION_NAMES,
+  LETTER_SCRIPTS,
+} from "./submatrix/letter/letter.constants";
 import { MLatinLetterCharacteristicsService } from "./submatrix/letter/m-latin-letter-characteristics.service";
 import { MuHanziLetterCharacteristicsService } from "./submatrix/letter/mu-hanzi-letter-characteristics.service";
 import { NLatinLetterCharacteristicsService } from "./submatrix/letter/n-latin-letter-characteristics.service";
@@ -234,8 +237,10 @@ const CHARACTERISTIC_SERVICES: readonly Type<CharacteristicEvaluator>[] = [
 ];
 
 /** A letter service's class name, read as its key stem and its script: `TuSoilHanziLetterCharacteristicsService` keys `tuSoil…HanziCount`. */
-const LETTER_SERVICE_NAME =
-  /^(?<stem>\w+?)(?<script>Greek|Hangul|Hanzi|Hebrew|Katakana|Latin)LetterCharacteristicsService$/u;
+const LETTER_SERVICE_NAME = new RegExp(
+  String.raw`^(?<stem>\w+?)(?<script>${Object.keys(LETTER_SCRIPTS).join("|")})LetterCharacteristicsService$`,
+  "u",
+);
 
 /**
  * The window, in lattice points, each submatrix evaluator other than a letter

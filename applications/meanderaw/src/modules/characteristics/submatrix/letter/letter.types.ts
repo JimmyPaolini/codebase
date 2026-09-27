@@ -2,6 +2,7 @@ import type {
   LetterCharacteristicKey,
   SubmatrixWindow,
 } from "../../characteristics.types";
+import type { LETTER_SCRIPTS } from "./letter.constants";
 
 // 🏷️ Types
 
@@ -33,12 +34,19 @@ export interface LetterDefinition {
 }
 
 /**
- * One of a letter's sixteen orientations: its corner, its clockwise rotation
- * applied after the corner's flip, the template drawn that way, and the
- * window that template fills.
+ * A mirroring that draws a glyph at another corner than its script's base
+ * corner, worded as an orientation's description says it.
+ */
+export type LetterFlip = "east to west" | "north to south";
+
+/**
+ * One of a letter's sixteen orientations: its corner, the flips drawing that
+ * corner from the script's base corner, its clockwise rotation applied after
+ * them, the template drawn that way, and the window that template fills.
  */
 export interface LetterOrientation {
   readonly corner: LetterCorner;
+  readonly flips: readonly LetterFlip[];
   readonly name: LetterOrientationName;
   readonly rotation: LetterRotation;
   readonly template: readonly string[];
@@ -54,14 +62,8 @@ export type LetterOrientationName = `${LetterCorner}${"" | LetterTurn}`;
 /** A clockwise rotation of a glyph, `None` leaving it unturned. */
 export type LetterRotation = "None" | LetterTurn;
 
-/** A script whose letters are drawn as glyph templates. */
-export type LetterScript =
-  | "Greek"
-  | "Hangul"
-  | "Hanzi"
-  | "Hebrew"
-  | "Katakana"
-  | "Latin";
+/** A script whose letters are drawn as glyph templates: see {@link LETTER_SCRIPTS}. */
+export type LetterScript = keyof typeof LETTER_SCRIPTS;
 
 /** A clockwise turn of a glyph by a quarter, a half, or three quarters. */
 export type LetterTurn = "Half" | "Quarter" | "ThreeQuarter";

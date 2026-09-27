@@ -2004,10 +2004,10 @@ Call stacks traced through `applications/meanderaw`, deepest first. Each frame s
 
 | Measure | Value |
 | --- | --- |
-| Callables | 669 |
+| Callables | 671 |
 | Files | 232 |
 | Calls traced | 689 |
-| Call stacks | 89 |
+| Call stacks | 88 |
 | Deepest stack | 16 |
 | Stacks through recursion | 0 |
 | Unfollowable calls | 20 |
@@ -2060,949 +2060,992 @@ What this project is judged against, as declared in its own `callidescope.config
 
 ```text
 🚀 ALatinLetterCharacteristicsService.constructor(…): ALatinLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/a-latin-letter-characteristics.service.ts:26]
-  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:284]
      ↳ A letter's sixteen evaluators, one per orientation in {@link LetterUtilitiesService.orientationNames} order.
-    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:333]
+    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:357]
        ↳ A base template drawn in all sixteen orientations, in {@link LetterUtilitiesService.orientationNames} order.
-      └─> LetterUtilitiesService.flatMap(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; }[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:338]
-        └─> LetterUtilitiesService.map(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; } [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:347]
-          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:364]
+      └─> LetterUtilitiesService.map(…)(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:362]
+        └─> LetterUtilitiesService.orientation(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:203]
+           ↳ A base template facing `base` drawn in the orientation `name`: flipped to its corner, then turned.
+          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:371]
              ↳ Turns a template clockwise by `rotation`, carrying each arm round with it; a quarter or three-quarter turn swaps its…
-            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:370]
-              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:233]
+            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:377]
+              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:257]
                  ↳ Turns a template one quarter clockwise: its west column becomes its top row, and each arm moves round — north to east,…
-                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:236]
-                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:238]
-                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:199]
+                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:262]
+                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:187]
                        ↳ Rewrites a template digit's arms through `arms`, which maps each arm bit — north 8, south 4, east 2, west 1 — to the…
-                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:210]
+                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
 **3. `AoHanziLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 AoHanziLetterCharacteristicsService.constructor(…): AoHanziLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/ao-hanzi-letter-characteristics.service.ts:26]
-  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:284]
      ↳ A letter's sixteen evaluators, one per orientation in {@link LetterUtilitiesService.orientationNames} order.
-    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:333]
+    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:357]
        ↳ A base template drawn in all sixteen orientations, in {@link LetterUtilitiesService.orientationNames} order.
-      └─> LetterUtilitiesService.flatMap(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; }[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:338]
-        └─> LetterUtilitiesService.map(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; } [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:347]
-          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:364]
+      └─> LetterUtilitiesService.map(…)(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:362]
+        └─> LetterUtilitiesService.orientation(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:203]
+           ↳ A base template facing `base` drawn in the orientation `name`: flipped to its corner, then turned.
+          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:371]
              ↳ Turns a template clockwise by `rotation`, carrying each arm round with it; a quarter or three-quarter turn swaps its…
-            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:370]
-              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:233]
+            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:377]
+              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:257]
                  ↳ Turns a template one quarter clockwise: its west column becomes its top row, and each arm moves round — north to east,…
-                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:236]
-                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:238]
-                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:199]
+                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:262]
+                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:187]
                        ↳ Rewrites a template digit's arms through `arms`, which maps each arm bit — north 8, south 4, east 2, west 1 — to the…
-                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:210]
+                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
 <details>
-<summary>86 more call stacks</summary>
+<summary>85 more call stacks</summary>
 
 **4. `BLatinLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 BLatinLetterCharacteristicsService.constructor(…): BLatinLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/b-latin-letter-characteristics.service.ts:26]
-  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:284]
      ↳ A letter's sixteen evaluators, one per orientation in {@link LetterUtilitiesService.orientationNames} order.
-    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:333]
+    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:357]
        ↳ A base template drawn in all sixteen orientations, in {@link LetterUtilitiesService.orientationNames} order.
-      └─> LetterUtilitiesService.flatMap(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; }[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:338]
-        └─> LetterUtilitiesService.map(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; } [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:347]
-          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:364]
+      └─> LetterUtilitiesService.map(…)(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:362]
+        └─> LetterUtilitiesService.orientation(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:203]
+           ↳ A base template facing `base` drawn in the orientation `name`: flipped to its corner, then turned.
+          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:371]
              ↳ Turns a template clockwise by `rotation`, carrying each arm round with it; a quarter or three-quarter turn swaps its…
-            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:370]
-              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:233]
+            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:377]
+              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:257]
                  ↳ Turns a template one quarter clockwise: its west column becomes its top row, and each arm moves round — north to east,…
-                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:236]
-                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:238]
-                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:199]
+                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:262]
+                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:187]
                        ↳ Rewrites a template digit's arms through `arms`, which maps each arm bit — north 8, south 4, east 2, west 1 — to the…
-                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:210]
+                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
 **5. `CLatinLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 CLatinLetterCharacteristicsService.constructor(…): CLatinLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/c-latin-letter-characteristics.service.ts:25]
-  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:284]
      ↳ A letter's sixteen evaluators, one per orientation in {@link LetterUtilitiesService.orientationNames} order.
-    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:333]
+    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:357]
        ↳ A base template drawn in all sixteen orientations, in {@link LetterUtilitiesService.orientationNames} order.
-      └─> LetterUtilitiesService.flatMap(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; }[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:338]
-        └─> LetterUtilitiesService.map(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; } [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:347]
-          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:364]
+      └─> LetterUtilitiesService.map(…)(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:362]
+        └─> LetterUtilitiesService.orientation(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:203]
+           ↳ A base template facing `base` drawn in the orientation `name`: flipped to its corner, then turned.
+          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:371]
              ↳ Turns a template clockwise by `rotation`, carrying each arm round with it; a quarter or three-quarter turn swaps its…
-            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:370]
-              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:233]
+            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:377]
+              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:257]
                  ↳ Turns a template one quarter clockwise: its west column becomes its top row, and each arm moves round — north to east,…
-                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:236]
-                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:238]
-                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:199]
+                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:262]
+                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:187]
                        ↳ Rewrites a template digit's arms through `arms`, which maps each arm bit — north 8, south 4, east 2, west 1 — to the…
-                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:210]
+                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
 **6. `DaletHebrewLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 DaletHebrewLetterCharacteristicsService.constructor(…): DaletHebrewLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/dalet-hebrew-letter-characteristics.service.ts:25]
-  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:284]
      ↳ A letter's sixteen evaluators, one per orientation in {@link LetterUtilitiesService.orientationNames} order.
-    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:333]
+    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:357]
        ↳ A base template drawn in all sixteen orientations, in {@link LetterUtilitiesService.orientationNames} order.
-      └─> LetterUtilitiesService.flatMap(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; }[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:338]
-        └─> LetterUtilitiesService.map(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; } [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:347]
-          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:364]
+      └─> LetterUtilitiesService.map(…)(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:362]
+        └─> LetterUtilitiesService.orientation(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:203]
+           ↳ A base template facing `base` drawn in the orientation `name`: flipped to its corner, then turned.
+          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:371]
              ↳ Turns a template clockwise by `rotation`, carrying each arm round with it; a quarter or three-quarter turn swaps its…
-            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:370]
-              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:233]
+            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:377]
+              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:257]
                  ↳ Turns a template one quarter clockwise: its west column becomes its top row, and each arm moves round — north to east,…
-                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:236]
-                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:238]
-                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:199]
+                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:262]
+                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:187]
                        ↳ Rewrites a template digit's arms through `arms`, which maps each arm bit — north 8, south 4, east 2, west 1 — to the…
-                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:210]
+                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
 **7. `ELatinLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 ELatinLetterCharacteristicsService.constructor(…): ELatinLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/e-latin-letter-characteristics.service.ts:26]
-  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:284]
      ↳ A letter's sixteen evaluators, one per orientation in {@link LetterUtilitiesService.orientationNames} order.
-    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:333]
+    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:357]
        ↳ A base template drawn in all sixteen orientations, in {@link LetterUtilitiesService.orientationNames} order.
-      └─> LetterUtilitiesService.flatMap(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; }[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:338]
-        └─> LetterUtilitiesService.map(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; } [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:347]
-          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:364]
+      └─> LetterUtilitiesService.map(…)(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:362]
+        └─> LetterUtilitiesService.orientation(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:203]
+           ↳ A base template facing `base` drawn in the orientation `name`: flipped to its corner, then turned.
+          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:371]
              ↳ Turns a template clockwise by `rotation`, carrying each arm round with it; a quarter or three-quarter turn swaps its…
-            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:370]
-              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:233]
+            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:377]
+              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:257]
                  ↳ Turns a template one quarter clockwise: its west column becomes its top row, and each arm moves round — north to east,…
-                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:236]
-                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:238]
-                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:199]
+                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:262]
+                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:187]
                        ↳ Rewrites a template digit's arms through `arms`, which maps each arm bit — north 8, south 4, east 2, west 1 — to the…
-                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:210]
+                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
 **8. `FLatinLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 FLatinLetterCharacteristicsService.constructor(…): FLatinLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/f-latin-letter-characteristics.service.ts:26]
-  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:284]
      ↳ A letter's sixteen evaluators, one per orientation in {@link LetterUtilitiesService.orientationNames} order.
-    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:333]
+    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:357]
        ↳ A base template drawn in all sixteen orientations, in {@link LetterUtilitiesService.orientationNames} order.
-      └─> LetterUtilitiesService.flatMap(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; }[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:338]
-        └─> LetterUtilitiesService.map(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; } [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:347]
-          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:364]
+      └─> LetterUtilitiesService.map(…)(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:362]
+        └─> LetterUtilitiesService.orientation(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:203]
+           ↳ A base template facing `base` drawn in the orientation `name`: flipped to its corner, then turned.
+          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:371]
              ↳ Turns a template clockwise by `rotation`, carrying each arm round with it; a quarter or three-quarter turn swaps its…
-            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:370]
-              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:233]
+            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:377]
+              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:257]
                  ↳ Turns a template one quarter clockwise: its west column becomes its top row, and each arm moves round — north to east,…
-                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:236]
-                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:238]
-                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:199]
+                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:262]
+                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:187]
                        ↳ Rewrites a template digit's arms through `arms`, which maps each arm bit — north 8, south 4, east 2, west 1 — to the…
-                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:210]
+                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
 **9. `GanHanziLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 GanHanziLetterCharacteristicsService.constructor(…): GanHanziLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/gan-hanzi-letter-characteristics.service.ts:26]
-  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:284]
      ↳ A letter's sixteen evaluators, one per orientation in {@link LetterUtilitiesService.orientationNames} order.
-    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:333]
+    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:357]
        ↳ A base template drawn in all sixteen orientations, in {@link LetterUtilitiesService.orientationNames} order.
-      └─> LetterUtilitiesService.flatMap(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; }[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:338]
-        └─> LetterUtilitiesService.map(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; } [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:347]
-          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:364]
+      └─> LetterUtilitiesService.map(…)(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:362]
+        └─> LetterUtilitiesService.orientation(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:203]
+           ↳ A base template facing `base` drawn in the orientation `name`: flipped to its corner, then turned.
+          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:371]
              ↳ Turns a template clockwise by `rotation`, carrying each arm round with it; a quarter or three-quarter turn swaps its…
-            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:370]
-              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:233]
+            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:377]
+              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:257]
                  ↳ Turns a template one quarter clockwise: its west column becomes its top row, and each arm moves round — north to east,…
-                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:236]
-                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:238]
-                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:199]
+                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:262]
+                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:187]
                        ↳ Rewrites a template digit's arms through `arms`, which maps each arm bit — north 8, south 4, east 2, west 1 — to the…
-                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:210]
+                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
 **10. `HLatinLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 HLatinLetterCharacteristicsService.constructor(…): HLatinLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/h-latin-letter-characteristics.service.ts:26]
-  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:284]
      ↳ A letter's sixteen evaluators, one per orientation in {@link LetterUtilitiesService.orientationNames} order.
-    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:333]
+    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:357]
        ↳ A base template drawn in all sixteen orientations, in {@link LetterUtilitiesService.orientationNames} order.
-      └─> LetterUtilitiesService.flatMap(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; }[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:338]
-        └─> LetterUtilitiesService.map(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; } [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:347]
-          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:364]
+      └─> LetterUtilitiesService.map(…)(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:362]
+        └─> LetterUtilitiesService.orientation(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:203]
+           ↳ A base template facing `base` drawn in the orientation `name`: flipped to its corner, then turned.
+          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:371]
              ↳ Turns a template clockwise by `rotation`, carrying each arm round with it; a quarter or three-quarter turn swaps its…
-            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:370]
-              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:233]
+            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:377]
+              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:257]
                  ↳ Turns a template one quarter clockwise: its west column becomes its top row, and each arm moves round — north to east,…
-                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:236]
-                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:238]
-                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:199]
+                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:262]
+                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:187]
                        ↳ Rewrites a template digit's arms through `arms`, which maps each arm bit — north 8, south 4, east 2, west 1 — to the…
-                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:210]
+                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
 **11. `ILatinLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 ILatinLetterCharacteristicsService.constructor(…): ILatinLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/i-latin-letter-characteristics.service.ts:25]
-  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:284]
      ↳ A letter's sixteen evaluators, one per orientation in {@link LetterUtilitiesService.orientationNames} order.
-    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:333]
+    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:357]
        ↳ A base template drawn in all sixteen orientations, in {@link LetterUtilitiesService.orientationNames} order.
-      └─> LetterUtilitiesService.flatMap(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; }[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:338]
-        └─> LetterUtilitiesService.map(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; } [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:347]
-          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:364]
+      └─> LetterUtilitiesService.map(…)(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:362]
+        └─> LetterUtilitiesService.orientation(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:203]
+           ↳ A base template facing `base` drawn in the orientation `name`: flipped to its corner, then turned.
+          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:371]
              ↳ Turns a template clockwise by `rotation`, carrying each arm round with it; a quarter or three-quarter turn swaps its…
-            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:370]
-              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:233]
+            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:377]
+              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:257]
                  ↳ Turns a template one quarter clockwise: its west column becomes its top row, and each arm moves round — north to east,…
-                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:236]
-                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:238]
-                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:199]
+                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:262]
+                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:187]
                        ↳ Rewrites a template digit's arms through `arms`, which maps each arm bit — north 8, south 4, east 2, west 1 — to the…
-                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:210]
+                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
 **12. `JiaHanziLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 JiaHanziLetterCharacteristicsService.constructor(…): JiaHanziLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/jia-hanzi-letter-characteristics.service.ts:27]
-  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:284]
      ↳ A letter's sixteen evaluators, one per orientation in {@link LetterUtilitiesService.orientationNames} order.
-    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:333]
+    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:357]
        ↳ A base template drawn in all sixteen orientations, in {@link LetterUtilitiesService.orientationNames} order.
-      └─> LetterUtilitiesService.flatMap(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; }[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:338]
-        └─> LetterUtilitiesService.map(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; } [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:347]
-          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:364]
+      └─> LetterUtilitiesService.map(…)(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:362]
+        └─> LetterUtilitiesService.orientation(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:203]
+           ↳ A base template facing `base` drawn in the orientation `name`: flipped to its corner, then turned.
+          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:371]
              ↳ Turns a template clockwise by `rotation`, carrying each arm round with it; a quarter or three-quarter turn swaps its…
-            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:370]
-              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:233]
+            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:377]
+              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:257]
                  ↳ Turns a template one quarter clockwise: its west column becomes its top row, and each arm moves round — north to east,…
-                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:236]
-                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:238]
-                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:199]
+                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:262]
+                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:187]
                        ↳ Rewrites a template digit's arms through `arms`, which maps each arm bit — north 8, south 4, east 2, west 1 — to the…
-                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:210]
+                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
 **13. `JingHanziLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 JingHanziLetterCharacteristicsService.constructor(…): JingHanziLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/jing-hanzi-letter-characteristics.service.ts:27]
-  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:284]
      ↳ A letter's sixteen evaluators, one per orientation in {@link LetterUtilitiesService.orientationNames} order.
-    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:333]
+    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:357]
        ↳ A base template drawn in all sixteen orientations, in {@link LetterUtilitiesService.orientationNames} order.
-      └─> LetterUtilitiesService.flatMap(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; }[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:338]
-        └─> LetterUtilitiesService.map(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; } [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:347]
-          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:364]
+      └─> LetterUtilitiesService.map(…)(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:362]
+        └─> LetterUtilitiesService.orientation(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:203]
+           ↳ A base template facing `base` drawn in the orientation `name`: flipped to its corner, then turned.
+          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:371]
              ↳ Turns a template clockwise by `rotation`, carrying each arm round with it; a quarter or three-quarter turn swaps its…
-            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:370]
-              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:233]
+            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:377]
+              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:257]
                  ↳ Turns a template one quarter clockwise: its west column becomes its top row, and each arm moves round — north to east,…
-                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:236]
-                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:238]
-                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:199]
+                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:262]
+                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:187]
                        ↳ Rewrites a template digit's arms through `arms`, which maps each arm bit — north 8, south 4, east 2, west 1 — to the…
-                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:210]
+                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
 **14. `KieukHangulLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 KieukHangulLetterCharacteristicsService.constructor(…): KieukHangulLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/kieuk-hangul-letter-characteristics.service.ts:26]
-  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:284]
      ↳ A letter's sixteen evaluators, one per orientation in {@link LetterUtilitiesService.orientationNames} order.
-    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:333]
+    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:357]
        ↳ A base template drawn in all sixteen orientations, in {@link LetterUtilitiesService.orientationNames} order.
-      └─> LetterUtilitiesService.flatMap(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; }[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:338]
-        └─> LetterUtilitiesService.map(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; } [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:347]
-          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:364]
+      └─> LetterUtilitiesService.map(…)(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:362]
+        └─> LetterUtilitiesService.orientation(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:203]
+           ↳ A base template facing `base` drawn in the orientation `name`: flipped to its corner, then turned.
+          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:371]
              ↳ Turns a template clockwise by `rotation`, carrying each arm round with it; a quarter or three-quarter turn swaps its…
-            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:370]
-              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:233]
+            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:377]
+              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:257]
                  ↳ Turns a template one quarter clockwise: its west column becomes its top row, and each arm moves round — north to east,…
-                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:236]
-                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:238]
-                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:199]
+                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:262]
+                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:187]
                        ↳ Rewrites a template digit's arms through `arms`, which maps each arm bit — north 8, south 4, east 2, west 1 — to the…
-                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:210]
+                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
 **15. `LLatinLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 LLatinLetterCharacteristicsService.constructor(…): LLatinLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/l-latin-letter-characteristics.service.ts:25]
-  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:284]
      ↳ A letter's sixteen evaluators, one per orientation in {@link LetterUtilitiesService.orientationNames} order.
-    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:333]
+    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:357]
        ↳ A base template drawn in all sixteen orientations, in {@link LetterUtilitiesService.orientationNames} order.
-      └─> LetterUtilitiesService.flatMap(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; }[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:338]
-        └─> LetterUtilitiesService.map(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; } [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:347]
-          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:364]
+      └─> LetterUtilitiesService.map(…)(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:362]
+        └─> LetterUtilitiesService.orientation(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:203]
+           ↳ A base template facing `base` drawn in the orientation `name`: flipped to its corner, then turned.
+          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:371]
              ↳ Turns a template clockwise by `rotation`, carrying each arm round with it; a quarter or three-quarter turn swaps its…
-            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:370]
-              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:233]
+            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:377]
+              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:257]
                  ↳ Turns a template one quarter clockwise: its west column becomes its top row, and each arm moves round — north to east,…
-                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:236]
-                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:238]
-                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:199]
+                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:262]
+                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:187]
                        ↳ Rewrites a template digit's arms through `arms`, which maps each arm bit — north 8, south 4, east 2, west 1 — to the…
-                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:210]
+                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
 **16. `LamedHebrewLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 LamedHebrewLetterCharacteristicsService.constructor(…): LamedHebrewLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/lamed-hebrew-letter-characteristics.service.ts:27]
-  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:284]
      ↳ A letter's sixteen evaluators, one per orientation in {@link LetterUtilitiesService.orientationNames} order.
-    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:333]
+    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:357]
        ↳ A base template drawn in all sixteen orientations, in {@link LetterUtilitiesService.orientationNames} order.
-      └─> LetterUtilitiesService.flatMap(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; }[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:338]
-        └─> LetterUtilitiesService.map(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; } [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:347]
-          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:364]
+      └─> LetterUtilitiesService.map(…)(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:362]
+        └─> LetterUtilitiesService.orientation(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:203]
+           ↳ A base template facing `base` drawn in the orientation `name`: flipped to its corner, then turned.
+          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:371]
              ↳ Turns a template clockwise by `rotation`, carrying each arm round with it; a quarter or three-quarter turn swaps its…
-            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:370]
-              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:233]
+            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:377]
+              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:257]
                  ↳ Turns a template one quarter clockwise: its west column becomes its top row, and each arm moves round — north to east,…
-                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:236]
-                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:238]
-                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:199]
+                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:262]
+                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:187]
                        ↳ Rewrites a template digit's arms through `arms`, which maps each arm bit — north 8, south 4, east 2, west 1 — to the…
-                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:210]
+                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
 **17. `MLatinLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 MLatinLetterCharacteristicsService.constructor(…): MLatinLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/m-latin-letter-characteristics.service.ts:26]
-  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:284]
      ↳ A letter's sixteen evaluators, one per orientation in {@link LetterUtilitiesService.orientationNames} order.
-    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:333]
+    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:357]
        ↳ A base template drawn in all sixteen orientations, in {@link LetterUtilitiesService.orientationNames} order.
-      └─> LetterUtilitiesService.flatMap(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; }[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:338]
-        └─> LetterUtilitiesService.map(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; } [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:347]
-          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:364]
+      └─> LetterUtilitiesService.map(…)(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:362]
+        └─> LetterUtilitiesService.orientation(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:203]
+           ↳ A base template facing `base` drawn in the orientation `name`: flipped to its corner, then turned.
+          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:371]
              ↳ Turns a template clockwise by `rotation`, carrying each arm round with it; a quarter or three-quarter turn swaps its…
-            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:370]
-              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:233]
+            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:377]
+              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:257]
                  ↳ Turns a template one quarter clockwise: its west column becomes its top row, and each arm moves round — north to east,…
-                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:236]
-                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:238]
-                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:199]
+                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:262]
+                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:187]
                        ↳ Rewrites a template digit's arms through `arms`, which maps each arm bit — north 8, south 4, east 2, west 1 — to the…
-                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:210]
+                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
 **18. `MuHanziLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 MuHanziLetterCharacteristicsService.constructor(…): MuHanziLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/mu-hanzi-letter-characteristics.service.ts:27]
-  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:284]
      ↳ A letter's sixteen evaluators, one per orientation in {@link LetterUtilitiesService.orientationNames} order.
-    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:333]
+    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:357]
        ↳ A base template drawn in all sixteen orientations, in {@link LetterUtilitiesService.orientationNames} order.
-      └─> LetterUtilitiesService.flatMap(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; }[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:338]
-        └─> LetterUtilitiesService.map(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; } [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:347]
-          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:364]
+      └─> LetterUtilitiesService.map(…)(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:362]
+        └─> LetterUtilitiesService.orientation(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:203]
+           ↳ A base template facing `base` drawn in the orientation `name`: flipped to its corner, then turned.
+          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:371]
              ↳ Turns a template clockwise by `rotation`, carrying each arm round with it; a quarter or three-quarter turn swaps its…
-            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:370]
-              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:233]
+            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:377]
+              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:257]
                  ↳ Turns a template one quarter clockwise: its west column becomes its top row, and each arm moves round — north to east,…
-                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:236]
-                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:238]
-                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:199]
+                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:262]
+                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:187]
                        ↳ Rewrites a template digit's arms through `arms`, which maps each arm bit — north 8, south 4, east 2, west 1 — to the…
-                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:210]
+                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
 **19. `NLatinLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 NLatinLetterCharacteristicsService.constructor(…): NLatinLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/n-latin-letter-characteristics.service.ts:26]
-  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:284]
      ↳ A letter's sixteen evaluators, one per orientation in {@link LetterUtilitiesService.orientationNames} order.
-    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:333]
+    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:357]
        ↳ A base template drawn in all sixteen orientations, in {@link LetterUtilitiesService.orientationNames} order.
-      └─> LetterUtilitiesService.flatMap(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; }[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:338]
-        └─> LetterUtilitiesService.map(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; } [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:347]
-          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:364]
+      └─> LetterUtilitiesService.map(…)(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:362]
+        └─> LetterUtilitiesService.orientation(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:203]
+           ↳ A base template facing `base` drawn in the orientation `name`: flipped to its corner, then turned.
+          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:371]
              ↳ Turns a template clockwise by `rotation`, carrying each arm round with it; a quarter or three-quarter turn swaps its…
-            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:370]
-              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:233]
+            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:377]
+              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:257]
                  ↳ Turns a template one quarter clockwise: its west column becomes its top row, and each arm moves round — north to east,…
-                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:236]
-                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:238]
-                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:199]
+                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:262]
+                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:187]
                        ↳ Rewrites a template digit's arms through `arms`, which maps each arm bit — north 8, south 4, east 2, west 1 — to the…
-                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:210]
+                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
 **20. `OLatinLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 OLatinLetterCharacteristicsService.constructor(…): OLatinLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/o-latin-letter-characteristics.service.ts:24]
-  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:284]
      ↳ A letter's sixteen evaluators, one per orientation in {@link LetterUtilitiesService.orientationNames} order.
-    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:333]
+    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:357]
        ↳ A base template drawn in all sixteen orientations, in {@link LetterUtilitiesService.orientationNames} order.
-      └─> LetterUtilitiesService.flatMap(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; }[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:338]
-        └─> LetterUtilitiesService.map(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; } [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:347]
-          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:364]
+      └─> LetterUtilitiesService.map(…)(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:362]
+        └─> LetterUtilitiesService.orientation(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:203]
+           ↳ A base template facing `base` drawn in the orientation `name`: flipped to its corner, then turned.
+          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:371]
              ↳ Turns a template clockwise by `rotation`, carrying each arm round with it; a quarter or three-quarter turn swaps its…
-            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:370]
-              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:233]
+            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:377]
+              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:257]
                  ↳ Turns a template one quarter clockwise: its west column becomes its top row, and each arm moves round — north to east,…
-                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:236]
-                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:238]
-                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:199]
+                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:262]
+                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:187]
                        ↳ Rewrites a template digit's arms through `arms`, which maps each arm bit — north 8, south 4, east 2, west 1 — to the…
-                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:210]
+                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
 **21. `PhiGreekLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 PhiGreekLetterCharacteristicsService.constructor(…): PhiGreekLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/phi-greek-letter-characteristics.service.ts:28]
-  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:284]
      ↳ A letter's sixteen evaluators, one per orientation in {@link LetterUtilitiesService.orientationNames} order.
-    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:333]
+    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:357]
        ↳ A base template drawn in all sixteen orientations, in {@link LetterUtilitiesService.orientationNames} order.
-      └─> LetterUtilitiesService.flatMap(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; }[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:338]
-        └─> LetterUtilitiesService.map(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; } [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:347]
-          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:364]
+      └─> LetterUtilitiesService.map(…)(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:362]
+        └─> LetterUtilitiesService.orientation(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:203]
+           ↳ A base template facing `base` drawn in the orientation `name`: flipped to its corner, then turned.
+          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:371]
              ↳ Turns a template clockwise by `rotation`, carrying each arm round with it; a quarter or three-quarter turn swaps its…
-            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:370]
-              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:233]
+            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:377]
+              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:257]
                  ↳ Turns a template one quarter clockwise: its west column becomes its top row, and each arm moves round — north to east,…
-                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:236]
-                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:238]
-                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:199]
+                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:262]
+                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:187]
                        ↳ Rewrites a template digit's arms through `arms`, which maps each arm bit — north 8, south 4, east 2, west 1 — to the…
-                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:210]
+                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
 **22. `PieupHangulLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 PieupHangulLetterCharacteristicsService.constructor(…): PieupHangulLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/pieup-hangul-letter-characteristics.service.ts:25]
-  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:284]
      ↳ A letter's sixteen evaluators, one per orientation in {@link LetterUtilitiesService.orientationNames} order.
-    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:333]
+    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:357]
        ↳ A base template drawn in all sixteen orientations, in {@link LetterUtilitiesService.orientationNames} order.
-      └─> LetterUtilitiesService.flatMap(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; }[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:338]
-        └─> LetterUtilitiesService.map(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; } [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:347]
-          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:364]
+      └─> LetterUtilitiesService.map(…)(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:362]
+        └─> LetterUtilitiesService.orientation(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:203]
+           ↳ A base template facing `base` drawn in the orientation `name`: flipped to its corner, then turned.
+          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:371]
              ↳ Turns a template clockwise by `rotation`, carrying each arm round with it; a quarter or three-quarter turn swaps its…
-            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:370]
-              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:233]
+            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:377]
+              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:257]
                  ↳ Turns a template one quarter clockwise: its west column becomes its top row, and each arm moves round — north to east,…
-                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:236]
-                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:238]
-                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:199]
+                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:262]
+                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:187]
                        ↳ Rewrites a template digit's arms through `arms`, which maps each arm bit — north 8, south 4, east 2, west 1 — to the…
-                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:210]
+                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
 **23. `PsiGreekLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 PsiGreekLetterCharacteristicsService.constructor(…): PsiGreekLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/psi-greek-letter-characteristics.service.ts:27]
-  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:284]
      ↳ A letter's sixteen evaluators, one per orientation in {@link LetterUtilitiesService.orientationNames} order.
-    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:333]
+    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:357]
        ↳ A base template drawn in all sixteen orientations, in {@link LetterUtilitiesService.orientationNames} order.
-      └─> LetterUtilitiesService.flatMap(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; }[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:338]
-        └─> LetterUtilitiesService.map(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; } [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:347]
-          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:364]
+      └─> LetterUtilitiesService.map(…)(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:362]
+        └─> LetterUtilitiesService.orientation(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:203]
+           ↳ A base template facing `base` drawn in the orientation `name`: flipped to its corner, then turned.
+          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:371]
              ↳ Turns a template clockwise by `rotation`, carrying each arm round with it; a quarter or three-quarter turn swaps its…
-            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:370]
-              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:233]
+            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:377]
+              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:257]
                  ↳ Turns a template one quarter clockwise: its west column becomes its top row, and each arm moves round — north to east,…
-                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:236]
-                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:238]
-                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:199]
+                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:262]
+                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:187]
                        ↳ Rewrites a template digit's arms through `arms`, which maps each arm bit — north 8, south 4, east 2, west 1 — to the…
-                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:210]
+                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
 **24. `RhoGreekLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 RhoGreekLetterCharacteristicsService.constructor(…): RhoGreekLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/rho-greek-letter-characteristics.service.ts:26]
-  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:284]
      ↳ A letter's sixteen evaluators, one per orientation in {@link LetterUtilitiesService.orientationNames} order.
-    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:333]
+    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:357]
        ↳ A base template drawn in all sixteen orientations, in {@link LetterUtilitiesService.orientationNames} order.
-      └─> LetterUtilitiesService.flatMap(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; }[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:338]
-        └─> LetterUtilitiesService.map(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; } [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:347]
-          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:364]
+      └─> LetterUtilitiesService.map(…)(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:362]
+        └─> LetterUtilitiesService.orientation(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:203]
+           ↳ A base template facing `base` drawn in the orientation `name`: flipped to its corner, then turned.
+          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:371]
              ↳ Turns a template clockwise by `rotation`, carrying each arm round with it; a quarter or three-quarter turn swaps its…
-            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:370]
-              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:233]
+            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:377]
+              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:257]
                  ↳ Turns a template one quarter clockwise: its west column becomes its top row, and each arm moves round — north to east,…
-                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:236]
-                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:238]
-                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:199]
+                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:262]
+                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:187]
                        ↳ Rewrites a template digit's arms through `arms`, which maps each arm bit — north 8, south 4, east 2, west 1 — to the…
-                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:210]
+                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
 **25. `SLatinLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 SLatinLetterCharacteristicsService.constructor(…): SLatinLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/s-latin-letter-characteristics.service.ts:26]
-  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:284]
      ↳ A letter's sixteen evaluators, one per orientation in {@link LetterUtilitiesService.orientationNames} order.
-    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:333]
+    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:357]
        ↳ A base template drawn in all sixteen orientations, in {@link LetterUtilitiesService.orientationNames} order.
-      └─> LetterUtilitiesService.flatMap(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; }[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:338]
-        └─> LetterUtilitiesService.map(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; } [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:347]
-          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:364]
+      └─> LetterUtilitiesService.map(…)(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:362]
+        └─> LetterUtilitiesService.orientation(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:203]
+           ↳ A base template facing `base` drawn in the orientation `name`: flipped to its corner, then turned.
+          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:371]
              ↳ Turns a template clockwise by `rotation`, carrying each arm round with it; a quarter or three-quarter turn swaps its…
-            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:370]
-              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:233]
+            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:377]
+              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:257]
                  ↳ Turns a template one quarter clockwise: its west column becomes its top row, and each arm moves round — north to east,…
-                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:236]
-                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:238]
-                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:199]
+                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:262]
+                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:187]
                        ↳ Rewrites a template digit's arms through `arms`, which maps each arm bit — north 8, south 4, east 2, west 1 — to the…
-                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:210]
+                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
 **26. `ShangHanziLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 ShangHanziLetterCharacteristicsService.constructor(…): ShangHanziLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/shang-hanzi-letter-characteristics.service.ts:27]
-  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:284]
      ↳ A letter's sixteen evaluators, one per orientation in {@link LetterUtilitiesService.orientationNames} order.
-    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:333]
+    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:357]
        ↳ A base template drawn in all sixteen orientations, in {@link LetterUtilitiesService.orientationNames} order.
-      └─> LetterUtilitiesService.flatMap(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; }[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:338]
-        └─> LetterUtilitiesService.map(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; } [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:347]
-          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:364]
+      └─> LetterUtilitiesService.map(…)(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:362]
+        └─> LetterUtilitiesService.orientation(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:203]
+           ↳ A base template facing `base` drawn in the orientation `name`: flipped to its corner, then turned.
+          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:371]
              ↳ Turns a template clockwise by `rotation`, carrying each arm round with it; a quarter or three-quarter turn swaps its…
-            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:370]
-              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:233]
+            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:377]
+              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:257]
                  ↳ Turns a template one quarter clockwise: its west column becomes its top row, and each arm moves round — north to east,…
-                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:236]
-                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:238]
-                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:199]
+                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:262]
+                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:187]
                        ↳ Rewrites a template digit's arms through `arms`, which maps each arm bit — north 8, south 4, east 2, west 1 — to the…
-                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:210]
+                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
 **27. `ShenHanziLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 ShenHanziLetterCharacteristicsService.constructor(…): ShenHanziLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/shen-hanzi-letter-characteristics.service.ts:28]
-  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:284]
      ↳ A letter's sixteen evaluators, one per orientation in {@link LetterUtilitiesService.orientationNames} order.
-    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:333]
+    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:357]
        ↳ A base template drawn in all sixteen orientations, in {@link LetterUtilitiesService.orientationNames} order.
-      └─> LetterUtilitiesService.flatMap(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; }[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:338]
-        └─> LetterUtilitiesService.map(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; } [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:347]
-          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:364]
+      └─> LetterUtilitiesService.map(…)(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:362]
+        └─> LetterUtilitiesService.orientation(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:203]
+           ↳ A base template facing `base` drawn in the orientation `name`: flipped to its corner, then turned.
+          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:371]
              ↳ Turns a template clockwise by `rotation`, carrying each arm round with it; a quarter or three-quarter turn swaps its…
-            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:370]
-              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:233]
+            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:377]
+              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:257]
                  ↳ Turns a template one quarter clockwise: its west column becomes its top row, and each arm moves round — north to east,…
-                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:236]
-                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:238]
-                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:199]
+                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:262]
+                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:187]
                        ↳ Rewrites a template digit's arms through `arms`, which maps each arm bit — north 8, south 4, east 2, west 1 — to the…
-                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:210]
+                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
 **28. `TLatinLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 TLatinLetterCharacteristicsService.constructor(…): TLatinLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/t-latin-letter-characteristics.service.ts:25]
-  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:284]
      ↳ A letter's sixteen evaluators, one per orientation in {@link LetterUtilitiesService.orientationNames} order.
-    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:333]
+    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:357]
        ↳ A base template drawn in all sixteen orientations, in {@link LetterUtilitiesService.orientationNames} order.
-      └─> LetterUtilitiesService.flatMap(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; }[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:338]
-        └─> LetterUtilitiesService.map(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; } [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:347]
-          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:364]
+      └─> LetterUtilitiesService.map(…)(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:362]
+        └─> LetterUtilitiesService.orientation(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:203]
+           ↳ A base template facing `base` drawn in the orientation `name`: flipped to its corner, then turned.
+          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:371]
              ↳ Turns a template clockwise by `rotation`, carrying each arm round with it; a quarter or three-quarter turn swaps its…
-            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:370]
-              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:233]
+            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:377]
+              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:257]
                  ↳ Turns a template one quarter clockwise: its west column becomes its top row, and each arm moves round — north to east,…
-                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:236]
-                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:238]
-                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:199]
+                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:262]
+                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:187]
                        ↳ Rewrites a template digit's arms through `arms`, which maps each arm bit — north 8, south 4, east 2, west 1 — to the…
-                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:210]
+                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
 **29. `TavHebrewLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 TavHebrewLetterCharacteristicsService.constructor(…): TavHebrewLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/tav-hebrew-letter-characteristics.service.ts:25]
-  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:284]
      ↳ A letter's sixteen evaluators, one per orientation in {@link LetterUtilitiesService.orientationNames} order.
-    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:333]
+    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:357]
        ↳ A base template drawn in all sixteen orientations, in {@link LetterUtilitiesService.orientationNames} order.
-      └─> LetterUtilitiesService.flatMap(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; }[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:338]
-        └─> LetterUtilitiesService.map(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; } [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:347]
-          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:364]
+      └─> LetterUtilitiesService.map(…)(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:362]
+        └─> LetterUtilitiesService.orientation(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:203]
+           ↳ A base template facing `base` drawn in the orientation `name`: flipped to its corner, then turned.
+          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:371]
              ↳ Turns a template clockwise by `rotation`, carrying each arm round with it; a quarter or three-quarter turn swaps its…
-            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:370]
-              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:233]
+            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:377]
+              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:257]
                  ↳ Turns a template one quarter clockwise: its west column becomes its top row, and each arm moves round — north to east,…
-                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:236]
-                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:238]
-                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:199]
+                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:262]
+                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:187]
                        ↳ Rewrites a template digit's arms through `arms`, which maps each arm bit — north 8, south 4, east 2, west 1 — to the…
-                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:210]
+                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
 **30. `TianHanziLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 TianHanziLetterCharacteristicsService.constructor(…): TianHanziLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/tian-hanzi-letter-characteristics.service.ts:26]
-  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:284]
      ↳ A letter's sixteen evaluators, one per orientation in {@link LetterUtilitiesService.orientationNames} order.
-    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:333]
+    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:357]
        ↳ A base template drawn in all sixteen orientations, in {@link LetterUtilitiesService.orientationNames} order.
-      └─> LetterUtilitiesService.flatMap(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; }[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:338]
-        └─> LetterUtilitiesService.map(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; } [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:347]
-          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:364]
+      └─> LetterUtilitiesService.map(…)(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:362]
+        └─> LetterUtilitiesService.orientation(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:203]
+           ↳ A base template facing `base` drawn in the orientation `name`: flipped to its corner, then turned.
+          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:371]
              ↳ Turns a template clockwise by `rotation`, carrying each arm round with it; a quarter or three-quarter turn swaps its…
-            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:370]
-              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:233]
+            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:377]
+              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:257]
                  ↳ Turns a template one quarter clockwise: its west column becomes its top row, and each arm moves round — north to east,…
-                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:236]
-                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:238]
-                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:199]
+                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:262]
+                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:187]
                        ↳ Rewrites a template digit's arms through `arms`, which maps each arm bit — north 8, south 4, east 2, west 1 — to the…
-                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:210]
+                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
 **31. `TuHanziLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 TuHanziLetterCharacteristicsService.constructor(…): TuHanziLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/tu-hanzi-letter-characteristics.service.ts:26]
-  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:284]
      ↳ A letter's sixteen evaluators, one per orientation in {@link LetterUtilitiesService.orientationNames} order.
-    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:333]
+    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:357]
        ↳ A base template drawn in all sixteen orientations, in {@link LetterUtilitiesService.orientationNames} order.
-      └─> LetterUtilitiesService.flatMap(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; }[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:338]
-        └─> LetterUtilitiesService.map(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; } [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:347]
-          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:364]
+      └─> LetterUtilitiesService.map(…)(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:362]
+        └─> LetterUtilitiesService.orientation(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:203]
+           ↳ A base template facing `base` drawn in the orientation `name`: flipped to its corner, then turned.
+          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:371]
              ↳ Turns a template clockwise by `rotation`, carrying each arm round with it; a quarter or three-quarter turn swaps its…
-            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:370]
-              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:233]
+            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:377]
+              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:257]
                  ↳ Turns a template one quarter clockwise: its west column becomes its top row, and each arm moves round — north to east,…
-                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:236]
-                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:238]
-                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:199]
+                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:262]
+                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:187]
                        ↳ Rewrites a template digit's arms through `arms`, which maps each arm bit — north 8, south 4, east 2, west 1 — to the…
-                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:210]
+                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
 **32. `TuSoilHanziLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 TuSoilHanziLetterCharacteristicsService.constructor(…): TuSoilHanziLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/tu-soil-hanzi-letter-characteristics.service.ts:27]
-  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:284]
      ↳ A letter's sixteen evaluators, one per orientation in {@link LetterUtilitiesService.orientationNames} order.
-    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:333]
+    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:357]
        ↳ A base template drawn in all sixteen orientations, in {@link LetterUtilitiesService.orientationNames} order.
-      └─> LetterUtilitiesService.flatMap(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; }[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:338]
-        └─> LetterUtilitiesService.map(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; } [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:347]
-          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:364]
+      └─> LetterUtilitiesService.map(…)(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:362]
+        └─> LetterUtilitiesService.orientation(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:203]
+           ↳ A base template facing `base` drawn in the orientation `name`: flipped to its corner, then turned.
+          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:371]
              ↳ Turns a template clockwise by `rotation`, carrying each arm round with it; a quarter or three-quarter turn swaps its…
-            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:370]
-              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:233]
+            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:377]
+              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:257]
                  ↳ Turns a template one quarter clockwise: its west column becomes its top row, and each arm moves round — north to east,…
-                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:236]
-                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:238]
-                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:199]
+                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:262]
+                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:187]
                        ↳ Rewrites a template digit's arms through `arms`, which maps each arm bit — north 8, south 4, east 2, west 1 — to the…
-                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:210]
+                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
 **33. `ULatinLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 ULatinLetterCharacteristicsService.constructor(…): ULatinLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/u-latin-letter-characteristics.service.ts:25]
-  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:284]
      ↳ A letter's sixteen evaluators, one per orientation in {@link LetterUtilitiesService.orientationNames} order.
-    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:333]
+    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:357]
        ↳ A base template drawn in all sixteen orientations, in {@link LetterUtilitiesService.orientationNames} order.
-      └─> LetterUtilitiesService.flatMap(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; }[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:338]
-        └─> LetterUtilitiesService.map(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; } [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:347]
-          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:364]
+      └─> LetterUtilitiesService.map(…)(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:362]
+        └─> LetterUtilitiesService.orientation(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:203]
+           ↳ A base template facing `base` drawn in the orientation `name`: flipped to its corner, then turned.
+          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:371]
              ↳ Turns a template clockwise by `rotation`, carrying each arm round with it; a quarter or three-quarter turn swaps its…
-            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:370]
-              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:233]
+            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:377]
+              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:257]
                  ↳ Turns a template one quarter clockwise: its west column becomes its top row, and each arm moves round — north to east,…
-                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:236]
-                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:238]
-                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:199]
+                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:262]
+                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:187]
                        ↳ Rewrites a template digit's arms through `arms`, which maps each arm bit — north 8, south 4, east 2, west 1 — to the…
-                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:210]
+                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
 **34. `WLatinLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 WLatinLetterCharacteristicsService.constructor(…): WLatinLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/w-latin-letter-characteristics.service.ts:26]
-  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:284]
      ↳ A letter's sixteen evaluators, one per orientation in {@link LetterUtilitiesService.orientationNames} order.
-    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:333]
+    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:357]
        ↳ A base template drawn in all sixteen orientations, in {@link LetterUtilitiesService.orientationNames} order.
-      └─> LetterUtilitiesService.flatMap(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; }[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:338]
-        └─> LetterUtilitiesService.map(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; } [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:347]
-          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:364]
+      └─> LetterUtilitiesService.map(…)(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:362]
+        └─> LetterUtilitiesService.orientation(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:203]
+           ↳ A base template facing `base` drawn in the orientation `name`: flipped to its corner, then turned.
+          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:371]
              ↳ Turns a template clockwise by `rotation`, carrying each arm round with it; a quarter or three-quarter turn swaps its…
-            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:370]
-              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:233]
+            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:377]
+              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:257]
                  ↳ Turns a template one quarter clockwise: its west column becomes its top row, and each arm moves round — north to east,…
-                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:236]
-                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:238]
-                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:199]
+                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:262]
+                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:187]
                        ↳ Rewrites a template digit's arms through `arms`, which maps each arm bit — north 8, south 4, east 2, west 1 — to the…
-                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:210]
+                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
 **35. `WangHanziLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 WangHanziLetterCharacteristicsService.constructor(…): WangHanziLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/wang-hanzi-letter-characteristics.service.ts:26]
-  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:284]
      ↳ A letter's sixteen evaluators, one per orientation in {@link LetterUtilitiesService.orientationNames} order.
-    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:333]
+    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:357]
        ↳ A base template drawn in all sixteen orientations, in {@link LetterUtilitiesService.orientationNames} order.
-      └─> LetterUtilitiesService.flatMap(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; }[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:338]
-        └─> LetterUtilitiesService.map(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; } [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:347]
-          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:364]
+      └─> LetterUtilitiesService.map(…)(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:362]
+        └─> LetterUtilitiesService.orientation(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:203]
+           ↳ A base template facing `base` drawn in the orientation `name`: flipped to its corner, then turned.
+          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:371]
              ↳ Turns a template clockwise by `rotation`, carrying each arm round with it; a quarter or three-quarter turn swaps its…
-            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:370]
-              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:233]
+            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:377]
+              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:257]
                  ↳ Turns a template one quarter clockwise: its west column becomes its top row, and each arm moves round — north to east,…
-                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:236]
-                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:238]
-                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:199]
+                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:262]
+                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:187]
                        ↳ Rewrites a template digit's arms through `arms`, which maps each arm bit — north 8, south 4, east 2, west 1 — to the…
-                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:210]
+                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
 **36. `XLatinLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 XLatinLetterCharacteristicsService.constructor(…): XLatinLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/x-latin-letter-characteristics.service.ts:25]
-  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:284]
      ↳ A letter's sixteen evaluators, one per orientation in {@link LetterUtilitiesService.orientationNames} order.
-    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:333]
+    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:357]
        ↳ A base template drawn in all sixteen orientations, in {@link LetterUtilitiesService.orientationNames} order.
-      └─> LetterUtilitiesService.flatMap(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; }[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:338]
-        └─> LetterUtilitiesService.map(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; } [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:347]
-          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:364]
+      └─> LetterUtilitiesService.map(…)(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:362]
+        └─> LetterUtilitiesService.orientation(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:203]
+           ↳ A base template facing `base` drawn in the orientation `name`: flipped to its corner, then turned.
+          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:371]
              ↳ Turns a template clockwise by `rotation`, carrying each arm round with it; a quarter or three-quarter turn swaps its…
-            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:370]
-              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:233]
+            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:377]
+              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:257]
                  ↳ Turns a template one quarter clockwise: its west column becomes its top row, and each arm moves round — north to east,…
-                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:236]
-                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:238]
-                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:199]
+                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:262]
+                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:187]
                        ↳ Rewrites a template digit's arms through `arms`, which maps each arm bit — north 8, south 4, east 2, west 1 — to the…
-                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:210]
+                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
 **37. `YLatinLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 YLatinLetterCharacteristicsService.constructor(…): YLatinLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/y-latin-letter-characteristics.service.ts:26]
-  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:284]
      ↳ A letter's sixteen evaluators, one per orientation in {@link LetterUtilitiesService.orientationNames} order.
-    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:333]
+    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:357]
        ↳ A base template drawn in all sixteen orientations, in {@link LetterUtilitiesService.orientationNames} order.
-      └─> LetterUtilitiesService.flatMap(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; }[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:338]
-        └─> LetterUtilitiesService.map(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; } [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:347]
-          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:364]
+      └─> LetterUtilitiesService.map(…)(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:362]
+        └─> LetterUtilitiesService.orientation(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:203]
+           ↳ A base template facing `base` drawn in the orientation `name`: flipped to its corner, then turned.
+          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:371]
              ↳ Turns a template clockwise by `rotation`, carrying each arm round with it; a quarter or three-quarter turn swaps its…
-            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:370]
-              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:233]
+            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:377]
+              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:257]
                  ↳ Turns a template one quarter clockwise: its west column becomes its top row, and each arm moves round — north to east,…
-                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:236]
-                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:238]
-                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:199]
+                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:262]
+                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:187]
                        ↳ Rewrites a template digit's arms through `arms`, which maps each arm bit — north 8, south 4, east 2, west 1 — to the…
-                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:210]
+                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
 **38. `YaHangulLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 YaHangulLetterCharacteristicsService.constructor(…): YaHangulLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/ya-hangul-letter-characteristics.service.ts:27]
-  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:284]
      ↳ A letter's sixteen evaluators, one per orientation in {@link LetterUtilitiesService.orientationNames} order.
-    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:333]
+    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:357]
        ↳ A base template drawn in all sixteen orientations, in {@link LetterUtilitiesService.orientationNames} order.
-      └─> LetterUtilitiesService.flatMap(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; }[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:338]
-        └─> LetterUtilitiesService.map(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; } [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:347]
-          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:364]
+      └─> LetterUtilitiesService.map(…)(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:362]
+        └─> LetterUtilitiesService.orientation(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:203]
+           ↳ A base template facing `base` drawn in the orientation `name`: flipped to its corner, then turned.
+          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:371]
              ↳ Turns a template clockwise by `rotation`, carrying each arm round with it; a quarter or three-quarter turn swaps its…
-            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:370]
-              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:233]
+            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:377]
+              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:257]
                  ↳ Turns a template one quarter clockwise: its west column becomes its top row, and each arm moves round — north to east,…
-                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:236]
-                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:238]
-                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:199]
+                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:262]
+                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:187]
                        ↳ Rewrites a template digit's arms through `arms`, which maps each arm bit — north 8, south 4, east 2, west 1 — to the…
-                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:210]
+                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
 **39. `YeoHangulLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 YeoHangulLetterCharacteristicsService.constructor(…): YeoHangulLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/yeo-hangul-letter-characteristics.service.ts:27]
-  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:284]
      ↳ A letter's sixteen evaluators, one per orientation in {@link LetterUtilitiesService.orientationNames} order.
-    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:333]
+    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:357]
        ↳ A base template drawn in all sixteen orientations, in {@link LetterUtilitiesService.orientationNames} order.
-      └─> LetterUtilitiesService.flatMap(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; }[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:338]
-        └─> LetterUtilitiesService.map(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; } [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:347]
-          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:364]
+      └─> LetterUtilitiesService.map(…)(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:362]
+        └─> LetterUtilitiesService.orientation(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:203]
+           ↳ A base template facing `base` drawn in the orientation `name`: flipped to its corner, then turned.
+          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:371]
              ↳ Turns a template clockwise by `rotation`, carrying each arm round with it; a quarter or three-quarter turn swaps its…
-            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:370]
-              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:233]
+            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:377]
+              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:257]
                  ↳ Turns a template one quarter clockwise: its west column becomes its top row, and each arm moves round — north to east,…
-                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:236]
-                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:238]
-                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:199]
+                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:262]
+                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:187]
                        ↳ Rewrites a template digit's arms through `arms`, which maps each arm bit — north 8, south 4, east 2, west 1 — to the…
-                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:210]
+                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
 **40. `YoHangulLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 YoHangulLetterCharacteristicsService.constructor(…): YoHangulLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/yo-hangul-letter-characteristics.service.ts:25]
-  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:284]
      ↳ A letter's sixteen evaluators, one per orientation in {@link LetterUtilitiesService.orientationNames} order.
-    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:333]
+    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:357]
        ↳ A base template drawn in all sixteen orientations, in {@link LetterUtilitiesService.orientationNames} order.
-      └─> LetterUtilitiesService.flatMap(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; }[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:338]
-        └─> LetterUtilitiesService.map(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; } [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:347]
-          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:364]
+      └─> LetterUtilitiesService.map(…)(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:362]
+        └─> LetterUtilitiesService.orientation(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:203]
+           ↳ A base template facing `base` drawn in the orientation `name`: flipped to its corner, then turned.
+          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:371]
              ↳ Turns a template clockwise by `rotation`, carrying each arm round with it; a quarter or three-quarter turn swaps its…
-            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:370]
-              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:233]
+            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:377]
+              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:257]
                  ↳ Turns a template one quarter clockwise: its west column becomes its top row, and each arm moves round — north to east,…
-                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:236]
-                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:238]
-                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:199]
+                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:262]
+                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:187]
                        ↳ Rewrites a template digit's arms through `arms`, which maps each arm bit — north 8, south 4, east 2, west 1 — to the…
-                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:210]
+                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
 **41. `YouHanziLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 YouHanziLetterCharacteristicsService.constructor(…): YouHanziLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/you-hanzi-letter-characteristics.service.ts:27]
-  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:284]
      ↳ A letter's sixteen evaluators, one per orientation in {@link LetterUtilitiesService.orientationNames} order.
-    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:333]
+    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:357]
        ↳ A base template drawn in all sixteen orientations, in {@link LetterUtilitiesService.orientationNames} order.
-      └─> LetterUtilitiesService.flatMap(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; }[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:338]
-        └─> LetterUtilitiesService.map(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; } [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:347]
-          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:364]
+      └─> LetterUtilitiesService.map(…)(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:362]
+        └─> LetterUtilitiesService.orientation(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:203]
+           ↳ A base template facing `base` drawn in the orientation `name`: flipped to its corner, then turned.
+          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:371]
              ↳ Turns a template clockwise by `rotation`, carrying each arm round with it; a quarter or three-quarter turn swaps its…
-            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:370]
-              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:233]
+            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:377]
+              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:257]
                  ↳ Turns a template one quarter clockwise: its west column becomes its top row, and each arm moves round — north to east,…
-                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:236]
-                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:238]
-                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:199]
+                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:262]
+                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:187]
                        ↳ Rewrites a template digit's arms through `arms`, which maps each arm bit — north 8, south 4, east 2, west 1 — to the…
-                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:210]
+                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
 **42. `YuHangulLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 YuHangulLetterCharacteristicsService.constructor(…): YuHangulLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/yu-hangul-letter-characteristics.service.ts:25]
-  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:284]
      ↳ A letter's sixteen evaluators, one per orientation in {@link LetterUtilitiesService.orientationNames} order.
-    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:333]
+    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:357]
        ↳ A base template drawn in all sixteen orientations, in {@link LetterUtilitiesService.orientationNames} order.
-      └─> LetterUtilitiesService.flatMap(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; }[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:338]
-        └─> LetterUtilitiesService.map(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; } [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:347]
-          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:364]
+      └─> LetterUtilitiesService.map(…)(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:362]
+        └─> LetterUtilitiesService.orientation(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:203]
+           ↳ A base template facing `base` drawn in the orientation `name`: flipped to its corner, then turned.
+          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:371]
              ↳ Turns a template clockwise by `rotation`, carrying each arm round with it; a quarter or three-quarter turn swaps its…
-            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:370]
-              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:233]
+            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:377]
+              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:257]
                  ↳ Turns a template one quarter clockwise: its west column becomes its top row, and each arm moves round — north to east,…
-                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:236]
-                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:238]
-                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:199]
+                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:262]
+                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:187]
                        ↳ Rewrites a template digit's arms through `arms`, which maps each arm bit — north 8, south 4, east 2, west 1 — to the…
-                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:210]
+                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
 **43. `YuKatakanaLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 YuKatakanaLetterCharacteristicsService.constructor(…): YuKatakanaLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/yu-katakana-letter-characteristics.service.ts:25]
-  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:284]
      ↳ A letter's sixteen evaluators, one per orientation in {@link LetterUtilitiesService.orientationNames} order.
-    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:333]
+    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:357]
        ↳ A base template drawn in all sixteen orientations, in {@link LetterUtilitiesService.orientationNames} order.
-      └─> LetterUtilitiesService.flatMap(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; }[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:338]
-        └─> LetterUtilitiesService.map(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; } [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:347]
-          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:364]
+      └─> LetterUtilitiesService.map(…)(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:362]
+        └─> LetterUtilitiesService.orientation(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:203]
+           ↳ A base template facing `base` drawn in the orientation `name`: flipped to its corner, then turned.
+          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:371]
              ↳ Turns a template clockwise by `rotation`, carrying each arm round with it; a quarter or three-quarter turn swaps its…
-            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:370]
-              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:233]
+            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:377]
+              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:257]
                  ↳ Turns a template one quarter clockwise: its west column becomes its top row, and each arm moves round — north to east,…
-                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:236]
-                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:238]
-                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:199]
+                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:262]
+                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:187]
                        ↳ Rewrites a template digit's arms through `arms`, which maps each arm bit — north 8, south 4, east 2, west 1 — to the…
-                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:210]
+                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
 **44. `ZLatinLetterCharacteristicsService.constructor`** — depth ≥ 12 · orphan-root
 
 ```text
 🚀 ZLatinLetterCharacteristicsService.constructor(…): ZLatinLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/z-latin-letter-characteristics.service.ts:26]
-  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+  └─> LetterUtilitiesService.evaluators(definition: LetterDefinition): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:284]
      ↳ A letter's sixteen evaluators, one per orientation in {@link LetterUtilitiesService.orientationNames} order.
-    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:333]
+    └─> LetterUtilitiesService.orientations(…): readonly LetterOrientation[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:357]
        ↳ A base template drawn in all sixteen orientations, in {@link LetterUtilitiesService.orientationNames} order.
-      └─> LetterUtilitiesService.flatMap(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; }[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:338]
-        └─> LetterUtilitiesService.map(…)(…): { corner: LetterCorner; name: "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | ... 8 more ... | "NorthwestThreeQuarter"; rotation: LetterRotation; template: readonly string[]; window: SubmatrixWindow; } [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:347]
-          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:364]
+      └─> LetterUtilitiesService.map(…)(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:362]
+        └─> LetterUtilitiesService.orientation(…): LetterOrientation [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:203]
+           ↳ A base template facing `base` drawn in the orientation `name`: flipped to its corner, then turned.
+          └─> LetterUtilitiesService.turnClockwise(template: readonly string[], rotation: LetterRotation): readonly string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:371]
              ↳ Turns a template clockwise by `rotation`, carrying each arm round with it; a quarter or three-quarter turn swaps its…
-            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:370]
-              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:233]
+            └─> LetterUtilitiesService.reduce(…)(turned: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:377]
+              └─> LetterUtilitiesService.turnQuarter(template: readonly string[]): string[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:257]
                  ↳ Turns a template one quarter clockwise: its west column becomes its top row, and each arm moves round — north to east,…
-                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:236]
-                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:238]
-                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:199]
+                └─> LetterUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260]
+                  └─> LetterUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:262]
+                    └─> LetterUtilitiesService.mapArms(character: string, arms: Readonly<Record<number, number>>): string [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:187]
                        ↳ Rewrites a template digit's arms through `arms`, which maps each arm bit — north 8, south 4, east 2, west 1 — to the…
-                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:210]
+                      └─> LetterUtilitiesService.reduce(…)(sum: number, arm: number): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:198]
 ```
 
 **45. `IsBoxesCharacteristicService.compute`** — depth ≥ 10 · orphan-root
@@ -3384,8 +3427,8 @@ What this project is judged against, as declared in its own `callidescope.config
 **65. `LetterUtilitiesService.compute`** — depth 6 · orphan-root
 
 ```text
-🚀 LetterUtilitiesService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:178]
-  └─> LetterUtilitiesService.count(context: CharacteristicContext, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:102]
+🚀 LetterUtilitiesService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:145]
+  └─> LetterUtilitiesService.count(context: CharacteristicContext, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:80]
      ↳ The count of `template` glyphs in a context, scanned the first time any evaluator asks for it.
     └─> SubmatrixUtilitiesService.countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:66]
        ↳ Counts the minimal isolated glyphs of a matrix drawn exactly as `template`.
@@ -3473,18 +3516,7 @@ What this project is judged against, as declared in its own `callidescope.config
       └─> MatrixService.from(…)(_unusedColumn: unknown, deltaColumn: number): MatrixPoint [applications/meanderaw/src/modules/matrix/matrix.service.ts:47]
 ```
 
-**72. `LetterUtilitiesService.orientationNames`** — depth 4 · orphan-root
-
-```text
-🚀 LetterUtilitiesService.orientationNames(): readonly LetterOrientationName[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:319]
-   ↳ The sixteen orientation names, every corner with every rotation: `Southeast`, `SoutheastQuarter`, `SoutheastHalf`,…
-  └─> LetterUtilitiesService.flatMap(…)(…): ("Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | "SouthwestThreeQuarter" | "Northeast" | ... 6 more ... | "NorthwestThreeQuarter")[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:320]
-    └─> LetterUtilitiesService.map(…)(…): "Southeast" | "SoutheastQuarter" | "SoutheastHalf" | "SoutheastThreeQuarter" | "Southwest" | "SouthwestQuarter" | "SouthwestHalf" | "SouthwestThreeQuarter" | "Northeast" | ... 6 more ... | "NorthwestThreeQuarter" [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:321]
-      └─> LetterUtilitiesService.orientationName(corner: LetterCorner, rotation: LetterRotation): LetterOrientationName [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:215]
-         ↳ The orientation name for a corner and rotation, with no word for `None`.
-```
-
-**73. `MatrixService.toCode`** — depth 3 · orphan-root
+**72. `MatrixService.toCode`** — depth 3 · orphan-root
 
 ```text
 🚀 MatrixService.toCode(matrix: Matrix, repeats?: number): Code [applications/meanderaw/src/modules/matrix/matrix.service.ts:157]
@@ -3493,7 +3525,7 @@ What this project is judged against, as declared in its own `callidescope.config
     └─> MatrixService.map(…)(point: MatrixPoint): string [applications/meanderaw/src/modules/matrix/matrix.service.ts:167]
 ```
 
-**74. `BottomBorderTouchCountCharacteristicService.compute`** — depth 3 · orphan-root
+**73. `BottomBorderTouchCountCharacteristicService.compute`** — depth 3 · orphan-root
 
 ```text
 🚀 BottomBorderTouchCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/path/turn/bottom-border-touch-count-characteristic.service.ts:49]
@@ -3504,7 +3536,7 @@ What this project is judged against, as declared in its own `callidescope.config
        ↳ The row and column a `row,column` point key names.
 ```
 
-**75. `TopBorderTouchCountCharacteristicService.compute`** — depth 3 · orphan-root
+**74. `TopBorderTouchCountCharacteristicService.compute`** — depth 3 · orphan-root
 
 ```text
 🚀 TopBorderTouchCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/path/turn/top-border-touch-count-characteristic.service.ts:49]
@@ -3515,7 +3547,7 @@ What this project is judged against, as declared in its own `callidescope.config
        ↳ The row and column a `row,column` point key names.
 ```
 
-**76. `IsCrossCharacteristicService.compute`** — depth 3 · orphan-root
+**75. `IsCrossCharacteristicService.compute`** — depth 3 · orphan-root
 
 ```text
 🚀 IsCrossCharacteristicService.compute(context: CharacteristicContext): boolean [applications/meanderaw/src/modules/characteristics/compound/family/is-cross-characteristic.service.ts:49]
@@ -3526,7 +3558,7 @@ What this project is judged against, as declared in its own `callidescope.config
        ↳ Counts the points whose ink leaves by exactly `arms` — every named arm set and every other arm clear — which is the…
 ```
 
-**77. `CornerCountCharacteristicService.compute`** — depth 3 · orphan-root
+**76. `CornerCountCharacteristicService.compute`** — depth 3 · orphan-root
 
 ```text
 🚀 CornerCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/corner/corner-count-characteristic.service.ts:56]
@@ -3537,7 +3569,7 @@ What this project is judged against, as declared in its own `callidescope.config
        ↳ Counts the points whose ink leaves by exactly `arms` — every named arm set and every other arm clear — which is the…
 ```
 
-**78. `TileEnumerationService.isMatching`** — depth 3 · orphan-root
+**77. `TileEnumerationService.isMatching`** — depth 3 · orphan-root
 
 ```text
 🚀 TileEnumerationService.isMatching(tile: Tile): boolean [applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:235]
@@ -3548,7 +3580,7 @@ What this project is judged against, as declared in its own `callidescope.config
        ↳ How many of a point's four direction bits are set — the point's degree as the drawing shows it.
 ```
 
-**79. `ClassificationService.matches`** — depth 2 · orphan-root
+**78. `ClassificationService.matches`** — depth 2 · orphan-root
 
 ```text
 🚀 ClassificationService.matches(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:64]
@@ -3556,7 +3588,7 @@ What this project is judged against, as declared in its own `callidescope.config
      ↳ Whether a repeat's family predicate holds and its band is deep enough for that family.
 ```
 
-**80. `ClassificationService.matches`** — depth 2 · orphan-root
+**79. `ClassificationService.matches`** — depth 2 · orphan-root
 
 ```text
 🚀 ClassificationService.matches(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:75]
@@ -3564,7 +3596,7 @@ What this project is judged against, as declared in its own `callidescope.config
      ↳ Whether a repeat's family predicate holds and its band is deep enough for that family.
 ```
 
-**81. `TileService.isBare`** — depth 2 · orphan-root
+**80. `TileService.isBare`** — depth 2 · orphan-root
 
 ```text
 🚀 TileService.isBare(directions: Directions): boolean [applications/meanderaw/src/modules/tile/tile.service.ts:231]
@@ -3573,7 +3605,7 @@ What this project is judged against, as declared in its own `callidescope.config
      ↳ How many of a point's four direction bits are set — the point's degree as the drawing shows it.
 ```
 
-**82. `MatrixService.rotate`** — depth 2 · orphan-root
+**81. `MatrixService.rotate`** — depth 2 · orphan-root
 
 ```text
 🚀 MatrixService.rotate(matrix: Matrix, step: number): Matrix [applications/meanderaw/src/modules/matrix/matrix.service.ts:101]
@@ -3581,7 +3613,7 @@ What this project is judged against, as declared in its own `callidescope.config
   └─> MatrixService.map(…)(row: readonly MatrixPoint[]): MatrixPoint[] [applications/meanderaw/src/modules/matrix/matrix.service.ts:113]
 ```
 
-**83. `DoubleHorizontalEdgeCountCharacteristicService.compute`** — depth 2 · orphan-root
+**82. `DoubleHorizontalEdgeCountCharacteristicService.compute`** — depth 2 · orphan-root
 
 ```text
 🚀 DoubleHorizontalEdgeCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/point/double-horizontal-edge-count-characteristic.service.ts:47]
@@ -3590,7 +3622,7 @@ What this project is judged against, as declared in its own `callidescope.config
      ↳ Counts the points whose ink leaves by exactly `arms` — every named arm set and every other arm clear — which is the…
 ```
 
-**84. `DoubleVerticalEdgeCountCharacteristicService.compute`** — depth 2 · orphan-root
+**83. `DoubleVerticalEdgeCountCharacteristicService.compute`** — depth 2 · orphan-root
 
 ```text
 🚀 DoubleVerticalEdgeCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/point/double-vertical-edge-count-characteristic.service.ts:47]
@@ -3599,7 +3631,7 @@ What this project is judged against, as declared in its own `callidescope.config
      ↳ Counts the points whose ink leaves by exactly `arms` — every named arm set and every other arm clear — which is the…
 ```
 
-**85. `EastEdgeCountCharacteristicService.compute`** — depth 2 · orphan-root
+**84. `EastEdgeCountCharacteristicService.compute`** — depth 2 · orphan-root
 
 ```text
 🚀 EastEdgeCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/point/east-edge-count-characteristic.service.ts:46]
@@ -3608,7 +3640,7 @@ What this project is judged against, as declared in its own `callidescope.config
      ↳ Counts the points whose ink leaves by `arm`, whatever other arms they carry — a lone arm, a straight edge, a corner, a…
 ```
 
-**86. `EdgeCountCharacteristicService.compute`** — depth 2 · orphan-root
+**85. `EdgeCountCharacteristicService.compute`** — depth 2 · orphan-root
 
 ```text
 🚀 EdgeCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/point/edge-count-characteristic.service.ts:48]
@@ -3617,7 +3649,7 @@ What this project is judged against, as declared in its own `callidescope.config
      ↳ How many of a point's four arms carry ink — its raw digit degree, read directly off the point rather than through the…
 ```
 
-**87. `NorthEdgeCountCharacteristicService.compute`** — depth 2 · orphan-root
+**86. `NorthEdgeCountCharacteristicService.compute`** — depth 2 · orphan-root
 
 ```text
 🚀 NorthEdgeCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/point/north-edge-count-characteristic.service.ts:46]
@@ -3626,7 +3658,7 @@ What this project is judged against, as declared in its own `callidescope.config
      ↳ Counts the points whose ink leaves by `arm`, whatever other arms they carry — a lone arm, a straight edge, a corner, a…
 ```
 
-**88. `SouthEdgeCountCharacteristicService.compute`** — depth 2 · orphan-root
+**87. `SouthEdgeCountCharacteristicService.compute`** — depth 2 · orphan-root
 
 ```text
 🚀 SouthEdgeCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/point/south-edge-count-characteristic.service.ts:46]
@@ -3635,7 +3667,7 @@ What this project is judged against, as declared in its own `callidescope.config
      ↳ Counts the points whose ink leaves by `arm`, whatever other arms they carry — a lone arm, a straight edge, a corner, a…
 ```
 
-**89. `WestEdgeCountCharacteristicService.compute`** — depth 2 · orphan-root
+**88. `WestEdgeCountCharacteristicService.compute`** — depth 2 · orphan-root
 
 ```text
 🚀 WestEdgeCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/point/west-edge-count-characteristic.service.ts:46]
@@ -3655,7 +3687,7 @@ What this project is judged against, as declared in its own `callidescope.config
 | `IsCombCharacteristicService.compute` | 8 | `FamilyUtilitiesService.hasValidDimensions`, `IsBarsCharacteristicService.compute`, `IsLinesCharacteristicService.compute`, `IsMeshCharacteristicService.compute`, `FamilyUtilitiesService.grid`, `IsCombCharacteristicService.isVerticalComb`, `IsCombCharacteristicService.isHorizontalComb`, `IsCombCharacteristicService.isReversingComb` | `applications/meanderaw/src/modules/characteristics/compound/family/is-comb-characteristic.service.ts:161` |
 
 <details>
-<summary>339 more callables</summary>
+<summary>337 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
@@ -3669,6 +3701,7 @@ What this project is judged against, as declared in its own `callidescope.config
 | `CharacteristicsService.discover` | 5 | `CharacteristicsService.flatMap(…)`, `CharacteristicsService.verify`, `CharacteristicsService.assertStorage`, `CharacteristicRegistryError.constructor`, `CharacteristicsService.map(…)` | `applications/meanderaw/src/modules/characteristics/characteristics.service.ts:143` |
 | `CharacteristicsService.letterKeys` | 5 | `CharacteristicsService.filter(…)`, `CharacteristicsService.map(…)`, `CharacteristicsService.filter(…)`, `CharacteristicsService.map(…)`, `CharacteristicsService.evaluators` | `applications/meanderaw/src/modules/characteristics/characteristics.service.ts:237` |
 | `IsWaterfallsCharacteristicService.isDotFreeOpenStrandSet` | 5 | `CompoundUtilitiesService.isJunctionFree`, `DotCountCharacteristicService.compute`, `BettiNumber1CountCharacteristicService.compute`, `FreeEndCountCharacteristicService.compute`, `BettiNumber0CountCharacteristicService.compute` | `applications/meanderaw/src/modules/characteristics/compound/family/is-waterfalls-characteristic.service.ts:71` |
+| `LetterUtilitiesService.orientation` | 5 | `LetterUtilitiesService.parse`, `LetterUtilitiesService.flips`, `LetterUtilitiesService.reduce(…)`, `LetterUtilitiesService.turnClockwise`, `SubmatrixUtilitiesService.glyphWindow` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:203` |
 | `RectangleUtilitiesService.ringCloses` | 5 | `RectangleUtilitiesService.from(…)`, `RectangleUtilitiesService.from(…)`, `SubmatrixUtilitiesService.pointDigitAt`, `RectangleUtilitiesService.every(…)`, `RectangleUtilitiesService.every(…)` | `applications/meanderaw/src/modules/characteristics/submatrix/rectangle/rectangle-utilities.service.ts:73` |
 | `DrawingService.render` | 5 | `GeometryService.compute`, `DrawingService.codeSegments`, `GeometryService.borderPath`, `SvgService.render`, `DrawingService.format` | `applications/meanderaw/src/modules/drawing/drawing.service.ts:125` |
 | `DrawCheckService.check` | 5 | `DrawEnumerationService.sweep`, `CorpusService.ingest`, `DrawCheckService.diff`, `DrawCheckService.hasDrift`, `MeanderDriftDetectedError.constructor` | `applications/meanderaw/src/modules/draw/draw-check.service.ts:186` |
@@ -3713,9 +3746,7 @@ What this project is judged against, as declared in its own `callidescope.config
 | `IsStippledCharacteristicService.compute` | 3 | `BettiNumber0CountCharacteristicService.compute`, `DotCountCharacteristicService.compute`, `ForkCountCharacteristicService.compute` | `applications/meanderaw/src/modules/characteristics/compound/family/is-stippled-characteristic.service.ts:50` |
 | `IsSwirlCharacteristicService.compute` | 3 | `StrandUtilitiesService.isTileBoundCoil`, `EndsOnBorderRulesCharacteristicService.compute`, `StrandUtilitiesService.hasStrandEnds` | `applications/meanderaw/src/modules/characteristics/compound/family/is-swirl-characteristic.service.ts:50` |
 | `IsWhirlCharacteristicService.compute` | 3 | `StrandUtilitiesService.isTileBoundCoil`, `IsWhirlCharacteristicService.isSingleWhirl`, `IsWhirlCharacteristicService.isDoubleWhirl` | `applications/meanderaw/src/modules/characteristics/compound/family/is-whirl-characteristic.service.ts:66` |
-| `LetterUtilitiesService.evaluator` | 3 | `LetterUtilitiesService.description`, `SubmatrixUtilitiesService.glyphFormula`, `LetterUtilitiesService.displayName` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:170` |
-| `LetterUtilitiesService.flatMap(…)` | 3 | `LetterUtilitiesService.flipHorizontally`, `LetterUtilitiesService.flipVertically`, `LetterUtilitiesService.map(…)` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:338` |
-| `LetterUtilitiesService.map(…)` | 3 | `LetterUtilitiesService.turnClockwise`, `LetterUtilitiesService.orientationName`, `SubmatrixUtilitiesService.glyphWindow` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:347` |
+| `LetterUtilitiesService.evaluator` | 3 | `LetterUtilitiesService.description`, `SubmatrixUtilitiesService.glyphFormula`, `LetterUtilitiesService.displayName` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:137` |
 | `RectangleUtilitiesService.isIsolatedRectangleAt` | 3 | `SubmatrixUtilitiesService.pointDigitAt`, `RectangleUtilitiesService.sideLength`, `RectangleUtilitiesService.ringCloses` | `applications/meanderaw/src/modules/characteristics/submatrix/rectangle/rectangle-utilities.service.ts:32` |
 | `TileEnumerationService.record` | 3 | `TileService.build`, `SymmetryService.canonicalTile`, `SymmetryService.edgeKey` | `applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:148` |
 | `MeanderDriftDetectedError.describe` | 3 | `MeanderDriftDetectedError.map(…)`, `MeanderDriftDetectedError.map(…)`, `MeanderDriftDetectedError.map(…)` | `applications/meanderaw/src/modules/draw/draw-check.constants.ts:77` |
@@ -3765,16 +3796,18 @@ What this project is judged against, as declared in its own `callidescope.config
 | `StrandUtilitiesService.hasStrandEnds` | 2 | `BettiNumber0CountCharacteristicService.compute`, `FreeEndCountCharacteristicService.compute` | `applications/meanderaw/src/modules/characteristics/compound/family/strand-utilities.service.ts:61` |
 | `StrandUtilitiesService.isFullInkWithoutDots` | 2 | `DensityCharacteristicService.compute`, `DotCountCharacteristicService.compute` | `applications/meanderaw/src/modules/characteristics/compound/family/strand-utilities.service.ts:72` |
 | `IsCrossCharacteristicService.compute` | 2 | `CrossCountCharacteristicService.compute`, `IsMeshCharacteristicService.compute` | `applications/meanderaw/src/modules/characteristics/compound/family/is-cross-characteristic.service.ts:49` |
-| `LetterUtilitiesService.mapArms` | 2 | `LetterUtilitiesService.reduce(…)`, `LetterUtilitiesService.filter(…)` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:199` |
-| `LetterUtilitiesService.rectangular` | 2 | `LetterUtilitiesService.map(…)`, `LetterUtilitiesService.map(…)` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:223` |
-| `LetterUtilitiesService.turnQuarter` | 2 | `LetterUtilitiesService.rectangular`, `LetterUtilitiesService.from(…)` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:233` |
-| `LetterUtilitiesService.evaluators` | 2 | `LetterUtilitiesService.orientations`, `LetterUtilitiesService.map(…)` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260` |
-| `LetterUtilitiesService.flipHorizontally` | 2 | `LetterUtilitiesService.map(…)`, `LetterUtilitiesService.rectangular` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:289` |
-| `LetterUtilitiesService.map(…)` | 2 | `LetterUtilitiesService.map(…)`, `LetterUtilitiesService.characters` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:290` |
-| `LetterUtilitiesService.flipVertically` | 2 | `LetterUtilitiesService.map(…)`, `LetterUtilitiesService.rectangular` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:302` |
-| `LetterUtilitiesService.map(…)` | 2 | `LetterUtilitiesService.map(…)`, `LetterUtilitiesService.characters` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:305` |
-| `LetterUtilitiesService.orientations` | 2 | `LetterUtilitiesService.baseCorner`, `LetterUtilitiesService.flatMap(…)` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:333` |
-| `LetterUtilitiesService.turnClockwise` | 2 | `LetterUtilitiesService.reduce(…)`, `LetterUtilitiesService.rectangular` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:364` |
+| `LetterUtilitiesService.count` | 2 | `LetterUtilitiesService.track`, `SubmatrixUtilitiesService.countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:80` |
+| `LetterUtilitiesService.mapArms` | 2 | `LetterUtilitiesService.reduce(…)`, `LetterUtilitiesService.filter(…)` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:187` |
+| `LetterUtilitiesService.reduce(…)` | 2 | `LetterUtilitiesService.flipHorizontally`, `LetterUtilitiesService.flipVertically` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:211` |
+| `LetterUtilitiesService.rectangular` | 2 | `LetterUtilitiesService.map(…)`, `LetterUtilitiesService.map(…)` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:240` |
+| `LetterUtilitiesService.turnQuarter` | 2 | `LetterUtilitiesService.rectangular`, `LetterUtilitiesService.from(…)` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:257` |
+| `LetterUtilitiesService.evaluators` | 2 | `LetterUtilitiesService.orientations`, `LetterUtilitiesService.map(…)` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:284` |
+| `LetterUtilitiesService.flipHorizontally` | 2 | `LetterUtilitiesService.map(…)`, `LetterUtilitiesService.rectangular` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:313` |
+| `LetterUtilitiesService.map(…)` | 2 | `LetterUtilitiesService.map(…)`, `LetterUtilitiesService.characters` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:314` |
+| `LetterUtilitiesService.flipVertically` | 2 | `LetterUtilitiesService.map(…)`, `LetterUtilitiesService.rectangular` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:326` |
+| `LetterUtilitiesService.map(…)` | 2 | `LetterUtilitiesService.map(…)`, `LetterUtilitiesService.characters` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:329` |
+| `LetterUtilitiesService.orientations` | 2 | `LetterUtilitiesService.baseCorner`, `LetterUtilitiesService.map(…)` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:357` |
+| `LetterUtilitiesService.turnClockwise` | 2 | `LetterUtilitiesService.reduce(…)`, `LetterUtilitiesService.rectangular` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:371` |
 | `HorizontalRectangleCountCharacteristicService.compute` | 2 | `HorizontalRectangleCountCharacteristicService.countIsolatedRectangles(…)`, `RectangleUtilitiesService.countIsolatedRectangles` | `applications/meanderaw/src/modules/characteristics/submatrix/rectangle/horizontal-rectangle-count-characteristic.service.ts:48` |
 | `VerticalRectangleCountCharacteristicService.compute` | 2 | `VerticalRectangleCountCharacteristicService.countIsolatedRectangles(…)`, `RectangleUtilitiesService.countIsolatedRectangles` | `applications/meanderaw/src/modules/characteristics/submatrix/rectangle/vertical-rectangle-count-characteristic.service.ts:48` |
 | `DrawingService.codeSegments` | 2 | `CodeService.directionsAt`, `DrawingService.pointSegments` | `applications/meanderaw/src/modules/drawing/drawing.service.ts:54` |
@@ -3904,20 +3937,17 @@ What this project is judged against, as declared in its own `callidescope.config
 | `NorthWestCornerCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countPointsWithExactArms` | `applications/meanderaw/src/modules/characteristics/submatrix/corner/north-west-corner-count-characteristic.service.ts:46` |
 | `SouthEastCornerCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countPointsWithExactArms` | `applications/meanderaw/src/modules/characteristics/submatrix/corner/south-east-corner-count-characteristic.service.ts:46` |
 | `SouthWestCornerCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countPointsWithExactArms` | `applications/meanderaw/src/modules/characteristics/submatrix/corner/south-west-corner-count-characteristic.service.ts:46` |
-| `LetterUtilitiesService.characters` | 1 | `LetterUtilitiesService.from(…)` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:95` |
-| `LetterUtilitiesService.count` | 1 | `SubmatrixUtilitiesService.countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:102` |
-| `LetterUtilitiesService.description` | 1 | `LetterUtilitiesService.drawing` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:127` |
-| `LetterUtilitiesService.drawing` | 1 | `LetterUtilitiesService.baseCorner` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:146` |
-| `LetterUtilitiesService.compute` | 1 | `LetterUtilitiesService.count` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:178` |
-| `LetterUtilitiesService.from(…)` | 1 | `LetterUtilitiesService.map(…)` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:236` |
-| `LetterUtilitiesService.map(…)` | 1 | `LetterUtilitiesService.mapArms` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:238` |
-| `LetterUtilitiesService.map(…)` | 1 | `LetterUtilitiesService.evaluator` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:276` |
-| `LetterUtilitiesService.map(…)` | 1 | `LetterUtilitiesService.mapArms` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:293` |
-| `LetterUtilitiesService.map(…)` | 1 | `LetterUtilitiesService.mapArms` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:307` |
-| `LetterUtilitiesService.orientationNames` | 1 | `LetterUtilitiesService.flatMap(…)` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:319` |
-| `LetterUtilitiesService.flatMap(…)` | 1 | `LetterUtilitiesService.map(…)` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:320` |
-| `LetterUtilitiesService.map(…)` | 1 | `LetterUtilitiesService.orientationName` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:321` |
-| `LetterUtilitiesService.reduce(…)` | 1 | `LetterUtilitiesService.turnQuarter` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:370` |
+| `LetterUtilitiesService.characters` | 1 | `LetterUtilitiesService.from(…)` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:73` |
+| `LetterUtilitiesService.description` | 1 | `LetterUtilitiesService.drawing` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:104` |
+| `LetterUtilitiesService.compute` | 1 | `LetterUtilitiesService.count` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:145` |
+| `LetterUtilitiesService.parse` | 1 | `LetterUtilitiesService.isTurn` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:229` |
+| `LetterUtilitiesService.from(…)` | 1 | `LetterUtilitiesService.map(…)` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:260` |
+| `LetterUtilitiesService.map(…)` | 1 | `LetterUtilitiesService.mapArms` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:262` |
+| `LetterUtilitiesService.map(…)` | 1 | `LetterUtilitiesService.evaluator` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:300` |
+| `LetterUtilitiesService.map(…)` | 1 | `LetterUtilitiesService.mapArms` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:317` |
+| `LetterUtilitiesService.map(…)` | 1 | `LetterUtilitiesService.mapArms` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:331` |
+| `LetterUtilitiesService.map(…)` | 1 | `LetterUtilitiesService.orientation` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:362` |
+| `LetterUtilitiesService.reduce(…)` | 1 | `LetterUtilitiesService.turnQuarter` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:377` |
 | `ALatinLetterCharacteristicsService.constructor` | 1 | `LetterUtilitiesService.evaluators` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/a-latin-letter-characteristics.service.ts:26` |
 | `AoHanziLetterCharacteristicsService.constructor` | 1 | `LetterUtilitiesService.evaluators` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/ao-hanzi-letter-characteristics.service.ts:26` |
 | `BLatinLetterCharacteristicsService.constructor` | 1 | `LetterUtilitiesService.evaluators` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/b-latin-letter-characteristics.service.ts:26` |

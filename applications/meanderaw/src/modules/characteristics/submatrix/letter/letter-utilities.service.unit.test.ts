@@ -261,6 +261,20 @@ describe(LetterUtilitiesService, () => {
       );
     });
 
+    it("carries the flips each corner is drawn with from the Southwest base", () => {
+      expect(
+        ["Southwest", "SoutheastQuarter", "NorthwestHalf", "Northeast"].map(
+          (name) =>
+            orientations.find((entry) => entry.name === name)?.flips ?? null,
+        ),
+      ).toStrictEqual([
+        [],
+        ["east to west"],
+        ["north to south"],
+        ["east to west", "north to south"],
+      ]);
+    });
+
     it("draws Southwest turned a half the same as Northeast", () => {
       expect(named(orientations, "SouthwestHalf")?.template).toStrictEqual(
         named(orientations, "Northeast")?.template,

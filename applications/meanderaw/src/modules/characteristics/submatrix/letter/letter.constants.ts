@@ -24,3 +24,17 @@ export const LETTER_ORIENTATION_NAMES = [
   "NorthwestHalf",
   "NorthwestThreeQuarter",
 ] as const;
+
+/**
+ * Every script whose letters are drawn as glyph templates, with its base
+ * corner: its reading direction, the corner its glyphs face before any flip.
+ * The source of truth for `LetterScript`, so a new script is one entry here.
+ */
+export const LETTER_SCRIPTS = {
+  Greek: { baseCorner: "Southeast" },
+  Hangul: { baseCorner: "Southeast" },
+  Hanzi: { baseCorner: "Southeast" },
+  Hebrew: { baseCorner: "Southwest" },
+  Katakana: { baseCorner: "Southeast" },
+  Latin: { baseCorner: "Southeast" },
+} as const;

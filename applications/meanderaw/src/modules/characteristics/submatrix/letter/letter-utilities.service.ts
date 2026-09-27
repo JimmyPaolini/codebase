@@ -2,6 +2,8 @@ import { Inject, Injectable } from "@nestjs/common";
 
 import { SubmatrixUtilitiesService } from "../submatrix-utilities.service";
 
+import { LETTER_ORIENTATION_NAMES, LETTER_SCRIPTS } from "./letter.constants";
+
 import type { Matrix } from "../../../matrix/matrix.types";
 import type {
   CharacteristicContext,
@@ -10,10 +12,12 @@ import type {
 import type {
   LetterCorner,
   LetterDefinition,
+  LetterFlip,
   LetterOrientation,
   LetterOrientationName,
   LetterRotation,
   LetterScript,
+  LetterTurn,
 } from "./letter.types";
 
 /**
@@ -37,24 +41,6 @@ export class LetterUtilitiesService {
 
   // 🔐 Private Fields
 
-  /** Each script's reading direction, the corner its glyphs face before any flip. */
-  private readonly baseCorners: Readonly<Record<LetterScript, LetterCorner>> = {
-    Greek: "Southeast",
-    Hangul: "Southeast",
-    Hanzi: "Southeast",
-    Hebrew: "Southwest",
-    Katakana: "Southeast",
-    Latin: "Southeast",
-  };
-
-  /** The four corners, in the order orientations are enumerated. */
-  private readonly corners: readonly LetterCorner[] = [
-    "Southeast",
-    "Southwest",
-    "Northeast",
-    "Northwest",
-  ];
-
   /**
    * Each matrix's glyph counts by template, so orientations and letters
    * drawing the same ink scan a context once between them. Keyed weakly by
@@ -69,14 +55,6 @@ export class LetterUtilitiesService {
     Quarter: 1,
     ThreeQuarter: 3,
   };
-
-  /** The four rotations, in the order each corner's orientations are enumerated. */
-  private readonly rotations: readonly LetterRotation[] = [
-    "None",
-    "Quarter",
-    "Half",
-    "ThreeQuarter",
-  ];
 
   /** How each turn is said in an orientation's description. */
   private readonly turnWords: Readonly<
@@ -103,8 +81,7 @@ export class LetterUtilitiesService {
     context: CharacteristicContext,
     template: readonly string[],
   ): number {
-    const counts = this.counts.get(context.matrix) ?? new Map<string, number>();
-    this.counts.set(context.matrix, counts);
+    const counts = this.counts.get(context.matrix) ?? this.track(context);
     const key = template.join("/");
     const cached = counts.get(key);
     if (cached !== undefined) {
@@ -132,7 +109,7 @@ export class LetterUtilitiesService {
     const aliasSentence =
       aliases.length === 0 ? "" : ` Also reads as ${aliases.join(", ")}.`;
 
-    return `The number of minimal isolated ${definition.glyph} glyphs — ${definition.shape} — ${this.drawing(definition.script, orientation)}.${aliasSentence}`;
+    return `The number of minimal isolated ${definition.glyph} glyphs — ${definition.shape} — ${this.drawing(orientation)}.${aliasSentence}`;
   }
 
   /** A key spelled out word by word for display: `aSoutheastQuarterLatinCount` reads `A Southeast Quarter Latin Count`. */
@@ -142,22 +119,12 @@ export class LetterUtilitiesService {
     return words.charAt(0).toUpperCase() + words.slice(1);
   }
 
-  /** How an orientation draws the upright glyph: `drawn upright`, or its flip and then its turn. */
-  private drawing(
-    script: LetterScript,
-    orientation: LetterOrientation,
-  ): string {
-    const base = this.baseCorner(script);
-    const flips = [
-      ...(orientation.corner.endsWith("east") === base.endsWith("east")
-        ? []
-        : ["east to west"]),
-      ...(orientation.corner.startsWith("North") === base.startsWith("North")
-        ? []
-        : ["north to south"]),
-    ];
+  /** How an orientation draws the upright glyph: `drawn upright`, or its flips and then its turn. */
+  private drawing(orientation: LetterOrientation): string {
     const steps = [
-      ...(flips.length === 0 ? [] : [`mirrored ${flips.join(" and ")}`]),
+      ...(orientation.flips.length === 0
+        ? []
+        : [`mirrored ${orientation.flips.join(" and ")}`]),
       ...(orientation.rotation === "None"
         ? []
         : [this.turnWords[orientation.rotation]]),
@@ -192,6 +159,27 @@ export class LetterUtilitiesService {
   }
 
   /**
+   * The flips drawing a glyph at `corner` from its script's base corner:
+   * east to west wherever the two differ east–west, then north to south
+   * wherever they differ north–south.
+   */
+  private flips(corner: LetterCorner, base: LetterCorner): LetterFlip[] {
+    return [
+      ...(corner.endsWith("east") === base.endsWith("east")
+        ? []
+        : ["east to west" as const]),
+      ...(corner.startsWith("North") === base.startsWith("North")
+        ? []
+        : ["north to south" as const]),
+    ];
+  }
+
+  /** Whether an orientation name's suffix after its corner is a turn word. */
+  private isTurn(suffix: string): suffix is LetterTurn {
+    return Object.hasOwn(this.turnWords, suffix);
+  }
+
+  /**
    * Rewrites a template digit's arms through `arms`, which maps each arm bit
    * — north 8, south 4, east 2, west 1 — to the bit it becomes. A blank `.`
    * stays blank.
@@ -211,18 +199,54 @@ export class LetterUtilitiesService {
       .toString(16);
   }
 
-  /** The orientation name for a corner and rotation, with no word for `None`. */
-  private orientationName(
-    corner: LetterCorner,
-    rotation: LetterRotation,
-  ): LetterOrientationName {
-    return rotation === "None" ? corner : `${corner}${rotation}`;
+  /** A base template facing `base` drawn in the orientation `name`: flipped to its corner, then turned. */
+  private orientation(
+    template: readonly string[],
+    base: LetterCorner,
+    name: LetterOrientationName,
+  ): LetterOrientation {
+    const { corner, rotation } = this.parse(name);
+    const flips = this.flips(corner, base);
+    const flipped = flips.reduce<readonly string[]>(
+      (drawn, flip) =>
+        flip === "east to west"
+          ? this.flipHorizontally(drawn)
+          : this.flipVertically(drawn),
+      template,
+    );
+    const turned = this.turnClockwise(flipped, rotation);
+    return {
+      corner,
+      flips,
+      name,
+      rotation,
+      template: turned,
+      window: this.submatrixUtilitiesService.glyphWindow(turned),
+    };
+  }
+
+  /** An orientation name read back into its corner and its rotation. */
+  private parse(name: LetterOrientationName): {
+    corner: LetterCorner;
+    rotation: LetterRotation;
+  } {
+    const corner: LetterCorner = `${name.startsWith("North") ? "North" : "South"}${name.slice("North".length).startsWith("east") ? "east" : "west"}`;
+    const suffix = name.slice(corner.length);
+
+    return { corner, rotation: this.isTurn(suffix) ? suffix : "None" };
   }
 
   /** Pads every row of a template with blanks to its widest row. */
   private rectangular(template: readonly string[]): string[] {
     const width = Math.max(0, ...template.map((line) => line.length));
     return template.map((line) => line.padEnd(width, "."));
+  }
+
+  /** Starts a context's glyph count cache, the first time any evaluator asks it for a count. */
+  private track(context: CharacteristicContext): Map<string, number> {
+    const counts = new Map<string, number>();
+    this.counts.set(context.matrix, counts);
+    return counts;
   }
 
   /**
@@ -247,7 +271,7 @@ export class LetterUtilitiesService {
 
   /** The corner a script's glyphs face before any flip: its reading direction. */
   public baseCorner(script: LetterScript): LetterCorner {
-    return this.baseCorners[script];
+    return LETTER_SCRIPTS[script].baseCorner;
   }
 
   /**
@@ -314,12 +338,11 @@ export class LetterUtilitiesService {
   /**
    * The sixteen orientation names, every corner with every rotation:
    * `Southeast`, `SoutheastQuarter`, `SoutheastHalf`, `SoutheastThreeQuarter`,
-   * then the same for Southwest, Northeast, and Northwest.
+   * then the same for Southwest, Northeast, and Northwest — the order
+   * {@link LETTER_ORIENTATION_NAMES} lists and every letter's keys follow.
    */
   public orientationNames(): readonly LetterOrientationName[] {
-    return this.corners.flatMap((corner) =>
-      this.rotations.map((rotation) => this.orientationName(corner, rotation)),
-    );
+    return LETTER_ORIENTATION_NAMES;
   }
 
   /**
@@ -328,33 +351,17 @@ export class LetterUtilitiesService {
    * the base wherever it differs from the script's base corner — east–west
    * by a horizontal flip, north–south by a vertical flip — and the rotation
    * then turns the flipped glyph clockwise. Each carries the window its
-   * template fills, columns and rows swapping on a quarter turn.
+   * template fills, columns and rows swapping on a quarter turn, and the
+   * flips it was drawn with, which its description then names.
    */
   public orientations(
     template: readonly string[],
     script: LetterScript,
   ): readonly LetterOrientation[] {
     const base = this.baseCorner(script);
-    return this.corners.flatMap((corner) => {
-      const mirrored =
-        corner.endsWith("east") === base.endsWith("east")
-          ? template
-          : this.flipHorizontally(template);
-      const flipped =
-        corner.startsWith("North") === base.startsWith("North")
-          ? mirrored
-          : this.flipVertically(mirrored);
-      return this.rotations.map((rotation) => {
-        const turned = this.turnClockwise(flipped, rotation);
-        return {
-          corner,
-          name: this.orientationName(corner, rotation),
-          rotation,
-          template: turned,
-          window: this.submatrixUtilitiesService.glyphWindow(turned),
-        };
-      });
-    });
+    return LETTER_ORIENTATION_NAMES.map((name) =>
+      this.orientation(template, base, name),
+    );
   }
 
   /**

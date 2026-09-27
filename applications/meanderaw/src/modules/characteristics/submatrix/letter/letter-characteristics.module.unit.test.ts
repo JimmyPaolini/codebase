@@ -20,6 +20,7 @@ import { LLatinLetterCharacteristicsService } from "./l-latin-letter-characteris
 import { LamedHebrewLetterCharacteristicsService } from "./lamed-hebrew-letter-characteristics.service";
 import { LetterCharacteristicsModule } from "./letter-characteristics.module";
 import { LetterUtilitiesService } from "./letter-utilities.service";
+import { LETTER_SCRIPTS } from "./letter.constants";
 import { MLatinLetterCharacteristicsService } from "./m-latin-letter-characteristics.service";
 import { MuHanziLetterCharacteristicsService } from "./mu-hanzi-letter-characteristics.service";
 import { NLatinLetterCharacteristicsService } from "./n-latin-letter-characteristics.service";
@@ -107,18 +108,14 @@ const LETTERS: readonly Type<CharacteristicEvaluatorGroup<number>>[] = [
 const GROUPS = Symbol("GROUPS");
 
 /** The script a letter key names, read from its end: `daletSouthwestHebrewCount` is Hebrew. */
-const SCRIPT = /(Greek|Hangul|Hanzi|Hebrew|Katakana|Latin)Count$/u;
+const SCRIPT = new RegExp(
+  `(${Object.keys(LETTER_SCRIPTS).join("|")})Count$`,
+  "u",
+);
 
 /** Whether a string names a letter script, so a key's script can be looked up without a cast. */
 function isLetterScript(value: string | undefined): value is LetterScript {
-  return (
-    value === "Greek" ||
-    value === "Hangul" ||
-    value === "Hanzi" ||
-    value === "Hebrew" ||
-    value === "Katakana" ||
-    value === "Latin"
-  );
+  return value !== undefined && Object.hasOwn(LETTER_SCRIPTS, value);
 }
 
 /**
