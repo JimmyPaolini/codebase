@@ -73,7 +73,14 @@ export class PullRequestReleaseSignificanceService {
     );
   }
 
-  /** Every commit scope this title's own scopes do not cover, and who used it. */
+  /**
+   * Every scope that a commit used without any scope overlap in the title,
+   * grouped by scope and commit SHA.
+   *
+   * A title counts as scoping a commit when at least one of the commit's
+   * scopes also appears in the title; there is no requirement that the title
+   * name every scope the branch used.
+   */
   private findMissingScopes(
     commits: readonly PullRequestCommit[],
     titleConvention: ConventionalSubject,
@@ -85,11 +92,15 @@ export class PullRequestReleaseSignificanceService {
         continue;
       }
 
-      for (const scope of commit.convention.scopes) {
-        if (titleConvention.scopes.includes(scope)) {
-          continue;
-        }
+      const overlapsTitle = commit.convention.scopes.some((scope) =>
+        titleConvention.scopes.includes(scope),
+      );
 
+      if (overlapsTitle) {
+        continue;
+      }
+
+      for (const scope of commit.convention.scopes) {
         const shas = missingScopeCommits.get(scope) ?? [];
         shas.push(commit.sha);
         missingScopeCommits.set(scope, shas);
@@ -198,9 +209,8 @@ export class PullRequestReleaseSignificanceService {
    *
    * Two independent comparisons, both against the title alone rather than
    * against each other: the most release-significant commit sets the floor
-   * the title's own type must clear, and every scope any commit names must
-   * also be named by the title, so a reviewer reading the title learns the
-   * whole shape of what shipped.
+   * the title's own type must clear, and the title must share at least one
+   * scope with each commit it is checked against.
    */
   public checkSignificance(options: {
     readonly commits: readonly PullRequestCommit[];

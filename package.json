@@ -1,8 +1,5 @@
 {
   "author": "Jimmy Paolini",
-  "dependencies": {
-    "pino-pretty": "catalog:"
-  },
   "description": "",
   "devDependencies": {
     "@callidescope/configuration": "workspace:*",
@@ -74,6 +71,7 @@
     "openwiki": "catalog:",
     "oxfmt": "catalog:",
     "oxlint": "catalog:",
+    "pino-pretty": "catalog:",
     "prettier": "catalog:",
     "semantic-release": "catalog:",
     "skills": "catalog:",

@@ -126,32 +126,14 @@ export class LoggerService extends ConsoleLogger {
     context: string | undefined;
     parsed: ParsedLogMessage;
   }): void {
-    if (LoggerService.isProduction) {
+    if (this.shouldSkipConventionalValidation(args.context)) {
       return;
     }
 
-    if (
-      args.context !== undefined &&
-      UNVALIDATED_LOG_CONTEXTS.has(args.context)
-    ) {
-      return;
-    }
+    const violation = this.readConventionalMessageViolation(args.parsed);
 
-    const emoji = args.parsed.emoji;
-    const text = args.parsed.text;
-
-    if (emoji === undefined) {
-      throw new Error(
-        `Log message must start with an emoji naming its subject, then a verb: "${text}"`,
-      );
-    }
-
-    const firstWord = FIRST_WORD_PATTERN.exec(text)?.[1];
-
-    if (firstWord === undefined || !this.isConventionalVerb(firstWord)) {
-      throw new Error(
-        `Log message must begin with a verb in present progressive or past tense, got "${firstWord ?? ""}": "${emoji} ${text}"`,
-      );
+    if (violation !== undefined) {
+      throw new Error(violation);
     }
   }
 
@@ -200,6 +182,36 @@ export class LoggerService extends ConsoleLogger {
     return emoji === undefined
       ? { emoji: undefined, text }
       : { emoji, text: text.slice(match?.[0].length) };
+  }
+
+  /** The exact validation error for a malformed log message, if any. */
+  private readConventionalMessageViolation(
+    parsed: ParsedLogMessage,
+  ): string | undefined {
+    const emoji = parsed.emoji;
+    const text = parsed.text;
+
+    if (emoji === undefined) {
+      return `Log message must start with an emoji naming its subject, then a verb: "${text}"`;
+    }
+
+    const firstWord = FIRST_WORD_PATTERN.exec(text)?.[1];
+
+    if (firstWord === undefined || !this.isConventionalVerb(firstWord)) {
+      return `Log message must begin with a verb in present progressive or past tense, got "${firstWord ?? ""}": "${emoji} ${text}"`;
+    }
+
+    return undefined;
+  }
+
+  /** Whether this log context should bypass the conventional message check. */
+  private shouldSkipConventionalValidation(
+    context: string | undefined,
+  ): boolean {
+    return (
+      LoggerService.isProduction ||
+      (context !== undefined && UNVALIDATED_LOG_CONTEXTS.has(context))
+    );
   }
 
   // 🌎 Public Methods
