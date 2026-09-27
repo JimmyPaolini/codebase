@@ -2,6 +2,19 @@ import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import { CharacteristicsModule } from "./characteristics.module";
+import { IsArcadeCharacteristicService } from "./compound/family/is-arcade-characteristic.service";
+import { IsBarsCharacteristicService } from "./compound/family/is-bars-characteristic.service";
+import { IsCombCharacteristicService } from "./compound/family/is-comb-characteristic.service";
+import { IsCrossCharacteristicService } from "./compound/family/is-cross-characteristic.service";
+import { IsDotsCharacteristicService } from "./compound/family/is-dots-characteristic.service";
+import { IsForkCharacteristicService } from "./compound/family/is-fork-characteristic.service";
+import { IsLinesCharacteristicService } from "./compound/family/is-lines-characteristic.service";
+import { IsMeshCharacteristicService } from "./compound/family/is-mesh-characteristic.service";
+import { IsParallelCharacteristicService } from "./compound/family/is-parallel-characteristic.service";
+import { IsPureTreeCharacteristicService } from "./compound/family/is-pure-tree-characteristic.service";
+import { IsStippledCharacteristicService } from "./compound/family/is-stippled-characteristic.service";
+import { IsClosedLoopCharacteristicService } from "./compound/structure/is-closed-loop-characteristic.service";
+import { IsSingleArcCharacteristicService } from "./compound/structure/is-single-arc-characteristic.service";
 import { EndsAreLatticeNeighborsCharacteristicService } from "./path/end/ends-are-lattice-neighbors-characteristic.service";
 import { EndsOnBorderRulesCharacteristicService } from "./path/end/ends-on-border-rules-characteristic.service";
 import { TileCrossingComponentDeltaCountCharacteristicService } from "./path/tile-crossing/tile-crossing-component-delta-count-characteristic.service";
@@ -155,6 +168,19 @@ const CHARACTERISTIC_SERVICES: readonly Type<CharacteristicEvaluator>[] = [
   HorizontalRectangleCountCharacteristicService,
   InflectionCountCharacteristicService,
   InkPointCountCharacteristicService,
+  IsArcadeCharacteristicService,
+  IsBarsCharacteristicService,
+  IsClosedLoopCharacteristicService,
+  IsCombCharacteristicService,
+  IsCrossCharacteristicService,
+  IsDotsCharacteristicService,
+  IsForkCharacteristicService,
+  IsLinesCharacteristicService,
+  IsMeshCharacteristicService,
+  IsParallelCharacteristicService,
+  IsPureTreeCharacteristicService,
+  IsSingleArcCharacteristicService,
+  IsStippledCharacteristicService,
   LongestHorizontalRunLengthCharacteristicService,
   LongestVerticalRunLengthCharacteristicService,
   MaxMonotonicTurnLengthCharacteristicService,

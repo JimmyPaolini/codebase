@@ -9,6 +9,8 @@ import { CharacteristicsFamilyService } from "./characteristics-family.service";
 import { CharacteristicsPathService } from "./characteristics-path.service";
 import { CharacteristicsShapeService } from "./characteristics-shape.service";
 import { CharacteristicsService } from "./characteristics.service";
+import { FamilyCharacteristicsModule } from "./compound/family/family-characteristics.module";
+import { StructureCharacteristicsModule } from "./compound/structure/structure-characteristics.module";
 import { ConnectivityService } from "./connectivity.service";
 import { EndCharacteristicsModule } from "./path/end/end-characteristics.module";
 import { TileCrossingCharacteristicsModule } from "./path/tile-crossing/tile-crossing-characteristics.module";
@@ -55,11 +57,13 @@ import { RunCharacteristicsModule } from "./submatrix/run/run-characteristics.mo
     CrossCharacteristicsModule,
     EmbeddedCharacteristicsModule,
     EndCharacteristicsModule,
+    FamilyCharacteristicsModule,
     ForkCharacteristicsModule,
     LetterCharacteristicsModule,
     PointCharacteristicsModule,
     RectangleCharacteristicsModule,
     RunCharacteristicsModule,
+    StructureCharacteristicsModule,
     TileCrossingCharacteristicsModule,
     TopologyCharacteristicsModule,
     TurnCharacteristicsModule,
@@ -70,6 +74,7 @@ import { RunCharacteristicsModule } from "./submatrix/run/run-characteristics.mo
     CrossCharacteristicsModule,
     EmbeddedCharacteristicsModule,
     EndCharacteristicsModule,
+    FamilyCharacteristicsModule,
     ForkCharacteristicsModule,
     GraphModule,
     LetterCharacteristicsModule,
@@ -77,6 +82,7 @@ import { RunCharacteristicsModule } from "./submatrix/run/run-characteristics.mo
     PointCharacteristicsModule,
     RectangleCharacteristicsModule,
     RunCharacteristicsModule,
+    StructureCharacteristicsModule,
     TileCrossingCharacteristicsModule,
     TopologyCharacteristicsModule,
     TurnCharacteristicsModule,
