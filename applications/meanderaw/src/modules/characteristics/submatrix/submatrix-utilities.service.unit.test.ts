@@ -108,6 +108,24 @@ describe(SubmatrixUtilitiesService, () => {
     });
   });
 
+  describe("digitGrid", () => {
+    it("spells every point's arms as its hexadecimal Code digit, row by row", () => {
+      const matrix: Matrix = [
+        [point("north", "east"), point("south", "west")],
+        [point(), point("north", "south", "east", "west")],
+      ];
+
+      expect(service.digitGrid(matrix)).toStrictEqual([
+        [10, 5],
+        [0, 15],
+      ]);
+    });
+
+    it("reads an empty matrix as an empty grid", () => {
+      expect(service.digitGrid([])).toStrictEqual([]);
+    });
+  });
+
   describe("countIsolatedGlyphs", () => {
     const square: Matrix = [
       [point("south", "east"), point("south", "west"), point()],

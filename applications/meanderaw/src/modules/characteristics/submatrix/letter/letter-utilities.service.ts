@@ -76,14 +76,18 @@ export class LetterUtilitiesService {
     );
   }
 
-  /** The count of `template` glyphs in a context, scanned the first time any evaluator asks for it. */
+  /**
+   * The count of `template` glyphs in a context, scanned the first time any
+   * evaluator asks for it. `ink` is the template's rows joined by `/`, which
+   * its evaluator spells once rather than on every context.
+   */
   private count(
     context: CharacteristicContext,
     template: readonly string[],
+    ink: string,
   ): number {
     const counts = this.counts.get(context.matrix) ?? this.track(context);
-    const key = template.join("/");
-    const cached = counts.get(key);
+    const cached = counts.get(ink);
     if (cached !== undefined) {
       return cached;
     }
@@ -92,7 +96,7 @@ export class LetterUtilitiesService {
       context.matrix,
       template,
     );
-    counts.set(key, count);
+    counts.set(ink, count);
     return count;
   }
 
@@ -140,9 +144,10 @@ export class LetterUtilitiesService {
     aliases: readonly string[],
   ): CharacteristicEvaluator<number> {
     const key = definition.key(orientation.name);
+    const ink = orientation.template.join("/");
 
     return {
-      compute: (context) => this.count(context, orientation.template),
+      compute: (context) => this.count(context, orientation.template, ink),
       metadata: {
         category: "submatrix",
         description: this.description(definition, orientation, aliases),
