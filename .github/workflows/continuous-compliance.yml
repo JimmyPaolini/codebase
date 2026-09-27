@@ -116,7 +116,8 @@ jobs:
             if [ -n "$issue_number" ]; then
               gh issue edit "$issue_number" --add-assignee JimmyPaolini
             fi
-          done < <(gh issue list --state open --limit 500 --search "no:assignee" --json number --jq '.[].number')
+          done < <(gh issue list --state open --limit 500 --search "no:assignee" --json number \
+            --jq '.[].number')
 
       # Read live, by issue number, rather than out of this event's payload.
       - name: 🧾 Audit Single Issue Metadata
