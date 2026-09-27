@@ -43,6 +43,7 @@ import { LUpLetterCountCharacteristicService } from "./l-up-letter-count-charact
 import { LWestLetterCountCharacteristicService } from "./l-west-letter-count-characteristic.service";
 import { LamedLetterCountCharacteristicService } from "./lamed-letter-count-characteristic.service";
 import { LamedSidewaysLetterCountCharacteristicService } from "./lamed-sideways-letter-count-characteristic.service";
+import { LetterUtilitiesService } from "./letter-utilities.service";
 import { MEastLetterCountCharacteristicService } from "./m-east-letter-count-characteristic.service";
 import { MLetterCountCharacteristicService } from "./m-letter-count-characteristic.service";
 import { MWestLetterCountCharacteristicService } from "./m-west-letter-count-characteristic.service";
@@ -106,7 +107,9 @@ import { ZSidewaysLetterCountCharacteristicService } from "./z-sideways-letter-c
  * Latin, Greek, Hebrew, katakana, hanzi, and hangul, each upright glyph and each
  * distinct rotation of an asymmetric one — as one group
  * `CharacteristicsModule` imports and re-exports. A glyph drawn exactly like
- * another script's is one evaluator whose description names both.
+ * another script's is one evaluator whose description names both. It also
+ * provides and exports the `LetterUtilitiesService` orientation arithmetic
+ * that letter services inject to draw a base template in every orientation.
  *
  * A rotation's turn word names where the upright glyph's bottom — its base or
  * stem — now points: East and West for a quarter turn whose bottom points east
@@ -115,6 +118,7 @@ import { ZSidewaysLetterCountCharacteristicService } from "./z-sideways-letter-c
 @Module({
   controllers: [],
   exports: [
+    LetterUtilitiesService,
     AEastLetterCountCharacteristicService,
     AInvertedLetterCountCharacteristicService,
     ALetterCountCharacteristicService,
@@ -216,6 +220,7 @@ import { ZSidewaysLetterCountCharacteristicService } from "./z-sideways-letter-c
   ],
   imports: [SubmatrixUtilitiesModule],
   providers: [
+    LetterUtilitiesService,
     AEastLetterCountCharacteristicService,
     AInvertedLetterCountCharacteristicService,
     ALetterCountCharacteristicService,
