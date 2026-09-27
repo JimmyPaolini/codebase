@@ -34,6 +34,7 @@ export class ZLetterCountCharacteristicService implements CharacteristicEvaluato
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "zLetterCount",
       name: "Z Letter Count",
+      submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",
     };
   }

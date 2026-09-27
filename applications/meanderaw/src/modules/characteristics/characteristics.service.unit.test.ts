@@ -59,6 +59,7 @@ function fake(key: string, valueType: string, value: unknown): Provider {
         description: `Stands in for ${key}.`,
         key,
         name: key,
+        submatrix: { columns: 1, rows: 1 },
         valueType,
       },
     },

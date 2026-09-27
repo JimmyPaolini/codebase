@@ -33,6 +33,7 @@ export class CrossCountCharacteristicService implements CharacteristicEvaluator<
     formula: String.raw`\left|\{\, p \in M : \text{arms}(p) = \{N, S, E, W\} \,\}\right|`,
     key: "crossCount",
     name: "Cross Count",
+    submatrix: { columns: 1, rows: 1 },
     valueType: "number",
   };
 

@@ -33,6 +33,7 @@ export class HorizontalEdgeCountCharacteristicService implements CharacteristicE
     formula: String.raw`\left|\{\, p \in M : \text{arms}(p) = \{E, W\} \,\}\right|`,
     key: "horizontalEdgeCount",
     name: "Horizontal Edge Count",
+    submatrix: { columns: 1, rows: 1 },
     valueType: "number",
   };
 

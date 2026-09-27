@@ -33,6 +33,7 @@ export class UInvertedLetterCountCharacteristicService implements Characteristic
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "uInvertedLetterCount",
       name: "U Inverted Letter Count",
+      submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",
     };
   }

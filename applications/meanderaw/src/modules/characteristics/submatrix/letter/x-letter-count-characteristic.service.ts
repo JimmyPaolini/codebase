@@ -33,6 +33,7 @@ export class XLetterCountCharacteristicService implements CharacteristicEvaluato
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "xLetterCount",
       name: "X Letter Count",
+      submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",
     };
   }

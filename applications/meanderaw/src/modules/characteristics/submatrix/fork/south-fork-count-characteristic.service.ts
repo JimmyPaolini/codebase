@@ -34,6 +34,7 @@ export class SouthForkCountCharacteristicService implements CharacteristicEvalua
     formula: String.raw`\left|\{\, p \in M : \text{arms}(p) = \{S, E, W\} \,\}\right|`,
     key: "southForkCount",
     name: "South Fork Count",
+    submatrix: { columns: 1, rows: 1 },
     valueType: "number",
   };
 

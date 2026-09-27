@@ -33,6 +33,7 @@ export class VerticalEdgeCountCharacteristicService implements CharacteristicEva
     formula: String.raw`\left|\{\, p \in M : \text{arms}(p) = \{N, S\} \,\}\right|`,
     key: "verticalEdgeCount",
     name: "Vertical Edge Count",
+    submatrix: { columns: 1, rows: 1 },
     valueType: "number",
   };
 

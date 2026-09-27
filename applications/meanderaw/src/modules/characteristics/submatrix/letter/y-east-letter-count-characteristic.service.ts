@@ -34,6 +34,7 @@ export class YEastLetterCountCharacteristicService implements CharacteristicEval
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "yEastLetterCount",
       name: "Y East Letter Count",
+      submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",
     };
   }

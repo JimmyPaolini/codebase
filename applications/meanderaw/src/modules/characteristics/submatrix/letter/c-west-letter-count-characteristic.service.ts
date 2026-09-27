@@ -33,6 +33,7 @@ export class CWestLetterCountCharacteristicService implements CharacteristicEval
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "cWestLetterCount",
       name: "C West Letter Count",
+      submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",
     };
   }

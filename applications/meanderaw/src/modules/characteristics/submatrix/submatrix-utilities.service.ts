@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 
 import type { Matrix, MatrixPointArm } from "../../matrix/matrix.types";
+import type { SubmatrixWindow } from "../characteristics.types";
 import type { GlyphCell } from "./submatrix.types";
 
 /**
@@ -134,6 +135,19 @@ export class SubmatrixUtilitiesService {
       .join(String.raw` \\ `);
 
     return String.raw`\left|\left\{\, W \subseteq M : W \equiv \begin{matrix} ${rows} \end{matrix},\ W \text{ isolated} \,\right\}\right|`;
+  }
+
+  /**
+   * The window a {@link SubmatrixUtilitiesService.countIsolatedGlyphs}
+   * template reads: one column per character of its widest line, blanks
+   * included, and one row per line — the `submatrix` metadata of every glyph
+   * characteristic, derived so it cannot disagree with the template.
+   */
+  public glyphWindow(template: readonly string[]): SubmatrixWindow {
+    return {
+      columns: Math.max(0, ...template.map((line) => line.length)),
+      rows: template.length,
+    };
   }
 
   /**

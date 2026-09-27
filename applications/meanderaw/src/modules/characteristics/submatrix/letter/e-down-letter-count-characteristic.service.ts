@@ -33,6 +33,7 @@ export class EDownLetterCountCharacteristicService implements CharacteristicEval
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "eDownLetterCount",
       name: "E Down Letter Count",
+      submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",
     };
   }

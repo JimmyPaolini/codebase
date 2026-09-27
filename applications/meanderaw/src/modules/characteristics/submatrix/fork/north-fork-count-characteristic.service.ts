@@ -34,6 +34,7 @@ export class NorthForkCountCharacteristicService implements CharacteristicEvalua
     formula: String.raw`\left|\{\, p \in M : \text{arms}(p) = \{N, E, W\} \,\}\right|`,
     key: "northForkCount",
     name: "North Fork Count",
+    submatrix: { columns: 1, rows: 1 },
     valueType: "number",
   };
 

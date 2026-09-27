@@ -36,6 +36,7 @@ export class HorizontalRectangleCountCharacteristicService implements Characteri
     formula: String.raw`\left|\{\, R \subseteq M : R \text{ an isolated rectangular ring},\ w(R) > h(R) \,\}\right|`,
     key: "horizontalRectangleCount",
     name: "Horizontal Rectangle Count",
+    submatrix: { columns: 3, rows: 2, variable: true },
     valueType: "number",
   };
 

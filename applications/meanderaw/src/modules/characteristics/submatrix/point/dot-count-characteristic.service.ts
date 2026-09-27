@@ -32,6 +32,7 @@ export class DotCountCharacteristicService implements CharacteristicEvaluator<nu
     formula: String.raw`\left|\{\, p \in M : \text{arms}(p) = \varnothing \,\}\right|`,
     key: "dotCount",
     name: "Dot Count",
+    submatrix: { columns: 1, rows: 1 },
     valueType: "number",
   };
 

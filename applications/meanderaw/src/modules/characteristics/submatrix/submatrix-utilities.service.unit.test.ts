@@ -152,4 +152,20 @@ describe(SubmatrixUtilitiesService, () => {
       );
     });
   });
+
+  describe("glyphWindow", () => {
+    it("measures a template as one column per character and one row per line", () => {
+      expect(service.glyphWindow(["4.", "a1", "8."])).toStrictEqual({
+        columns: 2,
+        rows: 3,
+      });
+    });
+
+    it("counts a blank cell toward the window like a glyph point", () => {
+      expect(service.glyphWindow(["..4", "6a9"])).toStrictEqual({
+        columns: 3,
+        rows: 2,
+      });
+    });
+  });
 });

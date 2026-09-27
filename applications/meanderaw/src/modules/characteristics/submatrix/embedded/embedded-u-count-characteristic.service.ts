@@ -39,6 +39,7 @@ export class EmbeddedUCountCharacteristicService implements CharacteristicEvalua
     formula: String.raw`\left|\left\{\, W \subseteq M : W \text{ carries a U's arms, in any rotation} \,\right\}\right|`,
     key: "embeddedUCount",
     name: "Embedded U Count",
+    submatrix: { columns: 2, rows: 2 },
     valueType: "number",
   };
 

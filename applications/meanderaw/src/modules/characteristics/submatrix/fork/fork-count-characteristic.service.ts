@@ -43,6 +43,7 @@ export class ForkCountCharacteristicService implements CharacteristicEvaluator<n
     formula: String.raw`n_{\text{N}} + n_{\text{S}} + n_{\text{E}} + n_{\text{W}}`,
     key: "forkCount",
     name: "Fork Count",
+    submatrix: { columns: 1, rows: 1 },
     valueType: "number",
   };
 

@@ -34,6 +34,7 @@ export class SouthEastCornerCountCharacteristicService implements Characteristic
     formula: String.raw`\left|\{\, p \in M : \text{arms}(p) = \{S, E\} \,\}\right|`,
     key: "southEastCornerCount",
     name: "South-East Corner Count",
+    submatrix: { columns: 1, rows: 1 },
     valueType: "number",
   };
 

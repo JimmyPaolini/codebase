@@ -34,6 +34,7 @@ export class DensityCharacteristicService implements CharacteristicEvaluator<num
     formula: String.raw`\frac{\text{inkPointCount}}{\text{rows} \cdot \text{columns}}`,
     key: "density",
     name: "Density",
+    submatrix: { columns: 1, rows: 1 },
     valueType: "number",
   };
 

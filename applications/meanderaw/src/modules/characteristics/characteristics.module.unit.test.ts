@@ -111,7 +111,10 @@ import { VerticalRectangleCountCharacteristicService } from "./submatrix/rectang
 import { LongestHorizontalRunLengthCharacteristicService } from "./submatrix/run/longest-horizontal-run-length-characteristic.service";
 import { LongestVerticalRunLengthCharacteristicService } from "./submatrix/run/longest-vertical-run-length-characteristic.service";
 
-import type { CharacteristicEvaluator } from "./characteristics.types";
+import type {
+  CharacteristicEvaluator,
+  SubmatrixWindow,
+} from "./characteristics.types";
 import type { Type } from "@nestjs/common";
 
 /** Every characteristic evaluator a consumer of `CharacteristicsModule` must be able to inject. */
@@ -222,6 +225,37 @@ const CHARACTERISTIC_SERVICES: readonly Type<CharacteristicEvaluator>[] = [
   WestForkCountCharacteristicService,
 ];
 
+/**
+ * The window, in lattice points, each submatrix evaluator other than a letter
+ * glyph reads: 1×1 for a point scan or a sum of point scans, and the smallest
+ * window for a variable-size scan. A letter glyph's window is checked against
+ * its drawn fixture in the letter module's own test.
+ */
+const WINDOWS: Readonly<Record<string, SubmatrixWindow>> = {
+  cornerCount: { columns: 1, rows: 1 },
+  crossCount: { columns: 1, rows: 1 },
+  density: { columns: 1, rows: 1 },
+  dotCount: { columns: 1, rows: 1 },
+  eastForkCount: { columns: 1, rows: 1 },
+  edgeCount: { columns: 1, rows: 1 },
+  embeddedUCount: { columns: 2, rows: 2 },
+  forkCount: { columns: 1, rows: 1 },
+  horizontalEdgeCount: { columns: 1, rows: 1 },
+  horizontalRectangleCount: { columns: 3, rows: 2, variable: true },
+  inkPointCount: { columns: 1, rows: 1 },
+  longestHorizontalRunLength: { columns: 2, rows: 1, variable: true },
+  longestVerticalRunLength: { columns: 1, rows: 2, variable: true },
+  northEastCornerCount: { columns: 1, rows: 1 },
+  northForkCount: { columns: 1, rows: 1 },
+  northWestCornerCount: { columns: 1, rows: 1 },
+  southEastCornerCount: { columns: 1, rows: 1 },
+  southForkCount: { columns: 1, rows: 1 },
+  southWestCornerCount: { columns: 1, rows: 1 },
+  verticalEdgeCount: { columns: 1, rows: 1 },
+  verticalRectangleCount: { columns: 2, rows: 3, variable: true },
+  westForkCount: { columns: 1, rows: 1 },
+};
+
 /** The token a consumer module gathers every evaluator under, through a factory whose `inject` list only resolves exported providers. */
 const EVALUATORS = Symbol("EVALUATORS");
 
@@ -274,6 +308,14 @@ describe(CharacteristicsModule, () => {
       expect(metadata?.description).not.toBe("");
       expect(["compound", "path", "submatrix"]).toContain(metadata?.category);
     });
+
+    it("declares a submatrix window exactly when its category is submatrix", () => {
+      const metadata = evaluators[index]?.metadata;
+
+      expect(metadata?.submatrix !== undefined).toBe(
+        metadata?.category === "submatrix",
+      );
+    });
   });
 
   it("gives every characteristic evaluator a unique metadata key", () => {
@@ -286,6 +328,36 @@ describe(CharacteristicsModule, () => {
     const keys = evaluators.map((evaluator) => evaluator.metadata.key);
 
     expect(keys.toSorted()).toStrictEqual([...CHARACTERISTIC_KEYS].toSorted());
+  });
+
+  it("sizes every declared submatrix window in whole lattice points", () => {
+    const windows = evaluators.flatMap(({ metadata }) =>
+      metadata.submatrix === undefined ? [] : [metadata.submatrix],
+    );
+
+    expect(
+      windows.filter(
+        ({ columns, rows }) =>
+          !Number.isInteger(columns) ||
+          !Number.isInteger(rows) ||
+          columns < 1 ||
+          rows < 1,
+      ),
+    ).toStrictEqual([]);
+  });
+
+  it("declares the window each non-letter submatrix evaluator reads", () => {
+    const declared = Object.fromEntries(
+      evaluators
+        .filter(({ metadata }) => !metadata.key.endsWith("LetterCount"))
+        .flatMap(({ metadata }) =>
+          metadata.submatrix === undefined
+            ? []
+            : [[metadata.key, metadata.submatrix]],
+        ),
+    );
+
+    expect(declared).toStrictEqual(WINDOWS);
   });
 
   it("declares the value type each key's list promises", () => {

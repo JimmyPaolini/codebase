@@ -33,6 +33,7 @@ export class ZSidewaysLetterCountCharacteristicService implements Characteristic
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "zSidewaysLetterCount",
       name: "Z Sideways Letter Count",
+      submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",
     };
   }

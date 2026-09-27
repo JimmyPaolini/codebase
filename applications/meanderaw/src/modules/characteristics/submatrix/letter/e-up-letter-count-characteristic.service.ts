@@ -33,6 +33,7 @@ export class EUpLetterCountCharacteristicService implements CharacteristicEvalua
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "eUpLetterCount",
       name: "E Up Letter Count",
+      submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",
     };
   }

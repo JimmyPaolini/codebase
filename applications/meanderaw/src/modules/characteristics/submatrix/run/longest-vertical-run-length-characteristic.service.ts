@@ -34,6 +34,7 @@ export class LongestVerticalRunLengthCharacteristicService implements Characteri
     formula: String.raw`\max_{c} \max \left\{\, k : \text{south}(r, c), \dots, \text{south}(r+k-1, c) \,\right\}`,
     key: "longestVerticalRunLength",
     name: "Longest Vertical Run Length",
+    submatrix: { columns: 1, rows: 2, variable: true },
     valueType: "number",
   };
 
