@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.24.2](https://github.com/JimmyPaolini/codebase/compare/v2.24.1...v2.24.2) (2026-09-27)
+
+### 🐛 Bug Fixes
+
+* **validation:** 🐛 relax commit scope overlap validation ([#1200](https://github.com/JimmyPaolini/codebase/issues/1200)) ([5367fd2](https://github.com/JimmyPaolini/codebase/commit/5367fd2eeba84428d07421f5d553079fe3e35b25))
+
 ## [2.24.1](https://github.com/JimmyPaolini/codebase/compare/v2.24.0...v2.24.1) (2026-09-27)
 
 ### 🐛 Bug Fixes
