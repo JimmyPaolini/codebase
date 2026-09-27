@@ -340,7 +340,6 @@ graph LR
 _Dashed edges are dependencies Nx inferred from configuration rather than from code._
 <!-- codependix:end name="codependix-nx-projects" -->
 
-
 ### NestJS Module Graph
 
 <!-- codependix:start name="codependix-nestjs-modules" -->
