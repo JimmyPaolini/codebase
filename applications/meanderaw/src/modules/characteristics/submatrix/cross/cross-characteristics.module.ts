@@ -1,5 +1,7 @@
 import { Module } from "@nestjs/common";
 
+import { SubmatrixUtilitiesModule } from "../submatrix-utilities.module";
+
 import { CrossCountCharacteristicService } from "./cross-count-characteristic.service";
 
 /**
@@ -9,7 +11,7 @@ import { CrossCountCharacteristicService } from "./cross-count-characteristic.se
 @Module({
   controllers: [],
   exports: [CrossCountCharacteristicService],
-  imports: [],
+  imports: [SubmatrixUtilitiesModule],
   providers: [CrossCountCharacteristicService],
 })
 export class CrossCharacteristicsModule {}

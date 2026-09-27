@@ -1,6 +1,6 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 
-import { countPointsWithExactArms } from "../submatrix.utilities";
+import { SubmatrixUtilitiesService } from "../submatrix-utilities.service";
 
 import type {
   CharacteristicContext,
@@ -16,7 +16,10 @@ import type {
 export class CrossCountCharacteristicService implements CharacteristicEvaluator<number> {
   // 🏗 Dependency Injection
 
-  constructor() {}
+  constructor(
+    @Inject(SubmatrixUtilitiesService)
+    private readonly submatrixUtilitiesService: SubmatrixUtilitiesService,
+  ) {}
 
   // 🔐 Private Fields
 
@@ -39,11 +42,9 @@ export class CrossCountCharacteristicService implements CharacteristicEvaluator<
 
   /** Counts the points that carry all four arms. */
   public compute(context: CharacteristicContext): number {
-    return countPointsWithExactArms(context.matrix, [
-      "east",
-      "north",
-      "south",
-      "west",
-    ]);
+    return this.submatrixUtilitiesService.countPointsWithExactArms(
+      context.matrix,
+      ["east", "north", "south", "west"],
+    );
   }
 }

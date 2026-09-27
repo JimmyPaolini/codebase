@@ -2,6 +2,7 @@ import { Module } from "@nestjs/common";
 
 import { ConnectivityModule } from "../../connectivity/connectivity.module";
 import { PointCharacteristicsModule } from "../../submatrix/point/point-characteristics.module";
+import { PathUtilitiesModule } from "../path-utilities.module";
 
 import { BottomBorderTouchCountCharacteristicService } from "./bottom-border-touch-count-characteristic.service";
 import { InflectionCountCharacteristicService } from "./inflection-count-characteristic.service";
@@ -31,7 +32,11 @@ import { TotalTurnCountCharacteristicService } from "./total-turn-count-characte
     TopBorderTouchCountCharacteristicService,
     TotalTurnCountCharacteristicService,
   ],
-  imports: [ConnectivityModule, PointCharacteristicsModule],
+  imports: [
+    ConnectivityModule,
+    PathUtilitiesModule,
+    PointCharacteristicsModule,
+  ],
   providers: [
     BottomBorderTouchCountCharacteristicService,
     InflectionCountCharacteristicService,

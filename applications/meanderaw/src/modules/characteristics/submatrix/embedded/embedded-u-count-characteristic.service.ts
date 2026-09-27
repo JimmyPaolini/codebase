@@ -1,6 +1,6 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 
-import { pointDigitAt } from "../submatrix.utilities";
+import { SubmatrixUtilitiesService } from "../submatrix-utilities.service";
 
 import type { Matrix } from "../../../matrix/matrix.types";
 import type {
@@ -22,7 +22,10 @@ import type {
 export class EmbeddedUCountCharacteristicService implements CharacteristicEvaluator<number> {
   // 🏗 Dependency Injection
 
-  constructor() {}
+  constructor(
+    @Inject(SubmatrixUtilitiesService)
+    private readonly submatrixUtilitiesService: SubmatrixUtilitiesService,
+  ) {}
 
   // 🔐 Private Fields
 
@@ -71,10 +74,14 @@ export class EmbeddedUCountCharacteristicService implements CharacteristicEvalua
     column: number,
   ): { bl: number; br: number; tl: number; tr: number } {
     return {
-      bl: pointDigitAt(matrix, row + 1, column),
-      br: pointDigitAt(matrix, row + 1, column + 1),
-      tl: pointDigitAt(matrix, row, column),
-      tr: pointDigitAt(matrix, row, column + 1),
+      bl: this.submatrixUtilitiesService.pointDigitAt(matrix, row + 1, column),
+      br: this.submatrixUtilitiesService.pointDigitAt(
+        matrix,
+        row + 1,
+        column + 1,
+      ),
+      tl: this.submatrixUtilitiesService.pointDigitAt(matrix, row, column),
+      tr: this.submatrixUtilitiesService.pointDigitAt(matrix, row, column + 1),
     };
   }
 

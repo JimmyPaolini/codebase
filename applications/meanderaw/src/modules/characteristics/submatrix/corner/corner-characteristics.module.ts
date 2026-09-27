@@ -1,5 +1,7 @@
 import { Module } from "@nestjs/common";
 
+import { SubmatrixUtilitiesModule } from "../submatrix-utilities.module";
+
 import { CornerCountCharacteristicService } from "./corner-count-characteristic.service";
 import { NorthEastCornerCountCharacteristicService } from "./north-east-corner-count-characteristic.service";
 import { NorthWestCornerCountCharacteristicService } from "./north-west-corner-count-characteristic.service";
@@ -20,7 +22,7 @@ import { SouthWestCornerCountCharacteristicService } from "./south-west-corner-c
     SouthEastCornerCountCharacteristicService,
     SouthWestCornerCountCharacteristicService,
   ],
-  imports: [],
+  imports: [SubmatrixUtilitiesModule],
   providers: [
     CornerCountCharacteristicService,
     NorthEastCornerCountCharacteristicService,

@@ -4,7 +4,9 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { CodeModule } from "../../../code/code.module";
 import { MatrixModule } from "../../../matrix/matrix.module";
 import { CharacteristicContextService } from "../../characteristic-context.service";
+import { SubmatrixUtilitiesService } from "../submatrix-utilities.service";
 
+import { RectangleUtilitiesService } from "./rectangle-utilities.service";
 import { VerticalRectangleCountCharacteristicService } from "./vertical-rectangle-count-characteristic.service";
 
 describe(VerticalRectangleCountCharacteristicService, () => {
@@ -16,6 +18,8 @@ describe(VerticalRectangleCountCharacteristicService, () => {
       imports: [CodeModule, MatrixModule],
       providers: [
         CharacteristicContextService,
+        RectangleUtilitiesService,
+        SubmatrixUtilitiesService,
         VerticalRectangleCountCharacteristicService,
       ],
     }).compile();

@@ -1,6 +1,6 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 
-import { countIsolatedRectangles } from "./rectangle.utilities";
+import { RectangleUtilitiesService } from "./rectangle-utilities.service";
 
 import type {
   CharacteristicContext,
@@ -19,7 +19,10 @@ import type {
 export class HorizontalRectangleCountCharacteristicService implements CharacteristicEvaluator<number> {
   // 🏗 Dependency Injection
 
-  constructor() {}
+  constructor(
+    @Inject(RectangleUtilitiesService)
+    private readonly rectangleUtilitiesService: RectangleUtilitiesService,
+  ) {}
 
   // 🔐 Private Fields
 
@@ -42,7 +45,7 @@ export class HorizontalRectangleCountCharacteristicService implements Characteri
 
   /** Counts the isolated rings whose width and height compare as `w > h`. */
   public compute(context: CharacteristicContext): number {
-    return countIsolatedRectangles(
+    return this.rectangleUtilitiesService.countIsolatedRectangles(
       context.matrix,
       (width, height) => width > height,
     );

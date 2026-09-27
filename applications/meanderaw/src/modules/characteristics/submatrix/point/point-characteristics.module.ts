@@ -1,5 +1,7 @@
 import { Module } from "@nestjs/common";
 
+import { SubmatrixUtilitiesModule } from "../submatrix-utilities.module";
+
 import { DensityCharacteristicService } from "./density-characteristic.service";
 import { DotCountCharacteristicService } from "./dot-count-characteristic.service";
 import { EdgeCountCharacteristicService } from "./edge-count-characteristic.service";
@@ -25,7 +27,7 @@ import { VerticalEdgeCountCharacteristicService } from "./vertical-edge-count-ch
     PointUtilitiesService,
     VerticalEdgeCountCharacteristicService,
   ],
-  imports: [],
+  imports: [SubmatrixUtilitiesModule],
   providers: [
     DensityCharacteristicService,
     DotCountCharacteristicService,

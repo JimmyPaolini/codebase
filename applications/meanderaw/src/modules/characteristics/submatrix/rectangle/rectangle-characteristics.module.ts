@@ -1,6 +1,9 @@
 import { Module } from "@nestjs/common";
 
+import { SubmatrixUtilitiesModule } from "../submatrix-utilities.module";
+
 import { HorizontalRectangleCountCharacteristicService } from "./horizontal-rectangle-count-characteristic.service";
+import { RectangleUtilitiesService } from "./rectangle-utilities.service";
 import { VerticalRectangleCountCharacteristicService } from "./vertical-rectangle-count-characteristic.service";
 
 /**
@@ -14,9 +17,10 @@ import { VerticalRectangleCountCharacteristicService } from "./vertical-rectangl
     HorizontalRectangleCountCharacteristicService,
     VerticalRectangleCountCharacteristicService,
   ],
-  imports: [],
+  imports: [SubmatrixUtilitiesModule],
   providers: [
     HorizontalRectangleCountCharacteristicService,
+    RectangleUtilitiesService,
     VerticalRectangleCountCharacteristicService,
   ],
 })

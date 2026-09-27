@@ -1,6 +1,6 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 
-import { countPointsWithExactArms } from "../submatrix.utilities";
+import { SubmatrixUtilitiesService } from "../submatrix-utilities.service";
 
 import type {
   CharacteristicContext,
@@ -17,7 +17,10 @@ import type {
 export class SouthWestCornerCountCharacteristicService implements CharacteristicEvaluator<number> {
   // 🏗 Dependency Injection
 
-  constructor() {}
+  constructor(
+    @Inject(SubmatrixUtilitiesService)
+    private readonly submatrixUtilitiesService: SubmatrixUtilitiesService,
+  ) {}
 
   // 🔐 Private Fields
 
@@ -40,6 +43,9 @@ export class SouthWestCornerCountCharacteristicService implements Characteristic
 
   /** Counts the points whose only arms are south and west. */
   public compute(context: CharacteristicContext): number {
-    return countPointsWithExactArms(context.matrix, ["south", "west"]);
+    return this.submatrixUtilitiesService.countPointsWithExactArms(
+      context.matrix,
+      ["south", "west"],
+    );
   }
 }

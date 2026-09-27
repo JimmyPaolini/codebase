@@ -1,7 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
 
 import { ConnectivityService } from "../../connectivity/connectivity.service";
-import { neighborPairs, signedTurns, strands } from "../path.utilities";
+import { PathUtilitiesService } from "../path-utilities.service";
 
 import type {
   CharacteristicContext,
@@ -22,6 +22,8 @@ export class InflectionCountCharacteristicService implements CharacteristicEvalu
   constructor(
     @Inject(ConnectivityService)
     private readonly connectivityService: ConnectivityService,
+    @Inject(PathUtilitiesService)
+    private readonly pathUtilitiesService: PathUtilitiesService,
   ) {}
 
   // 🔐 Private Fields
@@ -45,15 +47,18 @@ export class InflectionCountCharacteristicService implements CharacteristicEvalu
 
   /** Counts neighboring turn pairs of opposite hand across every strand. */
   public compute(context: CharacteristicContext): number {
-    return strands(
-      this.connectivityService.edges(context.matrix, false),
-    ).reduce(
-      (total, strand) =>
-        total +
-        neighborPairs(signedTurns(strand), strand.closed).filter(
-          ([previous, next]) => previous !== next,
-        ).length,
-      0,
-    );
+    return this.pathUtilitiesService
+      .strands(this.connectivityService.edges(context.matrix, false))
+      .reduce(
+        (total, strand) =>
+          total +
+          this.pathUtilitiesService
+            .neighborPairs(
+              this.pathUtilitiesService.signedTurns(strand),
+              strand.closed,
+            )
+            .filter(([previous, next]) => previous !== next).length,
+        0,
+      );
   }
 }

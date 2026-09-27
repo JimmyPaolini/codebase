@@ -1,5 +1,7 @@
 import { Module } from "@nestjs/common";
 
+import { SubmatrixUtilitiesModule } from "../submatrix-utilities.module";
+
 import { AEastLetterCountCharacteristicService } from "./a-east-letter-count-characteristic.service";
 import { AInvertedLetterCountCharacteristicService } from "./a-inverted-letter-count-characteristic.service";
 import { ALetterCountCharacteristicService } from "./a-letter-count-characteristic.service";
@@ -102,7 +104,7 @@ import { ZSidewaysLetterCountCharacteristicService } from "./z-sideways-letter-c
     ZLetterCountCharacteristicService,
     ZSidewaysLetterCountCharacteristicService,
   ],
-  imports: [],
+  imports: [SubmatrixUtilitiesModule],
   providers: [
     AEastLetterCountCharacteristicService,
     AInvertedLetterCountCharacteristicService,

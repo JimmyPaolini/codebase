@@ -1,7 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
 
 import { ConnectivityService } from "../../connectivity/connectivity.service";
-import { rowTouchCount } from "../path.utilities";
+import { PathUtilitiesService } from "../path-utilities.service";
 
 import type {
   CharacteristicContext,
@@ -22,6 +22,8 @@ export class BottomBorderTouchCountCharacteristicService implements Characterist
   constructor(
     @Inject(ConnectivityService)
     private readonly connectivityService: ConnectivityService,
+    @Inject(PathUtilitiesService)
+    private readonly pathUtilitiesService: PathUtilitiesService,
   ) {}
 
   // 🔐 Private Fields
@@ -45,7 +47,7 @@ export class BottomBorderTouchCountCharacteristicService implements Characterist
 
   /** Counts the separate runs of ink on the last row. */
   public compute(context: CharacteristicContext): number {
-    return rowTouchCount(
+    return this.pathUtilitiesService.rowTouchCount(
       this.connectivityService.edges(context.matrix, false),
       context.rows - 1,
     );

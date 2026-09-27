@@ -1,6 +1,6 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 
-import { countIsolatedGlyphs, glyphFormula } from "../submatrix.utilities";
+import { SubmatrixUtilitiesService } from "../submatrix-utilities.service";
 
 import type {
   CharacteristicContext,
@@ -22,7 +22,20 @@ import type {
 export class EUpLetterCountCharacteristicService implements CharacteristicEvaluator<number> {
   // 🏗 Dependency Injection
 
-  constructor() {}
+  constructor(
+    @Inject(SubmatrixUtilitiesService)
+    private readonly submatrixUtilitiesService: SubmatrixUtilitiesService,
+  ) {
+    this.metadata = {
+      category: "submatrix",
+      description:
+        "The number of minimal isolated E glyphs — a spine with three equal prongs, prongs pointing north.",
+      formula: this.submatrixUtilitiesService.glyphFormula(this.template),
+      key: "eUpLetterCount",
+      name: "E Up Letter Count",
+      valueType: "number",
+    };
+  }
 
   // 🔐 Private Fields
 
@@ -32,15 +45,7 @@ export class EUpLetterCountCharacteristicService implements CharacteristicEvalua
   // 🔑 Public Fields
 
   /** Names and explains `eUpLetterCount` for catalogs and inspectors. */
-  public readonly metadata: CharacteristicMetadata<number> = {
-    category: "submatrix",
-    description:
-      "The number of minimal isolated E glyphs — a spine with three equal prongs, prongs pointing north.",
-    formula: glyphFormula(this.template),
-    key: "eUpLetterCount",
-    name: "E Up Letter Count",
-    valueType: "number",
-  };
+  public readonly metadata: CharacteristicMetadata<number>;
 
   // 🔏 Private Methods
 
@@ -48,6 +53,9 @@ export class EUpLetterCountCharacteristicService implements CharacteristicEvalua
 
   /** Counts the pieces of ink drawn exactly as the template. */
   public compute(context: CharacteristicContext): number {
-    return countIsolatedGlyphs(context.matrix, this.template);
+    return this.submatrixUtilitiesService.countIsolatedGlyphs(
+      context.matrix,
+      this.template,
+    );
   }
 }

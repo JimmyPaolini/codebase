@@ -4,6 +4,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { CodeModule } from "../../../code/code.module";
 import { MatrixModule } from "../../../matrix/matrix.module";
 import { CharacteristicContextService } from "../../characteristic-context.service";
+import { SubmatrixUtilitiesService } from "../submatrix-utilities.service";
 
 import { CornerCountCharacteristicService } from "./corner-count-characteristic.service";
 import { NorthEastCornerCountCharacteristicService } from "./north-east-corner-count-characteristic.service";
@@ -23,6 +24,7 @@ describe(CornerCountCharacteristicService, () => {
         imports: [CodeModule, MatrixModule],
         providers: [
           CharacteristicContextService,
+          SubmatrixUtilitiesService,
           CornerCountCharacteristicService,
           NorthEastCornerCountCharacteristicService,
           NorthWestCornerCountCharacteristicService,
