@@ -102,12 +102,12 @@ band cut at a different column is the same meander in a different phase, so a
 meander has exactly one canonical phase rather than one Code.
 _Avoid_: Rotation, offset, cut
 
-**Seam**:
+**Tile crossing**:
 The join where a tile's last column meets its first when a Code is read as a
-repeating band rather than as a finite drawing. What crosses a seam — a stranded
+repeating band rather than as a finite drawing. What crosses it — a stranded
 end, a junction, a closed loop — is measured rather than assumed, and the
 measurement is what a canonical phase is chosen to minimize.
-_Avoid_: Wrap, edge, border
+_Avoid_: Seam (formerly this project's own term), wrap, edge, border
 
 **Characteristic**:
 A measured structural property of a meander, read as a pattern over the Code's

@@ -137,29 +137,31 @@ export class CodeService {
   // 🌎 Public Methods
 
   /**
-   * The canonical phase of a Code is the one that minimizes seamComponents,
-   * breaking ties by choosing the lexicographically smallest Code string.
+   * The canonical phase of a Code is the one that minimizes its
+   * tile-crossing component delta, breaking ties by choosing the
+   * lexicographically smallest Code string.
    *
    * The group of phases defaults to every cyclic column rotation.
    */
   canonicalPhase(
     code: CodeObject,
-    measureSeams: (phase: CodeObject) => number,
+    scoreTileCrossing: (phase: CodeObject) => number,
     group: (code: CodeObject) => CodeObject[] = (c) =>
       Array.from({ length: c.columns }, (_, index) => this.rotate(c, index)),
   ): CodeObject {
     let best = code;
-    let minimumSeamComponents = Infinity;
+    let minimumTileCrossingScore = Infinity;
 
     for (const phase of group(code)) {
-      const seamComponents = measureSeams(phase);
+      const tileCrossingScore = scoreTileCrossing(phase);
 
       if (
-        seamComponents < minimumSeamComponents ||
-        (seamComponents === minimumSeamComponents && phase.digits < best.digits)
+        tileCrossingScore < minimumTileCrossingScore ||
+        (tileCrossingScore === minimumTileCrossingScore &&
+          phase.digits < best.digits)
       ) {
         best = phase;
-        minimumSeamComponents = seamComponents;
+        minimumTileCrossingScore = tileCrossingScore;
       }
     }
 

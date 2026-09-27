@@ -2004,13 +2004,13 @@ Call stacks traced through `applications/meanderaw`, deepest first. Each frame s
 
 | Measure | Value |
 | --- | --- |
-| Callables | 528 |
-| Files | 182 |
-| Calls traced | 552 |
-| Call stacks | 104 |
-| Deepest stack | 17 |
+| Callables | 564 |
+| Files | 226 |
+| Calls traced | 620 |
+| Call stacks | 87 |
+| Deepest stack | 16 |
 | Stacks through recursion | 0 |
-| Unfollowable calls | 18 |
+| Unfollowable calls | 19 |
 
 ### Limits
 
@@ -2023,7 +2023,7 @@ What this project is judged against, as declared in its own `callidescope.config
 
 ### Call stacks (depth)
 
-**1. `DrawCommand.run`** — depth ≥ 17 · decorated-method
+**1. `DrawCommand.run`** — depth ≥ 16 · decorated-method
 
 ```text
 🚀 DrawCommand.run(_passedParameters: string[], options: DrawCommandOptions): Promise<void> [applications/meanderaw/src/modules/draw/draw.command.ts:229]
@@ -2037,32 +2037,183 @@ What this project is judged against, as declared in its own `callidescope.config
         └─> DrawEnumerationService.records(shape: MeanderShape): MeanderRecord[] [applications/meanderaw/src/modules/draw/draw-enumeration.service.ts:71]
            ↳ Every meander of one shape, as the rows the database holds for them.
           └─> DrawEnumerationService.map(…)({ code }: EnumeratedMeander): MeanderRecord [applications/meanderaw/src/modules/draw/draw-enumeration.service.ts:74]
-            └─> DrawRecordService.record(…): MeanderRecord [applications/meanderaw/src/modules/draw/draw-record.service.ts:57]
+            └─> DrawRecordService.record(…): MeanderRecord [applications/meanderaw/src/modules/draw/draw-record.service.ts:58]
                ↳ The row one Code describes at one shape, every field of it derived from that Code alone.
-              └─> CharacteristicsService.compute(code: CodeObject): Characteristics [applications/meanderaw/src/modules/characteristics/characteristics.service.ts:463]
-                 ↳ Computes every characteristic for a given parsed code (delegates to measure).
-                └─> CharacteristicsService.measure(…): Characteristics [applications/meanderaw/src/modules/characteristics/characteristics.service.ts:468]
-                   ↳ Computes every characteristic for a given Matrix, CodeObject, or code string.
-                  └─> CharacteristicsService.computeFromMatrix(matrix: Matrix, isReducible?: boolean): Characteristics [applications/meanderaw/src/modules/characteristics/characteristics.service.ts:89]
-                     ↳ Computes every characteristic from a 2D Matrix representation.
-                    └─> CharacteristicsService.measureGraphs(…): { unwrappedEdges: CodeEdge[]; unwrappedGraph: Connectivity; unwrappedJunctions: { tJunctions: number; xJunctions: number; }; wrappedEdges: CodeEdge[]; wrappedGraph: Connectivity; wrappedJunctions: { ...; }; } [applications/meanderaw/src/modules/characteristics/characteristics.service.ts:292]
-                       ↳ Computes graph connectivity and junctions.
-                      └─> ConnectivityService.connectivity(matrix: Matrix, unwrapped?: boolean): Connectivity [applications/meanderaw/src/modules/characteristics/connectivity.service.ts:133]
-                         ↳ How many pieces one repeat's ink falls into, how many independent loops it closes, and how many of its points…
-                        └─> ConnectivityService.adjacency(matrix: Matrix, edges: readonly CodeEdge[]): InkAdjacency<string> [applications/meanderaw/src/modules/characteristics/connectivity.service.ts:61]
-                           ↳ The Matrix's edges as an {@link InkAdjacency}, which is all {@link GraphService.components} needs of it.
-                          └─> ConnectivityService.nodes(matrix: Matrix): string[] [applications/meanderaw/src/modules/characteristics/connectivity.service.ts:114]
-                             ↳ Every point the Matrix spells, inked dots included — a point on no edge at all is a component of its own.
-                            └─> ConnectivityService.from(…)(_unused: unknown, row: number): string[] [applications/meanderaw/src/modules/characteristics/connectivity.service.ts:117]
-                              └─> ConnectivityService.from(…)(_column: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/connectivity.service.ts:118]
-                                └─> ConnectivityService.key(row: number, column: number): string [applications/meanderaw/src/modules/characteristics/connectivity.service.ts:109]
-                                   ↳ One point's identity in the graph, which is its position and nothing else.
+              └─> DrawRecordService.canonicalPhase(…)(phase: CodeObject): number [applications/meanderaw/src/modules/draw/draw-record.service.ts:70]
+                └─> CharacteristicsService.tileCrossingComponentDeltaCount(code: Code | CodeObject): number [applications/meanderaw/src/modules/characteristics/characteristics.service.ts:256]
+                   ↳ The tile-crossing component delta of the Code exactly as filed, not of its repeating unit — the canonical-phase scorer,…
+                  └─> TileCrossingComponentDeltaCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/path/tile-crossing/tile-crossing-component-delta-count-characteristic.service.ts:45]
+                     ↳ Subtracts the band's component count from the lone tile's.
+                    └─> ConnectivityService.connectivity(matrix: Matrix, unwrapped?: boolean): Connectivity [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:133]
+                       ↳ How many pieces one repeat's ink falls into, how many independent loops it closes, and how many of its points…
+                      └─> ConnectivityService.adjacency(matrix: Matrix, edges: readonly CodeEdge[]): InkAdjacency<string> [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:61]
+                         ↳ The Matrix's edges as an {@link InkAdjacency}, which is all {@link GraphService.components} needs of it.
+                        └─> ConnectivityService.nodes(matrix: Matrix): string[] [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:114]
+                           ↳ Every point the Matrix spells, inked dots included — a point on no edge at all is a component of its own.
+                          └─> ConnectivityService.from(…)(_unused: unknown, row: number): string[] [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:117]
+                            └─> ConnectivityService.from(…)(_column: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:118]
+                              └─> ConnectivityService.key(row: number, column: number): string [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:109]
+                                 ↳ One point's identity in the graph, which is its position and nothing else.
 ```
 
-**2. `CodeService.spellCanonical`** — depth 8 · orphan-root
+**2. `IsBoxesCharacteristicService.compute`** — depth ≥ 10 · orphan-root
 
 ```text
-🚀 CodeService.spellCanonical(tile: Tile, repeats?: number): string [applications/meanderaw/src/modules/code/code.service.ts:315]
+🚀 IsBoxesCharacteristicService.compute(context: CharacteristicContext): boolean [applications/meanderaw/src/modules/characteristics/compound/family/is-boxes-characteristic.service.ts:56]
+   ↳ Checks the unit is a tile-crossing open arc at pitch `rows - 1` with its ends apart and no waterfall.
+  └─> IsWaterfallsCharacteristicService.compute(context: CharacteristicContext): boolean [applications/meanderaw/src/modules/characteristics/compound/family/is-waterfalls-characteristic.service.ts:84]
+     ↳ Checks the unit is dot-free open strands stepping down across the tile edge to the border rules, ends apart, with no…
+    └─> IsWaterfallsCharacteristicService.isDotFreeOpenStrandSet(context: CharacteristicContext): boolean [applications/meanderaw/src/modules/characteristics/compound/family/is-waterfalls-characteristic.service.ts:71]
+       ↳ Whether the ink is junction-free, dot-free, and acyclic, with two free ends per component.
+      └─> BettiNumber1CountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/path/topology/betti-number-1-count-characteristic.service.ts:46]
+         ↳ Counts the independent loops of the wrapped repeat graph.
+        └─> ConnectivityService.connectivity(matrix: Matrix, unwrapped?: boolean): Connectivity [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:133]
+           ↳ How many pieces one repeat's ink falls into, how many independent loops it closes, and how many of its points…
+          └─> ConnectivityService.adjacency(matrix: Matrix, edges: readonly CodeEdge[]): InkAdjacency<string> [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:61]
+             ↳ The Matrix's edges as an {@link InkAdjacency}, which is all {@link GraphService.components} needs of it.
+            └─> ConnectivityService.nodes(matrix: Matrix): string[] [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:114]
+               ↳ Every point the Matrix spells, inked dots included — a point on no edge at all is a component of its own.
+              └─> ConnectivityService.from(…)(_unused: unknown, row: number): string[] [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:117]
+                └─> ConnectivityService.from(…)(_column: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:118]
+                  └─> ConnectivityService.key(row: number, column: number): string [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:109]
+                     ↳ One point's identity in the graph, which is its position and nothing else.
+```
+
+**3. `IsWhirlCharacteristicService.compute`** — depth ≥ 10 · orphan-root
+
+```text
+🚀 IsWhirlCharacteristicService.compute(context: CharacteristicContext): boolean [applications/meanderaw/src/modules/characteristics/compound/family/is-whirl-characteristic.service.ts:66]
+   ↳ Checks the unit is a tile-bound coil of one or two open strands at a whirl's pitch.
+  └─> IsWhirlCharacteristicService.isSingleWhirl(context: CharacteristicContext): boolean [applications/meanderaw/src/modules/characteristics/compound/family/is-whirl-characteristic.service.ts:54]
+     ↳ Whether one open strand sits at pitch `rows + 1`, or at `rows` from four rows down.
+    └─> StrandUtilitiesService.hasStrandEnds(context: CharacteristicContext, strands: number): boolean [applications/meanderaw/src/modules/characteristics/compound/family/strand-utilities.service.ts:61]
+       ↳ Whether the unit has exactly `strands` components and two free ends per component.
+      └─> BettiNumber0CountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/path/topology/betti-number-0-count-characteristic.service.ts:46]
+         ↳ Counts the components of the wrapped repeat graph.
+        └─> ConnectivityService.connectivity(matrix: Matrix, unwrapped?: boolean): Connectivity [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:133]
+           ↳ How many pieces one repeat's ink falls into, how many independent loops it closes, and how many of its points…
+          └─> ConnectivityService.adjacency(matrix: Matrix, edges: readonly CodeEdge[]): InkAdjacency<string> [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:61]
+             ↳ The Matrix's edges as an {@link InkAdjacency}, which is all {@link GraphService.components} needs of it.
+            └─> ConnectivityService.nodes(matrix: Matrix): string[] [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:114]
+               ↳ Every point the Matrix spells, inked dots included — a point on no edge at all is a component of its own.
+              └─> ConnectivityService.from(…)(_unused: unknown, row: number): string[] [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:117]
+                └─> ConnectivityService.from(…)(_column: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:118]
+                  └─> ConnectivityService.key(row: number, column: number): string [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:109]
+                     ↳ One point's identity in the graph, which is its position and nothing else.
+```
+
+<details>
+<summary>84 more call stacks</summary>
+
+**4. `IsChainCharacteristicService.compute`** — depth ≥ 9 · orphan-root
+
+```text
+🚀 IsChainCharacteristicService.compute(context: CharacteristicContext): boolean [applications/meanderaw/src/modules/characteristics/compound/family/is-chain-characteristic.service.ts:57]
+   ↳ Checks the unit is a wrapping, reversing open arc at pitch `rows` with runs of the full width and `rows - 1`.
+  └─> IsSingleArcCharacteristicService.compute(context: CharacteristicContext): boolean [applications/meanderaw/src/modules/characteristics/compound/structure/is-single-arc-characteristic.service.ts:53]
+     ↳ Checks the unit is one junction-free component with no cycle and two free ends.
+    └─> BettiNumber0CountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/path/topology/betti-number-0-count-characteristic.service.ts:46]
+       ↳ Counts the components of the wrapped repeat graph.
+      └─> ConnectivityService.connectivity(matrix: Matrix, unwrapped?: boolean): Connectivity [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:133]
+         ↳ How many pieces one repeat's ink falls into, how many independent loops it closes, and how many of its points…
+        └─> ConnectivityService.adjacency(matrix: Matrix, edges: readonly CodeEdge[]): InkAdjacency<string> [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:61]
+           ↳ The Matrix's edges as an {@link InkAdjacency}, which is all {@link GraphService.components} needs of it.
+          └─> ConnectivityService.nodes(matrix: Matrix): string[] [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:114]
+             ↳ Every point the Matrix spells, inked dots included — a point on no edge at all is a component of its own.
+            └─> ConnectivityService.from(…)(_unused: unknown, row: number): string[] [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:117]
+              └─> ConnectivityService.from(…)(_column: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:118]
+                └─> ConnectivityService.key(row: number, column: number): string [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:109]
+                   ↳ One point's identity in the graph, which is its position and nothing else.
+```
+
+**5. `IsClaspsCharacteristicService.compute`** — depth ≥ 9 · orphan-root
+
+```text
+🚀 IsClaspsCharacteristicService.compute(context: CharacteristicContext): boolean [applications/meanderaw/src/modules/characteristics/compound/family/is-clasps-characteristic.service.ts:50]
+   ↳ Checks the unit is a reversing tile-bound coil of two or four open strands at a clasp's pitch.
+  └─> StrandUtilitiesService.isTileBoundCoil(context: CharacteristicContext): boolean [applications/meanderaw/src/modules/characteristics/compound/family/strand-utilities.service.ts:80]
+     ↳ Whether the ink is junction-free, acyclic, fully inked, dot-free, never crosses the tile edge, and runs `rows - 1` both…
+    └─> BettiNumber1CountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/path/topology/betti-number-1-count-characteristic.service.ts:46]
+       ↳ Counts the independent loops of the wrapped repeat graph.
+      └─> ConnectivityService.connectivity(matrix: Matrix, unwrapped?: boolean): Connectivity [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:133]
+         ↳ How many pieces one repeat's ink falls into, how many independent loops it closes, and how many of its points…
+        └─> ConnectivityService.adjacency(matrix: Matrix, edges: readonly CodeEdge[]): InkAdjacency<string> [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:61]
+           ↳ The Matrix's edges as an {@link InkAdjacency}, which is all {@link GraphService.components} needs of it.
+          └─> ConnectivityService.nodes(matrix: Matrix): string[] [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:114]
+             ↳ Every point the Matrix spells, inked dots included — a point on no edge at all is a component of its own.
+            └─> ConnectivityService.from(…)(_unused: unknown, row: number): string[] [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:117]
+              └─> ConnectivityService.from(…)(_column: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:118]
+                └─> ConnectivityService.key(row: number, column: number): string [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:109]
+                   ↳ One point's identity in the graph, which is its position and nothing else.
+```
+
+**6. `IsDoubleChainCharacteristicService.compute`** — depth ≥ 9 · orphan-root
+
+```text
+🚀 IsDoubleChainCharacteristicService.compute(context: CharacteristicContext): boolean [applications/meanderaw/src/modules/characteristics/compound/family/is-double-chain-characteristic.service.ts:60]
+   ↳ Checks the unit is two wrapping, reversing open strands at pitch `2 rows - 2` with runs of `width - 1` and `rows - 2`.
+  └─> StrandUtilitiesService.hasStrandEnds(context: CharacteristicContext, strands: number): boolean [applications/meanderaw/src/modules/characteristics/compound/family/strand-utilities.service.ts:61]
+     ↳ Whether the unit has exactly `strands` components and two free ends per component.
+    └─> BettiNumber0CountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/path/topology/betti-number-0-count-characteristic.service.ts:46]
+       ↳ Counts the components of the wrapped repeat graph.
+      └─> ConnectivityService.connectivity(matrix: Matrix, unwrapped?: boolean): Connectivity [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:133]
+         ↳ How many pieces one repeat's ink falls into, how many independent loops it closes, and how many of its points…
+        └─> ConnectivityService.adjacency(matrix: Matrix, edges: readonly CodeEdge[]): InkAdjacency<string> [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:61]
+           ↳ The Matrix's edges as an {@link InkAdjacency}, which is all {@link GraphService.components} needs of it.
+          └─> ConnectivityService.nodes(matrix: Matrix): string[] [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:114]
+             ↳ Every point the Matrix spells, inked dots included — a point on no edge at all is a component of its own.
+            └─> ConnectivityService.from(…)(_unused: unknown, row: number): string[] [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:117]
+              └─> ConnectivityService.from(…)(_column: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:118]
+                └─> ConnectivityService.key(row: number, column: number): string [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:109]
+                   ↳ One point's identity in the graph, which is its position and nothing else.
+```
+
+**7. `IsSnakeCharacteristicService.compute`** — depth ≥ 9 · orphan-root
+
+```text
+🚀 IsSnakeCharacteristicService.compute(context: CharacteristicContext): boolean [applications/meanderaw/src/modules/characteristics/compound/family/is-snake-characteristic.service.ts:45]
+   ↳ Checks the unit is one closed loop at pitch `rows - 1`.
+  └─> IsClosedLoopCharacteristicService.compute(context: CharacteristicContext): boolean [applications/meanderaw/src/modules/characteristics/compound/structure/is-closed-loop-characteristic.service.ts:53]
+     ↳ Checks the unit is one junction-free component closing one cycle with no free ends.
+    └─> BettiNumber0CountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/path/topology/betti-number-0-count-characteristic.service.ts:46]
+       ↳ Counts the components of the wrapped repeat graph.
+      └─> ConnectivityService.connectivity(matrix: Matrix, unwrapped?: boolean): Connectivity [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:133]
+         ↳ How many pieces one repeat's ink falls into, how many independent loops it closes, and how many of its points…
+        └─> ConnectivityService.adjacency(matrix: Matrix, edges: readonly CodeEdge[]): InkAdjacency<string> [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:61]
+           ↳ The Matrix's edges as an {@link InkAdjacency}, which is all {@link GraphService.components} needs of it.
+          └─> ConnectivityService.nodes(matrix: Matrix): string[] [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:114]
+             ↳ Every point the Matrix spells, inked dots included — a point on no edge at all is a component of its own.
+            └─> ConnectivityService.from(…)(_unused: unknown, row: number): string[] [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:117]
+              └─> ConnectivityService.from(…)(_column: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:118]
+                └─> ConnectivityService.key(row: number, column: number): string [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:109]
+                   ↳ One point's identity in the graph, which is its position and nothing else.
+```
+
+**8. `IsSwirlCharacteristicService.compute`** — depth ≥ 9 · orphan-root
+
+```text
+🚀 IsSwirlCharacteristicService.compute(context: CharacteristicContext): boolean [applications/meanderaw/src/modules/characteristics/compound/family/is-swirl-characteristic.service.ts:50]
+   ↳ Checks the unit is a tile-bound coil off the border rules, of one or two open strands at a swirl's pitch.
+  └─> StrandUtilitiesService.isTileBoundCoil(context: CharacteristicContext): boolean [applications/meanderaw/src/modules/characteristics/compound/family/strand-utilities.service.ts:80]
+     ↳ Whether the ink is junction-free, acyclic, fully inked, dot-free, never crosses the tile edge, and runs `rows - 1` both…
+    └─> BettiNumber1CountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/path/topology/betti-number-1-count-characteristic.service.ts:46]
+       ↳ Counts the independent loops of the wrapped repeat graph.
+      └─> ConnectivityService.connectivity(matrix: Matrix, unwrapped?: boolean): Connectivity [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:133]
+         ↳ How many pieces one repeat's ink falls into, how many independent loops it closes, and how many of its points…
+        └─> ConnectivityService.adjacency(matrix: Matrix, edges: readonly CodeEdge[]): InkAdjacency<string> [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:61]
+           ↳ The Matrix's edges as an {@link InkAdjacency}, which is all {@link GraphService.components} needs of it.
+          └─> ConnectivityService.nodes(matrix: Matrix): string[] [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:114]
+             ↳ Every point the Matrix spells, inked dots included — a point on no edge at all is a component of its own.
+            └─> ConnectivityService.from(…)(_unused: unknown, row: number): string[] [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:117]
+              └─> ConnectivityService.from(…)(_column: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:118]
+                └─> ConnectivityService.key(row: number, column: number): string [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:109]
+                   ↳ One point's identity in the graph, which is its position and nothing else.
+```
+
+**9. `CodeService.spellCanonical`** — depth 8 · orphan-root
+
+```text
+🚀 CodeService.spellCanonical(tile: Tile, repeats?: number): string [applications/meanderaw/src/modules/code/code.service.ts:303]
    ↳ The Code every tile in a symmetry class shares: {@link spell} of the one member `SymmetryService.canonicalTile` picks.
   └─> SymmetryService.canonicalTile(tile: Tile): Tile [applications/meanderaw/src/modules/symmetry/symmetry.service.ts:172]
      ↳ The one tile of a symmetry class the corpus draws.
@@ -2077,7 +2228,83 @@ What this project is judged against, as declared in its own `callidescope.config
               └─> TileService.from(…)(): boolean [applications/meanderaw/src/modules/tile/tile.service.ts:147]
 ```
 
-**3. `SymmetryService.variants`** — depth 7 · orphan-root
+**10. `IsForkCharacteristicService.compute`** — depth ≥ 8 · orphan-root
+
+```text
+🚀 IsForkCharacteristicService.compute(context: CharacteristicContext): boolean [applications/meanderaw/src/modules/characteristics/compound/family/is-fork-characteristic.service.ts:64]
+   ↳ Checks the unit is one acyclic single-fork component with three free ends, no dots, and no comb.
+  └─> BettiNumber0CountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/path/topology/betti-number-0-count-characteristic.service.ts:46]
+     ↳ Counts the components of the wrapped repeat graph.
+    └─> ConnectivityService.connectivity(matrix: Matrix, unwrapped?: boolean): Connectivity [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:133]
+       ↳ How many pieces one repeat's ink falls into, how many independent loops it closes, and how many of its points…
+      └─> ConnectivityService.adjacency(matrix: Matrix, edges: readonly CodeEdge[]): InkAdjacency<string> [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:61]
+         ↳ The Matrix's edges as an {@link InkAdjacency}, which is all {@link GraphService.components} needs of it.
+        └─> ConnectivityService.nodes(matrix: Matrix): string[] [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:114]
+           ↳ Every point the Matrix spells, inked dots included — a point on no edge at all is a component of its own.
+          └─> ConnectivityService.from(…)(_unused: unknown, row: number): string[] [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:117]
+            └─> ConnectivityService.from(…)(_column: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:118]
+              └─> ConnectivityService.key(row: number, column: number): string [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:109]
+                 ↳ One point's identity in the graph, which is its position and nothing else.
+```
+
+**11. `IsParallelCharacteristicService.compute`** — depth ≥ 8 · orphan-root
+
+```text
+🚀 IsParallelCharacteristicService.compute(context: CharacteristicContext): boolean [applications/meanderaw/src/modules/characteristics/compound/family/is-parallel-characteristic.service.ts:55]
+   ↳ Checks the unit is a junction-free, acyclic bundle of `pitch / 2 + 1` open strands at an even pitch.
+  └─> BettiNumber0CountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/path/topology/betti-number-0-count-characteristic.service.ts:46]
+     ↳ Counts the components of the wrapped repeat graph.
+    └─> ConnectivityService.connectivity(matrix: Matrix, unwrapped?: boolean): Connectivity [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:133]
+       ↳ How many pieces one repeat's ink falls into, how many independent loops it closes, and how many of its points…
+      └─> ConnectivityService.adjacency(matrix: Matrix, edges: readonly CodeEdge[]): InkAdjacency<string> [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:61]
+         ↳ The Matrix's edges as an {@link InkAdjacency}, which is all {@link GraphService.components} needs of it.
+        └─> ConnectivityService.nodes(matrix: Matrix): string[] [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:114]
+           ↳ Every point the Matrix spells, inked dots included — a point on no edge at all is a component of its own.
+          └─> ConnectivityService.from(…)(_unused: unknown, row: number): string[] [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:117]
+            └─> ConnectivityService.from(…)(_column: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:118]
+              └─> ConnectivityService.key(row: number, column: number): string [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:109]
+                 ↳ One point's identity in the graph, which is its position and nothing else.
+```
+
+**12. `IsPureTreeCharacteristicService.compute`** — depth ≥ 8 · orphan-root
+
+```text
+🚀 IsPureTreeCharacteristicService.compute(context: CharacteristicContext): boolean [applications/meanderaw/src/modules/characteristics/compound/family/is-pure-tree-characteristic.service.ts:64]
+   ↳ Checks the unit is one acyclic multi-fork component with no cross, no dots, no comb, and no arcade.
+  └─> BettiNumber0CountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/path/topology/betti-number-0-count-characteristic.service.ts:46]
+     ↳ Counts the components of the wrapped repeat graph.
+    └─> ConnectivityService.connectivity(matrix: Matrix, unwrapped?: boolean): Connectivity [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:133]
+       ↳ How many pieces one repeat's ink falls into, how many independent loops it closes, and how many of its points…
+      └─> ConnectivityService.adjacency(matrix: Matrix, edges: readonly CodeEdge[]): InkAdjacency<string> [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:61]
+         ↳ The Matrix's edges as an {@link InkAdjacency}, which is all {@link GraphService.components} needs of it.
+        └─> ConnectivityService.nodes(matrix: Matrix): string[] [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:114]
+           ↳ Every point the Matrix spells, inked dots included — a point on no edge at all is a component of its own.
+          └─> ConnectivityService.from(…)(_unused: unknown, row: number): string[] [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:117]
+            └─> ConnectivityService.from(…)(_column: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:118]
+              └─> ConnectivityService.key(row: number, column: number): string [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:109]
+                 ↳ One point's identity in the graph, which is its position and nothing else.
+```
+
+**13. `IsStippledCharacteristicService.compute`** — depth ≥ 8 · orphan-root
+
+```text
+🚀 IsStippledCharacteristicService.compute(context: CharacteristicContext): boolean [applications/meanderaw/src/modules/characteristics/compound/family/is-stippled-characteristic.service.ts:50]
+   ↳ Checks the unit has several components, a bare dot, and a fork.
+  └─> BettiNumber0CountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/path/topology/betti-number-0-count-characteristic.service.ts:46]
+     ↳ Counts the components of the wrapped repeat graph.
+    └─> ConnectivityService.connectivity(matrix: Matrix, unwrapped?: boolean): Connectivity [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:133]
+       ↳ How many pieces one repeat's ink falls into, how many independent loops it closes, and how many of its points…
+      └─> ConnectivityService.adjacency(matrix: Matrix, edges: readonly CodeEdge[]): InkAdjacency<string> [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:61]
+         ↳ The Matrix's edges as an {@link InkAdjacency}, which is all {@link GraphService.components} needs of it.
+        └─> ConnectivityService.nodes(matrix: Matrix): string[] [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:114]
+           ↳ Every point the Matrix spells, inked dots included — a point on no edge at all is a component of its own.
+          └─> ConnectivityService.from(…)(_unused: unknown, row: number): string[] [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:117]
+            └─> ConnectivityService.from(…)(_column: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:118]
+              └─> ConnectivityService.key(row: number, column: number): string [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:109]
+                 ↳ One point's identity in the graph, which is its position and nothing else.
+```
+
+**14. `SymmetryService.variants`** — depth 7 · orphan-root
 
 ```text
 🚀 SymmetryService.variants(tile: Tile): Tile[] [applications/meanderaw/src/modules/symmetry/symmetry.service.ts:217]
@@ -2093,127 +2320,58 @@ What this project is judged against, as declared in its own `callidescope.config
             └─> TileService.from(…)(): boolean [applications/meanderaw/src/modules/tile/tile.service.ts:147]
 ```
 
-<details>
-<summary>101 more call stacks</summary>
-
-**4. `TileCrossingComponentDeltaCountCharacteristicService.compute`** — depth ≥ 7 · orphan-root
-
-```text
-🚀 TileCrossingComponentDeltaCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/path/tile-crossing/tile-crossing-component-delta-count-characteristic.service.ts:45]
-   ↳ Subtracts the band's component count from the lone tile's.
-  └─> ConnectivityService.connectivity(matrix: Matrix, unwrapped?: boolean): Connectivity [applications/meanderaw/src/modules/characteristics/connectivity.service.ts:133]
-     ↳ How many pieces one repeat's ink falls into, how many independent loops it closes, and how many of its points…
-    └─> ConnectivityService.adjacency(matrix: Matrix, edges: readonly CodeEdge[]): InkAdjacency<string> [applications/meanderaw/src/modules/characteristics/connectivity.service.ts:61]
-       ↳ The Matrix's edges as an {@link InkAdjacency}, which is all {@link GraphService.components} needs of it.
-      └─> ConnectivityService.nodes(matrix: Matrix): string[] [applications/meanderaw/src/modules/characteristics/connectivity.service.ts:114]
-         ↳ Every point the Matrix spells, inked dots included — a point on no edge at all is a component of its own.
-        └─> ConnectivityService.from(…)(_unused: unknown, row: number): string[] [applications/meanderaw/src/modules/characteristics/connectivity.service.ts:117]
-          └─> ConnectivityService.from(…)(_column: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/connectivity.service.ts:118]
-            └─> ConnectivityService.key(row: number, column: number): string [applications/meanderaw/src/modules/characteristics/connectivity.service.ts:109]
-               ↳ One point's identity in the graph, which is its position and nothing else.
-```
-
-**5. `TileCrossingCycleCountCharacteristicService.compute`** — depth ≥ 7 · orphan-root
+**15. `TileCrossingCycleCountCharacteristicService.compute`** — depth ≥ 7 · orphan-root
 
 ```text
 🚀 TileCrossingCycleCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/path/tile-crossing/tile-crossing-cycle-count-characteristic.service.ts:45]
    ↳ Subtracts the lone tile's loop count from the band's.
-  └─> ConnectivityService.connectivity(matrix: Matrix, unwrapped?: boolean): Connectivity [applications/meanderaw/src/modules/characteristics/connectivity.service.ts:133]
+  └─> ConnectivityService.connectivity(matrix: Matrix, unwrapped?: boolean): Connectivity [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:133]
      ↳ How many pieces one repeat's ink falls into, how many independent loops it closes, and how many of its points…
-    └─> ConnectivityService.adjacency(matrix: Matrix, edges: readonly CodeEdge[]): InkAdjacency<string> [applications/meanderaw/src/modules/characteristics/connectivity.service.ts:61]
+    └─> ConnectivityService.adjacency(matrix: Matrix, edges: readonly CodeEdge[]): InkAdjacency<string> [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:61]
        ↳ The Matrix's edges as an {@link InkAdjacency}, which is all {@link GraphService.components} needs of it.
-      └─> ConnectivityService.nodes(matrix: Matrix): string[] [applications/meanderaw/src/modules/characteristics/connectivity.service.ts:114]
+      └─> ConnectivityService.nodes(matrix: Matrix): string[] [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:114]
          ↳ Every point the Matrix spells, inked dots included — a point on no edge at all is a component of its own.
-        └─> ConnectivityService.from(…)(_unused: unknown, row: number): string[] [applications/meanderaw/src/modules/characteristics/connectivity.service.ts:117]
-          └─> ConnectivityService.from(…)(_column: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/connectivity.service.ts:118]
-            └─> ConnectivityService.key(row: number, column: number): string [applications/meanderaw/src/modules/characteristics/connectivity.service.ts:109]
+        └─> ConnectivityService.from(…)(_unused: unknown, row: number): string[] [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:117]
+          └─> ConnectivityService.from(…)(_column: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:118]
+            └─> ConnectivityService.key(row: number, column: number): string [applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:109]
                ↳ One point's identity in the graph, which is its position and nothing else.
 ```
 
-**6. `BettiNumber0CountCharacteristicService.compute`** — depth ≥ 7 · orphan-root
+**16. `CharacteristicsService.onApplicationBootstrap`** — depth ≥ 6 · lifecycle
 
 ```text
-🚀 BettiNumber0CountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/path/topology/betti-number-0-count-characteristic.service.ts:46]
-   ↳ Counts the components of the wrapped repeat graph.
-  └─> ConnectivityService.connectivity(matrix: Matrix, unwrapped?: boolean): Connectivity [applications/meanderaw/src/modules/characteristics/connectivity.service.ts:133]
-     ↳ How many pieces one repeat's ink falls into, how many independent loops it closes, and how many of its points…
-    └─> ConnectivityService.adjacency(matrix: Matrix, edges: readonly CodeEdge[]): InkAdjacency<string> [applications/meanderaw/src/modules/characteristics/connectivity.service.ts:61]
-       ↳ The Matrix's edges as an {@link InkAdjacency}, which is all {@link GraphService.components} needs of it.
-      └─> ConnectivityService.nodes(matrix: Matrix): string[] [applications/meanderaw/src/modules/characteristics/connectivity.service.ts:114]
-         ↳ Every point the Matrix spells, inked dots included — a point on no edge at all is a component of its own.
-        └─> ConnectivityService.from(…)(_unused: unknown, row: number): string[] [applications/meanderaw/src/modules/characteristics/connectivity.service.ts:117]
-          └─> ConnectivityService.from(…)(_column: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/connectivity.service.ts:118]
-            └─> ConnectivityService.key(row: number, column: number): string [applications/meanderaw/src/modules/characteristics/connectivity.service.ts:109]
-               ↳ One point's identity in the graph, which is its position and nothing else.
+🚀 CharacteristicsService.onApplicationBootstrap(): void [applications/meanderaw/src/modules/characteristics/characteristics.service.ts:247]
+   ↳ Discovers and checks every evaluator as the application boots, so a key with no evaluator, an unknown or doubly claimed…
+  └─> CharacteristicsService.evaluators(): readonly CharacteristicEvaluator[] [applications/meanderaw/src/modules/characteristics/characteristics.service.ts:140]
+     ↳ Every evaluator in key-list order, discovering them the first time only.
+    └─> CharacteristicsService.discover(): readonly CharacteristicEvaluator[] [applications/meanderaw/src/modules/characteristics/characteristics.service.ts:103]
+       ↳ Every discovered evaluator, checked against the key lists and ordered by them.
+      └─> CharacteristicsService.verify(candidate: CandidateEvaluator): CharacteristicEvaluator [applications/meanderaw/src/modules/characteristics/characteristics.service.ts:183]
+         ↳ The candidate as an evaluator, or a thrown error saying whether its key is unknown or its value type wrong.
+        └─> CharacteristicsService.isCharacteristicEvaluator(candidate: CandidateEvaluator): candidate is CharacteristicEvaluator [applications/meanderaw/src/modules/characteristics/characteristics.service.ts:162]
+           ↳ Whether a candidate's key is in the key list and its declared value type is the one that list promises.
+          └─> CharacteristicsService.isCharacteristicKey(key: string): key is CharacteristicKey [applications/meanderaw/src/modules/characteristics/characteristics.service.ts:171]
+             ↳ Whether a string names a registered characteristic.
 ```
 
-**7. `BettiNumber1CountCharacteristicService.compute`** — depth ≥ 7 · orphan-root
+**17. `CharacteristicsService.metadata`** — depth ≥ 6 · orphan-root
 
 ```text
-🚀 BettiNumber1CountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/path/topology/betti-number-1-count-characteristic.service.ts:46]
-   ↳ Counts the independent loops of the wrapped repeat graph.
-  └─> ConnectivityService.connectivity(matrix: Matrix, unwrapped?: boolean): Connectivity [applications/meanderaw/src/modules/characteristics/connectivity.service.ts:133]
-     ↳ How many pieces one repeat's ink falls into, how many independent loops it closes, and how many of its points…
-    └─> ConnectivityService.adjacency(matrix: Matrix, edges: readonly CodeEdge[]): InkAdjacency<string> [applications/meanderaw/src/modules/characteristics/connectivity.service.ts:61]
-       ↳ The Matrix's edges as an {@link InkAdjacency}, which is all {@link GraphService.components} needs of it.
-      └─> ConnectivityService.nodes(matrix: Matrix): string[] [applications/meanderaw/src/modules/characteristics/connectivity.service.ts:114]
-         ↳ Every point the Matrix spells, inked dots included — a point on no edge at all is a component of its own.
-        └─> ConnectivityService.from(…)(_unused: unknown, row: number): string[] [applications/meanderaw/src/modules/characteristics/connectivity.service.ts:117]
-          └─> ConnectivityService.from(…)(_column: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/connectivity.service.ts:118]
-            └─> ConnectivityService.key(row: number, column: number): string [applications/meanderaw/src/modules/characteristics/connectivity.service.ts:109]
-               ↳ One point's identity in the graph, which is its position and nothing else.
+🚀 CharacteristicsService.metadata(): readonly CharacteristicMetadata[] [applications/meanderaw/src/modules/characteristics/characteristics.service.ts:221]
+   ↳ Every registered characteristic's metadata, in key-list order.
+  └─> CharacteristicsService.evaluators(): readonly CharacteristicEvaluator[] [applications/meanderaw/src/modules/characteristics/characteristics.service.ts:140]
+     ↳ Every evaluator in key-list order, discovering them the first time only.
+    └─> CharacteristicsService.discover(): readonly CharacteristicEvaluator[] [applications/meanderaw/src/modules/characteristics/characteristics.service.ts:103]
+       ↳ Every discovered evaluator, checked against the key lists and ordered by them.
+      └─> CharacteristicsService.verify(candidate: CandidateEvaluator): CharacteristicEvaluator [applications/meanderaw/src/modules/characteristics/characteristics.service.ts:183]
+         ↳ The candidate as an evaluator, or a thrown error saying whether its key is unknown or its value type wrong.
+        └─> CharacteristicsService.isCharacteristicEvaluator(candidate: CandidateEvaluator): candidate is CharacteristicEvaluator [applications/meanderaw/src/modules/characteristics/characteristics.service.ts:162]
+           ↳ Whether a candidate's key is in the key list and its declared value type is the one that list promises.
+          └─> CharacteristicsService.isCharacteristicKey(key: string): key is CharacteristicKey [applications/meanderaw/src/modules/characteristics/characteristics.service.ts:171]
+             ↳ Whether a string names a registered characteristic.
 ```
 
-**8. `FreeEndCountCharacteristicService.compute`** — depth ≥ 7 · orphan-root
-
-```text
-🚀 FreeEndCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/path/topology/free-end-count-characteristic.service.ts:46]
-   ↳ Counts the degree-one vertices of the wrapped repeat graph.
-  └─> ConnectivityService.connectivity(matrix: Matrix, unwrapped?: boolean): Connectivity [applications/meanderaw/src/modules/characteristics/connectivity.service.ts:133]
-     ↳ How many pieces one repeat's ink falls into, how many independent loops it closes, and how many of its points…
-    └─> ConnectivityService.adjacency(matrix: Matrix, edges: readonly CodeEdge[]): InkAdjacency<string> [applications/meanderaw/src/modules/characteristics/connectivity.service.ts:61]
-       ↳ The Matrix's edges as an {@link InkAdjacency}, which is all {@link GraphService.components} needs of it.
-      └─> ConnectivityService.nodes(matrix: Matrix): string[] [applications/meanderaw/src/modules/characteristics/connectivity.service.ts:114]
-         ↳ Every point the Matrix spells, inked dots included — a point on no edge at all is a component of its own.
-        └─> ConnectivityService.from(…)(_unused: unknown, row: number): string[] [applications/meanderaw/src/modules/characteristics/connectivity.service.ts:117]
-          └─> ConnectivityService.from(…)(_column: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/connectivity.service.ts:118]
-            └─> ConnectivityService.key(row: number, column: number): string [applications/meanderaw/src/modules/characteristics/connectivity.service.ts:109]
-               ↳ One point's identity in the graph, which is its position and nothing else.
-```
-
-**9. `CharacteristicContextService.create`** — depth ≥ 6 · orphan-root
-
-```text
-🚀 CharacteristicContextService.create(code: Code | CodeObject): CharacteristicContext [applications/meanderaw/src/modules/characteristics/characteristic-context.service.ts:39]
-   ↳ Builds the context for the repeating unit of a formatted Code string or an already parsed Code.
-  └─> MatrixService.fromCode(code: Code | CodeObject, rows?: number, columns?: number): Matrix [applications/meanderaw/src/modules/matrix/matrix.service.ts:65]
-     ↳ Converts a meander Code string (self-contained formatted or bare hexadecimal digits with dimensions) or a `CodeObject`…
-    └─> CodeService.parse(code: Code, rows?: number, columns?: number): CodeObject [applications/meanderaw/src/modules/code/code.service.ts:213]
-       ↳ Reads `code`, either as a self-contained string formatted as `{columns}x{rows}y{digits}r{repeats}` or as bare…
-      └─> CodeService.parseFormatted(match: RegExpExecArray): CodeObject [applications/meanderaw/src/modules/code/code.service.ts:102]
-         ↳ Parses a self-contained code string match into a `CodeObject`.
-        └─> CodeService.validateDigits(digits: string, rows: number, columns: number): void [applications/meanderaw/src/modules/code/code.service.ts:125]
-           ↳ Validates that digits match expected length for the shape and are valid hexadecimal.
-          └─> InvalidCodeLengthError.constructor(code: string, rows: number, columns: number): InvalidCodeLengthError [applications/meanderaw/src/modules/code/code.constants.ts:50]
-```
-
-**10. `CharacteristicsService.classifyFamilies`** — depth ≥ 6 · orphan-root
-
-```text
-🚀 CharacteristicsService.classifyFamilies(code: CodeObject): string[] [applications/meanderaw/src/modules/characteristics/characteristics.service.ts:458]
-   ↳ Evaluates formalized family memberships for a Code.
-  └─> CharacteristicsFamilyService.classify(code: CodeObject): string[] [applications/meanderaw/src/modules/characteristics/characteristics-family.service.ts:202]
-     ↳ Evaluates all formalized family predicates against the given Code and returns the list of earned family names.
-    └─> CharacteristicsFamilyService.isComb(code: CodeObject): boolean [applications/meanderaw/src/modules/characteristics/characteristics-family.service.ts:301]
-       ↳ Whether the meander consists of a spine with perpendicular teeth, or alternating reversing top and bottom combs.
-      └─> CharacteristicsFamilyService.isReversingComb(grid: readonly string[], rows: number, digits: string): boolean [applications/meanderaw/src/modules/characteristics/characteristics-family.service.ts:121]
-         ↳ Whether top and bottom rails interdigitate with vertical teeth.
-        └─> CharacteristicsFamilyService.hasDownTeeth(grid: readonly string[]): boolean [applications/meanderaw/src/modules/characteristics/characteristics-family.service.ts:54]
-           ↳ Checks if a top/bottom pair has downward teeth.
-          └─> CharacteristicsFamilyService.from(…)(_: unknown, index: number): number [applications/meanderaw/src/modules/characteristics/characteristics-family.service.ts:60]
-```
-
-**11. `InflectionCountCharacteristicService.compute`** — depth 6 · orphan-root
+**18. `InflectionCountCharacteristicService.compute`** — depth 6 · orphan-root
 
 ```text
 🚀 InflectionCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/path/turn/inflection-count-characteristic.service.ts:47]
@@ -2229,7 +2387,7 @@ What this project is judged against, as declared in its own `callidescope.config
              ↳ The heading pointing the other way.
 ```
 
-**12. `MaxMonotonicTurnLengthCharacteristicService.compute`** — depth 6 · orphan-root
+**19. `MaxMonotonicTurnLengthCharacteristicService.compute`** — depth 6 · orphan-root
 
 ```text
 🚀 MaxMonotonicTurnLengthCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/path/turn/max-monotonic-turn-length-characteristic.service.ts:46]
@@ -2245,7 +2403,7 @@ What this project is judged against, as declared in its own `callidescope.config
              ↳ The heading pointing the other way.
 ```
 
-**13. `TightestTurnCountCharacteristicService.compute`** — depth 6 · orphan-root
+**20. `TightestTurnCountCharacteristicService.compute`** — depth 6 · orphan-root
 
 ```text
 🚀 TightestTurnCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/path/turn/tightest-turn-count-characteristic.service.ts:47]
@@ -2261,7 +2419,7 @@ What this project is judged against, as declared in its own `callidescope.config
              ↳ The heading pointing the other way.
 ```
 
-**14. `TotalTurnCountCharacteristicService.compute`** — depth 6 · orphan-root
+**21. `TotalTurnCountCharacteristicService.compute`** — depth 6 · orphan-root
 
 ```text
 🚀 TotalTurnCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/path/turn/total-turn-count-characteristic.service.ts:46]
@@ -2277,7 +2435,7 @@ What this project is judged against, as declared in its own `callidescope.config
              ↳ The heading pointing the other way.
 ```
 
-**15. `HorizontalRectangleCountCharacteristicService.compute`** — depth ≥ 6 · orphan-root
+**22. `HorizontalRectangleCountCharacteristicService.compute`** — depth ≥ 6 · orphan-root
 
 ```text
 🚀 HorizontalRectangleCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/rectangle/horizontal-rectangle-count-characteristic.service.ts:44]
@@ -2293,7 +2451,7 @@ What this project is judged against, as declared in its own `callidescope.config
              ↳ The hexadecimal Code digit of the point at `(row, column)` — north 8, south 4, east 2, west 1 — with columns wrapping,…
 ```
 
-**16. `VerticalRectangleCountCharacteristicService.compute`** — depth ≥ 6 · orphan-root
+**23. `VerticalRectangleCountCharacteristicService.compute`** — depth ≥ 6 · orphan-root
 
 ```text
 🚀 VerticalRectangleCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/rectangle/vertical-rectangle-count-characteristic.service.ts:44]
@@ -2309,33 +2467,20 @@ What this project is judged against, as declared in its own `callidescope.config
              ↳ The hexadecimal Code digit of the point at `(row, column)` — north 8, south 4, east 2, west 1 — with columns wrapping,…
 ```
 
-**17. `CodeService.tile`** — depth 5 · orphan-root
+**24. `CodeService.tile`** — depth 5 · orphan-root
 
 ```text
-🚀 CodeService.tile(code: CodeObject): Tile [applications/meanderaw/src/modules/code/code.service.ts:330]
+🚀 CodeService.tile(code: CodeObject): Tile [applications/meanderaw/src/modules/code/code.service.ts:339]
    ↳ The tile a Code names, as the tile vocabulary rather than a point at a time — {@link spell} read backwards.
-  └─> CodeService.from(…)(_row: unknown, row: number): Directions[] [applications/meanderaw/src/modules/code/code.service.ts:335]
-    └─> CodeService.from(…)(_column: unknown, column: number): Directions [applications/meanderaw/src/modules/code/code.service.ts:336]
-      └─> CodeService.directionsAt(code: CodeObject, row: number, column: number): Directions [applications/meanderaw/src/modules/code/code.service.ts:179]
+  └─> CodeService.from(…)(_row: unknown, row: number): Directions[] [applications/meanderaw/src/modules/code/code.service.ts:344]
+    └─> CodeService.from(…)(_column: unknown, column: number): Directions [applications/meanderaw/src/modules/code/code.service.ts:345]
+      └─> CodeService.directionsAt(code: CodeObject, row: number, column: number): Directions [applications/meanderaw/src/modules/code/code.service.ts:181]
          ↳ The four direction bits the point at `(row, column)` carries, read off the single character at `row * columns + column`.
         └─> CodeService.decode(value: number): Directions [applications/meanderaw/src/modules/code/code.service.ts:65]
            ↳ One digit's four direction bits, worth `8` north, `4` south, `2` east, `1` west.
 ```
 
-**18. `CharacteristicsFamilyService.anonymous`** — depth ≥ 5 · orphan-root
-
-```text
-🚀 CharacteristicsFamilyService.anonymous(c: CodeObject): boolean [applications/meanderaw/src/modules/characteristics/characteristics-family.service.ts:245]
-  └─> CharacteristicsFamilyService.isComb(code: CodeObject): boolean [applications/meanderaw/src/modules/characteristics/characteristics-family.service.ts:301]
-     ↳ Whether the meander consists of a spine with perpendicular teeth, or alternating reversing top and bottom combs.
-    └─> CharacteristicsFamilyService.isReversingComb(grid: readonly string[], rows: number, digits: string): boolean [applications/meanderaw/src/modules/characteristics/characteristics-family.service.ts:121]
-       ↳ Whether top and bottom rails interdigitate with vertical teeth.
-      └─> CharacteristicsFamilyService.hasDownTeeth(grid: readonly string[]): boolean [applications/meanderaw/src/modules/characteristics/characteristics-family.service.ts:54]
-         ↳ Checks if a top/bottom pair has downward teeth.
-        └─> CharacteristicsFamilyService.from(…)(_: unknown, index: number): number [applications/meanderaw/src/modules/characteristics/characteristics-family.service.ts:60]
-```
-
-**19. `AEastLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
+**25. `AEastLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
 🚀 AEastLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/a-east-letter-count-characteristic.service.ts:50]
@@ -2348,7 +2493,7 @@ What this project is judged against, as declared in its own `callidescope.config
         └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
 ```
 
-**20. `AInvertedLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
+**26. `AInvertedLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
 🚀 AInvertedLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/a-inverted-letter-count-characteristic.service.ts:51]
@@ -2361,7 +2506,7 @@ What this project is judged against, as declared in its own `callidescope.config
         └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
 ```
 
-**21. `ALetterCountCharacteristicService.compute`** — depth 5 · orphan-root
+**27. `ALetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
 🚀 ALetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/a-letter-count-characteristic.service.ts:51]
@@ -2374,7 +2519,7 @@ What this project is judged against, as declared in its own `callidescope.config
         └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
 ```
 
-**22. `AWestLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
+**28. `AWestLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
 🚀 AWestLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/a-west-letter-count-characteristic.service.ts:50]
@@ -2387,7 +2532,7 @@ What this project is judged against, as declared in its own `callidescope.config
         └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
 ```
 
-**23. `BLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
+**29. `BLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
 🚀 BLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/b-letter-count-characteristic.service.ts:51]
@@ -2400,7 +2545,7 @@ What this project is judged against, as declared in its own `callidescope.config
         └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
 ```
 
-**24. `BSidewaysLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
+**30. `BSidewaysLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
 🚀 BSidewaysLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/b-sideways-letter-count-characteristic.service.ts:50]
@@ -2413,7 +2558,7 @@ What this project is judged against, as declared in its own `callidescope.config
         └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
 ```
 
-**25. `CLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
+**31. `CLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
 🚀 CLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/c-letter-count-characteristic.service.ts:50]
@@ -2426,7 +2571,7 @@ What this project is judged against, as declared in its own `callidescope.config
         └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
 ```
 
-**26. `CWestLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
+**32. `CWestLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
 🚀 CWestLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/c-west-letter-count-characteristic.service.ts:50]
@@ -2439,7 +2584,7 @@ What this project is judged against, as declared in its own `callidescope.config
         └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
 ```
 
-**27. `EDownLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
+**33. `EDownLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
 🚀 EDownLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/e-down-letter-count-characteristic.service.ts:50]
@@ -2452,7 +2597,7 @@ What this project is judged against, as declared in its own `callidescope.config
         └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
 ```
 
-**28. `ELetterCountCharacteristicService.compute`** — depth 5 · orphan-root
+**34. `ELetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
 🚀 ELetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/e-letter-count-characteristic.service.ts:51]
@@ -2465,7 +2610,7 @@ What this project is judged against, as declared in its own `callidescope.config
         └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
 ```
 
-**29. `EUpLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
+**35. `EUpLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
 🚀 EUpLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/e-up-letter-count-characteristic.service.ts:50]
@@ -2478,7 +2623,7 @@ What this project is judged against, as declared in its own `callidescope.config
         └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
 ```
 
-**30. `EWestLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
+**36. `EWestLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
 🚀 EWestLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/e-west-letter-count-characteristic.service.ts:51]
@@ -2491,7 +2636,7 @@ What this project is judged against, as declared in its own `callidescope.config
         └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
 ```
 
-**31. `FDownLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
+**37. `FDownLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
 🚀 FDownLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/f-down-letter-count-characteristic.service.ts:50]
@@ -2504,7 +2649,7 @@ What this project is judged against, as declared in its own `callidescope.config
         └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
 ```
 
-**32. `FLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
+**38. `FLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
 🚀 FLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/f-letter-count-characteristic.service.ts:51]
@@ -2517,7 +2662,7 @@ What this project is judged against, as declared in its own `callidescope.config
         └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
 ```
 
-**33. `FUpLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
+**39. `FUpLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
 🚀 FUpLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/f-up-letter-count-characteristic.service.ts:50]
@@ -2530,7 +2675,7 @@ What this project is judged against, as declared in its own `callidescope.config
         └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
 ```
 
-**34. `FWestLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
+**40. `FWestLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
 🚀 FWestLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/f-west-letter-count-characteristic.service.ts:51]
@@ -2543,7 +2688,7 @@ What this project is judged against, as declared in its own `callidescope.config
         └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
 ```
 
-**35. `HLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
+**41. `HLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
 🚀 HLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/h-letter-count-characteristic.service.ts:51]
@@ -2556,7 +2701,7 @@ What this project is judged against, as declared in its own `callidescope.config
         └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
 ```
 
-**36. `HSidewaysLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
+**42. `HSidewaysLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
 🚀 HSidewaysLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/h-sideways-letter-count-characteristic.service.ts:50]
@@ -2569,7 +2714,7 @@ What this project is judged against, as declared in its own `callidescope.config
         └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
 ```
 
-**37. `ILetterCountCharacteristicService.compute`** — depth 5 · orphan-root
+**43. `ILetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
 🚀 ILetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/i-letter-count-characteristic.service.ts:50]
@@ -2582,7 +2727,7 @@ What this project is judged against, as declared in its own `callidescope.config
         └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
 ```
 
-**38. `ISidewaysLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
+**44. `ISidewaysLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
 🚀 ISidewaysLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/i-sideways-letter-count-characteristic.service.ts:49]
@@ -2595,7 +2740,7 @@ What this project is judged against, as declared in its own `callidescope.config
         └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
 ```
 
-**39. `LDownLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
+**45. `LDownLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
 🚀 LDownLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/l-down-letter-count-characteristic.service.ts:50]
@@ -2608,7 +2753,7 @@ What this project is judged against, as declared in its own `callidescope.config
         └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
 ```
 
-**40. `LLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
+**46. `LLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
 🚀 LLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/l-letter-count-characteristic.service.ts:50]
@@ -2621,7 +2766,7 @@ What this project is judged against, as declared in its own `callidescope.config
         └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
 ```
 
-**41. `LUpLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
+**47. `LUpLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
 🚀 LUpLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/l-up-letter-count-characteristic.service.ts:50]
@@ -2634,7 +2779,7 @@ What this project is judged against, as declared in its own `callidescope.config
         └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
 ```
 
-**42. `LWestLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
+**48. `LWestLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
 🚀 LWestLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/l-west-letter-count-characteristic.service.ts:50]
@@ -2647,7 +2792,7 @@ What this project is judged against, as declared in its own `callidescope.config
         └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
 ```
 
-**43. `MEastLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
+**49. `MEastLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
 🚀 MEastLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/m-east-letter-count-characteristic.service.ts:51]
@@ -2660,7 +2805,7 @@ What this project is judged against, as declared in its own `callidescope.config
         └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
 ```
 
-**44. `MLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
+**50. `MLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
 🚀 MLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/m-letter-count-characteristic.service.ts:51]
@@ -2673,7 +2818,7 @@ What this project is judged against, as declared in its own `callidescope.config
         └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
 ```
 
-**45. `MWestLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
+**51. `MWestLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
 🚀 MWestLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/m-west-letter-count-characteristic.service.ts:51]
@@ -2686,7 +2831,7 @@ What this project is judged against, as declared in its own `callidescope.config
         └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
 ```
 
-**46. `NLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
+**52. `NLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
 🚀 NLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/n-letter-count-characteristic.service.ts:51]
@@ -2699,7 +2844,7 @@ What this project is judged against, as declared in its own `callidescope.config
         └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
 ```
 
-**47. `NSidewaysLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
+**53. `NSidewaysLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
 🚀 NSidewaysLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/n-sideways-letter-count-characteristic.service.ts:51]
@@ -2712,7 +2857,7 @@ What this project is judged against, as declared in its own `callidescope.config
         └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
 ```
 
-**48. `OLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
+**54. `OLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
 🚀 OLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/o-letter-count-characteristic.service.ts:49]
@@ -2725,7 +2870,7 @@ What this project is judged against, as declared in its own `callidescope.config
         └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
 ```
 
-**49. `SLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
+**55. `SLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
 🚀 SLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/s-letter-count-characteristic.service.ts:51]
@@ -2738,7 +2883,7 @@ What this project is judged against, as declared in its own `callidescope.config
         └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
 ```
 
-**50. `SSidewaysLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
+**56. `SSidewaysLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
 🚀 SSidewaysLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/s-sideways-letter-count-characteristic.service.ts:50]
@@ -2751,7 +2896,7 @@ What this project is judged against, as declared in its own `callidescope.config
         └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
 ```
 
-**51. `TEastLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
+**57. `TEastLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
 🚀 TEastLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/t-east-letter-count-characteristic.service.ts:51]
@@ -2764,7 +2909,7 @@ What this project is judged against, as declared in its own `callidescope.config
         └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
 ```
 
-**52. `TLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
+**58. `TLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
 🚀 TLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/t-letter-count-characteristic.service.ts:50]
@@ -2777,7 +2922,7 @@ What this project is judged against, as declared in its own `callidescope.config
         └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
 ```
 
-**53. `TUpLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
+**59. `TUpLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
 🚀 TUpLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/t-up-letter-count-characteristic.service.ts:50]
@@ -2790,7 +2935,7 @@ What this project is judged against, as declared in its own `callidescope.config
         └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
 ```
 
-**54. `TWestLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
+**60. `TWestLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
 🚀 TWestLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/t-west-letter-count-characteristic.service.ts:51]
@@ -2803,7 +2948,7 @@ What this project is judged against, as declared in its own `callidescope.config
         └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
 ```
 
-**55. `UInvertedLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
+**61. `UInvertedLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
 🚀 UInvertedLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/u-inverted-letter-count-characteristic.service.ts:50]
@@ -2816,7 +2961,7 @@ What this project is judged against, as declared in its own `callidescope.config
         └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
 ```
 
-**56. `ULetterCountCharacteristicService.compute`** — depth 5 · orphan-root
+**62. `ULetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
 🚀 ULetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/u-letter-count-characteristic.service.ts:50]
@@ -2829,7 +2974,7 @@ What this project is judged against, as declared in its own `callidescope.config
         └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
 ```
 
-**57. `WLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
+**63. `WLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
 🚀 WLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/w-letter-count-characteristic.service.ts:51]
@@ -2842,7 +2987,7 @@ What this project is judged against, as declared in its own `callidescope.config
         └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
 ```
 
-**58. `XLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
+**64. `XLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
 🚀 XLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/x-letter-count-characteristic.service.ts:50]
@@ -2855,7 +3000,7 @@ What this project is judged against, as declared in its own `callidescope.config
         └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
 ```
 
-**59. `YEastLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
+**65. `YEastLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
 🚀 YEastLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/y-east-letter-count-characteristic.service.ts:51]
@@ -2868,7 +3013,7 @@ What this project is judged against, as declared in its own `callidescope.config
         └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
 ```
 
-**60. `YLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
+**66. `YLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
 🚀 YLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/y-letter-count-characteristic.service.ts:51]
@@ -2881,7 +3026,7 @@ What this project is judged against, as declared in its own `callidescope.config
         └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
 ```
 
-**61. `YUpLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
+**67. `YUpLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
 🚀 YUpLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/y-up-letter-count-characteristic.service.ts:51]
@@ -2894,7 +3039,7 @@ What this project is judged against, as declared in its own `callidescope.config
         └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
 ```
 
-**62. `YWestLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
+**68. `YWestLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
 🚀 YWestLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/y-west-letter-count-characteristic.service.ts:51]
@@ -2907,7 +3052,7 @@ What this project is judged against, as declared in its own `callidescope.config
         └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
 ```
 
-**63. `ZLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
+**69. `ZLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
 🚀 ZLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/z-letter-count-characteristic.service.ts:51]
@@ -2920,7 +3065,7 @@ What this project is judged against, as declared in its own `callidescope.config
         └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
 ```
 
-**64. `ZSidewaysLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
+**70. `ZSidewaysLetterCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
 🚀 ZSidewaysLetterCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/z-sideways-letter-count-characteristic.service.ts:50]
@@ -2933,19 +3078,7 @@ What this project is judged against, as declared in its own `callidescope.config
         └─> map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:132]
 ```
 
-**65. `ClassificationService.matches`** — depth 4 · orphan-root
-
-```text
-🚀 ClassificationService.matches(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:377]
-  └─> ClassificationService.isChain(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:57]
-     ↳ Whether a repeat's ink matches the single-strand chain structure.
-    └─> ClassificationService.isArc(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:31]
-       ↳ Whether a repeat's ink is one open arc with two ends and no junctions.
-      └─> ClassificationService.isJunctionFree(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:167]
-         ↳ Whether a repeat's ink is free of T-junctions and X-junctions.
-```
-
-**66. `TileService.assertWellFormed`** — depth ≥ 4 · orphan-root
+**71. `TileService.assertWellFormed`** — depth ≥ 4 · orphan-root
 
 ```text
 🚀 TileService.assertWellFormed(tile: Tile): void [applications/meanderaw/src/modules/tile/tile.service.ts:120]
@@ -2957,97 +3090,28 @@ What this project is judged against, as declared in its own `callidescope.config
       └─> MalformedTileError.constructor(reason: string): MalformedTileError [applications/meanderaw/src/modules/tile/tile.constants.ts:31]
 ```
 
-**67. `CodeService.anonymous`** — depth 4 · orphan-root
+**72. `CodeService.anonymous`** — depth 4 · orphan-root
 
 ```text
-🚀 CodeService.anonymous(c: CodeObject): CodeObject[] [applications/meanderaw/src/modules/code/code.service.ts:148]
-  └─> CodeService.from(…)(_: unknown, index: number): CodeObject [applications/meanderaw/src/modules/code/code.service.ts:149]
-    └─> CodeService.rotate(code: CodeObject, shift: number): CodeObject [applications/meanderaw/src/modules/code/code.service.ts:270]
+🚀 CodeService.anonymous(c: CodeObject): CodeObject[] [applications/meanderaw/src/modules/code/code.service.ts:149]
+  └─> CodeService.from(…)(_: unknown, index: number): CodeObject [applications/meanderaw/src/modules/code/code.service.ts:150]
+    └─> CodeService.rotate(code: CodeObject, shift: number): CodeObject [applications/meanderaw/src/modules/code/code.service.ts:272]
        ↳ The Code shifted `shift` columns west, wrapping each row around its own span — the same band cut at a different place.
-      └─> CodeService.from(…)(_unused: unknown, row: number): string [applications/meanderaw/src/modules/code/code.service.ts:273]
+      └─> CodeService.from(…)(_unused: unknown, row: number): string [applications/meanderaw/src/modules/code/code.service.ts:275]
 ```
 
-**68. `ClassificationService.matches`** — depth 3 · orphan-root
+**73. `MatrixService.submatrices`** — depth 4 · orphan-root
 
 ```text
-🚀 ClassificationService.matches(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:344]
-  └─> ClassificationService.isBundle(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:43]
-     ↳ Whether a repeat's ink is a bundle of parallel strands.
-    └─> ClassificationService.isJunctionFree(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:167]
-       ↳ Whether a repeat's ink is free of T-junctions and X-junctions.
+🚀 MatrixService.submatrices(matrix: Matrix, height: number, width: number): Submatrix[] [applications/meanderaw/src/modules/matrix/matrix.service.ts:119]
+   ↳ Extracts sliding submatrix kernels of size `height x width` over the matrix with horizontal column wrapping.
+  └─> MatrixService.extractSubmatrix(…): MatrixPoint[][] [applications/meanderaw/src/modules/matrix/matrix.service.ts:33]
+     ↳ Extracts a 2D submatrix kernel starting at the given origin with the specified size.
+    └─> MatrixService.from(…)(_unusedRow: unknown, deltaRow: number): MatrixPoint[] [applications/meanderaw/src/modules/matrix/matrix.service.ts:42]
+      └─> MatrixService.from(…)(_unusedColumn: unknown, deltaColumn: number): MatrixPoint [applications/meanderaw/src/modules/matrix/matrix.service.ts:47]
 ```
 
-**69. `ClassificationService.matches`** — depth 3 · orphan-root
-
-```text
-🚀 ClassificationService.matches(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:367]
-  └─> ClassificationService.isArc(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:31]
-     ↳ Whether a repeat's ink is one open arc with two ends and no junctions.
-    └─> ClassificationService.isJunctionFree(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:167]
-       ↳ Whether a repeat's ink is free of T-junctions and X-junctions.
-```
-
-**70. `ClassificationService.matches`** — depth 3 · orphan-root
-
-```text
-🚀 ClassificationService.matches(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:381]
-  └─> ClassificationService.isDoubleChain(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:134]
-     ↳ Whether a repeat's ink matches the two-strand double-chain structure.
-    └─> ClassificationService.isJunctionFree(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:167]
-       ↳ Whether a repeat's ink is free of T-junctions and X-junctions.
-```
-
-**71. `ClassificationService.matches`** — depth 3 · orphan-root
-
-```text
-🚀 ClassificationService.matches(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:385]
-  └─> ClassificationService.isWaterfalls(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:212]
-     ↳ Whether a repeat's ink is a downward zig-zagging waterfall across the seam with no isolated dots.
-    └─> ClassificationService.isJunctionFree(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:167]
-       ↳ Whether a repeat's ink is free of T-junctions and X-junctions.
-```
-
-**72. `ClassificationService.matches`** — depth 3 · orphan-root
-
-```text
-🚀 ClassificationService.matches(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:389]
-  └─> ClassificationService.isWhirl(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:230]
-     ↳ Whether a repeat's ink matches the single- or double-strand whirl structure.
-    └─> ClassificationService.isJunctionFree(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:167]
-       ↳ Whether a repeat's ink is free of T-junctions and X-junctions.
-```
-
-**73. `ClassificationService.matches`** — depth 3 · orphan-root
-
-```text
-🚀 ClassificationService.matches(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:393]
-  └─> ClassificationService.isSwirl(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:174]
-     ↳ Whether a repeat's ink matches the single- or double-strand swirl structure.
-    └─> ClassificationService.isJunctionFree(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:167]
-       ↳ Whether a repeat's ink is free of T-junctions and X-junctions.
-```
-
-**74. `ClassificationService.matches`** — depth 3 · orphan-root
-
-```text
-🚀 ClassificationService.matches(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:397]
-  └─> ClassificationService.isClasps(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:84]
-     ↳ Whether a repeat's ink matches the single- or double-motif clasp structure.
-    └─> ClassificationService.isJunctionFree(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:167]
-       ↳ Whether a repeat's ink is free of T-junctions and X-junctions.
-```
-
-**75. `ClassificationService.matches`** — depth 3 · orphan-root
-
-```text
-🚀 ClassificationService.matches(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:401]
-  └─> ClassificationService.isClosedLoop(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:122]
-     ↳ Whether a repeat's ink is one closed loop with no junctions and no free ends.
-    └─> ClassificationService.isJunctionFree(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:167]
-       ↳ Whether a repeat's ink is free of T-junctions and X-junctions.
-```
-
-**76. `MatrixService.toCode`** — depth 3 · orphan-root
+**74. `MatrixService.toCode`** — depth 3 · orphan-root
 
 ```text
 🚀 MatrixService.toCode(matrix: Matrix, repeats?: number): Code [applications/meanderaw/src/modules/matrix/matrix.service.ts:157]
@@ -3056,18 +3120,16 @@ What this project is judged against, as declared in its own `callidescope.config
     └─> MatrixService.map(…)(point: MatrixPoint): string [applications/meanderaw/src/modules/matrix/matrix.service.ts:167]
 ```
 
-**77. `TileCrossingCountCharacteristicService.compute`** — depth 3 · orphan-root
+**75. `glyphFormula`** — depth 3 · orphan-root
 
 ```text
-🚀 TileCrossingCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/path/tile-crossing/tile-crossing-count-characteristic.service.ts:47]
-   ↳ Counts the edges the band holds that the lone tile does not.
-  └─> ConnectivityService.edges(matrix: Matrix, unwrapped: boolean): CodeEdge[] [applications/meanderaw/src/modules/characteristics/connectivity.service.ts:152]
-     ↳ Every edge the Matrix holds, each once, named by the two points it joins.
-    └─> ConnectivityService.key(row: number, column: number): string [applications/meanderaw/src/modules/characteristics/connectivity.service.ts:109]
-       ↳ One point's identity in the graph, which is its position and nothing else.
+🚀 glyphFormula(template: readonly string[]): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:87]
+   ↳ Typesets a {@link countIsolatedGlyphs} template as the LaTeX definition of its characteristic — the count of isolated…
+  └─> map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:89]
+    └─> from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:90]
 ```
 
-**78. `BottomBorderTouchCountCharacteristicService.compute`** — depth 3 · orphan-root
+**76. `BottomBorderTouchCountCharacteristicService.compute`** — depth 3 · orphan-root
 
 ```text
 🚀 BottomBorderTouchCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/path/turn/bottom-border-touch-count-characteristic.service.ts:47]
@@ -3078,7 +3140,7 @@ What this project is judged against, as declared in its own `callidescope.config
        ↳ The row and column a `row,column` point key names.
 ```
 
-**79. `TopBorderTouchCountCharacteristicService.compute`** — depth 3 · orphan-root
+**77. `TopBorderTouchCountCharacteristicService.compute`** — depth 3 · orphan-root
 
 ```text
 🚀 TopBorderTouchCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/path/turn/top-border-touch-count-characteristic.service.ts:47]
@@ -3089,16 +3151,18 @@ What this project is judged against, as declared in its own `callidescope.config
        ↳ The row and column a `row,column` point key names.
 ```
 
-**80. `glyphFormula`** — depth 3 · orphan-root
+**78. `IsCrossCharacteristicService.compute`** — depth 3 · orphan-root
 
 ```text
-🚀 glyphFormula(template: readonly string[]): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:87]
-   ↳ Typesets a {@link countIsolatedGlyphs} template as the LaTeX definition of its characteristic — the count of isolated…
-  └─> map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:89]
-    └─> from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:90]
+🚀 IsCrossCharacteristicService.compute(context: CharacteristicContext): boolean [applications/meanderaw/src/modules/characteristics/compound/family/is-cross-characteristic.service.ts:49]
+   ↳ Checks the unit has a cross and is not the mesh template.
+  └─> CrossCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/cross/cross-count-characteristic.service.ts:41]
+     ↳ Counts the points that carry all four arms.
+    └─> countPointsWithExactArms(matrix: Matrix, arms: readonly MatrixPointArm[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:56]
+       ↳ Counts the points whose ink leaves by exactly `arms` — every named arm set and every other arm clear — which is the…
 ```
 
-**81. `CornerCountCharacteristicService.compute`** — depth 3 · orphan-root
+**79. `CornerCountCharacteristicService.compute`** — depth 3 · orphan-root
 
 ```text
 🚀 CornerCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/corner/corner-count-characteristic.service.ts:55]
@@ -3109,18 +3173,7 @@ What this project is judged against, as declared in its own `callidescope.config
        ↳ Counts the points whose ink leaves by exactly `arms` — every named arm set and every other arm clear — which is the…
 ```
 
-**82. `ForkCountCharacteristicService.compute`** — depth 3 · orphan-root
-
-```text
-🚀 ForkCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/fork/fork-count-characteristic.service.ts:54]
-   ↳ Sums the four directional fork counts over the same context.
-  └─> NorthForkCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/fork/north-fork-count-characteristic.service.ts:42]
-     ↳ Counts the points whose only arms are north, east, and west.
-    └─> countPointsWithExactArms(matrix: Matrix, arms: readonly MatrixPointArm[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:56]
-       ↳ Counts the points whose ink leaves by exactly `arms` — every named arm set and every other arm clear — which is the…
-```
-
-**83. `TileEnumerationService.isMatching`** — depth 3 · orphan-root
+**80. `TileEnumerationService.isMatching`** — depth 3 · orphan-root
 
 ```text
 🚀 TileEnumerationService.isMatching(tile: Tile): boolean [applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:235]
@@ -3131,87 +3184,23 @@ What this project is judged against, as declared in its own `callidescope.config
        ↳ How many of a point's four direction bits are set — the point's degree as the drawing shows it.
 ```
 
-**84. `ClassificationService.matches`** — depth 2 · orphan-root
+**81. `ClassificationService.matches`** — depth 2 · orphan-root
 
 ```text
-🚀 ClassificationService.matches(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:308]
-  └─> ClassificationService.reachesMinimumRows(structure: MeanderStructure, family: MeanderFamily): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:272]
-     ↳ Whether a repeat satisfies the structural minimum row constraint for a family.
+🚀 ClassificationService.matches(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:64]
+  └─> ClassificationService.holds(…): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:47]
+     ↳ Whether a repeat's family predicate holds and its band is deep enough for that family.
 ```
 
-**85. `ClassificationService.matches`** — depth 2 · orphan-root
+**82. `ClassificationService.matches`** — depth 2 · orphan-root
 
 ```text
-🚀 ClassificationService.matches(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:314]
-  └─> ClassificationService.reachesMinimumRows(structure: MeanderStructure, family: MeanderFamily): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:272]
-     ↳ Whether a repeat satisfies the structural minimum row constraint for a family.
+🚀 ClassificationService.matches(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:75]
+  └─> ClassificationService.holds(…): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:47]
+     ↳ Whether a repeat's family predicate holds and its band is deep enough for that family.
 ```
 
-**86. `ClassificationService.matches`** — depth 2 · orphan-root
-
-```text
-🚀 ClassificationService.matches(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:320]
-  └─> ClassificationService.reachesMinimumRows(structure: MeanderStructure, family: MeanderFamily): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:272]
-     ↳ Whether a repeat satisfies the structural minimum row constraint for a family.
-```
-
-**87. `ClassificationService.matches`** — depth 2 · orphan-root
-
-```text
-🚀 ClassificationService.matches(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:326]
-  └─> ClassificationService.reachesMinimumRows(structure: MeanderStructure, family: MeanderFamily): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:272]
-     ↳ Whether a repeat satisfies the structural minimum row constraint for a family.
-```
-
-**88. `ClassificationService.matches`** — depth 2 · orphan-root
-
-```text
-🚀 ClassificationService.matches(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:332]
-  └─> ClassificationService.reachesMinimumRows(structure: MeanderStructure, family: MeanderFamily): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:272]
-     ↳ Whether a repeat satisfies the structural minimum row constraint for a family.
-```
-
-**89. `ClassificationService.matches`** — depth 2 · orphan-root
-
-```text
-🚀 ClassificationService.matches(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:338]
-  └─> ClassificationService.reachesMinimumRows(structure: MeanderStructure, family: MeanderFamily): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:272]
-     ↳ Whether a repeat satisfies the structural minimum row constraint for a family.
-```
-
-**90. `ClassificationService.matches`** — depth 2 · orphan-root
-
-```text
-🚀 ClassificationService.matches(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:348]
-  └─> ClassificationService.reachesMinimumRows(structure: MeanderStructure, family: MeanderFamily): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:272]
-     ↳ Whether a repeat satisfies the structural minimum row constraint for a family.
-```
-
-**91. `ClassificationService.matches`** — depth 2 · orphan-root
-
-```text
-🚀 ClassificationService.matches(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:355]
-  └─> ClassificationService.reachesMinimumRows(structure: MeanderStructure, family: MeanderFamily): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:272]
-     ↳ Whether a repeat satisfies the structural minimum row constraint for a family.
-```
-
-**92. `ClassificationService.matches`** — depth 2 · orphan-root
-
-```text
-🚀 ClassificationService.matches(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:361]
-  └─> ClassificationService.reachesMinimumRows(structure: MeanderStructure, family: MeanderFamily): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:272]
-     ↳ Whether a repeat satisfies the structural minimum row constraint for a family.
-```
-
-**93. `ClassificationService.matches`** — depth 2 · orphan-root
-
-```text
-🚀 ClassificationService.matches(structure: MeanderStructure): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:408]
-  └─> ClassificationService.reachesMinimumRows(structure: MeanderStructure, family: MeanderFamily): boolean [applications/meanderaw/src/modules/classification/classification.service.ts:272]
-     ↳ Whether a repeat satisfies the structural minimum row constraint for a family.
-```
-
-**94. `TileService.isBare`** — depth 2 · orphan-root
+**83. `TileService.isBare`** — depth 2 · orphan-root
 
 ```text
 🚀 TileService.isBare(directions: Directions): boolean [applications/meanderaw/src/modules/tile/tile.service.ts:231]
@@ -3220,7 +3209,7 @@ What this project is judged against, as declared in its own `callidescope.config
      ↳ How many of a point's four direction bits are set — the point's degree as the drawing shows it.
 ```
 
-**95. `MatrixService.rotate`** — depth 2 · orphan-root
+**84. `MatrixService.rotate`** — depth 2 · orphan-root
 
 ```text
 🚀 MatrixService.rotate(matrix: Matrix, step: number): Matrix [applications/meanderaw/src/modules/matrix/matrix.service.ts:101]
@@ -3228,65 +3217,16 @@ What this project is judged against, as declared in its own `callidescope.config
   └─> MatrixService.map(…)(row: readonly MatrixPoint[]): MatrixPoint[] [applications/meanderaw/src/modules/matrix/matrix.service.ts:113]
 ```
 
-**96. `CharacteristicsFamilyService.anonymous`** — depth 2 · orphan-root
+**85. `EdgeCountCharacteristicService.compute`** — depth 2 · orphan-root
 
 ```text
-🚀 CharacteristicsFamilyService.anonymous(c: CodeObject): boolean [applications/meanderaw/src/modules/characteristics/characteristics-family.service.ts:243]
-  └─> CharacteristicsFamilyService.isBars(code: CodeObject): boolean [applications/meanderaw/src/modules/characteristics/characteristics-family.service.ts:284]
-     ↳ Whether the meander consists only of parallel vertical lines across the entire column width from the top border tick to…
+🚀 EdgeCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/point/edge-count-characteristic.service.ts:47]
+   ↳ Sums every point's arm count and halves it.
+  └─> PointUtilitiesService.armCount(point: MatrixPoint): number [applications/meanderaw/src/modules/characteristics/submatrix/point/point-utilities.service.ts:31]
+     ↳ How many of a point's four arms carry ink — its raw digit degree, read directly off the point rather than through the…
 ```
 
-**97. `CharacteristicsFamilyService.anonymous`** — depth 2 · orphan-root
-
-```text
-🚀 CharacteristicsFamilyService.anonymous(c: CodeObject): boolean [applications/meanderaw/src/modules/characteristics/characteristics-family.service.ts:244]
-  └─> CharacteristicsFamilyService.isMesh(code: CodeObject): boolean [applications/meanderaw/src/modules/characteristics/characteristics-family.service.ts:341]
-     ↳ Whether the meander contains all possible horizontal and vertical connections across the entire lattice grid.
-```
-
-**98. `CharacteristicsFamilyService.anonymous`** — depth 2 · orphan-root
-
-```text
-🚀 CharacteristicsFamilyService.anonymous(c: CodeObject): boolean [applications/meanderaw/src/modules/characteristics/characteristics-family.service.ts:304]
-  └─> CharacteristicsFamilyService.isBars(code: CodeObject): boolean [applications/meanderaw/src/modules/characteristics/characteristics-family.service.ts:284]
-     ↳ Whether the meander consists only of parallel vertical lines across the entire column width from the top border tick to…
-```
-
-**99. `CharacteristicsFamilyService.anonymous`** — depth 2 · orphan-root
-
-```text
-🚀 CharacteristicsFamilyService.anonymous(c: CodeObject): boolean [applications/meanderaw/src/modules/characteristics/characteristics-family.service.ts:305]
-  └─> CharacteristicsFamilyService.isLines(code: CodeObject): boolean [applications/meanderaw/src/modules/characteristics/characteristics-family.service.ts:333]
-     ↳ Whether the meander consists only of parallel horizontal lines spanning unbroken across every level of the band.
-```
-
-**100. `CharacteristicsFamilyService.anonymous`** — depth 2 · orphan-root
-
-```text
-🚀 CharacteristicsFamilyService.anonymous(c: CodeObject): boolean [applications/meanderaw/src/modules/characteristics/characteristics-family.service.ts:306]
-  └─> CharacteristicsFamilyService.isMesh(code: CodeObject): boolean [applications/meanderaw/src/modules/characteristics/characteristics-family.service.ts:341]
-     ↳ Whether the meander contains all possible horizontal and vertical connections across the entire lattice grid.
-```
-
-**101. `CrossCountCharacteristicService.compute`** — depth 2 · orphan-root
-
-```text
-🚀 CrossCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/cross/cross-count-characteristic.service.ts:41]
-   ↳ Counts the points that carry all four arms.
-  └─> countPointsWithExactArms(matrix: Matrix, arms: readonly MatrixPointArm[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:56]
-     ↳ Counts the points whose ink leaves by exactly `arms` — every named arm set and every other arm clear — which is the…
-```
-
-**102. `DotCountCharacteristicService.compute`** — depth 2 · orphan-root
-
-```text
-🚀 DotCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/point/dot-count-characteristic.service.ts:40]
-   ↳ Counts the points with no arms.
-  └─> countPointsWithExactArms(matrix: Matrix, arms: readonly MatrixPointArm[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:56]
-     ↳ Counts the points whose ink leaves by exactly `arms` — every named arm set and every other arm clear — which is the…
-```
-
-**103. `HorizontalEdgeCountCharacteristicService.compute`** — depth 2 · orphan-root
+**86. `HorizontalEdgeCountCharacteristicService.compute`** — depth 2 · orphan-root
 
 ```text
 🚀 HorizontalEdgeCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/point/horizontal-edge-count-characteristic.service.ts:41]
@@ -3295,7 +3235,7 @@ What this project is judged against, as declared in its own `callidescope.config
      ↳ Counts the points whose ink leaves by exactly `arms` — every named arm set and every other arm clear — which is the…
 ```
 
-**104. `VerticalEdgeCountCharacteristicService.compute`** — depth 2 · orphan-root
+**87. `VerticalEdgeCountCharacteristicService.compute`** — depth 2 · orphan-root
 
 ```text
 🚀 VerticalEdgeCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/point/vertical-edge-count-characteristic.service.ts:41]
@@ -3310,67 +3250,73 @@ What this project is judged against, as declared in its own `callidescope.config
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `CorpusService.ingestOne` | 13 | `CodeService.parse`, `CorpusService.canonicalPhase(…)`, `CodeService.canonicalPhase`, `DrawingService.render`, `CharacteristicsService.compute`, `CorpusService.map(…)`, `CorpusService.filter(…)`, `CorpusService.filter(…)`, `DatabaseService.findOneByLattice`, `ClassificationService.classify`, `DatabaseService.save`, `CodeService.format`, `DuplicateCorpusCodeError.constructor` | `applications/meanderaw/src/modules/corpus/corpus.service.ts:89` |
-| `CharacteristicsService.computeFromMatrix` | 12 | `CharacteristicsService.tallyInk`, `CharacteristicsService.measureGraphs`, `CharacteristicsService.tallyHistogram`, `CharacteristicsShapeService.tallyUnitShapes`, `CharacteristicsService.findFreeEnds`, `CharacteristicsService.every(…)`, `CharacteristicsService.checkEndsAreLatticeNeighbors`, `CharacteristicsPathService.analyzePaths`, `CharacteristicsService.toParsedCode`, `CharacteristicsService.computeFamilyFlags`, `CharacteristicsService.longestHorizontalRun`, `CharacteristicsService.longestVerticalRun` | `applications/meanderaw/src/modules/characteristics/characteristics.service.ts:89` |
-| `DrawRecordService.record` | 10 | `CodeService.parse`, `DrawRecordService.canonicalPhase(…)`, `CodeService.canonicalPhase`, `CharacteristicsService.compute`, `ClassificationService.classify`, `DrawRecordService.map(…)`, `DrawRecordService.filter(…)`, `DrawRecordService.filter(…)`, `DrawingService.render`, `CodeService.format` | `applications/meanderaw/src/modules/draw/draw-record.service.ts:57` |
+| `CorpusService.ingestOne` | 13 | `CodeService.parse`, `CorpusService.canonicalPhase(…)`, `CodeService.canonicalPhase`, `DrawingService.render`, `CharacteristicsService.compute`, `CharacteristicsService.isReducible`, `CharacteristicsService.trueBooleanKeys`, `DatabaseService.findOneByLattice`, `ClassificationService.classify`, `DatabaseService.save`, `CharacteristicsService.numericRecord`, `CodeService.format`, `DuplicateCorpusCodeError.constructor` | `applications/meanderaw/src/modules/corpus/corpus.service.ts:88` |
+| `DrawRecordService.record` | 10 | `CodeService.parse`, `DrawRecordService.canonicalPhase(…)`, `CodeService.canonicalPhase`, `CharacteristicsService.compute`, `CharacteristicsService.isReducible`, `ClassificationService.classify`, `CharacteristicsService.trueBooleanKeys`, `DrawingService.render`, `CharacteristicsService.numericRecord`, `CodeService.format` | `applications/meanderaw/src/modules/draw/draw-record.service.ts:58` |
+| `IsCombCharacteristicService.compute` | 8 | `FamilyUtilitiesService.hasValidDimensions`, `IsBarsCharacteristicService.compute`, `IsLinesCharacteristicService.compute`, `IsMeshCharacteristicService.compute`, `FamilyUtilitiesService.grid`, `IsCombCharacteristicService.isVerticalComb`, `IsCombCharacteristicService.isHorizontalComb`, `IsCombCharacteristicService.isReversingComb` | `applications/meanderaw/src/modules/characteristics/compound/family/is-comb-characteristic.service.ts:161` |
 
 <details>
-<summary>293 more callables</summary>
+<summary>301 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `CharacteristicsFamilyService.classify` | 7 | `CharacteristicsFamilyService.isBars`, `CharacteristicsFamilyService.isDots`, `CharacteristicsFamilyService.isLines`, `CharacteristicsFamilyService.isMesh`, `CharacteristicsFamilyService.isComb`, `CharacteristicsFamilyService.isArcade`, `CharacteristicsFamilyService.isWaterfalls` | `applications/meanderaw/src/modules/characteristics/characteristics-family.service.ts:202` |
+| `IsForkCharacteristicService.compute` | 7 | `BettiNumber0CountCharacteristicService.compute`, `BettiNumber1CountCharacteristicService.compute`, `ForkCountCharacteristicService.compute`, `CrossCountCharacteristicService.compute`, `FreeEndCountCharacteristicService.compute`, `DotCountCharacteristicService.compute`, `IsCombCharacteristicService.compute` | `applications/meanderaw/src/modules/characteristics/compound/family/is-fork-characteristic.service.ts:64` |
+| `IsPureTreeCharacteristicService.compute` | 7 | `BettiNumber0CountCharacteristicService.compute`, `BettiNumber1CountCharacteristicService.compute`, `ForkCountCharacteristicService.compute`, `CrossCountCharacteristicService.compute`, `DotCountCharacteristicService.compute`, `IsCombCharacteristicService.compute`, `IsArcadeCharacteristicService.compute` | `applications/meanderaw/src/modules/characteristics/compound/family/is-pure-tree-characteristic.service.ts:64` |
 | `TileEnumerationService.enumerate` | 7 | `TileEnumerationService.isAdmitted`, `OversizedTileError.constructor`, `TileEnumerationService.edges`, `TileService.blankEdges`, `TileEnumerationService.assign`, `TileEnumerationService.map(…)`, `TileEnumerationService.toSorted(…)` | `applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:184` |
-| `CharacteristicsService.computeFamilyFlags` | 6 | `CharacteristicsFamilyService.isArcade`, `CharacteristicsFamilyService.isBars`, `CharacteristicsFamilyService.isComb`, `CharacteristicsFamilyService.isDots`, `CharacteristicsFamilyService.isLines`, `CharacteristicsFamilyService.isMesh` | `applications/meanderaw/src/modules/characteristics/characteristics.service.ts:70` |
-| `CharacteristicsFamilyService.isComb` | 5 | `CharacteristicsFamilyService.validateBasic`, `CharacteristicsFamilyService.toGrid`, `CharacteristicsFamilyService.isVerticalComb`, `CharacteristicsFamilyService.isHorizontalComb`, `CharacteristicsFamilyService.isReversingComb` | `applications/meanderaw/src/modules/characteristics/characteristics-family.service.ts:301` |
+| `IsArcadeCharacteristicService.compute` | 6 | `FamilyUtilitiesService.hasValidDimensions`, `IsBarsCharacteristicService.compute`, `IsMeshCharacteristicService.compute`, `IsCombCharacteristicService.compute`, `IsArcadeCharacteristicService.countPillars`, `FamilyUtilitiesService.grid` | `applications/meanderaw/src/modules/characteristics/compound/family/is-arcade-characteristic.service.ts:83` |
+| `IsWaterfallsCharacteristicService.compute` | 6 | `IsWaterfallsCharacteristicService.isDotFreeOpenStrandSet`, `TileCrossingCountCharacteristicService.compute`, `EndsOnBorderRulesCharacteristicService.compute`, `EndsAreLatticeNeighborsCharacteristicService.compute`, `EmbeddedUCountCharacteristicService.compute`, `LongestVerticalRunLengthCharacteristicService.compute` | `applications/meanderaw/src/modules/characteristics/compound/family/is-waterfalls-characteristic.service.ts:84` |
+| `StrandUtilitiesService.isTileBoundCoil` | 6 | `CompoundUtilitiesService.isJunctionFree`, `BettiNumber1CountCharacteristicService.compute`, `TileCrossingCountCharacteristicService.compute`, `StrandUtilitiesService.isFullInkWithoutDots`, `LongestHorizontalRunLengthCharacteristicService.compute`, `LongestVerticalRunLengthCharacteristicService.compute` | `applications/meanderaw/src/modules/characteristics/compound/family/strand-utilities.service.ts:80` |
+| `IsDoubleChainCharacteristicService.compute` | 6 | `CompoundUtilitiesService.isJunctionFree`, `StrandUtilitiesService.hasStrandEnds`, `BettiNumber1CountCharacteristicService.compute`, `StrandUtilitiesService.isWrappingReversal`, `LongestHorizontalRunLengthCharacteristicService.compute`, `LongestVerticalRunLengthCharacteristicService.compute` | `applications/meanderaw/src/modules/characteristics/compound/family/is-double-chain-characteristic.service.ts:60` |
+| `IsWaterfallsCharacteristicService.isDotFreeOpenStrandSet` | 5 | `CompoundUtilitiesService.isJunctionFree`, `DotCountCharacteristicService.compute`, `BettiNumber1CountCharacteristicService.compute`, `FreeEndCountCharacteristicService.compute`, `BettiNumber0CountCharacteristicService.compute` | `applications/meanderaw/src/modules/characteristics/compound/family/is-waterfalls-characteristic.service.ts:71` |
 | `ringCloses` | 5 | `from(…)`, `from(…)`, `pointDigitAt`, `every(…)`, `every(…)` | `applications/meanderaw/src/modules/characteristics/submatrix/rectangle/rectangle.utilities.ts:81` |
 | `DrawingService.render` | 5 | `GeometryService.compute`, `DrawingService.codeSegments`, `GeometryService.borderPath`, `SvgService.render`, `DrawingService.format` | `applications/meanderaw/src/modules/drawing/drawing.service.ts:125` |
 | `DrawCheckService.check` | 5 | `DrawEnumerationService.sweep`, `CorpusService.ingest`, `DrawCheckService.diff`, `DrawCheckService.hasDrift`, `MeanderDriftDetectedError.constructor` | `applications/meanderaw/src/modules/draw/draw-check.service.ts:162` |
 | `DrawIndexService.renderBand` | 5 | `GeometryService.compute`, `DrawIndexService.format`, `CodeService.parse`, `DrawingService.render`, `DrawIndexService.renderRepeats` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:151` |
 | `DrawIndexService.render` | 5 | `DrawIndexService.groupByFamily`, `DrawIndexService.renderContents`, `DrawIndexService.label`, `DrawIndexService.escape`, `DrawIndexService.renderSection` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:274` |
 | `SymmetryService.transform` | 4 | `TileService.edges`, `TileService.blankEdges`, `SymmetryService.place`, `TileService.build` | `applications/meanderaw/src/modules/symmetry/symmetry.service.ts:143` |
-| `CharacteristicsFamilyService.isArcade` | 4 | `CharacteristicsFamilyService.validateBasic`, `CharacteristicsFamilyService.toGrid`, `CharacteristicsFamilyService.reduce(…)`, `CharacteristicsFamilyService.from(…)` | `applications/meanderaw/src/modules/characteristics/characteristics-family.service.ts:240` |
-| `ConnectivityService.connectivity` | 4 | `ConnectivityService.edges`, `ConnectivityService.adjacency`, `GraphService.components`, `ConnectivityService.freeEnds` | `applications/meanderaw/src/modules/characteristics/connectivity.service.ts:133` |
-| `CharacteristicsPathService.traceSinglePath` | 4 | `CharacteristicsPathService.findStartNode`, `CharacteristicsPathService.findNextNode`, `CharacteristicsPathService.advancePath`, `CharacteristicsPathService.checkFinalLoopTurn` | `applications/meanderaw/src/modules/characteristics/characteristics-path.service.ts:233` |
-| `CharacteristicsService.measure` | 4 | `CodeService.parse`, `CodeService.reduceToUnit`, `MatrixService.fromCode`, `CharacteristicsService.computeFromMatrix` | `applications/meanderaw/src/modules/characteristics/characteristics.service.ts:468` |
-| `CornerCountCharacteristicService.compute` | 4 | `NorthEastCornerCountCharacteristicService.compute`, `NorthWestCornerCountCharacteristicService.compute`, `SouthEastCornerCountCharacteristicService.compute`, `SouthWestCornerCountCharacteristicService.compute` | `applications/meanderaw/src/modules/characteristics/submatrix/corner/corner-count-characteristic.service.ts:55` |
+| `ConnectivityService.connectivity` | 4 | `ConnectivityService.edges`, `ConnectivityService.adjacency`, `GraphService.components`, `ConnectivityService.freeEnds` | `applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:133` |
+| `CharacteristicsService.discover` | 4 | `CharacteristicsService.isCandidateEvaluator`, `CharacteristicsService.verify`, `CharacteristicRegistryError.constructor`, `CharacteristicsService.map(…)` | `applications/meanderaw/src/modules/characteristics/characteristics.service.ts:103` |
+| `CharacteristicsService.verify` | 4 | `CharacteristicsService.isCharacteristicEvaluator`, `CharacteristicsService.isCharacteristicKey`, `CharacteristicRegistryError.constructor`, `CharacteristicsService.valueTypeOf` | `applications/meanderaw/src/modules/characteristics/characteristics.service.ts:183` |
+| `CharacteristicsService.compute` | 4 | `CharacteristicContextService.create`, `CharacteristicsService.map(…)`, `CharacteristicsService.evaluators`, `CharacteristicsService.assertCharacteristics` | `applications/meanderaw/src/modules/characteristics/characteristics.service.ts:201` |
+| `ReversesAtItsTightestTurnCharacteristicService.traceSinglePath` | 4 | `ReversesAtItsTightestTurnCharacteristicService.findStartNode`, `ReversesAtItsTightestTurnCharacteristicService.findNextNode`, `ReversesAtItsTightestTurnCharacteristicService.advancePath`, `ReversesAtItsTightestTurnCharacteristicService.checkFinalLoopTurn` | `applications/meanderaw/src/modules/characteristics/path/turn/reverses-at-its-tightest-turn-characteristic.service.ts:265` |
+| `ReversesAtItsTightestTurnCharacteristicService.compute` | 4 | `ReversesAtItsTightestTurnCharacteristicService.isJunctionFree`, `ConnectivityService.edges`, `ReversesAtItsTightestTurnCharacteristicService.buildAdjacencyGraph`, `ReversesAtItsTightestTurnCharacteristicService.tracePaths` | `applications/meanderaw/src/modules/characteristics/path/turn/reverses-at-its-tightest-turn-characteristic.service.ts:317` |
 | `ForkCountCharacteristicService.compute` | 4 | `NorthForkCountCharacteristicService.compute`, `SouthForkCountCharacteristicService.compute`, `EastForkCountCharacteristicService.compute`, `WestForkCountCharacteristicService.compute` | `applications/meanderaw/src/modules/characteristics/submatrix/fork/fork-count-characteristic.service.ts:54` |
+| `IsClosedLoopCharacteristicService.compute` | 4 | `BettiNumber0CountCharacteristicService.compute`, `BettiNumber1CountCharacteristicService.compute`, `FreeEndCountCharacteristicService.compute`, `CompoundUtilitiesService.isJunctionFree` | `applications/meanderaw/src/modules/characteristics/compound/structure/is-closed-loop-characteristic.service.ts:53` |
+| `IsSingleArcCharacteristicService.compute` | 4 | `BettiNumber0CountCharacteristicService.compute`, `BettiNumber1CountCharacteristicService.compute`, `FreeEndCountCharacteristicService.compute`, `CompoundUtilitiesService.isJunctionFree` | `applications/meanderaw/src/modules/characteristics/compound/structure/is-single-arc-characteristic.service.ts:53` |
+| `IsBoxesCharacteristicService.compute` | 4 | `IsSingleArcCharacteristicService.compute`, `TileCrossingCountCharacteristicService.compute`, `EndsAreLatticeNeighborsCharacteristicService.compute`, `IsWaterfallsCharacteristicService.compute` | `applications/meanderaw/src/modules/characteristics/compound/family/is-boxes-characteristic.service.ts:56` |
+| `StrandUtilitiesService.isWrappingReversal` | 4 | `TileCrossingCountCharacteristicService.compute`, `ReversesAtItsTightestTurnCharacteristicService.compute`, `EndsOnBorderRulesCharacteristicService.compute`, `StrandUtilitiesService.isFullInkWithoutDots` | `applications/meanderaw/src/modules/characteristics/compound/family/strand-utilities.service.ts:94` |
+| `IsChainCharacteristicService.compute` | 4 | `IsSingleArcCharacteristicService.compute`, `StrandUtilitiesService.isWrappingReversal`, `LongestHorizontalRunLengthCharacteristicService.compute`, `LongestVerticalRunLengthCharacteristicService.compute` | `applications/meanderaw/src/modules/characteristics/compound/family/is-chain-characteristic.service.ts:57` |
+| `IsParallelCharacteristicService.compute` | 4 | `BettiNumber0CountCharacteristicService.compute`, `CompoundUtilitiesService.isJunctionFree`, `BettiNumber1CountCharacteristicService.compute`, `FreeEndCountCharacteristicService.compute` | `applications/meanderaw/src/modules/characteristics/compound/family/is-parallel-characteristic.service.ts:55` |
+| `CornerCountCharacteristicService.compute` | 4 | `NorthEastCornerCountCharacteristicService.compute`, `NorthWestCornerCountCharacteristicService.compute`, `SouthEastCornerCountCharacteristicService.compute`, `SouthWestCornerCountCharacteristicService.compute` | `applications/meanderaw/src/modules/characteristics/submatrix/corner/corner-count-characteristic.service.ts:55` |
 | `TileEnumerationService.assign` | 4 | `TileEnumerationService.edges`, `TileEnumerationService.record`, `TileEnumerationService.set`, `TileEnumerationService.clear` | `applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:113` |
 | `DrawIndexService.renderSection` | 4 | `DrawIndexService.escape`, `DrawIndexService.label`, `DrawIndexService.renderUnclassifiedSection`, `DrawIndexService.map(…)` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:196` |
-| `ClassificationService.matches` | 3 | `ClassificationService.isArc`, `ClassificationService.isWaterfalls`, `ClassificationService.reachesMinimumRows` | `applications/meanderaw/src/modules/classification/classification.service.ts:367` |
-| `CodeService.parse` | 3 | `CodeService.parseFormatted`, `CodeService.parseBare`, `InvalidCodeFormatError.constructor` | `applications/meanderaw/src/modules/code/code.service.ts:213` |
-| `CharacteristicContextService.create` | 3 | `CodeService.parse`, `CodeService.reduceToUnit`, `MatrixService.fromCode` | `applications/meanderaw/src/modules/characteristics/characteristic-context.service.ts:39` |
-| `CharacteristicsFamilyService.isVerticalComb` | 3 | `CharacteristicsFamilyService.from(…)`, `CharacteristicsFamilyService.map(…)`, `CharacteristicsFamilyService.map(…)` | `applications/meanderaw/src/modules/characteristics/characteristics-family.service.ts:139` |
-| `ConnectivityService.edges` | 3 | `ConnectivityService.key`, `ConnectivityService.joinsEast`, `ConnectivityService.joinsSouth` | `applications/meanderaw/src/modules/characteristics/connectivity.service.ts:152` |
-| `CharacteristicsPathService.advancePath` | 3 | `CharacteristicsPathService.getDirection`, `CharacteristicsPathService.applyTurn`, `CharacteristicsPathService.findNextNode` | `applications/meanderaw/src/modules/characteristics/characteristics-path.service.ts:24` |
-| `CharacteristicsPathService.findNextNode` | 3 | `CharacteristicsPathService.getNeighbors`, `CharacteristicsPathService.find(…)`, `CharacteristicsPathService.find(…)` | `applications/meanderaw/src/modules/characteristics/characteristics-path.service.ts:115` |
-| `CharacteristicsPathService.analyzePaths` | 3 | `ConnectivityService.edges`, `CharacteristicsPathService.buildAdjacencyGraph`, `CharacteristicsPathService.tracePaths` | `applications/meanderaw/src/modules/characteristics/characteristics-path.service.ts:291` |
-| `CharacteristicsShapeService.tallySubmatrix` | 3 | `CharacteristicsShapeService.pointToDigit`, `CharacteristicsShapeService.tallyIsolatedShapes`, `CharacteristicsShapeService.tallyEmbeddedShapes` | `applications/meanderaw/src/modules/characteristics/characteristics-shape.service.ts:91` |
-| `CharacteristicsService.measureGraphs` | 3 | `ConnectivityService.connectivity`, `ConnectivityService.edges`, `CharacteristicsService.countJunctions` | `applications/meanderaw/src/modules/characteristics/characteristics.service.ts:292` |
-| `CharacteristicsService.seamComponents` | 3 | `MatrixService.fromCode`, `CodeService.parse`, `ConnectivityService.connectivity` | `applications/meanderaw/src/modules/characteristics/characteristics.service.ts:490` |
+| `CodeService.parse` | 3 | `CodeService.parseFormatted`, `CodeService.parseBare`, `InvalidCodeFormatError.constructor` | `applications/meanderaw/src/modules/code/code.service.ts:215` |
+| `CharacteristicContextService.create` | 3 | `CharacteristicContextService.build`, `CodeService.reduceToUnit`, `CharacteristicContextService.parse` | `applications/meanderaw/src/modules/characteristics/characteristic-context.service.ts:66` |
+| `ConnectivityService.edges` | 3 | `ConnectivityService.key`, `ConnectivityService.joinsEast`, `ConnectivityService.joinsSouth` | `applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:152` |
+| `CharacteristicsService.assertCharacteristics` | 3 | `CharacteristicsService.find(…)`, `CharacteristicRegistryError.constructor`, `CharacteristicsService.valueTypeOf` | `applications/meanderaw/src/modules/characteristics/characteristics.service.ts:73` |
+| `EndsOnBorderRulesCharacteristicService.compute` | 3 | `EndUtilitiesService.freeEndPoints`, `ConnectivityService.edges`, `EndsOnBorderRulesCharacteristicService.every(…)` | `applications/meanderaw/src/modules/characteristics/path/end/ends-on-border-rules-characteristic.service.ts:50` |
+| `countIsolatedGlyphs` | 3 | `glyphCells`, `map(…)`, `every(…)` | `applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:21` |
+| `flatMap(…)` | 3 | `map(…)`, `filter(…)`, `from(…)` | `applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:126` |
 | `strands` | 3 | `halfEdgeGraph`, `flatMap(…)`, `walk` | `applications/meanderaw/src/modules/characteristics/path/path.utilities.ts:83` |
 | `halfEdgeGraph` | 3 | `position`, `attach`, `opposite` | `applications/meanderaw/src/modules/characteristics/path/path.utilities.ts:132` |
 | `InflectionCountCharacteristicService.compute` | 3 | `InflectionCountCharacteristicService.reduce(…)`, `strands`, `ConnectivityService.edges` | `applications/meanderaw/src/modules/characteristics/path/turn/inflection-count-characteristic.service.ts:47` |
 | `InflectionCountCharacteristicService.reduce(…)` | 3 | `InflectionCountCharacteristicService.filter(…)`, `neighborPairs`, `signedTurns` | `applications/meanderaw/src/modules/characteristics/path/turn/inflection-count-characteristic.service.ts:51` |
 | `MaxMonotonicTurnLengthCharacteristicService.compute` | 3 | `MaxMonotonicTurnLengthCharacteristicService.map(…)`, `strands`, `ConnectivityService.edges` | `applications/meanderaw/src/modules/characteristics/path/turn/max-monotonic-turn-length-characteristic.service.ts:46` |
+| `ReversesAtItsTightestTurnCharacteristicService.advancePath` | 3 | `ReversesAtItsTightestTurnCharacteristicService.getDirection`, `ReversesAtItsTightestTurnCharacteristicService.applyTurn`, `ReversesAtItsTightestTurnCharacteristicService.findNextNode` | `applications/meanderaw/src/modules/characteristics/path/turn/reverses-at-its-tightest-turn-characteristic.service.ts:56` |
+| `ReversesAtItsTightestTurnCharacteristicService.findNextNode` | 3 | `ReversesAtItsTightestTurnCharacteristicService.getNeighbors`, `ReversesAtItsTightestTurnCharacteristicService.find(…)`, `ReversesAtItsTightestTurnCharacteristicService.find(…)` | `applications/meanderaw/src/modules/characteristics/path/turn/reverses-at-its-tightest-turn-characteristic.service.ts:156` |
 | `TightestTurnCountCharacteristicService.compute` | 3 | `TightestTurnCountCharacteristicService.reduce(…)`, `strands`, `ConnectivityService.edges` | `applications/meanderaw/src/modules/characteristics/path/turn/tightest-turn-count-characteristic.service.ts:47` |
 | `TotalTurnCountCharacteristicService.compute` | 3 | `TotalTurnCountCharacteristicService.reduce(…)`, `strands`, `ConnectivityService.edges` | `applications/meanderaw/src/modules/characteristics/path/turn/total-turn-count-characteristic.service.ts:46` |
-| `countIsolatedGlyphs` | 3 | `glyphCells`, `map(…)`, `every(…)` | `applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:21` |
-| `flatMap(…)` | 3 | `map(…)`, `filter(…)`, `from(…)` | `applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:126` |
+| `IsCombCharacteristicService.isVerticalComb` | 3 | `IsCombCharacteristicService.from(…)`, `IsCombCharacteristicService.map(…)`, `IsCombCharacteristicService.map(…)` | `applications/meanderaw/src/modules/characteristics/compound/family/is-comb-characteristic.service.ts:138` |
+| `IsClaspsCharacteristicService.compute` | 3 | `StrandUtilitiesService.isTileBoundCoil`, `ReversesAtItsTightestTurnCharacteristicService.compute`, `StrandUtilitiesService.hasStrandEnds` | `applications/meanderaw/src/modules/characteristics/compound/family/is-clasps-characteristic.service.ts:50` |
+| `IsStippledCharacteristicService.compute` | 3 | `BettiNumber0CountCharacteristicService.compute`, `DotCountCharacteristicService.compute`, `ForkCountCharacteristicService.compute` | `applications/meanderaw/src/modules/characteristics/compound/family/is-stippled-characteristic.service.ts:50` |
+| `IsSwirlCharacteristicService.compute` | 3 | `StrandUtilitiesService.isTileBoundCoil`, `EndsOnBorderRulesCharacteristicService.compute`, `StrandUtilitiesService.hasStrandEnds` | `applications/meanderaw/src/modules/characteristics/compound/family/is-swirl-characteristic.service.ts:50` |
+| `IsWhirlCharacteristicService.compute` | 3 | `StrandUtilitiesService.isTileBoundCoil`, `IsWhirlCharacteristicService.isSingleWhirl`, `IsWhirlCharacteristicService.isDoubleWhirl` | `applications/meanderaw/src/modules/characteristics/compound/family/is-whirl-characteristic.service.ts:66` |
 | `isIsolatedRectangleAt` | 3 | `pointDigitAt`, `sideLength`, `ringCloses` | `applications/meanderaw/src/modules/characteristics/submatrix/rectangle/rectangle.utilities.ts:46` |
 | `TileEnumerationService.record` | 3 | `TileService.build`, `SymmetryService.canonicalTile`, `SymmetryService.edgeKey` | `applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:148` |
-| `MeanderDriftDetectedError.describe` | 3 | `MeanderDriftDetectedError.map(…)`, `MeanderDriftDetectedError.map(…)`, `MeanderDriftDetectedError.map(…)` | `applications/meanderaw/src/modules/draw/draw-check.constants.ts:72` |
+| `MeanderDriftDetectedError.describe` | 3 | `MeanderDriftDetectedError.map(…)`, `MeanderDriftDetectedError.map(…)`, `MeanderDriftDetectedError.map(…)` | `applications/meanderaw/src/modules/draw/draw-check.constants.ts:74` |
 | `DrawCheckService.diff` | 3 | `DrawCheckService.index`, `DrawCheckService.findNewAndChanged`, `DrawCheckService.findMissing` | `applications/meanderaw/src/modules/draw/draw-check.service.ts:204` |
 | `DrawCommand.sweep` | 3 | `DrawEnumerationService.sweep`, `CorpusService.ingest`, `DrawIndexService.build` | `applications/meanderaw/src/modules/draw/draw.command.ts:138` |
 | `DrawCommand.run` | 3 | `DrawCheckService.check`, `DrawCommand.sweep`, `DrawCommand.runCodeDrawing` | `applications/meanderaw/src/modules/draw/draw.command.ts:229` |
-| `ClassificationService.isBundle` | 2 | `ClassificationService.isJunctionFree`, `ClassificationService.reachesMinimumRows` | `applications/meanderaw/src/modules/classification/classification.service.ts:43` |
-| `ClassificationService.isChain` | 2 | `ClassificationService.isArc`, `ClassificationService.reachesMinimumRows` | `applications/meanderaw/src/modules/classification/classification.service.ts:57` |
-| `ClassificationService.isClasps` | 2 | `ClassificationService.isJunctionFree`, `ClassificationService.reachesMinimumRows` | `applications/meanderaw/src/modules/classification/classification.service.ts:84` |
-| `ClassificationService.isDoubleChain` | 2 | `ClassificationService.isJunctionFree`, `ClassificationService.reachesMinimumRows` | `applications/meanderaw/src/modules/classification/classification.service.ts:134` |
-| `ClassificationService.isSwirl` | 2 | `ClassificationService.isJunctionFree`, `ClassificationService.reachesMinimumRows` | `applications/meanderaw/src/modules/classification/classification.service.ts:174` |
-| `ClassificationService.isWaterfalls` | 2 | `ClassificationService.isJunctionFree`, `ClassificationService.reachesMinimumRows` | `applications/meanderaw/src/modules/classification/classification.service.ts:212` |
-| `ClassificationService.isWhirl` | 2 | `ClassificationService.isJunctionFree`, `ClassificationService.reachesMinimumRows` | `applications/meanderaw/src/modules/classification/classification.service.ts:230` |
-| `ClassificationService.matches` | 2 | `ClassificationService.isClosedLoop`, `ClassificationService.reachesMinimumRows` | `applications/meanderaw/src/modules/classification/classification.service.ts:401` |
+| `ClassificationService.rules` | 2 | `ClassificationService.rule`, `ClassificationService.unitRule` | `applications/meanderaw/src/modules/classification/classification.service.ts:107` |
 | `TileService.assertPointAgrees` | 2 | `MalformedTileError.constructor`, `TileService.assertPointJoinsBelow` | `applications/meanderaw/src/modules/tile/tile.service.ts:50` |
 | `TileService.assertWellFormed` | 2 | `MalformedTileError.constructor`, `TileService.assertPointAgrees` | `applications/meanderaw/src/modules/tile/tile.service.ts:120` |
 | `TileService.from(…)` | 2 | `TileService.horizontal`, `TileService.vertical` | `applications/meanderaw/src/modules/tile/tile.service.ts:168` |
@@ -3381,16 +3327,21 @@ What this project is judged against, as declared in its own `callidescope.config
 | `SymmetryService.edgeKey` | 2 | `TileService.edges`, `SymmetryService.flatMap(…)` | `applications/meanderaw/src/modules/symmetry/symmetry.service.ts:200` |
 | `SymmetryService.variants` | 2 | `SymmetryService.orbit`, `SymmetryService.edgeKey` | `applications/meanderaw/src/modules/symmetry/symmetry.service.ts:217` |
 | `CodeService.validateDigits` | 2 | `InvalidCodeLengthError.constructor`, `InvalidCodeCharacterError.constructor` | `applications/meanderaw/src/modules/code/code.service.ts:125` |
-| `CodeService.spell` | 2 | `CodeService.flatMap(…)`, `CodeService.format` | `applications/meanderaw/src/modules/code/code.service.ts:288` |
-| `CodeService.spellCanonical` | 2 | `CodeService.spell`, `SymmetryService.canonicalTile` | `applications/meanderaw/src/modules/code/code.service.ts:315` |
+| `CodeService.spell` | 2 | `CodeService.format`, `CodeService.spellDigits` | `applications/meanderaw/src/modules/code/code.service.ts:289` |
+| `CodeService.spellCanonical` | 2 | `CodeService.spell`, `SymmetryService.canonicalTile` | `applications/meanderaw/src/modules/code/code.service.ts:303` |
 | `MatrixService.fromCode` | 2 | `CodeService.parse`, `MatrixService.from(…)` | `applications/meanderaw/src/modules/matrix/matrix.service.ts:65` |
 | `MatrixService.toCode` | 2 | `MatrixService.flatMap(…)`, `CodeService.format` | `applications/meanderaw/src/modules/matrix/matrix.service.ts:157` |
-| `CharacteristicsFamilyService.isHorizontalComb` | 2 | `CharacteristicsFamilyService.from(…)`, `CharacteristicsFamilyService.filter(…)` | `applications/meanderaw/src/modules/characteristics/characteristics-family.service.ts:102` |
-| `CharacteristicsFamilyService.isReversingComb` | 2 | `CharacteristicsFamilyService.hasDownTeeth`, `CharacteristicsFamilyService.hasUpTeeth` | `applications/meanderaw/src/modules/characteristics/characteristics-family.service.ts:121` |
-| `ConnectivityService.freeEnds` | 2 | `ConnectivityService.bump`, `ConnectivityService.filter(…)` | `applications/meanderaw/src/modules/characteristics/connectivity.service.ts:80` |
-| `CharacteristicsShapeService.tallyUnitShapes` | 2 | `MatrixService.submatrices`, `CharacteristicsShapeService.tallySubmatrix` | `applications/meanderaw/src/modules/characteristics/characteristics-shape.service.ts:121` |
-| `CharacteristicsService.tallyInk` | 2 | `CharacteristicsService.tally`, `CharacteristicsService.inkDegree` | `applications/meanderaw/src/modules/characteristics/characteristics.service.ts:388` |
-| `CharacteristicsService.tallyMatrixPoint` | 2 | `CharacteristicsService.inkDegree`, `CharacteristicsService.tallyDegreeTwoPoint` | `applications/meanderaw/src/modules/characteristics/characteristics.service.ts:401` |
+| `CharacteristicContextService.build` | 2 | `MatrixService.fromCode`, `CodeService.spellDigits` | `applications/meanderaw/src/modules/characteristics/characteristic-context.service.ts:39` |
+| `CharacteristicContextService.createUnreduced` | 2 | `CharacteristicContextService.build`, `CharacteristicContextService.parse` | `applications/meanderaw/src/modules/characteristics/characteristic-context.service.ts:76` |
+| `ConnectivityService.freeEnds` | 2 | `ConnectivityService.bump`, `ConnectivityService.filter(…)` | `applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:80` |
+| `CharacteristicsService.assertNumericRecord` | 2 | `CharacteristicsService.find(…)`, `CharacteristicRegistryError.constructor` | `applications/meanderaw/src/modules/characteristics/characteristics.service.ts:88` |
+| `CharacteristicsService.isCharacteristicEvaluator` | 2 | `CharacteristicsService.isCharacteristicKey`, `CharacteristicsService.valueTypeOf` | `applications/meanderaw/src/modules/characteristics/characteristics.service.ts:162` |
+| `CharacteristicsService.isReducible` | 2 | `CodeService.parse`, `CodeService.reduceToUnit` | `applications/meanderaw/src/modules/characteristics/characteristics.service.ts:213` |
+| `CharacteristicsService.metadata` | 2 | `CharacteristicsService.map(…)`, `CharacteristicsService.evaluators` | `applications/meanderaw/src/modules/characteristics/characteristics.service.ts:221` |
+| `CharacteristicsService.numericRecord` | 2 | `CharacteristicsService.map(…)`, `CharacteristicsService.assertNumericRecord` | `applications/meanderaw/src/modules/characteristics/characteristics.service.ts:226` |
+| `CharacteristicsService.tileCrossingComponentDeltaCount` | 2 | `TileCrossingComponentDeltaCountCharacteristicService.compute`, `CharacteristicContextService.createUnreduced` | `applications/meanderaw/src/modules/characteristics/characteristics.service.ts:256` |
+| `EndUtilitiesService.freeEndPoints` | 2 | `EndUtilitiesService.bump`, `EndUtilitiesService.position` | `applications/meanderaw/src/modules/characteristics/path/end/end-utilities.service.ts:41` |
+| `EndsAreLatticeNeighborsCharacteristicService.compute` | 2 | `EndUtilitiesService.freeEndPoints`, `ConnectivityService.edges` | `applications/meanderaw/src/modules/characteristics/path/end/ends-are-lattice-neighbors-characteristic.service.ts:51` |
 | `longestRun` | 2 | `findIndex(…)`, `neighborPairs` | `applications/meanderaw/src/modules/characteristics/path/path.utilities.ts:11` |
 | `rowTouchCount` | 2 | `position`, `filter(…)` | `applications/meanderaw/src/modules/characteristics/path/path.utilities.ts:54` |
 | `walk` | 2 | `continuation`, `turnBetween` | `applications/meanderaw/src/modules/characteristics/path/path.utilities.ts:173` |
@@ -3398,6 +3349,14 @@ What this project is judged against, as declared in its own `callidescope.config
 | `MaxMonotonicTurnLengthCharacteristicService.map(…)` | 2 | `longestRun`, `signedTurns` | `applications/meanderaw/src/modules/characteristics/path/turn/max-monotonic-turn-length-characteristic.service.ts:50` |
 | `TightestTurnCountCharacteristicService.reduce(…)` | 2 | `TightestTurnCountCharacteristicService.filter(…)`, `neighborPairs` | `applications/meanderaw/src/modules/characteristics/path/turn/tightest-turn-count-characteristic.service.ts:51` |
 | `TopBorderTouchCountCharacteristicService.compute` | 2 | `rowTouchCount`, `ConnectivityService.edges` | `applications/meanderaw/src/modules/characteristics/path/turn/top-border-touch-count-characteristic.service.ts:47` |
+| `EmbeddedUCountCharacteristicService.compute` | 2 | `EmbeddedUCountCharacteristicService.isEmbeddedU`, `EmbeddedUCountCharacteristicService.windowDigits` | `applications/meanderaw/src/modules/characteristics/submatrix/embedded/embedded-u-count-characteristic.service.ts:84` |
+| `CompoundUtilitiesService.isJunctionFree` | 2 | `ForkCountCharacteristicService.compute`, `CrossCountCharacteristicService.compute` | `applications/meanderaw/src/modules/characteristics/compound/compound-utilities.service.ts:33` |
+| `IsCombCharacteristicService.isHorizontalComb` | 2 | `IsCombCharacteristicService.from(…)`, `IsCombCharacteristicService.filter(…)` | `applications/meanderaw/src/modules/characteristics/compound/family/is-comb-characteristic.service.ts:101` |
+| `IsCombCharacteristicService.isReversingComb` | 2 | `IsCombCharacteristicService.hasDownTeeth`, `IsCombCharacteristicService.hasUpTeeth` | `applications/meanderaw/src/modules/characteristics/compound/family/is-comb-characteristic.service.ts:120` |
+| `IsArcadeCharacteristicService.countPillars` | 2 | `IsArcadeCharacteristicService.reduce(…)`, `IsArcadeCharacteristicService.from(…)` | `applications/meanderaw/src/modules/characteristics/compound/family/is-arcade-characteristic.service.ts:57` |
+| `StrandUtilitiesService.hasStrandEnds` | 2 | `BettiNumber0CountCharacteristicService.compute`, `FreeEndCountCharacteristicService.compute` | `applications/meanderaw/src/modules/characteristics/compound/family/strand-utilities.service.ts:61` |
+| `StrandUtilitiesService.isFullInkWithoutDots` | 2 | `DensityCharacteristicService.compute`, `DotCountCharacteristicService.compute` | `applications/meanderaw/src/modules/characteristics/compound/family/strand-utilities.service.ts:72` |
+| `IsCrossCharacteristicService.compute` | 2 | `CrossCountCharacteristicService.compute`, `IsMeshCharacteristicService.compute` | `applications/meanderaw/src/modules/characteristics/compound/family/is-cross-characteristic.service.ts:49` |
 | `HorizontalRectangleCountCharacteristicService.compute` | 2 | `HorizontalRectangleCountCharacteristicService.countIsolatedRectangles(…)`, `countIsolatedRectangles` | `applications/meanderaw/src/modules/characteristics/submatrix/rectangle/horizontal-rectangle-count-characteristic.service.ts:44` |
 | `VerticalRectangleCountCharacteristicService.compute` | 2 | `VerticalRectangleCountCharacteristicService.countIsolatedRectangles(…)`, `countIsolatedRectangles` | `applications/meanderaw/src/modules/characteristics/submatrix/rectangle/vertical-rectangle-count-characteristic.service.ts:44` |
 | `DrawingService.codeSegments` | 2 | `CodeService.directionsAt`, `DrawingService.pointSegments` | `applications/meanderaw/src/modules/drawing/drawing.service.ts:54` |
@@ -3405,7 +3364,7 @@ What this project is judged against, as declared in its own `callidescope.config
 | `TileEnumerationService.set` | 2 | `TileEnumerationService.address`, `TileService.mark` | `applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:160` |
 | `EnumerationService.enumerate` | 2 | `EnumerationService.map(…)`, `TileEnumerationService.enumerate` | `applications/meanderaw/src/modules/enumeration/enumeration.service.ts:101` |
 | `EnumerationService.shapes` | 2 | `EnumerationService.isAdmitted`, `TileEnumerationService.maximumColumns` | `applications/meanderaw/src/modules/enumeration/enumeration.service.ts:132` |
-| `CorpusService.ingest` | 2 | `CorpusService.filter(…)`, `CorpusService.ingestOne` | `applications/meanderaw/src/modules/corpus/corpus.service.ts:173` |
+| `CorpusService.ingest` | 2 | `CorpusService.filter(…)`, `CorpusService.ingestOne` | `applications/meanderaw/src/modules/corpus/corpus.service.ts:164` |
 | `DrawEnumerationService.persist` | 2 | `DatabaseService.saveAll`, `DrawEnumerationService.records` | `applications/meanderaw/src/modules/draw/draw-enumeration.service.ts:60` |
 | `DrawEnumerationService.records` | 2 | `DrawEnumerationService.map(…)`, `EnumerationService.enumerate` | `applications/meanderaw/src/modules/draw/draw-enumeration.service.ts:71` |
 | `DrawEnumerationService.sweep` | 2 | `DrawEnumerationService.persist`, `EnumerationService.shapes` | `applications/meanderaw/src/modules/draw/draw-enumeration.service.ts:80` |
@@ -3418,26 +3377,9 @@ What this project is judged against, as declared in its own `callidescope.config
 | `DrawIndexService.map(…)` | 2 | `DrawIndexService.toSorted(…)`, `DrawIndexService.map(…)` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:240` |
 | `DrawIndexService.build` | 2 | `DrawIndexService.render`, `DatabaseService.findAll` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:266` |
 | `DrawCommand.runCodeDrawing` | 2 | `IncompleteCodeDrawingError.constructor`, `DrawCodeService.draw` | `applications/meanderaw/src/modules/draw/draw.command.ts:104` |
-| `ClassificationService.isArc` | 1 | `ClassificationService.isJunctionFree` | `applications/meanderaw/src/modules/classification/classification.service.ts:31` |
-| `ClassificationService.isClosedLoop` | 1 | `ClassificationService.isJunctionFree` | `applications/meanderaw/src/modules/classification/classification.service.ts:122` |
-| `ClassificationService.classify` | 1 | `ClassificationService.rules` | `applications/meanderaw/src/modules/classification/classification.service.ts:284` |
-| `ClassificationService.matches` | 1 | `ClassificationService.reachesMinimumRows` | `applications/meanderaw/src/modules/classification/classification.service.ts:308` |
-| `ClassificationService.matches` | 1 | `ClassificationService.reachesMinimumRows` | `applications/meanderaw/src/modules/classification/classification.service.ts:314` |
-| `ClassificationService.matches` | 1 | `ClassificationService.reachesMinimumRows` | `applications/meanderaw/src/modules/classification/classification.service.ts:320` |
-| `ClassificationService.matches` | 1 | `ClassificationService.reachesMinimumRows` | `applications/meanderaw/src/modules/classification/classification.service.ts:326` |
-| `ClassificationService.matches` | 1 | `ClassificationService.reachesMinimumRows` | `applications/meanderaw/src/modules/classification/classification.service.ts:332` |
-| `ClassificationService.matches` | 1 | `ClassificationService.reachesMinimumRows` | `applications/meanderaw/src/modules/classification/classification.service.ts:338` |
-| `ClassificationService.matches` | 1 | `ClassificationService.isBundle` | `applications/meanderaw/src/modules/classification/classification.service.ts:344` |
-| `ClassificationService.matches` | 1 | `ClassificationService.reachesMinimumRows` | `applications/meanderaw/src/modules/classification/classification.service.ts:348` |
-| `ClassificationService.matches` | 1 | `ClassificationService.reachesMinimumRows` | `applications/meanderaw/src/modules/classification/classification.service.ts:355` |
-| `ClassificationService.matches` | 1 | `ClassificationService.reachesMinimumRows` | `applications/meanderaw/src/modules/classification/classification.service.ts:361` |
-| `ClassificationService.matches` | 1 | `ClassificationService.isChain` | `applications/meanderaw/src/modules/classification/classification.service.ts:377` |
-| `ClassificationService.matches` | 1 | `ClassificationService.isDoubleChain` | `applications/meanderaw/src/modules/classification/classification.service.ts:381` |
-| `ClassificationService.matches` | 1 | `ClassificationService.isWaterfalls` | `applications/meanderaw/src/modules/classification/classification.service.ts:385` |
-| `ClassificationService.matches` | 1 | `ClassificationService.isWhirl` | `applications/meanderaw/src/modules/classification/classification.service.ts:389` |
-| `ClassificationService.matches` | 1 | `ClassificationService.isSwirl` | `applications/meanderaw/src/modules/classification/classification.service.ts:393` |
-| `ClassificationService.matches` | 1 | `ClassificationService.isClasps` | `applications/meanderaw/src/modules/classification/classification.service.ts:397` |
-| `ClassificationService.matches` | 1 | `ClassificationService.reachesMinimumRows` | `applications/meanderaw/src/modules/classification/classification.service.ts:408` |
+| `ClassificationService.matches` | 1 | `ClassificationService.holds` | `applications/meanderaw/src/modules/classification/classification.service.ts:64` |
+| `ClassificationService.matches` | 1 | `ClassificationService.holds` | `applications/meanderaw/src/modules/classification/classification.service.ts:75` |
+| `ClassificationService.classify` | 1 | `ClassificationService.rules` | `applications/meanderaw/src/modules/classification/classification.service.ts:86` |
 | `TileService.assertPointJoinsBelow` | 1 | `MalformedTileError.constructor` | `applications/meanderaw/src/modules/tile/tile.service.ts:72` |
 | `TileService.blankEdges` | 1 | `TileService.grid` | `applications/meanderaw/src/modules/tile/tile.service.ts:143` |
 | `TileService.grid` | 1 | `TileService.from(…)` | `applications/meanderaw/src/modules/tile/tile.service.ts:145` |
@@ -3454,16 +3396,16 @@ What this project is judged against, as declared in its own `callidescope.config
 | `SymmetryService.flatMap(…)` | 1 | `SymmetryService.map(…)` | `applications/meanderaw/src/modules/symmetry/symmetry.service.ts:204` |
 | `CodeService.parseBare` | 1 | `CodeService.validateDigits` | `applications/meanderaw/src/modules/code/code.service.ts:90` |
 | `CodeService.parseFormatted` | 1 | `CodeService.validateDigits` | `applications/meanderaw/src/modules/code/code.service.ts:102` |
-| `CodeService.anonymous` | 1 | `CodeService.from(…)` | `applications/meanderaw/src/modules/code/code.service.ts:148` |
-| `CodeService.from(…)` | 1 | `CodeService.rotate` | `applications/meanderaw/src/modules/code/code.service.ts:149` |
-| `CodeService.directionsAt` | 1 | `CodeService.decode` | `applications/meanderaw/src/modules/code/code.service.ts:179` |
-| `CodeService.reduceToUnit` | 1 | `CodeService.isRepeatingUnit` | `applications/meanderaw/src/modules/code/code.service.ts:230` |
-| `CodeService.rotate` | 1 | `CodeService.from(…)` | `applications/meanderaw/src/modules/code/code.service.ts:270` |
-| `CodeService.flatMap(…)` | 1 | `CodeService.map(…)` | `applications/meanderaw/src/modules/code/code.service.ts:290` |
-| `CodeService.tile` | 1 | `CodeService.from(…)` | `applications/meanderaw/src/modules/code/code.service.ts:330` |
-| `CodeService.from(…)` | 1 | `CodeService.from(…)` | `applications/meanderaw/src/modules/code/code.service.ts:335` |
-| `CodeService.from(…)` | 1 | `CodeService.directionsAt` | `applications/meanderaw/src/modules/code/code.service.ts:336` |
-| `GraphService.components` | 1 | `GraphService.walk` | `applications/meanderaw/src/modules/graph/graph.service.ts:67` |
+| `CodeService.anonymous` | 1 | `CodeService.from(…)` | `applications/meanderaw/src/modules/code/code.service.ts:149` |
+| `CodeService.from(…)` | 1 | `CodeService.rotate` | `applications/meanderaw/src/modules/code/code.service.ts:150` |
+| `CodeService.directionsAt` | 1 | `CodeService.decode` | `applications/meanderaw/src/modules/code/code.service.ts:181` |
+| `CodeService.reduceToUnit` | 1 | `CodeService.isRepeatingUnit` | `applications/meanderaw/src/modules/code/code.service.ts:232` |
+| `CodeService.rotate` | 1 | `CodeService.from(…)` | `applications/meanderaw/src/modules/code/code.service.ts:272` |
+| `CodeService.spellDigits` | 1 | `CodeService.flatMap(…)` | `applications/meanderaw/src/modules/code/code.service.ts:313` |
+| `CodeService.flatMap(…)` | 1 | `CodeService.map(…)` | `applications/meanderaw/src/modules/code/code.service.ts:315` |
+| `CodeService.tile` | 1 | `CodeService.from(…)` | `applications/meanderaw/src/modules/code/code.service.ts:339` |
+| `CodeService.from(…)` | 1 | `CodeService.from(…)` | `applications/meanderaw/src/modules/code/code.service.ts:344` |
+| `CodeService.from(…)` | 1 | `CodeService.directionsAt` | `applications/meanderaw/src/modules/code/code.service.ts:345` |
 | `MatrixService.extractSubmatrix` | 1 | `MatrixService.from(…)` | `applications/meanderaw/src/modules/matrix/matrix.service.ts:33` |
 | `MatrixService.from(…)` | 1 | `MatrixService.from(…)` | `applications/meanderaw/src/modules/matrix/matrix.service.ts:42` |
 | `MatrixService.from(…)` | 1 | `MatrixService.from(…)` | `applications/meanderaw/src/modules/matrix/matrix.service.ts:73` |
@@ -3471,60 +3413,69 @@ What this project is judged against, as declared in its own `callidescope.config
 | `MatrixService.rotate` | 1 | `MatrixService.map(…)` | `applications/meanderaw/src/modules/matrix/matrix.service.ts:101` |
 | `MatrixService.submatrices` | 1 | `MatrixService.extractSubmatrix` | `applications/meanderaw/src/modules/matrix/matrix.service.ts:119` |
 | `MatrixService.flatMap(…)` | 1 | `MatrixService.map(…)` | `applications/meanderaw/src/modules/matrix/matrix.service.ts:166` |
-| `CharacteristicsFamilyService.generateWaterfall` | 1 | `CharacteristicsFamilyService.shiftString` | `applications/meanderaw/src/modules/characteristics/characteristics-family.service.ts:25` |
-| `CharacteristicsFamilyService.hasDownTeeth` | 1 | `CharacteristicsFamilyService.from(…)` | `applications/meanderaw/src/modules/characteristics/characteristics-family.service.ts:54` |
-| `CharacteristicsFamilyService.hasUpTeeth` | 1 | `CharacteristicsFamilyService.from(…)` | `applications/meanderaw/src/modules/characteristics/characteristics-family.service.ts:78` |
-| `CharacteristicsFamilyService.toGrid` | 1 | `CharacteristicsFamilyService.from(…)` | `applications/meanderaw/src/modules/characteristics/characteristics-family.service.ts:173` |
-| `CharacteristicsFamilyService.validateBasic` | 1 | `CharacteristicsFamilyService.some(…)` | `applications/meanderaw/src/modules/characteristics/characteristics-family.service.ts:181` |
-| `CharacteristicsFamilyService.anonymous` | 1 | `CharacteristicsFamilyService.isBars` | `applications/meanderaw/src/modules/characteristics/characteristics-family.service.ts:243` |
-| `CharacteristicsFamilyService.anonymous` | 1 | `CharacteristicsFamilyService.isMesh` | `applications/meanderaw/src/modules/characteristics/characteristics-family.service.ts:244` |
-| `CharacteristicsFamilyService.anonymous` | 1 | `CharacteristicsFamilyService.isComb` | `applications/meanderaw/src/modules/characteristics/characteristics-family.service.ts:245` |
-| `CharacteristicsFamilyService.from(…)` | 1 | `CharacteristicsFamilyService.every(…)` | `applications/meanderaw/src/modules/characteristics/characteristics-family.service.ts:265` |
-| `CharacteristicsFamilyService.anonymous` | 1 | `CharacteristicsFamilyService.isBars` | `applications/meanderaw/src/modules/characteristics/characteristics-family.service.ts:304` |
-| `CharacteristicsFamilyService.anonymous` | 1 | `CharacteristicsFamilyService.isLines` | `applications/meanderaw/src/modules/characteristics/characteristics-family.service.ts:305` |
-| `CharacteristicsFamilyService.anonymous` | 1 | `CharacteristicsFamilyService.isMesh` | `applications/meanderaw/src/modules/characteristics/characteristics-family.service.ts:306` |
-| `CharacteristicsFamilyService.isWaterfalls` | 1 | `CharacteristicsFamilyService.generateWaterfall` | `applications/meanderaw/src/modules/characteristics/characteristics-family.service.ts:358` |
-| `ConnectivityService.adjacency` | 1 | `ConnectivityService.nodes` | `applications/meanderaw/src/modules/characteristics/connectivity.service.ts:61` |
-| `ConnectivityService.nodes` | 1 | `ConnectivityService.from(…)` | `applications/meanderaw/src/modules/characteristics/connectivity.service.ts:114` |
-| `ConnectivityService.from(…)` | 1 | `ConnectivityService.from(…)` | `applications/meanderaw/src/modules/characteristics/connectivity.service.ts:117` |
-| `ConnectivityService.from(…)` | 1 | `ConnectivityService.key` | `applications/meanderaw/src/modules/characteristics/connectivity.service.ts:118` |
-| `CharacteristicsPathService.checkFinalLoopTurn` | 1 | `CharacteristicsPathService.applyTurn` | `applications/meanderaw/src/modules/characteristics/characteristics-path.service.ts:89` |
-| `CharacteristicsPathService.findStartNode` | 1 | `CharacteristicsPathService.getNeighbors` | `applications/meanderaw/src/modules/characteristics/characteristics-path.service.ts:130` |
-| `CharacteristicsPathService.getDirection` | 1 | `CharacteristicsPathService.parseKey` | `applications/meanderaw/src/modules/characteristics/characteristics-path.service.ts:156` |
-| `CharacteristicsPathService.tracePaths` | 1 | `CharacteristicsPathService.traceSinglePath` | `applications/meanderaw/src/modules/characteristics/characteristics-path.service.ts:199` |
-| `CharacteristicsService.longestHorizontalRun` | 1 | `CharacteristicsService.map(…)` | `applications/meanderaw/src/modules/characteristics/characteristics.service.ts:251` |
-| `CharacteristicsService.map(…)` | 1 | `CharacteristicsService.longestRowRun` | `applications/meanderaw/src/modules/characteristics/characteristics.service.ts:255` |
-| `CharacteristicsService.longestVerticalRun` | 1 | `CharacteristicsService.from(…)` | `applications/meanderaw/src/modules/characteristics/characteristics.service.ts:280` |
-| `CharacteristicsService.from(…)` | 1 | `CharacteristicsService.longestColumnRun` | `applications/meanderaw/src/modules/characteristics/characteristics.service.ts:285` |
-| `CharacteristicsService.tallyHistogram` | 1 | `CharacteristicsService.tallyMatrixPoint` | `applications/meanderaw/src/modules/characteristics/characteristics.service.ts:350` |
-| `CharacteristicsService.toParsedCode` | 1 | `CharacteristicsService.flatMap(…)` | `applications/meanderaw/src/modules/characteristics/characteristics.service.ts:431` |
-| `CharacteristicsService.flatMap(…)` | 1 | `CharacteristicsService.map(…)` | `applications/meanderaw/src/modules/characteristics/characteristics.service.ts:439` |
-| `CharacteristicsService.classifyFamilies` | 1 | `CharacteristicsFamilyService.classify` | `applications/meanderaw/src/modules/characteristics/characteristics.service.ts:458` |
-| `CharacteristicsService.compute` | 1 | `CharacteristicsService.measure` | `applications/meanderaw/src/modules/characteristics/characteristics.service.ts:463` |
+| `CharacteristicContextService.parse` | 1 | `CodeService.parse` | `applications/meanderaw/src/modules/characteristics/characteristic-context.service.ts:56` |
+| `GraphService.components` | 1 | `GraphService.walk` | `applications/meanderaw/src/modules/graph/graph.service.ts:67` |
+| `ConnectivityService.adjacency` | 1 | `ConnectivityService.nodes` | `applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:61` |
+| `ConnectivityService.nodes` | 1 | `ConnectivityService.from(…)` | `applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:114` |
+| `ConnectivityService.from(…)` | 1 | `ConnectivityService.from(…)` | `applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:117` |
+| `ConnectivityService.from(…)` | 1 | `ConnectivityService.key` | `applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:118` |
 | `TileCrossingComponentDeltaCountCharacteristicService.compute` | 1 | `ConnectivityService.connectivity` | `applications/meanderaw/src/modules/characteristics/path/tile-crossing/tile-crossing-component-delta-count-characteristic.service.ts:45` |
+| `CharacteristicsService.find(…)` | 1 | `CharacteristicsService.valueTypeOf` | `applications/meanderaw/src/modules/characteristics/characteristics.service.ts:77` |
+| `CharacteristicsService.map(…)` | 1 | `CharacteristicRegistryError.constructor` | `applications/meanderaw/src/modules/characteristics/characteristics.service.ts:120` |
+| `CharacteristicsService.evaluators` | 1 | `CharacteristicsService.discover` | `applications/meanderaw/src/modules/characteristics/characteristics.service.ts:140` |
+| `CharacteristicsService.map(…)` | 1 | `CharacteristicsService.entry` | `applications/meanderaw/src/modules/characteristics/characteristics.service.ts:204` |
+| `CharacteristicsService.onApplicationBootstrap` | 1 | `CharacteristicsService.evaluators` | `applications/meanderaw/src/modules/characteristics/characteristics.service.ts:247` |
+| `CharacteristicsService.trueBooleanKeys` | 1 | `CharacteristicsService.filter(…)` | `applications/meanderaw/src/modules/characteristics/characteristics.service.ts:263` |
 | `TileCrossingCountCharacteristicService.compute` | 1 | `ConnectivityService.edges` | `applications/meanderaw/src/modules/characteristics/path/tile-crossing/tile-crossing-count-characteristic.service.ts:47` |
 | `TileCrossingCycleCountCharacteristicService.compute` | 1 | `ConnectivityService.connectivity` | `applications/meanderaw/src/modules/characteristics/path/tile-crossing/tile-crossing-cycle-count-characteristic.service.ts:45` |
 | `BettiNumber0CountCharacteristicService.compute` | 1 | `ConnectivityService.connectivity` | `applications/meanderaw/src/modules/characteristics/path/topology/betti-number-0-count-characteristic.service.ts:46` |
 | `BettiNumber1CountCharacteristicService.compute` | 1 | `ConnectivityService.connectivity` | `applications/meanderaw/src/modules/characteristics/path/topology/betti-number-1-count-characteristic.service.ts:46` |
 | `FreeEndCountCharacteristicService.compute` | 1 | `ConnectivityService.connectivity` | `applications/meanderaw/src/modules/characteristics/path/topology/free-end-count-characteristic.service.ts:46` |
-| `neighborPairs` | 1 | `map(…)` | `applications/meanderaw/src/modules/characteristics/path/path.utilities.ts:31` |
-| `signedTurns` | 1 | `filter(…)` | `applications/meanderaw/src/modules/characteristics/path/path.utilities.ts:74` |
-| `continuation` | 1 | `find(…)` | `applications/meanderaw/src/modules/characteristics/path/path.utilities.ts:112` |
-| `find(…)` | 1 | `opposite` | `applications/meanderaw/src/modules/characteristics/path/path.utilities.ts:120` |
-| `TotalTurnCountCharacteristicService.reduce(…)` | 1 | `signedTurns` | `applications/meanderaw/src/modules/characteristics/path/turn/total-turn-count-characteristic.service.ts:49` |
+| `InkPointCountCharacteristicService.compute` | 1 | `PointUtilitiesService.armCount` | `applications/meanderaw/src/modules/characteristics/submatrix/point/ink-point-count-characteristic.service.ts:44` |
+| `DensityCharacteristicService.compute` | 1 | `InkPointCountCharacteristicService.compute` | `applications/meanderaw/src/modules/characteristics/submatrix/point/density-characteristic.service.ts:45` |
 | `every(…)` | 1 | `pointDigitAt` | `applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:37` |
 | `glyphFormula` | 1 | `map(…)` | `applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:87` |
 | `map(…)` | 1 | `from(…)` | `applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:89` |
 | `glyphCells` | 1 | `flatMap(…)` | `applications/meanderaw/src/modules/characteristics/submatrix/submatrix.utilities.ts:125` |
-| `NorthEastCornerCountCharacteristicService.compute` | 1 | `countPointsWithExactArms` | `applications/meanderaw/src/modules/characteristics/submatrix/corner/north-east-corner-count-characteristic.service.ts:42` |
-| `NorthWestCornerCountCharacteristicService.compute` | 1 | `countPointsWithExactArms` | `applications/meanderaw/src/modules/characteristics/submatrix/corner/north-west-corner-count-characteristic.service.ts:42` |
-| `SouthEastCornerCountCharacteristicService.compute` | 1 | `countPointsWithExactArms` | `applications/meanderaw/src/modules/characteristics/submatrix/corner/south-east-corner-count-characteristic.service.ts:42` |
-| `SouthWestCornerCountCharacteristicService.compute` | 1 | `countPointsWithExactArms` | `applications/meanderaw/src/modules/characteristics/submatrix/corner/south-west-corner-count-characteristic.service.ts:42` |
+| `DotCountCharacteristicService.compute` | 1 | `countPointsWithExactArms` | `applications/meanderaw/src/modules/characteristics/submatrix/point/dot-count-characteristic.service.ts:40` |
+| `EdgeCountCharacteristicService.compute` | 1 | `PointUtilitiesService.armCount` | `applications/meanderaw/src/modules/characteristics/submatrix/point/edge-count-characteristic.service.ts:47` |
+| `HorizontalEdgeCountCharacteristicService.compute` | 1 | `countPointsWithExactArms` | `applications/meanderaw/src/modules/characteristics/submatrix/point/horizontal-edge-count-characteristic.service.ts:41` |
+| `VerticalEdgeCountCharacteristicService.compute` | 1 | `countPointsWithExactArms` | `applications/meanderaw/src/modules/characteristics/submatrix/point/vertical-edge-count-characteristic.service.ts:41` |
+| `neighborPairs` | 1 | `map(…)` | `applications/meanderaw/src/modules/characteristics/path/path.utilities.ts:31` |
+| `signedTurns` | 1 | `filter(…)` | `applications/meanderaw/src/modules/characteristics/path/path.utilities.ts:74` |
+| `continuation` | 1 | `find(…)` | `applications/meanderaw/src/modules/characteristics/path/path.utilities.ts:112` |
+| `find(…)` | 1 | `opposite` | `applications/meanderaw/src/modules/characteristics/path/path.utilities.ts:120` |
+| `ReversesAtItsTightestTurnCharacteristicService.checkFinalLoopTurn` | 1 | `ReversesAtItsTightestTurnCharacteristicService.applyTurn` | `applications/meanderaw/src/modules/characteristics/path/turn/reverses-at-its-tightest-turn-characteristic.service.ts:134` |
+| `ReversesAtItsTightestTurnCharacteristicService.findStartNode` | 1 | `ReversesAtItsTightestTurnCharacteristicService.getNeighbors` | `applications/meanderaw/src/modules/characteristics/path/turn/reverses-at-its-tightest-turn-characteristic.service.ts:171` |
+| `ReversesAtItsTightestTurnCharacteristicService.getDirection` | 1 | `ReversesAtItsTightestTurnCharacteristicService.parseKey` | `applications/meanderaw/src/modules/characteristics/path/turn/reverses-at-its-tightest-turn-characteristic.service.ts:197` |
+| `ReversesAtItsTightestTurnCharacteristicService.isJunctionFree` | 1 | `PointUtilitiesService.armCount` | `applications/meanderaw/src/modules/characteristics/path/turn/reverses-at-its-tightest-turn-characteristic.service.ts:223` |
+| `ReversesAtItsTightestTurnCharacteristicService.tracePaths` | 1 | `ReversesAtItsTightestTurnCharacteristicService.traceSinglePath` | `applications/meanderaw/src/modules/characteristics/path/turn/reverses-at-its-tightest-turn-characteristic.service.ts:242` |
+| `TotalTurnCountCharacteristicService.reduce(…)` | 1 | `signedTurns` | `applications/meanderaw/src/modules/characteristics/path/turn/total-turn-count-characteristic.service.ts:49` |
 | `CrossCountCharacteristicService.compute` | 1 | `countPointsWithExactArms` | `applications/meanderaw/src/modules/characteristics/submatrix/cross/cross-count-characteristic.service.ts:41` |
+| `EmbeddedUCountCharacteristicService.windowDigits` | 1 | `pointDigitAt` | `applications/meanderaw/src/modules/characteristics/submatrix/embedded/embedded-u-count-characteristic.service.ts:68` |
 | `EastForkCountCharacteristicService.compute` | 1 | `countPointsWithExactArms` | `applications/meanderaw/src/modules/characteristics/submatrix/fork/east-fork-count-characteristic.service.ts:42` |
 | `NorthForkCountCharacteristicService.compute` | 1 | `countPointsWithExactArms` | `applications/meanderaw/src/modules/characteristics/submatrix/fork/north-fork-count-characteristic.service.ts:42` |
 | `SouthForkCountCharacteristicService.compute` | 1 | `countPointsWithExactArms` | `applications/meanderaw/src/modules/characteristics/submatrix/fork/south-fork-count-characteristic.service.ts:42` |
 | `WestForkCountCharacteristicService.compute` | 1 | `countPointsWithExactArms` | `applications/meanderaw/src/modules/characteristics/submatrix/fork/west-fork-count-characteristic.service.ts:42` |
+| `RunUtilitiesService.longestHorizontalRunLength` | 1 | `RunUtilitiesService.map(…)` | `applications/meanderaw/src/modules/characteristics/submatrix/run/run-utilities.service.ts:67` |
+| `RunUtilitiesService.map(…)` | 1 | `RunUtilitiesService.longestRowRunLength` | `applications/meanderaw/src/modules/characteristics/submatrix/run/run-utilities.service.ts:74` |
+| `RunUtilitiesService.longestVerticalRunLength` | 1 | `RunUtilitiesService.from(…)` | `applications/meanderaw/src/modules/characteristics/submatrix/run/run-utilities.service.ts:84` |
+| `RunUtilitiesService.from(…)` | 1 | `RunUtilitiesService.longestColumnRunLength` | `applications/meanderaw/src/modules/characteristics/submatrix/run/run-utilities.service.ts:91` |
+| `LongestHorizontalRunLengthCharacteristicService.compute` | 1 | `RunUtilitiesService.longestHorizontalRunLength` | `applications/meanderaw/src/modules/characteristics/submatrix/run/longest-horizontal-run-length-characteristic.service.ts:45` |
+| `LongestVerticalRunLengthCharacteristicService.compute` | 1 | `RunUtilitiesService.longestVerticalRunLength` | `applications/meanderaw/src/modules/characteristics/submatrix/run/longest-vertical-run-length-characteristic.service.ts:45` |
+| `FamilyUtilitiesService.grid` | 1 | `FamilyUtilitiesService.from(…)` | `applications/meanderaw/src/modules/characteristics/compound/family/family-utilities.service.ts:26` |
+| `IsBarsCharacteristicService.compute` | 1 | `FamilyUtilitiesService.matchesRails` | `applications/meanderaw/src/modules/characteristics/compound/family/is-bars-characteristic.service.ts:45` |
+| `IsMeshCharacteristicService.compute` | 1 | `FamilyUtilitiesService.matchesRails` | `applications/meanderaw/src/modules/characteristics/compound/family/is-mesh-characteristic.service.ts:45` |
+| `IsCombCharacteristicService.hasDownTeeth` | 1 | `IsCombCharacteristicService.from(…)` | `applications/meanderaw/src/modules/characteristics/compound/family/is-comb-characteristic.service.ts:53` |
+| `IsCombCharacteristicService.hasUpTeeth` | 1 | `IsCombCharacteristicService.from(…)` | `applications/meanderaw/src/modules/characteristics/compound/family/is-comb-characteristic.service.ts:77` |
+| `IsArcadeCharacteristicService.from(…)` | 1 | `IsArcadeCharacteristicService.every(…)` | `applications/meanderaw/src/modules/characteristics/compound/family/is-arcade-characteristic.service.ts:67` |
+| `IsSnakeCharacteristicService.compute` | 1 | `IsClosedLoopCharacteristicService.compute` | `applications/meanderaw/src/modules/characteristics/compound/family/is-snake-characteristic.service.ts:45` |
+| `IsWhirlCharacteristicService.isDoubleWhirl` | 1 | `StrandUtilitiesService.hasStrandEnds` | `applications/meanderaw/src/modules/characteristics/compound/family/is-whirl-characteristic.service.ts:44` |
+| `IsWhirlCharacteristicService.isSingleWhirl` | 1 | `StrandUtilitiesService.hasStrandEnds` | `applications/meanderaw/src/modules/characteristics/compound/family/is-whirl-characteristic.service.ts:54` |
+| `NorthEastCornerCountCharacteristicService.compute` | 1 | `countPointsWithExactArms` | `applications/meanderaw/src/modules/characteristics/submatrix/corner/north-east-corner-count-characteristic.service.ts:42` |
+| `NorthWestCornerCountCharacteristicService.compute` | 1 | `countPointsWithExactArms` | `applications/meanderaw/src/modules/characteristics/submatrix/corner/north-west-corner-count-characteristic.service.ts:42` |
+| `SouthEastCornerCountCharacteristicService.compute` | 1 | `countPointsWithExactArms` | `applications/meanderaw/src/modules/characteristics/submatrix/corner/south-east-corner-count-characteristic.service.ts:42` |
+| `SouthWestCornerCountCharacteristicService.compute` | 1 | `countPointsWithExactArms` | `applications/meanderaw/src/modules/characteristics/submatrix/corner/south-west-corner-count-characteristic.service.ts:42` |
 | `AEastLetterCountCharacteristicService.compute` | 1 | `countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/a-east-letter-count-characteristic.service.ts:50` |
 | `AInvertedLetterCountCharacteristicService.compute` | 1 | `countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/a-inverted-letter-count-characteristic.service.ts:51` |
 | `ALetterCountCharacteristicService.compute` | 1 | `countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/a-letter-count-characteristic.service.ts:51` |
@@ -3571,9 +3522,6 @@ What this project is judged against, as declared in its own `callidescope.config
 | `YWestLetterCountCharacteristicService.compute` | 1 | `countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/y-west-letter-count-characteristic.service.ts:51` |
 | `ZLetterCountCharacteristicService.compute` | 1 | `countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/z-letter-count-characteristic.service.ts:51` |
 | `ZSidewaysLetterCountCharacteristicService.compute` | 1 | `countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/z-sideways-letter-count-characteristic.service.ts:50` |
-| `DotCountCharacteristicService.compute` | 1 | `countPointsWithExactArms` | `applications/meanderaw/src/modules/characteristics/submatrix/point/dot-count-characteristic.service.ts:40` |
-| `HorizontalEdgeCountCharacteristicService.compute` | 1 | `countPointsWithExactArms` | `applications/meanderaw/src/modules/characteristics/submatrix/point/horizontal-edge-count-characteristic.service.ts:41` |
-| `VerticalEdgeCountCharacteristicService.compute` | 1 | `countPointsWithExactArms` | `applications/meanderaw/src/modules/characteristics/submatrix/point/vertical-edge-count-characteristic.service.ts:41` |
 | `countIsolatedRectangles` | 1 | `isIsolatedRectangleAt` | `applications/meanderaw/src/modules/characteristics/submatrix/rectangle/rectangle.utilities.ts:23` |
 | `from(…)` | 1 | `pointDigitAt` | `applications/meanderaw/src/modules/characteristics/submatrix/rectangle/rectangle.utilities.ts:88` |
 | `from(…)` | 1 | `pointDigitAt` | `applications/meanderaw/src/modules/characteristics/submatrix/rectangle/rectangle.utilities.ts:91` |
@@ -3587,17 +3535,17 @@ What this project is judged against, as declared in its own `callidescope.config
 | `TileEnumerationService.isMatching` | 1 | `TileService.incidentEdges` | `applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:235` |
 | `EnumerationService.map(…)` | 1 | `CodeService.spell` | `applications/meanderaw/src/modules/enumeration/enumeration.service.ts:104` |
 | `EnumerationService.isAdmitted` | 1 | `TileEnumerationService.isAdmitted` | `applications/meanderaw/src/modules/enumeration/enumeration.service.ts:112` |
-| `CorpusService.canonicalPhase(…)` | 1 | `CharacteristicsService.seamComponents` | `applications/meanderaw/src/modules/corpus/corpus.service.ts:95` |
-| `CorpusService.filter(…)` | 1 | `CorpusService.isBeyondEnumeration` | `applications/meanderaw/src/modules/corpus/corpus.service.ts:174` |
-| `CorpusService.isBeyondEnumeration` | 1 | `EnumerationService.isAdmitted` | `applications/meanderaw/src/modules/corpus/corpus.service.ts:196` |
-| `MeanderDriftDetectedError.constructor` | 1 | `MeanderDriftDetectedError.describe` | `applications/meanderaw/src/modules/draw/draw-check.constants.ts:66` |
-| `MeanderDriftDetectedError.map(…)` | 1 | `MeanderDriftDetectedError.describeNew` | `applications/meanderaw/src/modules/draw/draw-check.constants.ts:78` |
-| `MeanderDriftDetectedError.map(…)` | 1 | `MeanderDriftDetectedError.describeMissing` | `applications/meanderaw/src/modules/draw/draw-check.constants.ts:81` |
-| `MeanderDriftDetectedError.map(…)` | 1 | `MeanderDriftDetectedError.describeChanged` | `applications/meanderaw/src/modules/draw/draw-check.constants.ts:84` |
-| `MeanderDriftDetectedError.describeChanged` | 1 | `MeanderDriftDetectedError.describeKey` | `applications/meanderaw/src/modules/draw/draw-check.constants.ts:91` |
-| `MeanderDriftDetectedError.describeMissing` | 1 | `MeanderDriftDetectedError.describeKey` | `applications/meanderaw/src/modules/draw/draw-check.constants.ts:101` |
-| `MeanderDriftDetectedError.describeNew` | 1 | `MeanderDriftDetectedError.describeKey` | `applications/meanderaw/src/modules/draw/draw-check.constants.ts:106` |
-| `DrawRecordService.canonicalPhase(…)` | 1 | `CharacteristicsService.seamComponents` | `applications/meanderaw/src/modules/draw/draw-record.service.ts:69` |
+| `CorpusService.canonicalPhase(…)` | 1 | `CharacteristicsService.tileCrossingComponentDeltaCount` | `applications/meanderaw/src/modules/corpus/corpus.service.ts:94` |
+| `CorpusService.filter(…)` | 1 | `CorpusService.isBeyondEnumeration` | `applications/meanderaw/src/modules/corpus/corpus.service.ts:165` |
+| `CorpusService.isBeyondEnumeration` | 1 | `EnumerationService.isAdmitted` | `applications/meanderaw/src/modules/corpus/corpus.service.ts:187` |
+| `MeanderDriftDetectedError.constructor` | 1 | `MeanderDriftDetectedError.describe` | `applications/meanderaw/src/modules/draw/draw-check.constants.ts:68` |
+| `MeanderDriftDetectedError.map(…)` | 1 | `MeanderDriftDetectedError.describeNew` | `applications/meanderaw/src/modules/draw/draw-check.constants.ts:80` |
+| `MeanderDriftDetectedError.map(…)` | 1 | `MeanderDriftDetectedError.describeMissing` | `applications/meanderaw/src/modules/draw/draw-check.constants.ts:83` |
+| `MeanderDriftDetectedError.map(…)` | 1 | `MeanderDriftDetectedError.describeChanged` | `applications/meanderaw/src/modules/draw/draw-check.constants.ts:86` |
+| `MeanderDriftDetectedError.describeChanged` | 1 | `MeanderDriftDetectedError.describeKey` | `applications/meanderaw/src/modules/draw/draw-check.constants.ts:93` |
+| `MeanderDriftDetectedError.describeMissing` | 1 | `MeanderDriftDetectedError.describeKey` | `applications/meanderaw/src/modules/draw/draw-check.constants.ts:103` |
+| `MeanderDriftDetectedError.describeNew` | 1 | `MeanderDriftDetectedError.describeKey` | `applications/meanderaw/src/modules/draw/draw-check.constants.ts:108` |
+| `DrawRecordService.canonicalPhase(…)` | 1 | `CharacteristicsService.tileCrossingComponentDeltaCount` | `applications/meanderaw/src/modules/draw/draw-record.service.ts:70` |
 | `DrawEnumerationService.map(…)` | 1 | `DrawRecordService.record` | `applications/meanderaw/src/modules/draw/draw-enumeration.service.ts:74` |
 | `DrawCheckService.differingColumns` | 1 | `DrawCheckService.filter(…)` | `applications/meanderaw/src/modules/draw/draw-check.service.ts:61` |
 | `DrawCheckService.filter(…)` | 1 | `DrawCheckService.some(…)` | `applications/meanderaw/src/modules/draw/draw-check.service.ts:65` |
@@ -3641,7 +3589,9 @@ flowchart LR
   CharacteristicsModule
   ClassificationModule
   CodeModule
+  CompoundUtilitiesModule
   ConfigModule([ConfigModule])
+  ConnectivityModule
   CornerCharacteristicsModule
   CorpusModule
   CrossCharacteristicsModule
@@ -3649,7 +3599,10 @@ flowchart LR
   DiscoveryModule
   DrawingModule
   DrawModule
+  EmbeddedCharacteristicsModule
+  EndCharacteristicsModule
   EnumerationModule
+  FamilyCharacteristicsModule
   ForkCharacteristicsModule
   GeometryModule
   GraphModule
@@ -3659,6 +3612,8 @@ flowchart LR
   MatrixModule
   PointCharacteristicsModule
   RectangleCharacteristicsModule
+  RunCharacteristicsModule
+  StructureCharacteristicsModule
   SvgModule
   SymmetryModule
   TileCrossingCharacteristicsModule
@@ -3669,16 +3624,24 @@ flowchart LR
   CharacteristicsModule --> CodeModule
   CharacteristicsModule --> CornerCharacteristicsModule
   CharacteristicsModule --> CrossCharacteristicsModule
+  CharacteristicsModule --> DiscoveryModule
+  CharacteristicsModule --> EmbeddedCharacteristicsModule
+  CharacteristicsModule --> EndCharacteristicsModule
+  CharacteristicsModule --> FamilyCharacteristicsModule
   CharacteristicsModule --> ForkCharacteristicsModule
-  CharacteristicsModule --> GraphModule
   CharacteristicsModule --> LetterCharacteristicsModule
   CharacteristicsModule --> MatrixModule
   CharacteristicsModule --> PointCharacteristicsModule
   CharacteristicsModule --> RectangleCharacteristicsModule
+  CharacteristicsModule --> RunCharacteristicsModule
+  CharacteristicsModule --> StructureCharacteristicsModule
   CharacteristicsModule --> TileCrossingCharacteristicsModule
   CharacteristicsModule --> TopologyCharacteristicsModule
   CharacteristicsModule --> TurnCharacteristicsModule
   CodeModule --> SymmetryModule
+  CompoundUtilitiesModule --> CrossCharacteristicsModule
+  CompoundUtilitiesModule --> ForkCharacteristicsModule
+  ConnectivityModule --> GraphModule
   CorpusModule --> CharacteristicsModule
   CorpusModule --> ClassificationModule
   CorpusModule --> CodeModule
@@ -3698,19 +3661,34 @@ flowchart LR
   DrawModule --> DrawingModule
   DrawModule --> EnumerationModule
   DrawModule --> GeometryModule
+  EndCharacteristicsModule --> ConnectivityModule
   EnumerationModule --> CodeModule
   EnumerationModule --> SymmetryModule
   EnumerationModule --> TileModule
+  FamilyCharacteristicsModule --> CompoundUtilitiesModule
+  FamilyCharacteristicsModule --> CrossCharacteristicsModule
+  FamilyCharacteristicsModule --> EmbeddedCharacteristicsModule
+  FamilyCharacteristicsModule --> EndCharacteristicsModule
+  FamilyCharacteristicsModule --> ForkCharacteristicsModule
+  FamilyCharacteristicsModule --> PointCharacteristicsModule
+  FamilyCharacteristicsModule --> RunCharacteristicsModule
+  FamilyCharacteristicsModule --> StructureCharacteristicsModule
+  FamilyCharacteristicsModule --> TileCrossingCharacteristicsModule
+  FamilyCharacteristicsModule --> TopologyCharacteristicsModule
+  FamilyCharacteristicsModule --> TurnCharacteristicsModule
   MainModule --> ClassificationModule
   MainModule --> DiscoveryModule
   MainModule --> DrawingModule
   MainModule --> DrawModule
   MainModule --> MatrixModule
   MatrixModule --> CodeModule
+  StructureCharacteristicsModule --> CompoundUtilitiesModule
+  StructureCharacteristicsModule --> TopologyCharacteristicsModule
   SymmetryModule --> TileModule
-  TileCrossingCharacteristicsModule --> GraphModule
-  TopologyCharacteristicsModule --> GraphModule
-  TurnCharacteristicsModule --> GraphModule
+  TileCrossingCharacteristicsModule --> ConnectivityModule
+  TopologyCharacteristicsModule --> ConnectivityModule
+  TurnCharacteristicsModule --> ConnectivityModule
+  TurnCharacteristicsModule --> PointCharacteristicsModule
 ```
 
 _Rounded modules are global: every module can inject them, so their edges are left out._
@@ -3732,20 +3710,79 @@ graph LR
   file_src_main_unit_test_ts["src/main.unit.test.ts"]
   file_src_modules_characteristics_characteristic_context_service_ts["src/modules/characteristics/characteristic-context.service.ts"]
   file_src_modules_characteristics_characteristic_context_service_unit_test_ts["src/modules/characteristics/characteristic-context.service.unit.test.ts"]
-  file_src_modules_characteristics_characteristics_family_service_ts["src/modules/characteristics/characteristics-family.service.ts"]
-  file_src_modules_characteristics_characteristics_family_service_unit_test_ts["src/modules/characteristics/characteristics-family.service.unit.test.ts"]
-  file_src_modules_characteristics_characteristics_path_service_ts["src/modules/characteristics/characteristics-path.service.ts"]
-  file_src_modules_characteristics_characteristics_path_service_unit_test_ts["src/modules/characteristics/characteristics-path.service.unit.test.ts"]
-  file_src_modules_characteristics_characteristics_shape_service_ts["src/modules/characteristics/characteristics-shape.service.ts"]
-  file_src_modules_characteristics_characteristics_shape_service_unit_test_ts["src/modules/characteristics/characteristics-shape.service.unit.test.ts"]
   file_src_modules_characteristics_characteristics_constants_ts["src/modules/characteristics/characteristics.constants.ts"]
   file_src_modules_characteristics_characteristics_module_ts["src/modules/characteristics/characteristics.module.ts"]
   file_src_modules_characteristics_characteristics_module_unit_test_ts["src/modules/characteristics/characteristics.module.unit.test.ts"]
+  file_src_modules_characteristics_characteristics_service_integration_test_ts["src/modules/characteristics/characteristics.service.integration.test.ts"]
   file_src_modules_characteristics_characteristics_service_ts["src/modules/characteristics/characteristics.service.ts"]
   file_src_modules_characteristics_characteristics_service_unit_test_ts["src/modules/characteristics/characteristics.service.unit.test.ts"]
   file_src_modules_characteristics_characteristics_types_ts["src/modules/characteristics/characteristics.types.ts"]
-  file_src_modules_characteristics_connectivity_service_ts["src/modules/characteristics/connectivity.service.ts"]
-  file_src_modules_characteristics_connectivity_service_unit_test_ts["src/modules/characteristics/connectivity.service.unit.test.ts"]
+  file_src_modules_characteristics_compound_compound_utilities_module_ts["src/modules/characteristics/compound/compound-utilities.module.ts"]
+  file_src_modules_characteristics_compound_compound_utilities_module_unit_test_ts["src/modules/characteristics/compound/compound-utilities.module.unit.test.ts"]
+  file_src_modules_characteristics_compound_compound_utilities_service_ts["src/modules/characteristics/compound/compound-utilities.service.ts"]
+  file_src_modules_characteristics_compound_compound_utilities_service_unit_test_ts["src/modules/characteristics/compound/compound-utilities.service.unit.test.ts"]
+  file_src_modules_characteristics_compound_family_family_characteristics_module_ts["src/modules/characteristics/compound/family/family-characteristics.module.ts"]
+  file_src_modules_characteristics_compound_family_family_utilities_service_ts["src/modules/characteristics/compound/family/family-utilities.service.ts"]
+  file_src_modules_characteristics_compound_family_family_utilities_service_unit_test_ts["src/modules/characteristics/compound/family/family-utilities.service.unit.test.ts"]
+  file_src_modules_characteristics_compound_family_family_types_ts["src/modules/characteristics/compound/family/family.types.ts"]
+  file_src_modules_characteristics_compound_family_is_arcade_characteristic_service_ts["src/modules/characteristics/compound/family/is-arcade-characteristic.service.ts"]
+  file_src_modules_characteristics_compound_family_is_arcade_characteristic_service_unit_test_ts["src/modules/characteristics/compound/family/is-arcade-characteristic.service.unit.test.ts"]
+  file_src_modules_characteristics_compound_family_is_bars_characteristic_service_ts["src/modules/characteristics/compound/family/is-bars-characteristic.service.ts"]
+  file_src_modules_characteristics_compound_family_is_bars_characteristic_service_unit_test_ts["src/modules/characteristics/compound/family/is-bars-characteristic.service.unit.test.ts"]
+  file_src_modules_characteristics_compound_family_is_boxes_characteristic_service_ts["src/modules/characteristics/compound/family/is-boxes-characteristic.service.ts"]
+  file_src_modules_characteristics_compound_family_is_boxes_characteristic_service_unit_test_ts["src/modules/characteristics/compound/family/is-boxes-characteristic.service.unit.test.ts"]
+  file_src_modules_characteristics_compound_family_is_chain_characteristic_service_ts["src/modules/characteristics/compound/family/is-chain-characteristic.service.ts"]
+  file_src_modules_characteristics_compound_family_is_chain_characteristic_service_unit_test_ts["src/modules/characteristics/compound/family/is-chain-characteristic.service.unit.test.ts"]
+  file_src_modules_characteristics_compound_family_is_clasps_characteristic_service_ts["src/modules/characteristics/compound/family/is-clasps-characteristic.service.ts"]
+  file_src_modules_characteristics_compound_family_is_clasps_characteristic_service_unit_test_ts["src/modules/characteristics/compound/family/is-clasps-characteristic.service.unit.test.ts"]
+  file_src_modules_characteristics_compound_family_is_comb_characteristic_service_ts["src/modules/characteristics/compound/family/is-comb-characteristic.service.ts"]
+  file_src_modules_characteristics_compound_family_is_comb_characteristic_service_unit_test_ts["src/modules/characteristics/compound/family/is-comb-characteristic.service.unit.test.ts"]
+  file_src_modules_characteristics_compound_family_is_cross_characteristic_service_ts["src/modules/characteristics/compound/family/is-cross-characteristic.service.ts"]
+  file_src_modules_characteristics_compound_family_is_cross_characteristic_service_unit_test_ts["src/modules/characteristics/compound/family/is-cross-characteristic.service.unit.test.ts"]
+  file_src_modules_characteristics_compound_family_is_dots_characteristic_service_ts["src/modules/characteristics/compound/family/is-dots-characteristic.service.ts"]
+  file_src_modules_characteristics_compound_family_is_dots_characteristic_service_unit_test_ts["src/modules/characteristics/compound/family/is-dots-characteristic.service.unit.test.ts"]
+  file_src_modules_characteristics_compound_family_is_double_chain_characteristic_service_ts["src/modules/characteristics/compound/family/is-double-chain-characteristic.service.ts"]
+  file_src_modules_characteristics_compound_family_is_double_chain_characteristic_service_unit_test_ts["src/modules/characteristics/compound/family/is-double-chain-characteristic.service.unit.test.ts"]
+  file_src_modules_characteristics_compound_family_is_fork_characteristic_service_ts["src/modules/characteristics/compound/family/is-fork-characteristic.service.ts"]
+  file_src_modules_characteristics_compound_family_is_fork_characteristic_service_unit_test_ts["src/modules/characteristics/compound/family/is-fork-characteristic.service.unit.test.ts"]
+  file_src_modules_characteristics_compound_family_is_lines_characteristic_service_ts["src/modules/characteristics/compound/family/is-lines-characteristic.service.ts"]
+  file_src_modules_characteristics_compound_family_is_lines_characteristic_service_unit_test_ts["src/modules/characteristics/compound/family/is-lines-characteristic.service.unit.test.ts"]
+  file_src_modules_characteristics_compound_family_is_mesh_characteristic_service_ts["src/modules/characteristics/compound/family/is-mesh-characteristic.service.ts"]
+  file_src_modules_characteristics_compound_family_is_mesh_characteristic_service_unit_test_ts["src/modules/characteristics/compound/family/is-mesh-characteristic.service.unit.test.ts"]
+  file_src_modules_characteristics_compound_family_is_parallel_characteristic_service_ts["src/modules/characteristics/compound/family/is-parallel-characteristic.service.ts"]
+  file_src_modules_characteristics_compound_family_is_parallel_characteristic_service_unit_test_ts["src/modules/characteristics/compound/family/is-parallel-characteristic.service.unit.test.ts"]
+  file_src_modules_characteristics_compound_family_is_pure_tree_characteristic_service_ts["src/modules/characteristics/compound/family/is-pure-tree-characteristic.service.ts"]
+  file_src_modules_characteristics_compound_family_is_pure_tree_characteristic_service_unit_test_ts["src/modules/characteristics/compound/family/is-pure-tree-characteristic.service.unit.test.ts"]
+  file_src_modules_characteristics_compound_family_is_snake_characteristic_service_ts["src/modules/characteristics/compound/family/is-snake-characteristic.service.ts"]
+  file_src_modules_characteristics_compound_family_is_snake_characteristic_service_unit_test_ts["src/modules/characteristics/compound/family/is-snake-characteristic.service.unit.test.ts"]
+  file_src_modules_characteristics_compound_family_is_stippled_characteristic_service_ts["src/modules/characteristics/compound/family/is-stippled-characteristic.service.ts"]
+  file_src_modules_characteristics_compound_family_is_stippled_characteristic_service_unit_test_ts["src/modules/characteristics/compound/family/is-stippled-characteristic.service.unit.test.ts"]
+  file_src_modules_characteristics_compound_family_is_swirl_characteristic_service_ts["src/modules/characteristics/compound/family/is-swirl-characteristic.service.ts"]
+  file_src_modules_characteristics_compound_family_is_swirl_characteristic_service_unit_test_ts["src/modules/characteristics/compound/family/is-swirl-characteristic.service.unit.test.ts"]
+  file_src_modules_characteristics_compound_family_is_waterfalls_characteristic_service_ts["src/modules/characteristics/compound/family/is-waterfalls-characteristic.service.ts"]
+  file_src_modules_characteristics_compound_family_is_waterfalls_characteristic_service_unit_test_ts["src/modules/characteristics/compound/family/is-waterfalls-characteristic.service.unit.test.ts"]
+  file_src_modules_characteristics_compound_family_is_whirl_characteristic_service_ts["src/modules/characteristics/compound/family/is-whirl-characteristic.service.ts"]
+  file_src_modules_characteristics_compound_family_is_whirl_characteristic_service_unit_test_ts["src/modules/characteristics/compound/family/is-whirl-characteristic.service.unit.test.ts"]
+  file_src_modules_characteristics_compound_family_strand_utilities_service_ts["src/modules/characteristics/compound/family/strand-utilities.service.ts"]
+  file_src_modules_characteristics_compound_family_strand_utilities_service_unit_test_ts["src/modules/characteristics/compound/family/strand-utilities.service.unit.test.ts"]
+  file_src_modules_characteristics_compound_structure_is_closed_loop_characteristic_service_ts["src/modules/characteristics/compound/structure/is-closed-loop-characteristic.service.ts"]
+  file_src_modules_characteristics_compound_structure_is_closed_loop_characteristic_service_unit_test_ts["src/modules/characteristics/compound/structure/is-closed-loop-characteristic.service.unit.test.ts"]
+  file_src_modules_characteristics_compound_structure_is_single_arc_characteristic_service_ts["src/modules/characteristics/compound/structure/is-single-arc-characteristic.service.ts"]
+  file_src_modules_characteristics_compound_structure_is_single_arc_characteristic_service_unit_test_ts["src/modules/characteristics/compound/structure/is-single-arc-characteristic.service.unit.test.ts"]
+  file_src_modules_characteristics_compound_structure_structure_characteristics_module_ts["src/modules/characteristics/compound/structure/structure-characteristics.module.ts"]
+  file_src_modules_characteristics_connectivity_connectivity_module_ts["src/modules/characteristics/connectivity/connectivity.module.ts"]
+  file_src_modules_characteristics_connectivity_connectivity_module_unit_test_ts["src/modules/characteristics/connectivity/connectivity.module.unit.test.ts"]
+  file_src_modules_characteristics_connectivity_connectivity_service_ts["src/modules/characteristics/connectivity/connectivity.service.ts"]
+  file_src_modules_characteristics_connectivity_connectivity_service_unit_test_ts["src/modules/characteristics/connectivity/connectivity.service.unit.test.ts"]
+  file_src_modules_characteristics_connectivity_connectivity_types_ts["src/modules/characteristics/connectivity/connectivity.types.ts"]
+  file_src_modules_characteristics_path_end_end_characteristics_module_ts["src/modules/characteristics/path/end/end-characteristics.module.ts"]
+  file_src_modules_characteristics_path_end_end_utilities_service_ts["src/modules/characteristics/path/end/end-utilities.service.ts"]
+  file_src_modules_characteristics_path_end_end_utilities_service_unit_test_ts["src/modules/characteristics/path/end/end-utilities.service.unit.test.ts"]
+  file_src_modules_characteristics_path_end_end_types_ts["src/modules/characteristics/path/end/end.types.ts"]
+  file_src_modules_characteristics_path_end_ends_are_lattice_neighbors_characteristic_service_ts["src/modules/characteristics/path/end/ends-are-lattice-neighbors-characteristic.service.ts"]
+  file_src_modules_characteristics_path_end_ends_are_lattice_neighbors_characteristic_service_unit_test_ts["src/modules/characteristics/path/end/ends-are-lattice-neighbors-characteristic.service.unit.test.ts"]
+  file_src_modules_characteristics_path_end_ends_on_border_rules_characteristic_service_ts["src/modules/characteristics/path/end/ends-on-border-rules-characteristic.service.ts"]
+  file_src_modules_characteristics_path_end_ends_on_border_rules_characteristic_service_unit_test_ts["src/modules/characteristics/path/end/ends-on-border-rules-characteristic.service.unit.test.ts"]
   file_src_modules_characteristics_path_path_types_ts["src/modules/characteristics/path/path.types.ts"]
   file_src_modules_characteristics_path_path_utilities_ts["src/modules/characteristics/path/path.utilities.ts"]
   file_src_modules_characteristics_path_path_utilities_unit_test_ts["src/modules/characteristics/path/path.utilities.unit.test.ts"]
@@ -3769,6 +3806,9 @@ graph LR
   file_src_modules_characteristics_path_turn_inflection_count_characteristic_service_unit_test_ts["src/modules/characteristics/path/turn/inflection-count-characteristic.service.unit.test.ts"]
   file_src_modules_characteristics_path_turn_max_monotonic_turn_length_characteristic_service_ts["src/modules/characteristics/path/turn/max-monotonic-turn-length-characteristic.service.ts"]
   file_src_modules_characteristics_path_turn_max_monotonic_turn_length_characteristic_service_unit_test_ts["src/modules/characteristics/path/turn/max-monotonic-turn-length-characteristic.service.unit.test.ts"]
+  file_src_modules_characteristics_path_turn_reverses_at_its_tightest_turn_characteristic_service_ts["src/modules/characteristics/path/turn/reverses-at-its-tightest-turn-characteristic.service.ts"]
+  file_src_modules_characteristics_path_turn_reverses_at_its_tightest_turn_characteristic_service_unit_test_ts["src/modules/characteristics/path/turn/reverses-at-its-tightest-turn-characteristic.service.unit.test.ts"]
+  file_src_modules_characteristics_path_turn_reverses_at_its_tightest_turn_types_ts["src/modules/characteristics/path/turn/reverses-at-its-tightest-turn.types.ts"]
   file_src_modules_characteristics_path_turn_tightest_turn_count_characteristic_service_ts["src/modules/characteristics/path/turn/tightest-turn-count-characteristic.service.ts"]
   file_src_modules_characteristics_path_turn_tightest_turn_count_characteristic_service_unit_test_ts["src/modules/characteristics/path/turn/tightest-turn-count-characteristic.service.unit.test.ts"]
   file_src_modules_characteristics_path_turn_top_border_touch_count_characteristic_service_ts["src/modules/characteristics/path/turn/top-border-touch-count-characteristic.service.ts"]
@@ -3790,6 +3830,9 @@ graph LR
   file_src_modules_characteristics_submatrix_cross_cross_characteristics_module_ts["src/modules/characteristics/submatrix/cross/cross-characteristics.module.ts"]
   file_src_modules_characteristics_submatrix_cross_cross_count_characteristic_service_ts["src/modules/characteristics/submatrix/cross/cross-count-characteristic.service.ts"]
   file_src_modules_characteristics_submatrix_cross_cross_count_characteristic_service_unit_test_ts["src/modules/characteristics/submatrix/cross/cross-count-characteristic.service.unit.test.ts"]
+  file_src_modules_characteristics_submatrix_embedded_embedded_characteristics_module_ts["src/modules/characteristics/submatrix/embedded/embedded-characteristics.module.ts"]
+  file_src_modules_characteristics_submatrix_embedded_embedded_u_count_characteristic_service_ts["src/modules/characteristics/submatrix/embedded/embedded-u-count-characteristic.service.ts"]
+  file_src_modules_characteristics_submatrix_embedded_embedded_u_count_characteristic_service_unit_test_ts["src/modules/characteristics/submatrix/embedded/embedded-u-count-characteristic.service.unit.test.ts"]
   file_src_modules_characteristics_submatrix_fork_east_fork_count_characteristic_service_ts["src/modules/characteristics/submatrix/fork/east-fork-count-characteristic.service.ts"]
   file_src_modules_characteristics_submatrix_fork_east_fork_count_characteristic_service_unit_test_ts["src/modules/characteristics/submatrix/fork/east-fork-count-characteristic.service.unit.test.ts"]
   file_src_modules_characteristics_submatrix_fork_fork_characteristics_module_ts["src/modules/characteristics/submatrix/fork/fork-characteristics.module.ts"]
@@ -3895,11 +3938,19 @@ graph LR
   file_src_modules_characteristics_submatrix_letter_z_letter_count_characteristic_service_unit_test_ts["src/modules/characteristics/submatrix/letter/z-letter-count-characteristic.service.unit.test.ts"]
   file_src_modules_characteristics_submatrix_letter_z_sideways_letter_count_characteristic_service_ts["src/modules/characteristics/submatrix/letter/z-sideways-letter-count-characteristic.service.ts"]
   file_src_modules_characteristics_submatrix_letter_z_sideways_letter_count_characteristic_service_unit_test_ts["src/modules/characteristics/submatrix/letter/z-sideways-letter-count-characteristic.service.unit.test.ts"]
+  file_src_modules_characteristics_submatrix_point_density_characteristic_service_ts["src/modules/characteristics/submatrix/point/density-characteristic.service.ts"]
+  file_src_modules_characteristics_submatrix_point_density_characteristic_service_unit_test_ts["src/modules/characteristics/submatrix/point/density-characteristic.service.unit.test.ts"]
   file_src_modules_characteristics_submatrix_point_dot_count_characteristic_service_ts["src/modules/characteristics/submatrix/point/dot-count-characteristic.service.ts"]
   file_src_modules_characteristics_submatrix_point_dot_count_characteristic_service_unit_test_ts["src/modules/characteristics/submatrix/point/dot-count-characteristic.service.unit.test.ts"]
+  file_src_modules_characteristics_submatrix_point_edge_count_characteristic_service_ts["src/modules/characteristics/submatrix/point/edge-count-characteristic.service.ts"]
+  file_src_modules_characteristics_submatrix_point_edge_count_characteristic_service_unit_test_ts["src/modules/characteristics/submatrix/point/edge-count-characteristic.service.unit.test.ts"]
   file_src_modules_characteristics_submatrix_point_horizontal_edge_count_characteristic_service_ts["src/modules/characteristics/submatrix/point/horizontal-edge-count-characteristic.service.ts"]
   file_src_modules_characteristics_submatrix_point_horizontal_edge_count_characteristic_service_unit_test_ts["src/modules/characteristics/submatrix/point/horizontal-edge-count-characteristic.service.unit.test.ts"]
+  file_src_modules_characteristics_submatrix_point_ink_point_count_characteristic_service_ts["src/modules/characteristics/submatrix/point/ink-point-count-characteristic.service.ts"]
+  file_src_modules_characteristics_submatrix_point_ink_point_count_characteristic_service_unit_test_ts["src/modules/characteristics/submatrix/point/ink-point-count-characteristic.service.unit.test.ts"]
   file_src_modules_characteristics_submatrix_point_point_characteristics_module_ts["src/modules/characteristics/submatrix/point/point-characteristics.module.ts"]
+  file_src_modules_characteristics_submatrix_point_point_utilities_service_ts["src/modules/characteristics/submatrix/point/point-utilities.service.ts"]
+  file_src_modules_characteristics_submatrix_point_point_utilities_service_unit_test_ts["src/modules/characteristics/submatrix/point/point-utilities.service.unit.test.ts"]
   file_src_modules_characteristics_submatrix_point_vertical_edge_count_characteristic_service_ts["src/modules/characteristics/submatrix/point/vertical-edge-count-characteristic.service.ts"]
   file_src_modules_characteristics_submatrix_point_vertical_edge_count_characteristic_service_unit_test_ts["src/modules/characteristics/submatrix/point/vertical-edge-count-characteristic.service.unit.test.ts"]
   file_src_modules_characteristics_submatrix_rectangle_horizontal_rectangle_count_characteristic_service_ts["src/modules/characteristics/submatrix/rectangle/horizontal-rectangle-count-characteristic.service.ts"]
@@ -3909,11 +3960,19 @@ graph LR
   file_src_modules_characteristics_submatrix_rectangle_rectangle_utilities_unit_test_ts["src/modules/characteristics/submatrix/rectangle/rectangle.utilities.unit.test.ts"]
   file_src_modules_characteristics_submatrix_rectangle_vertical_rectangle_count_characteristic_service_ts["src/modules/characteristics/submatrix/rectangle/vertical-rectangle-count-characteristic.service.ts"]
   file_src_modules_characteristics_submatrix_rectangle_vertical_rectangle_count_characteristic_service_unit_test_ts["src/modules/characteristics/submatrix/rectangle/vertical-rectangle-count-characteristic.service.unit.test.ts"]
+  file_src_modules_characteristics_submatrix_run_longest_horizontal_run_length_characteristic_service_ts["src/modules/characteristics/submatrix/run/longest-horizontal-run-length-characteristic.service.ts"]
+  file_src_modules_characteristics_submatrix_run_longest_horizontal_run_length_characteristic_service_unit_test_ts["src/modules/characteristics/submatrix/run/longest-horizontal-run-length-characteristic.service.unit.test.ts"]
+  file_src_modules_characteristics_submatrix_run_longest_vertical_run_length_characteristic_service_ts["src/modules/characteristics/submatrix/run/longest-vertical-run-length-characteristic.service.ts"]
+  file_src_modules_characteristics_submatrix_run_longest_vertical_run_length_characteristic_service_unit_test_ts["src/modules/characteristics/submatrix/run/longest-vertical-run-length-characteristic.service.unit.test.ts"]
+  file_src_modules_characteristics_submatrix_run_run_characteristics_module_ts["src/modules/characteristics/submatrix/run/run-characteristics.module.ts"]
+  file_src_modules_characteristics_submatrix_run_run_utilities_service_ts["src/modules/characteristics/submatrix/run/run-utilities.service.ts"]
+  file_src_modules_characteristics_submatrix_run_run_utilities_service_unit_test_ts["src/modules/characteristics/submatrix/run/run-utilities.service.unit.test.ts"]
   file_src_modules_characteristics_submatrix_submatrix_types_ts["src/modules/characteristics/submatrix/submatrix.types.ts"]
   file_src_modules_characteristics_submatrix_submatrix_utilities_ts["src/modules/characteristics/submatrix/submatrix.utilities.ts"]
   file_src_modules_characteristics_submatrix_submatrix_utilities_unit_test_ts["src/modules/characteristics/submatrix/submatrix.utilities.unit.test.ts"]
   file_src_modules_classification_classification_constants_ts["src/modules/classification/classification.constants.ts"]
   file_src_modules_classification_classification_module_ts["src/modules/classification/classification.module.ts"]
+  file_src_modules_classification_classification_service_integration_test_ts["src/modules/classification/classification.service.integration.test.ts"]
   file_src_modules_classification_classification_service_ts["src/modules/classification/classification.service.ts"]
   file_src_modules_classification_classification_service_unit_test_ts["src/modules/classification/classification.service.unit.test.ts"]
   file_src_modules_classification_classification_types_ts["src/modules/classification/classification.types.ts"]
@@ -4014,6 +4073,8 @@ graph LR
   file_src_modules_tile_tile_service_unit_test_ts["src/modules/tile/tile.service.unit.test.ts"]
   file_src_modules_tile_tile_types_ts["src/modules/tile/tile.types.ts"]
   file_src_repl_ts["src/repl.ts"]
+  file_testing_legacy_characteristics_ts["testing/legacy-characteristics.ts"]
+  file_testing_meanders_ts["testing/meanders.ts"]
   file_testing_mocks_ts["testing/mocks.ts"]
   file_testing_path_data_ts["testing/path-data.ts"]
   file_testing_setup_ts["testing/setup.ts"]
@@ -4035,47 +4096,50 @@ graph LR
   file_src_modules_characteristics_characteristic_context_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_src_modules_characteristics_characteristic_context_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_characteristic_context_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
-  file_src_modules_characteristics_characteristics_family_service_ts --> file_src_modules_code_code_types_ts
-  file_src_modules_characteristics_characteristics_family_service_unit_test_ts --> file_src_modules_characteristics_characteristics_family_service_ts
-  file_src_modules_characteristics_characteristics_family_service_unit_test_ts --> file_src_modules_code_code_types_ts
-  file_src_modules_characteristics_characteristics_path_service_ts --> file_src_modules_characteristics_connectivity_service_ts
-  file_src_modules_characteristics_characteristics_path_service_ts --> file_src_modules_matrix_matrix_types_ts
-  file_src_modules_characteristics_characteristics_path_service_unit_test_ts --> file_src_modules_characteristics_characteristics_path_service_ts
-  file_src_modules_characteristics_characteristics_path_service_unit_test_ts --> file_src_modules_characteristics_connectivity_service_ts
-  file_src_modules_characteristics_characteristics_path_service_unit_test_ts --> file_src_modules_matrix_matrix_constants_ts
-  file_src_modules_characteristics_characteristics_path_service_unit_test_ts --> file_src_modules_matrix_matrix_types_ts
-  file_src_modules_characteristics_characteristics_shape_service_ts --> file_src_modules_characteristics_characteristics_constants_ts
-  file_src_modules_characteristics_characteristics_shape_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_characteristics_shape_service_ts --> file_src_modules_matrix_matrix_constants_ts
-  file_src_modules_characteristics_characteristics_shape_service_ts --> file_src_modules_matrix_matrix_service_ts
-  file_src_modules_characteristics_characteristics_shape_service_ts --> file_src_modules_matrix_matrix_types_ts
-  file_src_modules_characteristics_characteristics_shape_service_unit_test_ts --> file_src_modules_characteristics_characteristics_shape_service_ts
-  file_src_modules_characteristics_characteristics_shape_service_unit_test_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_characteristics_shape_service_unit_test_ts --> file_src_modules_code_code_module_ts
-  file_src_modules_characteristics_characteristics_shape_service_unit_test_ts --> file_src_modules_code_code_types_ts
-  file_src_modules_characteristics_characteristics_shape_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
-  file_src_modules_characteristics_characteristics_shape_service_unit_test_ts --> file_src_modules_matrix_matrix_service_ts
-  file_src_modules_characteristics_characteristics_constants_ts --> file_src_modules_characteristics_characteristics_types_ts
   file_src_modules_characteristics_characteristics_module_ts --> file_src_modules_characteristics_characteristic_context_service_ts
-  file_src_modules_characteristics_characteristics_module_ts --> file_src_modules_characteristics_characteristics_family_service_ts
-  file_src_modules_characteristics_characteristics_module_ts --> file_src_modules_characteristics_characteristics_path_service_ts
-  file_src_modules_characteristics_characteristics_module_ts --> file_src_modules_characteristics_characteristics_shape_service_ts
   file_src_modules_characteristics_characteristics_module_ts --> file_src_modules_characteristics_characteristics_service_ts
-  file_src_modules_characteristics_characteristics_module_ts --> file_src_modules_characteristics_connectivity_service_ts
+  file_src_modules_characteristics_characteristics_module_ts --> file_src_modules_characteristics_compound_family_family_characteristics_module_ts
+  file_src_modules_characteristics_characteristics_module_ts --> file_src_modules_characteristics_compound_structure_structure_characteristics_module_ts
+  file_src_modules_characteristics_characteristics_module_ts --> file_src_modules_characteristics_path_end_end_characteristics_module_ts
   file_src_modules_characteristics_characteristics_module_ts --> file_src_modules_characteristics_path_tile_crossing_tile_crossing_characteristics_module_ts
   file_src_modules_characteristics_characteristics_module_ts --> file_src_modules_characteristics_path_topology_topology_characteristics_module_ts
   file_src_modules_characteristics_characteristics_module_ts --> file_src_modules_characteristics_path_turn_turn_characteristics_module_ts
   file_src_modules_characteristics_characteristics_module_ts --> file_src_modules_characteristics_submatrix_corner_corner_characteristics_module_ts
   file_src_modules_characteristics_characteristics_module_ts --> file_src_modules_characteristics_submatrix_cross_cross_characteristics_module_ts
+  file_src_modules_characteristics_characteristics_module_ts --> file_src_modules_characteristics_submatrix_embedded_embedded_characteristics_module_ts
   file_src_modules_characteristics_characteristics_module_ts --> file_src_modules_characteristics_submatrix_fork_fork_characteristics_module_ts
   file_src_modules_characteristics_characteristics_module_ts --> file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_ts
   file_src_modules_characteristics_characteristics_module_ts --> file_src_modules_characteristics_submatrix_point_point_characteristics_module_ts
   file_src_modules_characteristics_characteristics_module_ts --> file_src_modules_characteristics_submatrix_rectangle_rectangle_characteristics_module_ts
+  file_src_modules_characteristics_characteristics_module_ts --> file_src_modules_characteristics_submatrix_run_run_characteristics_module_ts
   file_src_modules_characteristics_characteristics_module_ts --> file_src_modules_code_code_module_ts
-  file_src_modules_characteristics_characteristics_module_ts --> file_src_modules_graph_graph_module_ts
   file_src_modules_characteristics_characteristics_module_ts --> file_src_modules_matrix_matrix_module_ts
+  file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_characteristics_constants_ts
   file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_characteristics_module_ts
   file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_compound_family_is_arcade_characteristic_service_ts
+  file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_compound_family_is_bars_characteristic_service_ts
+  file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_compound_family_is_boxes_characteristic_service_ts
+  file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_compound_family_is_chain_characteristic_service_ts
+  file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_compound_family_is_clasps_characteristic_service_ts
+  file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_compound_family_is_comb_characteristic_service_ts
+  file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_compound_family_is_cross_characteristic_service_ts
+  file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_compound_family_is_dots_characteristic_service_ts
+  file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_compound_family_is_double_chain_characteristic_service_ts
+  file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_compound_family_is_fork_characteristic_service_ts
+  file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_compound_family_is_lines_characteristic_service_ts
+  file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_compound_family_is_mesh_characteristic_service_ts
+  file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_compound_family_is_parallel_characteristic_service_ts
+  file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_compound_family_is_pure_tree_characteristic_service_ts
+  file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_compound_family_is_snake_characteristic_service_ts
+  file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_compound_family_is_stippled_characteristic_service_ts
+  file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_compound_family_is_swirl_characteristic_service_ts
+  file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_compound_family_is_waterfalls_characteristic_service_ts
+  file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_compound_family_is_whirl_characteristic_service_ts
+  file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_compound_structure_is_closed_loop_characteristic_service_ts
+  file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_compound_structure_is_single_arc_characteristic_service_ts
+  file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_path_end_ends_are_lattice_neighbors_characteristic_service_ts
+  file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_path_end_ends_on_border_rules_characteristic_service_ts
   file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_path_tile_crossing_tile_crossing_component_delta_count_characteristic_service_ts
   file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_path_tile_crossing_tile_crossing_count_characteristic_service_ts
   file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_path_tile_crossing_tile_crossing_cycle_count_characteristic_service_ts
@@ -4085,6 +4149,7 @@ graph LR
   file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_path_turn_bottom_border_touch_count_characteristic_service_ts
   file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_path_turn_inflection_count_characteristic_service_ts
   file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_path_turn_max_monotonic_turn_length_characteristic_service_ts
+  file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_path_turn_reverses_at_its_tightest_turn_characteristic_service_ts
   file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_path_turn_tightest_turn_count_characteristic_service_ts
   file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_path_turn_top_border_touch_count_characteristic_service_ts
   file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_path_turn_total_turn_count_characteristic_service_ts
@@ -4094,6 +4159,7 @@ graph LR
   file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_corner_south_east_corner_count_characteristic_service_ts
   file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_corner_south_west_corner_count_characteristic_service_ts
   file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_cross_cross_count_characteristic_service_ts
+  file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_embedded_embedded_u_count_characteristic_service_ts
   file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_fork_east_fork_count_characteristic_service_ts
   file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_fork_fork_count_characteristic_service_ts
   file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_fork_north_fork_count_characteristic_service_ts
@@ -4145,169 +4211,592 @@ graph LR
   file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_y_west_letter_count_characteristic_service_ts
   file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_z_letter_count_characteristic_service_ts
   file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_z_sideways_letter_count_characteristic_service_ts
+  file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_point_density_characteristic_service_ts
   file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_point_dot_count_characteristic_service_ts
+  file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_point_edge_count_characteristic_service_ts
   file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_point_horizontal_edge_count_characteristic_service_ts
+  file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_point_ink_point_count_characteristic_service_ts
   file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_point_vertical_edge_count_characteristic_service_ts
   file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_rectangle_horizontal_rectangle_count_characteristic_service_ts
   file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_rectangle_vertical_rectangle_count_characteristic_service_ts
-  file_src_modules_characteristics_characteristics_service_ts --> file_src_modules_characteristics_characteristics_family_service_ts
-  file_src_modules_characteristics_characteristics_service_ts --> file_src_modules_characteristics_characteristics_path_service_ts
-  file_src_modules_characteristics_characteristics_service_ts --> file_src_modules_characteristics_characteristics_shape_service_ts
+  file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_run_longest_horizontal_run_length_characteristic_service_ts
+  file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_run_longest_vertical_run_length_characteristic_service_ts
+  file_src_modules_characteristics_characteristics_service_integration_test_ts --> file_src_modules_characteristics_characteristics_constants_ts
+  file_src_modules_characteristics_characteristics_service_integration_test_ts --> file_src_modules_characteristics_characteristics_module_ts
+  file_src_modules_characteristics_characteristics_service_integration_test_ts --> file_src_modules_characteristics_characteristics_service_ts
+  file_src_modules_characteristics_characteristics_service_integration_test_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_characteristics_service_integration_test_ts --> file_src_modules_code_code_service_ts
+  file_src_modules_characteristics_characteristics_service_integration_test_ts --> file_src_modules_corpus_historical_corpus_constants_ts
+  file_src_modules_characteristics_characteristics_service_integration_test_ts --> file_testing_legacy_characteristics_ts
+  file_src_modules_characteristics_characteristics_service_integration_test_ts --> file_testing_meanders_ts
+  file_src_modules_characteristics_characteristics_service_ts --> file_src_modules_characteristics_characteristic_context_service_ts
+  file_src_modules_characteristics_characteristics_service_ts --> file_src_modules_characteristics_characteristics_constants_ts
   file_src_modules_characteristics_characteristics_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_characteristics_service_ts --> file_src_modules_characteristics_connectivity_service_ts
+  file_src_modules_characteristics_characteristics_service_ts --> file_src_modules_characteristics_path_tile_crossing_tile_crossing_component_delta_count_characteristic_service_ts
   file_src_modules_characteristics_characteristics_service_ts --> file_src_modules_code_code_service_ts
   file_src_modules_characteristics_characteristics_service_ts --> file_src_modules_code_code_types_ts
-  file_src_modules_characteristics_characteristics_service_ts --> file_src_modules_matrix_matrix_constants_ts
-  file_src_modules_characteristics_characteristics_service_ts --> file_src_modules_matrix_matrix_service_ts
-  file_src_modules_characteristics_characteristics_service_ts --> file_src_modules_matrix_matrix_types_ts
-  file_src_modules_characteristics_characteristics_service_unit_test_ts --> file_src_modules_characteristics_characteristics_family_service_ts
-  file_src_modules_characteristics_characteristics_service_unit_test_ts --> file_src_modules_characteristics_characteristics_path_service_ts
-  file_src_modules_characteristics_characteristics_service_unit_test_ts --> file_src_modules_characteristics_characteristics_shape_service_ts
+  file_src_modules_characteristics_characteristics_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_src_modules_characteristics_characteristics_service_unit_test_ts --> file_src_modules_characteristics_characteristics_constants_ts
   file_src_modules_characteristics_characteristics_service_unit_test_ts --> file_src_modules_characteristics_characteristics_service_ts
-  file_src_modules_characteristics_characteristics_service_unit_test_ts --> file_src_modules_characteristics_connectivity_service_ts
-  file_src_modules_characteristics_characteristics_service_unit_test_ts --> file_src_modules_code_code_service_ts
-  file_src_modules_characteristics_characteristics_service_unit_test_ts --> file_src_modules_corpus_historical_corpus_constants_ts
-  file_src_modules_characteristics_characteristics_service_unit_test_ts --> file_src_modules_graph_graph_service_ts
-  file_src_modules_characteristics_characteristics_service_unit_test_ts --> file_src_modules_matrix_matrix_service_ts
-  file_src_modules_characteristics_characteristics_service_unit_test_ts --> file_src_modules_symmetry_symmetry_service_ts
-  file_src_modules_characteristics_characteristics_service_unit_test_ts --> file_src_modules_tile_tile_service_ts
+  file_src_modules_characteristics_characteristics_service_unit_test_ts --> file_src_modules_characteristics_path_tile_crossing_tile_crossing_component_delta_count_characteristic_service_ts
+  file_src_modules_characteristics_characteristics_service_unit_test_ts --> file_src_modules_code_code_module_ts
+  file_src_modules_characteristics_characteristics_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
+  file_src_modules_characteristics_characteristics_types_ts --> file_src_modules_characteristics_characteristics_constants_ts
   file_src_modules_characteristics_characteristics_types_ts --> file_src_modules_code_code_types_ts
   file_src_modules_characteristics_characteristics_types_ts --> file_src_modules_matrix_matrix_types_ts
-  file_src_modules_characteristics_connectivity_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_connectivity_service_ts --> file_src_modules_graph_graph_service_ts
-  file_src_modules_characteristics_connectivity_service_ts --> file_src_modules_graph_graph_types_ts
-  file_src_modules_characteristics_connectivity_service_ts --> file_src_modules_matrix_matrix_constants_ts
-  file_src_modules_characteristics_connectivity_service_ts --> file_src_modules_matrix_matrix_types_ts
-  file_src_modules_characteristics_connectivity_service_unit_test_ts --> file_src_modules_characteristics_connectivity_service_ts
-  file_src_modules_characteristics_connectivity_service_unit_test_ts --> file_src_modules_code_code_service_ts
-  file_src_modules_characteristics_connectivity_service_unit_test_ts --> file_src_modules_graph_graph_service_ts
-  file_src_modules_characteristics_connectivity_service_unit_test_ts --> file_src_modules_matrix_matrix_service_ts
-  file_src_modules_characteristics_connectivity_service_unit_test_ts --> file_src_modules_symmetry_symmetry_service_ts
-  file_src_modules_characteristics_connectivity_service_unit_test_ts --> file_src_modules_tile_tile_service_ts
-  file_src_modules_characteristics_path_path_utilities_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_compound_compound_utilities_module_ts --> file_src_modules_characteristics_compound_compound_utilities_service_ts
+  file_src_modules_characteristics_compound_compound_utilities_module_ts --> file_src_modules_characteristics_submatrix_cross_cross_characteristics_module_ts
+  file_src_modules_characteristics_compound_compound_utilities_module_ts --> file_src_modules_characteristics_submatrix_fork_fork_characteristics_module_ts
+  file_src_modules_characteristics_compound_compound_utilities_module_unit_test_ts --> file_src_modules_characteristics_characteristics_module_ts
+  file_src_modules_characteristics_compound_compound_utilities_module_unit_test_ts --> file_src_modules_characteristics_compound_compound_utilities_module_ts
+  file_src_modules_characteristics_compound_compound_utilities_module_unit_test_ts --> file_src_modules_characteristics_compound_compound_utilities_service_ts
+  file_src_modules_characteristics_compound_compound_utilities_service_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_compound_compound_utilities_service_ts --> file_src_modules_characteristics_submatrix_cross_cross_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_compound_utilities_service_ts --> file_src_modules_characteristics_submatrix_fork_fork_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_compound_utilities_service_unit_test_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_compound_compound_utilities_service_unit_test_ts --> file_src_modules_characteristics_compound_compound_utilities_service_ts
+  file_src_modules_characteristics_compound_compound_utilities_service_unit_test_ts --> file_src_modules_characteristics_submatrix_cross_cross_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_compound_utilities_service_unit_test_ts --> file_src_modules_characteristics_submatrix_fork_fork_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_family_characteristics_module_ts --> file_src_modules_characteristics_compound_compound_utilities_module_ts
+  file_src_modules_characteristics_compound_family_family_characteristics_module_ts --> file_src_modules_characteristics_compound_family_family_utilities_service_ts
+  file_src_modules_characteristics_compound_family_family_characteristics_module_ts --> file_src_modules_characteristics_compound_family_is_arcade_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_family_characteristics_module_ts --> file_src_modules_characteristics_compound_family_is_bars_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_family_characteristics_module_ts --> file_src_modules_characteristics_compound_family_is_boxes_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_family_characteristics_module_ts --> file_src_modules_characteristics_compound_family_is_chain_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_family_characteristics_module_ts --> file_src_modules_characteristics_compound_family_is_clasps_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_family_characteristics_module_ts --> file_src_modules_characteristics_compound_family_is_comb_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_family_characteristics_module_ts --> file_src_modules_characteristics_compound_family_is_cross_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_family_characteristics_module_ts --> file_src_modules_characteristics_compound_family_is_dots_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_family_characteristics_module_ts --> file_src_modules_characteristics_compound_family_is_double_chain_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_family_characteristics_module_ts --> file_src_modules_characteristics_compound_family_is_fork_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_family_characteristics_module_ts --> file_src_modules_characteristics_compound_family_is_lines_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_family_characteristics_module_ts --> file_src_modules_characteristics_compound_family_is_mesh_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_family_characteristics_module_ts --> file_src_modules_characteristics_compound_family_is_parallel_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_family_characteristics_module_ts --> file_src_modules_characteristics_compound_family_is_pure_tree_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_family_characteristics_module_ts --> file_src_modules_characteristics_compound_family_is_snake_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_family_characteristics_module_ts --> file_src_modules_characteristics_compound_family_is_stippled_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_family_characteristics_module_ts --> file_src_modules_characteristics_compound_family_is_swirl_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_family_characteristics_module_ts --> file_src_modules_characteristics_compound_family_is_waterfalls_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_family_characteristics_module_ts --> file_src_modules_characteristics_compound_family_is_whirl_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_family_characteristics_module_ts --> file_src_modules_characteristics_compound_family_strand_utilities_service_ts
+  file_src_modules_characteristics_compound_family_family_characteristics_module_ts --> file_src_modules_characteristics_compound_structure_structure_characteristics_module_ts
+  file_src_modules_characteristics_compound_family_family_characteristics_module_ts --> file_src_modules_characteristics_path_end_end_characteristics_module_ts
+  file_src_modules_characteristics_compound_family_family_characteristics_module_ts --> file_src_modules_characteristics_path_tile_crossing_tile_crossing_characteristics_module_ts
+  file_src_modules_characteristics_compound_family_family_characteristics_module_ts --> file_src_modules_characteristics_path_topology_topology_characteristics_module_ts
+  file_src_modules_characteristics_compound_family_family_characteristics_module_ts --> file_src_modules_characteristics_path_turn_turn_characteristics_module_ts
+  file_src_modules_characteristics_compound_family_family_characteristics_module_ts --> file_src_modules_characteristics_submatrix_cross_cross_characteristics_module_ts
+  file_src_modules_characteristics_compound_family_family_characteristics_module_ts --> file_src_modules_characteristics_submatrix_embedded_embedded_characteristics_module_ts
+  file_src_modules_characteristics_compound_family_family_characteristics_module_ts --> file_src_modules_characteristics_submatrix_fork_fork_characteristics_module_ts
+  file_src_modules_characteristics_compound_family_family_characteristics_module_ts --> file_src_modules_characteristics_submatrix_point_point_characteristics_module_ts
+  file_src_modules_characteristics_compound_family_family_characteristics_module_ts --> file_src_modules_characteristics_submatrix_run_run_characteristics_module_ts
+  file_src_modules_characteristics_compound_family_family_utilities_service_ts --> file_src_modules_characteristics_compound_family_family_types_ts
+  file_src_modules_characteristics_compound_family_family_utilities_service_ts --> file_src_modules_code_code_types_ts
+  file_src_modules_characteristics_compound_family_family_utilities_service_unit_test_ts --> file_src_modules_characteristics_compound_family_family_utilities_service_ts
+  file_src_modules_characteristics_compound_family_family_utilities_service_unit_test_ts --> file_src_modules_code_code_types_ts
+  file_src_modules_characteristics_compound_family_is_arcade_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_compound_family_is_arcade_characteristic_service_ts --> file_src_modules_characteristics_compound_family_family_utilities_service_ts
+  file_src_modules_characteristics_compound_family_is_arcade_characteristic_service_ts --> file_src_modules_characteristics_compound_family_is_bars_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_arcade_characteristic_service_ts --> file_src_modules_characteristics_compound_family_is_comb_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_arcade_characteristic_service_ts --> file_src_modules_characteristics_compound_family_is_mesh_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_arcade_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
+  file_src_modules_characteristics_compound_family_is_arcade_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_compound_family_is_arcade_characteristic_service_unit_test_ts --> file_src_modules_characteristics_compound_family_family_characteristics_module_ts
+  file_src_modules_characteristics_compound_family_is_arcade_characteristic_service_unit_test_ts --> file_src_modules_characteristics_compound_family_family_utilities_service_ts
+  file_src_modules_characteristics_compound_family_is_arcade_characteristic_service_unit_test_ts --> file_src_modules_characteristics_compound_family_is_arcade_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_arcade_characteristic_service_unit_test_ts --> file_src_modules_characteristics_compound_family_is_bars_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_arcade_characteristic_service_unit_test_ts --> file_src_modules_characteristics_compound_family_is_comb_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_arcade_characteristic_service_unit_test_ts --> file_src_modules_characteristics_compound_family_is_mesh_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_arcade_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
+  file_src_modules_characteristics_compound_family_is_arcade_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
+  file_src_modules_characteristics_compound_family_is_bars_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_compound_family_is_bars_characteristic_service_ts --> file_src_modules_characteristics_compound_family_family_utilities_service_ts
+  file_src_modules_characteristics_compound_family_is_bars_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
+  file_src_modules_characteristics_compound_family_is_bars_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_compound_family_is_bars_characteristic_service_unit_test_ts --> file_src_modules_characteristics_compound_family_family_characteristics_module_ts
+  file_src_modules_characteristics_compound_family_is_bars_characteristic_service_unit_test_ts --> file_src_modules_characteristics_compound_family_is_bars_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_bars_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
+  file_src_modules_characteristics_compound_family_is_bars_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
+  file_src_modules_characteristics_compound_family_is_boxes_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_compound_family_is_boxes_characteristic_service_ts --> file_src_modules_characteristics_compound_family_is_waterfalls_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_boxes_characteristic_service_ts --> file_src_modules_characteristics_compound_structure_is_single_arc_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_boxes_characteristic_service_ts --> file_src_modules_characteristics_path_end_ends_are_lattice_neighbors_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_boxes_characteristic_service_ts --> file_src_modules_characteristics_path_tile_crossing_tile_crossing_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_boxes_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
+  file_src_modules_characteristics_compound_family_is_boxes_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_compound_family_is_boxes_characteristic_service_unit_test_ts --> file_src_modules_characteristics_compound_family_family_characteristics_module_ts
+  file_src_modules_characteristics_compound_family_is_boxes_characteristic_service_unit_test_ts --> file_src_modules_characteristics_compound_family_is_boxes_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_boxes_characteristic_service_unit_test_ts --> file_src_modules_characteristics_compound_family_is_waterfalls_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_boxes_characteristic_service_unit_test_ts --> file_src_modules_characteristics_compound_structure_is_single_arc_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_boxes_characteristic_service_unit_test_ts --> file_src_modules_characteristics_path_end_ends_are_lattice_neighbors_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_boxes_characteristic_service_unit_test_ts --> file_src_modules_characteristics_path_tile_crossing_tile_crossing_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_boxes_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
+  file_src_modules_characteristics_compound_family_is_boxes_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
+  file_src_modules_characteristics_compound_family_is_chain_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_compound_family_is_chain_characteristic_service_ts --> file_src_modules_characteristics_compound_family_strand_utilities_service_ts
+  file_src_modules_characteristics_compound_family_is_chain_characteristic_service_ts --> file_src_modules_characteristics_compound_structure_is_single_arc_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_chain_characteristic_service_ts --> file_src_modules_characteristics_submatrix_run_longest_horizontal_run_length_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_chain_characteristic_service_ts --> file_src_modules_characteristics_submatrix_run_longest_vertical_run_length_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_chain_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
+  file_src_modules_characteristics_compound_family_is_chain_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_compound_family_is_chain_characteristic_service_unit_test_ts --> file_src_modules_characteristics_compound_family_family_characteristics_module_ts
+  file_src_modules_characteristics_compound_family_is_chain_characteristic_service_unit_test_ts --> file_src_modules_characteristics_compound_family_is_chain_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_chain_characteristic_service_unit_test_ts --> file_src_modules_characteristics_compound_family_strand_utilities_service_ts
+  file_src_modules_characteristics_compound_family_is_chain_characteristic_service_unit_test_ts --> file_src_modules_characteristics_compound_structure_is_single_arc_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_chain_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_run_longest_horizontal_run_length_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_chain_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_run_longest_vertical_run_length_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_chain_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
+  file_src_modules_characteristics_compound_family_is_chain_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
+  file_src_modules_characteristics_compound_family_is_clasps_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_compound_family_is_clasps_characteristic_service_ts --> file_src_modules_characteristics_compound_family_strand_utilities_service_ts
+  file_src_modules_characteristics_compound_family_is_clasps_characteristic_service_ts --> file_src_modules_characteristics_path_turn_reverses_at_its_tightest_turn_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_clasps_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
+  file_src_modules_characteristics_compound_family_is_clasps_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_compound_family_is_clasps_characteristic_service_unit_test_ts --> file_src_modules_characteristics_compound_family_family_characteristics_module_ts
+  file_src_modules_characteristics_compound_family_is_clasps_characteristic_service_unit_test_ts --> file_src_modules_characteristics_compound_family_is_clasps_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_clasps_characteristic_service_unit_test_ts --> file_src_modules_characteristics_compound_family_strand_utilities_service_ts
+  file_src_modules_characteristics_compound_family_is_clasps_characteristic_service_unit_test_ts --> file_src_modules_characteristics_path_turn_reverses_at_its_tightest_turn_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_clasps_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
+  file_src_modules_characteristics_compound_family_is_clasps_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
+  file_src_modules_characteristics_compound_family_is_comb_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_compound_family_is_comb_characteristic_service_ts --> file_src_modules_characteristics_compound_family_family_utilities_service_ts
+  file_src_modules_characteristics_compound_family_is_comb_characteristic_service_ts --> file_src_modules_characteristics_compound_family_is_bars_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_comb_characteristic_service_ts --> file_src_modules_characteristics_compound_family_is_lines_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_comb_characteristic_service_ts --> file_src_modules_characteristics_compound_family_is_mesh_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_comb_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
+  file_src_modules_characteristics_compound_family_is_comb_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_compound_family_is_comb_characteristic_service_unit_test_ts --> file_src_modules_characteristics_compound_family_family_characteristics_module_ts
+  file_src_modules_characteristics_compound_family_is_comb_characteristic_service_unit_test_ts --> file_src_modules_characteristics_compound_family_family_utilities_service_ts
+  file_src_modules_characteristics_compound_family_is_comb_characteristic_service_unit_test_ts --> file_src_modules_characteristics_compound_family_is_bars_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_comb_characteristic_service_unit_test_ts --> file_src_modules_characteristics_compound_family_is_comb_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_comb_characteristic_service_unit_test_ts --> file_src_modules_characteristics_compound_family_is_lines_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_comb_characteristic_service_unit_test_ts --> file_src_modules_characteristics_compound_family_is_mesh_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_comb_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
+  file_src_modules_characteristics_compound_family_is_comb_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
+  file_src_modules_characteristics_compound_family_is_cross_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_compound_family_is_cross_characteristic_service_ts --> file_src_modules_characteristics_compound_family_is_mesh_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_cross_characteristic_service_ts --> file_src_modules_characteristics_submatrix_cross_cross_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_cross_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
+  file_src_modules_characteristics_compound_family_is_cross_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_compound_family_is_cross_characteristic_service_unit_test_ts --> file_src_modules_characteristics_compound_family_family_characteristics_module_ts
+  file_src_modules_characteristics_compound_family_is_cross_characteristic_service_unit_test_ts --> file_src_modules_characteristics_compound_family_is_cross_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_cross_characteristic_service_unit_test_ts --> file_src_modules_characteristics_compound_family_is_mesh_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_cross_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_cross_cross_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_cross_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
+  file_src_modules_characteristics_compound_family_is_cross_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
+  file_src_modules_characteristics_compound_family_is_dots_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_compound_family_is_dots_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
+  file_src_modules_characteristics_compound_family_is_dots_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_compound_family_is_dots_characteristic_service_unit_test_ts --> file_src_modules_characteristics_compound_family_family_characteristics_module_ts
+  file_src_modules_characteristics_compound_family_is_dots_characteristic_service_unit_test_ts --> file_src_modules_characteristics_compound_family_is_dots_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_dots_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
+  file_src_modules_characteristics_compound_family_is_dots_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
+  file_src_modules_characteristics_compound_family_is_double_chain_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_compound_family_is_double_chain_characteristic_service_ts --> file_src_modules_characteristics_compound_compound_utilities_service_ts
+  file_src_modules_characteristics_compound_family_is_double_chain_characteristic_service_ts --> file_src_modules_characteristics_compound_family_strand_utilities_service_ts
+  file_src_modules_characteristics_compound_family_is_double_chain_characteristic_service_ts --> file_src_modules_characteristics_path_topology_betti_number_1_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_double_chain_characteristic_service_ts --> file_src_modules_characteristics_submatrix_run_longest_horizontal_run_length_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_double_chain_characteristic_service_ts --> file_src_modules_characteristics_submatrix_run_longest_vertical_run_length_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_double_chain_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
+  file_src_modules_characteristics_compound_family_is_double_chain_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_compound_family_is_double_chain_characteristic_service_unit_test_ts --> file_src_modules_characteristics_compound_compound_utilities_service_ts
+  file_src_modules_characteristics_compound_family_is_double_chain_characteristic_service_unit_test_ts --> file_src_modules_characteristics_compound_family_family_characteristics_module_ts
+  file_src_modules_characteristics_compound_family_is_double_chain_characteristic_service_unit_test_ts --> file_src_modules_characteristics_compound_family_is_double_chain_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_double_chain_characteristic_service_unit_test_ts --> file_src_modules_characteristics_compound_family_strand_utilities_service_ts
+  file_src_modules_characteristics_compound_family_is_double_chain_characteristic_service_unit_test_ts --> file_src_modules_characteristics_path_topology_betti_number_1_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_double_chain_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_cross_cross_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_double_chain_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_fork_fork_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_double_chain_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_run_longest_horizontal_run_length_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_double_chain_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_run_longest_vertical_run_length_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_double_chain_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
+  file_src_modules_characteristics_compound_family_is_double_chain_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
+  file_src_modules_characteristics_compound_family_is_fork_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_compound_family_is_fork_characteristic_service_ts --> file_src_modules_characteristics_compound_family_is_comb_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_fork_characteristic_service_ts --> file_src_modules_characteristics_path_topology_betti_number_0_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_fork_characteristic_service_ts --> file_src_modules_characteristics_path_topology_betti_number_1_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_fork_characteristic_service_ts --> file_src_modules_characteristics_path_topology_free_end_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_fork_characteristic_service_ts --> file_src_modules_characteristics_submatrix_cross_cross_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_fork_characteristic_service_ts --> file_src_modules_characteristics_submatrix_fork_fork_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_fork_characteristic_service_ts --> file_src_modules_characteristics_submatrix_point_dot_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_fork_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
+  file_src_modules_characteristics_compound_family_is_fork_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_compound_family_is_fork_characteristic_service_unit_test_ts --> file_src_modules_characteristics_compound_family_family_characteristics_module_ts
+  file_src_modules_characteristics_compound_family_is_fork_characteristic_service_unit_test_ts --> file_src_modules_characteristics_compound_family_is_comb_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_fork_characteristic_service_unit_test_ts --> file_src_modules_characteristics_compound_family_is_fork_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_fork_characteristic_service_unit_test_ts --> file_src_modules_characteristics_path_topology_betti_number_0_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_fork_characteristic_service_unit_test_ts --> file_src_modules_characteristics_path_topology_betti_number_1_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_fork_characteristic_service_unit_test_ts --> file_src_modules_characteristics_path_topology_free_end_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_fork_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_cross_cross_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_fork_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_fork_fork_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_fork_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_point_dot_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_fork_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
+  file_src_modules_characteristics_compound_family_is_fork_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
+  file_src_modules_characteristics_compound_family_is_lines_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_compound_family_is_lines_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
+  file_src_modules_characteristics_compound_family_is_lines_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_compound_family_is_lines_characteristic_service_unit_test_ts --> file_src_modules_characteristics_compound_family_family_characteristics_module_ts
+  file_src_modules_characteristics_compound_family_is_lines_characteristic_service_unit_test_ts --> file_src_modules_characteristics_compound_family_is_lines_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_lines_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
+  file_src_modules_characteristics_compound_family_is_lines_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
+  file_src_modules_characteristics_compound_family_is_mesh_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_compound_family_is_mesh_characteristic_service_ts --> file_src_modules_characteristics_compound_family_family_utilities_service_ts
+  file_src_modules_characteristics_compound_family_is_mesh_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
+  file_src_modules_characteristics_compound_family_is_mesh_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_compound_family_is_mesh_characteristic_service_unit_test_ts --> file_src_modules_characteristics_compound_family_family_characteristics_module_ts
+  file_src_modules_characteristics_compound_family_is_mesh_characteristic_service_unit_test_ts --> file_src_modules_characteristics_compound_family_is_mesh_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_mesh_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
+  file_src_modules_characteristics_compound_family_is_mesh_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
+  file_src_modules_characteristics_compound_family_is_parallel_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_compound_family_is_parallel_characteristic_service_ts --> file_src_modules_characteristics_compound_compound_utilities_service_ts
+  file_src_modules_characteristics_compound_family_is_parallel_characteristic_service_ts --> file_src_modules_characteristics_path_topology_betti_number_0_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_parallel_characteristic_service_ts --> file_src_modules_characteristics_path_topology_betti_number_1_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_parallel_characteristic_service_ts --> file_src_modules_characteristics_path_topology_free_end_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_parallel_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
+  file_src_modules_characteristics_compound_family_is_parallel_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_compound_family_is_parallel_characteristic_service_unit_test_ts --> file_src_modules_characteristics_compound_compound_utilities_service_ts
+  file_src_modules_characteristics_compound_family_is_parallel_characteristic_service_unit_test_ts --> file_src_modules_characteristics_compound_family_family_characteristics_module_ts
+  file_src_modules_characteristics_compound_family_is_parallel_characteristic_service_unit_test_ts --> file_src_modules_characteristics_compound_family_is_parallel_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_parallel_characteristic_service_unit_test_ts --> file_src_modules_characteristics_path_topology_betti_number_0_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_parallel_characteristic_service_unit_test_ts --> file_src_modules_characteristics_path_topology_betti_number_1_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_parallel_characteristic_service_unit_test_ts --> file_src_modules_characteristics_path_topology_free_end_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_parallel_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_cross_cross_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_parallel_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_fork_fork_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_parallel_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
+  file_src_modules_characteristics_compound_family_is_parallel_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
+  file_src_modules_characteristics_compound_family_is_pure_tree_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_compound_family_is_pure_tree_characteristic_service_ts --> file_src_modules_characteristics_compound_family_is_arcade_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_pure_tree_characteristic_service_ts --> file_src_modules_characteristics_compound_family_is_comb_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_pure_tree_characteristic_service_ts --> file_src_modules_characteristics_path_topology_betti_number_0_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_pure_tree_characteristic_service_ts --> file_src_modules_characteristics_path_topology_betti_number_1_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_pure_tree_characteristic_service_ts --> file_src_modules_characteristics_submatrix_cross_cross_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_pure_tree_characteristic_service_ts --> file_src_modules_characteristics_submatrix_fork_fork_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_pure_tree_characteristic_service_ts --> file_src_modules_characteristics_submatrix_point_dot_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_pure_tree_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
+  file_src_modules_characteristics_compound_family_is_pure_tree_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_compound_family_is_pure_tree_characteristic_service_unit_test_ts --> file_src_modules_characteristics_compound_family_family_characteristics_module_ts
+  file_src_modules_characteristics_compound_family_is_pure_tree_characteristic_service_unit_test_ts --> file_src_modules_characteristics_compound_family_is_arcade_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_pure_tree_characteristic_service_unit_test_ts --> file_src_modules_characteristics_compound_family_is_comb_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_pure_tree_characteristic_service_unit_test_ts --> file_src_modules_characteristics_compound_family_is_pure_tree_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_pure_tree_characteristic_service_unit_test_ts --> file_src_modules_characteristics_path_topology_betti_number_0_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_pure_tree_characteristic_service_unit_test_ts --> file_src_modules_characteristics_path_topology_betti_number_1_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_pure_tree_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_cross_cross_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_pure_tree_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_fork_fork_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_pure_tree_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_point_dot_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_pure_tree_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
+  file_src_modules_characteristics_compound_family_is_pure_tree_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
+  file_src_modules_characteristics_compound_family_is_snake_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_compound_family_is_snake_characteristic_service_ts --> file_src_modules_characteristics_compound_structure_is_closed_loop_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_snake_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
+  file_src_modules_characteristics_compound_family_is_snake_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_compound_family_is_snake_characteristic_service_unit_test_ts --> file_src_modules_characteristics_compound_family_family_characteristics_module_ts
+  file_src_modules_characteristics_compound_family_is_snake_characteristic_service_unit_test_ts --> file_src_modules_characteristics_compound_family_is_snake_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_snake_characteristic_service_unit_test_ts --> file_src_modules_characteristics_compound_structure_is_closed_loop_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_snake_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
+  file_src_modules_characteristics_compound_family_is_snake_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
+  file_src_modules_characteristics_compound_family_is_stippled_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_compound_family_is_stippled_characteristic_service_ts --> file_src_modules_characteristics_path_topology_betti_number_0_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_stippled_characteristic_service_ts --> file_src_modules_characteristics_submatrix_fork_fork_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_stippled_characteristic_service_ts --> file_src_modules_characteristics_submatrix_point_dot_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_stippled_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
+  file_src_modules_characteristics_compound_family_is_stippled_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_compound_family_is_stippled_characteristic_service_unit_test_ts --> file_src_modules_characteristics_compound_family_family_characteristics_module_ts
+  file_src_modules_characteristics_compound_family_is_stippled_characteristic_service_unit_test_ts --> file_src_modules_characteristics_compound_family_is_stippled_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_stippled_characteristic_service_unit_test_ts --> file_src_modules_characteristics_path_topology_betti_number_0_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_stippled_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_fork_fork_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_stippled_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_point_dot_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_stippled_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
+  file_src_modules_characteristics_compound_family_is_stippled_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
+  file_src_modules_characteristics_compound_family_is_swirl_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_compound_family_is_swirl_characteristic_service_ts --> file_src_modules_characteristics_compound_family_strand_utilities_service_ts
+  file_src_modules_characteristics_compound_family_is_swirl_characteristic_service_ts --> file_src_modules_characteristics_path_end_ends_on_border_rules_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_swirl_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
+  file_src_modules_characteristics_compound_family_is_swirl_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_compound_family_is_swirl_characteristic_service_unit_test_ts --> file_src_modules_characteristics_compound_family_family_characteristics_module_ts
+  file_src_modules_characteristics_compound_family_is_swirl_characteristic_service_unit_test_ts --> file_src_modules_characteristics_compound_family_is_swirl_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_swirl_characteristic_service_unit_test_ts --> file_src_modules_characteristics_compound_family_strand_utilities_service_ts
+  file_src_modules_characteristics_compound_family_is_swirl_characteristic_service_unit_test_ts --> file_src_modules_characteristics_path_end_ends_on_border_rules_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_swirl_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
+  file_src_modules_characteristics_compound_family_is_swirl_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
+  file_src_modules_characteristics_compound_family_is_waterfalls_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_compound_family_is_waterfalls_characteristic_service_ts --> file_src_modules_characteristics_compound_compound_utilities_service_ts
+  file_src_modules_characteristics_compound_family_is_waterfalls_characteristic_service_ts --> file_src_modules_characteristics_path_end_ends_are_lattice_neighbors_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_waterfalls_characteristic_service_ts --> file_src_modules_characteristics_path_end_ends_on_border_rules_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_waterfalls_characteristic_service_ts --> file_src_modules_characteristics_path_tile_crossing_tile_crossing_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_waterfalls_characteristic_service_ts --> file_src_modules_characteristics_path_topology_betti_number_0_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_waterfalls_characteristic_service_ts --> file_src_modules_characteristics_path_topology_betti_number_1_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_waterfalls_characteristic_service_ts --> file_src_modules_characteristics_path_topology_free_end_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_waterfalls_characteristic_service_ts --> file_src_modules_characteristics_submatrix_embedded_embedded_u_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_waterfalls_characteristic_service_ts --> file_src_modules_characteristics_submatrix_point_dot_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_waterfalls_characteristic_service_ts --> file_src_modules_characteristics_submatrix_run_longest_vertical_run_length_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_waterfalls_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
+  file_src_modules_characteristics_compound_family_is_waterfalls_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_compound_family_is_waterfalls_characteristic_service_unit_test_ts --> file_src_modules_characteristics_compound_compound_utilities_service_ts
+  file_src_modules_characteristics_compound_family_is_waterfalls_characteristic_service_unit_test_ts --> file_src_modules_characteristics_compound_family_family_characteristics_module_ts
+  file_src_modules_characteristics_compound_family_is_waterfalls_characteristic_service_unit_test_ts --> file_src_modules_characteristics_compound_family_is_waterfalls_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_waterfalls_characteristic_service_unit_test_ts --> file_src_modules_characteristics_path_end_ends_are_lattice_neighbors_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_waterfalls_characteristic_service_unit_test_ts --> file_src_modules_characteristics_path_end_ends_on_border_rules_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_waterfalls_characteristic_service_unit_test_ts --> file_src_modules_characteristics_path_tile_crossing_tile_crossing_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_waterfalls_characteristic_service_unit_test_ts --> file_src_modules_characteristics_path_topology_betti_number_0_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_waterfalls_characteristic_service_unit_test_ts --> file_src_modules_characteristics_path_topology_betti_number_1_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_waterfalls_characteristic_service_unit_test_ts --> file_src_modules_characteristics_path_topology_free_end_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_waterfalls_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_cross_cross_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_waterfalls_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_embedded_embedded_u_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_waterfalls_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_fork_fork_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_waterfalls_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_point_dot_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_waterfalls_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_run_longest_vertical_run_length_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_waterfalls_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
+  file_src_modules_characteristics_compound_family_is_waterfalls_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
+  file_src_modules_characteristics_compound_family_is_whirl_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_compound_family_is_whirl_characteristic_service_ts --> file_src_modules_characteristics_compound_family_strand_utilities_service_ts
+  file_src_modules_characteristics_compound_family_is_whirl_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
+  file_src_modules_characteristics_compound_family_is_whirl_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_compound_family_is_whirl_characteristic_service_unit_test_ts --> file_src_modules_characteristics_compound_family_family_characteristics_module_ts
+  file_src_modules_characteristics_compound_family_is_whirl_characteristic_service_unit_test_ts --> file_src_modules_characteristics_compound_family_is_whirl_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_is_whirl_characteristic_service_unit_test_ts --> file_src_modules_characteristics_compound_family_strand_utilities_service_ts
+  file_src_modules_characteristics_compound_family_is_whirl_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
+  file_src_modules_characteristics_compound_family_is_whirl_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
+  file_src_modules_characteristics_compound_family_strand_utilities_service_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_compound_family_strand_utilities_service_ts --> file_src_modules_characteristics_compound_compound_utilities_service_ts
+  file_src_modules_characteristics_compound_family_strand_utilities_service_ts --> file_src_modules_characteristics_path_end_ends_on_border_rules_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_strand_utilities_service_ts --> file_src_modules_characteristics_path_tile_crossing_tile_crossing_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_strand_utilities_service_ts --> file_src_modules_characteristics_path_topology_betti_number_0_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_strand_utilities_service_ts --> file_src_modules_characteristics_path_topology_betti_number_1_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_strand_utilities_service_ts --> file_src_modules_characteristics_path_topology_free_end_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_strand_utilities_service_ts --> file_src_modules_characteristics_path_turn_reverses_at_its_tightest_turn_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_strand_utilities_service_ts --> file_src_modules_characteristics_submatrix_point_density_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_strand_utilities_service_ts --> file_src_modules_characteristics_submatrix_point_dot_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_strand_utilities_service_ts --> file_src_modules_characteristics_submatrix_run_longest_horizontal_run_length_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_strand_utilities_service_ts --> file_src_modules_characteristics_submatrix_run_longest_vertical_run_length_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_strand_utilities_service_unit_test_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_compound_family_strand_utilities_service_unit_test_ts --> file_src_modules_characteristics_compound_compound_utilities_service_ts
+  file_src_modules_characteristics_compound_family_strand_utilities_service_unit_test_ts --> file_src_modules_characteristics_compound_family_strand_utilities_service_ts
+  file_src_modules_characteristics_compound_family_strand_utilities_service_unit_test_ts --> file_src_modules_characteristics_path_end_ends_on_border_rules_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_strand_utilities_service_unit_test_ts --> file_src_modules_characteristics_path_tile_crossing_tile_crossing_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_strand_utilities_service_unit_test_ts --> file_src_modules_characteristics_path_topology_betti_number_0_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_strand_utilities_service_unit_test_ts --> file_src_modules_characteristics_path_topology_betti_number_1_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_strand_utilities_service_unit_test_ts --> file_src_modules_characteristics_path_topology_free_end_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_strand_utilities_service_unit_test_ts --> file_src_modules_characteristics_path_turn_reverses_at_its_tightest_turn_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_strand_utilities_service_unit_test_ts --> file_src_modules_characteristics_submatrix_cross_cross_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_strand_utilities_service_unit_test_ts --> file_src_modules_characteristics_submatrix_fork_fork_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_strand_utilities_service_unit_test_ts --> file_src_modules_characteristics_submatrix_point_density_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_strand_utilities_service_unit_test_ts --> file_src_modules_characteristics_submatrix_point_dot_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_strand_utilities_service_unit_test_ts --> file_src_modules_characteristics_submatrix_run_longest_horizontal_run_length_characteristic_service_ts
+  file_src_modules_characteristics_compound_family_strand_utilities_service_unit_test_ts --> file_src_modules_characteristics_submatrix_run_longest_vertical_run_length_characteristic_service_ts
+  file_src_modules_characteristics_compound_structure_is_closed_loop_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_compound_structure_is_closed_loop_characteristic_service_ts --> file_src_modules_characteristics_compound_compound_utilities_service_ts
+  file_src_modules_characteristics_compound_structure_is_closed_loop_characteristic_service_ts --> file_src_modules_characteristics_path_topology_betti_number_0_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_structure_is_closed_loop_characteristic_service_ts --> file_src_modules_characteristics_path_topology_betti_number_1_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_structure_is_closed_loop_characteristic_service_ts --> file_src_modules_characteristics_path_topology_free_end_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_structure_is_closed_loop_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
+  file_src_modules_characteristics_compound_structure_is_closed_loop_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_compound_structure_is_closed_loop_characteristic_service_unit_test_ts --> file_src_modules_characteristics_compound_compound_utilities_service_ts
+  file_src_modules_characteristics_compound_structure_is_closed_loop_characteristic_service_unit_test_ts --> file_src_modules_characteristics_compound_structure_is_closed_loop_characteristic_service_ts
+  file_src_modules_characteristics_compound_structure_is_closed_loop_characteristic_service_unit_test_ts --> file_src_modules_characteristics_compound_structure_structure_characteristics_module_ts
+  file_src_modules_characteristics_compound_structure_is_closed_loop_characteristic_service_unit_test_ts --> file_src_modules_characteristics_path_topology_betti_number_0_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_structure_is_closed_loop_characteristic_service_unit_test_ts --> file_src_modules_characteristics_path_topology_betti_number_1_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_structure_is_closed_loop_characteristic_service_unit_test_ts --> file_src_modules_characteristics_path_topology_free_end_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_structure_is_closed_loop_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_cross_cross_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_structure_is_closed_loop_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_fork_fork_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_structure_is_closed_loop_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
+  file_src_modules_characteristics_compound_structure_is_closed_loop_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
+  file_src_modules_characteristics_compound_structure_is_single_arc_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_compound_structure_is_single_arc_characteristic_service_ts --> file_src_modules_characteristics_compound_compound_utilities_service_ts
+  file_src_modules_characteristics_compound_structure_is_single_arc_characteristic_service_ts --> file_src_modules_characteristics_path_topology_betti_number_0_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_structure_is_single_arc_characteristic_service_ts --> file_src_modules_characteristics_path_topology_betti_number_1_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_structure_is_single_arc_characteristic_service_ts --> file_src_modules_characteristics_path_topology_free_end_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_structure_is_single_arc_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
+  file_src_modules_characteristics_compound_structure_is_single_arc_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_compound_structure_is_single_arc_characteristic_service_unit_test_ts --> file_src_modules_characteristics_compound_compound_utilities_service_ts
+  file_src_modules_characteristics_compound_structure_is_single_arc_characteristic_service_unit_test_ts --> file_src_modules_characteristics_compound_structure_is_single_arc_characteristic_service_ts
+  file_src_modules_characteristics_compound_structure_is_single_arc_characteristic_service_unit_test_ts --> file_src_modules_characteristics_compound_structure_structure_characteristics_module_ts
+  file_src_modules_characteristics_compound_structure_is_single_arc_characteristic_service_unit_test_ts --> file_src_modules_characteristics_path_topology_betti_number_0_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_structure_is_single_arc_characteristic_service_unit_test_ts --> file_src_modules_characteristics_path_topology_betti_number_1_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_structure_is_single_arc_characteristic_service_unit_test_ts --> file_src_modules_characteristics_path_topology_free_end_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_structure_is_single_arc_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_cross_cross_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_structure_is_single_arc_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_fork_fork_count_characteristic_service_ts
+  file_src_modules_characteristics_compound_structure_is_single_arc_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
+  file_src_modules_characteristics_compound_structure_is_single_arc_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
+  file_src_modules_characteristics_compound_structure_structure_characteristics_module_ts --> file_src_modules_characteristics_compound_compound_utilities_module_ts
+  file_src_modules_characteristics_compound_structure_structure_characteristics_module_ts --> file_src_modules_characteristics_compound_structure_is_closed_loop_characteristic_service_ts
+  file_src_modules_characteristics_compound_structure_structure_characteristics_module_ts --> file_src_modules_characteristics_compound_structure_is_single_arc_characteristic_service_ts
+  file_src_modules_characteristics_compound_structure_structure_characteristics_module_ts --> file_src_modules_characteristics_path_topology_topology_characteristics_module_ts
+  file_src_modules_characteristics_connectivity_connectivity_module_ts --> file_src_modules_characteristics_connectivity_connectivity_service_ts
+  file_src_modules_characteristics_connectivity_connectivity_module_ts --> file_src_modules_graph_graph_module_ts
+  file_src_modules_characteristics_connectivity_connectivity_module_unit_test_ts --> file_src_modules_characteristics_characteristics_module_ts
+  file_src_modules_characteristics_connectivity_connectivity_module_unit_test_ts --> file_src_modules_characteristics_connectivity_connectivity_module_ts
+  file_src_modules_characteristics_connectivity_connectivity_module_unit_test_ts --> file_src_modules_characteristics_connectivity_connectivity_service_ts
+  file_src_modules_characteristics_connectivity_connectivity_service_ts --> file_src_modules_characteristics_connectivity_connectivity_types_ts
+  file_src_modules_characteristics_connectivity_connectivity_service_ts --> file_src_modules_graph_graph_service_ts
+  file_src_modules_characteristics_connectivity_connectivity_service_ts --> file_src_modules_graph_graph_types_ts
+  file_src_modules_characteristics_connectivity_connectivity_service_ts --> file_src_modules_matrix_matrix_constants_ts
+  file_src_modules_characteristics_connectivity_connectivity_service_ts --> file_src_modules_matrix_matrix_types_ts
+  file_src_modules_characteristics_connectivity_connectivity_service_unit_test_ts --> file_src_modules_characteristics_connectivity_connectivity_service_ts
+  file_src_modules_characteristics_connectivity_connectivity_service_unit_test_ts --> file_src_modules_code_code_service_ts
+  file_src_modules_characteristics_connectivity_connectivity_service_unit_test_ts --> file_src_modules_graph_graph_service_ts
+  file_src_modules_characteristics_connectivity_connectivity_service_unit_test_ts --> file_src_modules_matrix_matrix_service_ts
+  file_src_modules_characteristics_connectivity_connectivity_service_unit_test_ts --> file_src_modules_symmetry_symmetry_service_ts
+  file_src_modules_characteristics_connectivity_connectivity_service_unit_test_ts --> file_src_modules_tile_tile_service_ts
+  file_src_modules_characteristics_path_end_end_characteristics_module_ts --> file_src_modules_characteristics_connectivity_connectivity_module_ts
+  file_src_modules_characteristics_path_end_end_characteristics_module_ts --> file_src_modules_characteristics_path_end_end_utilities_service_ts
+  file_src_modules_characteristics_path_end_end_characteristics_module_ts --> file_src_modules_characteristics_path_end_ends_are_lattice_neighbors_characteristic_service_ts
+  file_src_modules_characteristics_path_end_end_characteristics_module_ts --> file_src_modules_characteristics_path_end_ends_on_border_rules_characteristic_service_ts
+  file_src_modules_characteristics_path_end_end_utilities_service_ts --> file_src_modules_characteristics_connectivity_connectivity_types_ts
+  file_src_modules_characteristics_path_end_end_utilities_service_ts --> file_src_modules_characteristics_path_end_end_types_ts
+  file_src_modules_characteristics_path_end_end_utilities_service_unit_test_ts --> file_src_modules_characteristics_path_end_end_utilities_service_ts
+  file_src_modules_characteristics_path_end_ends_are_lattice_neighbors_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_path_end_ends_are_lattice_neighbors_characteristic_service_ts --> file_src_modules_characteristics_connectivity_connectivity_service_ts
+  file_src_modules_characteristics_path_end_ends_are_lattice_neighbors_characteristic_service_ts --> file_src_modules_characteristics_path_end_end_utilities_service_ts
+  file_src_modules_characteristics_path_end_ends_are_lattice_neighbors_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
+  file_src_modules_characteristics_path_end_ends_are_lattice_neighbors_characteristic_service_unit_test_ts --> file_src_modules_characteristics_connectivity_connectivity_service_ts
+  file_src_modules_characteristics_path_end_ends_are_lattice_neighbors_characteristic_service_unit_test_ts --> file_src_modules_characteristics_path_end_end_utilities_service_ts
+  file_src_modules_characteristics_path_end_ends_are_lattice_neighbors_characteristic_service_unit_test_ts --> file_src_modules_characteristics_path_end_ends_are_lattice_neighbors_characteristic_service_ts
+  file_src_modules_characteristics_path_end_ends_are_lattice_neighbors_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
+  file_src_modules_characteristics_path_end_ends_are_lattice_neighbors_characteristic_service_unit_test_ts --> file_src_modules_graph_graph_module_ts
+  file_src_modules_characteristics_path_end_ends_are_lattice_neighbors_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
+  file_src_modules_characteristics_path_end_ends_on_border_rules_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_path_end_ends_on_border_rules_characteristic_service_ts --> file_src_modules_characteristics_connectivity_connectivity_service_ts
+  file_src_modules_characteristics_path_end_ends_on_border_rules_characteristic_service_ts --> file_src_modules_characteristics_path_end_end_utilities_service_ts
+  file_src_modules_characteristics_path_end_ends_on_border_rules_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
+  file_src_modules_characteristics_path_end_ends_on_border_rules_characteristic_service_unit_test_ts --> file_src_modules_characteristics_connectivity_connectivity_service_ts
+  file_src_modules_characteristics_path_end_ends_on_border_rules_characteristic_service_unit_test_ts --> file_src_modules_characteristics_path_end_end_utilities_service_ts
+  file_src_modules_characteristics_path_end_ends_on_border_rules_characteristic_service_unit_test_ts --> file_src_modules_characteristics_path_end_ends_on_border_rules_characteristic_service_ts
+  file_src_modules_characteristics_path_end_ends_on_border_rules_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
+  file_src_modules_characteristics_path_end_ends_on_border_rules_characteristic_service_unit_test_ts --> file_src_modules_graph_graph_module_ts
+  file_src_modules_characteristics_path_end_ends_on_border_rules_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
+  file_src_modules_characteristics_path_path_utilities_ts --> file_src_modules_characteristics_connectivity_connectivity_types_ts
   file_src_modules_characteristics_path_path_utilities_ts --> file_src_modules_characteristics_path_path_types_ts
   file_src_modules_characteristics_path_path_utilities_unit_test_ts --> file_src_modules_characteristics_path_path_utilities_ts
-  file_src_modules_characteristics_path_tile_crossing_tile_crossing_characteristics_module_ts --> file_src_modules_characteristics_connectivity_service_ts
+  file_src_modules_characteristics_path_tile_crossing_tile_crossing_characteristics_module_ts --> file_src_modules_characteristics_connectivity_connectivity_module_ts
   file_src_modules_characteristics_path_tile_crossing_tile_crossing_characteristics_module_ts --> file_src_modules_characteristics_path_tile_crossing_tile_crossing_component_delta_count_characteristic_service_ts
   file_src_modules_characteristics_path_tile_crossing_tile_crossing_characteristics_module_ts --> file_src_modules_characteristics_path_tile_crossing_tile_crossing_count_characteristic_service_ts
   file_src_modules_characteristics_path_tile_crossing_tile_crossing_characteristics_module_ts --> file_src_modules_characteristics_path_tile_crossing_tile_crossing_cycle_count_characteristic_service_ts
-  file_src_modules_characteristics_path_tile_crossing_tile_crossing_characteristics_module_ts --> file_src_modules_graph_graph_module_ts
   file_src_modules_characteristics_path_tile_crossing_tile_crossing_component_delta_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_path_tile_crossing_tile_crossing_component_delta_count_characteristic_service_ts --> file_src_modules_characteristics_connectivity_service_ts
+  file_src_modules_characteristics_path_tile_crossing_tile_crossing_component_delta_count_characteristic_service_ts --> file_src_modules_characteristics_connectivity_connectivity_service_ts
   file_src_modules_characteristics_path_tile_crossing_tile_crossing_component_delta_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
-  file_src_modules_characteristics_path_tile_crossing_tile_crossing_component_delta_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_connectivity_service_ts
+  file_src_modules_characteristics_path_tile_crossing_tile_crossing_component_delta_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_connectivity_connectivity_service_ts
   file_src_modules_characteristics_path_tile_crossing_tile_crossing_component_delta_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_path_tile_crossing_tile_crossing_component_delta_count_characteristic_service_ts
   file_src_modules_characteristics_path_tile_crossing_tile_crossing_component_delta_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_path_tile_crossing_tile_crossing_component_delta_count_characteristic_service_unit_test_ts --> file_src_modules_graph_graph_module_ts
   file_src_modules_characteristics_path_tile_crossing_tile_crossing_component_delta_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_path_tile_crossing_tile_crossing_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_path_tile_crossing_tile_crossing_count_characteristic_service_ts --> file_src_modules_characteristics_connectivity_service_ts
+  file_src_modules_characteristics_path_tile_crossing_tile_crossing_count_characteristic_service_ts --> file_src_modules_characteristics_connectivity_connectivity_service_ts
   file_src_modules_characteristics_path_tile_crossing_tile_crossing_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
-  file_src_modules_characteristics_path_tile_crossing_tile_crossing_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_connectivity_service_ts
+  file_src_modules_characteristics_path_tile_crossing_tile_crossing_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_connectivity_connectivity_service_ts
   file_src_modules_characteristics_path_tile_crossing_tile_crossing_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_path_tile_crossing_tile_crossing_count_characteristic_service_ts
   file_src_modules_characteristics_path_tile_crossing_tile_crossing_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_path_tile_crossing_tile_crossing_count_characteristic_service_unit_test_ts --> file_src_modules_graph_graph_module_ts
   file_src_modules_characteristics_path_tile_crossing_tile_crossing_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_path_tile_crossing_tile_crossing_cycle_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_path_tile_crossing_tile_crossing_cycle_count_characteristic_service_ts --> file_src_modules_characteristics_connectivity_service_ts
+  file_src_modules_characteristics_path_tile_crossing_tile_crossing_cycle_count_characteristic_service_ts --> file_src_modules_characteristics_connectivity_connectivity_service_ts
   file_src_modules_characteristics_path_tile_crossing_tile_crossing_cycle_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
-  file_src_modules_characteristics_path_tile_crossing_tile_crossing_cycle_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_connectivity_service_ts
+  file_src_modules_characteristics_path_tile_crossing_tile_crossing_cycle_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_connectivity_connectivity_service_ts
   file_src_modules_characteristics_path_tile_crossing_tile_crossing_cycle_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_path_tile_crossing_tile_crossing_cycle_count_characteristic_service_ts
   file_src_modules_characteristics_path_tile_crossing_tile_crossing_cycle_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_path_tile_crossing_tile_crossing_cycle_count_characteristic_service_unit_test_ts --> file_src_modules_graph_graph_module_ts
   file_src_modules_characteristics_path_tile_crossing_tile_crossing_cycle_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_path_topology_betti_number_0_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_path_topology_betti_number_0_count_characteristic_service_ts --> file_src_modules_characteristics_connectivity_service_ts
+  file_src_modules_characteristics_path_topology_betti_number_0_count_characteristic_service_ts --> file_src_modules_characteristics_connectivity_connectivity_service_ts
   file_src_modules_characteristics_path_topology_betti_number_0_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
-  file_src_modules_characteristics_path_topology_betti_number_0_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_connectivity_service_ts
+  file_src_modules_characteristics_path_topology_betti_number_0_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_connectivity_connectivity_service_ts
   file_src_modules_characteristics_path_topology_betti_number_0_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_path_topology_betti_number_0_count_characteristic_service_ts
   file_src_modules_characteristics_path_topology_betti_number_0_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_path_topology_betti_number_0_count_characteristic_service_unit_test_ts --> file_src_modules_graph_graph_module_ts
   file_src_modules_characteristics_path_topology_betti_number_0_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_path_topology_betti_number_1_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_path_topology_betti_number_1_count_characteristic_service_ts --> file_src_modules_characteristics_connectivity_service_ts
+  file_src_modules_characteristics_path_topology_betti_number_1_count_characteristic_service_ts --> file_src_modules_characteristics_connectivity_connectivity_service_ts
   file_src_modules_characteristics_path_topology_betti_number_1_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
-  file_src_modules_characteristics_path_topology_betti_number_1_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_connectivity_service_ts
+  file_src_modules_characteristics_path_topology_betti_number_1_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_connectivity_connectivity_service_ts
   file_src_modules_characteristics_path_topology_betti_number_1_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_path_topology_betti_number_1_count_characteristic_service_ts
   file_src_modules_characteristics_path_topology_betti_number_1_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_path_topology_betti_number_1_count_characteristic_service_unit_test_ts --> file_src_modules_graph_graph_module_ts
   file_src_modules_characteristics_path_topology_betti_number_1_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_path_topology_free_end_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_path_topology_free_end_count_characteristic_service_ts --> file_src_modules_characteristics_connectivity_service_ts
+  file_src_modules_characteristics_path_topology_free_end_count_characteristic_service_ts --> file_src_modules_characteristics_connectivity_connectivity_service_ts
   file_src_modules_characteristics_path_topology_free_end_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
-  file_src_modules_characteristics_path_topology_free_end_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_connectivity_service_ts
+  file_src_modules_characteristics_path_topology_free_end_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_connectivity_connectivity_service_ts
   file_src_modules_characteristics_path_topology_free_end_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_path_topology_free_end_count_characteristic_service_ts
   file_src_modules_characteristics_path_topology_free_end_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_path_topology_free_end_count_characteristic_service_unit_test_ts --> file_src_modules_graph_graph_module_ts
   file_src_modules_characteristics_path_topology_free_end_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
-  file_src_modules_characteristics_path_topology_topology_characteristics_module_ts --> file_src_modules_characteristics_connectivity_service_ts
+  file_src_modules_characteristics_path_topology_topology_characteristics_module_ts --> file_src_modules_characteristics_connectivity_connectivity_module_ts
   file_src_modules_characteristics_path_topology_topology_characteristics_module_ts --> file_src_modules_characteristics_path_topology_betti_number_0_count_characteristic_service_ts
   file_src_modules_characteristics_path_topology_topology_characteristics_module_ts --> file_src_modules_characteristics_path_topology_betti_number_1_count_characteristic_service_ts
   file_src_modules_characteristics_path_topology_topology_characteristics_module_ts --> file_src_modules_characteristics_path_topology_free_end_count_characteristic_service_ts
-  file_src_modules_characteristics_path_topology_topology_characteristics_module_ts --> file_src_modules_graph_graph_module_ts
   file_src_modules_characteristics_path_turn_bottom_border_touch_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_path_turn_bottom_border_touch_count_characteristic_service_ts --> file_src_modules_characteristics_connectivity_service_ts
+  file_src_modules_characteristics_path_turn_bottom_border_touch_count_characteristic_service_ts --> file_src_modules_characteristics_connectivity_connectivity_service_ts
   file_src_modules_characteristics_path_turn_bottom_border_touch_count_characteristic_service_ts --> file_src_modules_characteristics_path_path_utilities_ts
   file_src_modules_characteristics_path_turn_bottom_border_touch_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
-  file_src_modules_characteristics_path_turn_bottom_border_touch_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_connectivity_service_ts
+  file_src_modules_characteristics_path_turn_bottom_border_touch_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_connectivity_connectivity_service_ts
   file_src_modules_characteristics_path_turn_bottom_border_touch_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_path_turn_bottom_border_touch_count_characteristic_service_ts
   file_src_modules_characteristics_path_turn_bottom_border_touch_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_path_turn_bottom_border_touch_count_characteristic_service_unit_test_ts --> file_src_modules_graph_graph_module_ts
   file_src_modules_characteristics_path_turn_bottom_border_touch_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_path_turn_inflection_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_path_turn_inflection_count_characteristic_service_ts --> file_src_modules_characteristics_connectivity_service_ts
+  file_src_modules_characteristics_path_turn_inflection_count_characteristic_service_ts --> file_src_modules_characteristics_connectivity_connectivity_service_ts
   file_src_modules_characteristics_path_turn_inflection_count_characteristic_service_ts --> file_src_modules_characteristics_path_path_utilities_ts
   file_src_modules_characteristics_path_turn_inflection_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
-  file_src_modules_characteristics_path_turn_inflection_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_connectivity_service_ts
+  file_src_modules_characteristics_path_turn_inflection_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_connectivity_connectivity_service_ts
   file_src_modules_characteristics_path_turn_inflection_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_path_turn_inflection_count_characteristic_service_ts
   file_src_modules_characteristics_path_turn_inflection_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_path_turn_inflection_count_characteristic_service_unit_test_ts --> file_src_modules_graph_graph_module_ts
   file_src_modules_characteristics_path_turn_inflection_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_path_turn_max_monotonic_turn_length_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_path_turn_max_monotonic_turn_length_characteristic_service_ts --> file_src_modules_characteristics_connectivity_service_ts
+  file_src_modules_characteristics_path_turn_max_monotonic_turn_length_characteristic_service_ts --> file_src_modules_characteristics_connectivity_connectivity_service_ts
   file_src_modules_characteristics_path_turn_max_monotonic_turn_length_characteristic_service_ts --> file_src_modules_characteristics_path_path_utilities_ts
   file_src_modules_characteristics_path_turn_max_monotonic_turn_length_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
-  file_src_modules_characteristics_path_turn_max_monotonic_turn_length_characteristic_service_unit_test_ts --> file_src_modules_characteristics_connectivity_service_ts
+  file_src_modules_characteristics_path_turn_max_monotonic_turn_length_characteristic_service_unit_test_ts --> file_src_modules_characteristics_connectivity_connectivity_service_ts
   file_src_modules_characteristics_path_turn_max_monotonic_turn_length_characteristic_service_unit_test_ts --> file_src_modules_characteristics_path_turn_max_monotonic_turn_length_characteristic_service_ts
   file_src_modules_characteristics_path_turn_max_monotonic_turn_length_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_path_turn_max_monotonic_turn_length_characteristic_service_unit_test_ts --> file_src_modules_graph_graph_module_ts
   file_src_modules_characteristics_path_turn_max_monotonic_turn_length_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
+  file_src_modules_characteristics_path_turn_reverses_at_its_tightest_turn_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_path_turn_reverses_at_its_tightest_turn_characteristic_service_ts --> file_src_modules_characteristics_connectivity_connectivity_service_ts
+  file_src_modules_characteristics_path_turn_reverses_at_its_tightest_turn_characteristic_service_ts --> file_src_modules_characteristics_connectivity_connectivity_types_ts
+  file_src_modules_characteristics_path_turn_reverses_at_its_tightest_turn_characteristic_service_ts --> file_src_modules_characteristics_path_turn_reverses_at_its_tightest_turn_types_ts
+  file_src_modules_characteristics_path_turn_reverses_at_its_tightest_turn_characteristic_service_ts --> file_src_modules_characteristics_submatrix_point_point_utilities_service_ts
+  file_src_modules_characteristics_path_turn_reverses_at_its_tightest_turn_characteristic_service_ts --> file_src_modules_matrix_matrix_types_ts
+  file_src_modules_characteristics_path_turn_reverses_at_its_tightest_turn_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
+  file_src_modules_characteristics_path_turn_reverses_at_its_tightest_turn_characteristic_service_unit_test_ts --> file_src_modules_characteristics_connectivity_connectivity_service_ts
+  file_src_modules_characteristics_path_turn_reverses_at_its_tightest_turn_characteristic_service_unit_test_ts --> file_src_modules_characteristics_path_turn_reverses_at_its_tightest_turn_characteristic_service_ts
+  file_src_modules_characteristics_path_turn_reverses_at_its_tightest_turn_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_point_point_utilities_service_ts
+  file_src_modules_characteristics_path_turn_reverses_at_its_tightest_turn_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
+  file_src_modules_characteristics_path_turn_reverses_at_its_tightest_turn_characteristic_service_unit_test_ts --> file_src_modules_graph_graph_module_ts
+  file_src_modules_characteristics_path_turn_reverses_at_its_tightest_turn_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_path_turn_tightest_turn_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_path_turn_tightest_turn_count_characteristic_service_ts --> file_src_modules_characteristics_connectivity_service_ts
+  file_src_modules_characteristics_path_turn_tightest_turn_count_characteristic_service_ts --> file_src_modules_characteristics_connectivity_connectivity_service_ts
   file_src_modules_characteristics_path_turn_tightest_turn_count_characteristic_service_ts --> file_src_modules_characteristics_path_path_utilities_ts
   file_src_modules_characteristics_path_turn_tightest_turn_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
-  file_src_modules_characteristics_path_turn_tightest_turn_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_connectivity_service_ts
+  file_src_modules_characteristics_path_turn_tightest_turn_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_connectivity_connectivity_service_ts
   file_src_modules_characteristics_path_turn_tightest_turn_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_path_turn_tightest_turn_count_characteristic_service_ts
   file_src_modules_characteristics_path_turn_tightest_turn_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_path_turn_tightest_turn_count_characteristic_service_unit_test_ts --> file_src_modules_graph_graph_module_ts
   file_src_modules_characteristics_path_turn_tightest_turn_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_path_turn_top_border_touch_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_path_turn_top_border_touch_count_characteristic_service_ts --> file_src_modules_characteristics_connectivity_service_ts
+  file_src_modules_characteristics_path_turn_top_border_touch_count_characteristic_service_ts --> file_src_modules_characteristics_connectivity_connectivity_service_ts
   file_src_modules_characteristics_path_turn_top_border_touch_count_characteristic_service_ts --> file_src_modules_characteristics_path_path_utilities_ts
   file_src_modules_characteristics_path_turn_top_border_touch_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
-  file_src_modules_characteristics_path_turn_top_border_touch_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_connectivity_service_ts
+  file_src_modules_characteristics_path_turn_top_border_touch_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_connectivity_connectivity_service_ts
   file_src_modules_characteristics_path_turn_top_border_touch_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_path_turn_top_border_touch_count_characteristic_service_ts
   file_src_modules_characteristics_path_turn_top_border_touch_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_path_turn_top_border_touch_count_characteristic_service_unit_test_ts --> file_src_modules_graph_graph_module_ts
   file_src_modules_characteristics_path_turn_top_border_touch_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_path_turn_total_turn_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_path_turn_total_turn_count_characteristic_service_ts --> file_src_modules_characteristics_connectivity_service_ts
+  file_src_modules_characteristics_path_turn_total_turn_count_characteristic_service_ts --> file_src_modules_characteristics_connectivity_connectivity_service_ts
   file_src_modules_characteristics_path_turn_total_turn_count_characteristic_service_ts --> file_src_modules_characteristics_path_path_utilities_ts
   file_src_modules_characteristics_path_turn_total_turn_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
-  file_src_modules_characteristics_path_turn_total_turn_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_connectivity_service_ts
+  file_src_modules_characteristics_path_turn_total_turn_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_connectivity_connectivity_service_ts
   file_src_modules_characteristics_path_turn_total_turn_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_path_turn_total_turn_count_characteristic_service_ts
   file_src_modules_characteristics_path_turn_total_turn_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_path_turn_total_turn_count_characteristic_service_unit_test_ts --> file_src_modules_graph_graph_module_ts
   file_src_modules_characteristics_path_turn_total_turn_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
-  file_src_modules_characteristics_path_turn_turn_characteristics_module_ts --> file_src_modules_characteristics_connectivity_service_ts
+  file_src_modules_characteristics_path_turn_turn_characteristics_module_ts --> file_src_modules_characteristics_connectivity_connectivity_module_ts
   file_src_modules_characteristics_path_turn_turn_characteristics_module_ts --> file_src_modules_characteristics_path_turn_bottom_border_touch_count_characteristic_service_ts
   file_src_modules_characteristics_path_turn_turn_characteristics_module_ts --> file_src_modules_characteristics_path_turn_inflection_count_characteristic_service_ts
   file_src_modules_characteristics_path_turn_turn_characteristics_module_ts --> file_src_modules_characteristics_path_turn_max_monotonic_turn_length_characteristic_service_ts
+  file_src_modules_characteristics_path_turn_turn_characteristics_module_ts --> file_src_modules_characteristics_path_turn_reverses_at_its_tightest_turn_characteristic_service_ts
   file_src_modules_characteristics_path_turn_turn_characteristics_module_ts --> file_src_modules_characteristics_path_turn_tightest_turn_count_characteristic_service_ts
   file_src_modules_characteristics_path_turn_turn_characteristics_module_ts --> file_src_modules_characteristics_path_turn_top_border_touch_count_characteristic_service_ts
   file_src_modules_characteristics_path_turn_turn_characteristics_module_ts --> file_src_modules_characteristics_path_turn_total_turn_count_characteristic_service_ts
-  file_src_modules_characteristics_path_turn_turn_characteristics_module_ts --> file_src_modules_graph_graph_module_ts
+  file_src_modules_characteristics_path_turn_turn_characteristics_module_ts --> file_src_modules_characteristics_submatrix_point_point_characteristics_module_ts
   file_src_modules_characteristics_submatrix_corner_corner_characteristics_module_ts --> file_src_modules_characteristics_submatrix_corner_corner_count_characteristic_service_ts
   file_src_modules_characteristics_submatrix_corner_corner_characteristics_module_ts --> file_src_modules_characteristics_submatrix_corner_north_east_corner_count_characteristic_service_ts
   file_src_modules_characteristics_submatrix_corner_corner_characteristics_module_ts --> file_src_modules_characteristics_submatrix_corner_north_west_corner_count_characteristic_service_ts
@@ -4358,6 +4847,14 @@ graph LR
   file_src_modules_characteristics_submatrix_cross_cross_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_cross_cross_count_characteristic_service_ts
   file_src_modules_characteristics_submatrix_cross_cross_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_cross_cross_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
+  file_src_modules_characteristics_submatrix_embedded_embedded_characteristics_module_ts --> file_src_modules_characteristics_submatrix_embedded_embedded_u_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_embedded_embedded_u_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_submatrix_embedded_embedded_u_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_ts
+  file_src_modules_characteristics_submatrix_embedded_embedded_u_count_characteristic_service_ts --> file_src_modules_matrix_matrix_types_ts
+  file_src_modules_characteristics_submatrix_embedded_embedded_u_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
+  file_src_modules_characteristics_submatrix_embedded_embedded_u_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_embedded_embedded_u_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_embedded_embedded_u_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
+  file_src_modules_characteristics_submatrix_embedded_embedded_u_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_fork_east_fork_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
   file_src_modules_characteristics_submatrix_fork_east_fork_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_ts
   file_src_modules_characteristics_submatrix_fork_east_fork_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
@@ -4774,21 +5271,50 @@ graph LR
   file_src_modules_characteristics_submatrix_letter_z_sideways_letter_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_z_sideways_letter_count_characteristic_service_ts
   file_src_modules_characteristics_submatrix_letter_z_sideways_letter_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_letter_z_sideways_letter_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
+  file_src_modules_characteristics_submatrix_point_density_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_submatrix_point_density_characteristic_service_ts --> file_src_modules_characteristics_submatrix_point_ink_point_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_point_density_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
+  file_src_modules_characteristics_submatrix_point_density_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_submatrix_point_density_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_point_density_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_point_density_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_point_ink_point_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_point_density_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_point_point_utilities_service_ts
+  file_src_modules_characteristics_submatrix_point_density_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
+  file_src_modules_characteristics_submatrix_point_density_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_point_dot_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
   file_src_modules_characteristics_submatrix_point_dot_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_ts
   file_src_modules_characteristics_submatrix_point_dot_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_src_modules_characteristics_submatrix_point_dot_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_point_dot_count_characteristic_service_ts
   file_src_modules_characteristics_submatrix_point_dot_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_point_dot_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
+  file_src_modules_characteristics_submatrix_point_edge_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_submatrix_point_edge_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_point_point_utilities_service_ts
+  file_src_modules_characteristics_submatrix_point_edge_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
+  file_src_modules_characteristics_submatrix_point_edge_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_point_edge_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_point_edge_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_point_point_utilities_service_ts
+  file_src_modules_characteristics_submatrix_point_edge_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
+  file_src_modules_characteristics_submatrix_point_edge_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_point_horizontal_edge_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
   file_src_modules_characteristics_submatrix_point_horizontal_edge_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_ts
   file_src_modules_characteristics_submatrix_point_horizontal_edge_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_src_modules_characteristics_submatrix_point_horizontal_edge_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_point_horizontal_edge_count_characteristic_service_ts
   file_src_modules_characteristics_submatrix_point_horizontal_edge_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_point_horizontal_edge_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
+  file_src_modules_characteristics_submatrix_point_ink_point_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_submatrix_point_ink_point_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_point_point_utilities_service_ts
+  file_src_modules_characteristics_submatrix_point_ink_point_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
+  file_src_modules_characteristics_submatrix_point_ink_point_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_point_ink_point_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_point_ink_point_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_point_point_utilities_service_ts
+  file_src_modules_characteristics_submatrix_point_ink_point_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
+  file_src_modules_characteristics_submatrix_point_ink_point_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
+  file_src_modules_characteristics_submatrix_point_point_characteristics_module_ts --> file_src_modules_characteristics_submatrix_point_density_characteristic_service_ts
   file_src_modules_characteristics_submatrix_point_point_characteristics_module_ts --> file_src_modules_characteristics_submatrix_point_dot_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_point_point_characteristics_module_ts --> file_src_modules_characteristics_submatrix_point_edge_count_characteristic_service_ts
   file_src_modules_characteristics_submatrix_point_point_characteristics_module_ts --> file_src_modules_characteristics_submatrix_point_horizontal_edge_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_point_point_characteristics_module_ts --> file_src_modules_characteristics_submatrix_point_ink_point_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_point_point_characteristics_module_ts --> file_src_modules_characteristics_submatrix_point_point_utilities_service_ts
   file_src_modules_characteristics_submatrix_point_point_characteristics_module_ts --> file_src_modules_characteristics_submatrix_point_vertical_edge_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_point_point_utilities_service_ts --> file_src_modules_matrix_matrix_types_ts
+  file_src_modules_characteristics_submatrix_point_point_utilities_service_unit_test_ts --> file_src_modules_characteristics_submatrix_point_point_utilities_service_ts
   file_src_modules_characteristics_submatrix_point_vertical_edge_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
   file_src_modules_characteristics_submatrix_point_vertical_edge_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_ts
   file_src_modules_characteristics_submatrix_point_vertical_edge_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
@@ -4814,12 +5340,45 @@ graph LR
   file_src_modules_characteristics_submatrix_rectangle_vertical_rectangle_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_rectangle_vertical_rectangle_count_characteristic_service_ts
   file_src_modules_characteristics_submatrix_rectangle_vertical_rectangle_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_rectangle_vertical_rectangle_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
+  file_src_modules_characteristics_submatrix_run_longest_horizontal_run_length_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_submatrix_run_longest_horizontal_run_length_characteristic_service_ts --> file_src_modules_characteristics_submatrix_run_run_utilities_service_ts
+  file_src_modules_characteristics_submatrix_run_longest_horizontal_run_length_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
+  file_src_modules_characteristics_submatrix_run_longest_horizontal_run_length_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_run_longest_horizontal_run_length_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_run_longest_horizontal_run_length_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_run_run_utilities_service_ts
+  file_src_modules_characteristics_submatrix_run_longest_horizontal_run_length_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
+  file_src_modules_characteristics_submatrix_run_longest_horizontal_run_length_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
+  file_src_modules_characteristics_submatrix_run_longest_vertical_run_length_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_submatrix_run_longest_vertical_run_length_characteristic_service_ts --> file_src_modules_characteristics_submatrix_run_run_utilities_service_ts
+  file_src_modules_characteristics_submatrix_run_longest_vertical_run_length_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
+  file_src_modules_characteristics_submatrix_run_longest_vertical_run_length_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_run_longest_vertical_run_length_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_run_longest_vertical_run_length_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_run_run_utilities_service_ts
+  file_src_modules_characteristics_submatrix_run_longest_vertical_run_length_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
+  file_src_modules_characteristics_submatrix_run_longest_vertical_run_length_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
+  file_src_modules_characteristics_submatrix_run_run_characteristics_module_ts --> file_src_modules_characteristics_submatrix_run_longest_horizontal_run_length_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_run_run_characteristics_module_ts --> file_src_modules_characteristics_submatrix_run_longest_vertical_run_length_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_run_run_characteristics_module_ts --> file_src_modules_characteristics_submatrix_run_run_utilities_service_ts
+  file_src_modules_characteristics_submatrix_run_run_utilities_service_ts --> file_src_modules_matrix_matrix_constants_ts
+  file_src_modules_characteristics_submatrix_run_run_utilities_service_ts --> file_src_modules_matrix_matrix_types_ts
+  file_src_modules_characteristics_submatrix_run_run_utilities_service_unit_test_ts --> file_src_modules_characteristics_submatrix_run_run_utilities_service_ts
+  file_src_modules_characteristics_submatrix_run_run_utilities_service_unit_test_ts --> file_src_modules_code_code_module_ts
+  file_src_modules_characteristics_submatrix_run_run_utilities_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
+  file_src_modules_characteristics_submatrix_run_run_utilities_service_unit_test_ts --> file_src_modules_matrix_matrix_service_ts
   file_src_modules_characteristics_submatrix_submatrix_utilities_ts --> file_src_modules_characteristics_submatrix_submatrix_types_ts
   file_src_modules_characteristics_submatrix_submatrix_utilities_ts --> file_src_modules_matrix_matrix_types_ts
   file_src_modules_characteristics_submatrix_submatrix_utilities_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_ts
   file_src_modules_characteristics_submatrix_submatrix_utilities_unit_test_ts --> file_src_modules_matrix_matrix_types_ts
   file_src_modules_classification_classification_constants_ts --> file_src_modules_classification_classification_types_ts
   file_src_modules_classification_classification_module_ts --> file_src_modules_classification_classification_service_ts
+  file_src_modules_classification_classification_service_integration_test_ts --> file_src_modules_characteristics_characteristics_module_ts
+  file_src_modules_classification_classification_service_integration_test_ts --> file_src_modules_characteristics_characteristics_service_ts
+  file_src_modules_classification_classification_service_integration_test_ts --> file_src_modules_classification_classification_module_ts
+  file_src_modules_classification_classification_service_integration_test_ts --> file_src_modules_classification_classification_service_ts
+  file_src_modules_classification_classification_service_integration_test_ts --> file_src_modules_classification_classification_types_ts
+  file_src_modules_classification_classification_service_integration_test_ts --> file_src_modules_code_code_module_ts
+  file_src_modules_classification_classification_service_integration_test_ts --> file_src_modules_code_code_service_ts
+  file_src_modules_classification_classification_service_integration_test_ts --> file_src_modules_code_code_types_ts
+  file_src_modules_classification_classification_service_integration_test_ts --> file_testing_legacy_characteristics_ts
+  file_src_modules_classification_classification_service_integration_test_ts --> file_testing_meanders_ts
   file_src_modules_classification_classification_service_ts --> file_src_modules_characteristics_characteristics_types_ts
   file_src_modules_classification_classification_service_ts --> file_src_modules_classification_classification_constants_ts
   file_src_modules_classification_classification_service_ts --> file_src_modules_classification_classification_types_ts
@@ -4827,6 +5386,7 @@ graph LR
   file_src_modules_classification_classification_service_unit_test_ts --> file_src_modules_classification_classification_constants_ts
   file_src_modules_classification_classification_service_unit_test_ts --> file_src_modules_classification_classification_service_ts
   file_src_modules_classification_classification_service_unit_test_ts --> file_src_modules_classification_classification_types_ts
+  file_src_modules_classification_classification_service_unit_test_ts --> file_testing_meanders_ts
   file_src_modules_classification_classification_types_ts --> file_src_modules_characteristics_characteristics_types_ts
   file_src_modules_code_code_module_ts --> file_src_modules_code_code_service_ts
   file_src_modules_code_code_module_ts --> file_src_modules_symmetry_symmetry_module_ts
@@ -4853,13 +5413,11 @@ graph LR
   file_src_modules_corpus_corpus_service_ts --> file_src_modules_corpus_corpus_constants_ts
   file_src_modules_corpus_corpus_service_ts --> file_src_modules_corpus_corpus_types_ts
   file_src_modules_corpus_corpus_service_ts --> file_src_modules_database_database_service_ts
-  file_src_modules_corpus_corpus_service_ts --> file_src_modules_database_database_types_ts
   file_src_modules_corpus_corpus_service_ts --> file_src_modules_database_entities_Meander_entity_ts
   file_src_modules_corpus_corpus_service_ts --> file_src_modules_drawing_drawing_service_ts
   file_src_modules_corpus_corpus_service_ts --> file_src_modules_enumeration_enumeration_constants_ts
   file_src_modules_corpus_corpus_service_ts --> file_src_modules_enumeration_enumeration_service_ts
   file_src_modules_corpus_corpus_service_unit_test_ts --> file_src_modules_characteristics_characteristics_service_ts
-  file_src_modules_corpus_corpus_service_unit_test_ts --> file_src_modules_characteristics_characteristics_types_ts
   file_src_modules_corpus_corpus_service_unit_test_ts --> file_src_modules_classification_classification_service_ts
   file_src_modules_corpus_corpus_service_unit_test_ts --> file_src_modules_code_code_service_ts
   file_src_modules_corpus_corpus_service_unit_test_ts --> file_src_modules_corpus_corpus_constants_ts
@@ -4870,6 +5428,7 @@ graph LR
   file_src_modules_corpus_corpus_service_unit_test_ts --> file_src_modules_drawing_drawing_service_ts
   file_src_modules_corpus_corpus_service_unit_test_ts --> file_src_modules_enumeration_enumeration_service_ts
   file_src_modules_corpus_corpus_service_unit_test_ts --> file_src_modules_tile_tile_types_ts
+  file_src_modules_corpus_corpus_service_unit_test_ts --> file_testing_meanders_ts
   file_src_modules_corpus_historical_corpus_1_constants_ts --> file_src_modules_corpus_corpus_types_ts
   file_src_modules_corpus_historical_corpus_10_constants_ts --> file_src_modules_corpus_corpus_types_ts
   file_src_modules_corpus_historical_corpus_11_constants_ts --> file_src_modules_corpus_corpus_types_ts
@@ -4896,17 +5455,20 @@ graph LR
   file_src_modules_database_database_module_ts --> file_src_modules_database_database_constants_ts
   file_src_modules_database_database_module_ts --> file_src_modules_database_database_service_ts
   file_src_modules_database_database_module_ts --> file_src_modules_database_entities_Meander_entity_ts
+  file_src_modules_database_database_service_integration_test_ts --> file_src_modules_database_database_constants_ts
   file_src_modules_database_database_service_integration_test_ts --> file_src_modules_database_database_service_ts
-  file_src_modules_database_database_service_integration_test_ts --> file_src_modules_database_database_types_ts
   file_src_modules_database_database_service_integration_test_ts --> file_src_modules_database_entities_Meander_entity_ts
+  file_src_modules_database_database_service_integration_test_ts --> file_testing_meanders_ts
   file_src_modules_database_database_service_ts --> file_src_modules_database_database_constants_ts
   file_src_modules_database_database_service_ts --> file_src_modules_database_database_types_ts
   file_src_modules_database_database_service_ts --> file_src_modules_database_entities_Meander_entity_ts
   file_src_modules_database_database_service_unit_test_ts --> file_src_modules_database_database_service_ts
   file_src_modules_database_database_service_unit_test_ts --> file_src_modules_database_database_types_ts
   file_src_modules_database_database_service_unit_test_ts --> file_src_modules_database_entities_Meander_entity_ts
+  file_src_modules_database_database_service_unit_test_ts --> file_testing_meanders_ts
   file_src_modules_database_database_types_ts --> file_src_modules_database_database_constants_ts
   file_src_modules_database_database_types_ts --> file_src_modules_database_entities_Meander_entity_ts
+  file_src_modules_database_entities_Meander_entity_ts --> file_src_modules_characteristics_characteristics_types_ts
   file_src_modules_database_entities_Meander_entity_ts --> file_src_modules_classification_classification_constants_ts
   file_src_modules_database_entities_Meander_entity_ts --> file_src_modules_classification_classification_types_ts
   file_src_modules_database_entities_Meander_entity_ts --> file_src_modules_database_database_constants_ts
@@ -4931,6 +5493,8 @@ graph LR
   file_src_modules_draw_draw_check_command_integration_test_ts --> file_src_modules_draw_draw_index_service_ts
   file_src_modules_draw_draw_check_command_integration_test_ts --> file_src_modules_draw_draw_command_ts
   file_src_modules_draw_draw_check_command_integration_test_ts --> file_src_modules_enumeration_enumeration_constants_ts
+  file_src_modules_draw_draw_check_command_integration_test_ts --> file_testing_meanders_ts
+  file_src_modules_draw_draw_check_constants_ts --> file_src_modules_characteristics_characteristics_constants_ts
   file_src_modules_draw_draw_check_constants_ts --> file_src_modules_database_database_types_ts
   file_src_modules_draw_draw_check_constants_ts --> file_src_modules_draw_draw_check_types_ts
   file_src_modules_draw_draw_check_service_ts --> file_src_modules_corpus_corpus_service_ts
@@ -4940,11 +5504,13 @@ graph LR
   file_src_modules_draw_draw_check_service_ts --> file_src_modules_draw_draw_check_constants_ts
   file_src_modules_draw_draw_check_service_ts --> file_src_modules_draw_draw_check_types_ts
   file_src_modules_draw_draw_check_service_ts --> file_src_modules_draw_draw_enumeration_service_ts
+  file_src_modules_draw_draw_check_service_unit_test_ts --> file_src_modules_characteristics_characteristics_constants_ts
   file_src_modules_draw_draw_check_service_unit_test_ts --> file_src_modules_corpus_corpus_service_ts
   file_src_modules_draw_draw_check_service_unit_test_ts --> file_src_modules_database_entities_Meander_entity_ts
   file_src_modules_draw_draw_check_service_unit_test_ts --> file_src_modules_draw_draw_check_constants_ts
   file_src_modules_draw_draw_check_service_unit_test_ts --> file_src_modules_draw_draw_check_service_ts
   file_src_modules_draw_draw_check_service_unit_test_ts --> file_src_modules_draw_draw_enumeration_service_ts
+  file_src_modules_draw_draw_check_service_unit_test_ts --> file_testing_meanders_ts
   file_src_modules_draw_draw_code_service_ts --> file_src_modules_database_database_service_ts
   file_src_modules_draw_draw_code_service_ts --> file_src_modules_database_entities_Meander_entity_ts
   file_src_modules_draw_draw_code_service_ts --> file_src_modules_draw_draw_record_service_ts
@@ -4955,11 +5521,7 @@ graph LR
   file_src_modules_draw_draw_code_service_unit_test_ts --> file_src_modules_draw_draw_code_service_ts
   file_src_modules_draw_draw_code_service_unit_test_ts --> file_src_modules_draw_draw_record_service_ts
   file_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_src_constants_ts
-  file_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_src_modules_characteristics_characteristics_family_service_ts
-  file_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_src_modules_characteristics_characteristics_path_service_ts
-  file_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_src_modules_characteristics_characteristics_shape_service_ts
-  file_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_src_modules_characteristics_characteristics_service_ts
-  file_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_src_modules_characteristics_connectivity_service_ts
+  file_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_src_modules_characteristics_characteristics_module_ts
   file_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_src_modules_classification_classification_service_ts
   file_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_src_modules_code_code_service_ts
   file_src_modules_draw_draw_enumeration_service_integration_test_ts --> file_src_modules_database_database_service_ts
@@ -4995,6 +5557,7 @@ graph LR
   file_src_modules_draw_draw_index_service_integration_test_ts --> file_src_modules_svg_svg_service_ts
   file_src_modules_draw_draw_index_service_integration_test_ts --> file_src_modules_symmetry_symmetry_service_ts
   file_src_modules_draw_draw_index_service_integration_test_ts --> file_src_modules_tile_tile_service_ts
+  file_src_modules_draw_draw_index_service_integration_test_ts --> file_testing_meanders_ts
   file_src_modules_draw_draw_index_service_ts --> file_src_modules_code_code_service_ts
   file_src_modules_draw_draw_index_service_ts --> file_src_modules_database_database_service_ts
   file_src_modules_draw_draw_index_service_ts --> file_src_modules_database_entities_Meander_entity_ts
@@ -5009,27 +5572,21 @@ graph LR
   file_src_modules_draw_draw_index_service_unit_test_ts --> file_src_modules_draw_draw_index_service_ts
   file_src_modules_draw_draw_index_service_unit_test_ts --> file_src_modules_drawing_drawing_service_ts
   file_src_modules_draw_draw_index_service_unit_test_ts --> file_src_modules_geometry_geometry_service_ts
+  file_src_modules_draw_draw_index_service_unit_test_ts --> file_testing_meanders_ts
   file_src_modules_draw_draw_index_types_ts --> file_src_modules_database_entities_Meander_entity_ts
   file_src_modules_draw_draw_record_service_ts --> file_src_modules_characteristics_characteristics_service_ts
   file_src_modules_draw_draw_record_service_ts --> file_src_modules_classification_classification_service_ts
   file_src_modules_draw_draw_record_service_ts --> file_src_modules_code_code_service_ts
   file_src_modules_draw_draw_record_service_ts --> file_src_modules_database_database_types_ts
   file_src_modules_draw_draw_record_service_ts --> file_src_modules_drawing_drawing_service_ts
-  file_src_modules_draw_draw_record_service_unit_test_ts --> file_src_modules_characteristics_characteristics_family_service_ts
-  file_src_modules_draw_draw_record_service_unit_test_ts --> file_src_modules_characteristics_characteristics_path_service_ts
-  file_src_modules_draw_draw_record_service_unit_test_ts --> file_src_modules_characteristics_characteristics_shape_service_ts
+  file_src_modules_draw_draw_record_service_unit_test_ts --> file_src_modules_characteristics_characteristics_constants_ts
+  file_src_modules_draw_draw_record_service_unit_test_ts --> file_src_modules_characteristics_characteristics_module_ts
   file_src_modules_draw_draw_record_service_unit_test_ts --> file_src_modules_characteristics_characteristics_service_ts
-  file_src_modules_draw_draw_record_service_unit_test_ts --> file_src_modules_characteristics_connectivity_service_ts
-  file_src_modules_draw_draw_record_service_unit_test_ts --> file_src_modules_classification_classification_service_ts
+  file_src_modules_draw_draw_record_service_unit_test_ts --> file_src_modules_classification_classification_module_ts
+  file_src_modules_draw_draw_record_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_draw_draw_record_service_unit_test_ts --> file_src_modules_code_code_service_ts
   file_src_modules_draw_draw_record_service_unit_test_ts --> file_src_modules_draw_draw_record_service_ts
-  file_src_modules_draw_draw_record_service_unit_test_ts --> file_src_modules_drawing_drawing_service_ts
-  file_src_modules_draw_draw_record_service_unit_test_ts --> file_src_modules_geometry_geometry_service_ts
-  file_src_modules_draw_draw_record_service_unit_test_ts --> file_src_modules_graph_graph_service_ts
-  file_src_modules_draw_draw_record_service_unit_test_ts --> file_src_modules_matrix_matrix_service_ts
-  file_src_modules_draw_draw_record_service_unit_test_ts --> file_src_modules_svg_svg_service_ts
-  file_src_modules_draw_draw_record_service_unit_test_ts --> file_src_modules_symmetry_symmetry_service_ts
-  file_src_modules_draw_draw_record_service_unit_test_ts --> file_src_modules_tile_tile_service_ts
+  file_src_modules_draw_draw_record_service_unit_test_ts --> file_src_modules_drawing_drawing_module_ts
   file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_constants_ts
   file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_characteristics_characteristics_module_ts
   file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_classification_classification_constants_ts
@@ -5049,11 +5606,8 @@ graph LR
   file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_enumeration_enumeration_module_ts
   file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_enumeration_enumeration_service_ts
   file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_geometry_geometry_module_ts
-  file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_characteristics_characteristics_family_service_ts
-  file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_characteristics_characteristics_path_service_ts
-  file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_characteristics_characteristics_shape_service_ts
-  file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_characteristics_characteristics_service_ts
-  file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_characteristics_connectivity_service_ts
+  file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_testing_meanders_ts
+  file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_characteristics_characteristics_module_ts
   file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_classification_classification_module_ts
   file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_corpus_corpus_service_ts
@@ -5192,6 +5746,9 @@ graph LR
   file_src_modules_tile_tile_service_unit_test_ts --> file_src_modules_tile_tile_types_ts
   file_src_modules_tile_tile_service_unit_test_ts --> file_testing_tiles_ts
   file_src_repl_ts --> file_src_main_module_ts
+  file_testing_meanders_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_testing_meanders_ts --> file_src_modules_code_code_types_ts
+  file_testing_meanders_ts --> file_src_modules_database_database_types_ts
   file_testing_tiles_ts --> file_src_modules_tile_tile_service_ts
   file_testing_tiles_ts --> file_src_modules_tile_tile_types_ts
 ```

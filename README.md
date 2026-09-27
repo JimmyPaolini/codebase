@@ -9365,22 +9365,22 @@ The workspace's call graph, traced by [callidescope](packages/ic-suite/callidesc
 
 | Measure | Value |
 | --- | --- |
-| Callables | 5438 |
-| Files | 1576 |
-| Calls traced | 5957 |
-| Call stacks | 1526 |
+| Callables | 5474 |
+| Files | 1620 |
+| Calls traced | 6025 |
+| Call stacks | 1543 |
 | Deepest stack | 17 |
 | Stacks through recursion | 12 |
-| Unfollowable calls | 349 |
+| Unfollowable calls | 350 |
 
 ### Projects
 
 | Project | Deepest | Limit | Headroom | Widest |
 | --- | --- | --- | --- | --- |
-| `applications/meanderaw` | 17 | 16 | -1 | 13 |
 | `applications/caelundas` | 16 | 16 | 0 | 12 |
 | `applications/lexico` | 9 | 9 | 0 | 9 |
 | `applications/lexico-ingestion` | 17 | 17 | 0 | 8 |
+| `applications/meanderaw` | 16 | 16 | 0 | 13 |
 | `packages/ic-suite/callidescope/callidescope-cli` | 15 | 15 | 0 | 10 |
 | `packages/ic-suite/callidescope/callidescope-nx` | 17 | 17 | 0 | 7 |
 | `packages/ic-suite/codependix/codependix-boundaries` | 12 | 12 | 0 | 7 |
@@ -9421,50 +9421,16 @@ The workspace's call graph, traced by [callidescope](packages/ic-suite/callidesc
 
 | Headroom | Projects |
 | --- | --- |
-| over limit | 1 |
-| 0 — at limit | 16 |
+| over limit | 0 |
+| 0 — at limit | 17 |
 | 1 | 0 |
 | 2–3 | 2 |
 | 4+ | 10 |
 | no stacks | 10 |
 
-### Call stacks over the depth limit (1)
+### Call stacks over the depth limit (0)
 
-**1. `DrawCommand.run`** — depth ≥ 17 · decorated-method
-
-```text
-🚀 DrawCommand.run(_passedParameters: string[], options: DrawCommandOptions): Promise<void> [applications/meanderaw/src/modules/draw/draw.command.ts:229]
-   ↳ Checks for drift when `--check` is given, sweeps every meander into the database when no Code is named, or draws the…
-  └─> DrawCheckService.check(): Promise<MeanderDriftReport> [applications/meanderaw/src/modules/draw/draw-check.service.ts:162]
-     ↳ Regenerates the whole corpus into a throwaway database, diffs it against the committed one, and throws {@link…
-    └─> DrawEnumerationService.sweep(): Promise<number> [applications/meanderaw/src/modules/draw/draw-enumeration.service.ts:80]
-       ↳ Every shape the budget admits, swept and written — which is what `draw` with no drawing named now does.
-      └─> DrawEnumerationService.persist(shapes: readonly MeanderShape[]): Promise<number> [applications/meanderaw/src/modules/draw/draw-enumeration.service.ts:60]
-         ↳ Enumerates the shapes named and writes every meander they hold, one shape's rows at a time, answering with how many…
-        └─> DrawEnumerationService.records(shape: MeanderShape): MeanderRecord[] [applications/meanderaw/src/modules/draw/draw-enumeration.service.ts:71]
-           ↳ Every meander of one shape, as the rows the database holds for them.
-          └─> DrawEnumerationService.map(…)({ code }: EnumeratedMeander): MeanderRecord [applications/meanderaw/src/modules/draw/draw-enumeration.service.ts:74]
-            └─> DrawRecordService.record(…): MeanderRecord [applications/meanderaw/src/modules/draw/draw-record.service.ts:57]
-               ↳ The row one Code describes at one shape, every field of it derived from that Code alone.
-              └─> CharacteristicsService.compute(code: CodeObject): Characteristics [applications/meanderaw/src/modules/characteristics/characteristics.service.ts:463]
-                 ↳ Computes every characteristic for a given parsed code (delegates to measure).
-                └─> CharacteristicsService.measure(…): Characteristics [applications/meanderaw/src/modules/characteristics/characteristics.service.ts:468]
-                   ↳ Computes every characteristic for a given Matrix, CodeObject, or code string.
-                  └─> CharacteristicsService.computeFromMatrix(matrix: Matrix, isReducible?: boolean): Characteristics [applications/meanderaw/src/modules/characteristics/characteristics.service.ts:89]
-                     ↳ Computes every characteristic from a 2D Matrix representation.
-                    └─> CharacteristicsService.measureGraphs(…): { unwrappedEdges: CodeEdge[]; unwrappedGraph: Connectivity; unwrappedJunctions: { tJunctions: number; xJunctions: number; }; wrappedEdges: CodeEdge[]; wrappedGraph: Connectivity; wrappedJunctions: { ...; }; } [applications/meanderaw/src/modules/characteristics/characteristics.service.ts:292]
-                       ↳ Computes graph connectivity and junctions.
-                      └─> ConnectivityService.connectivity(matrix: Matrix, unwrapped?: boolean): Connectivity [applications/meanderaw/src/modules/characteristics/connectivity.service.ts:133]
-                         ↳ How many pieces one repeat's ink falls into, how many independent loops it closes, and how many of its points…
-                        └─> ConnectivityService.adjacency(matrix: Matrix, edges: readonly CodeEdge[]): InkAdjacency<string> [applications/meanderaw/src/modules/characteristics/connectivity.service.ts:61]
-                           ↳ The Matrix's edges as an {@link InkAdjacency}, which is all {@link GraphService.components} needs of it.
-                          └─> ConnectivityService.nodes(matrix: Matrix): string[] [applications/meanderaw/src/modules/characteristics/connectivity.service.ts:114]
-                             ↳ Every point the Matrix spells, inked dots included — a point on no edge at all is a component of its own.
-                            └─> ConnectivityService.from(…)(_unused: unknown, row: number): string[] [applications/meanderaw/src/modules/characteristics/connectivity.service.ts:117]
-                              └─> ConnectivityService.from(…)(_column: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/connectivity.service.ts:118]
-                                └─> ConnectivityService.key(row: number, column: number): string [applications/meanderaw/src/modules/characteristics/connectivity.service.ts:109]
-                                   ↳ One point's identity in the graph, which is its position and nothing else.
-```
+None.
 
 ### Callables over the breadth limit (2)
 
