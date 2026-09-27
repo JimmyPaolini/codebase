@@ -11,14 +11,14 @@ import type {
 /**
  * Counts the minimal isolated ד (Hebrew dalet) glyphs of a Code — a three-unit
  * roof with a unit leg dropping a unit short of its east end, turned a quarter
- * anticlockwise so its top faces west — as a 4×2 submatrix scan against the
- * glyph's template, drawn:
+ * clockwise so its base faces west — as a 4×2 submatrix scan against the glyph's
+ * template, drawn:
  *
  * ```text
- * ╷
- * ├╴
- * │
- * ╵
+ *  ╷
+ *  │
+ * ╶┤
+ *  ╵
  * ```
  */
 @Injectable()
@@ -32,7 +32,7 @@ export class DaletWestLetterCountCharacteristicService implements Characteristic
     this.metadata = {
       category: "submatrix",
       description:
-        "The number of minimal isolated ד (Hebrew dalet) glyphs — a three-unit roof with a unit leg dropping a unit short of its east end, turned a quarter anticlockwise so its top faces west.",
+        "The number of minimal isolated ד (Hebrew dalet) glyphs — a three-unit roof with a unit leg dropping a unit short of its east end, turned a quarter clockwise so its base faces west.",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "daletWestLetterCount",
       name: "Dalet West Letter Count",
@@ -44,7 +44,7 @@ export class DaletWestLetterCountCharacteristicService implements Characteristic
   // 🔐 Private Fields
 
   /** The glyph's points as hexadecimal Code digits, one string per row, `.` outside the glyph. */
-  private readonly template: readonly string[] = ["4.", "e1", "c.", "8."];
+  private readonly template: readonly string[] = [".4", ".c", "2d", ".8"];
 
   // 🔑 Public Fields
 

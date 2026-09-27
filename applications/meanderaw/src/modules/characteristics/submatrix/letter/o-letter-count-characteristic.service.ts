@@ -17,8 +17,8 @@ import type {
  * └┘
  * ```
  *
- * Also reads as the katakana ロ (ro), the hanzi 口 (kou), the hangul ㅁ (mieum),
- * and the Hebrew ם (final mem).
+ * Also reads as the Greek Ο (omicron), the katakana ロ (ro), the hanzi 口 (kou),
+ * the hangul ㅁ (mieum), and the Hebrew ם (final mem).
  */
 @Injectable()
 export class OLetterCountCharacteristicService implements CharacteristicEvaluator<number> {
@@ -31,7 +31,7 @@ export class OLetterCountCharacteristicService implements CharacteristicEvaluato
     this.metadata = {
       category: "submatrix",
       description:
-        "The number of minimal isolated O glyphs — a closed unit square. Also reads as the katakana ロ (ro), the hanzi 口 (kou), the hangul ㅁ (mieum), and the Hebrew ם (final mem).",
+        "The number of minimal isolated O glyphs — a closed unit square. Also reads as the Greek Ο (omicron), the katakana ロ (ro), the hanzi 口 (kou), the hangul ㅁ (mieum), and the Hebrew ם (final mem).",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "oLetterCount",
       name: "O Letter Count",

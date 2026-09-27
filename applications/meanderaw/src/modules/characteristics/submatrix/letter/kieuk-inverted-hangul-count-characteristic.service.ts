@@ -19,6 +19,8 @@ import type {
  * ├╴
  * └╴
  * ```
+ *
+ * Also reads as the katakana ヒ (hi).
  */
 @Injectable()
 export class KieukInvertedHangulCountCharacteristicService implements CharacteristicEvaluator<number> {
@@ -31,7 +33,7 @@ export class KieukInvertedHangulCountCharacteristicService implements Characteri
     this.metadata = {
       category: "submatrix",
       description:
-        "The number of minimal isolated ㅋ (hangul kieuk) glyphs — two unit strokes reaching west from a two-unit stem, one from its top and one from its middle, turned upside down.",
+        "The number of minimal isolated ㅋ (hangul kieuk) glyphs — two unit strokes reaching west from a two-unit stem, one from its top and one from its middle, turned upside down. Also reads as the katakana ヒ (hi).",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "kieukInvertedHangulCount",
       name: "Kieuk Inverted Hangul Count",

@@ -18,6 +18,8 @@ import type {
  * └┬┘
  *  ╵
  * ```
+ *
+ * Also reads as the Greek Υ (upsilon).
  */
 @Injectable()
 export class YLetterCountCharacteristicService implements CharacteristicEvaluator<number> {
@@ -30,7 +32,7 @@ export class YLetterCountCharacteristicService implements CharacteristicEvaluato
     this.metadata = {
       category: "submatrix",
       description:
-        "The number of minimal isolated Y glyphs — two arms joining into a unit stem, stem pointing south.",
+        "The number of minimal isolated Y glyphs — two arms joining into a unit stem, stem pointing south. Also reads as the Greek Υ (upsilon).",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "yLetterCount",
       name: "Y Letter Count",

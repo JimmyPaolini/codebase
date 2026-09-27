@@ -11,14 +11,14 @@ import type {
 /**
  * Counts the minimal isolated 凸 (hanzi tu) glyphs of a Code — the outline of a
  * unit square standing on the middle of a three-unit bar, turned a quarter
- * clockwise so its top faces east — as a 4×3 submatrix scan against the glyph's
- * template, drawn:
+ * anticlockwise so its base faces east — as a 4×3 submatrix scan against the
+ * glyph's template, drawn:
  *
  * ```text
- * ┌┐
- * │└┐
- * │┌┘
- * └┘
+ *  ┌┐
+ * ┌┘│
+ * └┐│
+ *  └┘
  * ```
  */
 @Injectable()
@@ -32,7 +32,7 @@ export class TuEastHanziCountCharacteristicService implements CharacteristicEval
     this.metadata = {
       category: "submatrix",
       description:
-        "The number of minimal isolated 凸 (hanzi tu) glyphs — the outline of a unit square standing on the middle of a three-unit bar, turned a quarter clockwise so its top faces east.",
+        "The number of minimal isolated 凸 (hanzi tu) glyphs — the outline of a unit square standing on the middle of a three-unit bar, turned a quarter anticlockwise so its base faces east.",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "tuEastHanziCount",
       name: "Tu East Hanzi Count",
@@ -44,7 +44,7 @@ export class TuEastHanziCountCharacteristicService implements CharacteristicEval
   // 🔐 Private Fields
 
   /** The glyph's points as hexadecimal Code digits, one string per row, `.` outside the glyph. */
-  private readonly template: readonly string[] = ["65.", "ca5", "c69", "a9."];
+  private readonly template: readonly string[] = [".65", "69c", "a5c", ".a9"];
 
   // 🔑 Public Fields
 

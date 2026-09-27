@@ -18,6 +18,8 @@ import type {
  * ├┤
  * ╵╵
  * ```
+ *
+ * Also reads as the Greek Α (alpha).
  */
 @Injectable()
 export class ALetterCountCharacteristicService implements CharacteristicEvaluator<number> {
@@ -30,7 +32,7 @@ export class ALetterCountCharacteristicService implements CharacteristicEvaluato
     this.metadata = {
       category: "submatrix",
       description:
-        "The number of minimal isolated A glyphs — a closed end, a crossbar, and two legs, legs pointing south.",
+        "The number of minimal isolated A glyphs — a closed end, a crossbar, and two legs, legs pointing south. Also reads as the Greek Α (alpha).",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "aLetterCount",
       name: "A Letter Count",

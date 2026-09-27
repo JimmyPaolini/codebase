@@ -9,7 +9,7 @@ import type {
 } from "../../characteristics.types";
 
 /**
- * Counts the minimal isolated ל (Hebrew lamed) glyphs of a Code — a unit step —
+ * Counts the minimal isolated ל (Hebrew lamed) glyphs of a Code — a unit step,
  * a unit stroke rising from the west end of a unit stroke and another dropping
  * from its east end — as a 3×2 submatrix scan against the glyph's template,
  * drawn:
@@ -31,7 +31,7 @@ export class LamedLetterCountCharacteristicService implements CharacteristicEval
     this.metadata = {
       category: "submatrix",
       description:
-        "The number of minimal isolated ל (Hebrew lamed) glyphs — a unit step — a unit stroke rising from the west end of a unit stroke and another dropping from its east end.",
+        "The number of minimal isolated ל (Hebrew lamed) glyphs — a unit step, a unit stroke rising from the west end of a unit stroke and another dropping from its east end.",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "lamedLetterCount",
       name: "Lamed Letter Count",

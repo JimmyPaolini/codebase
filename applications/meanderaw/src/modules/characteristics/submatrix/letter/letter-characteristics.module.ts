@@ -86,6 +86,10 @@ import { ZSidewaysLetterCountCharacteristicService } from "./z-sideways-letter-c
  * distinct rotation of an asymmetric one — as one group
  * `CharacteristicsModule` imports and re-exports. A glyph drawn exactly like
  * another script's is one evaluator whose description names both.
+ *
+ * A rotation's turn word names where the upright glyph's bottom — its base or
+ * stem — now points: East and West for a quarter turn whose bottom points east
+ * or west, and Inverted for the half turn whose bottom points north.
  */
 @Module({
   controllers: [],

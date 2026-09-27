@@ -4,6 +4,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { CodeModule } from "../../../code/code.module";
 import { MatrixModule } from "../../../matrix/matrix.module";
 import { CharacteristicContextService } from "../../characteristic-context.service";
+import { SubmatrixUtilitiesService } from "../submatrix-utilities.service";
 
 import { AEastLetterCountCharacteristicService } from "./a-east-letter-count-characteristic.service";
 import { AInvertedLetterCountCharacteristicService } from "./a-inverted-letter-count-characteristic.service";
@@ -188,7 +189,7 @@ const LETTERS: readonly {
   },
   { fixture: "04x02y25002b10", service: YuKatakanaCountCharacteristicService },
   {
-    fixture: "03x03y440e90800",
+    fixture: "03x03y0406d0880",
     service: YuEastKatakanaCountCharacteristicService,
   },
   {
@@ -196,7 +197,7 @@ const LETTERS: readonly {
     service: YuInvertedKatakanaCountCharacteristicService,
   },
   {
-    fixture: "03x03y0406d0880",
+    fixture: "03x03y440e90800",
     service: YuWestKatakanaCountCharacteristicService,
   },
   {
@@ -216,7 +217,7 @@ const LETTERS: readonly {
     service: TuHanziCountCharacteristicService,
   },
   {
-    fixture: "04x04y6500ca50c690a900",
+    fixture: "04x04y065069c0a5c00a90",
     service: TuEastHanziCountCharacteristicService,
   },
   {
@@ -224,7 +225,7 @@ const LETTERS: readonly {
     service: TuInvertedHanziCountCharacteristicService,
   },
   {
-    fixture: "04x04y065069c0a5c00a90",
+    fixture: "04x04y6500ca50c690a900",
     service: TuWestHanziCountCharacteristicService,
   },
   {
@@ -232,7 +233,7 @@ const LETTERS: readonly {
     service: AoHanziCountCharacteristicService,
   },
   {
-    fixture: "04x04y6350c690ca50a390",
+    fixture: "04x04y6350a5c069c0a390",
     service: AoEastHanziCountCharacteristicService,
   },
   {
@@ -240,7 +241,7 @@ const LETTERS: readonly {
     service: AoInvertedHanziCountCharacteristicService,
   },
   {
-    fixture: "04x04y6350a5c069c0a390",
+    fixture: "04x04y6350c690ca50a390",
     service: AoWestHanziCountCharacteristicService,
   },
   {
@@ -256,7 +257,7 @@ const LETTERS: readonly {
     service: KieukHangulCountCharacteristicService,
   },
   {
-    fixture: "04x02y04402b90",
+    fixture: "04x02y67108800",
     service: KieukEastHangulCountCharacteristicService,
   },
   {
@@ -264,7 +265,7 @@ const LETTERS: readonly {
     service: KieukInvertedHangulCountCharacteristicService,
   },
   {
-    fixture: "04x02y67108800",
+    fixture: "04x02y04402b90",
     service: KieukWestHangulCountCharacteristicService,
   },
   {
@@ -272,7 +273,7 @@ const LETTERS: readonly {
     service: DaletLetterCountCharacteristicService,
   },
   {
-    fixture: "03x04y0400c02d0080",
+    fixture: "03x04y400e10c00800",
     service: DaletEastLetterCountCharacteristicService,
   },
   {
@@ -280,7 +281,7 @@ const LETTERS: readonly {
     service: DaletInvertedLetterCountCharacteristicService,
   },
   {
-    fixture: "03x04y400e10c00800",
+    fixture: "03x04y0400c02d0080",
     service: DaletWestLetterCountCharacteristicService,
   },
   {
@@ -293,7 +294,7 @@ const LETTERS: readonly {
   },
   { fixture: "04x02y06502980", service: TavLetterCountCharacteristicService },
   {
-    fixture: "03x03y400a50290",
+    fixture: "03x03y610a50080",
     service: TavEastLetterCountCharacteristicService,
   },
   {
@@ -301,10 +302,35 @@ const LETTERS: readonly {
     service: TavInvertedLetterCountCharacteristicService,
   },
   {
-    fixture: "03x03y610a50080",
+    fixture: "03x03y400a50290",
     service: TavWestLetterCountCharacteristicService,
   },
 ];
+
+/**
+ * The glyph a letter formula typesets, with its blank border rows and columns
+ * trimmed, so a template padded with blanks reads as the glyph it pads.
+ */
+function trimmedGlyph(formula: string): string {
+  const blank = String.raw`\cdot`;
+  const matrix = /\\begin\{matrix\} (.*) \\end\{matrix\}/u.exec(formula)?.[1];
+  const rows = (matrix ?? "")
+    .split(String.raw` \\ `)
+    .map((row) => row.split(" & "));
+  const inkedRows = rows.flatMap((cells, row) =>
+    cells.some((cell) => cell !== blank) ? [row] : [],
+  );
+  const inkedColumns = rows.flatMap((cells) =>
+    cells.flatMap((cell, column) => (cell === blank ? [] : [column])),
+  );
+  const left = Math.min(...inkedColumns);
+  const right = Math.max(...inkedColumns);
+
+  return rows
+    .slice(Math.min(...inkedRows), Math.max(...inkedRows) + 1)
+    .map((cells) => cells.slice(left, right + 1).join(" & "))
+    .join(String.raw` \\ `);
+}
 
 describe(LetterCharacteristicsModule, () => {
   let contextService: CharacteristicContextService;
@@ -361,9 +387,17 @@ describe(LetterCharacteristicsModule, () => {
     });
   });
 
+  it("reads a template padded with blank rows and columns as the glyph it pads", () => {
+    const utilities = new SubmatrixUtilitiesService();
+
+    expect(
+      trimmedGlyph(utilities.glyphFormula(["....", ".25.", ".29.", "...."])),
+    ).toBe(trimmedGlyph(utilities.glyphFormula(["25", "29"])));
+  });
+
   it("gives every letter glyph evaluator its own template, so no ink is counted twice", () => {
-    const formulas = LETTERS.map(
-      ({ service }) => evaluators.get(service)?.metadata.formula,
+    const formulas = LETTERS.map(({ service }) =>
+      trimmedGlyph(evaluators.get(service)?.metadata.formula ?? ""),
     );
 
     expect(new Set(formulas).size).toBe(LETTERS.length);

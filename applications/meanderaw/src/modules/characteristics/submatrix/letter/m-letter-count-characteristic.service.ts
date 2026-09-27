@@ -18,6 +18,8 @@ import type {
  * │╵│
  * ╵ ╵
  * ```
+ *
+ * Also reads as the Greek Μ (mu).
  */
 @Injectable()
 export class MLetterCountCharacteristicService implements CharacteristicEvaluator<number> {
@@ -30,7 +32,7 @@ export class MLetterCountCharacteristicService implements CharacteristicEvaluato
     this.metadata = {
       category: "submatrix",
       description:
-        "The number of minimal isolated M glyphs — three legs hanging from a bar, the middle one half as long, legs pointing south.",
+        "The number of minimal isolated M glyphs — three legs hanging from a bar, the middle one half as long, legs pointing south. Also reads as the Greek Μ (mu).",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "mLetterCount",
       name: "M Letter Count",

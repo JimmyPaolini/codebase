@@ -30,23 +30,23 @@ describe(DaletEastLetterCountCharacteristicService, () => {
     expect(service).toBeDefined();
   });
 
-  it("counts an isolated ד glyph, turned a quarter clockwise so its top faces east", () => {
-    expect(service.compute(contextService.create("03x04y0400c02d0080"))).toBe(
+  it("counts an isolated ד glyph, turned a quarter anticlockwise so its base faces east", () => {
+    expect(service.compute(contextService.create("03x04y400e10c00800"))).toBe(
       1,
     );
   });
 
   it("ignores the glyph when more ink joins it", () => {
-    expect(service.compute(contextService.create("03x04y0610c02d0080"))).toBe(
+    expect(service.compute(contextService.create("03x04y400e31c00800"))).toBe(
       0,
     );
   });
 
   it("counts nothing for the glyph's other orientations", () => {
     expect(service.compute(contextService.create("05x02y2371000800"))).toBe(0);
-    expect(service.compute(contextService.create("05x02y040002b310"))).toBe(0);
-    expect(service.compute(contextService.create("03x04y400e10c00800"))).toBe(
+    expect(service.compute(contextService.create("03x04y0400c02d0080"))).toBe(
       0,
     );
+    expect(service.compute(contextService.create("05x02y040002b310"))).toBe(0);
   });
 });

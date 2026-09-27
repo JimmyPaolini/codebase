@@ -30,15 +30,15 @@ describe(TuEastHanziCountCharacteristicService, () => {
     expect(service).toBeDefined();
   });
 
-  it("counts an isolated 凸 glyph, turned a quarter clockwise so its top faces east", () => {
+  it("counts an isolated 凸 glyph, turned a quarter anticlockwise so its base faces east", () => {
     expect(
-      service.compute(contextService.create("04x04y6500ca50c690a900")),
+      service.compute(contextService.create("04x04y065069c0a5c00a90")),
     ).toBe(1);
   });
 
   it("ignores the glyph when more ink joins it", () => {
     expect(
-      service.compute(contextService.create("04x04y6500ca71c690a900")),
+      service.compute(contextService.create("04x04y067169c0a5c00a90")),
     ).toBe(0);
   });
 
@@ -47,10 +47,10 @@ describe(TuEastHanziCountCharacteristicService, () => {
       service.compute(contextService.create("05x03y0650069a50a3390")),
     ).toBe(0);
     expect(
-      service.compute(contextService.create("05x03y63350a56900a900")),
+      service.compute(contextService.create("04x04y6500ca50c690a900")),
     ).toBe(0);
     expect(
-      service.compute(contextService.create("04x04y065069c0a5c00a90")),
+      service.compute(contextService.create("05x03y63350a56900a900")),
     ).toBe(0);
   });
 });

@@ -11,13 +11,13 @@ import type {
 /**
  * Counts the minimal isolated 凹 (hanzi ao) glyphs of a Code — the outline of a
  * three-unit bar with a unit notch cut into the middle of its top, turned a
- * quarter anticlockwise so its top faces west — as a 4×3 submatrix scan against
- * the glyph's template, drawn:
+ * quarter clockwise so its base faces west — as a 4×3 submatrix scan against the
+ * glyph's template, drawn:
  *
  * ```text
  * ┌─┐
- * └┐│
- * ┌┘│
+ * │┌┘
+ * │└┐
  * └─┘
  * ```
  */
@@ -32,7 +32,7 @@ export class AoWestHanziCountCharacteristicService implements CharacteristicEval
     this.metadata = {
       category: "submatrix",
       description:
-        "The number of minimal isolated 凹 (hanzi ao) glyphs — the outline of a three-unit bar with a unit notch cut into the middle of its top, turned a quarter anticlockwise so its top faces west.",
+        "The number of minimal isolated 凹 (hanzi ao) glyphs — the outline of a three-unit bar with a unit notch cut into the middle of its top, turned a quarter clockwise so its base faces west.",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "aoWestHanziCount",
       name: "Ao West Hanzi Count",
@@ -44,7 +44,7 @@ export class AoWestHanziCountCharacteristicService implements CharacteristicEval
   // 🔐 Private Fields
 
   /** The glyph's points as hexadecimal Code digits, one string per row, `.` outside the glyph. */
-  private readonly template: readonly string[] = ["635", "a5c", "69c", "a39"];
+  private readonly template: readonly string[] = ["635", "c69", "ca5", "a39"];
 
   // 🔑 Public Fields
 

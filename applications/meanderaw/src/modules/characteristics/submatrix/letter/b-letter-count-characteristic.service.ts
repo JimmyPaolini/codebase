@@ -19,7 +19,7 @@ import type {
  * └┘
  * ```
  *
- * Also reads as the hanzi 日 (ri).
+ * Also reads as the Greek Β (beta), the Greek Θ (theta), and the hanzi 日 (ri).
  */
 @Injectable()
 export class BLetterCountCharacteristicService implements CharacteristicEvaluator<number> {
@@ -32,7 +32,7 @@ export class BLetterCountCharacteristicService implements CharacteristicEvaluato
     this.metadata = {
       category: "submatrix",
       description:
-        "The number of minimal isolated B glyphs — two unit squares sharing an edge, squares stacked north to south. Also reads as the hanzi 日 (ri).",
+        "The number of minimal isolated B glyphs — two unit squares sharing an edge, squares stacked north to south. Also reads as the Greek Β (beta), the Greek Θ (theta), and the hanzi 日 (ri).",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "bLetterCount",
       name: "B Letter Count",

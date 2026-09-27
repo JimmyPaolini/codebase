@@ -18,7 +18,7 @@ import type {
  * └╴
  * ```
  *
- * Also reads as the hangul ㄷ (digeut).
+ * Also reads as the hanzi 匚 (fang) and the hangul ㄷ (digeut).
  */
 @Injectable()
 export class CLetterCountCharacteristicService implements CharacteristicEvaluator<number> {
@@ -31,7 +31,7 @@ export class CLetterCountCharacteristicService implements CharacteristicEvaluato
     this.metadata = {
       category: "submatrix",
       description:
-        "The number of minimal isolated C glyphs — a unit square missing one side, open to the east. Also reads as the hangul ㄷ (digeut).",
+        "The number of minimal isolated C glyphs — a unit square missing one side, open to the east. Also reads as the hanzi 匚 (fang) and the hangul ㄷ (digeut).",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "cLetterCount",
       name: "C Letter Count",

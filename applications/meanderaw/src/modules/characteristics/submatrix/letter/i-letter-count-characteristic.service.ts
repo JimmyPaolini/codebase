@@ -18,7 +18,8 @@ import type {
  * ╵
  * ```
  *
- * Also reads as the hangul ㅣ (i).
+ * Also reads as the Greek Ι (iota), the hangul ㅣ (i), the Hebrew ו (vav), and
+ * the Hebrew ן (final nun).
  */
 @Injectable()
 export class ILetterCountCharacteristicService implements CharacteristicEvaluator<number> {
@@ -31,7 +32,7 @@ export class ILetterCountCharacteristicService implements CharacteristicEvaluato
     this.metadata = {
       category: "submatrix",
       description:
-        "The number of minimal isolated I glyphs — a single straight edge, drawn vertically. Also reads as the hangul ㅣ (i).",
+        "The number of minimal isolated I glyphs — a single straight edge, drawn vertically. Also reads as the Greek Ι (iota), the hangul ㅣ (i), the Hebrew ו (vav), and the Hebrew ן (final nun).",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "iLetterCount",
       name: "I Letter Count",

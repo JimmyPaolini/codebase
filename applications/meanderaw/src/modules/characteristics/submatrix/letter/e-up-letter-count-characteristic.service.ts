@@ -17,6 +17,8 @@ import type {
  * ╷╷╷
  * └┴┘
  * ```
+ *
+ * Also reads as the hanzi 山 (shan).
  */
 @Injectable()
 export class EUpLetterCountCharacteristicService implements CharacteristicEvaluator<number> {
@@ -29,7 +31,7 @@ export class EUpLetterCountCharacteristicService implements CharacteristicEvalua
     this.metadata = {
       category: "submatrix",
       description:
-        "The number of minimal isolated E glyphs — a spine with three equal prongs, prongs pointing north.",
+        "The number of minimal isolated E glyphs — a spine with three equal prongs, prongs pointing north. Also reads as the hanzi 山 (shan).",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "eUpLetterCount",
       name: "E Up Letter Count",

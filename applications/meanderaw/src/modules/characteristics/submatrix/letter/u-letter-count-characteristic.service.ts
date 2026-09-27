@@ -17,6 +17,8 @@ import type {
  * ╷╷
  * └┘
  * ```
+ *
+ * Also reads as the hanzi 凵 (kan).
  */
 @Injectable()
 export class ULetterCountCharacteristicService implements CharacteristicEvaluator<number> {
@@ -29,7 +31,7 @@ export class ULetterCountCharacteristicService implements CharacteristicEvaluato
     this.metadata = {
       category: "submatrix",
       description:
-        "The number of minimal isolated U glyphs — a unit square missing one side, open to the north.",
+        "The number of minimal isolated U glyphs — a unit square missing one side, open to the north. Also reads as the hanzi 凵 (kan).",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "uLetterCount",
       name: "U Letter Count",

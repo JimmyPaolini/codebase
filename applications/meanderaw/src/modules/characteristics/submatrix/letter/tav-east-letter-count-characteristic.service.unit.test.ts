@@ -30,17 +30,17 @@ describe(TavEastLetterCountCharacteristicService, () => {
     expect(service).toBeDefined();
   });
 
-  it("counts an isolated ת glyph, turned a quarter clockwise so its top faces east", () => {
-    expect(service.compute(contextService.create("03x03y400a50290"))).toBe(1);
+  it("counts an isolated ת glyph, turned a quarter anticlockwise so its base faces east", () => {
+    expect(service.compute(contextService.create("03x03y610a50080"))).toBe(1);
   });
 
   it("ignores the glyph when more ink joins it", () => {
-    expect(service.compute(contextService.create("03x03y400a71290"))).toBe(0);
+    expect(service.compute(contextService.create("03x03y631a50080"))).toBe(0);
   });
 
   it("counts nothing for the glyph's other orientations", () => {
     expect(service.compute(contextService.create("04x02y06502980"))).toBe(0);
+    expect(service.compute(contextService.create("03x03y400a50290"))).toBe(0);
     expect(service.compute(contextService.create("04x02y4610a900"))).toBe(0);
-    expect(service.compute(contextService.create("03x03y610a50080"))).toBe(0);
   });
 });

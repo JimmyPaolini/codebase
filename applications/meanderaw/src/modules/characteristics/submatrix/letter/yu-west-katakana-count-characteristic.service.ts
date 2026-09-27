@@ -11,13 +11,13 @@ import type {
 /**
  * Counts the minimal isolated ユ (katakana yu) glyphs of a Code — a unit stroke
  * turning down into a base stroke that runs a unit past the turn, turned a
- * quarter anticlockwise so its top faces west — as a 3×2 submatrix scan against
- * the glyph's template, drawn:
+ * quarter clockwise so its base faces west — as a 3×2 submatrix scan against the
+ * glyph's template, drawn:
  *
  * ```text
- *  ╷
- * ┌┤
- * ╵╵
+ * ╷╷
+ * ├┘
+ * ╵
  * ```
  */
 @Injectable()
@@ -31,7 +31,7 @@ export class YuWestKatakanaCountCharacteristicService implements CharacteristicE
     this.metadata = {
       category: "submatrix",
       description:
-        "The number of minimal isolated ユ (katakana yu) glyphs — a unit stroke turning down into a base stroke that runs a unit past the turn, turned a quarter anticlockwise so its top faces west.",
+        "The number of minimal isolated ユ (katakana yu) glyphs — a unit stroke turning down into a base stroke that runs a unit past the turn, turned a quarter clockwise so its base faces west.",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "yuWestKatakanaCount",
       name: "Yu West Katakana Count",
@@ -43,7 +43,7 @@ export class YuWestKatakanaCountCharacteristicService implements CharacteristicE
   // 🔐 Private Fields
 
   /** The glyph's points as hexadecimal Code digits, one string per row, `.` outside the glyph. */
-  private readonly template: readonly string[] = [".4", "6d", "88"];
+  private readonly template: readonly string[] = ["44", "e9", "8."];
 
   // 🔑 Public Fields
 

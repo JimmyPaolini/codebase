@@ -11,13 +11,13 @@ import type {
 /**
  * Counts the minimal isolated ת (Hebrew tav) glyphs of a Code — a unit roof on
  * two unit legs, the west leg kicking a unit foot out to the west, turned a
- * quarter anticlockwise so its top faces west — as a 3×2 submatrix scan against
- * the glyph's template, drawn:
+ * quarter clockwise so its base faces west — as a 3×2 submatrix scan against the
+ * glyph's template, drawn:
  *
  * ```text
- * ┌╴
+ * ╷
  * └┐
- *  ╵
+ * ╶┘
  * ```
  */
 @Injectable()
@@ -31,7 +31,7 @@ export class TavWestLetterCountCharacteristicService implements CharacteristicEv
     this.metadata = {
       category: "submatrix",
       description:
-        "The number of minimal isolated ת (Hebrew tav) glyphs — a unit roof on two unit legs, the west leg kicking a unit foot out to the west, turned a quarter anticlockwise so its top faces west.",
+        "The number of minimal isolated ת (Hebrew tav) glyphs — a unit roof on two unit legs, the west leg kicking a unit foot out to the west, turned a quarter clockwise so its base faces west.",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "tavWestLetterCount",
       name: "Tav West Letter Count",
@@ -43,7 +43,7 @@ export class TavWestLetterCountCharacteristicService implements CharacteristicEv
   // 🔐 Private Fields
 
   /** The glyph's points as hexadecimal Code digits, one string per row, `.` outside the glyph. */
-  private readonly template: readonly string[] = ["61", "a5", ".8"];
+  private readonly template: readonly string[] = ["4.", "a5", "29"];
 
   // 🔑 Public Fields
 

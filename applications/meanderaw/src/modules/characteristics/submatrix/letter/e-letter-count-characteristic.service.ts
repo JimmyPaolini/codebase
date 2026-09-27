@@ -19,7 +19,7 @@ import type {
  * └╴
  * ```
  *
- * Also reads as the hangul ㅌ (tieut).
+ * Also reads as the Greek Ε (epsilon) and the hangul ㅌ (tieut).
  */
 @Injectable()
 export class ELetterCountCharacteristicService implements CharacteristicEvaluator<number> {
@@ -32,7 +32,7 @@ export class ELetterCountCharacteristicService implements CharacteristicEvaluato
     this.metadata = {
       category: "submatrix",
       description:
-        "The number of minimal isolated E glyphs — a spine with three equal prongs, prongs pointing east. Also reads as the hangul ㅌ (tieut).",
+        "The number of minimal isolated E glyphs — a spine with three equal prongs, prongs pointing east. Also reads as the Greek Ε (epsilon) and the hangul ㅌ (tieut).",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "eLetterCount",
       name: "E Letter Count",

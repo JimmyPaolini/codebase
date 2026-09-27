@@ -30,17 +30,17 @@ describe(YuWestKatakanaCountCharacteristicService, () => {
     expect(service).toBeDefined();
   });
 
-  it("counts an isolated ユ glyph, turned a quarter anticlockwise so its top faces west", () => {
-    expect(service.compute(contextService.create("03x03y0406d0880"))).toBe(1);
+  it("counts an isolated ユ glyph, turned a quarter clockwise so its base faces west", () => {
+    expect(service.compute(contextService.create("03x03y440e90800"))).toBe(1);
   });
 
   it("ignores the glyph when more ink joins it", () => {
-    expect(service.compute(contextService.create("03x03y0616d0880"))).toBe(0);
+    expect(service.compute(contextService.create("03x03y461e90800"))).toBe(0);
   });
 
   it("counts nothing for the glyph's other orientations", () => {
     expect(service.compute(contextService.create("04x02y25002b10"))).toBe(0);
-    expect(service.compute(contextService.create("03x03y440e90800"))).toBe(0);
     expect(service.compute(contextService.create("04x02y27100a10"))).toBe(0);
+    expect(service.compute(contextService.create("03x03y0406d0880"))).toBe(0);
   });
 });

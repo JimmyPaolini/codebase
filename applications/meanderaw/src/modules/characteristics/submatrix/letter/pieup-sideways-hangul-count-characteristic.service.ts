@@ -19,6 +19,8 @@ import type {
  * ├┤
  * ╵╵
  * ```
+ *
+ * Also reads as the hangul ㅒ (yae).
  */
 @Injectable()
 export class PieupSidewaysHangulCountCharacteristicService implements CharacteristicEvaluator<number> {
@@ -31,7 +33,7 @@ export class PieupSidewaysHangulCountCharacteristicService implements Characteri
     this.metadata = {
       category: "submatrix",
       description:
-        "The number of minimal isolated ㅍ (hangul pieup) glyphs — a unit square whose top and bottom strokes run a unit past both sides, turned on its side.",
+        "The number of minimal isolated ㅍ (hangul pieup) glyphs — a unit square whose top and bottom strokes run a unit past both sides, turned on its side. Also reads as the hangul ㅒ (yae).",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "pieupSidewaysHangulCount",
       name: "Pieup Sideways Hangul Count",

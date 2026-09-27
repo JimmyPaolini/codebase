@@ -5,9 +5,12 @@ import type { SubmatrixWindow } from "../characteristics.types";
 import type { GlyphCell } from "./submatrix.types";
 
 /**
- * Shared submatrix readings every submatrix group injects: a point's Code
- * digit, the count of points with exactly a given arm set, and the exact
- * isolated-glyph template match with the LaTeX formula that names it.
+ * Shared submatrix readings every submatrix group injects: a point's Code digit
+ * (`pointDigitAt`), the count of points carrying a given arm
+ * (`countPointsWithArm`, every directional edge count) and of points with
+ * exactly a given arm set (`countPointsWithExactArms`), and the exact
+ * isolated-glyph template match (`countIsolatedGlyphs`) with the LaTeX formula
+ * (`glyphFormula`) and the submatrix window (`glyphWindow`) that describe it.
  */
 @Injectable()
 export class SubmatrixUtilitiesService {
@@ -21,7 +24,11 @@ export class SubmatrixUtilitiesService {
 
   // 🔏 Private Methods
 
-  /** The glyph points of a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template, with each blank `.` left out. */
+  /**
+   * The glyph points of a
+   * {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template, with each
+   * blank `.` left out.
+   */
   private glyphCells(template: readonly string[]): GlyphCell[] {
     return template.flatMap((line, row) =>
       Array.from({ length: line.length }, (_unused, column) => ({
@@ -140,9 +147,10 @@ export class SubmatrixUtilitiesService {
   }
 
   /**
-   * Typesets a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template as the LaTeX definition of
-   * its characteristic — the count of isolated windows equal to the template,
-   * with its digits as a matrix and each blank as a centered dot.
+   * Typesets a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template
+   * as the LaTeX definition of its characteristic — the count of isolated
+   * windows equal to the template, with its digits as a matrix and each blank
+   * as a centered dot.
    */
   public glyphFormula(template: readonly string[]): string {
     const rows = template

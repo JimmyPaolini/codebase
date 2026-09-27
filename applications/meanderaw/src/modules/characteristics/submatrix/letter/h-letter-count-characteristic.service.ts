@@ -18,6 +18,8 @@ import type {
  * ├┤
  * ╵╵
  * ```
+ *
+ * Also reads as the Greek Η (eta) and the hangul ㅐ (ae).
  */
 @Injectable()
 export class HLetterCountCharacteristicService implements CharacteristicEvaluator<number> {
@@ -30,7 +32,7 @@ export class HLetterCountCharacteristicService implements CharacteristicEvaluato
     this.metadata = {
       category: "submatrix",
       description:
-        "The number of minimal isolated H glyphs — two parallel posts joined at their middles, posts vertical.",
+        "The number of minimal isolated H glyphs — two parallel posts joined at their middles, posts vertical. Also reads as the Greek Η (eta) and the hangul ㅐ (ae).",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "hLetterCount",
       name: "H Letter Count",

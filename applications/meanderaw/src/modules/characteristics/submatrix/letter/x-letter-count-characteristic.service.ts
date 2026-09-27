@@ -18,7 +18,7 @@ import type {
  *  ╵
  * ```
  *
- * Also reads as the hanzi 十 (shi).
+ * Also reads as the Greek Χ (chi) and the hanzi 十 (shi).
  */
 @Injectable()
 export class XLetterCountCharacteristicService implements CharacteristicEvaluator<number> {
@@ -31,7 +31,7 @@ export class XLetterCountCharacteristicService implements CharacteristicEvaluato
     this.metadata = {
       category: "submatrix",
       description:
-        "The number of minimal isolated X glyphs — four unit arms from one crossing. Also reads as the hanzi 十 (shi).",
+        "The number of minimal isolated X glyphs — four unit arms from one crossing. Also reads as the Greek Χ (chi) and the hanzi 十 (shi).",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "xLetterCount",
       name: "X Letter Count",

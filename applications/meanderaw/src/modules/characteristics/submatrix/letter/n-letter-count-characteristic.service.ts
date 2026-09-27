@@ -18,6 +18,8 @@ import type {
  * │││
  * ╵└┘
  * ```
+ *
+ * Also reads as the Greek Ν (nu).
  */
 @Injectable()
 export class NLetterCountCharacteristicService implements CharacteristicEvaluator<number> {
@@ -30,7 +32,7 @@ export class NLetterCountCharacteristicService implements CharacteristicEvaluato
     this.metadata = {
       category: "submatrix",
       description:
-        "The number of minimal isolated N glyphs — two posts joined by a stepped diagonal, posts vertical.",
+        "The number of minimal isolated N glyphs — two posts joined by a stepped diagonal, posts vertical. Also reads as the Greek Ν (nu).",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "nLetterCount",
       name: "N Letter Count",

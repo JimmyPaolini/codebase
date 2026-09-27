@@ -11,12 +11,12 @@ import type {
 /**
  * Counts the minimal isolated ㅋ (hangul kieuk) glyphs of a Code — two unit
  * strokes reaching west from a two-unit stem, one from its top and one from its
- * middle, turned a quarter clockwise so its top faces east — as a 2×3 submatrix
- * scan against the glyph's template, drawn:
+ * middle, turned a quarter anticlockwise so its base faces east — as a 2×3
+ * submatrix scan against the glyph's template, drawn:
  *
  * ```text
- *  ╷╷
- * ╶┴┘
+ * ┌┬╴
+ * ╵╵
  * ```
  */
 @Injectable()
@@ -30,7 +30,7 @@ export class KieukEastHangulCountCharacteristicService implements Characteristic
     this.metadata = {
       category: "submatrix",
       description:
-        "The number of minimal isolated ㅋ (hangul kieuk) glyphs — two unit strokes reaching west from a two-unit stem, one from its top and one from its middle, turned a quarter clockwise so its top faces east.",
+        "The number of minimal isolated ㅋ (hangul kieuk) glyphs — two unit strokes reaching west from a two-unit stem, one from its top and one from its middle, turned a quarter anticlockwise so its base faces east.",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
       key: "kieukEastHangulCount",
       name: "Kieuk East Hangul Count",
@@ -42,7 +42,7 @@ export class KieukEastHangulCountCharacteristicService implements Characteristic
   // 🔐 Private Fields
 
   /** The glyph's points as hexadecimal Code digits, one string per row, `.` outside the glyph. */
-  private readonly template: readonly string[] = [".44", "2b9"];
+  private readonly template: readonly string[] = ["671", "88."];
 
   // 🔑 Public Fields
 

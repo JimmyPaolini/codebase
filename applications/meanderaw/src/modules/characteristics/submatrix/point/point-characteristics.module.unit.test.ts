@@ -67,6 +67,9 @@ describe(PointCharacteristicsModule, () => {
     ]);
   });
 
+  // Exact N=S holds for every Code that spells a well-formed tile, whose first
+  // row carries no north, last row no south, and every south a north below;
+  // only a Code that is not a tile, like the next one, can break it.
   it("balances north and south arms when no ink leaves the band", () => {
     const [northCount, southCount] = directional(
       contextService.create("04x02y6335a339"),

@@ -30,17 +30,17 @@ describe(KieukWestHangulCountCharacteristicService, () => {
     expect(service).toBeDefined();
   });
 
-  it("counts an isolated ㅋ glyph, turned a quarter anticlockwise so its top faces west", () => {
-    expect(service.compute(contextService.create("04x02y67108800"))).toBe(1);
+  it("counts an isolated ㅋ glyph, turned a quarter clockwise so its base faces west", () => {
+    expect(service.compute(contextService.create("04x02y04402b90"))).toBe(1);
   });
 
   it("ignores the glyph when more ink joins it", () => {
-    expect(service.compute(contextService.create("04x02y67318800"))).toBe(0);
+    expect(service.compute(contextService.create("04x02y04612b90"))).toBe(0);
   });
 
   it("counts nothing for the glyph's other orientations", () => {
     expect(service.compute(contextService.create("03x03y2502d0080"))).toBe(0);
-    expect(service.compute(contextService.create("04x02y04402b90"))).toBe(0);
     expect(service.compute(contextService.create("03x03y400e10a10"))).toBe(0);
+    expect(service.compute(contextService.create("04x02y67108800"))).toBe(0);
   });
 });
