@@ -1,21 +1,20 @@
 /**
  * Semantic Release Configuration
  *
- * Automated versioning and changelog generation using semantic-release
+ * Automated changelog and GitHub release notes using semantic-release
  * with Conventional Commits (https://www.conventionalcommits.org/).
  *
  * Branch strategy: Only `main` triggers releases.
- * NPM publishing: Disabled — packages are not published to any registry.
- * Versioning: Fixed (entire codebase shares one version).
- * Auto-committed files: CHANGELOG.md, package.json, pnpm-lock.yaml
+ * NPM publishing: Not handled here — Nx release publishes workspace packages.
+ * Versioning authority: Nx release (semantic-release is notes/changelog only).
+ * Auto-committed files: CHANGELOG.md plus generated README/AGENTS artifacts
  *
  * Usage:
  *   pnpm semantic-release            # Manual release (requires GITHUB_TOKEN)
  *   pnpm semantic-release:dry-run    # Preview without changes
  *
- * Automated: Merging to `main` triggers the release-projects.yml workflow,
- * which analyzes commits since the last release, bumps the version,
- * updates CHANGELOG.md, and creates a GitHub release with tag.
+ * Automated: Merging to `main` runs Nx release for versioning/publishing,
+ * then semantic-release updates CHANGELOG.md and creates the GitHub release.
  *
  * Per-project releases: Install `semantic-release-codebase` and configure
  * per-project release.config.cjs files if independent versioning is needed.
@@ -134,23 +133,7 @@ module.exports = {
       },
     ],
 
-    // Updates package.json version field without publishing to npm
-    [
-      "@semantic-release/npm",
-      {
-        npmPublish: false,
-      },
-    ],
-
-    // Synchronizes the version in root README.md title right after package.json is bumped
-    [
-      "@semantic-release/exec",
-      {
-        prepareCmd: "pnpm exec nx run synchronization:readme-version:write",
-      },
-    ],
-
-    // Commits version-bumped files back to the repository
+    // Commits generated release artifacts back to the repository
     [
       "@semantic-release/git",
       {

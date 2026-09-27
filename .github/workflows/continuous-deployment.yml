@@ -269,5 +269,6 @@ jobs:
           GIT_COMMITTER_EMAIL: jimmypaolini@gmail.com
           GIT_COMMITTER_NAME: Jimmy Paolini
         run: |
-          pnpm semantic-release
+          pnpm exec nx release version --git-commit --git-tag --git-push
           pnpm exec nx release publish --registry=https://registry.npmjs.org
+          pnpm semantic-release
