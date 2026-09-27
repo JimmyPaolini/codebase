@@ -340,7 +340,6 @@ graph LR
 _Dashed edges are dependencies Nx inferred from configuration rather than from code._
 <!-- codependix:end name="codependix-nx-projects" -->
 
-<!-- codometer:start -->
 
 ### NestJS Module Graph
 
@@ -8227,6 +8226,7 @@ graph LR
   file_validation_src_repl_ts --> file_validation_src_main_module_ts
 ```
 <!-- codependix:end name="codependix-file-imports" -->
+<!-- codometer:start -->
 
 ## ⏲️ Codometer
 
@@ -8299,15 +8299,15 @@ Repository statistics measured by [codometer](packages/ic-suite/codometer/codome
 ### YAML
 
 ![YAML Files](https://img.shields.io/badge/YAML_Files-21-cb171e?style=flat-square)
-![YAML Lines](https://img.shields.io/badge/YAML_Lines-2769-e34c26?style=flat-square)
+![YAML Lines](https://img.shields.io/badge/YAML_Lines-2795-e34c26?style=flat-square)
 ![YAML Documents](https://img.shields.io/badge/YAML_Documents-21-f97316?style=flat-square)
-![YAML Mappings](https://img.shields.io/badge/YAML_Mappings-400-7c3aed?style=flat-square)
+![YAML Mappings](https://img.shields.io/badge/YAML_Mappings-404-7c3aed?style=flat-square)
 ![YAML Sequences](https://img.shields.io/badge/YAML_Sequences-87-8b5cf6?style=flat-square)
-![YAML Keys](https://img.shields.io/badge/YAML_Keys-1378-0284c7?style=flat-square)
-![YAML Scalars](https://img.shields.io/badge/YAML_Scalars-2768-16a34a?style=flat-square)
+![YAML Keys](https://img.shields.io/badge/YAML_Keys-1389-0284c7?style=flat-square)
+![YAML Scalars](https://img.shields.io/badge/YAML_Scalars-2790-16a34a?style=flat-square)
 ![YAML Anchors](https://img.shields.io/badge/YAML_Anchors-0-059669?style=flat-square)
 ![YAML Aliases](https://img.shields.io/badge/YAML_Aliases-0-10b981?style=flat-square)
-![YAML Comments](https://img.shields.io/badge/YAML_Comments-386-64748b?style=flat-square)
+![YAML Comments](https://img.shields.io/badge/YAML_Comments-390-64748b?style=flat-square)
 ![YAML Max Depth](https://img.shields.io/badge/YAML_Max_Depth-8-ea580c?style=flat-square)
 
 ### TOML
@@ -8449,7 +8449,7 @@ The workspace's call graph, traced by [callidescope](packages/ic-suite/callidesc
 | Measure | Value |
 | --- | --- |
 | Callables | 5240 |
-| Files | 1488 |
+| Files | 1487 |
 | Calls traced | 5807 |
 | Call stacks | 1383 |
 | Deepest stack | 17 |

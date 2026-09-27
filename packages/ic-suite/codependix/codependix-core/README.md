@@ -59,6 +59,9 @@ graph LR
 ```
 <!-- codependix:end name="codependix-file-imports" -->
 
+<!-- codependix:start name="codependix-nestjs-modules" -->
+<!-- codependix:end name="codependix-nestjs-modules" -->
+
 <!-- callidescope:start -->
 
 ## 🔭 Callidescope
