@@ -1,6 +1,6 @@
 import { Test } from "@nestjs/testing";
 import { getRepositoryToken, TypeOrmModule } from "@nestjs/typeorm";
-import { DataSource, type Repository } from "typeorm";
+import { DataSource, Like, type Repository } from "typeorm";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import { meanderRecord } from "../../../testing/meanders";
@@ -54,17 +54,14 @@ describe(DatabaseService, () => {
     expect(service).toBeDefined();
   });
 
-  /** Every field besides `code` a fixture row does not care about, defaulted so a case only spells out what it means to test. */
-  const record = meanderRecord;
-
   describe("findAll", () => {
     it("resolves with an empty array before anything is committed", async () => {
       await expect(service.findAll()).resolves.toStrictEqual([]);
     });
 
     it("reads every committed row", async () => {
-      await service.save(record({ code: "findAll-first-row" }));
-      await service.save(record({ code: "findAll-second-row" }));
+      await service.save(meanderRecord({ code: "findAll-first-row" }));
+      await service.save(meanderRecord({ code: "findAll-second-row" }));
 
       const rows = await service.findAll();
 
@@ -77,7 +74,7 @@ describe(DatabaseService, () => {
   describe("save", () => {
     it("persists a meander row with every field it was given", async () => {
       const saved = await service.save(
-        record({
+        meanderRecord({
           bettiNumber0Count: 1,
           characteristics: ["zigzag"],
           code: "3c9a",
@@ -93,7 +90,7 @@ describe(DatabaseService, () => {
       const row = await repository.findOneByOrFail({ id: saved.id });
 
       expect(row).toMatchObject({
-        ...record({
+        ...meanderRecord({
           bettiNumber0Count: 1,
           characteristics: ["zigzag"],
           code: "3c9a",
@@ -109,25 +106,29 @@ describe(DatabaseService, () => {
     });
 
     it("assigns each saved row its own auto-generated id", async () => {
-      const first = await service.save(record({ code: "0" }));
-      const second = await service.save(record({ code: "f" }));
+      const first = await service.save(meanderRecord({ code: "0" }));
+      const second = await service.save(meanderRecord({ code: "f" }));
 
       expect(second.id).not.toBe(first.id);
     });
 
     it("refuses a second row with a code already committed, since code is the meander's whole identity", async () => {
-      await service.save(record({ code: "duplicate-code" }));
+      await service.save(meanderRecord({ code: "duplicate-code" }));
 
       await expect(
-        service.save(record({ code: "duplicate-code" })),
+        service.save(meanderRecord({ code: "duplicate-code" })),
       ).rejects.toThrow(/UNIQUE constraint/i);
     });
   });
 
   describe("characteristic numeric columns", () => {
     it("is queryable by a numeric Characteristic column, per spec #813's acceptance criteria", async () => {
-      await service.save(record({ code: "crossing-row", crossCount: 1 }));
-      await service.save(record({ bettiNumber0Count: 2, code: "plain-row" }));
+      await service.save(
+        meanderRecord({ code: "crossing-row", crossCount: 1 }),
+      );
+      await service.save(
+        meanderRecord({ bettiNumber0Count: 2, code: "plain-row" }),
+      );
 
       const crossingRows = await repository.findBy({ crossCount: 1 });
 
@@ -142,20 +143,20 @@ describe(DatabaseService, () => {
       const records = Array.from(
         { length: MEANDER_INSERT_CHUNK_SIZE * 2 + 1 },
         (_row, index) =>
-          record({ code: `save-all-${index}`, lattice: `${index}` }),
+          meanderRecord({ code: `save-all-${index}`, lattice: `${index}` }),
       );
 
       await expect(service.saveAll(records)).resolves.toBe(records.length);
       await expect(
-        repository.countBy({ drawingHash: "hash", family: "unclassified" }),
-      ).resolves.toBeGreaterThanOrEqual(records.length);
+        repository.countBy({ code: Like("save-all-%") }),
+      ).resolves.toBe(records.length);
     });
   });
 
   describe("family and subFamily columns", () => {
     it("persists a trusted family and subFamily alongside a row", async () => {
       const saved = await service.save(
-        record({
+        meanderRecord({
           characteristics: ["dots"],
           code: "trusted-row",
           family: "boxes",
@@ -171,7 +172,9 @@ describe(DatabaseService, () => {
     });
 
     it("leaves family and subFamily null when a row names neither", async () => {
-      const saved = await service.save(record({ code: "untrusted-row" }));
+      const saved = await service.save(
+        meanderRecord({ code: "untrusted-row" }),
+      );
 
       const row = await repository.findOneByOrFail({ id: saved.id });
 
