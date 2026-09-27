@@ -14,7 +14,7 @@ on:
     branches:
       - main
   issues:
-    types: [opened, edited, labeled, unlabeled]
+    types: [opened, reopened, unassigned, edited, labeled, unlabeled]
   pull_request:
     types:
       - opened
@@ -91,6 +91,32 @@ jobs:
         run: |
           NODE_OPTIONS='' node --import @swc-node/register/esm-register \
             tools/synchronization/src/main.ts issue-labels
+
+      # Issue events can arrive with no assignees. Default those to the
+      # repository owner while leaving already-owned issues unchanged.
+      - name: 🧑‍💼 Ensure Issue Assignee
+        if: >-
+          github.event_name == 'issues' &&
+          github.event.issue != null &&
+          github.event.issue.assignees[0] == null
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          gh issue edit "$ISSUE_NUMBER" --add-assignee JimmyPaolini
+
+      # On scheduled or manual runs, sweep all open issues and assign any
+      # that are currently unassigned.
+      - name: 🧑‍💼 Ensure Open Issues Have Assignees
+        if: github.event.issue == null
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          while IFS= read -r issue_number; do
+            if [ -n "$issue_number" ]; then
+              gh issue edit "$issue_number" --add-assignee JimmyPaolini
+            fi
+          done < <(gh issue list --state open --limit 500 --search "no:assignee" --json number --jq '.[].number')
 
       # Read live, by issue number, rather than out of this event's payload.
       - name: 🧾 Audit Single Issue Metadata
