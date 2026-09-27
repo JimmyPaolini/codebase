@@ -1,6 +1,10 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
+import {
+  BOOLEAN_CHARACTERISTIC_KEY_SET,
+  CHARACTERISTIC_KEYS,
+} from "./characteristic-registry.constants";
 import { CharacteristicsModule } from "./characteristics.module";
 import { IsArcadeCharacteristicService } from "./compound/family/is-arcade-characteristic.service";
 import { IsBarsCharacteristicService } from "./compound/family/is-bars-characteristic.service";
@@ -276,5 +280,24 @@ describe(CharacteristicsModule, () => {
     const keys = evaluators.map((evaluator) => evaluator.metadata.key);
 
     expect(new Set(keys).size).toBe(keys.length);
+  });
+
+  it("covers exactly the characteristic key list, in both directions", () => {
+    const keys = evaluators.map((evaluator) => evaluator.metadata.key);
+
+    expect(keys.toSorted()).toStrictEqual([...CHARACTERISTIC_KEYS].toSorted());
+  });
+
+  it("declares the value type each key's list promises", () => {
+    const declared = evaluators.map(({ metadata }) => [
+      metadata.key,
+      metadata.valueType,
+    ]);
+    const promised = evaluators.map(({ metadata }) => [
+      metadata.key,
+      BOOLEAN_CHARACTERISTIC_KEY_SET.has(metadata.key) ? "boolean" : "number",
+    ]);
+
+    expect(declared).toStrictEqual(promised);
   });
 });

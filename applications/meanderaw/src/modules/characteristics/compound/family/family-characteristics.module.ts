@@ -9,7 +9,7 @@ import { EmbeddedCharacteristicsModule } from "../../submatrix/embedded/embedded
 import { ForkCharacteristicsModule } from "../../submatrix/fork/fork-characteristics.module";
 import { PointCharacteristicsModule } from "../../submatrix/point/point-characteristics.module";
 import { RunCharacteristicsModule } from "../../submatrix/run/run-characteristics.module";
-import { CompoundUtilitiesService } from "../compound-utilities.service";
+import { CompoundUtilitiesModule } from "../compound-utilities.module";
 import { StructureCharacteristicsModule } from "../structure/structure-characteristics.module";
 
 import { FamilyUtilitiesService } from "./family-utilities.service";
@@ -39,9 +39,9 @@ import { StrandUtilitiesService } from "./strand-utilities.service";
  * boolean per family `ClassificationService` recognizes, from a whole-grid
  * template or from the characteristics a strand's shape reads — as one
  * group `CharacteristicsModule` imports and re-exports. It imports the
- * groups whose evaluators these predicates read, and provides its own
- * stateless `CompoundUtilitiesService`, `FamilyUtilitiesService`, and
- * `StrandUtilitiesService`.
+ * groups whose evaluators these predicates read and the shared
+ * `CompoundUtilitiesModule`, and provides its own stateless
+ * `FamilyUtilitiesService` and `StrandUtilitiesService`.
  */
 @Module({
   controllers: [],
@@ -67,6 +67,7 @@ import { StrandUtilitiesService } from "./strand-utilities.service";
     IsWhirlCharacteristicService,
   ],
   imports: [
+    CompoundUtilitiesModule,
     CrossCharacteristicsModule,
     EmbeddedCharacteristicsModule,
     EndCharacteristicsModule,
@@ -79,7 +80,6 @@ import { StrandUtilitiesService } from "./strand-utilities.service";
     TurnCharacteristicsModule,
   ],
   providers: [
-    CompoundUtilitiesService,
     FamilyUtilitiesService,
     IsArcadeCharacteristicService,
     IsBarsCharacteristicService,

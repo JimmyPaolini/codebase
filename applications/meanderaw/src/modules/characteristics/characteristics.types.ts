@@ -2,6 +2,28 @@
 
 import type { CodeObject } from "../code/code.types";
 import type { Matrix } from "../matrix/matrix.types";
+import type {
+  BOOLEAN_CHARACTERISTIC_KEYS,
+  CHARACTERISTIC_KEYS,
+  NUMERIC_CHARACTERISTIC_KEYS,
+} from "./characteristic-registry.constants";
+
+/** The key of a characteristic whose value is a boolean: see {@link BOOLEAN_CHARACTERISTIC_KEYS}. */
+export type BooleanCharacteristicKey =
+  (typeof BOOLEAN_CHARACTERISTIC_KEYS)[number];
+
+/**
+ * A discovered provider shaped like an evaluator — a `compute` method and a
+ * `metadata` object naming a string key and value type — before its key and
+ * value type are checked against the key lists.
+ */
+export interface CandidateEvaluator {
+  compute(context: CharacteristicContext): unknown;
+  readonly metadata: {
+    readonly key: string;
+    readonly valueType: unknown;
+  };
+}
 
 /**
  * The tier a characteristic is measured in: `submatrix` reads local windows
@@ -42,6 +64,13 @@ export interface CharacteristicEvaluator<
   readonly metadata: CharacteristicMetadata<T>;
 }
 
+/** The key of any registered characteristic: see {@link CHARACTERISTIC_KEYS}. */
+export type CharacteristicKey = (typeof CHARACTERISTIC_KEYS)[number];
+
+/** The key a characteristic yielding `T` may carry, derived from the value type so a numeric evaluator cannot claim a boolean key. */
+export type CharacteristicKeyOf<T extends CharacteristicValue> =
+  T extends boolean ? BooleanCharacteristicKey : NumericCharacteristicKey;
+
 /**
  * What a characteristic is, for people and catalogs rather than for the
  * computation: its camelCase `key` (the record field and database column it
@@ -56,10 +85,20 @@ export interface CharacteristicMetadata<
   readonly description: string;
   readonly documentationUrl?: string;
   readonly formula?: string;
-  readonly key: string;
+  readonly key: CharacteristicKeyOf<T>;
   readonly name: string;
   readonly valueType: CharacteristicValueType<T>;
 }
+
+/**
+ * Every Characteristic of one meander as a single record, one field per
+ * registered evaluator: a number under each numeric key and a boolean under
+ * each boolean key. `CharacteristicRegistryService.record` fills it.
+ */
+export type CharacteristicRecord = Readonly<
+  Record<BooleanCharacteristicKey, boolean>
+> &
+  Readonly<Record<NumericCharacteristicKey, number>>;
 
 /**
  * Every fact `CharacteristicsService.compute` derives directly from a
@@ -226,6 +265,10 @@ export type MutableHistogram = Pick<
   | "verticalPointCount"
   | "xCount"
 >;
+
+/** The key of a characteristic whose value is a number: see {@link NUMERIC_CHARACTERISTIC_KEYS}. */
+export type NumericCharacteristicKey =
+  (typeof NUMERIC_CHARACTERISTIC_KEYS)[number];
 
 /** Counts for exactly matched shapes in 2x2 windows. */
 export interface UnitShapeCounts {

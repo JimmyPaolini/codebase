@@ -67,4 +67,56 @@ describe(CharacteristicContextService, () => {
     expect(context.matrix).toHaveLength(2);
     expect(context.matrix[1]).toHaveLength(3);
   });
+
+  it("re-spells an uppercase parsed Code in lowercase, as the legacy grid predicates read it", () => {
+    const context = service.create({
+      columns: 3,
+      digits: "3C0303",
+      repeats: 1,
+      rows: 2,
+    });
+
+    expect(context.code.digits).toBe("3c0303");
+  });
+
+  it("pads a parsed Code short of rows × columns digits with bare points", () => {
+    const context = service.create({
+      columns: 2,
+      digits: "2",
+      repeats: 1,
+      rows: 1,
+    });
+
+    expect(context.code.digits).toBe("20");
+    expect(context.code.digits).toHaveLength(context.rows * context.columns);
+  });
+
+  it("keeps a repeating Code whole when built unreduced", () => {
+    const context = service.createUnreduced("04x01y3c3c");
+
+    expect(context.columns).toBe(4);
+    expect(context.code).toStrictEqual({
+      columns: 4,
+      digits: "3c3c",
+      repeats: 1,
+      rows: 1,
+    });
+    expect(context.matrix[0]).toHaveLength(4);
+  });
+
+  it("re-spells an unreduced parsed Code the same way", () => {
+    const context = service.createUnreduced({
+      columns: 2,
+      digits: "3C",
+      repeats: 2,
+      rows: 1,
+    });
+
+    expect(context.code).toStrictEqual({
+      columns: 2,
+      digits: "3c",
+      repeats: 2,
+      rows: 1,
+    });
+  });
 });

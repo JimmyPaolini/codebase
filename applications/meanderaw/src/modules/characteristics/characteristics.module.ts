@@ -1,10 +1,12 @@
 import { Module } from "@nestjs/common";
+import { DiscoveryModule } from "@nestjs/core";
 
 import { CodeModule } from "../code/code.module";
 import { GraphModule } from "../graph/graph.module";
 import { MatrixModule } from "../matrix/matrix.module";
 
 import { CharacteristicContextService } from "./characteristic-context.service";
+import { CharacteristicRegistryService } from "./characteristic-registry.service";
 import { CharacteristicsFamilyService } from "./characteristics-family.service";
 import { CharacteristicsPathService } from "./characteristics-path.service";
 import { CharacteristicsShapeService } from "./characteristics-shape.service";
@@ -45,11 +47,15 @@ import { RunCharacteristicsModule } from "./submatrix/run/run-characteristics.mo
  * beneath it. Each group folder holds one small module that provides and
  * exports its services, and this module imports and re-exports every group
  * module, so a consumer of `CharacteristicsModule` can inject any evaluator.
+ * `CharacteristicRegistryService` finds every one of them through
+ * `DiscoveryModule` rather than through a hand-maintained list, and fills a
+ * whole record from one context.
  */
 @Module({
   controllers: [],
   exports: [
     CharacteristicContextService,
+    CharacteristicRegistryService,
     CharacteristicsFamilyService,
     CharacteristicsService,
     ConnectivityService,
@@ -72,6 +78,7 @@ import { RunCharacteristicsModule } from "./submatrix/run/run-characteristics.mo
     CodeModule,
     CornerCharacteristicsModule,
     CrossCharacteristicsModule,
+    DiscoveryModule,
     EmbeddedCharacteristicsModule,
     EndCharacteristicsModule,
     FamilyCharacteristicsModule,
@@ -89,6 +96,7 @@ import { RunCharacteristicsModule } from "./submatrix/run/run-characteristics.mo
   ],
   providers: [
     CharacteristicContextService,
+    CharacteristicRegistryService,
     CharacteristicsFamilyService,
     CharacteristicsPathService,
     CharacteristicsShapeService,
