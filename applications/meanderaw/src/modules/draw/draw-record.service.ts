@@ -89,7 +89,7 @@ export class DrawRecordService {
     const drawingHash = crypto.createHash("sha256").update(svg).digest("hex");
 
     return {
-      ...characteristics,
+      ...this.characteristicsService.numericRecord(characteristics),
       characteristics: booleanKeys,
       code: this.codeService.format(canonical),
       columns: canonical.columns,

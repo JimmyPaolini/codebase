@@ -84,6 +84,7 @@ describe(DrawRecordService, () => {
       });
       expect(record.drawingHash).toMatch(/^8fba/u);
       expect(record).not.toHaveProperty("pitch");
+      expect(record).not.toHaveProperty("isBars");
     });
 
     it("stores every numeric characteristic of the computed record under its own key, and the true booleans in key-list order", () => {

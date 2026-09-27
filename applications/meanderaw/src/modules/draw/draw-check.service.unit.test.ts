@@ -4,6 +4,7 @@ import { getRepositoryToken } from "@nestjs/typeorm";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
 import { meanderRecord } from "../../../testing/meanders";
+import { NUMERIC_CHARACTERISTIC_KEYS } from "../characteristics/characteristics.constants";
 import { CorpusService } from "../corpus/corpus.service";
 import { Meander } from "../database/entities/Meander.entity";
 
@@ -279,22 +280,19 @@ describe(DrawCheckService, () => {
       ]);
     });
 
-    it("compares exactly the drift comparison columns, ignoring every other characteristic column", () => {
+    it("compares every numeric characteristic column, along with characteristics, family, provenance, and drawingHash", () => {
       const committedRow = meander({ code: "a", id: 2 });
+      const everyNumericColumnChanged = Object.fromEntries(
+        NUMERIC_CHARACTERISTIC_KEYS.map((key) => [key, 99]),
+      ) as Partial<Meander>;
       const regeneratedRow = meander({
-        aLetterCount: 3,
-        bettiNumber0Count: 2,
-        bettiNumber1Count: 1,
+        ...everyNumericColumnChanged,
         characteristics: ["isArcade"],
         code: "a",
-        crossCount: 1,
         drawingHash: "other",
         family: "snake",
-        forkCount: 1,
-        freeEndCount: 2,
         id: 1,
         provenance: "enumerated",
-        repeats: 2,
       });
 
       const report = service.diff([regeneratedRow], [committedRow]);
@@ -308,16 +306,26 @@ describe(DrawCheckService, () => {
         },
       ]);
       expect(MEANDER_DRIFT_COMPARISON_COLUMNS).toStrictEqual([
-        "bettiNumber0Count",
-        "bettiNumber1Count",
+        ...NUMERIC_CHARACTERISTIC_KEYS,
         "characteristics",
         "family",
-        "freeEndCount",
-        "forkCount",
-        "crossCount",
         "provenance",
         "drawingHash",
       ]);
+    });
+
+    it("does not compare lattice or repeats, which are not drift comparison columns", () => {
+      const committedRow = meander({ code: "a", id: 2 });
+      const regeneratedRow = meander({
+        code: "a",
+        id: 1,
+        lattice: "different",
+        repeats: 2,
+      });
+
+      const report = service.diff([regeneratedRow], [committedRow]);
+
+      expect(report.changed).toStrictEqual([]);
     });
 
     it("returns report when check() detects no drift", async () => {

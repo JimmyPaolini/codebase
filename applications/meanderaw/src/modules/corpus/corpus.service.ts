@@ -131,7 +131,7 @@ export class CorpusService {
             : filedFamily;
 
       return await this.databaseService.save({
-        ...characteristics,
+        ...this.characteristicsService.numericRecord(characteristics),
         characteristics: booleanKeys,
         code: this.codeService.format(canonical),
         columns,

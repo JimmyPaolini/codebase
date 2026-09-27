@@ -10,6 +10,7 @@ import {
   BOOLEAN_CHARACTERISTIC_KEY_SET,
   CHARACTERISTIC_KEYS,
   CharacteristicRegistryError,
+  NUMERIC_CHARACTERISTIC_KEYS,
 } from "./characteristics.constants";
 import { CharacteristicsService } from "./characteristics.service";
 import { TileCrossingComponentDeltaCountCharacteristicService } from "./path/tile-crossing/tile-crossing-component-delta-count-characteristic.service";
@@ -242,5 +243,17 @@ describe(CharacteristicsService, () => {
     expect(
       service.isReducible({ columns: 2, digits: "3c", repeats: 3, rows: 1 }),
     ).toBe(false);
+  });
+
+  it("keeps only the numeric keys of a computed record", () => {
+    const characteristics = service.compute("02x01y2c");
+
+    const numeric = service.numericRecord(characteristics);
+
+    expect(Object.keys(numeric)).toStrictEqual([
+      ...NUMERIC_CHARACTERISTIC_KEYS,
+    ]);
+    expect(numeric).not.toHaveProperty("isDots");
+    expect(numeric.dotCount).toBe(characteristics.dotCount);
   });
 });

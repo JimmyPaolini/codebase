@@ -3,6 +3,7 @@ import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { characteristicRecord } from "../../../testing/meanders";
+import { NUMERIC_CHARACTERISTIC_KEYS } from "../characteristics/characteristics.constants";
 import { CharacteristicsService } from "../characteristics/characteristics.service";
 import { ClassificationService } from "../classification/classification.service";
 import { CodeService } from "../code/code.service";
@@ -13,6 +14,7 @@ import { EnumerationService } from "../enumeration/enumeration.service";
 import { DuplicateCorpusCodeError } from "./corpus.constants";
 import { CorpusService } from "./corpus.service";
 
+import type { NumericCharacteristicRecord } from "../characteristics/characteristics.types";
 import type { Meander } from "../database/entities/Meander.entity";
 import type { Tile } from "../tile/tile.types";
 import type { CorpusEntry } from "./corpus.types";
@@ -95,6 +97,12 @@ describe(CorpusService, () => {
     vi.mocked(drawingService.render).mockReturnValue("<svg>fixture</svg>\n");
     vi.mocked(characteristicsService.compute).mockReturnValue(record);
     vi.mocked(characteristicsService.isReducible).mockReturnValue(false);
+    vi.mocked(characteristicsService.numericRecord).mockImplementation(
+      (characteristics) =>
+        Object.fromEntries(
+          NUMERIC_CHARACTERISTIC_KEYS.map((key) => [key, characteristics[key]]),
+        ) as NumericCharacteristicRecord,
+    );
     vi.mocked(classificationService.classify).mockReturnValue("snake");
     vi.mocked(enumerationService.isAdmitted).mockReturnValue(false);
     vi.mocked(databaseService.findOneByLattice).mockResolvedValue(null);
@@ -176,6 +184,17 @@ describe(CorpusService, () => {
           rows: 4,
         }),
       );
+    });
+
+    it("does not spread boolean characteristics into the saved row", async () => {
+      await service.ingest([entry]);
+
+      const [saved] = vi
+        .mocked(databaseService.save)
+        .mock.calls.map(([row]) => row);
+
+      expect(saved).not.toHaveProperty("isSingleArc");
+      expect(saved).not.toHaveProperty("isBars");
     });
 
     it("tells the classifier an entry filed under branch reduces when its Code is wider than its unit", async () => {

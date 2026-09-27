@@ -9,6 +9,7 @@ import {
   CHARACTERISTIC_KEY_SET,
   CHARACTERISTIC_KEYS,
   CharacteristicRegistryError,
+  NUMERIC_CHARACTERISTIC_KEYS,
 } from "./characteristics.constants";
 import { TileCrossingComponentDeltaCountCharacteristicService } from "./path/tile-crossing/tile-crossing-component-delta-count-characteristic.service";
 
@@ -22,6 +23,7 @@ import type {
   Characteristics,
   CharacteristicValue,
   CharacteristicValueType,
+  NumericCharacteristicRecord,
 } from "./characteristics.types";
 import type { OnApplicationBootstrap } from "@nestjs/common";
 
@@ -71,6 +73,21 @@ export class CharacteristicsService implements OnApplicationBootstrap {
     if (mismatch !== undefined) {
       throw new CharacteristicRegistryError(
         `Characteristic "${mismatch}" computed ${typeof values[mismatch]}, but its key promises ${this.valueTypeOf(mismatch)}`,
+      );
+    }
+  }
+
+  /** Narrows a record built from {@link NUMERIC_CHARACTERISTIC_KEYS} to {@link NumericCharacteristicRecord}, throwing if a key was left out. */
+  private assertNumericRecord(
+    values: Readonly<Record<string, number>>,
+  ): asserts values is NumericCharacteristicRecord {
+    const missing = NUMERIC_CHARACTERISTIC_KEYS.find(
+      (key) => typeof values[key] !== "number",
+    );
+
+    if (missing !== undefined) {
+      throw new CharacteristicRegistryError(
+        `Numeric characteristic "${missing}" is missing from the record`,
       );
     }
   }
@@ -196,6 +213,19 @@ export class CharacteristicsService implements OnApplicationBootstrap {
   /** Every registered characteristic's metadata, in key-list order. */
   public metadata(): readonly CharacteristicMetadata[] {
     return this.evaluators().map((evaluator) => evaluator.metadata);
+  }
+
+  /** The numeric half of a computed record — exactly the columns a stored meander row carries — with every boolean key left out. */
+  public numericRecord(
+    characteristics: Characteristics,
+  ): NumericCharacteristicRecord {
+    const values: Readonly<Record<string, number>> = Object.fromEntries(
+      NUMERIC_CHARACTERISTIC_KEYS.map((key) => [key, characteristics[key]]),
+    );
+
+    this.assertNumericRecord(values);
+
+    return values;
   }
 
   /**
