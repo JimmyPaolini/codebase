@@ -102,7 +102,7 @@ Call stacks traced through `packages/ic-suite/conformetry/conformetry-validation
 | Measure | Value |
 | --- | --- |
 | Callables | 43 |
-| Files | 17 |
+| Files | 18 |
 | Calls traced | 43 |
 | Call stacks | 0 |
 | Deepest stack | 0 |
@@ -268,6 +268,7 @@ graph LR
   file_src_modules_validation_validation_types_ts["src/modules/validation/validation.types.ts"]
   file_testing_mocks_ts["testing/mocks.ts"]
   file_testing_setup_ts["testing/setup.ts"]
+  file_vite_config_ts["vite.config.ts"]
   file_vitest_config_ts["vitest.config.ts"]
   file_src_modules_runner_runner_module_ts --> file_src_modules_runner_runner_service_ts
   file_src_modules_runner_runner_module_unit_test_ts --> file_src_modules_runner_runner_module_ts

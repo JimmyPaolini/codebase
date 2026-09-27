@@ -61,6 +61,7 @@ flowchart LR
   NestjsModulesWorkspaceGraphModule
   NestjsProjectModule
   OverrideResolutionModule
+  PathQueryModule
   ProjectGraphsModule
   PythonImportsModule
   PythonModule
@@ -82,6 +83,13 @@ flowchart LR
   GraphRunModule --> ProjectGraphsModule
   GraphRunModule --> PythonImportsModule
   GraphRunModule --> WorkspaceGraphsModule
+  PathQueryModule --> FileImportsWorkspaceGraphModule
+  PathQueryModule --> ModuleGraphModule
+  PathQueryModule --> NestjsModulesWorkspaceGraphModule
+  PathQueryModule --> NestjsProjectModule
+  PathQueryModule --> PythonModule
+  PathQueryModule --> TypescriptModule
+  PathQueryModule --> WorkspaceGraphModule
   ProjectGraphsModule --> ConfigurationModule
   ProjectGraphsModule --> DeliveryModule
   ProjectGraphsModule --> ModuleGraphModule
@@ -141,6 +149,12 @@ graph LR
   file_src_modules_graph_run_graph_run_service_ts["src/modules/graph-run/graph-run.service.ts"]
   file_src_modules_graph_run_graph_run_service_unit_test_ts["src/modules/graph-run/graph-run.service.unit.test.ts"]
   file_src_modules_graph_run_graph_run_types_ts["src/modules/graph-run/graph-run.types.ts"]
+  file_src_modules_path_query_path_query_constants_ts["src/modules/path-query/path-query.constants.ts"]
+  file_src_modules_path_query_path_query_module_ts["src/modules/path-query/path-query.module.ts"]
+  file_src_modules_path_query_path_query_module_unit_test_ts["src/modules/path-query/path-query.module.unit.test.ts"]
+  file_src_modules_path_query_path_query_service_ts["src/modules/path-query/path-query.service.ts"]
+  file_src_modules_path_query_path_query_service_unit_test_ts["src/modules/path-query/path-query.service.unit.test.ts"]
+  file_src_modules_path_query_path_query_types_ts["src/modules/path-query/path-query.types.ts"]
   file_src_modules_project_graphs_project_graphs_constants_ts["src/modules/project-graphs/project-graphs.constants.ts"]
   file_src_modules_project_graphs_project_graphs_module_ts["src/modules/project-graphs/project-graphs.module.ts"]
   file_src_modules_project_graphs_project_graphs_module_unit_test_ts["src/modules/project-graphs/project-graphs.module.unit.test.ts"]
@@ -167,6 +181,7 @@ graph LR
   file_src_modules_workspace_graphs_workspace_graphs_types_ts["src/modules/workspace-graphs/workspace-graphs.types.ts"]
   file_testing_mocks_ts["testing/mocks.ts"]
   file_testing_setup_ts["testing/setup.ts"]
+  file_vite_config_ts["vite.config.ts"]
   file_vitest_config_ts["vitest.config.ts"]
   file_src_modules_anchors_anchors_module_ts --> file_src_modules_anchors_anchors_service_ts
   file_src_modules_anchors_anchors_module_unit_test_ts --> file_src_modules_anchors_anchors_module_ts
@@ -219,6 +234,16 @@ graph LR
   file_src_modules_graph_run_graph_run_service_unit_test_ts --> file_src_modules_project_graphs_project_graphs_service_ts
   file_src_modules_graph_run_graph_run_service_unit_test_ts --> file_src_modules_python_imports_python_imports_service_ts
   file_src_modules_graph_run_graph_run_service_unit_test_ts --> file_src_modules_workspace_graphs_workspace_graphs_service_ts
+  file_src_modules_path_query_path_query_constants_ts --> file_src_modules_combined_output_combined_output_constants_ts
+  file_src_modules_path_query_path_query_module_ts --> file_src_modules_path_query_path_query_service_ts
+  file_src_modules_path_query_path_query_module_unit_test_ts --> file_src_modules_path_query_path_query_module_ts
+  file_src_modules_path_query_path_query_module_unit_test_ts --> file_src_modules_path_query_path_query_service_ts
+  file_src_modules_path_query_path_query_service_ts --> file_src_modules_combined_output_combined_output_constants_ts
+  file_src_modules_path_query_path_query_service_ts --> file_src_modules_delivery_delivery_constants_ts
+  file_src_modules_path_query_path_query_service_ts --> file_src_modules_path_query_path_query_constants_ts
+  file_src_modules_path_query_path_query_service_ts --> file_src_modules_path_query_path_query_types_ts
+  file_src_modules_path_query_path_query_service_unit_test_ts --> file_src_modules_path_query_path_query_service_ts
+  file_src_modules_path_query_path_query_types_ts --> file_src_modules_path_query_path_query_constants_ts
   file_src_modules_project_graphs_project_graphs_module_ts --> file_src_modules_delivery_delivery_module_ts
   file_src_modules_project_graphs_project_graphs_module_ts --> file_src_modules_project_graphs_project_graphs_service_ts
   file_src_modules_project_graphs_project_graphs_module_unit_test_ts --> file_src_modules_project_graphs_project_graphs_module_ts
@@ -269,9 +294,9 @@ Call stacks traced through `packages/ic-suite/codependix/codependix-output`, dee
 
 | Measure | Value |
 | --- | --- |
-| Callables | 84 |
-| Files | 38 |
-| Calls traced | 136 |
+| Callables | 111 |
+| Files | 43 |
+| Calls traced | 180 |
 | Call stacks | 2 |
 | Deepest stack | 11 |
 | Stacks through recursion | 0 |
@@ -319,12 +344,12 @@ What this project is judged against, as declared in its own `callidescope.config
      ↳ Renders and delivers the Nx Workspace Graph's configured destinations.
     └─> WorkspaceGraphsService.deliverWorkspaceGraph(…): ProjectRunResult [packages/ic-suite/codependix/codependix-output/src/modules/workspace-graphs/workspace-graphs.service.ts:135]
        ↳ Delivers one already-built whole-workspace graph's configured destinations, at the workspace root.
-      └─> DeliveryService.deliverGraphOutput(args: DeliverGraphOutputArguments): ProjectRunResult [packages/ic-suite/codependix/codependix-output/src/modules/delivery/delivery.service.ts:273]
+      └─> DeliveryService.deliverGraphOutput(args: DeliverGraphOutputArguments): ProjectRunResult [packages/ic-suite/codependix/codependix-output/src/modules/delivery/delivery.service.ts:366]
          ↳ Delivers whichever destinations a resolved graph output names. `jsonContent`/`markdownContent` are read only when the…
-        └─> DeliveryService.deliverMarkdown(…): void [packages/ic-suite/codependix/codependix-output/src/modules/delivery/delivery.service.ts:145]
+        └─> DeliveryService.deliverMarkdown(…): void [packages/ic-suite/codependix/codependix-output/src/modules/delivery/delivery.service.ts:168]
            ↳ Delivers a Markdown destination, recording it as stale if needed.
-          └─> DeliveryService.deliverAnchoredMarkdown(…): boolean [packages/ic-suite/codependix/codependix-output/src/modules/delivery/delivery.service.ts:54]
-             ↳ Splices content into a named anchor block, or checks it is current.
+          └─> DeliveryService.checkAnchoredMarkdown(…): void [packages/ic-suite/codependix/codependix-output/src/modules/delivery/delivery.service.ts:51]
+             ↳ Checks whether a named anchor block is current against fresh content.
             └─> AnchorsService.checkAnchor(args: AnchorLocationArguments & { freshContent: string; }): AnchorCheckResult [packages/ic-suite/codependix/codependix-output/src/modules/anchors/anchors.service.ts:103]
                ↳ Compares a Markdown file's anchor against a freshly computed export. `--check` reads this and reports drift without…
               └─> AnchorsService.extractAnchorContent(args: AnchorLocationArguments): string | undefined [packages/ic-suite/codependix/codependix-output/src/modules/anchors/anchors.service.ts:120]
@@ -344,19 +369,22 @@ What this project is judged against, as declared in its own `callidescope.config
 | `ProjectGraphsService.runImportProject` | 6 | `TypescriptService.buildProgram`, `TypescriptService.buildGraph`, `DeliveryService.deliverGraphOutput`, `DeliveryService.renderJson`, `TypescriptService.renderMermaid`, `ProjectGraphsService.buildMarkdownSection` | `packages/ic-suite/codependix/codependix-output/src/modules/project-graphs/project-graphs.service.ts:131` |
 
 <details>
-<summary>43 more callables</summary>
+<summary>59 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
 | `ProjectGraphsService.runNestjsProject` | 6 | `NestjsProjectService.exploreProject`, `ModuleGraphService.buildGraph`, `DeliveryService.deliverGraphOutput`, `DeliveryService.renderJson`, `ModuleGraphService.renderMermaid`, `ProjectGraphsService.buildMarkdownSection` | `packages/ic-suite/codependix/codependix-output/src/modules/project-graphs/project-graphs.service.ts:160` |
-| `DeliveryService.deliverAnchoredMarkdown` | 5 | `AnchorNotFoundError.constructor`, `AnchorsService.hasAnchor`, `AnchorsService.checkAnchor`, `DeliveryService.writeAutoCreatedAnchorSection`, `AnchorsService.replaceAnchorContent` | `packages/ic-suite/codependix/codependix-output/src/modules/delivery/delivery.service.ts:54` |
+| `PathQueryService.queryFileImports` | 6 | `PathQueryService.map(…)`, `PythonService.discoverProjects`, `PathQueryService.map(…)`, `TypescriptService.discoverProjects`, `FileImportsWorkspaceGraphService.buildWorkspaceGraph`, `PathQueryService.findShortestPath` | `packages/ic-suite/codependix/codependix-output/src/modules/path-query/path-query.service.ts:115` |
 | `ProjectGraphsService.runNxProject` | 5 | `DeliveryService.deliverGraphOutput`, `DeliveryService.renderJson`, `ProjectGraphsService.buildNeighborhoodJsonExport`, `NeighborhoodService.renderMermaid`, `ProjectGraphsService.buildMarkdownSection` | `packages/ic-suite/codependix/codependix-output/src/modules/project-graphs/project-graphs.service.ts:189` |
 | `PythonImportsService.runProject` | 5 | `PythonService.buildGraph`, `DeliveryService.deliverGraphOutput`, `DeliveryService.renderJson`, `PythonService.renderMermaid`, `PythonImportsService.buildMarkdownSection` | `packages/ic-suite/codependix/codependix-output/src/modules/python-imports/python-imports.service.ts:99` |
 | `WorkspaceGraphsService.runNestjsModulesWorkspaceGraph` | 5 | `ConfigurationService.resolveForWorkspace`, `WorkspaceGraphsService.buildNestjsModuleGraphs`, `NestjsModulesWorkspaceGraphService.buildWorkspaceGraph`, `NestjsModulesWorkspaceGraphService.renderMermaid`, `WorkspaceGraphsService.deliverWorkspaceGraph` | `packages/ic-suite/codependix/codependix-output/src/modules/workspace-graphs/workspace-graphs.service.ts:231` |
 | `GraphRunService.run` | 5 | `GraphRunService.runNxGraphs`, `GraphRunService.runNestjsGraphs`, `GraphRunService.runImportGraphs`, `GraphRunService.runPythonImportGraphs`, `GraphRunService.collectCombinedGraphs` | `packages/ic-suite/codependix/codependix-output/src/modules/graph-run/graph-run.service.ts:144` |
 | `AnchorsService.insertAnchorSection` | 4 | `AnchorsService.wrapInAnchors`, `AnchorsService.escapeForPattern`, `AnchorsService.appendCodependixSection`, `AnchorsService.insertIntoCodependixSection` | `packages/ic-suite/codependix/codependix-output/src/modules/anchors/anchors.service.ts:144` |
 | `CombinedOutputService.run` | 4 | `CombinedOutputService.printConsole`, `CombinedOutputService.writeFile`, `CombinedOutputService.renderJson`, `CombinedOutputService.renderMarkdown` | `packages/ic-suite/codependix/codependix-output/src/modules/combined-output/combined-output.service.ts:148` |
-| `DeliveryService.deliverGraphOutput` | 4 | `DeliveryService.resolveJsonDelivery`, `DeliveryService.resolveMarkdownDelivery`, `DeliveryService.deliverJson`, `DeliveryService.deliverMarkdown` | `packages/ic-suite/codependix/codependix-output/src/modules/delivery/delivery.service.ts:273` |
+| `DeliveryService.checkAnchoredMarkdown` | 4 | `AnchorNotFoundError.constructor`, `AnchorsService.hasAnchor`, `AnchorsService.checkAnchor`, `DeliveryService.classifyDifference` | `packages/ic-suite/codependix/codependix-output/src/modules/delivery/delivery.service.ts:51` |
+| `DeliveryService.deliverMarkdown` | 4 | `DeliveryService.readFileOrEmpty`, `DeliveryService.classifyDifference`, `DeliveryService.checkAnchoredMarkdown`, `DeliveryService.writeAnchoredMarkdown` | `packages/ic-suite/codependix/codependix-output/src/modules/delivery/delivery.service.ts:168` |
+| `DeliveryService.writeAnchoredMarkdown` | 4 | `AnchorNotFoundError.constructor`, `AnchorsService.hasAnchor`, `DeliveryService.writeAutoCreatedAnchorSection`, `AnchorsService.replaceAnchorContent` | `packages/ic-suite/codependix/codependix-output/src/modules/delivery/delivery.service.ts:282` |
+| `DeliveryService.deliverGraphOutput` | 4 | `DeliveryService.resolveJsonDelivery`, `DeliveryService.resolveMarkdownDelivery`, `DeliveryService.deliverJson`, `DeliveryService.deliverMarkdown` | `packages/ic-suite/codependix/codependix-output/src/modules/delivery/delivery.service.ts:366` |
 | `ProjectGraphsService.runFileImportsProjects` | 4 | `TypescriptService.discoverProjects`, `ProjectGraphsService.resolveProjectOutput`, `ProjectGraphsService.runImportProject`, `ProjectGraphsService.collectProjectFailure` | `packages/ic-suite/codependix/codependix-output/src/modules/project-graphs/project-graphs.service.ts:220` |
 | `ProjectGraphsService.runNestjsModulesProjects` | 4 | `NestjsProjectService.discoverProjects`, `ProjectGraphsService.resolveProjectOutput`, `ProjectGraphsService.runNestjsProject`, `ProjectGraphsService.collectProjectFailure` | `packages/ic-suite/codependix/codependix-output/src/modules/project-graphs/project-graphs.service.ts:255` |
 | `PythonImportsService.runGraphs` | 4 | `PythonService.discoverProjects`, `PythonImportsService.resolveProjectOutput`, `PythonImportsService.runProject`, `PythonImportsService.collectProjectFailure` | `packages/ic-suite/codependix/codependix-output/src/modules/python-imports/python-imports.service.ts:135` |
@@ -367,30 +395,43 @@ What this project is judged against, as declared in its own `callidescope.config
 | `WorkspaceGraphsService.deliverWorkspaceGraph` | 3 | `DeliveryService.deliverGraphOutput`, `DeliveryService.renderJson`, `WorkspaceGraphsService.buildMarkdownSection` | `packages/ic-suite/codependix/codependix-output/src/modules/workspace-graphs/workspace-graphs.service.ts:135` |
 | `GraphRunService.runNestjsGraphs` | 3 | `ProjectGraphsService.runNestjsModulesProjects`, `WorkspaceGraphsService.runNestjsModulesWorkspaceGraph`, `GraphRunService.collectProjectFailure` | `packages/ic-suite/codependix/codependix-output/src/modules/graph-run/graph-run.service.ts:207` |
 | `GraphRunService.runNxGraphs` | 3 | `NeighborhoodService.buildNeighborhoods`, `ProjectGraphsService.runNxProjectsGraphs`, `GraphRunService.collectWorkspaceOutcome` | `packages/ic-suite/codependix/codependix-output/src/modules/graph-run/graph-run.service.ts:240` |
+| `PathQueryService.buildNestjsModuleGraphs` | 3 | `NestjsProjectService.discoverProjects`, `NestjsProjectService.exploreProject`, `ModuleGraphService.buildGraph` | `packages/ic-suite/codependix/codependix-output/src/modules/path-query/path-query.service.ts:85` |
+| `PathQueryService.queryNestjsModules` | 3 | `PathQueryService.buildNestjsModuleGraphs`, `NestjsModulesWorkspaceGraphService.buildWorkspaceGraph`, `PathQueryService.findShortestPath` | `packages/ic-suite/codependix/codependix-output/src/modules/path-query/path-query.service.ts:140` |
+| `PathQueryService.renderMermaidSection` | 3 | `buildNoPathMessage`, `PathQueryService.map(…)`, `PathQueryService.toMermaidId` | `packages/ic-suite/codependix/codependix-output/src/modules/path-query/path-query.service.ts:207` |
+| `PathQueryService.findShortestPath` | 3 | `PathQueryService.isKnownNode`, `PathQueryService.searchBfs`, `PathQueryService.buildAdjacency` | `packages/ic-suite/codependix/codependix-output/src/modules/path-query/path-query.service.ts:269` |
+| `PathQueryService.query` | 3 | `PathQueryService.queryNxProjects`, `PathQueryService.queryFileImports`, `PathQueryService.queryNestjsModules` | `packages/ic-suite/codependix/codependix-output/src/modules/path-query/path-query.service.ts:296` |
+| `ReportingService.reportOutcome` | 3 | `ReportingService.filter(…)`, `ReportingService.map(…)`, `ReportingService.flatMap(…)` | `packages/ic-suite/codependix/codependix-output/src/modules/reporting/reporting.service.ts:112` |
 | `AnchorsService.checkAnchor` | 2 | `AnchorsService.extractAnchorContent`, `AnchorNotFoundError.constructor` | `packages/ic-suite/codependix/codependix-output/src/modules/anchors/anchors.service.ts:103` |
 | `AnchorsService.wrapInAnchors` | 2 | `buildStartMarker`, `buildEndMarker` | `packages/ic-suite/codependix/codependix-output/src/modules/anchors/anchors.service.ts:196` |
 | `CombinedOutputService.printConsole` | 2 | `CombinedOutputService.renderJson`, `CombinedOutputService.renderMarkdown` | `packages/ic-suite/codependix/codependix-output/src/modules/combined-output/combined-output.service.ts:51` |
 | `CombinedOutputService.resolveFormat` | 2 | `CombinedOutputService.find(…)`, `CombinedOutputService.map(…)` | `packages/ic-suite/codependix/codependix-output/src/modules/combined-output/combined-output.service.ts:116` |
-| `DeliveryService.deliverMarkdown` | 2 | `DeliveryService.deliverFile`, `DeliveryService.deliverAnchoredMarkdown` | `packages/ic-suite/codependix/codependix-output/src/modules/delivery/delivery.service.ts:145` |
-| `DeliveryService.writeAutoCreatedAnchorSection` | 2 | `AnchorNotFoundError.constructor`, `AnchorsService.insertAnchorSection` | `packages/ic-suite/codependix/codependix-output/src/modules/delivery/delivery.service.ts:240` |
+| `DeliveryService.deliverJson` | 2 | `DeliveryService.readFileOrEmpty`, `DeliveryService.classifyDifference` | `packages/ic-suite/codependix/codependix-output/src/modules/delivery/delivery.service.ts:135` |
+| `DeliveryService.writeAutoCreatedAnchorSection` | 2 | `AnchorNotFoundError.constructor`, `AnchorsService.insertAnchorSection` | `packages/ic-suite/codependix/codependix-output/src/modules/delivery/delivery.service.ts:333` |
 | `ProjectGraphsService.resolveProjectOutput` | 2 | `ConfigurationService.resolveForProject`, `ProjectGraphsService.find(…)` | `packages/ic-suite/codependix/codependix-output/src/modules/project-graphs/project-graphs.service.ts:108` |
 | `PythonImportsService.resolveProjectOutput` | 2 | `ConfigurationService.resolveForProject`, `PythonImportsService.find(…)` | `packages/ic-suite/codependix/codependix-output/src/modules/python-imports/python-imports.service.ts:77` |
 | `WorkspaceGraphsService.buildTypescriptGraphs` | 2 | `WorkspaceGraphsService.map(…)`, `TypescriptService.discoverProjects` | `packages/ic-suite/codependix/codependix-output/src/modules/workspace-graphs/workspace-graphs.service.ts:114` |
 | `WorkspaceGraphsService.map(…)` | 2 | `TypescriptService.buildGraph`, `TypescriptService.buildProgram` | `packages/ic-suite/codependix/codependix-output/src/modules/workspace-graphs/workspace-graphs.service.ts:119` |
 | `GraphRunService.runImportGraphs` | 2 | `ProjectGraphsService.runFileImportsProjects`, `GraphRunService.collectWorkspaceOutcome` | `packages/ic-suite/codependix/codependix-output/src/modules/graph-run/graph-run.service.ts:188` |
+| `PathQueryService.map(…)` | 2 | `TypescriptService.buildGraph`, `TypescriptService.buildProgram` | `packages/ic-suite/codependix/codependix-output/src/modules/path-query/path-query.service.ts:121` |
+| `PathQueryService.queryNxProjects` | 2 | `WorkspaceGraphService.buildWorkspaceGraph`, `PathQueryService.findShortestPath` | `packages/ic-suite/codependix/codependix-output/src/modules/path-query/path-query.service.ts:158` |
+| `PathQueryService.renderMarkdown` | 2 | `buildNoPathMessage`, `PathQueryService.map(…)` | `packages/ic-suite/codependix/codependix-output/src/modules/path-query/path-query.service.ts:173` |
+| `PathQueryService.render` | 2 | `PathQueryService.renderMermaid`, `PathQueryService.renderMarkdown` | `packages/ic-suite/codependix/codependix-output/src/modules/path-query/path-query.service.ts:328` |
+| `PathQueryService.resolveFormat` | 2 | `PathQueryService.find(…)`, `PathQueryService.map(…)` | `packages/ic-suite/codependix/codependix-output/src/modules/path-query/path-query.service.ts:344` |
 | `ReportingService.reportBoundaries` | 2 | `BoundaryReportService.renderSummary`, `BoundaryReportService.renderViolations` | `packages/ic-suite/codependix/codependix-output/src/modules/reporting/reporting.service.ts:47` |
-| `ReportingService.reportOutcome` | 2 | `ReportingService.filter(…)`, `ReportingService.map(…)` | `packages/ic-suite/codependix/codependix-output/src/modules/reporting/reporting.service.ts:112` |
-| `ReportingService.reportPassOutcomes` | 2 | `ReportingService.reportOutcome`, `ReportingService.reportBoundaries` | `packages/ic-suite/codependix/codependix-output/src/modules/reporting/reporting.service.ts:137` |
+| `ReportingService.reportPassOutcomes` | 2 | `ReportingService.reportOutcome`, `ReportingService.reportBoundaries` | `packages/ic-suite/codependix/codependix-output/src/modules/reporting/reporting.service.ts:157` |
 | `AnchorsService.extractAnchorContent` | 1 | `AnchorsService.buildAnchorPattern` | `packages/ic-suite/codependix/codependix-output/src/modules/anchors/anchors.service.ts:120` |
 | `AnchorsService.hasAnchor` | 1 | `AnchorsService.buildAnchorPattern` | `packages/ic-suite/codependix/codependix-output/src/modules/anchors/anchors.service.ts:125` |
 | `CombinedOutputService.renderMarkdown` | 1 | `AnchorsService.insertAnchorSection` | `packages/ic-suite/codependix/codependix-output/src/modules/combined-output/combined-output.service.ts:76` |
-| `DeliveryService.deliverFile` | 1 | `DeliveryService.readFileOrEmpty` | `packages/ic-suite/codependix/codependix-output/src/modules/delivery/delivery.service.ts:111` |
-| `DeliveryService.deliverJson` | 1 | `DeliveryService.deliverFile` | `packages/ic-suite/codependix/codependix-output/src/modules/delivery/delivery.service.ts:125` |
 | `WorkspaceGraphsService.map(…)` | 1 | `PythonService.buildGraph` | `packages/ic-suite/codependix/codependix-output/src/modules/workspace-graphs/workspace-graphs.service.ts:197` |
 | `GraphRunService.collectWorkspaceOutcome` | 1 | `GraphRunService.collectProjectFailure` | `packages/ic-suite/codependix/codependix-output/src/modules/graph-run/graph-run.service.ts:112` |
 | `GraphRunService.build` | 1 | `WorkspaceGraphsService.runFileImportsWorkspaceGraph` | `packages/ic-suite/codependix/codependix-output/src/modules/graph-run/graph-run.service.ts:192` |
 | `GraphRunService.build` | 1 | `WorkspaceGraphsService.runNxWorkspaceGraph` | `packages/ic-suite/codependix/codependix-output/src/modules/graph-run/graph-run.service.ts:249` |
 | `GraphRunService.runPythonImportGraphs` | 1 | `PythonImportsService.runGraphs` | `packages/ic-suite/codependix/codependix-output/src/modules/graph-run/graph-run.service.ts:266` |
+| `PathQueryService.isKnownNode` | 1 | `PathQueryService.some(…)` | `packages/ic-suite/codependix/codependix-output/src/modules/path-query/path-query.service.ts:102` |
+| `PathQueryService.map(…)` | 1 | `PythonService.buildGraph` | `packages/ic-suite/codependix/codependix-output/src/modules/path-query/path-query.service.ts:118` |
+| `PathQueryService.renderMermaid` | 1 | `PathQueryService.renderMermaidSection` | `packages/ic-suite/codependix/codependix-output/src/modules/path-query/path-query.service.ts:193` |
+| `PathQueryService.map(…)` | 1 | `PathQueryService.toMermaidId` | `packages/ic-suite/codependix/codependix-output/src/modules/path-query/path-query.service.ts:216` |
+| `ReportingService.flatMap(…)` | 1 | `ReportingService.map(…)` | `packages/ic-suite/codependix/codependix-output/src/modules/reporting/reporting.service.ts:127` |
 
 </details>
 <!-- callidescope:end -->

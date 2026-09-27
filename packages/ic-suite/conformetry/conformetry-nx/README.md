@@ -143,7 +143,7 @@ Call stacks traced through `packages/ic-suite/conformetry/conformetry-nx`, deepe
 | Measure | Value |
 | --- | --- |
 | Callables | 114 |
-| Files | 45 |
+| Files | 46 |
 | Calls traced | 137 |
 | Call stacks | 8 |
 | Deepest stack | 15 |
@@ -582,6 +582,7 @@ graph LR
   file_src_modules_scope_scope_types_ts["src/modules/scope/scope.types.ts"]
   file_testing_mocks_ts["testing/mocks.ts"]
   file_testing_setup_ts["testing/setup.ts"]
+  file_vite_config_ts["vite.config.ts"]
   file_vitest_config_ts["vitest.config.ts"]
   file_src_executors_validate_executor_ts --> file_src_executors_validate_executor_types_ts
   file_src_executors_validate_executor_ts --> file_src_modules_plugin_plugin_context_utilities_ts

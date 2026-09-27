@@ -270,7 +270,7 @@ Call stacks traced through `packages/ic-suite/conformetry/conformetry-configurat
 | Measure | Value |
 | --- | --- |
 | Callables | 167 |
-| Files | 36 |
+| Files | 37 |
 | Calls traced | 151 |
 | Call stacks | 5 |
 | Deepest stack | 10 |
@@ -588,6 +588,7 @@ graph LR
   file_src_modules_template_discovery_template_discovery_types_ts["src/modules/template-discovery/template-discovery.types.ts"]
   file_testing_mocks_ts["testing/mocks.ts"]
   file_testing_setup_ts["testing/setup.ts"]
+  file_vite_config_ts["vite.config.ts"]
   file_vitest_config_ts["vitest.config.ts"]
   file_src_index_unit_test_ts --> file_src_index_ts
   file_src_modules_configuration_configuration_constants_ts --> file_src_modules_configuration_configuration_utilities_ts

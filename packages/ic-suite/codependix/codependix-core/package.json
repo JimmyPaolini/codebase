@@ -38,7 +38,6 @@
   "license": "MIT",
   "main": "src/index.ts",
   "name": "@codependix/core",
-  "private": true,
   "publishConfig": {
     "access": "public",
     "exports": {

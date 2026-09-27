@@ -240,6 +240,7 @@ graph LR
   file_testing_render_graph_levels_ts["testing/render/graph-levels.ts"]
   file_testing_render_nestjs_graphs_ts["testing/render/nestjs-graphs.ts"]
   file_testing_render_nx_graphs_ts["testing/render/nx-graphs.ts"]
+  file_testing_render_path_queries_ts["testing/render/path-queries.ts"]
   file_testing_render_paths_ts["testing/render/paths.ts"]
   file_testing_render_python_imports_ts["testing/render/python-imports.ts"]
   file_testing_render_reading_order_ts["testing/render/reading-order.ts"]
@@ -254,6 +255,7 @@ graph LR
   file_testing_examples_integration_test_ts --> file_testing_render_configuration_ts
   file_testing_examples_integration_test_ts --> file_testing_render_document_ts
   file_testing_examples_integration_test_ts --> file_testing_render_export_delivery_ts
+  file_testing_examples_integration_test_ts --> file_testing_render_path_queries_ts
   file_testing_examples_integration_test_ts --> file_testing_render_paths_ts
   file_testing_examples_integration_test_ts --> file_testing_render_reading_order_ts
   file_testing_examples_integration_test_ts --> file_testing_render_run_ts
@@ -278,6 +280,7 @@ graph LR
   file_testing_render_catalog_ts --> file_testing_render_graph_levels_ts
   file_testing_render_catalog_ts --> file_testing_render_nestjs_graphs_ts
   file_testing_render_catalog_ts --> file_testing_render_nx_graphs_ts
+  file_testing_render_catalog_ts --> file_testing_render_path_queries_ts
   file_testing_render_catalog_ts --> file_testing_render_python_imports_ts
   file_testing_render_catalog_ts --> file_testing_render_reading_order_ts
   file_testing_render_catalog_ts --> file_testing_render_types_ts
@@ -307,6 +310,10 @@ graph LR
   file_testing_render_nx_graphs_ts --> file_testing_render_builders_ts
   file_testing_render_nx_graphs_ts --> file_testing_render_document_ts
   file_testing_render_nx_graphs_ts --> file_testing_render_types_ts
+  file_testing_render_path_queries_ts --> file_testing_render_builders_ts
+  file_testing_render_path_queries_ts --> file_testing_render_document_ts
+  file_testing_render_path_queries_ts --> file_testing_render_nx_graphs_ts
+  file_testing_render_path_queries_ts --> file_testing_render_types_ts
   file_testing_render_python_imports_ts --> file_testing_render_builders_ts
   file_testing_render_python_imports_ts --> file_testing_render_document_ts
   file_testing_render_python_imports_ts --> file_testing_render_paths_ts

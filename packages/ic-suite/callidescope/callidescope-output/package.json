@@ -43,7 +43,6 @@
   "license": "MIT",
   "main": "src/index.ts",
   "name": "@callidescope/output",
-  "private": true,
   "publishConfig": {
     "access": "public",
     "exports": {

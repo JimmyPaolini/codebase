@@ -5,7 +5,7 @@ import type { AuditGovernanceModule } from "./modules/audit-governance/audit-gov
 import type { CatalogManifestsModule } from "./modules/catalog-manifests/catalog-manifests.module";
 import type { IssueMetadataModule } from "./modules/issue-metadata/issue-metadata.module";
 import type { LockfileModule } from "./modules/lockfile/lockfile.module";
-import type { PublishSetModule } from "./modules/publish-set/publish-set.module";
+import type { PublishablePackagesModule } from "./modules/publishable-packages/publishable-packages.module";
 import type { PullRequestBodyModule } from "./modules/pull-request-body/pull-request-body.module";
 import type { PullRequestMetadataModule } from "./modules/pull-request-metadata/pull-request-metadata.module";
 import type { PullRequestReleaseSignificanceModule } from "./modules/pull-request-release-significance/pull-request-release-significance.module";
@@ -27,7 +27,7 @@ const pullRequestBodyModuleMock = createMock<PullRequestBodyModule>();
 const pullRequestMetadataModuleMock = createMock<PullRequestMetadataModule>();
 const pullRequestReleaseSignificanceModuleMock =
   createMock<PullRequestReleaseSignificanceModule>();
-const publishSetModuleMock = createMock<PublishSetModule>();
+const publishablePackagesModuleMock = createMock<PublishablePackagesModule>();
 const readmeProjectsModuleMock = createMock<ReadmeProjectsModule>();
 
 vi.mock("nest-commander", () => ({
@@ -98,9 +98,9 @@ vi.mock(
   }),
 );
 
-vi.mock("./modules/publish-set/publish-set.module", () => ({
-  PublishSetModule: function PublishSetModule() {
-    return publishSetModuleMock;
+vi.mock("./modules/publishable-packages/publishable-packages.module", () => ({
+  PublishablePackagesModule: function PublishablePackagesModule() {
+    return publishablePackagesModuleMock;
   },
 }));
 

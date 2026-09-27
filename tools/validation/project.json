@@ -44,8 +44,8 @@
         "lockfile": {
           "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/validation/src/main.ts lockfile"
         },
-        "publish-set": {
-          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/validation/src/main.ts publish-set"
+        "publishable-packages": {
+          "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/validation/src/main.ts publishable-packages"
         },
         "pull-request-body": {
           "command": "NODE_OPTIONS='' node --import @swc-node/register/esm-register tools/validation/src/main.ts pull-request-body"
@@ -68,13 +68,13 @@
     "type-coverage": {},
     "typecheck": {},
     "typecheck-code": {},
-    "verify-publish-set": {
+    "verify-publishable-packages": {
       "cache": false,
       "dependsOn": ["pack"],
       "description": "Verify that all publishable package tarballs install, typecheck, and execute CLI binaries cleanly.",
       "executor": "nx:run-commands",
       "options": {
-        "command": "pnpm exec nx run validation:start:publish-set",
+        "command": "pnpm exec nx run validation:start:publishable-packages",
         "cwd": "{workspaceRoot}"
       }
     },

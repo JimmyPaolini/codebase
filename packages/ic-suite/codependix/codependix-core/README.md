@@ -51,6 +51,7 @@ graph LR
   file_src_modules_codependix_core_codependix_core_types_ts["src/modules/codependix-core/codependix-core.types.ts"]
   file_testing_mocks_ts["testing/mocks.ts"]
   file_testing_setup_ts["testing/setup.ts"]
+  file_vite_config_ts["vite.config.ts"]
   file_vitest_config_ts["vitest.config.ts"]
   file_src_index_unit_test_ts --> file_src_index_ts
   file_src_modules_codependix_core_codependix_core_module_ts --> file_src_modules_codependix_core_codependix_core_service_ts
@@ -60,15 +61,6 @@ graph LR
 
 <!-- callidescope:start -->
 
-### NestJS Module Graph
-
-<!-- codependix:start name="codependix-nestjs-modules" -->
-```mermaid
-flowchart LR
-  CodependixCoreModule
-```
-<!-- codependix:end name="codependix-nestjs-modules" -->
-
 ## 🔭 Callidescope
 
 Call stacks traced through `packages/ic-suite/codependix/codependix-core`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
@@ -76,7 +68,7 @@ Call stacks traced through `packages/ic-suite/codependix/codependix-core`, deepe
 | Measure | Value |
 | --- | --- |
 | Callables | 1 |
-| Files | 10 |
+| Files | 11 |
 | Calls traced | 0 |
 | Call stacks | 0 |
 | Deepest stack | 0 |

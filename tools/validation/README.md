@@ -236,19 +236,19 @@ What this project is judged against, as declared in its own `callidescope.config
         └─> CatalogManifestsService.some(…)(scope: string): boolean [tools/validation/src/modules/catalog-manifests/catalog-manifests.service.ts:38]
 ```
 
-**7. `PublishSetCommand.run`** — depth 5 · decorated-method
+**7. `PublishablePackagesCommand.run`** — depth 5 · decorated-method
 
 ```text
-🚀 PublishSetCommand.run(): Promise<void> [tools/validation/src/modules/publish-set/publish-set.command.ts:40]
-   ↳ Executes the publish set tarball verification and exits 0 on success, 1 on failure.
-  └─> PublishSetService.verifyPublishSet(workspaceRoot: string): PublishSetVerificationResult [tools/validation/src/modules/publish-set/publish-set.service.ts:447]
-     ↳ Verifies that all publish set tarballs install and typecheck cleanly, and that all CLI binaries execute successfully.
-    └─> PublishSetService.resolvePublishSetPackages(workspaceRoot: string): PublishSetPackage[] [tools/validation/src/modules/publish-set/publish-set.service.ts:412]
+🚀 PublishablePackagesCommand.run(): Promise<void> [tools/validation/src/modules/publishable-packages/publishable-packages.command.ts:40]
+   ↳ Executes the publishable package tarball verification and exits 0 on success, 1 on failure.
+  └─> PublishablePackagesService.verifyPublishablePackages(workspaceRoot: string): PublishablePackagesVerificationResult [tools/validation/src/modules/publishable-packages/publishable-packages.service.ts:449]
+     ↳ Verifies that all publishable package tarballs install and typecheck cleanly, and that all CLI binaries execute…
+    └─> PublishablePackagesService.resolvePublishablePackages(workspaceRoot: string): PublishablePackage[] [tools/validation/src/modules/publishable-packages/publishable-packages.service.ts:412]
        ↳ Dynamically resolves all publishable packages in `packages/ic-suite`.
-      └─> PublishSetService.resolveFamilyPackages(familyDirectory: string): PublishSetPackage[] [tools/validation/src/modules/publish-set/publish-set.service.ts:166]
+      └─> PublishablePackagesService.resolveFamilyPackages(familyDirectory: string): PublishablePackage[] [tools/validation/src/modules/publishable-packages/publishable-packages.service.ts:166]
          ↳ Resolves publishable packages under a single toolchain family directory.
-        └─> PublishSetService.parsePackageCandidate(familyDirectory: string, childName: string): null | PublishSetPackage [tools/validation/src/modules/publish-set/publish-set.service.ts:95]
-           ↳ Inspects a child directory and parses a PublishSetPackage if publishable.
+        └─> PublishablePackagesService.parsePackageCandidate(familyDirectory: string, childName: string): null | PublishablePackage [tools/validation/src/modules/publishable-packages/publishable-packages.service.ts:95]
+           ↳ Inspects a child directory and parses a PublishablePackage if publishable.
 ```
 
 **8. `LockfileCommand.run`** — depth 3 · decorated-method
@@ -289,7 +289,7 @@ What this project is judged against, as declared in its own `callidescope.config
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
 | `IssueMetadataCommand.runBulkAudit` | 7 | `IssueMetadataGithubService.isAvailable`, `IssueMetadataCommand.failWithUsageError`, `IssueMetadataGithubService.listOpenIssues`, `IssueMetadataCommand.failWithMessage`, `IssueMetadataService.checkBulkIssues`, `IssueMetadataCommand.appendToReport`, `IssueMetadataCommand.mirrorToStepSummary` | `tools/validation/src/modules/issue-metadata/issue-metadata.command.ts:257` |
-| `PublishSetService.verifyPublishSet` | 6 | `PublishSetService.resolvePublishSetPackages`, `PublishSetService.filter(…)`, `PublishSetService.createScratchDirectories`, `PublishSetService.unpackTarballs`, `PublishSetService.verifyAllTypechecks`, `PublishSetService.verifyAllCliBinaries` | `tools/validation/src/modules/publish-set/publish-set.service.ts:447` |
+| `PublishablePackagesService.verifyPublishablePackages` | 6 | `PublishablePackagesService.resolvePublishablePackages`, `PublishablePackagesService.filter(…)`, `PublishablePackagesService.createScratchDirectories`, `PublishablePackagesService.unpackTarballs`, `PublishablePackagesService.verifyAllTypechecks`, `PublishablePackagesService.verifyAllCliBinaries` | `tools/validation/src/modules/publishable-packages/publishable-packages.service.ts:449` |
 | `IssueMetadataCommand.readLiveMetadata` | 5 | `IssueMetadataGithubService.isAvailable`, `IssueMetadataCommand.failWithUsageError`, `IssueMetadataGithubService.run`, `IssueMetadataGithubService.describeFailure`, `IssueMetadataService.resolveFromDocument` | `tools/validation/src/modules/issue-metadata/issue-metadata.command.ts:153` |
 | `PullRequestMetadataService.checkMetadata` | 5 | `PullRequestMetadataService.groupLabels`, `PullRequestMetadataService.checkTypeLabel`, `PullRequestMetadataService.checkScopeLabels`, `PullRequestMetadataService.record`, `PullRequestMetadataService.checkSourceLabel` | `tools/validation/src/modules/pull-request-metadata/pull-request-metadata.service.ts:213` |
 | `PullRequestMetadataCommand.readLiveMetadata` | 5 | `PullRequestMetadataGithubService.isAvailable`, `PullRequestMetadataCommand.failWithUsageError`, `PullRequestMetadataGithubService.run`, `PullRequestMetadataGithubService.describeFailure`, `PullRequestMetadataService.resolveFromDocument` | `tools/validation/src/modules/pull-request-metadata/pull-request-metadata.command.ts:154` |
@@ -306,7 +306,7 @@ What this project is judged against, as declared in its own `callidescope.config
 | `IssueMetadataService.groupLabels` | 3 | `IssueMetadataService.filter(…)`, `IssueMetadataService.filter(…)`, `IssueMetadataService.filter(…)` | `tools/validation/src/modules/issue-metadata/issue-metadata.service.ts:401` |
 | `IssueMetadataService.resolveFromDocument` | 3 | `IssueMetadataService.describeError`, `IssueMetadataService.isRecord`, `IssueMetadataService.readLabelNames` | `tools/validation/src/modules/issue-metadata/issue-metadata.service.ts:427` |
 | `IssueMetadataCommand.resolveMetadata` | 3 | `IssueMetadataCommand.failWithUsageError`, `IssueMetadataCommand.readEnvironmentMetadata`, `IssueMetadataCommand.readLiveMetadata` | `tools/validation/src/modules/issue-metadata/issue-metadata.command.ts:229` |
-| `PublishSetService.verifyCliBinary` | 3 | `PublishSetService.unpackCliTarball`, `PublishSetService.readPackageManifestBin`, `PublishSetService.executeSpawnedBinary` | `tools/validation/src/modules/publish-set/publish-set.service.ts:294` |
+| `PublishablePackagesService.verifyCliBinary` | 3 | `PublishablePackagesService.unpackCliTarball`, `PublishablePackagesService.readPackageManifestBin`, `PublishablePackagesService.executeSpawnedBinary` | `tools/validation/src/modules/publishable-packages/publishable-packages.service.ts:294` |
 | `PullRequestBodyService.checkBody` | 3 | `PullRequestBodyService.findEmptySections`, `PullRequestBodyService.findMissingHeadings`, `PullRequestBodyService.findUnfilledComments` | `tools/validation/src/modules/pull-request-body/pull-request-body.service.ts:64` |
 | `PullRequestMetadataService.groupLabels` | 3 | `PullRequestMetadataService.filter(…)`, `PullRequestMetadataService.filter(…)`, `PullRequestMetadataService.filter(…)` | `tools/validation/src/modules/pull-request-metadata/pull-request-metadata.service.ts:254` |
 | `PullRequestMetadataService.resolveFromDocument` | 3 | `PullRequestMetadataService.describeError`, `PullRequestMetadataService.isRecord`, `PullRequestMetadataService.readNames` | `tools/validation/src/modules/pull-request-metadata/pull-request-metadata.service.ts:297` |
@@ -329,8 +329,8 @@ What this project is judged against, as declared in its own `callidescope.config
 | `IssueMetadataCommand.failWithUsageError` | 2 | `IssueMetadataCommand.appendToReport`, `IssueMetadataCommand.mirrorToStepSummary` | `tools/validation/src/modules/issue-metadata/issue-metadata.command.ts:87` |
 | `IssueMetadataCommand.readEnvironmentMetadata` | 2 | `IssueMetadataCommand.failWithUsageError`, `IssueMetadataService.resolveFromEnvironment` | `tools/validation/src/modules/issue-metadata/issue-metadata.command.ts:133` |
 | `IssueMetadataCommand.reportFailures` | 2 | `IssueMetadataCommand.appendToReport`, `IssueMetadataCommand.mirrorToStepSummary` | `tools/validation/src/modules/issue-metadata/issue-metadata.command.ts:183` |
-| `PublishSetService.resolvePublishSetPackages` | 2 | `PublishSetService.resolveFamilyPackages`, `PublishSetService.toSorted(…)` | `tools/validation/src/modules/publish-set/publish-set.service.ts:412` |
-| `PublishSetCommand.run` | 2 | `PublishSetService.verifyPublishSet`, `formatPublishSetSuccessMessage` | `tools/validation/src/modules/publish-set/publish-set.command.ts:40` |
+| `PublishablePackagesService.resolvePublishablePackages` | 2 | `PublishablePackagesService.resolveFamilyPackages`, `PublishablePackagesService.toSorted(…)` | `tools/validation/src/modules/publishable-packages/publishable-packages.service.ts:412` |
+| `PublishablePackagesCommand.run` | 2 | `PublishablePackagesService.verifyPublishablePackages`, `formatPublishablePackagesSuccessMessage` | `tools/validation/src/modules/publishable-packages/publishable-packages.command.ts:40` |
 | `PullRequestBodyService.cleanSectionContent` | 2 | `PullRequestBodyService.filter(…)`, `PullRequestBodyService.map(…)` | `tools/validation/src/modules/pull-request-body/pull-request-body.service.ts:38` |
 | `PullRequestBodyService.findMissingHeadings` | 2 | `PullRequestBodyService.map(…)`, `PullRequestBodyService.filter(…)` | `tools/validation/src/modules/pull-request-body/pull-request-body.service.ts:120` |
 | `PullRequestBodyCommand.reportVerdict` | 2 | `PullRequestBodyCommand.map(…)`, `PullRequestBodyCommand.map(…)` | `tools/validation/src/modules/pull-request-body/pull-request-body.command.ts:73` |
@@ -364,10 +364,10 @@ What this project is judged against, as declared in its own `callidescope.config
 | `IssueMetadataService.parseFormAnswers` | 1 | `IssueMetadataService.extractFormField` | `tools/validation/src/modules/issue-metadata/issue-metadata.service.ts:416` |
 | `LockfileService.checkLockfile` | 1 | `LockfileService.runFrozenInstall` | `tools/validation/src/modules/lockfile/lockfile.service.ts:60` |
 | `LockfileCommand.run` | 1 | `LockfileService.checkLockfile` | `tools/validation/src/modules/lockfile/lockfile.command.ts:50` |
-| `PublishSetService.resolveFamilyPackages` | 1 | `PublishSetService.parsePackageCandidate` | `tools/validation/src/modules/publish-set/publish-set.service.ts:166` |
-| `PublishSetService.unpackTarballs` | 1 | `PublishSetService.filter(…)` | `tools/validation/src/modules/publish-set/publish-set.service.ts:209` |
-| `PublishSetService.verifyAllCliBinaries` | 1 | `PublishSetService.verifyCliBinary` | `tools/validation/src/modules/publish-set/publish-set.service.ts:244` |
-| `PublishSetService.verifyAllTypechecks` | 1 | `PublishSetService.verifyPackageTypecheck` | `tools/validation/src/modules/publish-set/publish-set.service.ts:269` |
+| `PublishablePackagesService.resolveFamilyPackages` | 1 | `PublishablePackagesService.parsePackageCandidate` | `tools/validation/src/modules/publishable-packages/publishable-packages.service.ts:166` |
+| `PublishablePackagesService.unpackTarballs` | 1 | `PublishablePackagesService.filter(…)` | `tools/validation/src/modules/publishable-packages/publishable-packages.service.ts:209` |
+| `PublishablePackagesService.verifyAllCliBinaries` | 1 | `PublishablePackagesService.verifyCliBinary` | `tools/validation/src/modules/publishable-packages/publishable-packages.service.ts:244` |
+| `PublishablePackagesService.verifyAllTypechecks` | 1 | `PublishablePackagesService.verifyPackageTypecheck` | `tools/validation/src/modules/publishable-packages/publishable-packages.service.ts:269` |
 | `PullRequestBodyService.extractTemplateComments` | 1 | `PullRequestBodyService.map(…)` | `tools/validation/src/modules/pull-request-body/pull-request-body.service.ts:76` |
 | `PullRequestBodyService.findEmptySections` | 1 | `PullRequestBodyService.filter(…)` | `tools/validation/src/modules/pull-request-body/pull-request-body.service.ts:83` |
 | `PullRequestBodyService.filter(…)` | 1 | `PullRequestBodyService.cleanSectionContent` | `tools/validation/src/modules/pull-request-body/pull-request-body.service.ts:106` |
@@ -425,7 +425,7 @@ flowchart LR
   LockfileModule
   LoggerModule([LoggerModule])
   MainModule
-  PublishSetModule
+  PublishablePackagesModule
   PullRequestBodyModule
   PullRequestMetadataModule
   PullRequestReleaseSignificanceModule
@@ -435,7 +435,7 @@ flowchart LR
   MainModule --> DiscoveryModule
   MainModule --> IssueMetadataModule
   MainModule --> LockfileModule
-  MainModule --> PublishSetModule
+  MainModule --> PublishablePackagesModule
   MainModule --> PullRequestBodyModule
   MainModule --> PullRequestMetadataModule
   MainModule --> PullRequestReleaseSignificanceModule
@@ -493,14 +493,14 @@ graph LR
   file_src_modules_lockfile_lockfile_service_ts["src/modules/lockfile/lockfile.service.ts"]
   file_src_modules_lockfile_lockfile_service_unit_test_ts["src/modules/lockfile/lockfile.service.unit.test.ts"]
   file_src_modules_lockfile_lockfile_types_ts["src/modules/lockfile/lockfile.types.ts"]
-  file_src_modules_publish_set_publish_set_command_ts["src/modules/publish-set/publish-set.command.ts"]
-  file_src_modules_publish_set_publish_set_command_unit_test_ts["src/modules/publish-set/publish-set.command.unit.test.ts"]
-  file_src_modules_publish_set_publish_set_constants_ts["src/modules/publish-set/publish-set.constants.ts"]
-  file_src_modules_publish_set_publish_set_module_ts["src/modules/publish-set/publish-set.module.ts"]
-  file_src_modules_publish_set_publish_set_module_unit_test_ts["src/modules/publish-set/publish-set.module.unit.test.ts"]
-  file_src_modules_publish_set_publish_set_service_ts["src/modules/publish-set/publish-set.service.ts"]
-  file_src_modules_publish_set_publish_set_service_unit_test_ts["src/modules/publish-set/publish-set.service.unit.test.ts"]
-  file_src_modules_publish_set_publish_set_types_ts["src/modules/publish-set/publish-set.types.ts"]
+  file_src_modules_publishable_packages_publishable_packages_command_ts["src/modules/publishable-packages/publishable-packages.command.ts"]
+  file_src_modules_publishable_packages_publishable_packages_command_unit_test_ts["src/modules/publishable-packages/publishable-packages.command.unit.test.ts"]
+  file_src_modules_publishable_packages_publishable_packages_constants_ts["src/modules/publishable-packages/publishable-packages.constants.ts"]
+  file_src_modules_publishable_packages_publishable_packages_module_ts["src/modules/publishable-packages/publishable-packages.module.ts"]
+  file_src_modules_publishable_packages_publishable_packages_module_unit_test_ts["src/modules/publishable-packages/publishable-packages.module.unit.test.ts"]
+  file_src_modules_publishable_packages_publishable_packages_service_ts["src/modules/publishable-packages/publishable-packages.service.ts"]
+  file_src_modules_publishable_packages_publishable_packages_service_unit_test_ts["src/modules/publishable-packages/publishable-packages.service.unit.test.ts"]
+  file_src_modules_publishable_packages_publishable_packages_types_ts["src/modules/publishable-packages/publishable-packages.types.ts"]
   file_src_modules_pull_request_body_pull_request_body_command_ts["src/modules/pull-request-body/pull-request-body.command.ts"]
   file_src_modules_pull_request_body_pull_request_body_command_unit_test_ts["src/modules/pull-request-body/pull-request-body.command.unit.test.ts"]
   file_src_modules_pull_request_body_pull_request_body_constants_ts["src/modules/pull-request-body/pull-request-body.constants.ts"]
@@ -548,7 +548,7 @@ graph LR
   file_src_main_module_ts --> file_src_modules_catalog_manifests_catalog_manifests_module_ts
   file_src_main_module_ts --> file_src_modules_issue_metadata_issue_metadata_module_ts
   file_src_main_module_ts --> file_src_modules_lockfile_lockfile_module_ts
-  file_src_main_module_ts --> file_src_modules_publish_set_publish_set_module_ts
+  file_src_main_module_ts --> file_src_modules_publishable_packages_publishable_packages_module_ts
   file_src_main_module_ts --> file_src_modules_pull_request_body_pull_request_body_module_ts
   file_src_main_module_ts --> file_src_modules_pull_request_metadata_pull_request_metadata_module_ts
   file_src_main_module_ts --> file_src_modules_pull_request_release_significance_pull_request_release_significance_module_ts
@@ -558,7 +558,7 @@ graph LR
   file_src_main_unit_test_ts --> file_src_modules_catalog_manifests_catalog_manifests_module_ts
   file_src_main_unit_test_ts --> file_src_modules_issue_metadata_issue_metadata_module_ts
   file_src_main_unit_test_ts --> file_src_modules_lockfile_lockfile_module_ts
-  file_src_main_unit_test_ts --> file_src_modules_publish_set_publish_set_module_ts
+  file_src_main_unit_test_ts --> file_src_modules_publishable_packages_publishable_packages_module_ts
   file_src_main_unit_test_ts --> file_src_modules_pull_request_body_pull_request_body_module_ts
   file_src_main_unit_test_ts --> file_src_modules_pull_request_metadata_pull_request_metadata_module_ts
   file_src_main_unit_test_ts --> file_src_modules_pull_request_release_significance_pull_request_release_significance_module_ts
@@ -629,21 +629,21 @@ graph LR
   file_src_modules_lockfile_lockfile_service_ts --> file_src_modules_lockfile_lockfile_types_ts
   file_src_modules_lockfile_lockfile_service_unit_test_ts --> file_src_modules_lockfile_lockfile_constants_ts
   file_src_modules_lockfile_lockfile_service_unit_test_ts --> file_src_modules_lockfile_lockfile_service_ts
-  file_src_modules_publish_set_publish_set_command_ts --> file_src_modules_publish_set_publish_set_constants_ts
-  file_src_modules_publish_set_publish_set_command_ts --> file_src_modules_publish_set_publish_set_service_ts
-  file_src_modules_publish_set_publish_set_command_unit_test_ts --> file_src_modules_publish_set_publish_set_command_ts
-  file_src_modules_publish_set_publish_set_command_unit_test_ts --> file_src_modules_publish_set_publish_set_constants_ts
-  file_src_modules_publish_set_publish_set_command_unit_test_ts --> file_src_modules_publish_set_publish_set_service_ts
-  file_src_modules_publish_set_publish_set_command_unit_test_ts --> file_testing_mocks_ts
-  file_src_modules_publish_set_publish_set_module_ts --> file_src_modules_publish_set_publish_set_command_ts
-  file_src_modules_publish_set_publish_set_module_ts --> file_src_modules_publish_set_publish_set_service_ts
-  file_src_modules_publish_set_publish_set_module_unit_test_ts --> file_src_modules_publish_set_publish_set_command_ts
-  file_src_modules_publish_set_publish_set_module_unit_test_ts --> file_src_modules_publish_set_publish_set_module_ts
-  file_src_modules_publish_set_publish_set_module_unit_test_ts --> file_src_modules_publish_set_publish_set_service_ts
-  file_src_modules_publish_set_publish_set_service_ts --> file_src_modules_publish_set_publish_set_constants_ts
-  file_src_modules_publish_set_publish_set_service_ts --> file_src_modules_publish_set_publish_set_types_ts
-  file_src_modules_publish_set_publish_set_service_unit_test_ts --> file_src_modules_publish_set_publish_set_constants_ts
-  file_src_modules_publish_set_publish_set_service_unit_test_ts --> file_src_modules_publish_set_publish_set_service_ts
+  file_src_modules_publishable_packages_publishable_packages_command_ts --> file_src_modules_publishable_packages_publishable_packages_constants_ts
+  file_src_modules_publishable_packages_publishable_packages_command_ts --> file_src_modules_publishable_packages_publishable_packages_service_ts
+  file_src_modules_publishable_packages_publishable_packages_command_unit_test_ts --> file_src_modules_publishable_packages_publishable_packages_command_ts
+  file_src_modules_publishable_packages_publishable_packages_command_unit_test_ts --> file_src_modules_publishable_packages_publishable_packages_constants_ts
+  file_src_modules_publishable_packages_publishable_packages_command_unit_test_ts --> file_src_modules_publishable_packages_publishable_packages_service_ts
+  file_src_modules_publishable_packages_publishable_packages_command_unit_test_ts --> file_testing_mocks_ts
+  file_src_modules_publishable_packages_publishable_packages_module_ts --> file_src_modules_publishable_packages_publishable_packages_command_ts
+  file_src_modules_publishable_packages_publishable_packages_module_ts --> file_src_modules_publishable_packages_publishable_packages_service_ts
+  file_src_modules_publishable_packages_publishable_packages_module_unit_test_ts --> file_src_modules_publishable_packages_publishable_packages_command_ts
+  file_src_modules_publishable_packages_publishable_packages_module_unit_test_ts --> file_src_modules_publishable_packages_publishable_packages_module_ts
+  file_src_modules_publishable_packages_publishable_packages_module_unit_test_ts --> file_src_modules_publishable_packages_publishable_packages_service_ts
+  file_src_modules_publishable_packages_publishable_packages_service_ts --> file_src_modules_publishable_packages_publishable_packages_constants_ts
+  file_src_modules_publishable_packages_publishable_packages_service_ts --> file_src_modules_publishable_packages_publishable_packages_types_ts
+  file_src_modules_publishable_packages_publishable_packages_service_unit_test_ts --> file_src_modules_publishable_packages_publishable_packages_constants_ts
+  file_src_modules_publishable_packages_publishable_packages_service_unit_test_ts --> file_src_modules_publishable_packages_publishable_packages_service_ts
   file_src_modules_pull_request_body_pull_request_body_command_ts --> file_src_modules_pull_request_body_pull_request_body_constants_ts
   file_src_modules_pull_request_body_pull_request_body_command_ts --> file_src_modules_pull_request_body_pull_request_body_service_ts
   file_src_modules_pull_request_body_pull_request_body_command_ts --> file_src_modules_pull_request_body_pull_request_body_types_ts

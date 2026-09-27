@@ -26,7 +26,7 @@ export const ROOT_PACKAGE_JSON_SCHEMA = z.object({
   repository: z.string().min(1),
 });
 
-/** Schema for validating individual package.json manifests in the publish set. */
+/** Schema for validating individual package.json manifests for publishable packages. */
 export const PACKAGE_MANIFEST_SCHEMA = z.looseObject({
   author: z.string().min(1).optional(),
   bugs: z.object({ url: z.string().min(1) }).optional(),
@@ -46,7 +46,7 @@ export const PACKAGE_MANIFEST_SCHEMA = z.looseObject({
 });
 
 /** The complete list of 28 publishable package directories across the four IC suites. */
-export const PUBLISH_SET_PROJECTS = [
+export const PUBLISHABLE_PACKAGE_PROJECTS = [
   // Conformetry (8)
   "packages/ic-suite/conformetry/conformetry-cli",
   "packages/ic-suite/conformetry/conformetry-configuration",

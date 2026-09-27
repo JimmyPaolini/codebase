@@ -116,6 +116,7 @@ graph LR
   file_src_modules_reporting_reporting_types_ts["src/modules/reporting/reporting.types.ts"]
   file_testing_mocks_ts["testing/mocks.ts"]
   file_testing_setup_ts["testing/setup.ts"]
+  file_vite_config_ts["vite.config.ts"]
   file_vitest_config_ts["vitest.config.ts"]
   file_src_modules_inventory_inventory_module_ts --> file_src_modules_inventory_inventory_service_ts
   file_src_modules_inventory_inventory_module_unit_test_ts --> file_src_modules_inventory_inventory_module_ts
@@ -132,6 +133,7 @@ graph LR
 <!-- codependix:end name="codependix-file-imports" -->
 
 <!-- callidescope:start -->
+
 ## 🔭 Callidescope
 
 Call stacks traced through `packages/ic-suite/conformetry/conformetry-output`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
@@ -139,7 +141,7 @@ Call stacks traced through `packages/ic-suite/conformetry/conformetry-output`, d
 | Measure | Value |
 | --- | --- |
 | Callables | 32 |
-| Files | 14 |
+| Files | 15 |
 | Calls traced | 34 |
 | Call stacks | 0 |
 | Deepest stack | 0 |

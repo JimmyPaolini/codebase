@@ -79,6 +79,7 @@ graph LR
   file_testing_mocks_ts["testing/mocks.ts"]
   file_testing_programs_ts["testing/programs.ts"]
   file_testing_setup_ts["testing/setup.ts"]
+  file_vite_config_ts["vite.config.ts"]
   file_vitest_config_ts["vitest.config.ts"]
   file_src_modules_file_imports_workspace_graph_file_imports_workspace_graph_module_ts --> file_src_modules_file_imports_workspace_graph_file_imports_workspace_graph_service_ts
   file_src_modules_file_imports_workspace_graph_file_imports_workspace_graph_module_unit_test_ts --> file_src_modules_file_imports_workspace_graph_file_imports_workspace_graph_module_ts
@@ -156,7 +157,7 @@ Call stacks traced through `packages/ic-suite/codependix/codependix-file-imports
 | Measure | Value |
 | --- | --- |
 | Callables | 100 |
-| Files | 25 |
+| Files | 26 |
 | Calls traced | 100 |
 | Call stacks | 0 |
 | Deepest stack | 0 |

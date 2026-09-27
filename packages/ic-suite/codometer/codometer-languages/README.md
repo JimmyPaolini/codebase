@@ -13,7 +13,7 @@ Call stacks traced through `packages/ic-suite/codometer/codometer-languages`, de
 | Measure | Value |
 | --- | --- |
 | Callables | 210 |
-| Files | 67 |
+| Files | 68 |
 | Calls traced | 207 |
 | Call stacks | 17 |
 | Deepest stack | 5 |
@@ -516,6 +516,7 @@ graph LR
   file_src_modules_yaml_yaml_types_ts["src/modules/yaml/yaml.types.ts"]
   file_testing_mocks_ts["testing/mocks.ts"]
   file_testing_setup_ts["testing/setup.ts"]
+  file_vite_config_ts["vite.config.ts"]
   file_vitest_config_ts["vitest.config.ts"]
   file_src_modules_comments_comments_module_ts --> file_src_modules_comments_comments_service_ts
   file_src_modules_comments_comments_module_ts --> file_src_modules_comments_css_comments_service_ts

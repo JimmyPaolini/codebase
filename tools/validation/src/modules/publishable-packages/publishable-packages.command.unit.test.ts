@@ -6,21 +6,21 @@ import { LoggerService } from "@codebase/logger";
 
 import { mockProcessExit } from "../../../testing/mocks";
 
-import { PublishSetCommand } from "./publish-set.command";
-import { formatPublishSetSuccessMessage } from "./publish-set.constants";
-import { PublishSetService } from "./publish-set.service";
+import { PublishablePackagesCommand } from "./publishable-packages.command";
+import { formatPublishablePackagesSuccessMessage } from "./publishable-packages.constants";
+import { PublishablePackagesService } from "./publishable-packages.service";
 
-describe(PublishSetCommand, () => {
-  let command: PublishSetCommand;
-  let service: PublishSetService;
+describe(PublishablePackagesCommand, () => {
+  let command: PublishablePackagesCommand;
+  let service: PublishablePackagesService;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
       providers: [
-        PublishSetCommand,
+        PublishablePackagesCommand,
         {
-          provide: PublishSetService,
-          useValue: createMock<PublishSetService>(),
+          provide: PublishablePackagesService,
+          useValue: createMock<PublishablePackagesService>(),
         },
         {
           provide: LoggerService,
@@ -29,8 +29,8 @@ describe(PublishSetCommand, () => {
       ],
     }).compile();
 
-    command = await module.resolve(PublishSetCommand);
-    service = await module.resolve(PublishSetService);
+    command = await module.resolve(PublishablePackagesCommand);
+    service = await module.resolve(PublishablePackagesService);
   });
 
   beforeEach(() => {
@@ -47,10 +47,10 @@ describe(PublishSetCommand, () => {
 
     const module = await Test.createTestingModule({
       providers: [
-        PublishSetCommand,
+        PublishablePackagesCommand,
         {
-          provide: PublishSetService,
-          useValue: createMock<PublishSetService>(),
+          provide: PublishablePackagesService,
+          useValue: createMock<PublishablePackagesService>(),
         },
         {
           provide: LoggerService,
@@ -61,13 +61,15 @@ describe(PublishSetCommand, () => {
 
     const logger = await module.resolve(LoggerService);
 
-    expect(logger.setContext).toHaveBeenCalledWith("PublishSetCommand");
+    expect(logger.setContext).toHaveBeenCalledWith(
+      "PublishablePackagesCommand",
+    );
   });
 
   it("logs success message when verification succeeds", async () => {
     expect.hasAssertions();
 
-    vi.mocked(service.verifyPublishSet).mockReturnValue({
+    vi.mocked(service.verifyPublishablePackages).mockReturnValue({
       binaryCount: 4,
       messages: [],
       packageCount: 28,
@@ -77,13 +79,15 @@ describe(PublishSetCommand, () => {
 
     await command.run();
 
-    expect(infoSpy).toHaveBeenCalledWith(formatPublishSetSuccessMessage(28, 4));
+    expect(infoSpy).toHaveBeenCalledWith(
+      formatPublishablePackagesSuccessMessage(28, 4),
+    );
   });
 
   it("logs error messages and exits with code 1 when verification fails", async () => {
     expect.hasAssertions();
 
-    vi.mocked(service.verifyPublishSet).mockReturnValue({
+    vi.mocked(service.verifyPublishablePackages).mockReturnValue({
       binaryCount: 0,
       messages: ["Error 1"],
       packageCount: 0,

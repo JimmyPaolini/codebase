@@ -315,18 +315,18 @@ product, not a directory: its packages version independently but are documented
 and discovered as one thing.
 _Avoid_: Toolchain family, package group, monorepo project
 
-**Publish set**:
+**Publishable packages**:
 The packages a release actually sends to npm. Deliberately narrower than the
 packages that build: the `*-agents` and `*-examples` packages are never
 published, because skills travel through `skills-lock.json` and examples are
 fixtures, several broken on purpose.
-_Avoid_: Publishable packages, the packages, release set
+_Avoid_: Publish set, the packages, release set
 
 **Gate**:
 A control that stops a package reaching npm. Three exist and they are not
 interchangeable: `private` in the manifest, which npm itself refuses to publish
 past; the orchestrator's own projects filter; and the registry's permissions.
-A package outside the publish set is held by the first two, never by only one.
+A package outside the publishable packages is held by the first two, never by only one.
 _Avoid_: Flag, switch, block
 
 **Inline**:

@@ -39,7 +39,6 @@
   "license": "MIT",
   "main": "src/index.ts",
   "name": "@conformetry/output",
-  "private": true,
   "publishConfig": {
     "access": "public",
     "exports": {

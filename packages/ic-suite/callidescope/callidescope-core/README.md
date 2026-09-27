@@ -87,6 +87,7 @@ graph LR
   file_src_modules_callidescope_core_callidescope_core_types_ts["src/modules/callidescope-core/callidescope-core.types.ts"]
   file_testing_mocks_ts["testing/mocks.ts"]
   file_testing_setup_ts["testing/setup.ts"]
+  file_vite_config_ts["vite.config.ts"]
   file_vitest_config_ts["vitest.config.ts"]
   file_src_index_unit_test_ts --> file_src_index_ts
   file_src_modules_callidescope_core_callidescope_core_module_ts --> file_src_modules_callidescope_core_callidescope_core_service_ts
@@ -95,6 +96,7 @@ graph LR
 <!-- codependix:end name="codependix-file-imports" -->
 
 <!-- callidescope:start -->
+
 ## 🔭 Callidescope
 
 Call stacks traced through `packages/ic-suite/callidescope/callidescope-core`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
@@ -102,7 +104,7 @@ Call stacks traced through `packages/ic-suite/callidescope/callidescope-core`, d
 | Measure | Value |
 | --- | --- |
 | Callables | 1 |
-| Files | 10 |
+| Files | 11 |
 | Calls traced | 0 |
 | Call stacks | 0 |
 | Deepest stack | 0 |

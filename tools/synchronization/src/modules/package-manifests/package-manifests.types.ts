@@ -32,7 +32,7 @@ export interface PackageManifestCheckResult {
   projectPath: string;
 }
 
-/** Aggregate synchronization check result across all publish-set packages. */
+/** Aggregate synchronization check result across all publishable packages. */
 export interface PackageManifestsSummary {
   checkedCount: number;
   failedProjects: PackageManifestCheckResult[];

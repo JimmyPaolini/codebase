@@ -5,8 +5,8 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { LoggerService } from "@codebase/logger";
 
-import { TARBALLS_DIRECTORY_MISSING_MESSAGE } from "./publish-set.constants";
-import { PublishSetService } from "./publish-set.service";
+import { TARBALLS_DIRECTORY_MISSING_MESSAGE } from "./publishable-packages.constants";
+import { PublishablePackagesService } from "./publishable-packages.service";
 
 /** Paths the mocked filesystem says exist. */
 const existingPaths = new Set<string>();
@@ -100,13 +100,13 @@ vi.mock("node:child_process", () => ({
   })),
 }));
 
-describe(PublishSetService, () => {
-  let service: PublishSetService;
+describe(PublishablePackagesService, () => {
+  let service: PublishablePackagesService;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
       providers: [
-        PublishSetService,
+        PublishablePackagesService,
         {
           provide: LoggerService,
           useValue: {
@@ -117,7 +117,7 @@ describe(PublishSetService, () => {
       ],
     }).compile();
 
-    service = await module.resolve(PublishSetService);
+    service = await module.resolve(PublishablePackagesService);
   });
 
   beforeEach(() => {
@@ -173,11 +173,11 @@ describe(PublishSetService, () => {
     expect(service).toBeDefined();
   });
 
-  describe("resolvePublishSetPackages", () => {
+  describe("resolvePublishablePackages", () => {
     it("returns empty array when packages/ic-suite directory does not exist", () => {
       expect.hasAssertions();
 
-      const packages = service.resolvePublishSetPackages("/non-existent");
+      const packages = service.resolvePublishablePackages("/non-existent");
 
       expect(packages).toStrictEqual([]);
     });
@@ -190,7 +190,7 @@ describe(PublishSetService, () => {
         publishConfig: { access: "public" },
       });
 
-      let packages = service.resolvePublishSetPackages(process.cwd());
+      let packages = service.resolvePublishablePackages(process.cwd());
 
       expect(packages[0]?.binary).toBeUndefined();
 
@@ -200,7 +200,7 @@ describe(PublishSetService, () => {
         publishConfig: { access: "public" },
       });
 
-      packages = service.resolvePublishSetPackages(process.cwd());
+      packages = service.resolvePublishablePackages(process.cwd());
 
       expect(packages[0]?.binary).toBe("conformetry-cli");
 
@@ -210,17 +210,17 @@ describe(PublishSetService, () => {
         publishConfig: { access: "public" },
       });
 
-      packages = service.resolvePublishSetPackages(process.cwd());
+      packages = service.resolvePublishablePackages(process.cwd());
 
       expect(packages[0]?.binary).toBe("conformetry");
     });
   });
 
-  describe("verifyPublishSet", () => {
+  describe("verifyPublishablePackages", () => {
     it("fails with an error message when dist/tarballs directory is missing", () => {
       expect.hasAssertions();
 
-      const result = service.verifyPublishSet("/mock-workspace");
+      const result = service.verifyPublishablePackages("/mock-workspace");
 
       expect(result.succeeded).toBe(false);
       expect(result.messages).toStrictEqual([
@@ -245,7 +245,7 @@ describe(PublishSetService, () => {
         "/mock-workspace/dist/tarballs/codependix-cli-0.0.1.tgz",
       );
 
-      const result = service.verifyPublishSet("/mock-workspace");
+      const result = service.verifyPublishablePackages("/mock-workspace");
 
       expect(result.succeeded).toBe(true);
       expect(result.messages).toStrictEqual([]);
@@ -256,7 +256,7 @@ describe(PublishSetService, () => {
 
       existingPaths.add(`${process.cwd()}/dist/tarballs`);
 
-      const result = service.verifyPublishSet(process.cwd());
+      const result = service.verifyPublishablePackages(process.cwd());
 
       expect(result.succeeded).toBe(true);
       expect(result.messages).toStrictEqual([]);
@@ -271,7 +271,7 @@ describe(PublishSetService, () => {
         publishConfig: { access: "public" },
       });
 
-      let result = service.verifyPublishSet("/mock-workspace");
+      let result = service.verifyPublishablePackages("/mock-workspace");
 
       expect(result.succeeded).toBe(true);
       expect(result.messages).toStrictEqual([]);
@@ -282,7 +282,7 @@ describe(PublishSetService, () => {
         publishConfig: { access: "public" },
       });
 
-      result = service.verifyPublishSet("/mock-workspace");
+      result = service.verifyPublishablePackages("/mock-workspace");
 
       expect(result.succeeded).toBe(true);
       expect(result.messages).toStrictEqual([]);
@@ -293,7 +293,7 @@ describe(PublishSetService, () => {
         publishConfig: { access: "public" },
       });
 
-      result = service.verifyPublishSet("/mock-workspace");
+      result = service.verifyPublishablePackages("/mock-workspace");
 
       expect(result.succeeded).toBe(true);
       expect(result.messages).toStrictEqual([]);
@@ -309,7 +309,7 @@ describe(PublishSetService, () => {
         publishConfig: { access: "public" },
       });
 
-      const result = service.verifyPublishSet("/mock-workspace");
+      const result = service.verifyPublishablePackages("/mock-workspace");
 
       expect(result.succeeded).toBe(true);
       expect(result.messages).toStrictEqual([]);
@@ -321,7 +321,7 @@ describe(PublishSetService, () => {
       existingPaths.add("/mock-workspace/dist/tarballs");
       spawnStatus = 1;
 
-      const result = service.verifyPublishSet("/mock-workspace");
+      const result = service.verifyPublishablePackages("/mock-workspace");
 
       expect(result.succeeded).toBe(false);
       expect(result.messages.length).toBeGreaterThan(0);
@@ -333,7 +333,7 @@ describe(PublishSetService, () => {
       existingPaths.add("/mock-workspace/dist/tarballs");
       typecheckShouldFail = true;
 
-      const result = service.verifyPublishSet("/mock-workspace");
+      const result = service.verifyPublishablePackages("/mock-workspace");
 
       expect(result.succeeded).toBe(false);
       expect(result.messages.length).toBeGreaterThan(0);
@@ -346,7 +346,7 @@ describe(PublishSetService, () => {
       existingPaths.add("/mock-workspace/dist/tarballs");
       tarShouldFail = true;
 
-      const result = service.verifyPublishSet("/mock-workspace");
+      const result = service.verifyPublishablePackages("/mock-workspace");
 
       expect(result.succeeded).toBe(false);
       expect(result.messages.length).toBeGreaterThan(0);
@@ -361,7 +361,7 @@ describe(PublishSetService, () => {
         throw new Error("Spawn execution failed");
       });
 
-      const result = service.verifyPublishSet("/mock-workspace");
+      const result = service.verifyPublishablePackages("/mock-workspace");
 
       expect(result.succeeded).toBe(false);
       expect(result.messages.length).toBeGreaterThan(0);

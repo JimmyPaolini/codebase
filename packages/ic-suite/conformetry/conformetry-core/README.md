@@ -124,7 +124,7 @@ Call stacks traced through `packages/ic-suite/conformetry/conformetry-core`, dee
 | Measure | Value |
 | --- | --- |
 | Callables | 1 |
-| Files | 10 |
+| Files | 11 |
 | Calls traced | 0 |
 | Call stacks | 0 |
 | Deepest stack | 0 |
@@ -201,6 +201,7 @@ graph LR
   file_src_modules_conformetry_core_conformetry_core_types_ts["src/modules/conformetry-core/conformetry-core.types.ts"]
   file_testing_mocks_ts["testing/mocks.ts"]
   file_testing_setup_ts["testing/setup.ts"]
+  file_vite_config_ts["vite.config.ts"]
   file_vitest_config_ts["vitest.config.ts"]
   file_src_index_unit_test_ts --> file_src_index_ts
   file_src_modules_conformetry_core_conformetry_core_module_ts --> file_src_modules_conformetry_core_conformetry_core_service_ts

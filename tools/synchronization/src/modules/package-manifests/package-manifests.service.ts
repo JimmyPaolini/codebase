@@ -7,7 +7,7 @@ import {
   BUGS_URL,
   GITHUB_TREE_BASE_URL,
   PACKAGE_MANIFEST_SCHEMA,
-  PUBLISH_SET_PROJECTS,
+  PUBLISHABLE_PACKAGE_PROJECTS,
   REPOSITORY_URL,
   ROOT_PACKAGE_JSON_PATH,
   ROOT_PACKAGE_JSON_SCHEMA,
@@ -23,7 +23,7 @@ import type {
 
 /**
  * Service that reconciles mechanically derivable package manifest metadata
- * across the 28 publishable packages in the publish set.
+ * across the 28 publishable packages.
  */
 @Injectable()
 export class PackageManifestsService {
@@ -96,10 +96,10 @@ export class PackageManifestsService {
 
   // 🌎 Public Methods
 
-  /** Checks every package in the publish set against its expected derived metadata. */
+  /** Checks every publishable package against its expected derived metadata. */
   public checkAll(workspaceRoot: string): PackageManifestsSummary {
     const rootManifest = this.readRootManifest(workspaceRoot);
-    const results = PUBLISH_SET_PROJECTS.map((projectPath) => {
+    const results = PUBLISHABLE_PACKAGE_PROJECTS.map((projectPath) => {
       return this.checkPackageManifest({
         projectPath,
         rootManifest,
@@ -201,11 +201,11 @@ export class PackageManifestsService {
     return ROOT_PACKAGE_JSON_SCHEMA.parse(parsed);
   }
 
-  /** Writes the derived metadata across all packages in the publish set. */
+  /** Writes the derived metadata across all publishable packages. */
   public writeAll(workspaceRoot: string): void {
     const rootManifest = this.readRootManifest(workspaceRoot);
 
-    for (const projectPath of PUBLISH_SET_PROJECTS) {
+    for (const projectPath of PUBLISHABLE_PACKAGE_PROJECTS) {
       this.writePackageManifest({
         projectPath,
         rootManifest,

@@ -7,7 +7,7 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   BUGS_URL,
   GITHUB_TREE_BASE_URL,
-  PUBLISH_SET_PROJECTS,
+  PUBLISHABLE_PACKAGE_PROJECTS,
   REPOSITORY_URL,
   ROOT_PACKAGE_JSON_PATH,
 } from "./package-manifests.constants";
@@ -106,7 +106,7 @@ describe(PackageManifestsService, () => {
 
   describe("readPackageManifest", () => {
     it("reads and parses valid project package.json", () => {
-      const projectPath = PUBLISH_SET_PROJECTS[0];
+      const projectPath = PUBLISHABLE_PACKAGE_PROJECTS[0];
       const manifestPath = path.join(
         workspaceRoot,
         projectPath,
@@ -129,7 +129,7 @@ describe(PackageManifestsService, () => {
 
   describe("checkPackageManifest", () => {
     it("returns isSynchronized=true when metadata matches", () => {
-      const projectPath = PUBLISH_SET_PROJECTS[0];
+      const projectPath = PUBLISHABLE_PACKAGE_PROJECTS[0];
       const manifestPath = path.join(
         workspaceRoot,
         projectPath,
@@ -160,7 +160,7 @@ describe(PackageManifestsService, () => {
     });
 
     it("returns isSynchronized=false and reports differences when metadata is missing", () => {
-      const projectPath = PUBLISH_SET_PROJECTS[0];
+      const projectPath = PUBLISHABLE_PACKAGE_PROJECTS[0];
       const manifestPath = path.join(
         workspaceRoot,
         projectPath,
@@ -187,10 +187,10 @@ describe(PackageManifestsService, () => {
   });
 
   describe("checkAll", () => {
-    it("checks every package in the publish set", () => {
+    it("checks every publishable package", () => {
       fileContents.set(rootManifestPath, JSON.stringify(mockRootManifest));
 
-      for (const projectPath of PUBLISH_SET_PROJECTS) {
+      for (const projectPath of PUBLISHABLE_PACKAGE_PROJECTS) {
         const manifestPath = path.join(
           workspaceRoot,
           projectPath,
@@ -221,7 +221,7 @@ describe(PackageManifestsService, () => {
 
   describe("writePackageManifest", () => {
     it("updates package.json with derived metadata", () => {
-      const projectPath = PUBLISH_SET_PROJECTS[0];
+      const projectPath = PUBLISHABLE_PACKAGE_PROJECTS[0];
       const manifestPath = path.join(
         workspaceRoot,
         projectPath,
@@ -259,7 +259,7 @@ describe(PackageManifestsService, () => {
     it("writes metadata across all 28 packages", () => {
       fileContents.set(rootManifestPath, JSON.stringify(mockRootManifest));
 
-      for (const projectPath of PUBLISH_SET_PROJECTS) {
+      for (const projectPath of PUBLISHABLE_PACKAGE_PROJECTS) {
         const manifestPath = path.join(
           workspaceRoot,
           projectPath,

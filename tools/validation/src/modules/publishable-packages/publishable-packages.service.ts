@@ -13,22 +13,22 @@ import { Injectable } from "@nestjs/common";
 
 import { LoggerService } from "@codebase/logger";
 
-import { TARBALLS_DIRECTORY_MISSING_MESSAGE } from "./publish-set.constants";
+import { TARBALLS_DIRECTORY_MISSING_MESSAGE } from "./publishable-packages.constants";
 
 import type {
-  PublishSetPackage,
-  PublishSetVerificationResult,
-} from "./publish-set.types";
+  PublishablePackage,
+  PublishablePackagesVerificationResult,
+} from "./publishable-packages.types";
 
 /**
- * Service that verifies publish set tarballs and CLI binaries.
+ * Service that verifies publishable package tarballs and CLI binaries.
  */
 @Injectable()
-export class PublishSetService {
+export class PublishablePackagesService {
   // 🏗 Dependency Injection
 
   constructor(private readonly logger: LoggerService) {
-    this.logger.setContext(PublishSetService.name);
+    this.logger.setContext(PublishablePackagesService.name);
   }
 
   // 🔐 Private Fields
@@ -90,12 +90,12 @@ export class PublishSetService {
   }
 
   /**
-   * Inspects a child directory and parses a PublishSetPackage if publishable.
+   * Inspects a child directory and parses a PublishablePackage if publishable.
    */
   private parsePackageCandidate(
     familyDirectory: string,
     childName: string,
-  ): null | PublishSetPackage {
+  ): null | PublishablePackage {
     const packageDirectory = path.resolve(familyDirectory, childName);
     const manifestPath = path.resolve(packageDirectory, "package.json");
     const projectPath = path.resolve(packageDirectory, "project.json");
@@ -163,8 +163,8 @@ export class PublishSetService {
   /**
    * Resolves publishable packages under a single toolchain family directory.
    */
-  private resolveFamilyPackages(familyDirectory: string): PublishSetPackage[] {
-    const packages: PublishSetPackage[] = [];
+  private resolveFamilyPackages(familyDirectory: string): PublishablePackage[] {
+    const packages: PublishablePackage[] = [];
     const children = readdirSync(familyDirectory, { withFileTypes: true });
 
     for (const child of children) {
@@ -244,11 +244,11 @@ export class PublishSetService {
   private verifyAllCliBinaries(
     workspaceRoot: string,
     tarballsDirectory: string,
-    publishSetPackages: readonly PublishSetPackage[],
+    publishablePackages: readonly PublishablePackage[],
   ): string[] {
     const errors: string[] = [];
 
-    for (const item of publishSetPackages) {
+    for (const item of publishablePackages) {
       const error = this.verifyCliBinary(
         workspaceRoot,
         tarballsDirectory,
@@ -264,16 +264,16 @@ export class PublishSetService {
   }
 
   /**
-   * Verifies typechecking for all packages in the publish set.
+   * Verifies typechecking for all publishable packages.
    */
   private verifyAllTypechecks(
     scratchDirectory: string,
     typescriptCompilerBinary: string,
-    publishSetPackages: readonly PublishSetPackage[],
+    publishablePackages: readonly PublishablePackage[],
   ): string[] {
     const errors: string[] = [];
 
-    for (const item of publishSetPackages) {
+    for (const item of publishablePackages) {
       const error = this.verifyPackageTypecheck(
         scratchDirectory,
         typescriptCompilerBinary,
@@ -294,21 +294,21 @@ export class PublishSetService {
   private verifyCliBinary(
     workspaceRoot: string,
     tarballsDirectory: string,
-    publishSetPackage: PublishSetPackage,
+    publishablePackage: PublishablePackage,
   ): null | string {
-    const binaryName = publishSetPackage.binary;
+    const binaryName = publishablePackage.binary;
     if (!binaryName) {
       return null;
     }
 
-    const nameParts = publishSetPackage.tarball.split("-");
+    const nameParts = publishablePackage.tarball.split("-");
     const family = nameParts[0] ?? "callidescope";
     const packageRoot = path.resolve(
       workspaceRoot,
       "packages",
       "ic-suite",
       family,
-      publishSetPackage.tarball,
+      publishablePackage.tarball,
     );
 
     const cliScratchDirectory = path.resolve(
@@ -323,7 +323,7 @@ export class PublishSetService {
       this.unpackCliTarball(
         targetDirectory,
         tarballsDirectory,
-        publishSetPackage.tarball,
+        publishablePackage.tarball,
       );
 
       const binRelative = this.readPackageManifestBin(
@@ -334,7 +334,7 @@ export class PublishSetService {
 
       return this.executeSpawnedBinary(binaryName, binPath, packageRoot);
     } catch (error) {
-      return `Failed to execute CLI binary for ${publishSetPackage.name}: ${String(error)}`;
+      return `Failed to execute CLI binary for ${publishablePackage.name}: ${String(error)}`;
     } finally {
       rmSync(cliScratchDirectory, { force: true, recursive: true });
     }
@@ -346,21 +346,21 @@ export class PublishSetService {
   private verifyPackageTypecheck(
     scratchDirectory: string,
     typescriptCompilerBinary: string,
-    publishSetPackage: PublishSetPackage,
+    publishablePackage: PublishablePackage,
   ): null | string {
     const consumerPath = path.resolve(
       scratchDirectory,
-      `consumer-${publishSetPackage.tarball}.ts`,
+      `consumer-${publishablePackage.tarball}.ts`,
     );
     writeFileSync(
       consumerPath,
-      `import * as item from "${publishSetPackage.name}";\nexport { item };\n`,
+      `import * as item from "${publishablePackage.name}";\nexport { item };\n`,
       "utf8",
     );
 
     const tsconfigPath = path.resolve(
       scratchDirectory,
-      `tsconfig-${publishSetPackage.tarball}.json`,
+      `tsconfig-${publishablePackage.tarball}.json`,
     );
     /* eslint-disable unicorn/prevent-abbreviations */
     writeFileSync(
@@ -379,7 +379,7 @@ export class PublishSetService {
           target: "ES2023",
           types: ["node"],
         },
-        include: [`consumer-${publishSetPackage.tarball}.ts`],
+        include: [`consumer-${publishablePackage.tarball}.ts`],
       }),
       "utf8",
     );
@@ -397,7 +397,7 @@ export class PublishSetService {
 
       return null;
     } catch (error) {
-      return `Failed to typecheck ${publishSetPackage.name} from tarball: ${String(error)}`;
+      return `Failed to typecheck ${publishablePackage.name} from tarball: ${String(error)}`;
     }
   }
 
@@ -409,7 +409,9 @@ export class PublishSetService {
    * @param workspaceRoot - Absolute path to the workspace root directory.
    * @returns Array of publishable packages with names, tarball bases, and CLI binaries.
    */
-  public resolvePublishSetPackages(workspaceRoot: string): PublishSetPackage[] {
+  public resolvePublishablePackages(
+    workspaceRoot: string,
+  ): PublishablePackage[] {
     const icSuiteDirectory = path.resolve(
       workspaceRoot,
       "packages",
@@ -420,7 +422,7 @@ export class PublishSetService {
       return [];
     }
 
-    const packages: PublishSetPackage[] = [];
+    const packages: PublishablePackage[] = [];
     const families = readdirSync(icSuiteDirectory, { withFileTypes: true });
 
     for (const family of families) {
@@ -438,13 +440,15 @@ export class PublishSetService {
   }
 
   /**
-   * Verifies that all publish set tarballs install and typecheck cleanly,
+   * Verifies that all publishable package tarballs install and typecheck cleanly,
    * and that all CLI binaries execute successfully.
    *
    * @param workspaceRoot - Absolute path to the workspace root directory.
    * @returns Verification result including success status, counts, and error messages.
    */
-  public verifyPublishSet(workspaceRoot: string): PublishSetVerificationResult {
+  public verifyPublishablePackages(
+    workspaceRoot: string,
+  ): PublishablePackagesVerificationResult {
     const tarballsDirectory = path.resolve(workspaceRoot, "dist", "tarballs");
 
     if (!existsSync(tarballsDirectory)) {
@@ -456,8 +460,10 @@ export class PublishSetService {
       };
     }
 
-    const publishSetPackages = this.resolvePublishSetPackages(workspaceRoot);
-    const binaryCount = publishSetPackages.filter((item) => item.binary).length;
+    const publishablePackages = this.resolvePublishablePackages(workspaceRoot);
+    const binaryCount = publishablePackages.filter(
+      (item) => item.binary,
+    ).length;
     const typescriptCompilerBinary = path.resolve(
       workspaceRoot,
       "node_modules",
@@ -476,12 +482,12 @@ export class PublishSetService {
       const typecheckErrors = this.verifyAllTypechecks(
         scratchDirectory,
         typescriptCompilerBinary,
-        publishSetPackages,
+        publishablePackages,
       );
       const cliErrors = this.verifyAllCliBinaries(
         workspaceRoot,
         tarballsDirectory,
-        publishSetPackages,
+        publishablePackages,
       );
 
       messages.push(...typecheckErrors, ...cliErrors);
@@ -492,7 +498,7 @@ export class PublishSetService {
     return {
       binaryCount,
       messages,
-      packageCount: publishSetPackages.length,
+      packageCount: publishablePackages.length,
       succeeded: messages.length === 0,
     };
   }

@@ -3,7 +3,7 @@
 /**
  * Specification for a publishable package to be verified.
  */
-export interface PublishSetPackage {
+export interface PublishablePackage {
   /** Optional binary command name for CLI packages. */
   readonly binary?: string;
   /** Scoped npm package name, e.g. `@conformetry/cli`. */
@@ -13,9 +13,9 @@ export interface PublishSetPackage {
 }
 
 /**
- * Result of running the publish set tarball verification.
+ * Result of running the publishable packages tarball verification.
  */
-export interface PublishSetVerificationResult {
+export interface PublishablePackagesVerificationResult {
   /** Total number of CLI binaries verified. */
   readonly binaryCount: number;
   /** Detail or failure messages logged during verification. */

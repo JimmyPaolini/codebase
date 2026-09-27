@@ -474,6 +474,7 @@ graph LR
   file_src_modules_run_configuration_run_configuration_types_ts["src/modules/run-configuration/run-configuration.types.ts"]
   file_testing_mocks_ts["testing/mocks.ts"]
   file_testing_setup_ts["testing/setup.ts"]
+  file_vite_config_ts["vite.config.ts"]
   file_vitest_config_ts["vitest.config.ts"]
   file_src_executors_breadth_executor_ts --> file_src_executors_address_types_ts
   file_src_executors_breadth_executor_ts --> file_src_modules_address_address_utilities_ts
@@ -795,7 +796,7 @@ Call stacks traced through `packages/ic-suite/callidescope/callidescope-nx`, dee
 | Measure | Value |
 | --- | --- |
 | Callables | 78 |
-| Files | 37 |
+| Files | 38 |
 | Calls traced | 109 |
 | Call stacks | 6 |
 | Deepest stack | 17 |
