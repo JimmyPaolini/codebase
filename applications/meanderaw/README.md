@@ -7,17 +7,21 @@ nx run meanderaw:start
 ## 🖌️ One Command
 
 Meanderaw has one command, `draw`, and it is the default — so the target above runs it
-with no arguments. What it draws is decided by whether a Code was named:
+with no arguments. **Nothing writes `output/meanders.sqlite` without `--write`**: with no
+flag the command is a read-only drift check, and what `--write` draws is decided by
+whether a Code was named:
 
-| Invocation | What it draws |
-| ---------- | ------------- |
-| `nx run meanderaw:start` | Every meander the application can draw, as rows in `output/meanders.sqlite` |
-| `nx run meanderaw:start --args="--rows <n> --columns <n> --code <code>"` | That one, as a single row in the same database |
-| `nx run meanderaw:start:check` | Nothing — regenerates the sweep into a throwaway database and fails if it disagrees with the committed one. `guard-code` runs this on every commit |
+| Invocation | What it does |
+| ---------- | ------------ |
+| `nx run meanderaw:start` | Writes nothing — regenerates the sweep into a throwaway database and fails if it disagrees with the committed one. `guard-code` runs this on every commit |
+| `nx run meanderaw:start --args="--check"` | The same read-only check, named explicitly |
+| `nx run meanderaw:start --args="--write"` | Regenerates every meander the application can draw, as rows in `output/meanders.sqlite` — clearing the rows already there first, so it runs against the committed database as-is |
+| `nx run meanderaw:start --args="--write --rows <n> --columns <n> --code <code>"` | That one, as a single row in the same database |
 
-The three flags of the single-drawing mode go together: `--code` is what selects that
-mode over the sweep, and it is refused without both `--rows` and `--columns`, since
-passing none of the three is how the sweep is asked for.
+`--check` with `--write` is refused, and so is `--code` without `--write`; either exits
+non-zero. The three flags of the single-drawing mode go together: `--code` is what
+selects that mode over the sweep, and it is refused without both `--rows` and
+`--columns`, since passing none of the three is how the sweep is asked for.
 
 **There is nothing else to pass.** `--type`, `--modifier` and the parameters it carried
 (`--strands`, `--branches`, `--direction`, `--flip`, `--offset`), `--sub-family`,
@@ -833,7 +837,7 @@ look through. The recommendation is to **leave the asymmetry**, and this section
 the measurements behind that.
 
 This was a spike. It changed no code, and everything below is measurement on the sweep
-`nx run meanderaw:start` already writes.
+`nx run meanderaw:start --args="--write"` already writes.
 
 > **What changed since, and what did not.** `mosaic` has since moved onto that shared
 > degree-bounded lattice rule — its tiles are four direction bits per point, junctions

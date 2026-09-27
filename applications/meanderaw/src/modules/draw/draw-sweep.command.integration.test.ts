@@ -155,7 +155,7 @@ describe("drawCommand sweep mode", () => {
         );
       const expectedHardcoded = 963;
 
-      await command.run([], {});
+      await command.run([], { write: true });
 
       await expect(
         repository.countBy({ provenance: "enumerated" }),
@@ -168,9 +168,26 @@ describe("drawCommand sweep mode", () => {
   );
 
   it(
+    "regenerates an already-populated database into exactly the rows a fresh sweep writes",
+    async () => {
+      await command.run([], { write: true });
+
+      const fresh = await repository.find({ order: { id: "ASC" } });
+
+      await expect(command.run([], { write: true })).resolves.not.toThrow();
+
+      const regenerated = await repository.find({ order: { id: "ASC" } });
+
+      expect(regenerated).toHaveLength(fresh.length);
+      expect(regenerated).toStrictEqual(fresh);
+    },
+    SWEEP_TIMEOUT_MILLISECONDS,
+  );
+
+  it(
     "rebuilds output/index.html and family pages from the sweep's own rows once both halves have committed",
     async () => {
-      await command.run([], {});
+      await command.run([], { write: true });
 
       const total = await repository.count();
 
@@ -222,7 +239,7 @@ describe("drawCommand sweep mode", () => {
   it(
     "carries the family it was filed under, and a hardcoded provenance, on every ingested corpus entry",
     async () => {
-      await command.run([], {});
+      await command.run([], { write: true });
 
       const rows = await repository.findBy({ provenance: "hardcoded" });
 
@@ -268,7 +285,7 @@ describe("drawCommand sweep mode", () => {
         svg: "<svg>fixture</svg>\n",
       });
 
-      await expect(command.run([], {})).resolves.not.toThrow();
+      await expect(command.run([], { write: true })).resolves.not.toThrow();
     },
     SWEEP_TIMEOUT_MILLISECONDS,
   );

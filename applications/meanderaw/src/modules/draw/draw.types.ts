@@ -17,13 +17,14 @@ export interface CodeDrawingOptions {
  * Parsed `draw` options, in the shape nest-commander leaves them.
  *
  * Every field is optional, and that is the command's whole contract: `draw`
- * with no Code named sweeps every meander the application can draw into the
- * database, `draw --rows <n> --columns <n> --code <code>` draws that one, and
- * `draw --check` regenerates the whole corpus into a throwaway database and
- * fails loudly if it disagrees with the committed one — see
- * `DrawCheckService`. `--rows`, `--columns`, and `--code` are checked
- * together rather than declared `required`, because passing none of them is
- * how the sweep is asked for — see `IncompleteCodeDrawingError`.
+ * with no flag (or with `--check`) regenerates the whole corpus into a
+ * throwaway database and fails loudly if it disagrees with the committed
+ * one — see `DrawCheckService`. Nothing writes the committed database
+ * without `--write`: `draw --write` sweeps every meander the application can
+ * draw into it, and `draw --write --rows <n> --columns <n> --code <code>`
+ * draws that one. `--rows`, `--columns`, and `--code` are checked together
+ * rather than declared `required`, because passing none of them is how the
+ * sweep is asked for — see `IncompleteCodeDrawingError`.
  *
  * The `--type`, `--modifier`, `--sub-family`, `--strands`, `--branches`,
  * `--direction`, `--flip`, `--offset`, `--repeat-count`, and
@@ -37,4 +38,5 @@ export interface DrawCommandOptions {
   code?: string;
   columns?: number;
   rows?: number;
+  write?: boolean;
 }

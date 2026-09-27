@@ -59,15 +59,7 @@
     "spell-check": {},
     "start": {
       "cache": false,
-      "configurations": {
-        "check": {
-          "command": "node --import @swc-node/register/esm-register src/main.ts --check"
-        },
-        "write": {
-          "command": "node --import @swc-node/register/esm-register src/main.ts --check"
-        }
-      },
-      "description": "Run the Meanderaw application. With no arguments it sweeps every meander into output/meanders.sqlite \u2014 the whole lattice's unit space, enumerated and classified, then the historical corpus's hardcoded Codes beyond that budget; with --args=\"--rows <n> --columns <n> --code <code>\" it writes that one row; with --check (or the `check` configuration, `nx run meanderaw:start:check`) it regenerates that same sweep into a throwaway database and fails if it disagrees with the committed one, which `guard-code` runs on every commit that affects meanderaw. `build` compiles this project rather than drawing anything, so populating the database is this target's job. The `check` and `write` configurations both run the drift check: `guard-code`'s own `--configuration` (`check` for the pre-commit gate, `write` for the auto-fix pass) forwards down to this dependency, and there is nothing here for a `write` pass to fix \u2014 the committed database is populated by a real `start` run a person chooses to make, not by an aggregator rewriting it from a branch \u2014 so `write` reruns the same read-only check rather than falling back to a bare sweep that would overwrite the committed database as a side effect. Invoking `guard-code` for this project without an explicit `--configuration` is unsupported: every caller (the pre-commit hook, the validate-code skill) always passes one, and omitting it would resolve this dependency to the bare sweep instead.",
+      "description": "Run the Meanderaw application. With no arguments (or --args=\"--check\") it is read-only: it regenerates the whole sweep \u2014 the lattice's unit space, enumerated and classified, then the historical corpus's hardcoded Codes beyond that budget \u2014 into a throwaway database and fails if it disagrees with the committed output/meanders.sqlite. Nothing writes that database without --write: --args=\"--write\" clears its meander rows and regenerates the sweep into it, and --args=\"--write --rows <n> --columns <n> --code <code>\" writes that one row; --check with --write, or --code without --write, exits non-zero. `guard-code` depends on this target, and there are deliberately no configurations: `guard-code`'s own --configuration (check or write) and a bare `guard-code` all reach this target with no matching configuration, so every one of them runs the read-only default. A `write` configuration here would be forwarded by `guard-code:write` and rewrite the committed database as a side effect. `build` compiles this project rather than drawing anything, so populating the database is this target's job.",
       "executor": "nx:run-commands",
       "inputs": [
         "^production",
