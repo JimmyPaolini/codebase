@@ -43,14 +43,31 @@ describe(DensityCharacteristicService, () => {
         expected: 0.5,
       },
       {
+        code: { columns: 2, digits: "4080", repeats: 1, rows: 2 },
+        expected: 0.5,
+      },
+      {
         code: { columns: 2, digits: "40a1", repeats: 1, rows: 2 },
         expected: 0.75,
+      },
+      {
+        code: { columns: 2, digits: "4488", repeats: 1, rows: 2 },
+        expected: 1,
       },
       {
         code: { columns: 2, digits: "44a9", repeats: 1, rows: 2 },
         expected: 1,
       },
+      {
+        code: { columns: 2, digits: "65a9", repeats: 1, rows: 2 },
+        expected: 1,
+      },
+      {
+        code: { columns: 2, digits: "9a56", repeats: 1, rows: 2 },
+        expected: 1,
+      },
       { code: { columns: 1, digits: "7", repeats: 1, rows: 1 }, expected: 1 },
+      { code: { columns: 1, digits: "f", repeats: 1, rows: 1 }, expected: 1 },
     ])("computes $expected for $code.digits", ({ code, expected }) => {
       expect(service.compute(contextService.create(code))).toBe(expected);
     });

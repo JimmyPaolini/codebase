@@ -44,15 +44,18 @@ describe(LongestVerticalRunLengthCharacteristicService, () => {
   });
 
   it("never wraps a vertical run across the band's own border rules", () => {
-    // A 3-row, 2-column full loop whose vertical arms never connect through
-    // the wrap the way its horizontal arms do.
+    // A single-column south arm at row 0 and another at row 2, with a bare
+    // row 1 between them. If the last row's south arm wrapped around to
+    // row 0 the way an east arm wraps across columns, this would read as
+    // one continuous run of 2; since it does not, the longest run is the
+    // lone edge from row 0 to row 1.
     const context = contextService.create({
-      columns: 2,
-      digits: "333300",
+      columns: 1,
+      digits: "404",
       repeats: 1,
       rows: 3,
     });
 
-    expect(service.compute(context)).toBe(0);
+    expect(service.compute(context)).toBe(1);
   });
 });

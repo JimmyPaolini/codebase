@@ -1,8 +1,9 @@
 import { Inject, Injectable } from "@nestjs/common";
 
 import { ConnectivityService } from "../../connectivity.service";
+import { PointUtilitiesService } from "../../submatrix/point/point-utilities.service";
 
-import type { Matrix, MatrixPoint } from "../../../matrix/matrix.types";
+import type { Matrix } from "../../../matrix/matrix.types";
 import type {
   CharacteristicContext,
   CharacteristicEvaluator,
@@ -30,6 +31,8 @@ export class ReversesAtItsTightestTurnCharacteristicService implements Character
   constructor(
     @Inject(ConnectivityService)
     private readonly connectivityService: ConnectivityService,
+    @Inject(PointUtilitiesService)
+    private readonly pointUtilitiesService: PointUtilitiesService,
   ) {}
 
   // 🔐 Private Fields
@@ -41,7 +44,7 @@ export class ReversesAtItsTightestTurnCharacteristicService implements Character
     category: "path",
     description:
       "Whether one repeat's ink turns again exactly one lattice step after its walk starts or after its previous turn, over a Code with no three- or four-armed points at all.",
-    formula: String.raw`\exists\, i : \tau_i \neq 0 \wedge \Delta_i = 1`,
+    formula: String.raw`\exists\, i : \tau_i \in \{1, 3\} \wedge \Delta_i = 1`,
     key: "reversesAtItsTightestTurn",
     name: "Reverses At Its Tightest Turn",
     valueType: "boolean",
@@ -111,12 +114,6 @@ export class ReversesAtItsTightestTurnCharacteristicService implements Character
     }
 
     return 0;
-  }
-
-  /** How many of a point's four arms carry ink, read directly off its own digit. */
-  private armCount(point: MatrixPoint): number {
-    return [point.east, point.north, point.south, point.west].filter(Boolean)
-      .length;
   }
 
   /** Builds an adjacency list from the given edges. */
@@ -226,7 +223,7 @@ export class ReversesAtItsTightestTurnCharacteristicService implements Character
   private isJunctionFree(matrix: Matrix): boolean {
     for (const row of matrix) {
       for (const point of row) {
-        if (this.armCount(point) >= 3) return false;
+        if (this.pointUtilitiesService.armCount(point) >= 3) return false;
       }
     }
     return true;

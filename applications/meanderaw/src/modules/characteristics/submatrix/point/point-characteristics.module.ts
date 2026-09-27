@@ -22,6 +22,7 @@ import { VerticalEdgeCountCharacteristicService } from "./vertical-edge-count-ch
     EdgeCountCharacteristicService,
     HorizontalEdgeCountCharacteristicService,
     InkPointCountCharacteristicService,
+    PointUtilitiesService,
     VerticalEdgeCountCharacteristicService,
   ],
   imports: [],

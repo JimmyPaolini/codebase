@@ -44,8 +44,10 @@ describe(LongestHorizontalRunLengthCharacteristicService, () => {
   });
 
   it("caps a wrapped run at the column count", () => {
-    // A 3-row, 2-column full loop where every row runs east all the way
-    // around the tile — the wrap would otherwise double-count past columns.
+    // A 2-column digit that repeats identically in both columns reduces to
+    // its 3-row, 1-column repeating unit before this runs, so the single
+    // remaining column runs east all the way around it — the wrap would
+    // otherwise double-count past columns.
     const context = contextService.create({
       columns: 2,
       digits: "333300",

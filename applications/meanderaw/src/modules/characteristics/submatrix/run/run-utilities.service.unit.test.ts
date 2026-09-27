@@ -59,17 +59,19 @@ describe(RunUtilitiesService, () => {
     });
 
     it("never wraps a run across the band's own border rules", () => {
-      // A 3-row, 2-column full loop whose vertical arms never connect
-      // through the wrap the way its horizontal arms do, so the run stays
-      // at zero even though every row runs east all the way around.
+      // A single-column south arm at row 0 and another at row 2, with a
+      // bare row 1 between them. If the last row's south arm wrapped
+      // around to row 0 the way an east arm wraps across columns, this
+      // would read as one continuous run of 2; since it does not, the
+      // longest run is the lone edge from row 0 to row 1.
       const matrix = matrixService.fromCode({
-        columns: 2,
-        digits: "333300",
+        columns: 1,
+        digits: "404",
         repeats: 1,
         rows: 3,
       });
 
-      expect(service.longestVerticalRunLength(matrix)).toBe(0);
+      expect(service.longestVerticalRunLength(matrix)).toBe(1);
     });
 
     it("finds the longer of two columns", () => {

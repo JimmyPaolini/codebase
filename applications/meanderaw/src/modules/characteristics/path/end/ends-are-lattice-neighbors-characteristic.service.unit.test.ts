@@ -96,6 +96,11 @@ describe(EndsAreLatticeNeighborsCharacteristicService, () => {
       expected: false,
       shape: "an X-junction",
     },
+    {
+      code: { columns: 3, digits: "102", repeats: 1, rows: 1 },
+      expected: true,
+      shape: "a dash whose ends are neighbors only across the seam",
+    },
   ])("reports $expected for $shape", ({ code, expected }) => {
     expect(service.compute(contextService.create(code))).toBe(expected);
   });

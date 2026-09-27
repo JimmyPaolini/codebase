@@ -6,6 +6,7 @@ import { GraphModule } from "../../../graph/graph.module";
 import { MatrixModule } from "../../../matrix/matrix.module";
 import { CharacteristicContextService } from "../../characteristic-context.service";
 import { ConnectivityService } from "../../connectivity.service";
+import { PointUtilitiesService } from "../../submatrix/point/point-utilities.service";
 
 import { ReversesAtItsTightestTurnCharacteristicService } from "./reverses-at-its-tightest-turn-characteristic.service";
 
@@ -19,6 +20,7 @@ describe(ReversesAtItsTightestTurnCharacteristicService, () => {
       providers: [
         CharacteristicContextService,
         ConnectivityService,
+        PointUtilitiesService,
         ReversesAtItsTightestTurnCharacteristicService,
       ],
     }).compile();
@@ -94,6 +96,23 @@ describe(ReversesAtItsTightestTurnCharacteristicService, () => {
       code: { columns: 1, digits: "f", repeats: 1, rows: 1 },
       expected: false,
       shape: "an X-junction",
+    },
+    {
+      code: { columns: 3, digits: "50690a", repeats: 1, rows: 2 },
+      expected: true,
+      shape: "a loop whose turn lands one step after crossing the seam",
+    },
+    {
+      code: { columns: 4, digits: "235000c000a1", repeats: 1, rows: 3 },
+      expected: true,
+      shape:
+        "an S-bend whose second turn is the opposite hand from its first, one step later",
+    },
+    {
+      code: { columns: 5, digits: "0000002350000a1", repeats: 1, rows: 3 },
+      expected: false,
+      shape:
+        "a right turn immediately followed by a left turn, with no straight step between them to reset",
     },
   ])("reports $expected for $shape", ({ code, expected }) => {
     expect(service.compute(contextService.create(code))).toBe(expected);
