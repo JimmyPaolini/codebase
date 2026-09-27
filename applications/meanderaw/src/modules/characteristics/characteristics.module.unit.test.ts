@@ -126,10 +126,10 @@ import { TavInvertedLetterCountCharacteristicService } from "./submatrix/letter/
 import { TavLetterCountCharacteristicService } from "./submatrix/letter/tav-letter-count-characteristic.service";
 import { TavWestLetterCountCharacteristicService } from "./submatrix/letter/tav-west-letter-count-characteristic.service";
 import { TianHanziCountCharacteristicService } from "./submatrix/letter/tian-hanzi-count-characteristic.service";
-import { TuEarthHanziCountCharacteristicService } from "./submatrix/letter/tu-earth-hanzi-count-characteristic.service";
 import { TuEastHanziCountCharacteristicService } from "./submatrix/letter/tu-east-hanzi-count-characteristic.service";
 import { TuHanziCountCharacteristicService } from "./submatrix/letter/tu-hanzi-count-characteristic.service";
 import { TuInvertedHanziCountCharacteristicService } from "./submatrix/letter/tu-inverted-hanzi-count-characteristic.service";
+import { TuSoilHanziCountCharacteristicService } from "./submatrix/letter/tu-soil-hanzi-count-characteristic.service";
 import { TuWestHanziCountCharacteristicService } from "./submatrix/letter/tu-west-hanzi-count-characteristic.service";
 import { UInvertedLetterCountCharacteristicService } from "./submatrix/letter/u-inverted-letter-count-characteristic.service";
 import { ULetterCountCharacteristicService } from "./submatrix/letter/u-letter-count-characteristic.service";
@@ -219,7 +219,7 @@ const CHARACTERISTIC_SERVICES: readonly Type<CharacteristicEvaluator>[] = [
   YeoHangulCountCharacteristicService,
   YoHangulCountCharacteristicService,
   YuHangulCountCharacteristicService,
-  TuEarthHanziCountCharacteristicService,
+  TuSoilHanziCountCharacteristicService,
   GanHanziCountCharacteristicService,
   ShangHanziCountCharacteristicService,
   MuHanziCountCharacteristicService,

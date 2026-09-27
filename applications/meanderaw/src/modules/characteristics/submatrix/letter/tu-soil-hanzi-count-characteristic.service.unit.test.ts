@@ -6,24 +6,24 @@ import { MatrixModule } from "../../../matrix/matrix.module";
 import { CharacteristicContextService } from "../../characteristic-context.service";
 import { SubmatrixUtilitiesService } from "../submatrix-utilities.service";
 
-import { TuEarthHanziCountCharacteristicService } from "./tu-earth-hanzi-count-characteristic.service";
+import { TuSoilHanziCountCharacteristicService } from "./tu-soil-hanzi-count-characteristic.service";
 
-describe(TuEarthHanziCountCharacteristicService, () => {
+describe(TuSoilHanziCountCharacteristicService, () => {
   let contextService: CharacteristicContextService;
-  let service: TuEarthHanziCountCharacteristicService;
+  let service: TuSoilHanziCountCharacteristicService;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
       imports: [CodeModule, MatrixModule],
       providers: [
         CharacteristicContextService,
-        TuEarthHanziCountCharacteristicService,
+        TuSoilHanziCountCharacteristicService,
         SubmatrixUtilitiesService,
       ],
     }).compile();
 
     contextService = await module.resolve(CharacteristicContextService);
-    service = await module.resolve(TuEarthHanziCountCharacteristicService);
+    service = await module.resolve(TuSoilHanziCountCharacteristicService);
   });
 
   it("is defined", () => {

@@ -74,10 +74,10 @@ import { TavInvertedLetterCountCharacteristicService } from "./tav-inverted-lett
 import { TavLetterCountCharacteristicService } from "./tav-letter-count-characteristic.service";
 import { TavWestLetterCountCharacteristicService } from "./tav-west-letter-count-characteristic.service";
 import { TianHanziCountCharacteristicService } from "./tian-hanzi-count-characteristic.service";
-import { TuEarthHanziCountCharacteristicService } from "./tu-earth-hanzi-count-characteristic.service";
 import { TuEastHanziCountCharacteristicService } from "./tu-east-hanzi-count-characteristic.service";
 import { TuHanziCountCharacteristicService } from "./tu-hanzi-count-characteristic.service";
 import { TuInvertedHanziCountCharacteristicService } from "./tu-inverted-hanzi-count-characteristic.service";
+import { TuSoilHanziCountCharacteristicService } from "./tu-soil-hanzi-count-characteristic.service";
 import { TuWestHanziCountCharacteristicService } from "./tu-west-hanzi-count-characteristic.service";
 import { UInvertedLetterCountCharacteristicService } from "./u-inverted-letter-count-characteristic.service";
 import { ULetterCountCharacteristicService } from "./u-letter-count-characteristic.service";
@@ -205,7 +205,7 @@ import { ZSidewaysLetterCountCharacteristicService } from "./z-sideways-letter-c
     YeoHangulCountCharacteristicService,
     YoHangulCountCharacteristicService,
     YuHangulCountCharacteristicService,
-    TuEarthHanziCountCharacteristicService,
+    TuSoilHanziCountCharacteristicService,
     GanHanziCountCharacteristicService,
     ShangHanziCountCharacteristicService,
     MuHanziCountCharacteristicService,
@@ -306,7 +306,7 @@ import { ZSidewaysLetterCountCharacteristicService } from "./z-sideways-letter-c
     YeoHangulCountCharacteristicService,
     YoHangulCountCharacteristicService,
     YuHangulCountCharacteristicService,
-    TuEarthHanziCountCharacteristicService,
+    TuSoilHanziCountCharacteristicService,
     GanHanziCountCharacteristicService,
     ShangHanziCountCharacteristicService,
     MuHanziCountCharacteristicService,

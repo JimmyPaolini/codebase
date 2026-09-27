@@ -378,9 +378,6 @@ export class Meander implements NumericCharacteristicRecord {
   totalTurnCount!: number;
 
   @Column({ default: 0, type: "int" })
-  tuEarthHanziCount!: number;
-
-  @Column({ default: 0, type: "int" })
   tuEastHanziCount!: number;
 
   @Column({ default: 0, type: "int" })
@@ -391,6 +388,9 @@ export class Meander implements NumericCharacteristicRecord {
 
   @Column({ default: 0, type: "int" })
   tUpLetterCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  tuSoilHanziCount!: number;
 
   @Column({ default: 0, type: "int" })
   tuWestHanziCount!: number;

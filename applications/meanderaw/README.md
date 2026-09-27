@@ -3416,10 +3416,10 @@ What this project is judged against, as declared in its own `callidescope.config
         └─> SubmatrixUtilitiesService.map(…)(…): { column: number; digit: number; row: number; } [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:39]
 ```
 
-**97. `TuEarthHanziCountCharacteristicService.compute`** — depth 5 · orphan-root
+**97. `TuSoilHanziCountCharacteristicService.compute`** — depth 5 · orphan-root
 
 ```text
-🚀 TuEarthHanziCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/tu-earth-hanzi-count-characteristic.service.ts:58]
+🚀 TuSoilHanziCountCharacteristicService.compute(context: CharacteristicContext): number [applications/meanderaw/src/modules/characteristics/submatrix/letter/tu-soil-hanzi-count-characteristic.service.ts:58]
    ↳ Counts the pieces of ink drawn exactly as the template.
   └─> SubmatrixUtilitiesService.countIsolatedGlyphs(matrix: Matrix, template: readonly string[]): number [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:66]
      ↳ Counts the minimal isolated glyphs of a matrix drawn exactly as `template`.
@@ -4507,10 +4507,10 @@ What this project is judged against, as declared in its own `callidescope.config
       └─> SubmatrixUtilitiesService.from(…)(_unused: unknown, column: number): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:158]
 ```
 
-**198. `TuEarthHanziCountCharacteristicService.constructor`** — depth 4 · orphan-root
+**198. `TuSoilHanziCountCharacteristicService.constructor`** — depth 4 · orphan-root
 
 ```text
-🚀 TuEarthHanziCountCharacteristicService.constructor(…): TuEarthHanziCountCharacteristicService [applications/meanderaw/src/modules/characteristics/submatrix/letter/tu-earth-hanzi-count-characteristic.service.ts:27]
+🚀 TuSoilHanziCountCharacteristicService.constructor(…): TuSoilHanziCountCharacteristicService [applications/meanderaw/src/modules/characteristics/submatrix/letter/tu-soil-hanzi-count-characteristic.service.ts:27]
   └─> SubmatrixUtilitiesService.glyphFormula(template: readonly string[]): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:155]
      ↳ Typesets a {@link SubmatrixUtilitiesService.countIsolatedGlyphs} template as the LaTeX definition of its characteristic…
     └─> SubmatrixUtilitiesService.map(…)(line: string): string [applications/meanderaw/src/modules/characteristics/submatrix/submatrix-utilities.service.ts:157]
@@ -5112,7 +5112,7 @@ What this project is judged against, as declared in its own `callidescope.config
 | `TavLetterCountCharacteristicService.constructor` | 2 | `SubmatrixUtilitiesService.glyphFormula`, `SubmatrixUtilitiesService.glyphWindow` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/tav-letter-count-characteristic.service.ts:25` |
 | `TavWestLetterCountCharacteristicService.constructor` | 2 | `SubmatrixUtilitiesService.glyphFormula`, `SubmatrixUtilitiesService.glyphWindow` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/tav-west-letter-count-characteristic.service.ts:27` |
 | `TianHanziCountCharacteristicService.constructor` | 2 | `SubmatrixUtilitiesService.glyphFormula`, `SubmatrixUtilitiesService.glyphWindow` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/tian-hanzi-count-characteristic.service.ts:26` |
-| `TuEarthHanziCountCharacteristicService.constructor` | 2 | `SubmatrixUtilitiesService.glyphFormula`, `SubmatrixUtilitiesService.glyphWindow` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/tu-earth-hanzi-count-characteristic.service.ts:27` |
+| `TuSoilHanziCountCharacteristicService.constructor` | 2 | `SubmatrixUtilitiesService.glyphFormula`, `SubmatrixUtilitiesService.glyphWindow` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/tu-soil-hanzi-count-characteristic.service.ts:27` |
 | `TuEastHanziCountCharacteristicService.constructor` | 2 | `SubmatrixUtilitiesService.glyphFormula`, `SubmatrixUtilitiesService.glyphWindow` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/tu-east-hanzi-count-characteristic.service.ts:28` |
 | `TuHanziCountCharacteristicService.constructor` | 2 | `SubmatrixUtilitiesService.glyphFormula`, `SubmatrixUtilitiesService.glyphWindow` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/tu-hanzi-count-characteristic.service.ts:26` |
 | `TuInvertedHanziCountCharacteristicService.constructor` | 2 | `SubmatrixUtilitiesService.glyphFormula`, `SubmatrixUtilitiesService.glyphWindow` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/tu-inverted-hanzi-count-characteristic.service.ts:26` |
@@ -5334,7 +5334,7 @@ What this project is judged against, as declared in its own `callidescope.config
 | `TavLetterCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/tav-letter-count-characteristic.service.ts:56` |
 | `TavWestLetterCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/tav-west-letter-count-characteristic.service.ts:58` |
 | `TianHanziCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/tian-hanzi-count-characteristic.service.ts:57` |
-| `TuEarthHanziCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/tu-earth-hanzi-count-characteristic.service.ts:58` |
+| `TuSoilHanziCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/tu-soil-hanzi-count-characteristic.service.ts:58` |
 | `TuEastHanziCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/tu-east-hanzi-count-characteristic.service.ts:59` |
 | `TuHanziCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/tu-hanzi-count-characteristic.service.ts:57` |
 | `TuInvertedHanziCountCharacteristicService.compute` | 1 | `SubmatrixUtilitiesService.countIsolatedGlyphs` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/tu-inverted-hanzi-count-characteristic.service.ts:57` |
@@ -5840,8 +5840,8 @@ graph LR
   file_src_modules_characteristics_submatrix_letter_tav_west_letter_count_characteristic_service_unit_test_ts["src/modules/characteristics/submatrix/letter/tav-west-letter-count-characteristic.service.unit.test.ts"]
   file_src_modules_characteristics_submatrix_letter_tian_hanzi_count_characteristic_service_ts["src/modules/characteristics/submatrix/letter/tian-hanzi-count-characteristic.service.ts"]
   file_src_modules_characteristics_submatrix_letter_tian_hanzi_count_characteristic_service_unit_test_ts["src/modules/characteristics/submatrix/letter/tian-hanzi-count-characteristic.service.unit.test.ts"]
-  file_src_modules_characteristics_submatrix_letter_tu_earth_hanzi_count_characteristic_service_ts["src/modules/characteristics/submatrix/letter/tu-earth-hanzi-count-characteristic.service.ts"]
-  file_src_modules_characteristics_submatrix_letter_tu_earth_hanzi_count_characteristic_service_unit_test_ts["src/modules/characteristics/submatrix/letter/tu-earth-hanzi-count-characteristic.service.unit.test.ts"]
+  file_src_modules_characteristics_submatrix_letter_tu_soil_hanzi_count_characteristic_service_ts["src/modules/characteristics/submatrix/letter/tu-soil-hanzi-count-characteristic.service.ts"]
+  file_src_modules_characteristics_submatrix_letter_tu_soil_hanzi_count_characteristic_service_unit_test_ts["src/modules/characteristics/submatrix/letter/tu-soil-hanzi-count-characteristic.service.unit.test.ts"]
   file_src_modules_characteristics_submatrix_letter_tu_east_hanzi_count_characteristic_service_ts["src/modules/characteristics/submatrix/letter/tu-east-hanzi-count-characteristic.service.ts"]
   file_src_modules_characteristics_submatrix_letter_tu_east_hanzi_count_characteristic_service_unit_test_ts["src/modules/characteristics/submatrix/letter/tu-east-hanzi-count-characteristic.service.unit.test.ts"]
   file_src_modules_characteristics_submatrix_letter_tu_hanzi_count_characteristic_service_ts["src/modules/characteristics/submatrix/letter/tu-hanzi-count-characteristic.service.ts"]
@@ -6202,7 +6202,7 @@ graph LR
   file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_tav_letter_count_characteristic_service_ts
   file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_tav_west_letter_count_characteristic_service_ts
   file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_tian_hanzi_count_characteristic_service_ts
-  file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_tu_earth_hanzi_count_characteristic_service_ts
+  file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_tu_soil_hanzi_count_characteristic_service_ts
   file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_tu_east_hanzi_count_characteristic_service_ts
   file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_tu_hanzi_count_characteristic_service_ts
   file_src_modules_characteristics_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_tu_inverted_hanzi_count_characteristic_service_ts
@@ -7305,7 +7305,7 @@ graph LR
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_ts --> file_src_modules_characteristics_submatrix_letter_tav_letter_count_characteristic_service_ts
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_ts --> file_src_modules_characteristics_submatrix_letter_tav_west_letter_count_characteristic_service_ts
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_ts --> file_src_modules_characteristics_submatrix_letter_tian_hanzi_count_characteristic_service_ts
-  file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_ts --> file_src_modules_characteristics_submatrix_letter_tu_earth_hanzi_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_ts --> file_src_modules_characteristics_submatrix_letter_tu_soil_hanzi_count_characteristic_service_ts
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_ts --> file_src_modules_characteristics_submatrix_letter_tu_east_hanzi_count_characteristic_service_ts
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_ts --> file_src_modules_characteristics_submatrix_letter_tu_hanzi_count_characteristic_service_ts
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_ts --> file_src_modules_characteristics_submatrix_letter_tu_inverted_hanzi_count_characteristic_service_ts
@@ -7407,7 +7407,7 @@ graph LR
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_tav_letter_count_characteristic_service_ts
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_tav_west_letter_count_characteristic_service_ts
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_tian_hanzi_count_characteristic_service_ts
-  file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_tu_earth_hanzi_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_tu_soil_hanzi_count_characteristic_service_ts
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_tu_east_hanzi_count_characteristic_service_ts
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_tu_hanzi_count_characteristic_service_ts
   file_src_modules_characteristics_submatrix_letter_letter_characteristics_module_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_tu_inverted_hanzi_count_characteristic_service_ts
@@ -7653,13 +7653,13 @@ graph LR
   file_src_modules_characteristics_submatrix_letter_tian_hanzi_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_tian_hanzi_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
   file_src_modules_characteristics_submatrix_letter_tian_hanzi_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
-  file_src_modules_characteristics_submatrix_letter_tu_earth_hanzi_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
-  file_src_modules_characteristics_submatrix_letter_tu_earth_hanzi_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
-  file_src_modules_characteristics_submatrix_letter_tu_earth_hanzi_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
-  file_src_modules_characteristics_submatrix_letter_tu_earth_hanzi_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_tu_earth_hanzi_count_characteristic_service_ts
-  file_src_modules_characteristics_submatrix_letter_tu_earth_hanzi_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
-  file_src_modules_characteristics_submatrix_letter_tu_earth_hanzi_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
-  file_src_modules_characteristics_submatrix_letter_tu_earth_hanzi_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
+  file_src_modules_characteristics_submatrix_letter_tu_soil_hanzi_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
+  file_src_modules_characteristics_submatrix_letter_tu_soil_hanzi_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
+  file_src_modules_characteristics_submatrix_letter_tu_soil_hanzi_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts
+  file_src_modules_characteristics_submatrix_letter_tu_soil_hanzi_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_letter_tu_soil_hanzi_count_characteristic_service_ts
+  file_src_modules_characteristics_submatrix_letter_tu_soil_hanzi_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
+  file_src_modules_characteristics_submatrix_letter_tu_soil_hanzi_count_characteristic_service_unit_test_ts --> file_src_modules_code_code_module_ts
+  file_src_modules_characteristics_submatrix_letter_tu_soil_hanzi_count_characteristic_service_unit_test_ts --> file_src_modules_matrix_matrix_module_ts
   file_src_modules_characteristics_submatrix_letter_tu_east_hanzi_count_characteristic_service_ts --> file_src_modules_characteristics_characteristics_types_ts
   file_src_modules_characteristics_submatrix_letter_tu_east_hanzi_count_characteristic_service_ts --> file_src_modules_characteristics_submatrix_submatrix_utilities_service_ts
   file_src_modules_characteristics_submatrix_letter_tu_east_hanzi_count_characteristic_service_unit_test_ts --> file_src_modules_characteristics_characteristic_context_service_ts

@@ -9,7 +9,7 @@ import type {
 } from "../../characteristics.types";
 
 /**
- * Counts the minimal isolated 土 (hanzi tu, earth) glyphs of a Code — two
+ * Counts the minimal isolated 土 (hanzi tu, soil or earth) glyphs of a Code — two
  * two-unit bars threaded on a vertical stroke that runs a unit above the upper
  * bar and stops at the lower — as a 3×3 submatrix scan against the glyph's
  * template, drawn:
@@ -21,7 +21,7 @@ import type {
  * ```
  */
 @Injectable()
-export class TuEarthHanziCountCharacteristicService implements CharacteristicEvaluator<number> {
+export class TuSoilHanziCountCharacteristicService implements CharacteristicEvaluator<number> {
   // 🏗 Dependency Injection
 
   constructor(
@@ -31,10 +31,10 @@ export class TuEarthHanziCountCharacteristicService implements CharacteristicEva
     this.metadata = {
       category: "submatrix",
       description:
-        "The number of minimal isolated 土 (hanzi tu, earth) glyphs — two two-unit bars threaded on a vertical stroke that runs a unit above the upper bar and stops at the lower. Also reads as the hanzi 士 (shi).",
+        "The number of minimal isolated 土 (hanzi tu, soil or earth) glyphs — two two-unit bars threaded on a vertical stroke that runs a unit above the upper bar and stops at the lower. Also reads as the hanzi 士 (shi).",
       formula: this.submatrixUtilitiesService.glyphFormula(this.template),
-      key: "tuEarthHanziCount",
-      name: "Tu Earth Hanzi Count",
+      key: "tuSoilHanziCount",
+      name: "Tu Soil Hanzi Count",
       submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
       valueType: "number",
     };
@@ -47,7 +47,7 @@ export class TuEarthHanziCountCharacteristicService implements CharacteristicEva
 
   // 🔑 Public Fields
 
-  /** Names and explains `tuEarthHanziCount` for catalogs and inspectors. */
+  /** Names and explains `tuSoilHanziCount` for catalogs and inspectors. */
   public readonly metadata: CharacteristicMetadata<number>;
 
   // 🔏 Private Methods

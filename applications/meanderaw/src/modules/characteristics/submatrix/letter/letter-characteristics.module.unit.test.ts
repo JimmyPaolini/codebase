@@ -79,10 +79,10 @@ import { TavInvertedLetterCountCharacteristicService } from "./tav-inverted-lett
 import { TavLetterCountCharacteristicService } from "./tav-letter-count-characteristic.service";
 import { TavWestLetterCountCharacteristicService } from "./tav-west-letter-count-characteristic.service";
 import { TianHanziCountCharacteristicService } from "./tian-hanzi-count-characteristic.service";
-import { TuEarthHanziCountCharacteristicService } from "./tu-earth-hanzi-count-characteristic.service";
 import { TuEastHanziCountCharacteristicService } from "./tu-east-hanzi-count-characteristic.service";
 import { TuHanziCountCharacteristicService } from "./tu-hanzi-count-characteristic.service";
 import { TuInvertedHanziCountCharacteristicService } from "./tu-inverted-hanzi-count-characteristic.service";
+import { TuSoilHanziCountCharacteristicService } from "./tu-soil-hanzi-count-characteristic.service";
 import { TuWestHanziCountCharacteristicService } from "./tu-west-hanzi-count-characteristic.service";
 import { UInvertedLetterCountCharacteristicService } from "./u-inverted-letter-count-characteristic.service";
 import { ULetterCountCharacteristicService } from "./u-letter-count-characteristic.service";
@@ -371,7 +371,7 @@ const LETTERS: readonly {
   { fixture: "05x02y2771008800", service: YuHangulCountCharacteristicService },
   {
     fixture: "04x03y04002f102b10",
-    service: TuEarthHanziCountCharacteristicService,
+    service: TuSoilHanziCountCharacteristicService,
   },
   {
     fixture: "04x03y27102f100800",
