@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.24.1](https://github.com/JimmyPaolini/codebase/compare/v2.24.0...v2.24.1) (2026-09-27)
+
+### 🐛 Bug Fixes
+
+* **ic-suite,deployments:** 🐛 fix order of anchor tags and refresh codependix markdown outputs ([#1199](https://github.com/JimmyPaolini/codebase/issues/1199)) ([1621631](https://github.com/JimmyPaolini/codebase/commit/1621631fb0555347d2d95ea4acb76a50542b47d6))
+
 ## [2.24.0](https://github.com/JimmyPaolini/codebase/compare/v2.23.3...v2.24.0) (2026-09-26)
 
 ### ✨ Features
