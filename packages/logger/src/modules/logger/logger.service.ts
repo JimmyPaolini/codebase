@@ -126,13 +126,9 @@ export class LoggerService extends ConsoleLogger {
     context: string | undefined;
     parsed: ParsedLogMessage;
   }): void {
-    if (LoggerService.isProduction) {
-      return;
-    }
-
     if (
-      args.context !== undefined &&
-      UNVALIDATED_LOG_CONTEXTS.has(args.context)
+      LoggerService.isProduction ||
+      (args.context !== undefined && UNVALIDATED_LOG_CONTEXTS.has(args.context))
     ) {
       return;
     }
