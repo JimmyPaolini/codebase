@@ -66,37 +66,76 @@ export const COLUMN_CHARACTERISTIC_KEYS = [
  */
 export const LETTER_CHARACTERISTIC_KEYS = [
   ...LETTER_ORIENTATION_NAMES.map((name) => `a${name}LatinCount` as const),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `ainIsolated${name}ArabicCount` as const,
+  ),
   ...LETTER_ORIENTATION_NAMES.map((name) => `ao${name}HanziCount` as const),
   ...LETTER_ORIENTATION_NAMES.map((name) => `b${name}LatinCount` as const),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `behIsolated${name}ArabicCount` as const,
+  ),
   ...LETTER_ORIENTATION_NAMES.map((name) => `c${name}LatinCount` as const),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `dalIsolated${name}ArabicCount` as const,
+  ),
   ...LETTER_ORIENTATION_NAMES.map((name) => `dalet${name}HebrewCount` as const),
   ...LETTER_ORIENTATION_NAMES.map((name) => `delta${name}GreekCount` as const),
   ...LETTER_ORIENTATION_NAMES.map((name) => `e${name}LatinCount` as const),
   ...LETTER_ORIENTATION_NAMES.map((name) => `f${name}LatinCount` as const),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `fehIsolated${name}ArabicCount` as const,
+  ),
   ...LETTER_ORIENTATION_NAMES.map((name) => `gan${name}HanziCount` as const),
   ...LETTER_ORIENTATION_NAMES.map((name) => `h${name}LatinCount` as const),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `hahIsolated${name}ArabicCount` as const,
+  ),
   ...LETTER_ORIENTATION_NAMES.map((name) => `i${name}LatinCount` as const),
   ...LETTER_ORIENTATION_NAMES.map((name) => `jia${name}HanziCount` as const),
   ...LETTER_ORIENTATION_NAMES.map((name) => `jing${name}HanziCount` as const),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `kafIsolated${name}ArabicCount` as const,
+  ),
   ...LETTER_ORIENTATION_NAMES.map((name) => `kappa${name}GreekCount` as const),
   ...LETTER_ORIENTATION_NAMES.map((name) => `kieuk${name}HangulCount` as const),
   ...LETTER_ORIENTATION_NAMES.map((name) => `l${name}LatinCount` as const),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `lamIsolated${name}ArabicCount` as const,
+  ),
   ...LETTER_ORIENTATION_NAMES.map((name) => `lambda${name}GreekCount` as const),
   ...LETTER_ORIENTATION_NAMES.map((name) => `lamed${name}HebrewCount` as const),
   ...LETTER_ORIENTATION_NAMES.map((name) => `m${name}LatinCount` as const),
   ...LETTER_ORIENTATION_NAMES.map((name) => `mu${name}HanziCount` as const),
   ...LETTER_ORIENTATION_NAMES.map((name) => `n${name}LatinCount` as const),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `noonIsolated${name}ArabicCount` as const,
+  ),
   ...LETTER_ORIENTATION_NAMES.map((name) => `o${name}LatinCount` as const),
   ...LETTER_ORIENTATION_NAMES.map((name) => `omega${name}GreekCount` as const),
   ...LETTER_ORIENTATION_NAMES.map((name) => `phi${name}GreekCount` as const),
   ...LETTER_ORIENTATION_NAMES.map((name) => `pieup${name}HangulCount` as const),
   ...LETTER_ORIENTATION_NAMES.map((name) => `psi${name}GreekCount` as const),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `qafIsolated${name}ArabicCount` as const,
+  ),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `rehIsolated${name}ArabicCount` as const,
+  ),
   ...LETTER_ORIENTATION_NAMES.map((name) => `rho${name}GreekCount` as const),
   ...LETTER_ORIENTATION_NAMES.map((name) => `s${name}LatinCount` as const),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `sadIsolated${name}ArabicCount` as const,
+  ),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `seenIsolated${name}ArabicCount` as const,
+  ),
   ...LETTER_ORIENTATION_NAMES.map((name) => `shang${name}HanziCount` as const),
   ...LETTER_ORIENTATION_NAMES.map((name) => `shen${name}HanziCount` as const),
   ...LETTER_ORIENTATION_NAMES.map((name) => `sigma${name}GreekCount` as const),
   ...LETTER_ORIENTATION_NAMES.map((name) => `t${name}LatinCount` as const),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `tahIsolated${name}ArabicCount` as const,
+  ),
   ...LETTER_ORIENTATION_NAMES.map((name) => `tav${name}HebrewCount` as const),
   ...LETTER_ORIENTATION_NAMES.map((name) => `tian${name}HanziCount` as const),
   ...LETTER_ORIENTATION_NAMES.map((name) => `tu${name}HanziCount` as const),
@@ -104,9 +143,15 @@ export const LETTER_CHARACTERISTIC_KEYS = [
   ...LETTER_ORIENTATION_NAMES.map((name) => `u${name}LatinCount` as const),
   ...LETTER_ORIENTATION_NAMES.map((name) => `w${name}LatinCount` as const),
   ...LETTER_ORIENTATION_NAMES.map((name) => `wang${name}HanziCount` as const),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `wawIsolated${name}ArabicCount` as const,
+  ),
   ...LETTER_ORIENTATION_NAMES.map((name) => `x${name}LatinCount` as const),
   ...LETTER_ORIENTATION_NAMES.map((name) => `y${name}LatinCount` as const),
   ...LETTER_ORIENTATION_NAMES.map((name) => `ya${name}HangulCount` as const),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `yehIsolated${name}ArabicCount` as const,
+  ),
   ...LETTER_ORIENTATION_NAMES.map((name) => `yeo${name}HangulCount` as const),
   ...LETTER_ORIENTATION_NAMES.map((name) => `yo${name}HangulCount` as const),
   ...LETTER_ORIENTATION_NAMES.map((name) => `you${name}HanziCount` as const),

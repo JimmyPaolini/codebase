@@ -55,21 +55,28 @@ import { NorthForkCountCharacteristicService } from "./submatrix/fork/north-fork
 import { SouthForkCountCharacteristicService } from "./submatrix/fork/south-fork-count-characteristic.service";
 import { WestForkCountCharacteristicService } from "./submatrix/fork/west-fork-count-characteristic.service";
 import { ALatinLetterCharacteristicsService } from "./submatrix/letter/a-latin-letter-characteristics.service";
+import { AinIsolatedArabicLetterCharacteristicsService } from "./submatrix/letter/ain-isolated-arabic-letter-characteristics.service";
 import { AoHanziLetterCharacteristicsService } from "./submatrix/letter/ao-hanzi-letter-characteristics.service";
 import { BLatinLetterCharacteristicsService } from "./submatrix/letter/b-latin-letter-characteristics.service";
+import { BehIsolatedArabicLetterCharacteristicsService } from "./submatrix/letter/beh-isolated-arabic-letter-characteristics.service";
 import { CLatinLetterCharacteristicsService } from "./submatrix/letter/c-latin-letter-characteristics.service";
+import { DalIsolatedArabicLetterCharacteristicsService } from "./submatrix/letter/dal-isolated-arabic-letter-characteristics.service";
 import { DaletHebrewLetterCharacteristicsService } from "./submatrix/letter/dalet-hebrew-letter-characteristics.service";
 import { DeltaGreekLetterCharacteristicsService } from "./submatrix/letter/delta-greek-letter-characteristics.service";
 import { ELatinLetterCharacteristicsService } from "./submatrix/letter/e-latin-letter-characteristics.service";
 import { FLatinLetterCharacteristicsService } from "./submatrix/letter/f-latin-letter-characteristics.service";
+import { FehIsolatedArabicLetterCharacteristicsService } from "./submatrix/letter/feh-isolated-arabic-letter-characteristics.service";
 import { GanHanziLetterCharacteristicsService } from "./submatrix/letter/gan-hanzi-letter-characteristics.service";
 import { HLatinLetterCharacteristicsService } from "./submatrix/letter/h-latin-letter-characteristics.service";
+import { HahIsolatedArabicLetterCharacteristicsService } from "./submatrix/letter/hah-isolated-arabic-letter-characteristics.service";
 import { ILatinLetterCharacteristicsService } from "./submatrix/letter/i-latin-letter-characteristics.service";
 import { JiaHanziLetterCharacteristicsService } from "./submatrix/letter/jia-hanzi-letter-characteristics.service";
 import { JingHanziLetterCharacteristicsService } from "./submatrix/letter/jing-hanzi-letter-characteristics.service";
+import { KafIsolatedArabicLetterCharacteristicsService } from "./submatrix/letter/kaf-isolated-arabic-letter-characteristics.service";
 import { KappaGreekLetterCharacteristicsService } from "./submatrix/letter/kappa-greek-letter-characteristics.service";
 import { KieukHangulLetterCharacteristicsService } from "./submatrix/letter/kieuk-hangul-letter-characteristics.service";
 import { LLatinLetterCharacteristicsService } from "./submatrix/letter/l-latin-letter-characteristics.service";
+import { LamIsolatedArabicLetterCharacteristicsService } from "./submatrix/letter/lam-isolated-arabic-letter-characteristics.service";
 import { LambdaGreekLetterCharacteristicsService } from "./submatrix/letter/lambda-greek-letter-characteristics.service";
 import { LamedHebrewLetterCharacteristicsService } from "./submatrix/letter/lamed-hebrew-letter-characteristics.service";
 import {
@@ -79,17 +86,23 @@ import {
 import { MLatinLetterCharacteristicsService } from "./submatrix/letter/m-latin-letter-characteristics.service";
 import { MuHanziLetterCharacteristicsService } from "./submatrix/letter/mu-hanzi-letter-characteristics.service";
 import { NLatinLetterCharacteristicsService } from "./submatrix/letter/n-latin-letter-characteristics.service";
+import { NoonIsolatedArabicLetterCharacteristicsService } from "./submatrix/letter/noon-isolated-arabic-letter-characteristics.service";
 import { OLatinLetterCharacteristicsService } from "./submatrix/letter/o-latin-letter-characteristics.service";
 import { OmegaGreekLetterCharacteristicsService } from "./submatrix/letter/omega-greek-letter-characteristics.service";
 import { PhiGreekLetterCharacteristicsService } from "./submatrix/letter/phi-greek-letter-characteristics.service";
 import { PieupHangulLetterCharacteristicsService } from "./submatrix/letter/pieup-hangul-letter-characteristics.service";
 import { PsiGreekLetterCharacteristicsService } from "./submatrix/letter/psi-greek-letter-characteristics.service";
+import { QafIsolatedArabicLetterCharacteristicsService } from "./submatrix/letter/qaf-isolated-arabic-letter-characteristics.service";
+import { RehIsolatedArabicLetterCharacteristicsService } from "./submatrix/letter/reh-isolated-arabic-letter-characteristics.service";
 import { RhoGreekLetterCharacteristicsService } from "./submatrix/letter/rho-greek-letter-characteristics.service";
 import { SLatinLetterCharacteristicsService } from "./submatrix/letter/s-latin-letter-characteristics.service";
+import { SadIsolatedArabicLetterCharacteristicsService } from "./submatrix/letter/sad-isolated-arabic-letter-characteristics.service";
+import { SeenIsolatedArabicLetterCharacteristicsService } from "./submatrix/letter/seen-isolated-arabic-letter-characteristics.service";
 import { ShangHanziLetterCharacteristicsService } from "./submatrix/letter/shang-hanzi-letter-characteristics.service";
 import { ShenHanziLetterCharacteristicsService } from "./submatrix/letter/shen-hanzi-letter-characteristics.service";
 import { SigmaGreekLetterCharacteristicsService } from "./submatrix/letter/sigma-greek-letter-characteristics.service";
 import { TLatinLetterCharacteristicsService } from "./submatrix/letter/t-latin-letter-characteristics.service";
+import { TahIsolatedArabicLetterCharacteristicsService } from "./submatrix/letter/tah-isolated-arabic-letter-characteristics.service";
 import { TavHebrewLetterCharacteristicsService } from "./submatrix/letter/tav-hebrew-letter-characteristics.service";
 import { TianHanziLetterCharacteristicsService } from "./submatrix/letter/tian-hanzi-letter-characteristics.service";
 import { TuHanziLetterCharacteristicsService } from "./submatrix/letter/tu-hanzi-letter-characteristics.service";
@@ -97,9 +110,11 @@ import { TuSoilHanziLetterCharacteristicsService } from "./submatrix/letter/tu-s
 import { ULatinLetterCharacteristicsService } from "./submatrix/letter/u-latin-letter-characteristics.service";
 import { WLatinLetterCharacteristicsService } from "./submatrix/letter/w-latin-letter-characteristics.service";
 import { WangHanziLetterCharacteristicsService } from "./submatrix/letter/wang-hanzi-letter-characteristics.service";
+import { WawIsolatedArabicLetterCharacteristicsService } from "./submatrix/letter/waw-isolated-arabic-letter-characteristics.service";
 import { XLatinLetterCharacteristicsService } from "./submatrix/letter/x-latin-letter-characteristics.service";
 import { YLatinLetterCharacteristicsService } from "./submatrix/letter/y-latin-letter-characteristics.service";
 import { YaHangulLetterCharacteristicsService } from "./submatrix/letter/ya-hangul-letter-characteristics.service";
+import { YehIsolatedArabicLetterCharacteristicsService } from "./submatrix/letter/yeh-isolated-arabic-letter-characteristics.service";
 import { YeoHangulLetterCharacteristicsService } from "./submatrix/letter/yeo-hangul-letter-characteristics.service";
 import { YoHangulLetterCharacteristicsService } from "./submatrix/letter/yo-hangul-letter-characteristics.service";
 import { YouHanziLetterCharacteristicsService } from "./submatrix/letter/you-hanzi-letter-characteristics.service";
@@ -131,37 +146,50 @@ import type { Type } from "@nestjs/common";
 /** Every letter service a consumer of `CharacteristicsModule` must be able to inject, each providing its letter's sixteen orientation evaluators. */
 const LETTER_SERVICES: readonly Type<CharacteristicEvaluatorGroup<number>>[] = [
   ALatinLetterCharacteristicsService,
+  AinIsolatedArabicLetterCharacteristicsService,
   AoHanziLetterCharacteristicsService,
   BLatinLetterCharacteristicsService,
+  BehIsolatedArabicLetterCharacteristicsService,
   CLatinLetterCharacteristicsService,
+  DalIsolatedArabicLetterCharacteristicsService,
   DaletHebrewLetterCharacteristicsService,
   DeltaGreekLetterCharacteristicsService,
   ELatinLetterCharacteristicsService,
   FLatinLetterCharacteristicsService,
+  FehIsolatedArabicLetterCharacteristicsService,
   GanHanziLetterCharacteristicsService,
   HLatinLetterCharacteristicsService,
+  HahIsolatedArabicLetterCharacteristicsService,
   ILatinLetterCharacteristicsService,
   JiaHanziLetterCharacteristicsService,
   JingHanziLetterCharacteristicsService,
+  KafIsolatedArabicLetterCharacteristicsService,
   KappaGreekLetterCharacteristicsService,
   KieukHangulLetterCharacteristicsService,
   LLatinLetterCharacteristicsService,
+  LamIsolatedArabicLetterCharacteristicsService,
   LambdaGreekLetterCharacteristicsService,
   LamedHebrewLetterCharacteristicsService,
   MLatinLetterCharacteristicsService,
   MuHanziLetterCharacteristicsService,
   NLatinLetterCharacteristicsService,
+  NoonIsolatedArabicLetterCharacteristicsService,
   OLatinLetterCharacteristicsService,
   OmegaGreekLetterCharacteristicsService,
   PhiGreekLetterCharacteristicsService,
   PieupHangulLetterCharacteristicsService,
   PsiGreekLetterCharacteristicsService,
+  QafIsolatedArabicLetterCharacteristicsService,
+  RehIsolatedArabicLetterCharacteristicsService,
   RhoGreekLetterCharacteristicsService,
   SLatinLetterCharacteristicsService,
+  SadIsolatedArabicLetterCharacteristicsService,
+  SeenIsolatedArabicLetterCharacteristicsService,
   ShangHanziLetterCharacteristicsService,
   ShenHanziLetterCharacteristicsService,
   SigmaGreekLetterCharacteristicsService,
   TLatinLetterCharacteristicsService,
+  TahIsolatedArabicLetterCharacteristicsService,
   TavHebrewLetterCharacteristicsService,
   TianHanziLetterCharacteristicsService,
   TuHanziLetterCharacteristicsService,
@@ -169,9 +197,11 @@ const LETTER_SERVICES: readonly Type<CharacteristicEvaluatorGroup<number>>[] = [
   ULatinLetterCharacteristicsService,
   WLatinLetterCharacteristicsService,
   WangHanziLetterCharacteristicsService,
+  WawIsolatedArabicLetterCharacteristicsService,
   XLatinLetterCharacteristicsService,
   YLatinLetterCharacteristicsService,
   YaHangulLetterCharacteristicsService,
+  YehIsolatedArabicLetterCharacteristicsService,
   YeoHangulLetterCharacteristicsService,
   YoHangulLetterCharacteristicsService,
   YouHanziLetterCharacteristicsService,

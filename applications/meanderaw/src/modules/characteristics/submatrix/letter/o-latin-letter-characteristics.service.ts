@@ -28,7 +28,7 @@ export class OLatinLetterCharacteristicsService implements CharacteristicEvaluat
     this.evaluators = this.letterUtilitiesService.evaluators({
       aliases: {
         Southeast:
-          "the Greek Ο (omicron), the katakana ロ (ro), the hanzi 口 (kou), the hangul ㅁ (mieum), and the Hebrew ם (final mem)",
+          "the Greek Ο (omicron), the katakana ロ (ro), the hanzi 口 (kou), the hangul ㅁ (mieum), the Hebrew ם (final mem), the isolated Arabic ه (heh), and the isolated Arabic ة (teh marbuta)",
       },
       glyph: "O",
       key: (name) => `o${name}LatinCount`,

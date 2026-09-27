@@ -3,7 +3,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 
 import { expectedCounts, letterHarness } from "../../../../../testing/letters";
 
-import { ILatinLetterCharacteristicsService } from "./i-latin-letter-characteristics.service";
+import { AinIsolatedArabicLetterCharacteristicsService } from "./ain-isolated-arabic-letter-characteristics.service";
 import { LETTER_ORIENTATION_NAMES } from "./letter.constants";
 
 import type {
@@ -11,70 +11,63 @@ import type {
   LetterOrientationFixture,
 } from "../../../../../testing/letters";
 
-/** Each distinct orientation of the I as a Code holding one isolated copy, beside every orientation name drawing that ink. */
+/**
+ * Each distinct orientation of the ع (isolated Arabic ain) as a Code holding
+ * one isolated copy, beside every orientation name drawing that ink. The base,
+ * facing Southwest, draws:
+ *
+ * ```text
+ *  ┌╴
+ * ┌┴╴
+ * └─╴
+ * ```
+ */
 const ORIENTATIONS: readonly LetterOrientationFixture[] = [
   {
-    fixture: "02x02y4080",
-    names: [
-      "Southeast",
-      "SoutheastHalf",
-      "Southwest",
-      "SouthwestHalf",
-      "Northeast",
-      "NortheastHalf",
-      "Northwest",
-      "NorthwestHalf",
-    ],
+    fixture: "04x03y25002b502390",
+    names: ["Southeast", "NorthwestHalf"],
   },
   {
-    fixture: "03x01y210",
-    names: [
-      "SoutheastQuarter",
-      "SoutheastThreeQuarter",
-      "SouthwestQuarter",
-      "SouthwestThreeQuarter",
-      "NortheastQuarter",
-      "NortheastThreeQuarter",
-      "NorthwestQuarter",
-      "NorthwestThreeQuarter",
-    ],
+    fixture: "04x03y4440ce90a900",
+    names: ["SoutheastQuarter", "NorthwestThreeQuarter"],
+  },
+  {
+    fixture: "04x03y6310a7100a10",
+    names: ["SoutheastHalf", "Northwest"],
+  },
+  {
+    fixture: "04x03y06506dc08880",
+    names: ["SoutheastThreeQuarter", "NorthwestQuarter"],
+  },
+  {
+    fixture: "04x03y06106b10a310",
+    names: ["Southwest", "NortheastHalf"],
+  },
+  {
+    fixture: "04x03y6500ce508880",
+    names: ["SouthwestQuarter", "NortheastThreeQuarter"],
+  },
+  {
+    fixture: "04x03y235027902900",
+    names: ["SouthwestHalf", "Northeast"],
+  },
+  {
+    fixture: "04x03y4440adc00a90",
+    names: ["SouthwestThreeQuarter", "NortheastQuarter"],
   },
 ];
 
 /** Each alias, beside every orientation name drawing the ink it reads as. */
 const ALIASES: readonly LetterAliasFixture[] = [
   {
-    alias:
-      "the Greek Ι (iota), the hangul ㅣ (i), the Hebrew ו (vav), the Hebrew ן (final nun), and the isolated Arabic ا (alef)",
-    names: [
-      "Southeast",
-      "SoutheastHalf",
-      "Southwest",
-      "SouthwestHalf",
-      "Northeast",
-      "NortheastHalf",
-      "Northwest",
-      "NorthwestHalf",
-    ],
-  },
-  {
-    alias: "the hangul ㅡ (eu) and the hanzi 一 (yi)",
-    names: [
-      "SoutheastQuarter",
-      "SoutheastThreeQuarter",
-      "SouthwestQuarter",
-      "SouthwestThreeQuarter",
-      "NortheastQuarter",
-      "NortheastThreeQuarter",
-      "NorthwestQuarter",
-      "NorthwestThreeQuarter",
-    ],
+    alias: "the isolated Arabic غ (ghain)",
+    names: ["Southwest", "NortheastHalf"],
   },
 ];
 
-describe(ILatinLetterCharacteristicsService, () => {
+describe(AinIsolatedArabicLetterCharacteristicsService, () => {
   const letter = letterHarness(
-    ILatinLetterCharacteristicsService,
+    AinIsolatedArabicLetterCharacteristicsService,
     async (metadata) => Test.createTestingModule(metadata).compile(),
   );
 
@@ -84,7 +77,7 @@ describe(ILatinLetterCharacteristicsService, () => {
 
   it("keys all sixteen orientations, each marked a letter", () => {
     expect(letter.keys()).toStrictEqual(
-      LETTER_ORIENTATION_NAMES.map((name) => `i${name}LatinCount`),
+      LETTER_ORIENTATION_NAMES.map((name) => `ainIsolated${name}ArabicCount`),
     );
     expect(letter.marks()).toStrictEqual(
       LETTER_ORIENTATION_NAMES.map(() => true),

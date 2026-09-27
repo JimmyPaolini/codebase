@@ -31,6 +31,7 @@ export const LETTER_ORIENTATION_NAMES = [
  * The source of truth for `LetterScript`, so a new script is one entry here.
  */
 export const LETTER_SCRIPTS = {
+  Arabic: { baseCorner: "Southwest" },
   Greek: { baseCorner: "Southeast" },
   Hangul: { baseCorner: "Southeast" },
   Hanzi: { baseCorner: "Southeast" },

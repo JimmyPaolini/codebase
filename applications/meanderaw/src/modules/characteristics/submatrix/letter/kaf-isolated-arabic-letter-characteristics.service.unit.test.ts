@@ -3,50 +3,60 @@ import { beforeAll, describe, expect, it } from "vitest";
 
 import { expectedCounts, letterHarness } from "../../../../../testing/letters";
 
+import { KafIsolatedArabicLetterCharacteristicsService } from "./kaf-isolated-arabic-letter-characteristics.service";
 import { LETTER_ORIENTATION_NAMES } from "./letter.constants";
-import { RhoGreekLetterCharacteristicsService } from "./rho-greek-letter-characteristics.service";
 
-import type {
-  LetterAliasFixture,
-  LetterOrientationFixture,
-} from "../../../../../testing/letters";
+import type { LetterOrientationFixture } from "../../../../../testing/letters";
 
-/** Each distinct orientation of the Ρ (Greek rho) as a Code holding one isolated copy, beside every orientation name drawing that ink. */
+/**
+ * Each distinct orientation of the ك (isolated Arabic kaf) as a Code holding
+ * one isolated copy, beside every orientation name drawing that ink. The base,
+ * facing Southwest, draws:
+ *
+ * ```text
+ * ╷
+ * │ ╷
+ * └─┘
+ * ```
+ */
 const ORIENTATIONS: readonly LetterOrientationFixture[] = [
-  { fixture: "03x03y650e90800", names: ["Southeast", "NorthwestHalf"] },
   {
-    fixture: "04x02y27500a90",
+    fixture: "04x03y004040c0a390",
+    names: ["Southeast", "NorthwestHalf"],
+  },
+  {
+    fixture: "04x03y6100c000a310",
     names: ["SoutheastQuarter", "NorthwestThreeQuarter"],
   },
-  { fixture: "03x03y0406d0a90", names: ["SoutheastHalf", "Northwest"] },
   {
-    fixture: "04x02y6500ab10",
+    fixture: "04x03y6350c0808000",
+    names: ["SoutheastHalf", "Northwest"],
+  },
+  {
+    fixture: "04x03y235000c00290",
     names: ["SoutheastThreeQuarter", "NorthwestQuarter"],
   },
-  { fixture: "03x03y650ad0080", names: ["Southwest", "NortheastHalf"] },
   {
-    fixture: "04x02y06502b90",
+    fixture: "04x03y4000c040a390",
+    names: ["Southwest", "NortheastHalf"],
+  },
+  {
+    fixture: "04x03y6310c000a100",
     names: ["SouthwestQuarter", "NortheastThreeQuarter"],
   },
-  { fixture: "03x03y400e50a90", names: ["SouthwestHalf", "Northeast"] },
   {
-    fixture: "04x02y6710a900",
+    fixture: "04x03y635080c00080",
+    names: ["SouthwestHalf", "Northeast"],
+  },
+  {
+    fixture: "04x03y025000c02390",
     names: ["SouthwestThreeQuarter", "NortheastQuarter"],
   },
 ];
 
-/** Each alias, beside every orientation name drawing the ink it reads as. */
-const ALIASES: readonly LetterAliasFixture[] = [
-  { alias: "the Latin d", names: ["SoutheastHalf", "Northwest"] },
-  {
-    alias: "the Latin P and the isolated Arabic م (meem)",
-    names: ["Southeast", "NorthwestHalf"],
-  },
-];
-
-describe(RhoGreekLetterCharacteristicsService, () => {
+describe(KafIsolatedArabicLetterCharacteristicsService, () => {
   const letter = letterHarness(
-    RhoGreekLetterCharacteristicsService,
+    KafIsolatedArabicLetterCharacteristicsService,
     async (metadata) => Test.createTestingModule(metadata).compile(),
   );
 
@@ -56,7 +66,7 @@ describe(RhoGreekLetterCharacteristicsService, () => {
 
   it("keys all sixteen orientations, each marked a letter", () => {
     expect(letter.keys()).toStrictEqual(
-      LETTER_ORIENTATION_NAMES.map((name) => `rho${name}GreekCount`),
+      LETTER_ORIENTATION_NAMES.map((name) => `kafIsolated${name}ArabicCount`),
     );
     expect(letter.marks()).toStrictEqual(
       LETTER_ORIENTATION_NAMES.map(() => true),
@@ -84,8 +94,4 @@ describe(RhoGreekLetterCharacteristicsService, () => {
       );
     },
   );
-
-  it.each(ALIASES)("lists $alias on exactly $names", ({ alias, names }) => {
-    expect(letter.namesDescribing(alias)).toStrictEqual(names);
-  });
 });

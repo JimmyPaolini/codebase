@@ -143,6 +143,7 @@ describe(LetterUtilitiesService, () => {
   );
 
   it.each<{ corner: string; script: LetterScript }>([
+    { corner: "Southwest", script: "Arabic" },
     { corner: "Southeast", script: "Greek" },
     { corner: "Southeast", script: "Hangul" },
     { corner: "Southeast", script: "Hanzi" },

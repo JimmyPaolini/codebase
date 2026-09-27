@@ -40,7 +40,7 @@ const ORIENTATIONS: readonly LetterOrientationFixture[] = [
 const ALIASES: readonly LetterAliasFixture[] = [
   {
     alias:
-      "the Greek Ο (omicron), the katakana ロ (ro), the hanzi 口 (kou), the hangul ㅁ (mieum), and the Hebrew ם (final mem)",
+      "the Greek Ο (omicron), the katakana ロ (ro), the hanzi 口 (kou), the hangul ㅁ (mieum), the Hebrew ם (final mem), the isolated Arabic ه (heh), and the isolated Arabic ة (teh marbuta)",
     names: [
       "Southeast",
       "SoutheastQuarter",

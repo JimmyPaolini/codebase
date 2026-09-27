@@ -29,7 +29,7 @@ export class RhoGreekLetterCharacteristicsService implements CharacteristicEvalu
   ) {
     this.evaluators = this.letterUtilitiesService.evaluators({
       aliases: {
-        Southeast: "the Latin P",
+        Southeast: "the Latin P and the isolated Arabic م (meem)",
         SoutheastHalf: "the Latin d",
       },
       glyph: "Ρ (Greek rho)",
