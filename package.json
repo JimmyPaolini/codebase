@@ -93,7 +93,7 @@
     "zod": "catalog:"
   },
   "engines": {
-    "node": ">=",
+    "node": ">=24.16.0",
     "vscode": "^1.22.0"
   },
   "exports": {
