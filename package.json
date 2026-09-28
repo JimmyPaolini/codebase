@@ -119,6 +119,7 @@
       "./applications/JimmyPaolini"
     ],
     "ignoreRule": [
+      "packages-without-package-json",
       "root-package-private-field",
       "unordered-dependencies"
     ]
