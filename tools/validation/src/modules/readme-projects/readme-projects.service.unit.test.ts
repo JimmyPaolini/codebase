@@ -66,7 +66,7 @@ describe(ReadmeProjectsService, () => {
       expect.hasAssertions();
 
       existingPaths.add("/workspace/packages");
-      existingPaths.add("/workspace/packages/logger/package.json");
+      existingPaths.add("/workspace/packages/logging/package.json");
       scopeChildren.set("/workspace/packages", ["logger", "notes"]);
 
       existingPaths.add("/workspace/tools");
@@ -74,7 +74,7 @@ describe(ReadmeProjectsService, () => {
       scopeChildren.set("/workspace/tools", ["validation"]);
 
       expect(service.resolveWorkspaceProjectPaths("/workspace")).toStrictEqual([
-        "packages/logger",
+        "packages/logging",
         "tools/validation",
       ]);
     });
@@ -132,11 +132,11 @@ describe(ReadmeProjectsService, () => {
       existingPaths.add("/workspace/packages");
       scopeChildren.set("/workspace/packages", ["logger"]);
 
-      existingPaths.add("/workspace/packages/logger/package.json");
-      scopeChildren.set("/workspace/packages/logger", ["src"]);
+      existingPaths.add("/workspace/packages/logging/package.json");
+      scopeChildren.set("/workspace/packages/logging", ["src"]);
 
       expect(service.resolveWorkspaceProjectPaths("/workspace")).toStrictEqual([
-        "packages/logger",
+        "packages/logging",
       ]);
     });
   });
@@ -156,8 +156,8 @@ describe(ReadmeProjectsService, () => {
       expect.hasAssertions();
       expect(
         service.findUndocumentedProjectPaths(
-          ["packages/logger"],
-          "- **[logger](packages/logger)** - Shared logger",
+          ["packages/logging"],
+          "- **[logger](packages/logging)** - Shared logger",
         ),
       ).toStrictEqual([]);
     });
@@ -166,8 +166,8 @@ describe(ReadmeProjectsService, () => {
       expect.hasAssertions();
       expect(
         service.findUndocumentedProjectPaths(
-          ["packages/logger", "packages/orphan"],
-          "- **[logger](packages/logger)** - Shared logger",
+          ["packages/logging", "packages/orphan"],
+          "- **[logger](packages/logging)** - Shared logger",
         ),
       ).toStrictEqual(["packages/orphan"]);
     });

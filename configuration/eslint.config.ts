@@ -22,7 +22,7 @@ import eslintPluginUnicorn from "eslint-plugin-unicorn";
 import eslintPluginYml from "eslint-plugin-yml";
 import tseslint from "typescript-eslint";
 
-import { conventionalLogMessagePlugin } from "@codebase/logger/eslint";
+import { conventionalLogMessagePlugin } from "@codebase/logging/eslint";
 
 import type { ConfigWithExtends } from "typescript-eslint";
 
@@ -405,7 +405,7 @@ export default [
       "@nx/dependency-checks": [
         "error",
         {
-          ignoredDependencies: ["@codebase/logger"],
+          ignoredDependencies: ["@codebase/logging"],
         },
       ],
       "@nx/enforce-module-boundaries": [
@@ -1404,7 +1404,7 @@ export default [
       "@nx/dependency-checks": [
         "error",
         {
-          ignoredDependencies: ["@codebase/logger"],
+          ignoredDependencies: ["@codebase/logging"],
         },
       ],
       // JSONC style rules

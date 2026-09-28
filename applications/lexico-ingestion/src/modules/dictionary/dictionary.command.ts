@@ -6,7 +6,7 @@ import { Command, CommandRunner, Option } from "nest-commander";
 import prompts from "prompts";
 
 import { Lexeme, Translation } from "@codebase/lexico-entities";
-import { LoggerService } from "@codebase/logger";
+import { LoggerService } from "@codebase/logging";
 
 import { LexemesService } from "../lexemes/lexemes.service";
 import { ManualService } from "../manual/manual.service";

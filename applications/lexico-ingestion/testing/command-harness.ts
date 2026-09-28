@@ -2,7 +2,7 @@ import { createMock, type DeepMocked } from "@golevelup/ts-vitest";
 import { Test, type TestingModule } from "@nestjs/testing";
 import { vi } from "vitest";
 
-import { LoggerService } from "@codebase/logger";
+import { LoggerService } from "@codebase/logging";
 
 import type { Provider, Type } from "@nestjs/common";
 

@@ -23,7 +23,7 @@ import {
   UninflectedInflection,
   VerbInflection,
 } from "@codebase/lexico-entities";
-import { LoggerModule } from "@codebase/logger";
+import { LoggerModule } from "@codebase/logging";
 
 import { environmentSchema } from "./lexico-api.constants";
 import { HealthModule } from "./modules/health/health.module";

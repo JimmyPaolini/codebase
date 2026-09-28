@@ -7,7 +7,7 @@ import _ from "lodash";
 import { Command, CommandRunner, Option } from "nest-commander";
 import prompts from "prompts";
 
-import { LoggerService } from "@codebase/logger";
+import { LoggerService } from "@codebase/logging";
 
 import { LIBRARY_PROVIDERS_TOKEN } from "./library.constants";
 

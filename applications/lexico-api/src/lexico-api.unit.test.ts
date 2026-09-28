@@ -34,7 +34,7 @@ vi.mock("./lexico-api.module", () => ({
   },
 }));
 
-vi.mock("@codebase/logger", () => ({
+vi.mock("@codebase/logging", () => ({
   LoggerService: class MockLoggerService {
     public constructor() {
       loggerConstructorMock();

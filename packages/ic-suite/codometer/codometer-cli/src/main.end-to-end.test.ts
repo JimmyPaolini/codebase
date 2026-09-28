@@ -149,7 +149,7 @@ describe("main end-to-end suite", () => {
       // One project configures itself. Nothing above it does, and the upward
       // search runs out at the filesystem root.
       writeFileSync(
-        path.join(workingDirectory, "packages/logger/codometer.config.json"),
+        path.join(workingDirectory, "packages/logging/codometer.config.json"),
         JSON.stringify({
           format: "json",
           limits: [{ label: "Bundle", metric: "codebase.size", value: 6000 }],
@@ -189,7 +189,7 @@ describe("main end-to-end suite", () => {
       expect(standardOutput).toContain("Bundle");
       expect(standardOutput).toContain("`codebase.size`");
       expect(standardOutput).toContain(
-        "`packages/logger/codometer.config.json`",
+        "`packages/logging/codometer.config.json`",
       );
     });
 
@@ -227,7 +227,7 @@ describe("main end-to-end suite", () => {
       writeFileSync(
         path.join(
           workingDirectory,
-          ".baseline/packages/logger/codometer-report.json",
+          ".baseline/packages/logging/codometer-report.json",
         ),
         JSON.stringify({
           targets: [
@@ -242,7 +242,7 @@ describe("main end-to-end suite", () => {
         }),
       );
       writeFileSync(
-        path.join(workingDirectory, "packages/logger/codometer-report.json"),
+        path.join(workingDirectory, "packages/logging/codometer-report.json"),
         JSON.stringify({
           targets: [
             {

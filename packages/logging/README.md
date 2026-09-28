@@ -6,7 +6,7 @@ The shared NestJS logging package.
 
 The one `LoggerService` every NestJS project in the codebase injects. Before
 this package, seventeen projects each carried an identical copy of the same
-`src/modules/logger` directory, so a fix to log formatting had to be applied
+`src/modules/logging` directory, so a fix to log formatting had to be applied
 seventeen times.
 
 It exports two things:
@@ -22,7 +22,7 @@ Import `LoggerModule` once in the root module. It is `@Global()`, so feature
 modules inject `LoggerService` without importing anything themselves:
 
 ```ts
-import { LoggerModule } from "@codebase/logger";
+import { LoggerModule } from "@codebase/logging";
 
 @Module({
   imports: [LoggerModule],
@@ -35,7 +35,7 @@ instance. Always call `setContext` in the constructor so every line is tagged
 with the originating class:
 
 ```ts
-import { LoggerService } from "@codebase/logger";
+import { LoggerService } from "@codebase/logging";
 
 @Injectable()
 export class MyService {
@@ -82,7 +82,7 @@ MIT — see [LICENSE](../../LICENSE).
 
 ## 🔭 Callidescope
 
-Call stacks traced through `packages/logger`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
+Call stacks traced through `packages/logging`, deepest first. Each frame shows what it takes, what it returns, and what its documentation says.
 
 | Measure | Value |
 | --- | --- |
@@ -108,12 +108,12 @@ What this project is judged against, as declared in its own `callidescope.config
 **1. `CallExpression`** — depth 4 · orphan-root
 
 ```text
-🚀 CallExpression(node: SimpleCallExpression & Rule.NodeParentExtension): void [packages/logger/src/lib/conventional-log-message.eslint-rule.ts:174]
-  └─> checkMessageArgumentConvention(argument: MessageArgumentShape): ConventionalLogMessageViolation | undefined [packages/logger/src/lib/conventional-log-message.eslint-rule.ts:91]
+🚀 CallExpression(node: SimpleCallExpression & Rule.NodeParentExtension): void [packages/logging/src/lib/conventional-log-message.eslint-rule.ts:174]
+  └─> checkMessageArgumentConvention(argument: MessageArgumentShape): ConventionalLogMessageViolation | undefined [packages/logging/src/lib/conventional-log-message.eslint-rule.ts:91]
      ↳ Extracts a message argument's static text, if it has one, and checks it against the logging convention.
-    └─> checkConventionalMessage(text: string): ConventionalLogMessageViolation | undefined [packages/logger/src/lib/conventional-log-message.eslint-rule.ts:61]
+    └─> checkConventionalMessage(text: string): ConventionalLogMessageViolation | undefined [packages/logging/src/lib/conventional-log-message.eslint-rule.ts:61]
        ↳ Checks a static message's text against the logging convention.
-      └─> parseLogMessage(message: string): ParsedLogMessage [packages/logger/src/lib/conventional-log-message.eslint-rule.ts:124]
+      └─> parseLogMessage(message: string): ParsedLogMessage [packages/logging/src/lib/conventional-log-message.eslint-rule.ts:124]
          ↳ Splits a leading emoji off a message, leaving prose behind.
 ```
 
@@ -121,9 +121,9 @@ What this project is judged against, as declared in its own `callidescope.config
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `checkConventionalMessage` | 2 | `parseLogMessage`, `isConventionalVerb` | `packages/logger/src/lib/conventional-log-message.eslint-rule.ts:61` |
-| `CallExpression` | 2 | `isLoggerObjectText`, `checkMessageArgumentConvention` | `packages/logger/src/lib/conventional-log-message.eslint-rule.ts:174` |
-| `checkMessageArgumentConvention` | 1 | `checkConventionalMessage` | `packages/logger/src/lib/conventional-log-message.eslint-rule.ts:91` |
+| `checkConventionalMessage` | 2 | `parseLogMessage`, `isConventionalVerb` | `packages/logging/src/lib/conventional-log-message.eslint-rule.ts:61` |
+| `CallExpression` | 2 | `isLoggerObjectText`, `checkMessageArgumentConvention` | `packages/logging/src/lib/conventional-log-message.eslint-rule.ts:174` |
+| `checkMessageArgumentConvention` | 1 | `checkConventionalMessage` | `packages/logging/src/lib/conventional-log-message.eslint-rule.ts:91` |
 <!-- callidescope:end -->
 
 ## 🕸️ Codependix
@@ -202,12 +202,12 @@ graph LR
   file_src_index_ts["src/index.ts"]
   file_src_lib_conventional_log_message_eslint_rule_ts["src/lib/conventional-log-message.eslint-rule.ts"]
   file_src_lib_conventional_log_message_eslint_rule_unit_test_ts["src/lib/conventional-log-message.eslint-rule.unit.test.ts"]
-  file_src_modules_logger_logger_constants_ts["src/modules/logger/logger.constants.ts"]
-  file_src_modules_logger_logger_module_ts["src/modules/logger/logger.module.ts"]
-  file_src_modules_logger_logger_module_unit_test_ts["src/modules/logger/logger.module.unit.test.ts"]
-  file_src_modules_logger_logger_service_ts["src/modules/logger/logger.service.ts"]
-  file_src_modules_logger_logger_service_unit_test_ts["src/modules/logger/logger.service.unit.test.ts"]
-  file_src_modules_logger_logger_types_ts["src/modules/logger/logger.types.ts"]
+  file_src_modules_logger_logger_constants_ts["src/modules/logging/logging.constants.ts"]
+  file_src_modules_logger_logger_module_ts["src/modules/logging/logging.module.ts"]
+  file_src_modules_logger_logger_module_unit_test_ts["src/modules/logging/logging.module.unit.test.ts"]
+  file_src_modules_logger_logger_service_ts["src/modules/logging/logging.service.ts"]
+  file_src_modules_logger_logger_service_unit_test_ts["src/modules/logging/logging.service.unit.test.ts"]
+  file_src_modules_logger_logger_types_ts["src/modules/logging/logging.types.ts"]
   file_testing_mocks_ts["testing/mocks.ts"]
   file_testing_setup_ts["testing/setup.ts"]
   file_vitest_config_ts["vitest.config.ts"]

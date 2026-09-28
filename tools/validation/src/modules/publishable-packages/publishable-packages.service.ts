@@ -11,7 +11,7 @@ import path from "node:path";
 
 import { Injectable } from "@nestjs/common";
 
-import { LoggerService } from "@codebase/logger";
+import { LoggerService } from "@codebase/logging";
 
 import { TARBALLS_DIRECTORY_MISSING_MESSAGE } from "./publishable-packages.constants";
 

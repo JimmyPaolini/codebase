@@ -4,7 +4,7 @@ import { getRepositoryToken, TypeOrmModule } from "@nestjs/typeorm";
 import { DataSource, type Repository } from "typeorm";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-import { LoggerService } from "@codebase/logger";
+import { LoggerService } from "@codebase/logging";
 
 import { CorpusService } from "../corpus/corpus.service";
 import { HISTORICAL_CORPUS } from "../corpus/historical-corpus.constants";

@@ -2,7 +2,7 @@ import "reflect-metadata";
 import { NestFactory } from "@nestjs/core";
 import { createLightship } from "lightship";
 
-import { LoggerService } from "@codebase/logger";
+import { LoggerService } from "@codebase/logging";
 
 import { environmentSchema } from "./lexico-api.constants";
 import { LexicoApiModule } from "./lexico-api.module";

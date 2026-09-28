@@ -6,7 +6,7 @@ import { Injectable } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import { SpelunkerModule } from "nestjs-spelunker";
 
-import { LoggerService } from "@codebase/logger";
+import { LoggerService } from "@codebase/logging";
 
 import { SyntheticRootModule } from "./nestjs-project-synthetic.module";
 import {

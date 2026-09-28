@@ -112,7 +112,7 @@ measured — its own sources, and whatever inputs the configuration declares for
 it:
 
 ```bash
-cd packages/logger && codometer --check limits
+cd packages/logging && codometer --check limits
 ```
 
 With no `--config`, the configuration is found by walking upward from that
@@ -277,7 +277,7 @@ codometer configuration --limits
 ```text
 | Directory        | Metric                    | Label | Severity | Value   | Declared in                          |
 | ---              | ---                       | ---   | ---      | ---     | ---                                  |
-| packages/logger  | `Compiled JavaScript.size`| —     | fail     | 12.00 kB | `packages/logger/codometer.config.ts`|
+| packages/logging  | `Compiled JavaScript.size`| —     | fail     | 12.00 kB | `packages/logging/codometer.config.ts`|
 ```
 
 It walks for every configuration file beneath the directory it is given — in
