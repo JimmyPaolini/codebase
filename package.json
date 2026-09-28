@@ -93,7 +93,7 @@
     "zod": "catalog:"
   },
   "engines": {
-    "node": ">=",
+    "node": ">=24.16.0",
     "vscode": "^1.22.0"
   },
   "exports": {
@@ -106,7 +106,7 @@
   "release": {
     "extends": "./configuration/release.config.cjs"
   },
-  "repository": "JimmyPaolini/codebase.git",
+  "repository": "Organizzolini/codebase.git",
   "scripts": {
     "postinstall": "conformetry-nx-bootstrap && bash scripts/install-skills.sh",
     "prepare": "husky configuration/.husky",
@@ -125,5 +125,5 @@
     ]
   },
   "type": "module",
-  "version": "2.24.2"
+  "version": "2.27.0"
 }

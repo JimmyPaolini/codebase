@@ -4,11 +4,21 @@ import { CodeModule } from "../code/code.module";
 import { GraphModule } from "../graph/graph.module";
 import { MatrixModule } from "../matrix/matrix.module";
 
+import { CharacteristicContextService } from "./characteristic-context.service";
 import { CharacteristicsFamilyService } from "./characteristics-family.service";
 import { CharacteristicsPathService } from "./characteristics-path.service";
 import { CharacteristicsShapeService } from "./characteristics-shape.service";
 import { CharacteristicsService } from "./characteristics.service";
 import { ConnectivityService } from "./connectivity.service";
+import { TileCrossingCharacteristicsModule } from "./path/tile-crossing/tile-crossing-characteristics.module";
+import { TopologyCharacteristicsModule } from "./path/topology/topology-characteristics.module";
+import { TurnCharacteristicsModule } from "./path/turn/turn-characteristics.module";
+import { CornerCharacteristicsModule } from "./submatrix/corner/corner-characteristics.module";
+import { CrossCharacteristicsModule } from "./submatrix/cross/cross-characteristics.module";
+import { ForkCharacteristicsModule } from "./submatrix/fork/fork-characteristics.module";
+import { LetterCharacteristicsModule } from "./submatrix/letter/letter-characteristics.module";
+import { PointCharacteristicsModule } from "./submatrix/point/point-characteristics.module";
+import { RectangleCharacteristicsModule } from "./submatrix/rectangle/rectangle-characteristics.module";
 
 /**
  * Wires up the Characteristic computation that reads a Code directly — no
@@ -24,16 +34,46 @@ import { ConnectivityService } from "./connectivity.service";
  * is written against `InkAdjacency` rather than against a document or a
  * tile, precisely so a third caller can bring its own vocabulary — see its
  * own doc comment — and this is that third caller.
+ *
+ * Each modular characteristic evaluator lives in its own service under a
+ * category folder (`submatrix/`, `path/`, `compound/`) and a group folder
+ * beneath it. Each group folder holds one small module that provides and
+ * exports its services, and this module imports and re-exports every group
+ * module, so a consumer of `CharacteristicsModule` can inject any evaluator.
  */
 @Module({
   controllers: [],
   exports: [
+    CharacteristicContextService,
     CharacteristicsFamilyService,
     CharacteristicsService,
     ConnectivityService,
+    CornerCharacteristicsModule,
+    CrossCharacteristicsModule,
+    ForkCharacteristicsModule,
+    LetterCharacteristicsModule,
+    PointCharacteristicsModule,
+    RectangleCharacteristicsModule,
+    TileCrossingCharacteristicsModule,
+    TopologyCharacteristicsModule,
+    TurnCharacteristicsModule,
   ],
-  imports: [CodeModule, GraphModule, MatrixModule],
+  imports: [
+    CodeModule,
+    CornerCharacteristicsModule,
+    CrossCharacteristicsModule,
+    ForkCharacteristicsModule,
+    GraphModule,
+    LetterCharacteristicsModule,
+    MatrixModule,
+    PointCharacteristicsModule,
+    RectangleCharacteristicsModule,
+    TileCrossingCharacteristicsModule,
+    TopologyCharacteristicsModule,
+    TurnCharacteristicsModule,
+  ],
   providers: [
+    CharacteristicContextService,
     CharacteristicsFamilyService,
     CharacteristicsPathService,
     CharacteristicsShapeService,

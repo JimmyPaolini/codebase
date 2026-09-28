@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.27.0](https://github.com/JimmyPaolini/codebase/compare/v2.26.0...v2.27.0) (2026-09-28)
+
+### ✨ Features
+
+* **meanderaw:** ✨ implement topological betti numbers and path dynamic characteristic services ([#1161](https://github.com/JimmyPaolini/codebase/issues/1161)) ([ac45a21](https://github.com/JimmyPaolini/codebase/commit/ac45a21d8b01ed7e3033633f4098736ab6c944ac)), closes [#1150](https://github.com/JimmyPaolini/codebase/issues/1150) [#1151](https://github.com/JimmyPaolini/codebase/issues/1151) [#1152](https://github.com/JimmyPaolini/codebase/issues/1152) [#1153](https://github.com/JimmyPaolini/codebase/issues/1153) [#1140](https://github.com/JimmyPaolini/codebase/issues/1140) [#1160](https://github.com/JimmyPaolini/codebase/issues/1160)
+
+## [2.26.0](https://github.com/JimmyPaolini/codebase/compare/v2.25.0...v2.26.0) (2026-09-28)
+
+### ✨ Features
+
+* **meanderaw:** ✨ implement submatrix forks, rectangles, and minimal letter glyph services ([#1162](https://github.com/JimmyPaolini/codebase/issues/1162)) ([edaaed7](https://github.com/JimmyPaolini/codebase/commit/edaaed701d93b200ea21a6284d90b4ea5f7bb2f3)), closes [#1140](https://github.com/JimmyPaolini/codebase/issues/1140) [#1145](https://github.com/JimmyPaolini/codebase/issues/1145) [#1146](https://github.com/JimmyPaolini/codebase/issues/1146) [#1147](https://github.com/JimmyPaolini/codebase/issues/1147) [#1148](https://github.com/JimmyPaolini/codebase/issues/1148)
+
+## [2.25.0](https://github.com/JimmyPaolini/codebase/compare/v2.24.2...v2.25.0) (2026-09-28)
+
+### ✨ Features
+
+* **meanderaw:** ✨ establish characteristic evaluator contract and atomic submatrix point/corner services ([#1160](https://github.com/JimmyPaolini/codebase/issues/1160)) ([c4585bc](https://github.com/JimmyPaolini/codebase/commit/c4585bcc2d06aa4e7aed69f14c549ba67966ccee)), closes [#1141](https://github.com/JimmyPaolini/codebase/issues/1141) [#1142](https://github.com/JimmyPaolini/codebase/issues/1142) [#1143](https://github.com/JimmyPaolini/codebase/issues/1143) [#1144](https://github.com/JimmyPaolini/codebase/issues/1144) [#1140](https://github.com/JimmyPaolini/codebase/issues/1140) [#1145](https://github.com/JimmyPaolini/codebase/issues/1145) [#1150](https://github.com/JimmyPaolini/codebase/issues/1150)
+
 ## [2.24.2](https://github.com/JimmyPaolini/codebase/compare/v2.24.1...v2.24.2) (2026-09-27)
 
 ### 🐛 Bug Fixes

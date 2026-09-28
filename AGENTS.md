@@ -325,11 +325,11 @@ read their per-repository configuration from `docs/agents/`. Edit these files
 directly; re-run `/setup-matt-pocock-skills` only to switch issue trackers or
 start over.
 
-| Concern       | Setting                                                                                                                   | Reference                                                      |
-| ------------- | ------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
-| Issue tracker | GitHub Issues in `JimmyPaolini/codebase`, via the `gh` CLI — a spec, then one issue per pull request, then one per commit | [`docs/agents/issue-tracker.md`](docs/agents/issue-tracker.md) |
-| Triage labels | The five canonical roles mapped onto this repository's `status:` label family                                             | [`docs/agents/triage-labels.md`](docs/agents/triage-labels.md) |
-| Domain docs   | Single-context — one root `CONTEXT.md` plus root `docs/adr/`                                                              | [`docs/agents/domain.md`](docs/agents/domain.md)               |
+| Concern       | Setting                                                                                                                    | Reference                                                      |
+| ------------- | -------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| Issue tracker | GitHub Issues in `Organizzolini/codebase`, via the `gh` CLI — a spec, then one issue per pull request, then one per commit | [`docs/agents/issue-tracker.md`](docs/agents/issue-tracker.md) |
+| Triage labels | The five canonical roles mapped onto this repository's `status:` label family                                              | [`docs/agents/triage-labels.md`](docs/agents/triage-labels.md) |
+| Domain docs   | Single-context — one root `CONTEXT.md` plus root `docs/adr/`                                                               | [`docs/agents/domain.md`](docs/agents/domain.md)               |
 
 `CONTEXT.md` and `docs/adr/` are both populated now.
 [domain-modeling](.agents/skills/domain-modeling/SKILL.md) grows them lazily, as

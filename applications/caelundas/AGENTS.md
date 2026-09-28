@@ -198,7 +198,7 @@ Caelundas runs as a **Kubernetes Job** (not Deployment):
 ```bash
 # 1. Build and push image
 nx run caelundas:docker-build
-docker push ghcr.io/jimmypaolini/caelundas:latest
+docker push ghcr.io/organizzolini/caelundas:latest
 
 # 2. Deploy Job (auto-generated release name)
 nx run caelundas:helm-upgrade
