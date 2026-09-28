@@ -42,7 +42,7 @@ describe("lexemes resolver suite", () => {
     });
 
     const resolver = new LexemesResolver(mockService);
-    const result = await resolver.lexeme("lex-1");
+    const result = await resolver.lexeme({ id: "lex-1" });
 
     expect(mockService.findById).toHaveBeenCalledWith("lex-1");
     expect(result).toBe(mockLexeme);
@@ -63,7 +63,7 @@ describe("lexemes resolver suite", () => {
     });
 
     const resolver = new LexemesResolver(mockService);
-    const result = await resolver.lexemes(["lex-1", "lex-2"]);
+    const result = await resolver.lexemes({ ids: ["lex-1", "lex-2"] });
 
     expect(mockService.findByIds).toHaveBeenCalledWith(["lex-1", "lex-2"]);
     expect(result).toStrictEqual([mockLexeme1, mockLexeme2]);
