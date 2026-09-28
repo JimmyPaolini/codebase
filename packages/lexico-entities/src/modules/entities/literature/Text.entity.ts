@@ -13,6 +13,8 @@ import { AuditableEntity } from "../base/Auditable.entity";
 import { Author } from "./Author.entity";
 import { Line } from "./Line.entity";
 
+import type { Relation } from "typeorm";
+
 /**
  * Represents a text or a collection of texts (like a book or corpus).
  */
@@ -27,7 +29,7 @@ export class Text extends AuditableEntity {
   @Index()
   @JoinColumn({ name: "author_id" })
   @ManyToOne("Author", "texts", { eager: true, onDelete: "CASCADE" })
-  author!: Author;
+  author!: Relation<Author>;
 
   @Field(() => [Text])
   @OneToMany("Text", "parentText", { cascade: true })
@@ -48,7 +50,7 @@ export class Text extends AuditableEntity {
     nullable: true,
     onDelete: "CASCADE",
   })
-  parentText?: null | Text;
+  parentText?: null | Relation<Text>;
 
   @Column("varchar", {
     comment: "Unique slug identifier (e.g. 'caesar/de bello gallico')",
