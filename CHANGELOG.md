@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.26.0](https://github.com/JimmyPaolini/codebase/compare/v2.25.0...v2.26.0) (2026-09-28)
+
+### ✨ Features
+
+* **meanderaw:** ✨ implement submatrix forks, rectangles, and minimal letter glyph services ([#1162](https://github.com/JimmyPaolini/codebase/issues/1162)) ([edaaed7](https://github.com/JimmyPaolini/codebase/commit/edaaed701d93b200ea21a6284d90b4ea5f7bb2f3)), closes [#1140](https://github.com/JimmyPaolini/codebase/issues/1140) [#1145](https://github.com/JimmyPaolini/codebase/issues/1145) [#1146](https://github.com/JimmyPaolini/codebase/issues/1146) [#1147](https://github.com/JimmyPaolini/codebase/issues/1147) [#1148](https://github.com/JimmyPaolini/codebase/issues/1148)
+
 ## [2.25.0](https://github.com/JimmyPaolini/codebase/compare/v2.24.2...v2.25.0) (2026-09-28)
 
 ### ✨ Features
