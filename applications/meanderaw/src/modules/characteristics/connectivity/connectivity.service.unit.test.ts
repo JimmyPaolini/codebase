@@ -1,11 +1,11 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { CodeService } from "../code/code.service";
-import { GraphService } from "../graph/graph.service";
-import { MatrixService } from "../matrix/matrix.service";
-import { SymmetryService } from "../symmetry/symmetry.service";
-import { TileService } from "../tile/tile.service";
+import { CodeService } from "../../code/code.service";
+import { GraphService } from "../../graph/graph.service";
+import { MatrixService } from "../../matrix/matrix.service";
+import { SymmetryService } from "../../symmetry/symmetry.service";
+import { TileService } from "../../tile/tile.service";
 
 import { ConnectivityService } from "./connectivity.service";
 

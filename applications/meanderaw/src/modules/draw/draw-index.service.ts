@@ -141,19 +141,19 @@ export class DrawIndexService {
    * row's markup would multiply an already large document by six for a
    * drawing each copy is identical in.
    *
-   * Each placement steps one pitch further along, which is the distance that
-   * makes consecutive tiles meet: a tile's own drawing runs from `offset` to
-   * `offset + columns * unit`, so a step of `pitch * unit` lands the next
+   * Each placement steps one tile width (`columns`) further along, which is
+   * the distance that makes consecutive tiles meet: a tile's own drawing runs
+   * from `offset` to `offset + columns * unit`, so a step of `columns * unit` lands the next
    * tile's first lattice column exactly on the last one's right edge. The
    * half-stroke gutters either side of that edge overlap, and both tiles ink
    * the same square cap there, so the seam paints over itself.
    */
   private renderBand(meander: Meander): string {
     const geometry = this.geometryService.compute(meander.rows);
-    const pitch = meander.pitch * geometry.unit;
+    const step = meander.columns * geometry.unit;
     const height = this.format(geometry.height + geometry.strokeWidth);
     const width = this.format(
-      (BAND_REPEAT_COUNT - 1) * pitch +
+      (BAND_REPEAT_COUNT - 1) * step +
         meander.columns * geometry.unit +
         geometry.strokeWidth,
     );
@@ -164,7 +164,7 @@ export class DrawIndexService {
       meander.columns,
     );
     const svg = this.drawingService.render(parsed).trim();
-    return `<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><g id="${tile}">${svg}</g></defs>${this.renderRepeats(tile, pitch)}</svg>`;
+    return `<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><g id="${tile}">${svg}</g></defs>${this.renderRepeats(tile, step)}</svg>`;
   }
 
   /** Renders the jump list, so a family thousands of rows down the page is one click away. */
@@ -183,12 +183,12 @@ export class DrawIndexService {
     return `<figure><div class="art">${this.renderBand(meander)}</div><figcaption>${this.caption(meander)}</figcaption></figure>`;
   }
 
-  /** The placements themselves: the one defined tile, referenced once per repeat, each a further pitch along. */
-  private renderRepeats(tile: string, pitch: number): string {
+  /** The placements themselves: the one defined tile, referenced once per repeat, each a further step along. */
+  private renderRepeats(tile: string, step: number): string {
     return Array.from(
       { length: BAND_REPEAT_COUNT },
       (_repeat, index) =>
-        `<use href="#${tile}" x="${this.format(index * pitch)}"/>`,
+        `<use href="#${tile}" x="${this.format(index * step)}"/>`,
     ).join("");
   }
 

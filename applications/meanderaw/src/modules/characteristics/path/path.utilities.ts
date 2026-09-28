@@ -1,4 +1,4 @@
-import type { CodeEdge } from "../characteristics.types";
+import type { CodeEdge } from "../connectivity/connectivity.types";
 import type {
   HalfEdge,
   HalfEdgeGraph,

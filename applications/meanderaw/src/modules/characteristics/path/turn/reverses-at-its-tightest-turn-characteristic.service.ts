@@ -1,22 +1,54 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 
-import { ConnectivityService } from "./connectivity.service";
+import { ConnectivityService } from "../../connectivity/connectivity.service";
+import { PointUtilitiesService } from "../../submatrix/point/point-utilities.service";
 
-import type { Matrix } from "../matrix/matrix.types";
+import type { Matrix } from "../../../matrix/matrix.types";
+import type {
+  CharacteristicContext,
+  CharacteristicEvaluator,
+  CharacteristicMetadata,
+} from "../../characteristics.types";
+import type { CodeEdge } from "../../connectivity/connectivity.types";
+import type { TurnTraceMetrics } from "./reverses-at-its-tightest-turn.types";
 
 /**
- * Service for analyzing single-arc paths to determine turning and reversing characteristics.
+ * Whether one repeat's ink reverses at its tightest possible turn: a turn
+ * landing exactly one lattice step after the walk's start, or after its
+ * previous turn — the verbatim port of the legacy path tracer's `hasTightU`
+ * check. That elapsed-step rule, not a same-hand comparison, is what
+ * "tightest" means here: two turns of *opposite* hands one step apart still
+ * count, which is why this differs from `tightestTurnCountCharacteristic`'s
+ * same-hand adjacency check. Always `false` when any point carries three or
+ * four arms — read directly off its own digit, not off the graph
+ * `ConnectivityService` builds — since a junction ends every strand before a
+ * turn can be judged.
  */
 @Injectable()
-export class CharacteristicsPathService {
+export class ReversesAtItsTightestTurnCharacteristicService implements CharacteristicEvaluator<boolean> {
   // 🏗 Dependency Injection
+
   constructor(
-    private readonly meanderConnectivityService: ConnectivityService,
+    @Inject(ConnectivityService)
+    private readonly connectivityService: ConnectivityService,
+    @Inject(PointUtilitiesService)
+    private readonly pointUtilitiesService: PointUtilitiesService,
   ) {}
 
   // 🔐 Private Fields
 
   // 🔑 Public Fields
+
+  /** Names and explains `reversesAtItsTightestTurn` for catalogs and inspectors. */
+  public readonly metadata: CharacteristicMetadata<boolean> = {
+    category: "path",
+    description:
+      "Whether one repeat's ink turns again exactly one lattice step after its walk starts or after its previous turn, over a Code with no three- or four-armed points at all.",
+    formula: String.raw`\exists\, i : \tau_i \in \{1, 3\} \wedge \Delta_i = 1`,
+    key: "reversesAtItsTightestTurn",
+    name: "Reverses At Its Tightest Turn",
+    valueType: "boolean",
+  };
 
   // 🔏 Private Methods
 
@@ -25,11 +57,7 @@ export class CharacteristicsPathService {
     adjacency: Map<string, string[]>;
     columns: number;
     currentNode: string;
-    metrics: {
-      hasLeftTurn: boolean;
-      hasRightTurn: boolean;
-      hasTightU: boolean;
-    };
+    metrics: TurnTraceMetrics;
     nextNode: string;
     previousDirection: number;
     stepsSinceTurn: number;
@@ -71,9 +99,26 @@ export class CharacteristicsPathService {
     return { currentNode, direction, nextNode, stepsSinceTurn };
   }
 
+  /** Records a turn against the metrics if it landed exactly one step after the last one, and resets the step count whenever a turn occurs. */
+  private applyTurn(
+    turn: number,
+    metrics: TurnTraceMetrics,
+    stepsSinceTurn: number,
+  ): number {
+    if (turn === 0 || turn === 2) {
+      return stepsSinceTurn + 1;
+    }
+
+    if (stepsSinceTurn === 1) {
+      metrics.hasTightU = true;
+    }
+
+    return 0;
+  }
+
   /** Builds an adjacency list from the given edges. */
   private buildAdjacencyGraph(
-    edges: { from: string; to: string }[],
+    edges: readonly CodeEdge[],
   ): Map<string, string[]> {
     const adjacency = new Map<string, string[]>();
     for (const { from, to } of edges) {
@@ -85,16 +130,12 @@ export class CharacteristicsPathService {
     return adjacency;
   }
 
-  /** Checks for loop closure turns. */
+  /** Checks for a turn closing a loop back to the walk's own start. */
   private checkFinalLoopTurn(args: {
     currentNode: string;
     initialDirection: number;
     initialNode: string;
-    metrics: {
-      hasLeftTurn: boolean;
-      hasRightTurn: boolean;
-      hasTightU: boolean;
-    };
+    metrics: TurnTraceMetrics;
     previousDirection: number;
     stepsSinceTurn: number;
   }): void {
@@ -118,10 +159,10 @@ export class CharacteristicsPathService {
     visited: Set<string>,
   ): string | undefined {
     const neighbors = this.getNeighbors(nodes.current, adjacency);
-    const unvisited = neighbors.find((n) => !visited.has(n));
+    const unvisited = neighbors.find((node) => !visited.has(node));
     if (unvisited) return unvisited;
     if (neighbors.length === 2 && nodes.previous !== undefined) {
-      return neighbors.find((n) => n !== nodes.previous);
+      return neighbors.find((node) => node !== nodes.previous);
     }
     return undefined;
   }
@@ -158,21 +199,13 @@ export class CharacteristicsPathService {
     const toPos = this.parseKey(to);
 
     if (fromPos.row === toPos.row) {
-      if (toPos.column === (fromPos.column + 1) % columns) {
-        return 1;
-      }
-      if (fromPos.column === (toPos.column + 1) % columns) {
-        return 3;
-      }
+      if (toPos.column === (fromPos.column + 1) % columns) return 1;
+      if (fromPos.column === (toPos.column + 1) % columns) return 3;
     }
 
     if (fromPos.column === toPos.column) {
-      if (toPos.row === fromPos.row + 1) {
-        return 2;
-      }
-      if (fromPos.row === toPos.row + 1) {
-        return 0;
-      }
+      if (toPos.row === fromPos.row + 1) return 2;
+      if (fromPos.row === toPos.row + 1) return 0;
     }
 
     return -1;
@@ -186,6 +219,16 @@ export class CharacteristicsPathService {
     return adjacency.get(node) ?? [];
   }
 
+  /** Whether every point in the Code carries at most two arms of its own, read directly off its digit rather than off the graph. */
+  private isJunctionFree(matrix: Matrix): boolean {
+    for (const row of matrix) {
+      for (const point of row) {
+        if (this.pointUtilitiesService.armCount(point) >= 3) return false;
+      }
+    }
+    return true;
+  }
+
   /** Parses a node string key into column and row integers. */
   private parseKey(key: string): { column: number; row: number } {
     const parts = key.split(",");
@@ -195,20 +238,13 @@ export class CharacteristicsPathService {
     };
   }
 
-  /** Traces all disjoint paths in the adjacency graph to compute turn behaviors. */
+  /** Traces every disjoint path in the adjacency graph, reporting whether any of them turns tightly. */
   private tracePaths(
     adjacency: Map<string, string[]>,
     columns: number,
-  ): {
-    reversesAtItsTightestTurn: boolean;
-    turnsMonotonically: boolean;
-  } {
+  ): boolean {
     const visited = new Set<string>();
-    const metrics = {
-      hasLeftTurn: false,
-      hasRightTurn: false,
-      hasTightU: false,
-    };
+    const metrics: TurnTraceMetrics = { hasTightU: false };
 
     for (const startNode of adjacency.keys()) {
       if (!visited.has(startNode)) {
@@ -222,22 +258,14 @@ export class CharacteristicsPathService {
       }
     }
 
-    const turnsMonotonically =
-      (metrics.hasLeftTurn && !metrics.hasRightTurn) ||
-      (metrics.hasRightTurn && !metrics.hasLeftTurn);
-
-    return { reversesAtItsTightestTurn: metrics.hasTightU, turnsMonotonically };
+    return metrics.hasTightU;
   }
 
   /** Traces a single path starting from a node. */
   private traceSinglePath(args: {
     adjacency: Map<string, string[]>;
     columns: number;
-    metrics: {
-      hasLeftTurn: boolean;
-      hasRightTurn: boolean;
-      hasTightU: boolean;
-    };
+    metrics: TurnTraceMetrics;
     startNode: string;
     visited: Set<string>;
   }): void {
@@ -285,54 +313,24 @@ export class CharacteristicsPathService {
 
   // 🌎 Public Methods
 
-  /**
-   * Analyzes path directions in a junction-free Matrix to determine turning properties.
-   */
-  public analyzePaths(matrix: Matrix): {
-    reversesAtItsTightestTurn: boolean;
-    turnsMonotonically: boolean;
-  } {
-    const columns = matrix[0]?.length ?? 0;
-    if (columns === 0 || matrix.length === 0) {
-      return { reversesAtItsTightestTurn: false, turnsMonotonically: false };
+  /** Walks every strand of a junction-free Code's wrapped repeat graph, reporting whether any turn lands exactly one step after the previous one. */
+  public compute(context: CharacteristicContext): boolean {
+    if (!this.isJunctionFree(context.matrix)) {
+      return false;
     }
 
-    const edges = this.meanderConnectivityService.edges(matrix, false);
+    const edges = this.connectivityService.edges(context.matrix, false);
     if (edges.length === 0) {
-      return { reversesAtItsTightestTurn: false, turnsMonotonically: false };
+      return false;
     }
 
     const adjacency = this.buildAdjacencyGraph(edges);
     for (const neighbors of adjacency.values()) {
       if (neighbors.length > 2) {
-        return { reversesAtItsTightestTurn: false, turnsMonotonically: false };
+        return false;
       }
     }
 
-    return this.tracePaths(adjacency, columns);
-  }
-
-  /** Applies a turn to the metrics. */
-  public applyTurn(
-    turn: number,
-    metrics: {
-      hasLeftTurn: boolean;
-      hasRightTurn: boolean;
-      hasTightU: boolean;
-    },
-    stepsSinceTurn: number,
-  ): number {
-    if (turn === 0 || turn === 2) return stepsSinceTurn + 1;
-    if (turn === 1) {
-      metrics.hasRightTurn = true;
-      if (stepsSinceTurn === 1) metrics.hasTightU = true;
-      return 0;
-    }
-    if (turn === 3) {
-      metrics.hasLeftTurn = true;
-      if (stepsSinceTurn === 1) metrics.hasTightU = true;
-      return 0;
-    }
-    return stepsSinceTurn;
+    return this.tracePaths(adjacency, context.columns);
   }
 }

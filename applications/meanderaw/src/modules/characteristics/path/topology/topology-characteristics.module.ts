@@ -1,18 +1,17 @@
 import { Module } from "@nestjs/common";
 
-import { GraphModule } from "../../../graph/graph.module";
-import { ConnectivityService } from "../../connectivity.service";
+import { ConnectivityModule } from "../../connectivity/connectivity.module";
 
 import { BettiNumber0CountCharacteristicService } from "./betti-number-0-count-characteristic.service";
 import { BettiNumber1CountCharacteristicService } from "./betti-number-1-count-characteristic.service";
 import { FreeEndCountCharacteristicService } from "./free-end-count-characteristic.service";
 
 /**
- * Provides and exports every topological path characteristic evaluator —
- * the two Betti numbers and the free-end count — as one group
- * `CharacteristicsModule` imports and re-exports. It provides its own
- * stateless `ConnectivityService` rather than importing
- * `CharacteristicsModule`, which imports this module.
+ * Provides and exports every topological path characteristic evaluator — the
+ * two Betti numbers and the free-end count — as one group
+ * `CharacteristicsModule` imports and re-exports. It imports
+ * `ConnectivityModule` for the one shared `ConnectivityService` rather than
+ * providing its own.
  */
 @Module({
   controllers: [],
@@ -21,11 +20,10 @@ import { FreeEndCountCharacteristicService } from "./free-end-count-characterist
     BettiNumber1CountCharacteristicService,
     FreeEndCountCharacteristicService,
   ],
-  imports: [GraphModule],
+  imports: [ConnectivityModule],
   providers: [
     BettiNumber0CountCharacteristicService,
     BettiNumber1CountCharacteristicService,
-    ConnectivityService,
     FreeEndCountCharacteristicService,
   ],
 })

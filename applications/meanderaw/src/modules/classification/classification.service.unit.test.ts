@@ -1,87 +1,67 @@
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
+import { characteristicRecord } from "../../../testing/meanders";
+
 import {
   MEANDER_FAMILIES,
   STRUCTURAL_MINIMUM_ROWS,
 } from "./classification.constants";
 import { ClassificationService } from "./classification.service";
 
-import type { Characteristics } from "../characteristics/characteristics.types";
-import type { MeanderShape } from "./classification.types";
+import type { BooleanCharacteristicKey } from "../characteristics/characteristics.types";
+import type { MeanderFamily, MeanderShape } from "./classification.types";
 
-const defaultCharacteristics: Characteristics = {
-  arcadePillarCount: 0,
-  bifurcationCount: 0,
-  combSpineCount: 0,
-  componentCount: 0,
-  components: 0,
-  cornerCount: 0,
-  crossesTheSeam: false,
-  cycleCount: 0,
-  cycles: 0,
-  density: 0,
-  dotCount: 0,
-  edgeCount: 0,
-  embeddedOCount: 0,
-  embeddedUCount: 0,
-  endsAreLatticeNeighbors: false,
-  endsOnBorderRules: false,
-  freeEnds: 0,
-  hasArcadePillars: false,
-  hasBranching: false,
-  hasCombSpine: false,
-  hasCrossing: false,
-  hasDots: false,
-  hasTJunctions: false,
-  hasXJunctions: false,
-  horizontalDashCount: 0,
-  horizontalPointCount: 0,
-  inkPointCount: 0,
-  inkTJunctions: 0,
-  inkXJunctions: 0,
-  isArcade: false,
-  isBars: false,
-  isClosedLoop: false,
-  isComb: false,
-  isConnected: false,
-  isDots: false,
-  isFlipSymmetric: false,
-  isFork: false,
-  isJunctionFree: true,
-  isLines: false,
-  isMesh: false,
-  isMirrorSymmetric: false,
-  isPureTree: false,
-  isReducible: false,
-  isSingleArc: false,
-  isStippled: false,
-  lCount: 0,
-  longestHorizontalRun: 0,
-  longestVerticalRun: 0,
-  oCount: 0,
-  pitch: 0,
-  plusCount: 0,
-  reversesAtItsTightestTurn: false,
-  seamComponents: 0,
-  seamCycles: 0,
-  seamTJunctions: 0,
-  seamXJunctions: 0,
-  shapeICount: 0,
-  tCount: 0,
-  turnsMonotonically: false,
-  uCount: 0,
-  verticalDashCount: 0,
-  verticalPointCount: 0,
-  xCount: 0,
-};
+/** One family rule as this test states it: the family and the compound characteristic that decides it. */
+interface FamilyRule {
+  readonly family: MeanderFamily;
+  readonly key: BooleanCharacteristicKey;
+}
 
-const createMockCharacteristics = (
-  overrides: Partial<Characteristics> = {},
-): Characteristics => ({
-  ...defaultCharacteristics,
-  ...overrides,
-});
+/** Every family rule in descending precedence order, which is the order the service must try them in. */
+const FAMILY_RULES: readonly FamilyRule[] = [
+  { family: "dots", key: "isDots" },
+  { family: "lines", key: "isLines" },
+  { family: "bars", key: "isBars" },
+  { family: "mesh", key: "isMesh" },
+  { family: "comb", key: "isComb" },
+  { family: "arcade", key: "isArcade" },
+  { family: "parallel", key: "isParallel" },
+  { family: "cross", key: "isCross" },
+  { family: "fork", key: "isFork" },
+  { family: "tree", key: "isPureTree" },
+  { family: "boxes", key: "isBoxes" },
+  { family: "chain", key: "isChain" },
+  { family: "double-chain", key: "isDoubleChain" },
+  { family: "waterfalls", key: "isWaterfalls" },
+  { family: "whirl", key: "isWhirl" },
+  { family: "swirl", key: "isSwirl" },
+  { family: "clasps", key: "isClasps" },
+  { family: "snake", key: "isSnake" },
+  { family: "stipple", key: "isStippled" },
+];
+
+/** The families whose predicate compares runs against the unit's width, and so refuse a Code that reduces. */
+const UNIT_FAMILIES: ReadonlySet<MeanderFamily> = new Set<MeanderFamily>([
+  "chain",
+  "double-chain",
+]);
+
+/** A band deep enough for every family's structural minimum. */
+const DEEPEST_MINIMUM = Math.max(...Object.values(STRUCTURAL_MINIMUM_ROWS));
+
+/** Every pair of rules where the first outranks the second. */
+const OUTRANKING_PAIRS = FAMILY_RULES.flatMap((higher, index) =>
+  FAMILY_RULES.slice(index + 1).map((lower) => ({ higher, lower })),
+);
+
+/** A shape `rows` deep and not reducible, except where `overrides` says otherwise. */
+function shape(
+  rows: number,
+  overrides: Partial<MeanderShape> = {},
+): MeanderShape {
+  return { isReducible: false, rows, ...overrides };
+}
 
 describe(ClassificationService, () => {
   let service: ClassificationService;
@@ -98,7 +78,7 @@ describe(ClassificationService, () => {
     expect(service).toBeDefined();
   });
 
-  it("exports supported families in precedence order", () => {
+  it("exports supported families", () => {
     expect(MEANDER_FAMILIES).toStrictEqual([
       "dots",
       "lines",
@@ -123,749 +103,126 @@ describe(ClassificationService, () => {
     ]);
   });
 
-  describe("classify", () => {
-    it("classifies dots correctly", () => {
-      const characteristics = createMockCharacteristics({
-        isDots: true,
-      });
-      const shape: MeanderShape = { columns: 2, rows: 2 };
+  it("tries its rules in descending precedence order", () => {
+    expect(service.rules().map((rule) => rule.name)).toStrictEqual(
+      FAMILY_RULES.map(({ family }) => family),
+    );
+  });
 
-      expect(service.classify(characteristics, shape)).toBe("dots");
-    });
+  it("returns unclassified when no family predicate holds", () => {
+    expect(
+      service.classify(characteristicRecord(), shape(DEEPEST_MINIMUM)),
+    ).toBe("unclassified");
+  });
 
-    it("classifies lines correctly", () => {
-      const characteristics = createMockCharacteristics({
-        isLines: true,
-      });
-      const shape: MeanderShape = { columns: 2, rows: 2 };
+  it("keeps boxes at least as deep as waterfalls, so the boxes predicate's own waterfalls exclusion always applies within the boxes rule", () => {
+    expect(STRUCTURAL_MINIMUM_ROWS.boxes).toBeGreaterThanOrEqual(
+      STRUCTURAL_MINIMUM_ROWS.waterfalls,
+    );
+  });
 
-      expect(service.classify(characteristics, shape)).toBe("lines");
-    });
+  describe.each(FAMILY_RULES)("$family", ({ family, key }) => {
+    const minimum = STRUCTURAL_MINIMUM_ROWS[family];
 
-    it("classifies bars correctly", () => {
-      const characteristics = createMockCharacteristics({
-        isBars: true,
-      });
-      const shape: MeanderShape = { columns: 2, rows: 3 };
-
-      expect(service.classify(characteristics, shape)).toBe("bars");
-    });
-
-    it("classifies mesh correctly", () => {
-      const characteristics = createMockCharacteristics({
-        isMesh: true,
-      });
-      const shape: MeanderShape = { columns: 2, rows: 3 };
-
-      expect(service.classify(characteristics, shape)).toBe("mesh");
-    });
-
-    it("classifies parallel bundles correctly", () => {
-      const pitch = 4;
-      const components = 3;
-      const freeEnds = 6;
-      const characteristics = createMockCharacteristics({
-        components,
-        cycles: 0,
-        freeEnds,
-        inkTJunctions: 0,
-        inkXJunctions: 0,
-        pitch,
-      });
-      const shape: MeanderShape = { columns: pitch, rows: 3 };
-
-      expect(service.classify(characteristics, shape)).toBe("parallel");
-    });
-
-    it("classifies cross meanders correctly", () => {
-      const characteristics = createMockCharacteristics({
-        inkTJunctions: 0,
-        inkXJunctions: 2,
-      });
-      const shape: MeanderShape = { columns: 5, rows: 6 };
-
-      expect(service.classify(characteristics, shape)).toBe("cross");
-    });
-
-    it("classifies arcade meanders correctly", () => {
-      const characteristics = createMockCharacteristics({
-        isArcade: true,
-      });
-      const shape: MeanderShape = { columns: 4, rows: 3 };
-
-      expect(service.classify(characteristics, shape)).toBe("arcade");
-    });
-
-    it("classifies comb meanders correctly", () => {
-      const characteristics = createMockCharacteristics({
-        isComb: true,
-      });
-      const shape: MeanderShape = { columns: 2, rows: 4 };
-
-      expect(service.classify(characteristics, shape)).toBe("comb");
-    });
-
-    it("classifies fork meanders correctly", () => {
-      const characteristics = createMockCharacteristics({
-        components: 1,
-        cycles: 0,
-        dotCount: 0,
-        freeEnds: 3,
-        inkTJunctions: 1,
-        inkXJunctions: 0,
-        isFork: true,
-      });
-      const shape: MeanderShape = { columns: 3, rows: 3 };
-
-      expect(service.classify(characteristics, shape)).toBe("fork");
-    });
-
-    it("classifies tree meanders correctly", () => {
-      const characteristics = createMockCharacteristics({
-        components: 1,
-        cycles: 0,
-        dotCount: 0,
-        freeEnds: 4,
-        inkTJunctions: 2,
-        inkXJunctions: 0,
-        isPureTree: true,
-      });
-      const shape: MeanderShape = { columns: 3, rows: 3 };
-
-      expect(service.classify(characteristics, shape)).toBe("tree");
-    });
-
-    it("classifies stipple meanders correctly", () => {
-      const characteristics = createMockCharacteristics({
-        components: 3,
-        dotCount: 2,
-        inkTJunctions: 1,
-        isStippled: true,
-      });
-      const shape: MeanderShape = { columns: 4, rows: 3 };
-
-      expect(service.classify(characteristics, shape)).toBe("stipple");
-    });
-
-    it("classifies boxes meanders correctly", () => {
-      const rows = 4;
-      const pitch = rows - 1;
-      const characteristics = createMockCharacteristics({
-        components: 1,
-        crossesTheSeam: true,
-        cycles: 0,
-        embeddedUCount: 1,
-        endsAreLatticeNeighbors: false,
-        endsOnBorderRules: true,
-        freeEnds: 2,
-        inkTJunctions: 0,
-        inkXJunctions: 0,
-        isSingleArc: true,
-        longestHorizontalRun: 2,
-        longestVerticalRun: 1,
-        pitch,
-        reversesAtItsTightestTurn: true,
-      });
-      const shape: MeanderShape = { columns: pitch, rows };
-
-      expect(service.classify(characteristics, shape)).toBe("boxes");
-    });
-
-    it("classifies waterfalls meanders correctly across row sizes and column sizes", () => {
-      for (const rows of [2, 3, 4, 5, 6, 7, 8]) {
-        for (const columns of [2, 3, 4, 5, 6]) {
-          const characteristics = createMockCharacteristics({
-            components: 1,
-            crossesTheSeam: true,
-            cycles: 0,
-            endsAreLatticeNeighbors: false,
-            endsOnBorderRules: true,
-            freeEnds: 2,
-            inkTJunctions: 0,
-            inkXJunctions: 0,
-            isSingleArc: true,
-            longestHorizontalRun: columns - 1,
-            longestVerticalRun: 1,
-            pitch: columns,
-            reversesAtItsTightestTurn: true,
-          });
-          const shape: MeanderShape = { columns, rows };
-
-          expect(service.classify(characteristics, shape)).toBe("waterfalls");
-        }
-      }
-    });
-
-    it("does not classify invalid 3x2 meanders as boxes", () => {
-      // 02x03y52a529: rows === 3 < STRUCTURAL_MINIMUM_ROWS.boxes (4)
-      const spiral3x2 = createMockCharacteristics({
-        components: 1,
-        crossesTheSeam: true,
-        cycles: 0,
-        embeddedUCount: 1,
-        endsAreLatticeNeighbors: false,
-        endsOnBorderRules: true,
-        freeEnds: 2,
-        inkTJunctions: 0,
-        inkXJunctions: 0,
-        isSingleArc: true,
-        longestHorizontalRun: 2,
-        longestVerticalRun: 1,
-        pitch: 2,
-        reversesAtItsTightestTurn: true,
-      });
-
-      expect(service.classify(spiral3x2, { columns: 2, rows: 3 })).not.toBe(
-        "boxes",
-      );
-
-      // 02x03y2569a1: does not cross the seam
-      const noSeam = createMockCharacteristics({
-        components: 1,
-        crossesTheSeam: false,
-        cycles: 0,
-        endsAreLatticeNeighbors: false,
-        endsOnBorderRules: true,
-        freeEnds: 2,
-        inkTJunctions: 0,
-        inkXJunctions: 0,
-        isSingleArc: true,
-        pitch: 2,
-        reversesAtItsTightestTurn: true,
-      });
-
-      expect(service.classify(noSeam, { columns: 2, rows: 3 })).not.toBe(
-        "boxes",
-      );
-
-      // 02x03y44cca9: monotonic turn, ends are lattice neighbors
-      const monotonicNeighbors = createMockCharacteristics({
-        components: 1,
-        crossesTheSeam: false,
-        cycles: 0,
-        endsAreLatticeNeighbors: true,
-        endsOnBorderRules: true,
-        freeEnds: 2,
-        inkTJunctions: 0,
-        inkXJunctions: 0,
-        isSingleArc: true,
-        pitch: 2,
-        turnsMonotonically: true,
-      });
-
+    it(`classifies a record whose ${key} holds, at the family's minimum rows`, () => {
       expect(
-        service.classify(monotonicNeighbors, { columns: 2, rows: 3 }),
-      ).not.toBe("boxes");
+        service.classify(characteristicRecord({ [key]: true }), shape(minimum)),
+      ).toBe(family);
+    });
 
-      // 02x03y56c8a1: ends are lattice neighbors
-      const seamNeighbors = createMockCharacteristics({
-        components: 1,
-        crossesTheSeam: true,
-        cycles: 0,
-        endsAreLatticeNeighbors: true,
-        freeEnds: 2,
-        inkTJunctions: 0,
-        inkXJunctions: 0,
-        isSingleArc: true,
-        pitch: 2,
-        reversesAtItsTightestTurn: true,
-      });
-
-      expect(service.classify(seamNeighbors, { columns: 2, rows: 3 })).not.toBe(
-        "boxes",
-      );
-
-      // 02x03y65c8a1: ends are lattice neighbors, no seam
-      const noSeamNeighbors = createMockCharacteristics({
-        components: 1,
-        crossesTheSeam: false,
-        cycles: 0,
-        endsAreLatticeNeighbors: true,
-        freeEnds: 2,
-        inkTJunctions: 0,
-        inkXJunctions: 0,
-        isSingleArc: true,
-        pitch: 2,
-        reversesAtItsTightestTurn: true,
-      });
-
+    it(`classifies a record whose ${key} holds, deeper than the family's minimum`, () => {
       expect(
-        service.classify(noSeamNeighbors, { columns: 2, rows: 3 }),
-      ).not.toBe("boxes");
+        service.classify(
+          characteristicRecord({ [key]: true }),
+          shape(minimum + 3),
+        ),
+      ).toBe(family);
     });
 
-    it("classifies whirl meanders correctly", () => {
-      const rows = 4;
-      const pitch = rows + 1;
-      const characteristics = createMockCharacteristics({
-        components: 1,
-        crossesTheSeam: false,
-        cycles: 0,
-        density: 1,
-        dotCount: 0,
-        endsOnBorderRules: true,
-        freeEnds: 2,
-        inkTJunctions: 0,
-        inkXJunctions: 0,
-        isSingleArc: true,
-        longestHorizontalRun: rows - 1,
-        longestVerticalRun: rows - 1,
-        pitch,
-      });
-      const shape: MeanderShape = { columns: pitch, rows };
-
-      expect(service.classify(characteristics, shape)).toBe("whirl");
+    it(`does not classify a record whose ${key} holds one row short of the family's minimum`, () => {
+      expect(
+        service.classify(
+          characteristicRecord({ [key]: true }),
+          shape(minimum - 1),
+        ),
+      ).toBe("unclassified");
     });
 
-    it("classifies double whirl meanders correctly", () => {
-      const rows = 4;
-      const pitch = 2 * rows + 2; // 10
-      const characteristics = createMockCharacteristics({
-        components: 2,
-        crossesTheSeam: false,
-        cycles: 0,
-        density: 1,
-        dotCount: 0,
-        endsOnBorderRules: false,
-        freeEnds: 4,
-        inkTJunctions: 0,
-        inkXJunctions: 0,
-        longestHorizontalRun: rows - 1,
-        longestVerticalRun: rows - 1,
-        pitch,
-      });
-      const shape: MeanderShape = { columns: pitch, rows };
-
-      expect(service.classify(characteristics, shape)).toBe("whirl");
+    it(`does not classify a record whose ${key} is false`, () => {
+      expect(
+        service.classify(
+          characteristicRecord({ [key]: false }),
+          shape(DEEPEST_MINIMUM),
+        ),
+      ).toBe("unclassified");
     });
+  });
 
-    it("classifies swirl meanders correctly", () => {
-      const rows = 4;
-      const pitch = 2 * rows - 1; // 7
-      const characteristics = createMockCharacteristics({
-        components: 1,
-        crossesTheSeam: false,
-        cycles: 0,
-        density: 1,
-        dotCount: 0,
-        endsOnBorderRules: false,
-        freeEnds: 2,
-        inkTJunctions: 0,
-        inkXJunctions: 0,
-        isSingleArc: true,
-        longestHorizontalRun: rows - 1,
-        longestVerticalRun: rows - 1,
-        pitch,
-      });
-      const shape: MeanderShape = { columns: pitch, rows };
-
-      expect(service.classify(characteristics, shape)).toBe("swirl");
+  describe.each(
+    FAMILY_RULES.filter(({ family }) => !UNIT_FAMILIES.has(family)),
+  )("$family for a reducible Code", ({ family, key }) => {
+    it("still classifies, since its predicate does not read the filed width", () => {
+      expect(
+        service.classify(
+          characteristicRecord({ [key]: true }),
+          shape(DEEPEST_MINIMUM, { isReducible: true }),
+        ),
+      ).toBe(family);
     });
+  });
 
-    it("classifies double swirl meanders correctly", () => {
-      const rows = 4;
-      const pitch = 4 * rows - 2; // 14
-      const characteristics = createMockCharacteristics({
-        components: 2,
-        crossesTheSeam: false,
-        cycles: 0,
-        density: 1,
-        dotCount: 0,
-        endsOnBorderRules: false,
-        freeEnds: 4,
-        inkTJunctions: 0,
-        inkXJunctions: 0,
-        longestHorizontalRun: rows - 1,
-        longestVerticalRun: rows - 1,
-        pitch,
-      });
-      const shape: MeanderShape = { columns: pitch, rows };
-
-      expect(service.classify(characteristics, shape)).toBe("swirl");
-    });
-
-    it("classifies single-strand chain meanders correctly", () => {
-      const rows = 5;
-      const pitch = 5;
-      const characteristics = createMockCharacteristics({
-        components: 1,
-        crossesTheSeam: true,
-        cycles: 0,
-        density: 1,
-        dotCount: 0,
-        endsOnBorderRules: false,
-        freeEnds: 2,
-        inkTJunctions: 0,
-        inkXJunctions: 0,
-        isSingleArc: true,
-        longestHorizontalRun: pitch,
-        longestVerticalRun: rows - 1,
-        pitch,
-        reversesAtItsTightestTurn: true,
-      });
-      const shape: MeanderShape = { columns: pitch, rows };
-
-      expect(service.classify(characteristics, shape)).toBe("chain");
-    });
-
-    it("classifies double-chain meanders correctly", () => {
-      const rows = 5;
-      const pitch = 2 * rows - 2; // 8
-      const characteristics = createMockCharacteristics({
-        components: 2,
-        crossesTheSeam: true,
-        cycles: 0,
-        density: 1,
-        dotCount: 0,
-        endsOnBorderRules: false,
-        freeEnds: 4,
-        inkTJunctions: 0,
-        inkXJunctions: 0,
-        longestHorizontalRun: pitch - 1,
-        longestVerticalRun: rows - 2,
-        pitch,
-        reversesAtItsTightestTurn: true,
-      });
-      const shape: MeanderShape = { columns: pitch, rows };
-
-      expect(service.classify(characteristics, shape)).toBe("double-chain");
-    });
-
-    it("rejects non-chain sparse dot/fragment meanders from chain and double-chain", () => {
-      const characteristics = createMockCharacteristics({
-        components: 3,
-        crossesTheSeam: true,
-        cycles: 0,
-        density: 0.8,
-        dotCount: 2,
-        freeEnds: 4,
-        inkTJunctions: 0,
-        inkXJunctions: 0,
-        pitch: 4,
-        reversesAtItsTightestTurn: true,
-      });
-      const shape: MeanderShape = { columns: 4, rows: 3 };
-
-      expect(service.classify(characteristics, shape)).toBe("unclassified");
-    });
-
-    it("rejects non-chain patterns that touch border rules or have insufficient run length", () => {
-      const borderEndChain = createMockCharacteristics({
-        components: 1,
-        crossesTheSeam: true,
-        cycles: 0,
-        density: 1,
-        dotCount: 0,
-        embeddedUCount: 1,
-        endsOnBorderRules: true,
-        freeEnds: 2,
-        inkTJunctions: 0,
-        inkXJunctions: 0,
-        isSingleArc: true,
-        longestHorizontalRun: 2,
-        longestVerticalRun: 2,
-        pitch: 3,
-        reversesAtItsTightestTurn: true,
+  describe.each(FAMILY_RULES.filter(({ family }) => UNIT_FAMILIES.has(family)))(
+    "$family for a reducible Code",
+    ({ family, key }) => {
+      it("does not classify, since its runs are measured against the unit rather than the Code as filed", () => {
+        expect(
+          service.classify(
+            characteristicRecord({ [key]: true }),
+            shape(DEEPEST_MINIMUM, { isReducible: true }),
+          ),
+        ).toBe("unclassified");
       });
 
-      expect(service.classify(borderEndChain, { columns: 3, rows: 3 })).toBe(
-        "unclassified",
-      );
-    });
-
-    it("rejects non-whirl patterns from whirl classification", () => {
-      const falseWhirl = createMockCharacteristics({
-        components: 1,
-        crossesTheSeam: false,
-        cycles: 0,
-        density: 1,
-        dotCount: 0,
-        endsOnBorderRules: true,
-        freeEnds: 2,
-        inkTJunctions: 0,
-        inkXJunctions: 0,
-        isSingleArc: true,
-        longestHorizontalRun: 2,
-        longestVerticalRun: 2,
-        pitch: 3,
+      it("falls through to the next family whose predicate holds", () => {
+        expect(
+          service.classify(
+            characteristicRecord({ isWaterfalls: true, [key]: true }),
+            shape(DEEPEST_MINIMUM, { isReducible: true }),
+          ),
+        ).toBe("waterfalls");
       });
 
-      expect(service.classify(falseWhirl, { columns: 3, rows: 3 })).toBe(
-        "unclassified",
-      );
-    });
-
-    it("classifies clasps meanders with disconnected links correctly", () => {
-      const rows = 4;
-      const pitch = rows + 1; // 5
-      const characteristics = createMockCharacteristics({
-        components: 2,
-        crossesTheSeam: false,
-        cycles: 0,
-        density: 1,
-        dotCount: 0,
-        freeEnds: 4,
-        inkTJunctions: 0,
-        inkXJunctions: 0,
-        longestHorizontalRun: rows - 1,
-        longestVerticalRun: rows - 1,
-        pitch,
-        reversesAtItsTightestTurn: true,
+      it("classifies the same record when the Code is its own unit", () => {
+        expect(
+          service.classify(
+            characteristicRecord({ [key]: true }),
+            shape(DEEPEST_MINIMUM),
+          ),
+        ).toBe(family);
       });
-      const shape: MeanderShape = { columns: pitch, rows };
+    },
+  );
 
-      expect(service.classify(characteristics, shape)).toBe("clasps");
-    });
-
-    it("classifies double clasps meanders correctly", () => {
-      const rows = 4;
-      const pitch = 2 * rows + 2; // 10
-      const characteristics = createMockCharacteristics({
-        components: 4,
-        crossesTheSeam: false,
-        cycles: 0,
-        density: 1,
-        dotCount: 0,
-        freeEnds: 8,
-        inkTJunctions: 0,
-        inkXJunctions: 0,
-        longestHorizontalRun: rows - 1,
-        longestVerticalRun: rows - 1,
-        pitch,
-        reversesAtItsTightestTurn: true,
+  describe.each(OUTRANKING_PAIRS)(
+    "$higher.family over $lower.family",
+    ({ higher, lower }) => {
+      it("picks the higher-precedence family when both predicates hold", () => {
+        expect(
+          service.classify(
+            characteristicRecord({ [higher.key]: true, [lower.key]: true }),
+            shape(DEEPEST_MINIMUM),
+          ),
+        ).toBe(higher.family);
       });
-      const shape: MeanderShape = { columns: pitch, rows };
+    },
+  );
 
-      expect(service.classify(characteristics, shape)).toBe("clasps");
-    });
-
-    it("classifies snake meanders correctly", () => {
-      const rows = 4;
-      const pitch = rows - 1;
-      const characteristics = createMockCharacteristics({
-        components: 1,
-        cycles: 1,
-        freeEnds: 0,
-        inkTJunctions: 0,
-        inkXJunctions: 0,
-        isClosedLoop: true,
-        pitch,
-      });
-      const shape: MeanderShape = { columns: pitch, rows };
-
-      expect(service.classify(characteristics, shape)).toBe("snake");
-    });
-
-    it("returns unclassified when no rule matches", () => {
-      const characteristics = createMockCharacteristics({
-        components: 2,
-        cycles: 2,
-      });
-      const shape: MeanderShape = { columns: 4, rows: 4 };
-
-      expect(service.classify(characteristics, shape)).toBe("unclassified");
-    });
-
-    it("respects minimum row constraints and falls back to unclassified", () => {
-      const characteristics = createMockCharacteristics({
-        inkTJunctions: 0,
-        inkXJunctions: 2,
-      });
-      const shape: MeanderShape = {
-        columns: 5,
-        rows: STRUCTURAL_MINIMUM_ROWS.cross - 1,
-      };
-
-      expect(service.classify(characteristics, shape)).toBe("unclassified");
-    });
-
-    it("prioritizes boxes over chain when both match at rows >= 4", () => {
-      const rows = 4;
-      const pitch = rows - 1;
-      const characteristics = createMockCharacteristics({
-        components: 1,
-        crossesTheSeam: true,
-        cycles: 0,
-        endsAreLatticeNeighbors: false,
-        freeEnds: 2,
-        inkTJunctions: 0,
-        inkXJunctions: 0,
-        isSingleArc: true,
-        longestHorizontalRun: 2,
-        pitch,
-        reversesAtItsTightestTurn: true,
-      });
-      const shape: MeanderShape = { columns: pitch, rows };
-
-      expect(service.classify(characteristics, shape)).toBe("boxes");
-    });
-
-    it("verifies hierarchical precedence from parallel through snake", () => {
-      // 1. parallel takes precedence when bundle conditions are satisfied
-      const bundle = createMockCharacteristics({
-        components: 3,
-        cycles: 0,
-        freeEnds: 6,
-        inkTJunctions: 0,
-        inkXJunctions: 0,
-        pitch: 4,
-      });
-
-      expect(service.classify(bundle, { columns: 4, rows: 4 })).toBe(
-        "parallel",
-      );
-
-      // 2. cross takes precedence
-      const cross = createMockCharacteristics({
-        inkTJunctions: 0,
-        inkXJunctions: 1,
-      });
-
-      expect(service.classify(cross, { columns: 5, rows: 6 })).toBe("cross");
-
-      // 3. fork takes precedence over boxes/whirl/swirl/chain/snake
-      const fork = createMockCharacteristics({
-        components: 1,
-        cycles: 0,
-        dotCount: 0,
-        freeEnds: 3,
-        inkTJunctions: 1,
-        inkXJunctions: 0,
-        isFork: true,
-        pitch: 3,
-      });
-
-      expect(service.classify(fork, { columns: 3, rows: 4 })).toBe("fork");
-    });
-
-    it("evaluates chain, double-chain and clasps rule matches directly", () => {
-      const rows = 4;
-      const chainStructure = {
-        characteristics: createMockCharacteristics({
-          components: 1,
-          crossesTheSeam: true,
-          cycles: 0,
-          density: 1,
-          dotCount: 0,
-          endsOnBorderRules: false,
-          freeEnds: 2,
-          inkTJunctions: 0,
-          inkXJunctions: 0,
-          isSingleArc: true,
-          longestHorizontalRun: 4,
-          longestVerticalRun: 3,
-          pitch: 4,
-          reversesAtItsTightestTurn: true,
-        }),
-        columns: 4,
-        rows,
-      };
-      const doubleChainStructure = {
-        characteristics: createMockCharacteristics({
-          components: 2,
-          crossesTheSeam: true,
-          cycles: 0,
-          density: 1,
-          dotCount: 0,
-          endsOnBorderRules: false,
-          freeEnds: 4,
-          inkTJunctions: 0,
-          inkXJunctions: 0,
-          longestHorizontalRun: 5,
-          longestVerticalRun: 2,
-          pitch: 6,
-          reversesAtItsTightestTurn: true,
-        }),
-        columns: 6,
-        rows,
-      };
-      const claspsStructure = {
-        characteristics: createMockCharacteristics({
-          components: 2,
-          crossesTheSeam: false,
-          cycles: 0,
-          density: 1,
-          dotCount: 0,
-          freeEnds: 4,
-          inkTJunctions: 0,
-          inkXJunctions: 0,
-          longestHorizontalRun: 3,
-          longestVerticalRun: 3,
-          pitch: 5,
-          reversesAtItsTightestTurn: true,
-        }),
-        columns: 5,
-        rows,
-      };
-      const chainRule = service.rules().find((r) => r.name === "chain");
-      const doubleChainRule = service
-        .rules()
-        .find((r) => r.name === "double-chain");
-      const claspsRule = service.rules().find((r) => r.name === "clasps");
-
-      expect(chainRule?.matches(chainStructure)).toBe(true);
-      expect(chainRule?.matches(claspsStructure)).toBe(false);
-      expect(chainRule?.matches(doubleChainStructure)).toBe(false);
-
-      expect(doubleChainRule?.matches(doubleChainStructure)).toBe(true);
-      expect(doubleChainRule?.matches(chainStructure)).toBe(false);
-
-      expect(claspsRule?.matches(claspsStructure)).toBe(true);
-      expect(claspsRule?.matches(chainStructure)).toBe(false);
-    });
-
-    it("tests individual branch conditions for isBundle, isArc, and isClosedLoop", () => {
-      const oddPitchBundle = createMockCharacteristics({
-        components: 2,
-        cycles: 0,
-        freeEnds: 4,
-        inkTJunctions: 0,
-        inkXJunctions: 0,
-        pitch: 3,
-      });
-
-      expect(service.classify(oddPitchBundle, { columns: 3, rows: 4 })).toBe(
-        "unclassified",
-      );
-
-      const cycleBundle = createMockCharacteristics({
-        components: 3,
-        cycles: 1,
-        freeEnds: 6,
-        inkTJunctions: 0,
-        inkXJunctions: 0,
-        pitch: 4,
-      });
-
-      expect(service.classify(cycleBundle, { columns: 4, rows: 4 })).toBe(
-        "unclassified",
-      );
-
-      const wrongEndsArc = createMockCharacteristics({
-        components: 1,
-        cycles: 0,
-        freeEnds: 1,
-        inkTJunctions: 0,
-        inkXJunctions: 0,
-        pitch: 3,
-      });
-
-      expect(service.classify(wrongEndsArc, { columns: 3, rows: 4 })).toBe(
-        "unclassified",
-      );
-
-      const notClosedLoop = createMockCharacteristics({
-        components: 1,
-        cycles: 0,
-        freeEnds: 0,
-        inkTJunctions: 0,
-        inkXJunctions: 0,
-        pitch: 3,
-      });
-
-      expect(service.classify(notClosedLoop, { columns: 3, rows: 4 })).toBe(
-        "unclassified",
-      );
-    });
+  it("falls through to a lower family when a higher one's predicate holds but its band is too shallow", () => {
+    expect(
+      service.classify(
+        characteristicRecord({ isBoxes: true, isWaterfalls: true }),
+        shape(STRUCTURAL_MINIMUM_ROWS.boxes - 1),
+      ),
+    ).toBe("waterfalls");
   });
 });
