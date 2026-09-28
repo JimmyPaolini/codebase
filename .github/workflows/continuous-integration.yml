@@ -54,6 +54,9 @@ jobs:
           - target: guard-code
             name: Guard
             emoji: 💂
+          - target: codependix
+            name: Codependix
+            emoji: 🕸️
           - target: test-code
             name: Test
             emoji: 🧑‍🔬
@@ -101,7 +104,8 @@ jobs:
           gitleaks: ${{ matrix.check.target == 'secure-code' && 'true' || 'false' }}
           trivy: ${{ matrix.check.target == 'secure-code' && 'true' || 'false' }}
           python-dependencies: >-
-            ${{ matrix.check.target != 'build-projects' && 'true' || 'false' }}
+            ${{ matrix.check.target != 'build-projects' &&
+            matrix.check.target != 'codependix' && 'true' || 'false' }}
           uv: "true"
           nx-cache: "true"
           nx-graph-cache: "true"
@@ -121,6 +125,8 @@ jobs:
           elif [ "${TARGET}" == "test-code" ]; then
             pnpm exec nx affected --target=test-code \
               --configuration=coverage --parallel=4
+          elif [ "${TARGET}" == "codependix" ]; then
+            pnpm exec nx run codebase:codependix:check
           elif [ "${TARGET}" == "build-projects" ]; then
             pnpm exec nx affected --target=build-projects \
               --parallel=4
