@@ -110,7 +110,7 @@ function letterModuleExports(): readonly unknown[] {
   return exported;
 }
 
-/** Every letter service a consumer of `CharacteristicsModule` must be able to inject, each providing its letter's sixteen orientation evaluators: every letter service the letter module exports, so a new letter needs no second list here. */
+/** Every letter service a consumer of `CharacteristicsModule` must be able to inject, each providing its letter's sixteen orientation evaluators per positional form: every letter service the letter module exports, so a new letter needs no second list here. */
 const LETTER_SERVICES: readonly Type<CharacteristicEvaluatorGroup<number>>[] =
   letterModuleExports().filter((value) => isLetterService(value));
 
@@ -234,17 +234,27 @@ function expectedKey(service: Type<CharacteristicEvaluator>): string {
   return stem.charAt(0).toLowerCase() + stem.slice(1);
 }
 
-/** The sixteen metadata keys a letter service's class name promises, in orientation order: `ALatinLetterCharacteristicsService` fills `aSoutheastLatinCount` through `aNorthwestThreeQuarterLatinCount`. */
+/**
+ * The metadata keys a letter service's class name promises, in key-list
+ * order: its letter's sixteen orientations, under each positional form the
+ * key list gives an Arabic letter. `ALatinLetterCharacteristicsService`
+ * fills `aSoutheastLatinCount` through `aNorthwestThreeQuarterLatinCount`,
+ * and `BehArabicLetterCharacteristicsService` fills
+ * `behFinalSoutheastArabicCount` through
+ * `behMedialNorthwestThreeQuarterArabicCount`.
+ */
 function expectedLetterKeys(
   service: Type<CharacteristicEvaluatorGroup<number>>,
 ): readonly string[] {
   const { script = "", stem = "" } =
     LETTER_SERVICE_NAME.exec(service.name)?.groups ?? {};
   const letter = stem.charAt(0).toLowerCase() + stem.slice(1);
-
-  return LETTER_ORIENTATION_NAMES.map(
-    (name) => `${letter}${name}${script}Count`,
+  const pattern = new RegExp(
+    `^${letter}(?:Final|Initial|Isolated|Medial)?(?:${LETTER_ORIENTATION_NAMES.join("|")})${script}Count$`,
+    "u",
   );
+
+  return LETTER_CHARACTERISTIC_KEYS.filter((key) => pattern.test(key));
 }
 
 describe(CharacteristicsModule, () => {
@@ -322,7 +332,7 @@ describe(CharacteristicsModule, () => {
       expect(letters[index]).toBeInstanceOf(service);
     });
 
-    it("keys its sixteen orientation evaluators after its class", () => {
+    it("keys its orientation evaluators after its class", () => {
       expect(
         letters[index]?.evaluators.map(({ metadata }) => metadata.key),
       ).toStrictEqual(expectedLetterKeys(service));
@@ -336,14 +346,18 @@ describe(CharacteristicsModule, () => {
           metadata.category === "submatrix",
       );
 
-      expect(described).toStrictEqual(Array.from({ length: 16 }, () => true));
+      expect(described).toStrictEqual(
+        expectedLetterKeys(service).map(() => true),
+      );
     });
   });
 
-  it("derives one letter service for every sixteen letter keys", () => {
-    expect(LETTER_SERVICES).toHaveLength(
-      LETTER_CHARACTERISTIC_KEYS.length / 16,
-    );
+  it("derives every letter key from exactly one letter service's class name", () => {
+    expect(
+      LETTER_SERVICES.flatMap((service) =>
+        expectedLetterKeys(service),
+      ).toSorted(),
+    ).toStrictEqual([...LETTER_CHARACTERISTIC_KEYS].toSorted());
   });
 
   it("gives every characteristic evaluator a unique metadata key", () => {

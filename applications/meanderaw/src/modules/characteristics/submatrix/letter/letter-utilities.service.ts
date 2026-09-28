@@ -25,7 +25,8 @@ import type {
  * either way, turning it clockwise, naming the sixteen corner and rotation
  * orientations, and reading each script's base corner. A letter holds one
  * base template and asks `evaluators` for an evaluator per orientation, each
- * counting the template `orientations` draws that way.
+ * counting the template `orientations` draws that way; an Arabic letter
+ * holds one per positional form and asks `formEvaluators` instead.
  *
  * Counts are shared: within one context, every orientation, and every letter,
  * drawing the same template scans the matrix for it once.
@@ -338,6 +339,19 @@ export class LetterUtilitiesService {
           )
           .join(""),
       );
+  }
+
+  /**
+   * The evaluators of a letter drawn as several base templates — an Arabic
+   * letter's positional forms — each form's sixteen in turn, in the order
+   * given. Each form is keyed, described, and aliased as
+   * {@link LetterUtilitiesService.evaluators} builds it alone, so an alias
+   * stays on its own form even where another form draws the same ink.
+   */
+  public formEvaluators(
+    forms: readonly LetterDefinition[],
+  ): readonly CharacteristicEvaluator<number>[] {
+    return forms.flatMap((definition) => this.evaluators(definition));
   }
 
   /**

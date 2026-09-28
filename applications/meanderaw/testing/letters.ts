@@ -15,9 +15,10 @@ import type { ModuleMetadata, Type } from "@nestjs/common";
 
 /**
  * Compiles one letter service for its unit test and reads its sixteen
- * orientation evaluators back by name, so each letter's test states only its
- * own fixtures: every distinct orientation drawn as a Code holding one
- * isolated copy, beside every orientation name that draws that ink.
+ * orientation evaluators back by name — sixteen per positional form for an
+ * Arabic letter — so each letter's test states only its own fixtures: every
+ * distinct orientation drawn as a Code holding one isolated copy, beside
+ * every orientation name that draws that ink.
  */
 
 // 🏷️ Types
@@ -28,26 +29,19 @@ export interface LetterAliasFixture {
   readonly names: readonly LetterOrientationName[];
 }
 
-/** A compiled letter service's evaluators, read by orientation name. */
-export interface LetterHarness {
+/** One positional form of a letter: the key prefix its evaluators share, each distinct orientation of its ink, and each of its aliases. */
+export interface LetterFormFixture {
+  readonly aliases: readonly LetterAliasFixture[];
+  readonly orientations: readonly LetterOrientationFixture[];
+  readonly prefix: string;
+}
+
+/** A compiled letter service's evaluators, read by orientation name, with `form` narrowing them to one positional form's. */
+export interface LetterHarness extends LetterReadings {
   /** Compiles the letter service; the letter's test runs it in `beforeAll`. */
   compile(): Promise<void>;
-  /** Each orientation's count of a fixture's ink, in orientation-name order. */
-  counts(
-    fixture: string,
-  ): readonly (readonly [LetterOrientationName, number])[];
-  /** The span of a fixture's inked points, in lattice points. */
-  inkedWindow(fixture: string): SubmatrixWindow;
-  /** Every evaluator's metadata key, in orientation-name order. */
-  keys(): readonly string[];
-  /** Every evaluator's `letter` mark, in orientation-name order. */
-  marks(): readonly (true | undefined)[];
-  /** The orientation names whose descriptions mention `text`, in orientation-name order. */
-  namesDescribing(text: string): readonly LetterOrientationName[];
-  /** The declared window of each named orientation. */
-  windows(
-    names: readonly LetterOrientationName[],
-  ): readonly (SubmatrixWindow | undefined)[];
+  /** The same readings of only the evaluators whose keys start with `prefix`, such as one Arabic positional form's `behInitial`. */
+  form(prefix: string): LetterReadings;
 }
 
 /**
@@ -62,6 +56,26 @@ export type LetterModuleCompiler = (
 export interface LetterOrientationFixture {
   readonly fixture: string;
   readonly names: readonly LetterOrientationName[];
+}
+
+/** A set of sixteen orientation evaluators, read by orientation name. */
+export interface LetterReadings {
+  /** Each orientation's count of a fixture's ink, in orientation-name order. */
+  counts(
+    fixture: string,
+  ): readonly (readonly [LetterOrientationName, number])[];
+  /** The span of a fixture's inked points, in lattice points. */
+  inkedWindow(fixture: string): SubmatrixWindow;
+  /** Every evaluator's metadata key, in evaluator order. */
+  keys(): readonly string[];
+  /** Every evaluator's `letter` mark, in evaluator order. */
+  marks(): readonly (true | undefined)[];
+  /** The orientation names whose descriptions mention `text`, in orientation-name order. */
+  namesDescribing(text: string): readonly LetterOrientationName[];
+  /** The declared window of each named orientation. */
+  windows(
+    names: readonly LetterOrientationName[],
+  ): readonly (SubmatrixWindow | undefined)[];
 }
 
 // 🌎 Utilities
@@ -100,39 +114,52 @@ export function letterHarness(
     evaluators = group.evaluators;
   };
 
-  const named = (
-    name: LetterOrientationName,
-  ): CharacteristicEvaluator<number> | undefined =>
-    evaluators[LETTER_ORIENTATION_NAMES.indexOf(name)];
+  /** The readings of whichever evaluators `select` returns when a reading is taken, so a form narrowed before `compile` reads the compiled evaluators. */
+  const readings = (
+    select: () => readonly CharacteristicEvaluator<number>[],
+  ): LetterReadings => {
+    const named = (
+      name: LetterOrientationName,
+    ): CharacteristicEvaluator<number> | undefined =>
+      select()[LETTER_ORIENTATION_NAMES.indexOf(name)];
+
+    return {
+      counts: (fixture) => {
+        const context = contextService.create(fixture);
+        return LETTER_ORIENTATION_NAMES.map((name) => [
+          name,
+          named(name)?.compute(context) ?? -1,
+        ]);
+      },
+      inkedWindow: (fixture) => {
+        const inked = contextService
+          .create(fixture)
+          .matrix.flatMap((points, row) =>
+            points.flatMap((point, column) =>
+              Object.values(point).includes(true) ? [{ column, row }] : [],
+            ),
+          );
+        return {
+          columns: new Set(inked.map(({ column }) => column)).size,
+          rows: new Set(inked.map(({ row }) => row)).size,
+        };
+      },
+      keys: () => select().map(({ metadata }) => metadata.key),
+      marks: () => select().map(({ metadata }) => metadata.letter),
+      namesDescribing: (text) =>
+        LETTER_ORIENTATION_NAMES.filter(
+          (name) => named(name)?.metadata.description.includes(text) === true,
+        ),
+      windows: (names) => names.map((name) => named(name)?.metadata.submatrix),
+    };
+  };
 
   return {
+    ...readings(() => evaluators),
     compile,
-    counts: (fixture) => {
-      const context = contextService.create(fixture);
-      return LETTER_ORIENTATION_NAMES.map((name) => [
-        name,
-        named(name)?.compute(context) ?? -1,
-      ]);
-    },
-    inkedWindow: (fixture) => {
-      const inked = contextService
-        .create(fixture)
-        .matrix.flatMap((points, row) =>
-          points.flatMap((point, column) =>
-            Object.values(point).includes(true) ? [{ column, row }] : [],
-          ),
-        );
-      return {
-        columns: new Set(inked.map(({ column }) => column)).size,
-        rows: new Set(inked.map(({ row }) => row)).size,
-      };
-    },
-    keys: () => evaluators.map(({ metadata }) => metadata.key),
-    marks: () => evaluators.map(({ metadata }) => metadata.letter),
-    namesDescribing: (text) =>
-      LETTER_ORIENTATION_NAMES.filter(
-        (name) => named(name)?.metadata.description.includes(text) === true,
+    form: (prefix) =>
+      readings(() =>
+        evaluators.filter(({ metadata }) => metadata.key.startsWith(prefix)),
       ),
-    windows: (names) => names.map((name) => named(name)?.metadata.submatrix),
   };
 }
