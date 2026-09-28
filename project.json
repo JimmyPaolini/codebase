@@ -102,6 +102,21 @@
         "cwd": "{workspaceRoot}"
       }
     },
+    "check-codependix-boundaries": {
+      "cache": true,
+      "description": "Judge every configured dependency graph against its declared boundary rules, reading no destination and writing nothing. A dependency of `guard-code`, so it gates every pull request in the 💂 Guard check and every commit through lint-staged. It is a separate target from `codependix` rather than an edge to `codependix:check` because Nx forwards an explicit configuration down `dependsOn`: an edge there would let `guard-code --configuration=write` run `codependix:write` and publish graph exports from a branch. With no configurations of its own, nothing can forward one here.",
+      "executor": "nx:run-commands",
+      "inputs": [
+        "{workspaceRoot}/**/*.{cts,mts,ts,tsx}",
+        "{workspaceRoot}/configuration/codependix.config.ts",
+        "shared-globals"
+      ],
+      "options": {
+        "command": "node --import @swc-node/register/esm-register packages/ic-suite/codependix/codependix-cli/src/main.ts map --directory . --config configuration/codependix.config.ts --check boundaries",
+        "cwd": "{workspaceRoot}"
+      },
+      "outputs": []
+    },
     "check-lockfile": {
       "description": "Verify that pnpm-lock.yaml is in sync with package.json files",
       "executor": "nx:run-commands",
@@ -129,7 +144,7 @@
         }
       },
       "defaultConfiguration": "check",
-      "description": "Export every configured Nx, NestJS, and file-import dependency graph, and gate the rules those graphs are judged against. Two configurations and no third, mirroring `codebase:callidescope` and `codebase:codometer`: this target is absent from `lint-code`'s `dependsOn`, so no run of it ever forwards a configuration here, and `write` means publish on the default branch and nowhere else. `check` runs `--check boundaries`, which reads no destination and writes nothing — a broken boundary is caused by the branch and fixed by it, so it gates every pull request, exactly where the inferred per-project `gate` target checks call-stack depth. The command line also accepts `--check reports`, which is what a bare `--check` used to mean, and nothing runs it: a configured export moves with the workspace it describes and would fail every branch that changed a project graph rather than anything the branch itself did. The release workflow runs `write`, after `callidescope` and the module-graph synchronization have run, so a project's `## 🕸️ Codependix` anchor reflects the same commit those write. The README glob is an input because `write` splices Markdown into anchor blocks placed by hand in those files.",
+      "description": "Export every configured Nx, NestJS, and file-import dependency graph, and gate the rules those graphs are judged against. Two configurations and no third, mirroring `codebase:callidescope` and `codebase:codometer`: this target is absent from `lint-code`'s `dependsOn`, so no run of it ever forwards a configuration here, and `write` means publish on the default branch and nowhere else. `check` runs `--check boundaries`, which reads no destination and writes nothing — a broken boundary is caused by the branch and fixed by it. What gates every pull request is `check-codependix-boundaries`, the same command as a target with no configurations, which `guard-code` depends on beside the inferred per-project `gate` target; this target stays off that edge so `guard-code --configuration=write` can never reach `write`. The command line also accepts `--check reports`, which is what a bare `--check` used to mean, and nothing runs it: a configured export moves with the workspace it describes and would fail every branch that changed a project graph rather than anything the branch itself did. The release workflow runs `write`, after `callidescope` and the module-graph synchronization have run, so a project's `## 🕸️ Codependix` anchor reflects the same commit those write. The README glob is an input because `write` splices Markdown into anchor blocks placed by hand in those files.",
       "executor": "nx:run-commands",
       "inputs": [
         "{workspaceRoot}/**/*.{cts,mts,ts,tsx}",
