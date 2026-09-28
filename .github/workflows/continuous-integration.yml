@@ -129,6 +129,15 @@ jobs:
               --configuration=check --parallel=4
           fi
 
+      - name: 🕸️ Codependix
+        if: >-
+          !cancelled() &&
+          steps.check-skip.outputs.skip != 'true' &&
+          matrix.check.target == 'guard-code'
+        env:
+          NX_VERBOSE_LOGGING: ${{ inputs.verbose || false }}
+        run: pnpm exec nx run codebase:codependix:check
+
       - name: 📊 Report Integration
         if: >-
           always() &&
