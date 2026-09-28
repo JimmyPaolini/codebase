@@ -121,7 +121,7 @@ committed output rather than from a generated drawing.
 | 4 | **No crossing** — ink contains no X-junctions | Demoted to characteristic `hasXJunctions` — present in `cross` except under `interrupted`, in `mosaic` across its enumerated half, and in `negative` under `brick-straight`, `brick-upright`, and `grid` |
 | 5 | **Band, not field** — fixed canvas height, `rows` is density, tiling is horizontal | Guaranteed by construction |
 | 6 | **Flat path model** — unordered paths, no z-order, one stroke width per document | May be relaxed by ADR only |
-| 7 | Invariants hold within a band, not at its termination | See [#338](https://github.com/JimmyPaolini/codebase/issues/338) |
+| 7 | Invariants hold within a band, not at its termination | See [#338](https://github.com/Organizzolini/codebase/issues/338) |
 
 What the measurements found. They were taken across the 114 named patterns and 3,179
 enumerated `mosaic` tiles that existed before `cross`; every count below is restated
@@ -200,7 +200,7 @@ Invariant 5 is fixed because the intended use is **borders**. Two-dimensional fi
 ornament is excluded for that reason, not because it is uninteresting.
 
 Wider-than-one-stroke gaps occur only where a band terminates, which is
-[#338](https://github.com/JimmyPaolini/codebase/issues/338) and is not a family
+[#338](https://github.com/Organizzolini/codebase/issues/338) and is not a family
 property.
 
 **The named half of the sweep runs to each family's own `FAMILY_MAXIMUM_ROWS`**, which is
@@ -210,7 +210,7 @@ combinations, each family from its own structural minimum through its own ceilin
 ceiling is the shared `MAXIMUM_VALUE` of 12 for nine of the ten families, and 6 for
 `mosaic`, whose reasons are below.
 
-It stopped at 8 until [#507](https://github.com/JimmyPaolini/codebase/issues/507), and that
+It stopped at 8 until [#507](https://github.com/Organizzolini/codebase/issues/507), and that
 issue lived in the four row counts between — `chain` and `snake` drew self-retracing ink at
 9 through 12 rows, reachable from the command line by anybody and covered by nothing,
 because the corpus stopped at 8 and the charter swept the corpus. Raising the sweep's range
@@ -240,7 +240,7 @@ above 6 rows.
 A **family** is a generator of repeat units — its **unit space**. A **modifier** is a
 named constructor into that space; a **sub-family** is a named predicate over it. Both
 are views on one underlying space, which is why `mosaic` is the only family whose
-sub-families can be **asked for**: [#365](https://github.com/JimmyPaolini/codebase/pull/365)
+sub-families can be **asked for**: [#365](https://github.com/Organizzolini/codebase/pull/365)
 materialized its unit space as enumerable tiles, so its regions — `lines`, `dashes`,
 `dots`, `diamond` — became nameable at the command line. The other nine families have
 latent unit spaces and therefore only modifiers. Evaluating a predicate needs no
@@ -662,7 +662,7 @@ modifier is gone; the sub-family is not, and `--sub-family dot` is still refused
 
 ## 🕳️ Negative Space Survey
 
-[#340](https://github.com/JimmyPaolini/codebase/issues/340) found genuine four-way
+[#340](https://github.com/Organizzolini/codebase/issues/340) found genuine four-way
 crossings in the negative space of `mosaic split` and `mosaic alternated period-3`, and
 branching in every family's negative — but only across the 114 named patterns. Those two
 drawings are no longer committed under those names, and the finding is not lost with them:
@@ -670,7 +670,7 @@ drawings are no longer committed under those names, and the finding is not lost 
 crossings in `testing/assets/mosaic-5-rows-12-repeats-diamond.svg`, measured off disk by
 the charter suite.
 
-[#412](https://github.com/JimmyPaolini/codebase/issues/412) runs the same measurement
+[#412](https://github.com/Organizzolini/codebase/issues/412) runs the same measurement
 across all 3,179 tiles of the `mosaic` permutation set at 4 through 8 rows, which the
 sweep committed under `output/mosaic/<rows>-rows/permutations/` at the time, before that
 level was removed — the only
@@ -816,7 +816,7 @@ loops before the shape that inspired it can satisfy the tree test (`edges = vert
 ## 🔬 Unit Spaces Beyond Mosaic
 
 `mosaic` is the only family whose unit space is materialized and enumerable, and
-[#414](https://github.com/JimmyPaolini/codebase/issues/414) asked whether that asymmetry
+[#414](https://github.com/Organizzolini/codebase/issues/414) asked whether that asymmetry
 can be removed: is there, for `boxes`, `chain`, `snake`, `swirl`, and `whirl`, a generating
 rule producing a finite enumerable unit space the way `mosaic`'s exact-cover rule does?
 Only `mosaic` had sub-families when this was measured, and the ticket read that as the
@@ -909,7 +909,7 @@ Every one of the 78, at every row count from each family's structural minimum th
 since none of the five ever draws a dot. The only degree-3 points in the
 whole set are the two per repeat unit that `edge` and `edge-flip` create by joining the
 zigzag to the border rule — the same ink T-junctions
-[#410](https://github.com/JimmyPaolini/codebase/issues/410) reports, reached here
+[#410](https://github.com/Organizzolini/codebase/issues/410) reports, reached here
 independently and from the other direction.
 
 `mosaic` was the same model with one extra bound, and this is where that bound came off.
@@ -1483,7 +1483,7 @@ Three modes over the same lattice, and two of the three carry a parameter of the
   width coincidence is all that is left of the bound's reason — the collapse it was set
   against is gone, and a three-branch crenel now draws a figure of its own — so the floor
   is retained rather than derived. See `MINIMUM_STAGGER_BRANCHES` and
-  [#682](https://github.com/JimmyPaolini/codebase/issues/682).
+  [#682](https://github.com/Organizzolini/codebase/issues/682).
 - **`rung --direction <northeast|northwest|southeast|southwest>`** — the construction
   turned on its side, and the one mode whose interior is a different figure rather than a
   different width: one vertical stile per repeat unit, a horizontal rung off it at every
@@ -1637,7 +1637,7 @@ relaxation, opposite ends of the same measurement, and one commit in which they 
 
 ### Unbounded branching: explored, not implemented
 
-Issue [#416](https://github.com/JimmyPaolini/codebase/issues/416) asks for unbounded
+Issue [#416](https://github.com/Organizzolini/codebase/issues/416) asks for unbounded
 branching — forks plus loops — to be explored and written up rather than built, including
 whether the output still reads as a meander. It was, on two constructions, both at six
 repeats. **Neither of the two ships**, and for one commit one of them did — which is what
@@ -1889,7 +1889,7 @@ re-derived:
   second run of ink over one already drawn. Under the old 32-pair space, eight pairs
   doubled into that range and four of the eight sat **inside** the row-count maximum — so
   degeneracy ruled the proposal out where the ceiling alone would not have. That defect
-  was [#507](https://github.com/JimmyPaolini/codebase/issues/507), and it is **fixed**:
+  was [#507](https://github.com/Organizzolini/codebase/issues/507), and it is **fixed**:
   the zigzag turns at every step at every row count the command line accepts.
   `meander-generation.service.unit.test.ts` measures that off rendered path data, across
   every family rather than the six this passage counts, so the claim fails rather than
@@ -1904,7 +1904,7 @@ charter nothing.
 
 ### A family, not a modifier
 
-The spec in [#340](https://github.com/JimmyPaolini/codebase/issues/340) models `parallel`
+The spec in [#340](https://github.com/Organizzolini/codebase/issues/340) models `parallel`
 as "a modifier compatible with every family", and reads that universal compatibility as
 "the first concrete evidence for the universal abstraction this spec proposes". **That is
 corrected here: `parallel` is a family.**
@@ -3618,7 +3618,7 @@ What this project is judged against, as declared in its own `callidescope.config
 
 ## 🕸️ Codependix
 
-Dependency graphs exported by [codependix](https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/codependix/codependix-cli), regenerated by `nx run codebase:codependix:write`.
+Dependency graphs exported by [codependix](https://github.com/Organizzolini/codebase/tree/main/packages/ic-suite/codependix/codependix-cli), regenerated by `nx run codebase:codependix:write`.
 
 ### Nx Neighborhood
 

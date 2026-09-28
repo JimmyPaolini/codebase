@@ -479,7 +479,7 @@ Complete codebase setup from scratch:
 
 ```bash
 # 1. Clone repository
-git clone https://github.com/JimmyPaolini/codebase.git
+git clone https://github.com/Organizzolini/codebase.git
 cd codebase
 
 # 2. Create .env file

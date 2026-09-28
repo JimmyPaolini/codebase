@@ -188,7 +188,7 @@ Exit code is `0` if all tests pass, `1` if any fail.
 
 The `🧑‍🏭 Devcontainer` target in [`.github/workflows/continuous-deployment.yml`](../.github/workflows/continuous-deployment.yml) builds the container image and executes the test script inside it. It runs on pushes to `main` when `.devcontainer/**` changes.
 
-Pushes to `main` publish `ghcr.io/jimmypaolini/codebase-devcontainer:latest`, and that image is both the usable image and the build cache. This configuration is compose-based, and for compose configurations the devcontainer CLI bakes `BUILDKIT_INLINE_CACHE=1` into the feature build, so the published image carries its own layer metadata and the next run's `cacheFrom` resolves against it. Pull the image to run the devcontainer without building it.
+Pushes to `main` publish `ghcr.io/organizzolini/codebase-devcontainer:latest`, and that image is both the usable image and the build cache. This configuration is compose-based, and for compose configurations the devcontainer CLI bakes `BUILDKIT_INLINE_CACHE=1` into the feature build, so the published image carries its own layer metadata and the next run's `cacheFrom` resolves against it. Pull the image to run the devcontainer without building it.
 
 There is deliberately no separate cache tag. The CLI refuses `--cache-to` for a compose configuration — `--cache-to not supported.`, a hard build failure rather than a degraded run — along with `--push` and `--output`. Pushing is done by the action afterwards rather than by the CLI, which is why `push: filter` works where `--push` would not.
 

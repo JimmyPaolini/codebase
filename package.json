@@ -106,7 +106,7 @@
   "release": {
     "extends": "./configuration/release.config.cjs"
   },
-  "repository": "JimmyPaolini/codebase.git",
+  "repository": "Organizzolini/codebase.git",
   "scripts": {
     "postinstall": "conformetry-nx-bootstrap && bash scripts/install-skills.sh",
     "prepare": "husky configuration/.husky",
