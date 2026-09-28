@@ -109,7 +109,9 @@ jobs:
           matrix.target.id == 'build-projects'
         env:
           NX_VERBOSE_LOGGING: ${{ inputs.verbose || false }}
-        run: pnpm exec nx affected --target=build-projects
+        uses: ./.github/actions/run-affected
+        with:
+          target: build-projects
 
       - name: 🧹 Cleanup Codebase
         if: >-
