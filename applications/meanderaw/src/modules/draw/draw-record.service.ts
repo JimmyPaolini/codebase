@@ -25,11 +25,11 @@ import type {
  * passes, which is a fact about where the Code came from rather than
  * anything this can read off it.
  *
- * Every numeric Characteristic of `CharacteristicsService.compute` is
- * stored under its own column, and every boolean one that holds is listed in
- * `characteristics`, followed by `"isReducible"` when the filed Code is
- * wider than its unit. The family is `ClassificationService`'s verdict on
- * that same record.
+ * Every numeric Characteristic of `CharacteristicsService.compute` but a
+ * letter is stored under its own column, every nonzero letter count in
+ * `glyphs`, and every boolean one that holds is listed in `characteristics`,
+ * followed by `"isReducible"` when the filed Code is wider than its unit.
+ * The family is `ClassificationService`'s verdict on that same record.
  */
 @Injectable()
 export class DrawRecordService {
@@ -87,12 +87,13 @@ export class DrawRecordService {
     const drawingHash = crypto.createHash("sha256").update(svg).digest("hex");
 
     return {
-      ...this.characteristicsService.numericRecord(characteristics),
+      ...this.characteristicsService.columnRecord(characteristics),
       characteristics: booleanKeys,
       code: this.codeService.format(canonical),
       columns: canonical.columns,
       drawingHash,
       family,
+      glyphs: this.characteristicsService.glyphCounts(characteristics),
       lattice: canonical.digits,
       provenance,
       repeats: canonical.repeats,

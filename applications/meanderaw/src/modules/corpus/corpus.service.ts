@@ -49,9 +49,10 @@ import type { CorpusEntry, CorpusFamily } from "./corpus.types";
  * what was extracted.
  *
  * The stored Characteristics are `DrawRecordService`'s: every numeric one
- * of `CharacteristicsService.compute` under its own column, and every
- * boolean one that holds in `characteristics`, then `"isReducible"` when the
- * filed Code is wider than its unit.
+ * of `CharacteristicsService.compute` but a letter under its own column,
+ * every nonzero letter count in `glyphs`, and every boolean one that holds
+ * in `characteristics`, then `"isReducible"` when the filed Code is wider
+ * than its unit.
  *
  * A Code that collides with one already committed — an Enumerated row, or
  * another entry ingested earlier in the same sweep — fails loudly through
@@ -129,12 +130,13 @@ export class CorpusService {
             : filedFamily;
 
       return await this.databaseService.save({
-        ...this.characteristicsService.numericRecord(characteristics),
+        ...this.characteristicsService.columnRecord(characteristics),
         characteristics: booleanKeys,
         code: this.codeService.format(canonical),
         columns,
         drawingHash,
         family: entityFamily,
+        glyphs: this.characteristicsService.glyphCounts(characteristics),
         lattice: canonical.digits,
         provenance: "hardcoded" as const,
         repeats: canonical.repeats,

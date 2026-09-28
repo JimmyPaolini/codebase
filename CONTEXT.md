@@ -121,6 +121,24 @@ several at once, possibly none. Earned by what a meander measures as, never
 assigned by its proportions or carried over as metadata.
 _Avoid_: Style, kind, category, generative model
 
+**Corner**:
+The direction a letter glyph's strokes run toward — Southeast, Southwest,
+Northeast or Northwest. Reaching another corner means mirroring the glyph, never
+turning it.
+_Avoid_: Facing, side, handedness, East/West/Inverted
+
+**Base corner**:
+The corner a script's letters face as written, set by its reading direction:
+Southeast for left-to-right scripts, Southwest for right-to-left ones. Every other
+corner of a letter is a mirroring of its base corner.
+_Avoid_: Default orientation, upright corner
+
+**Orientation**:
+One of the sixteen ways a letter glyph can be drawn: a corner, then a clockwise
+turn of none, a quarter, a half, or three quarters. Orientations that draw the
+same ink are still distinct names for it, each counted alike.
+_Avoid_: Variant, rotation (for the whole), pose
+
 **Tile**:
 One repeat unit's worth of the lattice a meander is drawn on — the grid of points
 and edges a Code is spelled into.

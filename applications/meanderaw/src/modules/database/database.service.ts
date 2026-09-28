@@ -83,7 +83,7 @@ export class DatabaseService {
    * that hits a duplicate leaves no half-written shape behind.
    *
    * Chunked because a single statement's parameter count is bounded and a
-   * row here carries about ninety columns, so a whole shape's worth of rows in
+   * row here carries about fifty columns, so a whole shape's worth of rows in
    * one statement is a limit nobody declared being reached at some column
    * count nobody chose. The chunk size is a size, not a tuning knob: what
    * matters is that it is bounded.

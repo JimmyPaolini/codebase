@@ -10,6 +10,8 @@ import {
   BOOLEAN_CHARACTERISTIC_KEY_SET,
   CHARACTERISTIC_KEYS,
   CharacteristicRegistryError,
+  COLUMN_CHARACTERISTIC_KEY_SET,
+  COLUMN_CHARACTERISTIC_KEYS,
   NUMERIC_CHARACTERISTIC_KEYS,
 } from "./characteristics.constants";
 import { CharacteristicsService } from "./characteristics.service";
@@ -40,17 +42,22 @@ function collaborators(
   ];
 }
 
-/** A well-formed stand-in for every key: `false` under each boolean key, the key's index under each numeric one. */
+/** A well-formed stand-in for every key: `false` under each boolean key, the key's index under each numeric one, and marked a letter wherever a numeric key has no column. */
 function completeRegistry(): Provider[] {
   return CHARACTERISTIC_KEYS.map((key, index) =>
     isBooleanKey(key)
       ? fake(key, "boolean", false)
-      : fake(key, "number", index),
+      : fake(key, "number", index, !COLUMN_CHARACTERISTIC_KEY_SET.has(key)),
   );
 }
 
-/** A stand-in evaluator for `key`, claiming `valueType` and yielding `value`. */
-function fake(key: string, valueType: string, value: unknown): Provider {
+/** A stand-in evaluator for `key`, claiming `valueType` and yielding `value`, marked a letter when `letter` is set. */
+function fake(
+  key: string,
+  valueType: string,
+  value: unknown,
+  letter = false,
+): Provider {
   return {
     instance: {
       compute: (): unknown => value,
@@ -58,6 +65,7 @@ function fake(key: string, valueType: string, value: unknown): Provider {
         category: "submatrix",
         description: `Stands in for ${key}.`,
         key,
+        ...(letter ? { letter: true } : {}),
         name: key,
         submatrix: { columns: 1, rows: 1 },
         valueType,
@@ -121,6 +129,38 @@ describe(CharacteristicsService, () => {
     ]);
   });
 
+  it("registers every member of a discovered evaluator group as its own evaluator", async () => {
+    const grouped = new Set(["aSoutheastLatinCount", "aSouthwestLatinCount"]);
+    const members = providers
+      .filter((_provider, index) =>
+        grouped.has(CHARACTERISTIC_KEYS[index] ?? ""),
+      )
+      .map(({ instance }) => instance);
+    providers = [
+      ...providers.filter(
+        (_provider, index) => !grouped.has(CHARACTERISTIC_KEYS[index] ?? ""),
+      ),
+      { instance: { evaluators: members } },
+    ];
+    const fresh = await registry();
+
+    expect(fresh.metadata().map((metadata) => metadata.key)).toStrictEqual([
+      ...CHARACTERISTIC_KEYS,
+    ]);
+    expect(fresh.compute("02x01y2c").aSouthwestLatinCount).toBe(
+      CHARACTERISTIC_KEYS.indexOf("aSouthwestLatinCount"),
+    );
+  });
+
+  it("throws when a group and a lone evaluator claim the same key", async () => {
+    const member =
+      providers[CHARACTERISTIC_KEYS.indexOf("aSoutheastLatinCount")];
+    providers.push({ instance: { evaluators: [member?.instance] } });
+    const fresh = await registry();
+
+    expect(() => fresh.metadata()).toThrow(/aSoutheastLatinCount/u);
+  });
+
   it("skips discovered providers that are not shaped like evaluators", async () => {
     providers.push(
       { instance: undefined },
@@ -130,6 +170,10 @@ describe(CharacteristicsService, () => {
       { instance: { compute: 1, metadata: { key: "dotCount" } } },
       { instance: { compute: (): number => 1, metadata: "dotCount" } },
       { instance: { compute: (): number => 1, metadata: { key: 3 } } },
+      { instance: { evaluators: "dotCount" } },
+      {
+        instance: { evaluators: [7, null, { metadata: { key: "dotCount" } }] },
+      },
     );
     const fresh = await registry();
 
@@ -246,16 +290,66 @@ describe(CharacteristicsService, () => {
     ).toBe(false);
   });
 
-  it("keeps only the numeric keys of a computed record", () => {
+  it("keeps only the column keys of a computed record, leaving every letter and boolean key out", () => {
     const characteristics = service.compute("02x01y2c");
 
-    const numeric = service.numericRecord(characteristics);
+    const columns = service.columnRecord(characteristics);
 
-    expect(Object.keys(numeric)).toStrictEqual([
-      ...NUMERIC_CHARACTERISTIC_KEYS,
-    ]);
-    expect(numeric).not.toHaveProperty("isDots");
-    expect(numeric.dotCount).toBe(characteristics.dotCount);
+    expect(Object.keys(columns)).toStrictEqual([...COLUMN_CHARACTERISTIC_KEYS]);
+    expect(columns).not.toHaveProperty("isDots");
+    expect(columns).not.toHaveProperty("aSoutheastLatinCount");
+    expect(columns.dotCount).toBe(characteristics.dotCount);
+  });
+
+  it("keeps every nonzero letter count in the glyph map, in key-list order, and no zero one", () => {
+    const characteristics = service.compute("02x01y2c");
+    const letterKeys = NUMERIC_CHARACTERISTIC_KEYS.filter(
+      (key) => !COLUMN_CHARACTERISTIC_KEY_SET.has(key),
+    );
+
+    const glyphs = service.glyphCounts(characteristics);
+
+    expect(letterKeys[0]).toBe("aNortheastHalfLatinCount");
+    expect(characteristics.aNortheastHalfLatinCount).toBe(0);
+    expect(Object.keys(glyphs)).toStrictEqual(letterKeys.slice(1));
+    expect(glyphs.aSoutheastLatinCount).toBe(
+      characteristics.aSoutheastLatinCount,
+    );
+    expect(glyphs).not.toHaveProperty("dotCount");
+  });
+
+  it("throws when an evaluator marked a letter has a column of its own", async () => {
+    providers = providers.map((provider, index) =>
+      CHARACTERISTIC_KEYS[index] === "dotCount"
+        ? fake("dotCount", "number", 0, true)
+        : provider,
+    );
+    const fresh = await registry();
+
+    expect(() => fresh.metadata()).toThrow(CharacteristicRegistryError);
+    expect(() => fresh.metadata()).toThrow(/dotCount/u);
+  });
+
+  it("throws when a numeric evaluator with no column is not marked a letter", async () => {
+    providers = providers.map((provider, index) =>
+      CHARACTERISTIC_KEYS[index] === "aSoutheastLatinCount"
+        ? fake("aSoutheastLatinCount", "number", 0)
+        : provider,
+    );
+    const fresh = await registry();
+
+    expect(() => fresh.metadata()).toThrow(/aSoutheastLatinCount/u);
+  });
+
+  it("throws when a boolean evaluator is marked a letter", async () => {
+    providers = providers.map((provider, index) =>
+      CHARACTERISTIC_KEYS[index] === "isDots"
+        ? fake("isDots", "boolean", false, true)
+        : provider,
+    );
+    const fresh = await registry();
+
+    expect(() => fresh.metadata()).toThrow(/isDots/u);
   });
 
   it("lists no boolean key when none of them hold and the Code is not reducible", () => {

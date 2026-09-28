@@ -9974,13 +9974,13 @@ The workspace's call graph, traced by [callidescope](packages/ic-suite/callidesc
 
 | Measure | Value |
 | --- | --- |
-| Callables | 5488 |
-| Files | 1626 |
-| Calls traced | 6122 |
-| Call stacks | 1553 |
+| Callables | 5721 |
+| Files | 1657 |
+| Calls traced | 6140 |
+| Call stacks | 1709 |
 | Deepest stack | 17 |
 | Stacks through recursion | 12 |
-| Unfollowable calls | 412 |
+| Unfollowable calls | 455 |
 
 ### Projects
 
@@ -9989,7 +9989,7 @@ The workspace's call graph, traced by [callidescope](packages/ic-suite/callidesc
 | `applications/caelundas` | 16 | 16 | 0 | 12 |
 | `applications/lexico` | 9 | 9 | 0 | 9 |
 | `applications/lexico-ingestion` | 17 | 17 | 0 | 8 |
-| `applications/meanderaw` | 16 | 16 | 0 | 13 |
+| `applications/meanderaw` | 16 | 16 | 0 | 14 |
 | `packages/ic-suite/callidescope/callidescope-cli` | 15 | 15 | 0 | 10 |
 | `packages/ic-suite/callidescope/callidescope-nx` | 17 | 17 | 0 | 7 |
 | `packages/ic-suite/codependix/codependix-boundaries` | 12 | 12 | 0 | 7 |

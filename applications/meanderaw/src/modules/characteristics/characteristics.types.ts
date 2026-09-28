@@ -5,6 +5,7 @@ import type { Matrix } from "../matrix/matrix.types";
 import type {
   BOOLEAN_CHARACTERISTIC_KEYS,
   CHARACTERISTIC_KEYS,
+  COLUMN_CHARACTERISTIC_KEYS,
   NUMERIC_CHARACTERISTIC_KEYS,
 } from "./characteristics.constants";
 
@@ -64,6 +65,18 @@ export interface CharacteristicEvaluator<
   readonly metadata: CharacteristicMetadata<T>;
 }
 
+/**
+ * A provider holding several evaluators rather than being one — a letter
+ * service, whose sixteen orientations are each an evaluator with its own key
+ * and metadata. `CharacteristicsService` registers every member of every
+ * group it discovers exactly as it registers a lone evaluator.
+ */
+export interface CharacteristicEvaluatorGroup<
+  T extends CharacteristicValue = CharacteristicValue,
+> {
+  readonly evaluators: readonly CharacteristicEvaluator<T>[];
+}
+
 /** The key of any registered characteristic: see {@link CHARACTERISTIC_KEYS}. */
 export type CharacteristicKey = (typeof CHARACTERISTIC_KEYS)[number];
 
@@ -93,7 +106,11 @@ export type CharacteristicMetadata<
       readonly submatrix?: never;
     });
 
-/** The {@link CharacteristicMetadata} fields every category shares. */
+/**
+ * The {@link CharacteristicMetadata} fields every category shares. `letter`
+ * marks a letter glyph count, which a meander row stores in its `glyphs` map
+ * rather than a column of its own: see {@link COLUMN_CHARACTERISTIC_KEYS}.
+ */
 export interface CharacteristicMetadataFields<
   T extends CharacteristicValue = CharacteristicValue,
 > {
@@ -101,6 +118,7 @@ export interface CharacteristicMetadataFields<
   readonly documentationUrl?: string;
   readonly formula?: string;
   readonly key: CharacteristicKeyOf<T>;
+  readonly letter?: true;
   readonly name: string;
   readonly valueType: CharacteristicValueType<T>;
 }
@@ -120,14 +138,38 @@ export type CharacteristicValue = boolean | number;
 export type CharacteristicValueType<T extends CharacteristicValue> =
   T extends boolean ? "boolean" : "number";
 
+/** The key of a numeric characteristic stored under a column of its own: see {@link COLUMN_CHARACTERISTIC_KEYS}. */
+export type ColumnCharacteristicKey =
+  (typeof COLUMN_CHARACTERISTIC_KEYS)[number];
+
+/** A number under each {@link ColumnCharacteristicKey}: the characteristic columns a stored meander row carries. */
+export type ColumnCharacteristicRecord = Readonly<
+  Record<ColumnCharacteristicKey, number>
+>;
+
+/**
+ * A meander's letter glyph counts, holding only the letters it contains: a
+ * count of zero is left out, so a reader takes a missing letter as zero.
+ * This is the whole of a stored row's `glyphs` map; raw SQL reads a letter
+ * as `COALESCE(json_extract(glyphs, '$.key'), 0)` for the same reason.
+ */
+export type GlyphCounts = Readonly<
+  Partial<Record<LetterCharacteristicKey, number>>
+>;
+
+/** The key of a letter glyph count: every numeric key without a column of its own. */
+export type LetterCharacteristicKey = Exclude<
+  NumericCharacteristicKey,
+  ColumnCharacteristicKey
+>;
+
 /** The key of a characteristic whose value is a number: see {@link NUMERIC_CHARACTERISTIC_KEYS}. */
 export type NumericCharacteristicKey =
   (typeof NUMERIC_CHARACTERISTIC_KEYS)[number];
 
 /**
  * The numeric half of a {@link Characteristics} record: a number under each
- * numeric key, which is exactly the set of numeric columns a stored meander
- * row carries.
+ * numeric key, letters included.
  */
 export type NumericCharacteristicRecord = Readonly<
   Record<NumericCharacteristicKey, number>

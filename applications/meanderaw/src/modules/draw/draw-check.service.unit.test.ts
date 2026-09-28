@@ -4,7 +4,7 @@ import { getRepositoryToken } from "@nestjs/typeorm";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
 import { meanderRecord } from "../../../testing/meanders";
-import { NUMERIC_CHARACTERISTIC_KEYS } from "../characteristics/characteristics.constants";
+import { COLUMN_CHARACTERISTIC_KEYS } from "../characteristics/characteristics.constants";
 import { CorpusService } from "../corpus/corpus.service";
 import { Meander } from "../database/entities/Meander.entity";
 
@@ -280,10 +280,10 @@ describe(DrawCheckService, () => {
       ]);
     });
 
-    it("compares every numeric characteristic column, along with characteristics, family, provenance, and drawingHash", () => {
+    it("compares every numeric characteristic column, along with characteristics, family, provenance, drawingHash, and glyphs", () => {
       const committedRow = meander({ code: "a", id: 2 });
       const everyNumericColumnChanged = Object.fromEntries(
-        NUMERIC_CHARACTERISTIC_KEYS.map((key) => [key, 99]),
+        COLUMN_CHARACTERISTIC_KEYS.map((key) => [key, 99]),
       ) as Partial<Meander>;
       const regeneratedRow = meander({
         ...everyNumericColumnChanged,
@@ -291,6 +291,7 @@ describe(DrawCheckService, () => {
         code: "a",
         drawingHash: "other",
         family: "snake",
+        glyphs: { aSoutheastLatinCount: 1 },
         id: 1,
         provenance: "enumerated",
       });
@@ -301,17 +302,118 @@ describe(DrawCheckService, () => {
         {
           code: "a",
           columns: 1,
-          differences: [...MEANDER_DRIFT_COMPARISON_COLUMNS],
+          differences: [
+            ...MEANDER_DRIFT_COMPARISON_COLUMNS.filter(
+              (column) => column !== "glyphs",
+            ),
+            "glyphs.aSoutheastLatinCount",
+          ],
           rows: 2,
         },
       ]);
       expect(MEANDER_DRIFT_COMPARISON_COLUMNS).toStrictEqual([
-        ...NUMERIC_CHARACTERISTIC_KEYS,
+        ...COLUMN_CHARACTERISTIC_KEYS,
         "characteristics",
         "family",
         "provenance",
         "drawingHash",
+        "glyphs",
       ]);
+    });
+
+    it("names each letter whose count differs, reading a letter missing from either glyph map as zero", () => {
+      const committedRow = meander({
+        code: "a",
+        glyphs: {
+          aSoutheastLatinCount: 1,
+          cSoutheastLatinCount: 0,
+          oSoutheastLatinCount: 2,
+        },
+        id: 2,
+      });
+      const regeneratedRow = meander({
+        code: "a",
+        glyphs: {
+          aSoutheastLatinCount: 1,
+          oSoutheastLatinCount: 3,
+          tSoutheastLatinCount: 1,
+        },
+        id: 1,
+      });
+
+      const report = service.diff([regeneratedRow], [committedRow]);
+
+      expect(report.changed).toStrictEqual([
+        {
+          code: "a",
+          columns: 1,
+          differences: [
+            "glyphs.oSoutheastLatinCount",
+            "glyphs.tSoutheastLatinCount",
+          ],
+          rows: 2,
+        },
+      ]);
+    });
+
+    it("reports drift when a letter the committed row counted disappears from the regenerated row", () => {
+      const committedRow = meander({
+        code: "a",
+        glyphs: { oSoutheastLatinCount: 2 },
+        id: 2,
+      });
+      const regeneratedRow = meander({ code: "a", glyphs: {}, id: 1 });
+
+      const report = service.diff([regeneratedRow], [committedRow]);
+
+      expect(report.changed).toStrictEqual([
+        {
+          code: "a",
+          columns: 1,
+          differences: ["glyphs.oSoutheastLatinCount"],
+          rows: 2,
+        },
+      ]);
+    });
+
+    it("lists differing letters in key order, whatever order either glyph map holds them in", () => {
+      const committedRow = meander({ code: "a", glyphs: {}, id: 2 });
+      const regeneratedRow = meander({
+        code: "a",
+        glyphs: Object.fromEntries(
+          [
+            "zSoutheastLatinCount",
+            "aSoutheastLatinCount",
+            "mSoutheastLatinCount",
+          ].map((key) => [key, 1]),
+        ),
+        id: 1,
+      });
+
+      const report = service.diff([regeneratedRow], [committedRow]);
+
+      expect(report.changed[0]?.differences).toStrictEqual([
+        "glyphs.aSoutheastLatinCount",
+        "glyphs.mSoutheastLatinCount",
+        "glyphs.zSoutheastLatinCount",
+      ]);
+    });
+
+    it("reports no drift between glyph maps that differ only in a zero count", () => {
+      const committedRow = meander({
+        code: "a",
+        glyphs: { aSoutheastLatinCount: 1, cSoutheastLatinCount: 0 },
+        id: 2,
+      });
+      const regeneratedRow = meander({
+        code: "a",
+        glyphs: { aSoutheastLatinCount: 1 },
+        id: 1,
+      });
+
+      expect(
+        service.diff([regeneratedRow], [committedRow]).changed,
+      ).toStrictEqual([]);
     });
 
     it("does not compare lattice or repeats, which are not drift comparison columns", () => {

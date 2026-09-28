@@ -3,6 +3,8 @@ import { beforeAll, describe, expect, it } from "vitest";
 
 import {
   BOOLEAN_CHARACTERISTIC_KEYS,
+  COLUMN_CHARACTERISTIC_KEY_SET,
+  COLUMN_CHARACTERISTIC_KEYS,
   NUMERIC_CHARACTERISTIC_KEYS,
 } from "../characteristics/characteristics.constants";
 import { CharacteristicsModule } from "../characteristics/characteristics.module";
@@ -87,16 +89,16 @@ describe(DrawRecordService, () => {
       expect(record).not.toHaveProperty("isBars");
     });
 
-    it("stores every numeric characteristic of the computed record under its own key, and the true booleans in key-list order", () => {
+    it("stores every non-letter numeric characteristic of the computed record under its own key, and the true booleans in key-list order", () => {
       const code = "2335635cc29ca339";
       const record = service.record(code, { columns: 4, rows: 4 }, "hardcoded");
       const canonical = codeService.parse(record.code);
       const expected = characteristicsService.compute(canonical);
 
       expect(
-        NUMERIC_CHARACTERISTIC_KEYS.map((key) => [key, record[key]]),
+        COLUMN_CHARACTERISTIC_KEYS.map((key) => [key, record[key]]),
       ).toStrictEqual(
-        NUMERIC_CHARACTERISTIC_KEYS.map((key) => [key, expected[key]]),
+        COLUMN_CHARACTERISTIC_KEYS.map((key) => [key, expected[key]]),
       );
 
       expect(record.characteristics).toStrictEqual([
@@ -105,6 +107,26 @@ describe(DrawRecordService, () => {
           ? ["isReducible"]
           : []),
       ]);
+    });
+
+    it("stores every nonzero letter count in glyphs, and no letter count under a key of its own", () => {
+      const record = service.record("03x03y650ed0880");
+      const expected = characteristicsService.compute(
+        codeService.parse(record.code),
+      );
+      const letterKeys = NUMERIC_CHARACTERISTIC_KEYS.filter(
+        (key) => !COLUMN_CHARACTERISTIC_KEY_SET.has(key),
+      );
+
+      expect(record.glyphs.aSoutheastLatinCount).toBe(1);
+      expect(record.glyphs).toStrictEqual(
+        Object.fromEntries(
+          letterKeys
+            .filter((key) => expected[key] !== 0)
+            .map((key) => [key, expected[key]]),
+        ),
+      );
+      expect(letterKeys.filter((key) => key in record)).toStrictEqual([]);
     });
 
     it("records family and specific characteristics where a Code's structure earns them", () => {
