@@ -7,6 +7,7 @@ import { AoHanziLetterCharacteristicsService } from "./ao-hanzi-letter-character
 import { BLatinLetterCharacteristicsService } from "./b-latin-letter-characteristics.service";
 import { CLatinLetterCharacteristicsService } from "./c-latin-letter-characteristics.service";
 import { DaletHebrewLetterCharacteristicsService } from "./dalet-hebrew-letter-characteristics.service";
+import { DeltaGreekLetterCharacteristicsService } from "./delta-greek-letter-characteristics.service";
 import { ELatinLetterCharacteristicsService } from "./e-latin-letter-characteristics.service";
 import { FLatinLetterCharacteristicsService } from "./f-latin-letter-characteristics.service";
 import { GanHanziLetterCharacteristicsService } from "./gan-hanzi-letter-characteristics.service";
@@ -14,14 +15,17 @@ import { HLatinLetterCharacteristicsService } from "./h-latin-letter-characteris
 import { ILatinLetterCharacteristicsService } from "./i-latin-letter-characteristics.service";
 import { JiaHanziLetterCharacteristicsService } from "./jia-hanzi-letter-characteristics.service";
 import { JingHanziLetterCharacteristicsService } from "./jing-hanzi-letter-characteristics.service";
+import { KappaGreekLetterCharacteristicsService } from "./kappa-greek-letter-characteristics.service";
 import { KieukHangulLetterCharacteristicsService } from "./kieuk-hangul-letter-characteristics.service";
 import { LLatinLetterCharacteristicsService } from "./l-latin-letter-characteristics.service";
+import { LambdaGreekLetterCharacteristicsService } from "./lambda-greek-letter-characteristics.service";
 import { LamedHebrewLetterCharacteristicsService } from "./lamed-hebrew-letter-characteristics.service";
 import { LetterUtilitiesService } from "./letter-utilities.service";
 import { MLatinLetterCharacteristicsService } from "./m-latin-letter-characteristics.service";
 import { MuHanziLetterCharacteristicsService } from "./mu-hanzi-letter-characteristics.service";
 import { NLatinLetterCharacteristicsService } from "./n-latin-letter-characteristics.service";
 import { OLatinLetterCharacteristicsService } from "./o-latin-letter-characteristics.service";
+import { OmegaGreekLetterCharacteristicsService } from "./omega-greek-letter-characteristics.service";
 import { PhiGreekLetterCharacteristicsService } from "./phi-greek-letter-characteristics.service";
 import { PieupHangulLetterCharacteristicsService } from "./pieup-hangul-letter-characteristics.service";
 import { PsiGreekLetterCharacteristicsService } from "./psi-greek-letter-characteristics.service";
@@ -29,6 +33,7 @@ import { RhoGreekLetterCharacteristicsService } from "./rho-greek-letter-charact
 import { SLatinLetterCharacteristicsService } from "./s-latin-letter-characteristics.service";
 import { ShangHanziLetterCharacteristicsService } from "./shang-hanzi-letter-characteristics.service";
 import { ShenHanziLetterCharacteristicsService } from "./shen-hanzi-letter-characteristics.service";
+import { SigmaGreekLetterCharacteristicsService } from "./sigma-greek-letter-characteristics.service";
 import { TLatinLetterCharacteristicsService } from "./t-latin-letter-characteristics.service";
 import { TavHebrewLetterCharacteristicsService } from "./tav-hebrew-letter-characteristics.service";
 import { TianHanziLetterCharacteristicsService } from "./tian-hanzi-letter-characteristics.service";
@@ -69,6 +74,7 @@ import { ZLatinLetterCharacteristicsService } from "./z-latin-letter-characteris
     BLatinLetterCharacteristicsService,
     CLatinLetterCharacteristicsService,
     DaletHebrewLetterCharacteristicsService,
+    DeltaGreekLetterCharacteristicsService,
     ELatinLetterCharacteristicsService,
     FLatinLetterCharacteristicsService,
     GanHanziLetterCharacteristicsService,
@@ -76,13 +82,16 @@ import { ZLatinLetterCharacteristicsService } from "./z-latin-letter-characteris
     ILatinLetterCharacteristicsService,
     JiaHanziLetterCharacteristicsService,
     JingHanziLetterCharacteristicsService,
+    KappaGreekLetterCharacteristicsService,
     KieukHangulLetterCharacteristicsService,
     LLatinLetterCharacteristicsService,
+    LambdaGreekLetterCharacteristicsService,
     LamedHebrewLetterCharacteristicsService,
     MLatinLetterCharacteristicsService,
     MuHanziLetterCharacteristicsService,
     NLatinLetterCharacteristicsService,
     OLatinLetterCharacteristicsService,
+    OmegaGreekLetterCharacteristicsService,
     PhiGreekLetterCharacteristicsService,
     PieupHangulLetterCharacteristicsService,
     PsiGreekLetterCharacteristicsService,
@@ -90,6 +99,7 @@ import { ZLatinLetterCharacteristicsService } from "./z-latin-letter-characteris
     SLatinLetterCharacteristicsService,
     ShangHanziLetterCharacteristicsService,
     ShenHanziLetterCharacteristicsService,
+    SigmaGreekLetterCharacteristicsService,
     TLatinLetterCharacteristicsService,
     TavHebrewLetterCharacteristicsService,
     TianHanziLetterCharacteristicsService,
@@ -116,6 +126,7 @@ import { ZLatinLetterCharacteristicsService } from "./z-latin-letter-characteris
     BLatinLetterCharacteristicsService,
     CLatinLetterCharacteristicsService,
     DaletHebrewLetterCharacteristicsService,
+    DeltaGreekLetterCharacteristicsService,
     ELatinLetterCharacteristicsService,
     FLatinLetterCharacteristicsService,
     GanHanziLetterCharacteristicsService,
@@ -123,13 +134,16 @@ import { ZLatinLetterCharacteristicsService } from "./z-latin-letter-characteris
     ILatinLetterCharacteristicsService,
     JiaHanziLetterCharacteristicsService,
     JingHanziLetterCharacteristicsService,
+    KappaGreekLetterCharacteristicsService,
     KieukHangulLetterCharacteristicsService,
     LLatinLetterCharacteristicsService,
+    LambdaGreekLetterCharacteristicsService,
     LamedHebrewLetterCharacteristicsService,
     MLatinLetterCharacteristicsService,
     MuHanziLetterCharacteristicsService,
     NLatinLetterCharacteristicsService,
     OLatinLetterCharacteristicsService,
+    OmegaGreekLetterCharacteristicsService,
     PhiGreekLetterCharacteristicsService,
     PieupHangulLetterCharacteristicsService,
     PsiGreekLetterCharacteristicsService,
@@ -137,6 +151,7 @@ import { ZLatinLetterCharacteristicsService } from "./z-latin-letter-characteris
     SLatinLetterCharacteristicsService,
     ShangHanziLetterCharacteristicsService,
     ShenHanziLetterCharacteristicsService,
+    SigmaGreekLetterCharacteristicsService,
     TLatinLetterCharacteristicsService,
     TavHebrewLetterCharacteristicsService,
     TianHanziLetterCharacteristicsService,

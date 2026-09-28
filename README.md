@@ -9974,13 +9974,13 @@ The workspace's call graph, traced by [callidescope](packages/ic-suite/callidesc
 
 | Measure | Value |
 | --- | --- |
-| Callables | 5721 |
-| Files | 1657 |
-| Calls traced | 6140 |
-| Call stacks | 1709 |
+| Callables | 5736 |
+| Files | 1662 |
+| Calls traced | 6145 |
+| Call stacks | 1724 |
 | Deepest stack | 17 |
 | Stacks through recursion | 12 |
-| Unfollowable calls | 455 |
+| Unfollowable calls | 352 |
 
 ### Projects
 
