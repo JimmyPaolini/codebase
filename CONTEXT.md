@@ -139,6 +139,20 @@ turn of none, a quarter, a half, or three quarters. Orientations that draw the
 same ink are still distinct names for it, each counted alike.
 _Avoid_: Variant, rotation (for the whole), pose
 
+**Positional form**:
+The shape a joining script's letter takes from where it sits in a word —
+isolated, initial, medial, or final — each drawn as its own letter, with a unit
+joining stroke on every side it connects. A form a letter never takes, such as
+a non-connecting letter's initial or medial, is left out rather than drawn.
+_Avoid_: Contextual form, allograph, position
+
+**Skeleton (rasm)**:
+A letter's dotless shape, which letters differing only by dots or by other
+marks such as hamza share. A skeleton is drawn once, as one letter, and every
+other letter sharing it is an alias of that letter rather than a second copy
+of its ink.
+_Avoid_: Base letter, outline, stem
+
 **Tile**:
 One repeat unit's worth of the lattice a meander is drawn on — the grid of points
 and edges a Code is spelled into.

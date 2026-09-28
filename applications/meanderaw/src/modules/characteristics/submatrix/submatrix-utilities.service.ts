@@ -32,6 +32,9 @@ export class SubmatrixUtilitiesService {
   /**
    * Each board's digit grid, built once however many templates count it.
    * Keyed weakly by the matrix, so a grid lives no longer than its board.
+   * Keying by identity assumes a board is never mutated after its first
+   * count, the same assumption {@link LetterUtilitiesService}'s count cache
+   * makes; a mutated board would keep reading its stale grid.
    */
   private readonly digitGrids = new WeakMap<
     Matrix,
@@ -186,6 +189,10 @@ export class SubmatrixUtilitiesService {
    * {@link SubmatrixUtilitiesService.pointDigitAt} spells it. Built once per
    * board and shared by every template counted on it, so a board's arms are
    * read once rather than once per template and window.
+   *
+   * The grid returned is that shared one, so a caller must not mutate it, and
+   * it stays correct only while the board itself is never mutated after its
+   * first count.
    */
   public digitGrid(matrix: Matrix): readonly (readonly number[])[] {
     const built = this.digitGrids.get(matrix);
