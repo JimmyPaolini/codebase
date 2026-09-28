@@ -3,7 +3,8 @@ name: 🦹 Continuous Compliance
 # External and repository compliance checks:
 # 1. 🧑‍💼 Issue: Issue metadata, hierarchy, and release significance.
 # 2. 👮 Enforce: Repository governance and workflow security.
-# 3. 🧑‍⚖️ Comply: Pull request metadata and commit message conventions.
+# 3. 🧑‍⚖️ Comply: Pull request metadata and commit message conventions, and
+#    a passing report on merge queue groups.
 #
 # Label reconciliation runs through `tools/synchronization`, and compliance
 # validation runs through `tools/validation`. All checks execute directly via
@@ -26,6 +27,10 @@ on:
       - assigned
       - unassigned
       - ready_for_review
+  # The merge queue waits for every required check on the group's commit, and
+  # 🧑‍⚖️ Comply is one of them.
+  merge_group:
+    types: [checks_requested]
   schedule:
     - cron: 18 12 * * 5 # Weekly Friday 8:18am NYC (EDT: 12:18 UTC / EST: 13:18 UTC)
   workflow_dispatch:
@@ -181,22 +186,39 @@ jobs:
     if: >-
       github.actor != 'dependabot[bot]' &&
       (github.event_name == 'push' ||
+      github.event_name == 'merge_group' ||
       (github.event_name == 'pull_request' && !github.event.pull_request.draft))
 
     steps:
+      # A merge group carries no pull request payload, and the pull request it
+      # queues already passed every check below to enter the queue. Reporting
+      # success here, rather than skipping the job, keeps the required check
+      # present on the group's commit.
+      - name: 🚂 Acknowledge Merge Group
+        if: github.event_name == 'merge_group'
+        env:
+          HEAD_REF: ${{ github.event.merge_group.head_ref }}
+        run: |
+          PULL_REQUEST_NUMBER="$(sed -nE 's#^.*/pr-([0-9]+)-[0-9a-f]+$#\1#p' <<< "$HEAD_REF")"
+          echo "✅ Pull request #${PULL_REQUEST_NUMBER} passed compliance before entering the queue."
+
       - name: 📥 Checkout Repository
+        if: github.event_name != 'merge_group'
         uses: actions/checkout@v7
 
       - name: 📦 Setup pnpm
+        if: github.event_name != 'merge_group'
         uses: ./.github/actions/setup-pnpm
 
       - name: 🟢 Setup node
+        if: github.event_name != 'merge_group'
         uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
           cache: pnpm
 
       - name: 📚 Install Root Dependencies
+        if: github.event_name != 'merge_group'
         run: |
           CI=true pnpm install --frozen-lockfile --reporter=append-only \
             --filter . --filter synchronization... --filter validation... \
