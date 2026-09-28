@@ -327,7 +327,7 @@ Four toolchains are developed in this repository and gate its own code. You are 
 
 | Toolchain      | What it does                                                                                                                   | What fails a pull request                                                       |
 | -------------- | ------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------- |
-| `conformetry`  | Scaffolds projects, modules, and components from templates, then measures the generated instances back against those templates | `conformetry-validate`, inside `lint-code`                                      |
+| `conformetry`  | Scaffolds projects, modules, and components from templates, then measures the generated instances back against those templates | `conformetry-validate`, inside `guard-code` in the 💂 Guard check |
 | `codometer`    | Measures a directory — languages, declared conventions, compressed size — against the limits its configuration declares        | that project's `codometer` target, inside Make Projects                         |
 | `codependix`   | Exports Nx, NestJS module, and file-level import graphs, and judges them against declared boundary rules                       | `codebase:codependix:check`, a step in the 💂 Guard check |
 | `callidescope` | Traces call stacks through injected dependencies and flags stacks that are too deep or callables that reach too widely         | the inferred per-project `gate` target, a step in the 💂 Guard check |
