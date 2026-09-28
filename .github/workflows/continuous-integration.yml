@@ -104,6 +104,7 @@ jobs:
             ${{ matrix.check.target != 'build-projects' && 'true' || 'false' }}
           uv: "true"
           nx-cache: "true"
+          nx-cache-scope: ${{ github.job }}-${{ matrix.check.target }}
           nx-graph-cache: "true"
           nx-shas: "true"
           eslint-cache: ${{ matrix.check.target == 'lint-code' && 'true' || 'false' }}
