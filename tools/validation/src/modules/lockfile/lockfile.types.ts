@@ -1,7 +1,7 @@
 // 🏷️ Types
 
 /**
- * What one `pnpm install --frozen-lockfile` produced.
+ * What one `pnpm install --frozen-lockfile --lockfile-only` produced.
  *
  * Both streams merged into one document here, unlike the `gh` reads elsewhere
  * in this application: nothing parses this output, it is only reprinted for a

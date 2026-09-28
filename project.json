@@ -730,7 +730,7 @@
           "command": "pnpm dlx sherif@1.10.0 -p applications/JimmyPaolini"
         },
         "write": {
-          "command": "pnpm dlx sherif@1.10.0 -p applications/JimmyPaolini --fix && nx run codebase:oxfmt:write"
+          "command": "pnpm dlx sherif@1.10.0 -p applications/JimmyPaolini --fix --no-install && nx run codebase:oxfmt:write"
         }
       },
       "defaultConfiguration": "check",

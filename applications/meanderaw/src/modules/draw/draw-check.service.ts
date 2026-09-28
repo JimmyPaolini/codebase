@@ -14,6 +14,7 @@ import {
 } from "./draw-check.constants";
 import { DrawEnumerationService } from "./draw-enumeration.service";
 
+import type { GlyphCounts } from "../characteristics/characteristics.types";
 import type {
   ChangedMeanderDrift,
   MeanderDriftReport,
@@ -57,22 +58,45 @@ export class DrawCheckService {
 
   // 🔏 Private Methods
 
-  /** Every column named by `MEANDER_DRIFT_COMPARISON_COLUMNS` on which two same-addressed rows disagree. */
+  /** Every column named by `MEANDER_DRIFT_COMPARISON_COLUMNS` on which two same-addressed rows disagree, with `glyphs` named letter by letter as `glyphs.<key>`. */
   private differingColumns(
     regeneratedRow: Meander,
     committedRow: Meander,
   ): string[] {
-    return MEANDER_DRIFT_COMPARISON_COLUMNS.filter((column) => {
+    return MEANDER_DRIFT_COMPARISON_COLUMNS.flatMap((column) => {
+      if (column === "glyphs") {
+        return this.differingGlyphs(regeneratedRow.glyphs, committedRow.glyphs);
+      }
       const regenerated = regeneratedRow[column];
       const committed = committedRow[column];
       if (Array.isArray(regenerated) && Array.isArray(committed)) {
-        return (
-          regenerated.length !== committed.length ||
+        return regenerated.length !== committed.length ||
           regenerated.some((value, index) => value !== committed[index])
-        );
+          ? [column]
+          : [];
       }
-      return regenerated !== committed;
+      return regenerated === committed ? [] : [column];
     });
+  }
+
+  /** Every letter whose count two glyph maps disagree on, as `glyphs.<key>` in key order, a letter one map leaves out counting as zero. */
+  private differingGlyphs(
+    regenerated: GlyphCounts,
+    committed: GlyphCounts,
+  ): string[] {
+    const regeneratedCounts: Readonly<Record<string, number>> = regenerated;
+    const committedCounts: Readonly<Record<string, number>> = committed;
+    const keys = new Set([
+      ...Object.keys(regeneratedCounts),
+      ...Object.keys(committedCounts),
+    ]);
+
+    return [...keys]
+      .filter(
+        (key) => (regeneratedCounts[key] ?? 0) !== (committedCounts[key] ?? 0),
+      )
+      .toSorted((left, right) => left.localeCompare(right))
+      .map((key) => `glyphs.${key}`);
   }
 
   /** Every committed row the regenerated sweep no longer finds at its address. */

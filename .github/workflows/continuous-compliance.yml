@@ -3,7 +3,8 @@ name: 🦹 Continuous Compliance
 # External and repository compliance checks:
 # 1. 🧑‍💼 Issue: Issue metadata, hierarchy, and release significance.
 # 2. 👮 Enforce: Repository governance and workflow security.
-# 3. 🧑‍⚖️ Comply: Pull request metadata and commit message conventions.
+# 3. 🧑‍⚖️ Comply: Pull request metadata and commit message conventions, on
+#    pull requests and again on the merge queue group that will land them.
 #
 # Label reconciliation runs through `tools/synchronization`, and compliance
 # validation runs through `tools/validation`. All checks execute directly via
@@ -26,6 +27,10 @@ on:
       - assigned
       - unassigned
       - ready_for_review
+  # The merge queue waits for every required check on the group's commit, and
+  # 🧑‍⚖️ Comply is one of them.
+  merge_group:
+    types: [checks_requested]
   schedule:
     - cron: 18 12 * * 5 # Weekly Friday 8:18am NYC (EDT: 12:18 UTC / EST: 13:18 UTC)
   workflow_dispatch:
@@ -181,9 +186,28 @@ jobs:
     if: >-
       github.actor != 'dependabot[bot]' &&
       (github.event_name == 'push' ||
+      github.event_name == 'merge_group' ||
       (github.event_name == 'pull_request' && !github.event.pull_request.draft))
 
     steps:
+      # A merge group carries no pull request payload, only its temporary
+      # `gh-readonly-queue/<base>/pr-<number>-<sha>` ref. Every pull request
+      # check below reads the queued pull request live through this number, so
+      # an edit made after the pull request entered the queue is caught here.
+      - name: 🚂 Resolve Merge Group Pull Request
+        id: merge-group
+        if: github.event_name == 'merge_group'
+        env:
+          HEAD_REF: ${{ github.event.merge_group.head_ref }}
+        run: |
+          PULL_REQUEST_NUMBER="$(sed -nE 's#^.*/pr-([0-9]+)-[0-9a-f]+$#\1#p' <<< "$HEAD_REF")"
+          if [ -z "$PULL_REQUEST_NUMBER" ]; then
+            echo "::error::Unable to parse a pull request number from ${HEAD_REF}"
+            exit 1
+          fi
+          echo "🚂 Merge group ${HEAD_REF} queues pull request #${PULL_REQUEST_NUMBER}."
+          echo "pull-request-number=${PULL_REQUEST_NUMBER}" >> "$GITHUB_OUTPUT"
+
       - name: 📥 Checkout Repository
         uses: actions/checkout@v7
 
@@ -202,7 +226,8 @@ jobs:
             --filter . --filter synchronization... --filter validation... \
             --ignore-scripts
 
-      # Only on pull request opened or synchronize — syncs labels from PR title.
+      # Only on pull request events — syncs labels from PR title. A merge group
+      # check must not write to the pull request it is judging.
       - name: 🏷️ Reconcile Pull Request Labels
         if: github.event_name == 'pull_request'
         env:
@@ -212,7 +237,8 @@ jobs:
           NODE_OPTIONS='' node --import @swc-node/register/esm-register \
             tools/synchronization/src/main.ts pull-request-labels write
 
-      # Validates that the pull request branch name conforms to Conventional Commits.
+      # Validates that the pull request branch name conforms to Conventional
+      # Commits. A merge group's branch is the queue's own, so it is not checked.
       - name: 🌿 Validate Branch Name
         if: github.event_name == 'pull_request'
         env:
@@ -220,21 +246,32 @@ jobs:
         run: |
           npx validate-branch-name -t "$BRANCH_NAME"
 
-      # Validates that the pull request title follows Conventional Commits format.
+      # Validates that the pull request title follows Conventional Commits
+      # format. A merge group reads the title live, since the squash commit's
+      # subject is that title and it may have been edited after queueing.
       - name: 🏷️ Validate Pull Request Title
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' || github.event_name == 'merge_group'
         env:
+          GH_TOKEN: ${{ github.token }}
+          PULL_REQUEST_NUMBER: >-
+            ${{ github.event.pull_request.number || steps.merge-group.outputs.pull-request-number }}
           PULL_REQUEST_TITLE: ${{ github.event.pull_request.title }}
         run: |
+          if [ "$GITHUB_EVENT_NAME" = "merge_group" ]; then
+            PULL_REQUEST_TITLE="$(gh pr view "$PULL_REQUEST_NUMBER" --json title -q .title)"
+          fi
           echo "$PULL_REQUEST_TITLE" | \
             npx commitlint --config configuration/commitlint.config.ts
 
       # Validates pull request body against required template sections.
       - name: 📝 Validate Pull Request Body
-        if: github.event_name == 'pull_request' && github.actor != 'dependabot[bot]'
+        if: >-
+          (github.event_name == 'pull_request' || github.event_name == 'merge_group') &&
+          github.actor != 'dependabot[bot]'
         env:
           GH_TOKEN: ${{ github.token }}
-          PULL_REQUEST_NUMBER: ${{ github.event.pull_request.number }}
+          PULL_REQUEST_NUMBER: >-
+            ${{ github.event.pull_request.number || steps.merge-group.outputs.pull-request-number }}
         run: |
           gh pr view "$PULL_REQUEST_NUMBER" --json body -q .body > pull_request_body.md
           NODE_OPTIONS='' node --import @swc-node/register/esm-register \
@@ -243,10 +280,11 @@ jobs:
 
       # Validates that PR title release significance matches or exceeds commits.
       - name: 🚦 Validate Release Significance
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' || github.event_name == 'merge_group'
         env:
           GH_TOKEN: ${{ github.token }}
-          PULL_REQUEST_NUMBER: ${{ github.event.pull_request.number }}
+          PULL_REQUEST_NUMBER: >-
+            ${{ github.event.pull_request.number || steps.merge-group.outputs.pull-request-number }}
         run: |
           NODE_OPTIONS='' node --import @swc-node/register/esm-register \
             tools/validation/src/main.ts pull-request-release-significance \
@@ -257,4 +295,22 @@ jobs:
         if: github.event_name == 'push'
         run: |
           git log -1 --pretty=%s | \
+            npx commitlint --config configuration/commitlint.config.ts
+
+      # Validates the merge group's head commit, which is exactly what lands on
+      # main. GitHub does not document the subject a queued squash commit
+      # carries, so a generic "Merge pull request #…" subject is logged and
+      # passed; the live title check above is the guard in that case.
+      - name: 🏷️ Validate Merge Group Commit Message
+        if: github.event_name == 'merge_group'
+        env:
+          HEAD_SHA: ${{ github.event.merge_group.head_sha }}
+        run: |
+          COMMIT_SUBJECT="$(git log -1 --pretty=%s "$HEAD_SHA")"
+          if [[ "$COMMIT_SUBJECT" == "Merge pull request #"* ]]; then
+            echo "⏭️ Generic queue subject, not linted: ${COMMIT_SUBJECT}"
+            exit 0
+          fi
+          echo "🏷️ Linting merge group commit subject: ${COMMIT_SUBJECT}"
+          echo "$COMMIT_SUBJECT" | \
             npx commitlint --config configuration/commitlint.config.ts
