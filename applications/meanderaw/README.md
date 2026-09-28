@@ -2085,7 +2085,7 @@ What this project is judged against, as declared in its own `callidescope.config
 **3. `AlefArabicLetterCharacteristicsService.constructor`** — depth ≥ 14 · orphan-root
 
 ```text
-🚀 AlefArabicLetterCharacteristicsService.constructor(…): AlefArabicLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/alef-arabic-letter-characteristics.service.ts:21]
+🚀 AlefArabicLetterCharacteristicsService.constructor(…): AlefArabicLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/alef-arabic-letter-characteristics.service.ts:22]
   └─> LetterUtilitiesService.formEvaluators(forms: readonly LetterDefinition[]): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:351]
      ↳ The evaluators of a letter drawn as several base templates — an Arabic letter's positional forms — each form's sixteen…
     └─> LetterUtilitiesService.flatMap(…)(…): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:354]
@@ -2218,7 +2218,7 @@ What this project is judged against, as declared in its own `callidescope.config
 **8. `HehArabicLetterCharacteristicsService.constructor`** — depth ≥ 14 · orphan-root
 
 ```text
-🚀 HehArabicLetterCharacteristicsService.constructor(…): HehArabicLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/heh-arabic-letter-characteristics.service.ts:21]
+🚀 HehArabicLetterCharacteristicsService.constructor(…): HehArabicLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/heh-arabic-letter-characteristics.service.ts:23]
   └─> LetterUtilitiesService.formEvaluators(forms: readonly LetterDefinition[]): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:351]
      ↳ The evaluators of a letter drawn as several base templates — an Arabic letter's positional forms — each form's sixteen…
     └─> LetterUtilitiesService.flatMap(…)(…): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:354]
@@ -2296,7 +2296,7 @@ What this project is judged against, as declared in its own `callidescope.config
 **11. `MeemArabicLetterCharacteristicsService.constructor`** — depth ≥ 14 · orphan-root
 
 ```text
-🚀 MeemArabicLetterCharacteristicsService.constructor(…): MeemArabicLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/meem-arabic-letter-characteristics.service.ts:21]
+🚀 MeemArabicLetterCharacteristicsService.constructor(…): MeemArabicLetterCharacteristicsService [applications/meanderaw/src/modules/characteristics/submatrix/letter/meem-arabic-letter-characteristics.service.ts:23]
   └─> LetterUtilitiesService.formEvaluators(forms: readonly LetterDefinition[]): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:351]
      ↳ The evaluators of a letter drawn as several base templates — an Arabic letter's positional forms — each form's sixteen…
     └─> LetterUtilitiesService.flatMap(…)(…): readonly CharacteristicEvaluator<number>[] [applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:354]
@@ -4539,7 +4539,7 @@ What this project is judged against, as declared in its own `callidescope.config
 | `LetterUtilitiesService.reduce(…)` | 1 | `LetterUtilitiesService.turnQuarter` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/letter-utilities.service.ts:396` |
 | `ALatinLetterCharacteristicsService.constructor` | 1 | `LetterUtilitiesService.evaluators` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/a-latin-letter-characteristics.service.ts:26` |
 | `AinArabicLetterCharacteristicsService.constructor` | 1 | `LetterUtilitiesService.formEvaluators` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/ain-arabic-letter-characteristics.service.ts:21` |
-| `AlefArabicLetterCharacteristicsService.constructor` | 1 | `LetterUtilitiesService.formEvaluators` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/alef-arabic-letter-characteristics.service.ts:21` |
+| `AlefArabicLetterCharacteristicsService.constructor` | 1 | `LetterUtilitiesService.formEvaluators` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/alef-arabic-letter-characteristics.service.ts:22` |
 | `AoHanziLetterCharacteristicsService.constructor` | 1 | `LetterUtilitiesService.evaluators` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/ao-hanzi-letter-characteristics.service.ts:26` |
 | `BLatinLetterCharacteristicsService.constructor` | 1 | `LetterUtilitiesService.evaluators` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/b-latin-letter-characteristics.service.ts:26` |
 | `BehArabicLetterCharacteristicsService.constructor` | 1 | `LetterUtilitiesService.formEvaluators` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/beh-arabic-letter-characteristics.service.ts:21` |
@@ -4553,7 +4553,7 @@ What this project is judged against, as declared in its own `callidescope.config
 | `GanHanziLetterCharacteristicsService.constructor` | 1 | `LetterUtilitiesService.evaluators` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/gan-hanzi-letter-characteristics.service.ts:26` |
 | `HLatinLetterCharacteristicsService.constructor` | 1 | `LetterUtilitiesService.evaluators` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/h-latin-letter-characteristics.service.ts:26` |
 | `HahArabicLetterCharacteristicsService.constructor` | 1 | `LetterUtilitiesService.formEvaluators` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/hah-arabic-letter-characteristics.service.ts:21` |
-| `HehArabicLetterCharacteristicsService.constructor` | 1 | `LetterUtilitiesService.formEvaluators` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/heh-arabic-letter-characteristics.service.ts:21` |
+| `HehArabicLetterCharacteristicsService.constructor` | 1 | `LetterUtilitiesService.formEvaluators` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/heh-arabic-letter-characteristics.service.ts:23` |
 | `ILatinLetterCharacteristicsService.constructor` | 1 | `LetterUtilitiesService.evaluators` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/i-latin-letter-characteristics.service.ts:25` |
 | `JiaHanziLetterCharacteristicsService.constructor` | 1 | `LetterUtilitiesService.evaluators` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/jia-hanzi-letter-characteristics.service.ts:27` |
 | `JingHanziLetterCharacteristicsService.constructor` | 1 | `LetterUtilitiesService.evaluators` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/jing-hanzi-letter-characteristics.service.ts:27` |
@@ -4565,7 +4565,7 @@ What this project is judged against, as declared in its own `callidescope.config
 | `LambdaGreekLetterCharacteristicsService.constructor` | 1 | `LetterUtilitiesService.evaluators` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/lambda-greek-letter-characteristics.service.ts:27` |
 | `LamedHebrewLetterCharacteristicsService.constructor` | 1 | `LetterUtilitiesService.evaluators` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/lamed-hebrew-letter-characteristics.service.ts:27` |
 | `MLatinLetterCharacteristicsService.constructor` | 1 | `LetterUtilitiesService.evaluators` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/m-latin-letter-characteristics.service.ts:26` |
-| `MeemArabicLetterCharacteristicsService.constructor` | 1 | `LetterUtilitiesService.formEvaluators` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/meem-arabic-letter-characteristics.service.ts:21` |
+| `MeemArabicLetterCharacteristicsService.constructor` | 1 | `LetterUtilitiesService.formEvaluators` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/meem-arabic-letter-characteristics.service.ts:23` |
 | `MuHanziLetterCharacteristicsService.constructor` | 1 | `LetterUtilitiesService.evaluators` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/mu-hanzi-letter-characteristics.service.ts:27` |
 | `NLatinLetterCharacteristicsService.constructor` | 1 | `LetterUtilitiesService.evaluators` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/n-latin-letter-characteristics.service.ts:26` |
 | `NoonArabicLetterCharacteristicsService.constructor` | 1 | `LetterUtilitiesService.formEvaluators` | `applications/meanderaw/src/modules/characteristics/submatrix/letter/noon-arabic-letter-characteristics.service.ts:21` |

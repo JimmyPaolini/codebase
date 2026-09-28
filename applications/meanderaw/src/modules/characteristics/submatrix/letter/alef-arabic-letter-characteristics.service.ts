@@ -9,10 +9,11 @@ import type {
 
 /**
  * Provides the sixteen orientation evaluators of the final positional form of
- * the ا (Arabic alef) skeleton, the only form it is drawn in — one per corner
- * and clockwise rotation, each counting that form's base template, which faces
- * Southwest, drawn that way. A letter sharing a form's skeleton, differing from
- * it only by dots or by other marks, is an alias of that form.
+ * the ا (Arabic alef) skeleton — one per corner and clockwise rotation, each
+ * counting that form's base template, which faces Southwest, drawn that way. A
+ * letter sharing the form's skeleton, differing from it only by its hamza or
+ * madda, is an alias of that form. The isolated form draws the same glyph as
+ * the Latin I, so it is an alias there rather than a form of its own.
  */
 @Injectable()
 export class AlefArabicLetterCharacteristicsService implements CharacteristicEvaluatorGroup<number> {

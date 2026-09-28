@@ -2,8 +2,8 @@ version: "0.2"
 $schema: https://raw.githubusercontent.com/streetsidesoftware/cspell/main/cspell.schema.json
 # 🔤 Letter and script names that only meanderaw's glyph characteristics spell:
 # arabic, hangul, and hanzi letter names, their transliterations, and the
-# arabic script's terms for its marks. CSpell finds this file
-# from each checked file's own directory and merges it over
+# arabic script's terms for its marks. CSpell finds this file from each
+# checked file's own directory and merges it over
 # `configuration/cspell.config.yaml`, so these words reach meanderaw alone. A
 # word here changes no workspace-root dictionary, so it marks no other project
 # affected.

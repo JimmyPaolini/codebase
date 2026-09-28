@@ -40,7 +40,7 @@ export interface LetterFormFixture {
 export interface LetterHarness extends LetterReadings {
   /** Compiles the letter service; the letter's test runs it in `beforeAll`. */
   compile(): Promise<void>;
-  /** The same readings of only the evaluators whose keys start with `prefix`, such as one Arabic positional form's `behInitial`. */
+  /** The same readings of only the evaluators whose keys are `prefix` followed by an orientation name, such as one Arabic positional form's `behInitial`. */
   form(prefix: string): LetterReadings;
 }
 
@@ -58,7 +58,7 @@ export interface LetterOrientationFixture {
   readonly names: readonly LetterOrientationName[];
 }
 
-/** A set of sixteen orientation evaluators, read by orientation name. */
+/** A set of sixteen orientation evaluators, read by orientation name; a reading by name throws unless exactly sixteen are selected. */
 export interface LetterReadings {
   /** Each orientation's count of a fixture's ink, in orientation-name order. */
   counts(
@@ -120,8 +120,16 @@ export function letterHarness(
   ): LetterReadings => {
     const named = (
       name: LetterOrientationName,
-    ): CharacteristicEvaluator<number> | undefined =>
-      select()[LETTER_ORIENTATION_NAMES.indexOf(name)];
+    ): CharacteristicEvaluator<number> | undefined => {
+      const selected = select();
+      if (selected.length !== LETTER_ORIENTATION_NAMES.length) {
+        throw new RangeError(
+          `Read ${selected.length} evaluators by orientation name, which needs exactly ${LETTER_ORIENTATION_NAMES.length}: narrow a letter with several forms to one with \`form\``,
+        );
+      }
+
+      return selected[LETTER_ORIENTATION_NAMES.indexOf(name)];
+    };
 
     return {
       counts: (fixture) => {
@@ -158,8 +166,13 @@ export function letterHarness(
     ...readings(() => evaluators),
     compile,
     form: (prefix) =>
-      readings(() =>
-        evaluators.filter(({ metadata }) => metadata.key.startsWith(prefix)),
-      ),
+      readings(() => {
+        const pattern = new RegExp(
+          `^${prefix}(?:${LETTER_ORIENTATION_NAMES.join("|")})`,
+          "u",
+        );
+
+        return evaluators.filter(({ metadata }) => pattern.test(metadata.key));
+      }),
   };
 }

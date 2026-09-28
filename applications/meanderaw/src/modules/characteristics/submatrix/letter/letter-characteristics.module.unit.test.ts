@@ -32,7 +32,7 @@ import { LambdaGreekLetterCharacteristicsService } from "./lambda-greek-letter-c
 import { LamedHebrewLetterCharacteristicsService } from "./lamed-hebrew-letter-characteristics.service";
 import { LetterCharacteristicsModule } from "./letter-characteristics.module";
 import { LetterUtilitiesService } from "./letter-utilities.service";
-import { LETTER_SCRIPTS } from "./letter.constants";
+import { LETTER_ORIENTATION_NAMES, LETTER_SCRIPTS } from "./letter.constants";
 import { MLatinLetterCharacteristicsService } from "./m-latin-letter-characteristics.service";
 import { MeemArabicLetterCharacteristicsService } from "./meem-arabic-letter-characteristics.service";
 import { MuHanziLetterCharacteristicsService } from "./mu-hanzi-letter-characteristics.service";
@@ -156,6 +156,12 @@ const GROUPS = Symbol("GROUPS");
 /** The script a letter key names, read from its end: `daletSouthwestHebrewCount` is Hebrew. */
 const SCRIPT = new RegExp(
   `(${Object.keys(LETTER_SCRIPTS).join("|")})Count$`,
+  "u",
+);
+
+/** A letter key's orientation name and script, read from its end, leaving the letter and any positional form: `behInitialSouthwestArabicCount` leaves `behInitial`. */
+const ORIENTATION = new RegExp(
+  `(?:${LETTER_ORIENTATION_NAMES.join("|")})(?:${Object.keys(LETTER_SCRIPTS).join("|")})Count$`,
   "u",
 );
 
@@ -307,9 +313,13 @@ describe(LetterCharacteristicsModule, () => {
     "exports $name to a consumer, with sixteen orientation evaluators per form",
     ({ index, service }) => {
       expect(groups[index]).toBeInstanceOf(service);
-      expect(groups[index]?.evaluators).toHaveLength(
-        16 * bases(groups[index]?.evaluators ?? []).length,
+
+      const keys = (groups[index]?.evaluators ?? []).map(
+        ({ metadata }) => metadata.key,
       );
+      const forms = new Set(keys.map((key) => key.replace(ORIENTATION, "")));
+
+      expect(keys).toHaveLength(LETTER_ORIENTATION_NAMES.length * forms.size);
     },
   );
 

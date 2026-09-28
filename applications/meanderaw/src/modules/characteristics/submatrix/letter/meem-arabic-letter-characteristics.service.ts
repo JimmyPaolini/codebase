@@ -12,7 +12,9 @@ import type {
  * (Arabic meem) skeleton — final, initial, and medial — one per corner and
  * clockwise rotation, each counting that form's base template, which faces
  * Southwest, drawn that way. A letter sharing a form's skeleton, differing from
- * it only by dots or by other marks, is an alias of that form.
+ * it only by dots or by other marks, is an alias of that form. The isolated
+ * form draws the same glyph as the Greek Ρ (rho), so it is an alias there
+ * rather than a form of its own.
  */
 @Injectable()
 export class MeemArabicLetterCharacteristicsService implements CharacteristicEvaluatorGroup<number> {

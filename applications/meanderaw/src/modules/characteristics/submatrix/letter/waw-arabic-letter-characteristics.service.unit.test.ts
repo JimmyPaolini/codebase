@@ -21,7 +21,12 @@ import type { LetterFormFixture } from "../../../../../testing/letters";
  * ```
  */
 const FINAL_FORM: LetterFormFixture = {
-  aliases: [],
+  aliases: [
+    {
+      alias: "the final Arabic ؤ (waw with hamza above)",
+      names: ["Southwest", "NortheastHalf"],
+    },
+  ],
   orientations: [
     {
       fixture: "04x04y06502f900a500080",
@@ -72,7 +77,12 @@ const FINAL_FORM: LetterFormFixture = {
  * ```
  */
 const ISOLATED_FORM: LetterFormFixture = {
-  aliases: [],
+  aliases: [
+    {
+      alias: "the isolated Arabic ؤ (waw with hamza above)",
+      names: ["Southwest", "NortheastHalf"],
+    },
+  ],
   orientations: [
     {
       fixture: "03x04y650e90a50080",
@@ -161,6 +171,14 @@ describe(WawArabicLetterCharacteristicsService, () => {
       expect(
         aliases.map(({ alias }) => form.namesDescribing(alias)),
       ).toStrictEqual(aliases.map(({ names }) => names));
+    });
+
+    it("lists an alias on no name but those its fixtures give", () => {
+      expect(form.namesDescribing("Also reads as")).toStrictEqual(
+        LETTER_ORIENTATION_NAMES.filter((name) =>
+          aliases.some(({ names }) => names.includes(name)),
+        ),
+      );
     });
   });
 });

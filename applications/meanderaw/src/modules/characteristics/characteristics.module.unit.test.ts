@@ -241,7 +241,9 @@ function expectedKey(service: Type<CharacteristicEvaluator>): string {
  * fills `aSoutheastLatinCount` through `aNorthwestThreeQuarterLatinCount`,
  * and `BehArabicLetterCharacteristicsService` fills
  * `behFinalSoutheastArabicCount` through
- * `behMedialNorthwestThreeQuarterArabicCount`.
+ * `behMedialNorthwestThreeQuarterArabicCount`. Which forms a letter takes is
+ * read off the key list rather than pinned here; each letter's own test pins
+ * its form set.
  */
 function expectedLetterKeys(
   service: Type<CharacteristicEvaluatorGroup<number>>,

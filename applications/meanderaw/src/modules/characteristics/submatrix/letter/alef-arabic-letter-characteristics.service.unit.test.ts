@@ -20,7 +20,18 @@ import type { LetterFormFixture } from "../../../../../testing/letters";
  * ```
  */
 const FINAL_FORM: LetterFormFixture = {
-  aliases: [],
+  aliases: [
+    {
+      alias:
+        "the final Arabic أ (alef with hamza above), إ (alef with hamza below), and آ (alef with madda above)",
+      names: [
+        "SoutheastQuarter",
+        "Southwest",
+        "NortheastHalf",
+        "NorthwestThreeQuarter",
+      ],
+    },
+  ],
   orientations: [
     {
       fixture: "04x03y004000c02390",
@@ -113,6 +124,14 @@ describe(AlefArabicLetterCharacteristicsService, () => {
       expect(
         aliases.map(({ alias }) => form.namesDescribing(alias)),
       ).toStrictEqual(aliases.map(({ names }) => names));
+    });
+
+    it("lists an alias on no name but those its fixtures give", () => {
+      expect(form.namesDescribing("Also reads as")).toStrictEqual(
+        LETTER_ORIENTATION_NAMES.filter((name) =>
+          aliases.some(({ names }) => names.includes(name)),
+        ),
+      );
     });
   });
 });

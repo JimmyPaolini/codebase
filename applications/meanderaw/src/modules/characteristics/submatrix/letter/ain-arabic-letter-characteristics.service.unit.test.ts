@@ -283,5 +283,13 @@ describe(AinArabicLetterCharacteristicsService, () => {
         aliases.map(({ alias }) => form.namesDescribing(alias)),
       ).toStrictEqual(aliases.map(({ names }) => names));
     });
+
+    it("lists an alias on no name but those its fixtures give", () => {
+      expect(form.namesDescribing("Also reads as")).toStrictEqual(
+        LETTER_ORIENTATION_NAMES.filter((name) =>
+          aliases.some(({ names }) => names.includes(name)),
+        ),
+      );
+    });
   });
 });
