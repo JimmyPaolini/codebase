@@ -417,5 +417,27 @@ describe(LetterUtilitiesService, () => {
         ),
       ).toBe(0);
     });
+
+    it("keeps apart two templates whose rows run together into the same characters", () => {
+      const context = contextService.create("04x02y6500a900");
+      const square = service.evaluators({
+        glyph: "O",
+        key: (name) => `o${name}LatinCount`,
+        script: "Latin",
+        shape: "a closed unit square",
+        template: ["65", "a9"],
+      });
+      const row = service.evaluators({
+        glyph: "L",
+        key: (name) => `l${name}LatinCount`,
+        script: "Latin",
+        shape: "the square's digits in one row",
+        template: ["65a9"],
+      });
+
+      expect(
+        [square, row].map((drawn) => drawn[0]?.compute(context)),
+      ).toStrictEqual([1, 0]);
+    });
   });
 });

@@ -5,6 +5,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 import {
   BOOLEAN_CHARACTERISTIC_KEY_SET,
   CHARACTERISTIC_KEYS,
+  LETTER_CHARACTERISTIC_KEYS,
 } from "./characteristics.constants";
 import { CharacteristicsModule } from "./characteristics.module";
 import { IsArcadeCharacteristicService } from "./compound/family/is-arcade-characteristic.service";
@@ -92,16 +93,26 @@ function isLetterService(
   );
 }
 
-/** The letter module's declared exports, read off its `@Module` metadata. */
-const LETTER_MODULE_EXPORTS: unknown = Reflect.getMetadata(
-  MODULE_METADATA.EXPORTS,
-  LetterCharacteristicsModule,
-);
+/**
+ * The letter module's declared exports, read off its `@Module` metadata. It
+ * throws when the metadata holds no exports list, so a letter module that
+ * stops declaring one fails every test here rather than exporting nothing.
+ */
+function letterModuleExports(): readonly unknown[] {
+  const exported: unknown = Reflect.getMetadata(
+    MODULE_METADATA.EXPORTS,
+    LetterCharacteristicsModule,
+  );
+  if (!Array.isArray(exported)) {
+    throw new TypeError("LetterCharacteristicsModule declares no exports list");
+  }
+
+  return exported;
+}
 
 /** Every letter service a consumer of `CharacteristicsModule` must be able to inject, each providing its letter's sixteen orientation evaluators: every letter service the letter module exports, so a new letter needs no second list here. */
-const LETTER_SERVICES: readonly Type<CharacteristicEvaluatorGroup<number>>[] = (
-  Array.isArray(LETTER_MODULE_EXPORTS) ? LETTER_MODULE_EXPORTS : []
-).filter((value) => isLetterService(value));
+const LETTER_SERVICES: readonly Type<CharacteristicEvaluatorGroup<number>>[] =
+  letterModuleExports().filter((value) => isLetterService(value));
 
 /** Every lone characteristic evaluator a consumer of `CharacteristicsModule` must be able to inject. */
 const CHARACTERISTIC_SERVICES: readonly Type<CharacteristicEvaluator>[] = [
@@ -327,6 +338,12 @@ describe(CharacteristicsModule, () => {
 
       expect(described).toStrictEqual(Array.from({ length: 16 }, () => true));
     });
+  });
+
+  it("derives one letter service for every sixteen letter keys", () => {
+    expect(LETTER_SERVICES).toHaveLength(
+      LETTER_CHARACTERISTIC_KEYS.length / 16,
+    );
   });
 
   it("gives every characteristic evaluator a unique metadata key", () => {

@@ -165,6 +165,17 @@ describe(SubmatrixUtilitiesService, () => {
       ).toBe(0);
     });
 
+    it("checks the last glyph point too, refusing a stray arm on it alone", () => {
+      const joinedAtTheLastPoint: Matrix = [
+        [point("south", "east"), point("south", "west"), point()],
+        [point("north", "east"), point("north", "west", "east"), point("west")],
+      ];
+
+      expect(
+        service.countIsolatedGlyphs(joinedAtTheLastPoint, ["65", "a9"]),
+      ).toBe(0);
+    });
+
     it("matches a glyph that crosses the tile's seam", () => {
       const seam: Matrix = [
         [point("south", "west"), point(), point("south", "east")],

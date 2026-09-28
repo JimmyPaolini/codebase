@@ -263,6 +263,82 @@ function trimmedGlyph(formula: string): string {
     .join(String.raw` \\ `);
 }
 
+/** Each arm a Code digit can carry: its bit, the step to the neighbor it reaches, and the bit that neighbor must carry back. */
+const ARMS = [
+  { back: 4, bit: 8, column: 0, row: -1 },
+  { back: 8, bit: 4, column: 0, row: 1 },
+  { back: 1, bit: 2, column: 1, row: 0 },
+  { back: 2, bit: 1, column: -1, row: 0 },
+] as const;
+
+/** The arms of the point at `(row, column)`, or none for a blank or a point off the glyph's edge. */
+function armsAt(
+  digits: readonly (readonly number[])[],
+  row: number,
+  column: number,
+): number {
+  return Math.max(0, digits[row]?.[column] ?? 0);
+}
+
+/** A trimmed glyph read back into its Code digits, row by row, with each blank as -1. */
+function glyphDigits(glyph: string): number[][] {
+  return glyph
+    .split(String.raw` \\ `)
+    .map((row) =>
+      row
+        .split(" & ")
+        .map((cell) =>
+          cell === String.raw`\cdot` ? -1 : Number.parseInt(cell, 16),
+        ),
+    );
+}
+
+/** The neighbors a point's arms reach that carry each arm back. */
+function joinedNeighbors(
+  digits: readonly (readonly number[])[],
+  row: number,
+  column: number,
+): { column: number; row: number }[] {
+  return ARMS.filter(
+    (arm) =>
+      (armsAt(digits, row, column) & arm.bit) !== 0 &&
+      (armsAt(digits, row + arm.row, column + arm.column) & arm.back) !== 0,
+  ).map((arm) => ({ column: column + arm.column, row: row + arm.row }));
+}
+
+/**
+ * What is wrong with a glyph as ink: every arm with no inked neighbor
+ * carrying it back, which covers an arm pointing at a blank or off the edge,
+ * and whether its ink falls apart into more than one piece.
+ */
+function malformations(glyph: string): string[] {
+  const digits = glyphDigits(glyph);
+  const inked = digits.flatMap((cells, row) =>
+    cells.flatMap((digit, column) => (digit < 0 ? [] : [{ column, row }])),
+  );
+  const unanswered = inked.flatMap(({ column, row }) => {
+    const arms = ARMS.filter(
+      ({ bit }) => (armsAt(digits, row, column) & bit) !== 0,
+    ).length;
+    return joinedNeighbors(digits, row, column).length === arms
+      ? []
+      : [`arm not carried back at row ${row}, column ${column}`];
+  });
+  const reached = new Set<string>();
+  const frontier = inked.slice(0, 1);
+  for (let next = frontier.pop(); next !== undefined; next = frontier.pop()) {
+    const cell = `${next.row},${next.column}`;
+    if (!reached.has(cell)) {
+      reached.add(cell);
+      frontier.push(...joinedNeighbors(digits, next.row, next.column));
+    }
+  }
+
+  return reached.size === inked.length
+    ? unanswered
+    : [...unanswered, "ink in more than one piece"];
+}
+
 describe(LetterCharacteristicsModule, () => {
   let groups: readonly CharacteristicEvaluatorGroup<number>[];
   let utilities: LetterUtilitiesService;
@@ -329,5 +405,15 @@ describe(LetterCharacteristicsModule, () => {
     );
 
     expect(new Set(shapes).size).toBe(LETTERS.length);
+  });
+
+  it("draws every letter's base as one piece of ink whose every arm meets a neighbor's arm", () => {
+    const malformed = groups.flatMap(({ evaluators }) => {
+      const drawn = base(evaluators)?.metadata;
+      const problems = malformations(trimmedGlyph(drawn?.formula ?? ""));
+      return problems.length === 0 ? [] : [{ key: drawn?.key, problems }];
+    });
+
+    expect(malformed).toStrictEqual([]);
   });
 });
