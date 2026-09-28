@@ -93,12 +93,11 @@ const config = {
   // forwards an explicit configuration down `dependsOn`, so an edge there
   // would let `lint-code --configuration=write` publish from a branch.
 
-  // `gate` and `check-codependix-boundaries` reach a commit through
-  // `guard-code`'s `dependsOn` instead of being named here. Neither has a
-  // `write` configuration for an explicit `--configuration` to forward into,
-  // so that edge is safe where a synchronization's would not be. `nx affected`
-  // still scopes `gate` to the projects a commit touched, so a commit that
-  // deepens one project's call stacks fails that project's own task.
+  // `gate` and `codebase:codependix` reach a commit through `guard-code`'s
+  // `dependsOn` instead of being named here, so the `check` configuration
+  // below forwards to codependix's `--check boundaries`. `nx affected` still
+  // scopes `gate` to the projects a commit touched, so a commit that deepens
+  // one project's call stacks fails that project's own task.
 
   // There is no aggregate `synchronize` target to name instead: each
   // synchronization is its own Nx target on the `synchronization` project, run
