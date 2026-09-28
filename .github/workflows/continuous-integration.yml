@@ -129,6 +129,19 @@ jobs:
               --configuration=check --parallel=4
           fi
 
+      # `gate` is inferred by the callidescope Nx plugin with no
+      # configurations, so it runs as its own step rather than under
+      # `guard-code`'s `--configuration=check`, and still runs when the
+      # guard step above fails so one push reports both.
+      - name: 🔭 Callidescope
+        if: >-
+          !cancelled() &&
+          steps.setup.outcome == 'success' &&
+          matrix.check.target == 'guard-code'
+        env:
+          NX_VERBOSE_LOGGING: ${{ inputs.verbose || false }}
+        run: pnpm exec nx affected --target=gate --parallel=4
+
       - name: 📊 Report Integration
         if: >-
           always() &&
