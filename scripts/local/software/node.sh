@@ -28,10 +28,27 @@ NVM_SCRIPT_PATH="$(brew --prefix nvm)/nvm.sh"
 
 . "$NVM_SCRIPT_PATH" --no-use
 
-# ── Node.js version from .nvmrc ───────────────────────────────────────────────
-echo "🔍 Installing Node.js from .nvmrc..."
-nvm install
-nvm use
+# ── Node.js version from .nvmrc or .node-version ───────────────────────────
+# Prefer .nvmrc, then .node-version. Strip leading 'v' if present and pass the
+# explicit version to nvm so it's deterministic in CI and scripts.
+echo "🔍 Installing Node.js from .nvmrc or .node-version..."
+node_version=""
+if [ -f ".nvmrc" ]; then
+  node_version=$(cat .nvmrc)
+elif [ -f ".node-version" ]; then
+  node_version=$(cat .node-version)
+fi
+# strip leading v
+node_version=${node_version#v}
+if [ -n "$node_version" ]; then
+  echo "🔧 Requested node version: $node_version"
+  nvm install "$node_version"
+  nvm use "$node_version"
+else
+  echo "⚠️  No .nvmrc or .node-version found — falling back to nvm default"
+  nvm install
+  nvm use
+fi
 echo "👍 Node.js $(nvm current)"
 
 # ── Husky ─────────────────────────────────────────────────────────────────────

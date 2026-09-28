@@ -95,7 +95,7 @@ The three invariants that most often catch a change:
 Two things that look like defects and are not:
 
 - **Gaps wider than one stroke where a band terminates** are expected, and owned by
-  [#338](https://github.com/JimmyPaolini/codebase/issues/338). Do not chase them.
+  [#338](https://github.com/Organizzolini/codebase/issues/338). Do not chase them.
 - **Most enumerated rows carrying no family at all** is the design. Enumeration produces
   every structurally distinct repeat within budget, and membership is decided afterwards.
 
@@ -138,7 +138,7 @@ testing/                            # Shared test utilities
 ### Module Graph
 
 The modules this project defines and the imports between them are exported by
-[codependix](https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/codependix/codependix-cli)
+[codependix](https://github.com/Organizzolini/codebase/tree/main/packages/ic-suite/codependix/codependix-cli)
 into the `## 🕸️ Codependix` section of [README.md](README.md), alongside this
 project's Nx neighborhood and its file-level import graph. Regenerate all three
 with:

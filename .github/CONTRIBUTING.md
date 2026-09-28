@@ -56,7 +56,7 @@ The fastest way to get started on macOS is the setup script, which installs ever
 **Setup:**
 
 ```bash
-git clone https://github.com/JimmyPaolini/codebase.git
+git clone https://github.com/Organizzolini/codebase.git
 ```
 
 ```bash
@@ -96,7 +96,7 @@ Alternatively, use the included dev container for a fully configured environment
 
 **Setup:**
 
-1. Clone the repository: `git clone https://github.com/JimmyPaolini/codebase.git`
+1. Clone the repository: `git clone https://github.com/Organizzolini/codebase.git`
 2. Open the folder in VS Code
 3. Open the command palette (`Ctrl/Cmd+Shift+P`) → **Dev Containers: Reopen in Container**
 4. Select a configuration when prompted:
@@ -467,7 +467,7 @@ If a change genuinely spans scopes, list them comma-separated (`feat(lexico,logg
 
 This repository squash-merges using the pull request title, so **the title is the only thing semantic-release ever sees**. Every individual commit on the branch is discarded at squash time.
 
-The `pull-request-release-significance` check reads the branch's commits and fails the pull request when the title's type is **less** release-significant than the most significant commit on the branch, or when a commit uses a scope the title does not name.
+The `pull-request-release-significance` check reads the branch's commits and fails the pull request when the title's type is **less** release-significant than the most significant commit on the branch, or when the title shares no scope overlap with a commit.
 
 **Practical effect:** pick the type and scope for the branch as a whole before you start committing, and keep every commit at or below that significance.
 
@@ -478,7 +478,7 @@ This is also why one project or module per pull request is the rule: the fewer c
 
 ## Issues and Planning
 
-Issues and specs live as GitHub issues in [JimmyPaolini/codebase](https://github.com/JimmyPaolini/codebase/issues). Blank issues are disabled, so a human-filed issue goes through the single template, whose Type and Scope dropdowns are kept in step with `configuration/conventional.config.cjs` by a synchronization target:
+Issues and specs live as GitHub issues in [Organizzolini/codebase](https://github.com/Organizzolini/codebase/issues). Blank issues are disabled, so a human-filed issue goes through the single template, whose Type and Scope dropdowns are kept in step with `configuration/conventional.config.cjs` by a synchronization target:
 
 ```bash
 gh issue create --template issue.yml
@@ -626,8 +626,8 @@ pnpm add -w <package>
 
 ## Getting Help
 
-- **Issues:** [GitHub Issues](https://github.com/JimmyPaolini/codebase/issues)
-- **Discussions:** [GitHub Discussions](https://github.com/JimmyPaolini/codebase/discussions)
+- **Issues:** [GitHub Issues](https://github.com/Organizzolini/codebase/issues)
+- **Discussions:** [GitHub Discussions](https://github.com/Organizzolini/codebase/discussions)
 - **Security:** [SECURITY.md](SECURITY.md)
 - **Owner:** [@JimmyPaolini](https://github.com/JimmyPaolini)
 

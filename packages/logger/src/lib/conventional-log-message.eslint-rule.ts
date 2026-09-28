@@ -145,6 +145,29 @@ function parseLogMessage(message: string): ParsedLogMessage {
  * identifier, a caught error, a function call) is skipped silently, since
  * static analysis cannot know its runtime value.
  */
+const conventionalLogMessageMeta: {
+  documentation: { description: string };
+  messages: {
+    missingLeadingEmoji: string;
+    nonConventionalVerb: string;
+  };
+  schema: [];
+  type: "problem";
+} = {
+  documentation: {
+    description:
+      "Require a log call message to start with an emoji naming its subject, then a verb in present progressive or past tense.",
+  },
+  messages: {
+    missingLeadingEmoji:
+      "Log message must start with an emoji naming its subject, then a verb.",
+    nonConventionalVerb:
+      'Log message must begin with a verb in present progressive or past tense, got "{{word}}".',
+  },
+  schema: [],
+  type: "problem",
+};
+
 export const conventionalLogMessageRule: Rule.RuleModule = {
   create(context): Rule.RuleListener {
     return {
@@ -186,20 +209,7 @@ export const conventionalLogMessageRule: Rule.RuleModule = {
       },
     };
   },
-  meta: {
-    docs: {
-      description:
-        "Require a log call message to start with an emoji naming its subject, then a verb in present progressive or past tense.",
-    },
-    messages: {
-      missingLeadingEmoji:
-        "Log message must start with an emoji naming its subject, then a verb.",
-      nonConventionalVerb:
-        'Log message must begin with a verb in present progressive or past tense, got "{{word}}".',
-    },
-    schema: [],
-    type: "problem",
-  },
+  meta: conventionalLogMessageMeta,
 };
 
 /** The flat-config plugin object `configuration/eslint.config.ts` registers. */
