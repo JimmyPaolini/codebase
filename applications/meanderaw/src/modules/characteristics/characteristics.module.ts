@@ -11,7 +11,11 @@ import { CharacteristicsShapeService } from "./characteristics-shape.service";
 import { CharacteristicsService } from "./characteristics.service";
 import { ConnectivityService } from "./connectivity.service";
 import { CornerCharacteristicsModule } from "./submatrix/corner/corner-characteristics.module";
+import { CrossCharacteristicsModule } from "./submatrix/cross/cross-characteristics.module";
+import { ForkCharacteristicsModule } from "./submatrix/fork/fork-characteristics.module";
+import { LetterCharacteristicsModule } from "./submatrix/letter/letter-characteristics.module";
 import { PointCharacteristicsModule } from "./submatrix/point/point-characteristics.module";
+import { RectangleCharacteristicsModule } from "./submatrix/rectangle/rectangle-characteristics.module";
 
 /**
  * Wires up the Characteristic computation that reads a Code directly — no
@@ -42,14 +46,22 @@ import { PointCharacteristicsModule } from "./submatrix/point/point-characterist
     CharacteristicsService,
     ConnectivityService,
     CornerCharacteristicsModule,
+    CrossCharacteristicsModule,
+    ForkCharacteristicsModule,
+    LetterCharacteristicsModule,
     PointCharacteristicsModule,
+    RectangleCharacteristicsModule,
   ],
   imports: [
     CodeModule,
     CornerCharacteristicsModule,
+    CrossCharacteristicsModule,
+    ForkCharacteristicsModule,
     GraphModule,
+    LetterCharacteristicsModule,
     MatrixModule,
     PointCharacteristicsModule,
+    RectangleCharacteristicsModule,
   ],
   providers: [
     CharacteristicContextService,
