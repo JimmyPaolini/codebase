@@ -20,6 +20,27 @@ export class SubmatrixUtilitiesService {
 
   // 🔐 Private Fields
 
+  /**
+   * Each template's glyph points, parsed once however many boards count it.
+   * Keyed weakly by the template, so a parse lives no longer than its template.
+   */
+  private readonly cellsByTemplate = new WeakMap<
+    readonly string[],
+    GlyphCell[]
+  >();
+
+  /**
+   * Each board's digit grid, built once however many templates count it.
+   * Keyed weakly by the matrix, so a grid lives no longer than its board.
+   * Keying by identity assumes a board is never mutated after its first
+   * count, the same assumption {@link LetterUtilitiesService}'s count cache
+   * makes; a mutated board would keep reading its stale grid.
+   */
+  private readonly digitGrids = new WeakMap<
+    Matrix,
+    readonly (readonly number[])[]
+  >();
+
   // 🔑 Public Fields
 
   // 🔏 Private Methods
@@ -30,7 +51,12 @@ export class SubmatrixUtilitiesService {
    * blank `.` left out.
    */
   private glyphCells(template: readonly string[]): GlyphCell[] {
-    return template.flatMap((line, row) =>
+    const parsed = this.cellsByTemplate.get(template);
+    if (parsed !== undefined) {
+      return parsed;
+    }
+
+    const cells = template.flatMap((line, row) =>
       Array.from({ length: line.length }, (_unused, column) => ({
         character: line.charAt(column),
         column,
@@ -42,6 +68,26 @@ export class SubmatrixUtilitiesService {
           row,
         })),
     );
+    this.cellsByTemplate.set(template, cells);
+    return cells;
+  }
+
+  /** Whether the glyph `cells` sit on `grid` with their top-left corner at `(row, column)`, columns wrapping. */
+  private matchesAt(
+    grid: readonly (readonly number[])[],
+    cells: readonly GlyphCell[],
+    corner: { column: number; row: number },
+  ): boolean {
+    for (const cell of cells) {
+      const digits = grid[corner.row + cell.row] ?? [];
+      if (
+        digits[(corner.column + cell.column) % digits.length] !== cell.digit
+      ) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   // 🌎 Public Methods
@@ -74,19 +120,11 @@ export class SubmatrixUtilitiesService {
       return 0;
     }
 
+    const grid = this.digitGrid(matrix);
     let count = 0;
-    for (let row = 0; row + template.length <= matrix.length; row += 1) {
+    for (let row = 0; row + template.length <= grid.length; row += 1) {
       for (let column = 0; column < columns; column += 1) {
-        if (
-          cells.every(
-            (cell) =>
-              this.pointDigitAt(
-                matrix,
-                row + cell.row,
-                column + cell.column,
-              ) === cell.digit,
-          )
-        ) {
+        if (this.matchesAt(grid, cells, { column, row })) {
           count += 1;
         }
       }
@@ -144,6 +182,29 @@ export class SubmatrixUtilitiesService {
     }
 
     return count;
+  }
+
+  /**
+   * Every point's hexadecimal Code digit, row by row, as
+   * {@link SubmatrixUtilitiesService.pointDigitAt} spells it. Built once per
+   * board and shared by every template counted on it, so a board's arms are
+   * read once rather than once per template and window.
+   *
+   * The grid returned is that shared one, so a caller must not mutate it, and
+   * it stays correct only while the board itself is never mutated after its
+   * first count.
+   */
+  public digitGrid(matrix: Matrix): readonly (readonly number[])[] {
+    const built = this.digitGrids.get(matrix);
+    if (built !== undefined) {
+      return built;
+    }
+
+    const grid = matrix.map((points, row) =>
+      points.map((_point, column) => this.pointDigitAt(matrix, row, column)),
+    );
+    this.digitGrids.set(matrix, grid);
+    return grid;
   }
 
   /**

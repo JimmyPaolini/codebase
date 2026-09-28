@@ -143,6 +143,7 @@ describe(LetterUtilitiesService, () => {
   );
 
   it.each<{ corner: string; script: LetterScript }>([
+    { corner: "Southwest", script: "Arabic" },
     { corner: "Southeast", script: "Greek" },
     { corner: "Southeast", script: "Hangul" },
     { corner: "Southeast", script: "Hanzi" },
@@ -415,6 +416,83 @@ describe(LetterUtilitiesService, () => {
           contextService.create("03x03y610c00800"),
         ),
       ).toBe(0);
+    });
+
+    it("keeps apart two templates whose rows run together into the same characters", () => {
+      const context = contextService.create("04x02y6500a900");
+      const square = service.evaluators({
+        glyph: "O",
+        key: (name) => `o${name}LatinCount`,
+        script: "Latin",
+        shape: "a closed unit square",
+        template: ["65", "a9"],
+      });
+      const row = service.evaluators({
+        glyph: "L",
+        key: (name) => `l${name}LatinCount`,
+        script: "Latin",
+        shape: "the square's digits in one row",
+        template: ["65a9"],
+      });
+
+      expect(
+        [square, row].map((drawn) => drawn[0]?.compute(context)),
+      ).toStrictEqual([1, 0]);
+    });
+  });
+
+  describe("evaluators for a letter's positional forms", () => {
+    /** A form of a dotless Arabic letter keyed by `key`, drawn as `template`, with its Southwest orientation aliased when `alias` is given. */
+    function form(
+      key: LetterDefinition["key"],
+      template: readonly string[],
+      alias?: string,
+    ): LetterDefinition {
+      return {
+        ...(alias === undefined ? {} : { aliases: { Southwest: alias } }),
+        glyph: "ٮ (Arabic dotless beh)",
+        key,
+        script: "Arabic",
+        shape: "a test shape",
+        template,
+      };
+    }
+
+    it("keys and draws each form's sixteen orientations in turn, from that form's own template", () => {
+      const utilities = new SubmatrixUtilitiesService();
+      const evaluators = service.formEvaluators([
+        form((name) => `behMedial${name}ArabicCount`, L),
+        form((name) => `behFinal${name}ArabicCount`, HOOK),
+      ]);
+
+      expect(evaluators.map(({ metadata }) => metadata.key)).toStrictEqual([
+        ...LETTER_ORIENTATION_NAMES.map(
+          (name) => `behMedial${name}ArabicCount`,
+        ),
+        ...LETTER_ORIENTATION_NAMES.map((name) => `behFinal${name}ArabicCount`),
+      ]);
+      expect(evaluators.map(({ metadata }) => metadata.formula)).toStrictEqual(
+        [
+          ...service.orientations(L, "Arabic"),
+          ...service.orientations(HOOK, "Arabic"),
+        ].map(({ template }) => utilities.glyphFormula(template)),
+      );
+    });
+
+    it("keeps each form's aliases on that form, even where another form draws the same ink", () => {
+      const evaluators = service.formEvaluators([
+        form((name) => `behMedial${name}ArabicCount`, L, "the medial ب"),
+        form((name) => `behFinal${name}ArabicCount`, L),
+      ]);
+
+      expect(
+        evaluators
+          .filter(({ metadata }) => metadata.description.includes("ب"))
+          .map(({ metadata }) => metadata.key),
+      ).toStrictEqual([
+        "behMedialSouthwestArabicCount",
+        "behMedialNortheastHalfArabicCount",
+      ]);
     });
   });
 });

@@ -38,7 +38,10 @@ const ORIENTATIONS: readonly LetterOrientationFixture[] = [
 /** Each alias, beside every orientation name drawing the ink it reads as. */
 const ALIASES: readonly LetterAliasFixture[] = [
   { alias: "the Latin d", names: ["SoutheastHalf", "Northwest"] },
-  { alias: "the Latin P", names: ["Southeast", "NorthwestHalf"] },
+  {
+    alias: "the Latin P and the isolated Arabic م (meem)",
+    names: ["Southeast", "NorthwestHalf"],
+  },
 ];
 
 describe(RhoGreekLetterCharacteristicsService, () => {

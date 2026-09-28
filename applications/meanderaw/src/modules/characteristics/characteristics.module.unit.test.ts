@@ -1,9 +1,11 @@
+import { MODULE_METADATA } from "@nestjs/common/constants";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import {
   BOOLEAN_CHARACTERISTIC_KEY_SET,
   CHARACTERISTIC_KEYS,
+  LETTER_CHARACTERISTIC_KEYS,
 } from "./characteristics.constants";
 import { CharacteristicsModule } from "./characteristics.module";
 import { IsArcadeCharacteristicService } from "./compound/family/is-arcade-characteristic.service";
@@ -54,58 +56,11 @@ import { ForkCountCharacteristicService } from "./submatrix/fork/fork-count-char
 import { NorthForkCountCharacteristicService } from "./submatrix/fork/north-fork-count-characteristic.service";
 import { SouthForkCountCharacteristicService } from "./submatrix/fork/south-fork-count-characteristic.service";
 import { WestForkCountCharacteristicService } from "./submatrix/fork/west-fork-count-characteristic.service";
-import { ALatinLetterCharacteristicsService } from "./submatrix/letter/a-latin-letter-characteristics.service";
-import { AoHanziLetterCharacteristicsService } from "./submatrix/letter/ao-hanzi-letter-characteristics.service";
-import { BLatinLetterCharacteristicsService } from "./submatrix/letter/b-latin-letter-characteristics.service";
-import { CLatinLetterCharacteristicsService } from "./submatrix/letter/c-latin-letter-characteristics.service";
-import { DaletHebrewLetterCharacteristicsService } from "./submatrix/letter/dalet-hebrew-letter-characteristics.service";
-import { DeltaGreekLetterCharacteristicsService } from "./submatrix/letter/delta-greek-letter-characteristics.service";
-import { ELatinLetterCharacteristicsService } from "./submatrix/letter/e-latin-letter-characteristics.service";
-import { FLatinLetterCharacteristicsService } from "./submatrix/letter/f-latin-letter-characteristics.service";
-import { GanHanziLetterCharacteristicsService } from "./submatrix/letter/gan-hanzi-letter-characteristics.service";
-import { HLatinLetterCharacteristicsService } from "./submatrix/letter/h-latin-letter-characteristics.service";
-import { ILatinLetterCharacteristicsService } from "./submatrix/letter/i-latin-letter-characteristics.service";
-import { JiaHanziLetterCharacteristicsService } from "./submatrix/letter/jia-hanzi-letter-characteristics.service";
-import { JingHanziLetterCharacteristicsService } from "./submatrix/letter/jing-hanzi-letter-characteristics.service";
-import { KappaGreekLetterCharacteristicsService } from "./submatrix/letter/kappa-greek-letter-characteristics.service";
-import { KieukHangulLetterCharacteristicsService } from "./submatrix/letter/kieuk-hangul-letter-characteristics.service";
-import { LLatinLetterCharacteristicsService } from "./submatrix/letter/l-latin-letter-characteristics.service";
-import { LambdaGreekLetterCharacteristicsService } from "./submatrix/letter/lambda-greek-letter-characteristics.service";
-import { LamedHebrewLetterCharacteristicsService } from "./submatrix/letter/lamed-hebrew-letter-characteristics.service";
+import { LetterCharacteristicsModule } from "./submatrix/letter/letter-characteristics.module";
 import {
   LETTER_ORIENTATION_NAMES,
   LETTER_SCRIPTS,
 } from "./submatrix/letter/letter.constants";
-import { MLatinLetterCharacteristicsService } from "./submatrix/letter/m-latin-letter-characteristics.service";
-import { MuHanziLetterCharacteristicsService } from "./submatrix/letter/mu-hanzi-letter-characteristics.service";
-import { NLatinLetterCharacteristicsService } from "./submatrix/letter/n-latin-letter-characteristics.service";
-import { OLatinLetterCharacteristicsService } from "./submatrix/letter/o-latin-letter-characteristics.service";
-import { OmegaGreekLetterCharacteristicsService } from "./submatrix/letter/omega-greek-letter-characteristics.service";
-import { PhiGreekLetterCharacteristicsService } from "./submatrix/letter/phi-greek-letter-characteristics.service";
-import { PieupHangulLetterCharacteristicsService } from "./submatrix/letter/pieup-hangul-letter-characteristics.service";
-import { PsiGreekLetterCharacteristicsService } from "./submatrix/letter/psi-greek-letter-characteristics.service";
-import { RhoGreekLetterCharacteristicsService } from "./submatrix/letter/rho-greek-letter-characteristics.service";
-import { SLatinLetterCharacteristicsService } from "./submatrix/letter/s-latin-letter-characteristics.service";
-import { ShangHanziLetterCharacteristicsService } from "./submatrix/letter/shang-hanzi-letter-characteristics.service";
-import { ShenHanziLetterCharacteristicsService } from "./submatrix/letter/shen-hanzi-letter-characteristics.service";
-import { SigmaGreekLetterCharacteristicsService } from "./submatrix/letter/sigma-greek-letter-characteristics.service";
-import { TLatinLetterCharacteristicsService } from "./submatrix/letter/t-latin-letter-characteristics.service";
-import { TavHebrewLetterCharacteristicsService } from "./submatrix/letter/tav-hebrew-letter-characteristics.service";
-import { TianHanziLetterCharacteristicsService } from "./submatrix/letter/tian-hanzi-letter-characteristics.service";
-import { TuHanziLetterCharacteristicsService } from "./submatrix/letter/tu-hanzi-letter-characteristics.service";
-import { TuSoilHanziLetterCharacteristicsService } from "./submatrix/letter/tu-soil-hanzi-letter-characteristics.service";
-import { ULatinLetterCharacteristicsService } from "./submatrix/letter/u-latin-letter-characteristics.service";
-import { WLatinLetterCharacteristicsService } from "./submatrix/letter/w-latin-letter-characteristics.service";
-import { WangHanziLetterCharacteristicsService } from "./submatrix/letter/wang-hanzi-letter-characteristics.service";
-import { XLatinLetterCharacteristicsService } from "./submatrix/letter/x-latin-letter-characteristics.service";
-import { YLatinLetterCharacteristicsService } from "./submatrix/letter/y-latin-letter-characteristics.service";
-import { YaHangulLetterCharacteristicsService } from "./submatrix/letter/ya-hangul-letter-characteristics.service";
-import { YeoHangulLetterCharacteristicsService } from "./submatrix/letter/yeo-hangul-letter-characteristics.service";
-import { YoHangulLetterCharacteristicsService } from "./submatrix/letter/yo-hangul-letter-characteristics.service";
-import { YouHanziLetterCharacteristicsService } from "./submatrix/letter/you-hanzi-letter-characteristics.service";
-import { YuHangulLetterCharacteristicsService } from "./submatrix/letter/yu-hangul-letter-characteristics.service";
-import { YuKatakanaLetterCharacteristicsService } from "./submatrix/letter/yu-katakana-letter-characteristics.service";
-import { ZLatinLetterCharacteristicsService } from "./submatrix/letter/z-latin-letter-characteristics.service";
 import { DensityCharacteristicService } from "./submatrix/point/density-characteristic.service";
 import { DotCountCharacteristicService } from "./submatrix/point/dot-count-characteristic.service";
 import { DoubleHorizontalEdgeCountCharacteristicService } from "./submatrix/point/double-horizontal-edge-count-characteristic.service";
@@ -128,57 +83,36 @@ import type {
 } from "./characteristics.types";
 import type { Type } from "@nestjs/common";
 
-/** Every letter service a consumer of `CharacteristicsModule` must be able to inject, each providing its letter's sixteen orientation evaluators. */
-const LETTER_SERVICES: readonly Type<CharacteristicEvaluatorGroup<number>>[] = [
-  ALatinLetterCharacteristicsService,
-  AoHanziLetterCharacteristicsService,
-  BLatinLetterCharacteristicsService,
-  CLatinLetterCharacteristicsService,
-  DaletHebrewLetterCharacteristicsService,
-  DeltaGreekLetterCharacteristicsService,
-  ELatinLetterCharacteristicsService,
-  FLatinLetterCharacteristicsService,
-  GanHanziLetterCharacteristicsService,
-  HLatinLetterCharacteristicsService,
-  ILatinLetterCharacteristicsService,
-  JiaHanziLetterCharacteristicsService,
-  JingHanziLetterCharacteristicsService,
-  KappaGreekLetterCharacteristicsService,
-  KieukHangulLetterCharacteristicsService,
-  LLatinLetterCharacteristicsService,
-  LambdaGreekLetterCharacteristicsService,
-  LamedHebrewLetterCharacteristicsService,
-  MLatinLetterCharacteristicsService,
-  MuHanziLetterCharacteristicsService,
-  NLatinLetterCharacteristicsService,
-  OLatinLetterCharacteristicsService,
-  OmegaGreekLetterCharacteristicsService,
-  PhiGreekLetterCharacteristicsService,
-  PieupHangulLetterCharacteristicsService,
-  PsiGreekLetterCharacteristicsService,
-  RhoGreekLetterCharacteristicsService,
-  SLatinLetterCharacteristicsService,
-  ShangHanziLetterCharacteristicsService,
-  ShenHanziLetterCharacteristicsService,
-  SigmaGreekLetterCharacteristicsService,
-  TLatinLetterCharacteristicsService,
-  TavHebrewLetterCharacteristicsService,
-  TianHanziLetterCharacteristicsService,
-  TuHanziLetterCharacteristicsService,
-  TuSoilHanziLetterCharacteristicsService,
-  ULatinLetterCharacteristicsService,
-  WLatinLetterCharacteristicsService,
-  WangHanziLetterCharacteristicsService,
-  XLatinLetterCharacteristicsService,
-  YLatinLetterCharacteristicsService,
-  YaHangulLetterCharacteristicsService,
-  YeoHangulLetterCharacteristicsService,
-  YoHangulLetterCharacteristicsService,
-  YouHanziLetterCharacteristicsService,
-  YuHangulLetterCharacteristicsService,
-  YuKatakanaLetterCharacteristicsService,
-  ZLatinLetterCharacteristicsService,
-];
+/** Whether a module export is a letter service, which its class name marks, so the letter module's exports can be read without a cast. */
+function isLetterService(
+  value: unknown,
+): value is Type<CharacteristicEvaluatorGroup<number>> {
+  return (
+    typeof value === "function" &&
+    value.name.endsWith("LetterCharacteristicsService")
+  );
+}
+
+/**
+ * The letter module's declared exports, read off its `@Module` metadata. It
+ * throws when the metadata holds no exports list, so a letter module that
+ * stops declaring one fails every test here rather than exporting nothing.
+ */
+function letterModuleExports(): readonly unknown[] {
+  const exported: unknown = Reflect.getMetadata(
+    MODULE_METADATA.EXPORTS,
+    LetterCharacteristicsModule,
+  );
+  if (!Array.isArray(exported)) {
+    throw new TypeError("LetterCharacteristicsModule declares no exports list");
+  }
+
+  return exported;
+}
+
+/** Every letter service a consumer of `CharacteristicsModule` must be able to inject, each providing its letter's sixteen orientation evaluators per positional form: every letter service the letter module exports, so a new letter needs no second list here. */
+const LETTER_SERVICES: readonly Type<CharacteristicEvaluatorGroup<number>>[] =
+  letterModuleExports().filter((value) => isLetterService(value));
 
 /** Every lone characteristic evaluator a consumer of `CharacteristicsModule` must be able to inject. */
 const CHARACTERISTIC_SERVICES: readonly Type<CharacteristicEvaluator>[] = [
@@ -300,17 +234,29 @@ function expectedKey(service: Type<CharacteristicEvaluator>): string {
   return stem.charAt(0).toLowerCase() + stem.slice(1);
 }
 
-/** The sixteen metadata keys a letter service's class name promises, in orientation order: `ALatinLetterCharacteristicsService` fills `aSoutheastLatinCount` through `aNorthwestThreeQuarterLatinCount`. */
+/**
+ * The metadata keys a letter service's class name promises, in key-list
+ * order: its letter's sixteen orientations, under each positional form the
+ * key list gives an Arabic letter. `ALatinLetterCharacteristicsService`
+ * fills `aSoutheastLatinCount` through `aNorthwestThreeQuarterLatinCount`,
+ * and `BehArabicLetterCharacteristicsService` fills
+ * `behFinalSoutheastArabicCount` through
+ * `behMedialNorthwestThreeQuarterArabicCount`. Which forms a letter takes is
+ * read off the key list rather than pinned here; each letter's own test pins
+ * its form set.
+ */
 function expectedLetterKeys(
   service: Type<CharacteristicEvaluatorGroup<number>>,
 ): readonly string[] {
   const { script = "", stem = "" } =
     LETTER_SERVICE_NAME.exec(service.name)?.groups ?? {};
   const letter = stem.charAt(0).toLowerCase() + stem.slice(1);
-
-  return LETTER_ORIENTATION_NAMES.map(
-    (name) => `${letter}${name}${script}Count`,
+  const pattern = new RegExp(
+    `^${letter}(?:Final|Initial|Isolated|Medial)?(?:${LETTER_ORIENTATION_NAMES.join("|")})${script}Count$`,
+    "u",
   );
+
+  return LETTER_CHARACTERISTIC_KEYS.filter((key) => pattern.test(key));
 }
 
 describe(CharacteristicsModule, () => {
@@ -388,7 +334,7 @@ describe(CharacteristicsModule, () => {
       expect(letters[index]).toBeInstanceOf(service);
     });
 
-    it("keys its sixteen orientation evaluators after its class", () => {
+    it("keys its orientation evaluators after its class", () => {
       expect(
         letters[index]?.evaluators.map(({ metadata }) => metadata.key),
       ).toStrictEqual(expectedLetterKeys(service));
@@ -402,8 +348,18 @@ describe(CharacteristicsModule, () => {
           metadata.category === "submatrix",
       );
 
-      expect(described).toStrictEqual(Array.from({ length: 16 }, () => true));
+      expect(described).toStrictEqual(
+        expectedLetterKeys(service).map(() => true),
+      );
     });
+  });
+
+  it("derives every letter key from exactly one letter service's class name", () => {
+    expect(
+      LETTER_SERVICES.flatMap((service) =>
+        expectedLetterKeys(service),
+      ).toSorted(),
+    ).toStrictEqual([...LETTER_CHARACTERISTIC_KEYS].toSorted());
   });
 
   it("gives every characteristic evaluator a unique metadata key", () => {

@@ -25,7 +25,8 @@ import type {
  * either way, turning it clockwise, naming the sixteen corner and rotation
  * orientations, and reading each script's base corner. A letter holds one
  * base template and asks `evaluators` for an evaluator per orientation, each
- * counting the template `orientations` draws that way.
+ * counting the template `orientations` draws that way; an Arabic letter
+ * holds one per positional form and asks `formEvaluators` instead.
  *
  * Counts are shared: within one context, every orientation, and every letter,
  * drawing the same template scans the matrix for it once.
@@ -76,14 +77,18 @@ export class LetterUtilitiesService {
     );
   }
 
-  /** The count of `template` glyphs in a context, scanned the first time any evaluator asks for it. */
+  /**
+   * The count of `template` glyphs in a context, scanned the first time any
+   * evaluator asks for it. `ink` is the template's rows joined by `/`, which
+   * its evaluator spells once rather than on every context.
+   */
   private count(
     context: CharacteristicContext,
     template: readonly string[],
+    ink: string,
   ): number {
     const counts = this.counts.get(context.matrix) ?? this.track(context);
-    const key = template.join("/");
-    const cached = counts.get(key);
+    const cached = counts.get(ink);
     if (cached !== undefined) {
       return cached;
     }
@@ -92,7 +97,7 @@ export class LetterUtilitiesService {
       context.matrix,
       template,
     );
-    counts.set(key, count);
+    counts.set(ink, count);
     return count;
   }
 
@@ -140,9 +145,10 @@ export class LetterUtilitiesService {
     aliases: readonly string[],
   ): CharacteristicEvaluator<number> {
     const key = definition.key(orientation.name);
+    const ink = orientation.template.join("/");
 
     return {
-      compute: (context) => this.count(context, orientation.template),
+      compute: (context) => this.count(context, orientation.template, ink),
       metadata: {
         category: "submatrix",
         description: this.description(definition, orientation, aliases),
@@ -333,6 +339,19 @@ export class LetterUtilitiesService {
           )
           .join(""),
       );
+  }
+
+  /**
+   * The evaluators of a letter drawn as several base templates — an Arabic
+   * letter's positional forms — each form's sixteen in turn, in the order
+   * given. Each form is keyed, described, and aliased as
+   * {@link LetterUtilitiesService.evaluators} builds it alone, so an alias
+   * stays on its own form even where another form draws the same ink.
+   */
+  public formEvaluators(
+    forms: readonly LetterDefinition[],
+  ): readonly CharacteristicEvaluator<number>[] {
+    return forms.flatMap((definition) => this.evaluators(definition));
   }
 
   /**
