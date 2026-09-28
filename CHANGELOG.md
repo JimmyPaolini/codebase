@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.30.0](https://github.com/Organizzolini/codebase/compare/v2.29.0...v2.30.0) (2026-09-28)
+
+### ✨ Features
+
+* **meanderaw:** ✨ add arabic letter skeletons in all positional forms ([#1206](https://github.com/Organizzolini/codebase/issues/1206)) ([007edad](https://github.com/Organizzolini/codebase/commit/007edad2e4767b31cd2122e7b13edc803c85b0df)), closes [#1205](https://github.com/Organizzolini/codebase/issues/1205) [#1205](https://github.com/Organizzolini/codebase/issues/1205) [#1204](https://github.com/Organizzolini/codebase/issues/1204) [#1198](https://github.com/Organizzolini/codebase/issues/1198) [#1197](https://github.com/Organizzolini/codebase/issues/1197) [#1204](https://github.com/Organizzolini/codebase/issues/1204) [#1198](https://github.com/Organizzolini/codebase/issues/1198) [#1192](https://github.com/Organizzolini/codebase/issues/1192) [#1197](https://github.com/Organizzolini/codebase/issues/1197) [#1198](https://github.com/Organizzolini/codebase/issues/1198) [#1189](https://github.com/Organizzolini/codebase/issues/1189) [#1205](https://github.com/Organizzolini/codebase/issues/1205)
+
 ## [2.29.0](https://github.com/Organizzolini/codebase/compare/v2.28.0...v2.29.0) (2026-09-28)
 
 ### ✨ Features
