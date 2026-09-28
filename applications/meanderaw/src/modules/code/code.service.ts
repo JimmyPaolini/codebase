@@ -137,29 +137,31 @@ export class CodeService {
   // 🌎 Public Methods
 
   /**
-   * The canonical phase of a Code is the one that minimizes seamComponents,
-   * breaking ties by choosing the lexicographically smallest Code string.
+   * The canonical phase of a Code is the one that minimizes its
+   * tile-crossing component delta, breaking ties by choosing the
+   * lexicographically smallest Code string.
    *
    * The group of phases defaults to every cyclic column rotation.
    */
   canonicalPhase(
     code: CodeObject,
-    measureSeams: (phase: CodeObject) => number,
+    scoreTileCrossing: (phase: CodeObject) => number,
     group: (code: CodeObject) => CodeObject[] = (c) =>
       Array.from({ length: c.columns }, (_, index) => this.rotate(c, index)),
   ): CodeObject {
     let best = code;
-    let minimumSeamComponents = Infinity;
+    let minimumTileCrossingScore = Infinity;
 
     for (const phase of group(code)) {
-      const seamComponents = measureSeams(phase);
+      const tileCrossingScore = scoreTileCrossing(phase);
 
       if (
-        seamComponents < minimumSeamComponents ||
-        (seamComponents === minimumSeamComponents && phase.digits < best.digits)
+        tileCrossingScore < minimumTileCrossingScore ||
+        (tileCrossingScore === minimumTileCrossingScore &&
+          phase.digits < best.digits)
       ) {
         best = phase;
-        minimumSeamComponents = seamComponents;
+        minimumTileCrossingScore = tileCrossingScore;
       }
     }
 
@@ -281,27 +283,13 @@ export class CodeService {
 
   /**
    * Names a tile as a self-contained Code string in the format
-   * `{columns}x{rows}y{digits}r{repeats}`: one hexadecimal character per point,
-   * in reading order, worth `8` for `north`, `4` for `south`, `2` for `east`
-   * and `1` for `west`, with 2-digit zero-padding on columns, rows, and repeats.
+   * `{columns}x{rows}y{digits}r{repeats}`: its {@link spellDigits}, with
+   * 2-digit zero-padding on columns, rows, and repeats.
    */
   spell(tile: Tile, repeats = 1): string {
-    const digits = tile.points
-      .flatMap((row) =>
-        row.map((point) =>
-          (
-            (point.north ? 8 : 0) +
-            (point.south ? 4 : 0) +
-            (point.east ? 2 : 0) +
-            (point.west ? 1 : 0)
-          ).toString(16),
-        ),
-      )
-      .join("");
-
     return this.format({
       columns: tile.columns,
-      digits,
+      digits: this.spellDigits(tile),
       repeats,
       rows: tile.rows,
     });
@@ -314,6 +302,27 @@ export class CodeService {
    */
   spellCanonical(tile: Tile, repeats = 1): string {
     return this.spell(this.symmetryService.canonicalTile(tile), repeats);
+  }
+
+  /**
+   * A tile's digits alone: one lowercase hexadecimal character per point, in
+   * reading order, worth `8` for `north`, `4` for `south`, `2` for `east` and
+   * `1` for `west` — exactly `rows × columns` of them, whatever the Code the
+   * tile was read from spelled.
+   */
+  spellDigits(tile: Tile): string {
+    return tile.points
+      .flatMap((row) =>
+        row.map((point) =>
+          (
+            (point.north ? 8 : 0) +
+            (point.south ? 4 : 0) +
+            (point.east ? 2 : 0) +
+            (point.west ? 1 : 0)
+          ).toString(16),
+        ),
+      )
+      .join("");
   }
 
   /**

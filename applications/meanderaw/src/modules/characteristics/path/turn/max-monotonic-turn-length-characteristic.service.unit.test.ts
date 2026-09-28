@@ -5,7 +5,8 @@ import { CodeModule } from "../../../code/code.module";
 import { GraphModule } from "../../../graph/graph.module";
 import { MatrixModule } from "../../../matrix/matrix.module";
 import { CharacteristicContextService } from "../../characteristic-context.service";
-import { ConnectivityService } from "../../connectivity.service";
+import { ConnectivityService } from "../../connectivity/connectivity.service";
+import { PathUtilitiesService } from "../path-utilities.service";
 
 import { MaxMonotonicTurnLengthCharacteristicService } from "./max-monotonic-turn-length-characteristic.service";
 
@@ -20,6 +21,7 @@ describe(MaxMonotonicTurnLengthCharacteristicService, () => {
         CharacteristicContextService,
         ConnectivityService,
         MaxMonotonicTurnLengthCharacteristicService,
+        PathUtilitiesService,
       ],
     }).compile();
 

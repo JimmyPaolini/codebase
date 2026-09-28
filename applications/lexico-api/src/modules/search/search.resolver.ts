@@ -1,7 +1,8 @@
 import { Inject } from "@nestjs/common";
 import { Args as Arguments, Query, Resolver } from "@nestjs/graphql";
 
-import { PaginationArguments } from "./search-pagination.entities";
+import { SearchEnglishArguments } from "./search-english-arguments.entities";
+import { SearchLatinArguments } from "./search-latin-arguments.entities";
 import { LexemeSearchConnection, LexemeSearchResult } from "./search.entities";
 import { SearchService } from "./search.service";
 
@@ -25,10 +26,9 @@ export class SearchResolver {
     name: "searchEnglish",
   })
   public async searchEnglish(
-    @Arguments("query", { type: () => String }) query: string,
-    @Arguments() pagination: PaginationArguments,
+    @Arguments() arguments_: SearchEnglishArguments,
   ): Promise<Connection<LexemeSearchResult>> {
-    return this.searchService.searchEnglish(query, pagination);
+    return this.searchService.searchEnglish(arguments_.query, arguments_);
   }
 
   /**
@@ -40,9 +40,8 @@ export class SearchResolver {
     name: "searchLatin",
   })
   public async searchLatin(
-    @Arguments("query", { type: () => String }) query: string,
-    @Arguments() pagination: PaginationArguments,
+    @Arguments() arguments_: SearchLatinArguments,
   ): Promise<Connection<LexemeSearchResult>> {
-    return this.searchService.searchLatin(query, pagination);
+    return this.searchService.searchLatin(arguments_.query, arguments_);
   }
 }

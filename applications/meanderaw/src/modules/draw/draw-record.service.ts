@@ -25,10 +25,11 @@ import type {
  * passes, which is a fact about where the Code came from rather than
  * anything this can read off it.
  *
- * `pitch` is recorded equal to `columns`: both an enumerated repeat and a
- * Code named directly by `--rows`/`--columns`/`--code` are one repeat wide
- * by construction, so their whole grid is one pitch. See `Meander`'s own doc
- * comment for why the two columns are still held separately.
+ * Every numeric Characteristic of `CharacteristicsService.compute` is
+ * stored under its own column, and every boolean one that holds is listed in
+ * `characteristics`, followed by `"isReducible"` when the filed Code is
+ * wider than its unit. The family is `ClassificationService`'s verdict on
+ * that same record.
  */
 @Injectable()
 export class DrawRecordService {
@@ -67,24 +68,17 @@ export class DrawRecordService {
     const repeats = shape.repeats ?? parsed.repeats;
     const withRepeats = { ...parsed, repeats };
     const canonical = this.codeService.canonicalPhase(withRepeats, (phase) =>
-      this.characteristicsService.seamComponents(phase),
+      this.characteristicsService.tileCrossingComponentDeltaCount(phase),
     );
     const characteristics = this.characteristicsService.compute(canonical);
+    const isReducible = this.characteristicsService.isReducible(canonical);
     const family = this.classificationService.classify(characteristics, {
-      columns: canonical.columns,
+      isReducible,
       rows: canonical.rows,
     });
-    const booleanKeys = (
-      Object.entries(characteristics) as [string, boolean | number][]
-    )
-      .filter(([, value]) => typeof value === "boolean" && value)
-      .map(([key]) => key);
-
-    // We only keep numbers in the returned object (the booleans are moved to the array)
-    const numericCharacteristics = Object.fromEntries(
-      (Object.entries(characteristics) as [string, boolean | number][]).filter(
-        ([, value]) => typeof value === "number",
-      ),
+    const booleanKeys = this.characteristicsService.trueBooleanKeys(
+      characteristics,
+      isReducible,
     );
 
     const svg = this.drawingService.render(canonical);
@@ -93,15 +87,13 @@ export class DrawRecordService {
     const drawingHash = crypto.createHash("sha256").update(svg).digest("hex");
 
     return {
-      // type-coverage:ignore-next-line
-      ...(numericCharacteristics as unknown as MeanderRecord),
+      ...this.characteristicsService.numericRecord(characteristics),
       characteristics: booleanKeys,
       code: this.codeService.format(canonical),
       columns: canonical.columns,
       drawingHash,
       family,
       lattice: canonical.digits,
-      pitch: canonical.columns,
       provenance,
       repeats: canonical.repeats,
       rows: canonical.rows,

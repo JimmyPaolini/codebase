@@ -10,8 +10,8 @@ import {
 
 import { AuditableEntity } from "../base/Auditable.entity";
 
-import type { Author } from "./Author.entity";
-import type { Line } from "./Line.entity";
+import { Author } from "./Author.entity";
+import { Line } from "./Line.entity";
 
 /**
  * Represents a text or a collection of texts (like a book or corpus).
@@ -23,25 +23,24 @@ import type { Line } from "./Line.entity";
 })
 @ObjectType()
 export class Text extends AuditableEntity {
-  @Field(() => Object)
+  @Field(() => Author)
   @Index()
   @JoinColumn({ name: "author_id" })
   @ManyToOne("Author", "texts", { eager: true, onDelete: "CASCADE" })
   author!: Author;
 
-  @Field(() => [Object])
+  @Field(() => [Text])
   @OneToMany("Text", "parentText", { cascade: true })
   childTexts!: Text[];
 
-  @Field(() => [Object])
+  @Field(() => [Line])
   @OneToMany("Line", "text", { cascade: true })
   lines!: Line[];
 
   @Column("jsonb", { comment: "Unstructured metadata", nullable: true })
-  @Field(() => Object, { nullable: true })
   metadata?: null | Record<string, unknown>;
 
-  @Field(() => Object, { nullable: true })
+  @Field(() => Text, { nullable: true })
   @Index()
   @JoinColumn({ name: "parent_text_id" })
   @ManyToOne("Text", "childTexts", {

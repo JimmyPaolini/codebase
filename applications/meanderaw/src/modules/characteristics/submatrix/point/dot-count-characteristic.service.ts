@@ -1,6 +1,6 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 
-import { countPointsWithExactArms } from "../submatrix.utilities";
+import { SubmatrixUtilitiesService } from "../submatrix-utilities.service";
 
 import type {
   CharacteristicContext,
@@ -16,7 +16,10 @@ import type {
 export class DotCountCharacteristicService implements CharacteristicEvaluator<number> {
   // 🏗 Dependency Injection
 
-  constructor() {}
+  constructor(
+    @Inject(SubmatrixUtilitiesService)
+    private readonly submatrixUtilitiesService: SubmatrixUtilitiesService,
+  ) {}
 
   // 🔐 Private Fields
 
@@ -29,6 +32,7 @@ export class DotCountCharacteristicService implements CharacteristicEvaluator<nu
     formula: String.raw`\left|\{\, p \in M : \text{arms}(p) = \varnothing \,\}\right|`,
     key: "dotCount",
     name: "Dot Count",
+    submatrix: { columns: 1, rows: 1 },
     valueType: "number",
   };
 
@@ -38,6 +42,9 @@ export class DotCountCharacteristicService implements CharacteristicEvaluator<nu
 
   /** Counts the points with no arms. */
   public compute(context: CharacteristicContext): number {
-    return countPointsWithExactArms(context.matrix, []);
+    return this.submatrixUtilitiesService.countPointsWithExactArms(
+      context.matrix,
+      [],
+    );
   }
 }

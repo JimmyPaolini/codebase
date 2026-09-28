@@ -1,7 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
 
-import { ConnectivityService } from "../../connectivity.service";
-import { signedTurns, strands } from "../path.utilities";
+import { ConnectivityService } from "../../connectivity/connectivity.service";
+import { PathUtilitiesService } from "../path-utilities.service";
 
 import type {
   CharacteristicContext,
@@ -21,6 +21,8 @@ export class TotalTurnCountCharacteristicService implements CharacteristicEvalua
   constructor(
     @Inject(ConnectivityService)
     private readonly connectivityService: ConnectivityService,
+    @Inject(PathUtilitiesService)
+    private readonly pathUtilitiesService: PathUtilitiesService,
   ) {}
 
   // 🔐 Private Fields
@@ -44,8 +46,12 @@ export class TotalTurnCountCharacteristicService implements CharacteristicEvalua
 
   /** Counts the nonzero turns across every strand of the repeat. */
   public compute(context: CharacteristicContext): number {
-    return strands(
-      this.connectivityService.edges(context.matrix, false),
-    ).reduce((total, strand) => total + signedTurns(strand).length, 0);
+    return this.pathUtilitiesService
+      .strands(this.connectivityService.edges(context.matrix, false))
+      .reduce(
+        (total, strand) =>
+          total + this.pathUtilitiesService.signedTurns(strand).length,
+        0,
+      );
   }
 }

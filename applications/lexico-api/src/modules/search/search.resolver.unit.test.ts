@@ -66,11 +66,12 @@ describe("search resolver suite", () => {
     });
 
     const resolver = new SearchResolver(mockService);
-    const result = await resolver.searchLatin("amō", {
+    const result = await resolver.searchLatin({
       after: "after-c",
       before: "before-c",
       first: 10,
       last: 5,
+      query: "amō",
     });
 
     expect(mockService.searchLatin).toHaveBeenCalledWith("amō", {
@@ -78,6 +79,7 @@ describe("search resolver suite", () => {
       before: "before-c",
       first: 10,
       last: 5,
+      query: "amō",
     });
     expect(result).toBe(mockConnection);
   });
@@ -111,11 +113,12 @@ describe("search resolver suite", () => {
     });
 
     const resolver = new SearchResolver(mockService);
-    const result = await resolver.searchEnglish("love", {
+    const result = await resolver.searchEnglish({
       after: "cursor-1",
       before: "cursor-2",
       first: 20,
       last: 10,
+      query: "love",
     });
 
     expect(mockService.searchEnglish).toHaveBeenCalledWith("love", {
@@ -123,6 +126,7 @@ describe("search resolver suite", () => {
       before: "cursor-2",
       first: 20,
       last: 10,
+      query: "love",
     });
     expect(result).toBe(mockConnection);
   });

@@ -1,7 +1,6 @@
 import { Module } from "@nestjs/common";
 
-import { GraphModule } from "../../../graph/graph.module";
-import { ConnectivityService } from "../../connectivity.service";
+import { ConnectivityModule } from "../../connectivity/connectivity.module";
 
 import { TileCrossingComponentDeltaCountCharacteristicService } from "./tile-crossing-component-delta-count-characteristic.service";
 import { TileCrossingCountCharacteristicService } from "./tile-crossing-count-characteristic.service";
@@ -10,9 +9,9 @@ import { TileCrossingCycleCountCharacteristicService } from "./tile-crossing-cyc
 /**
  * Provides and exports every tile crossing path characteristic evaluator —
  * what crosses the join between a tile's last column and its first — as one
- * group `CharacteristicsModule` imports and re-exports. It provides its own
- * stateless `ConnectivityService` rather than importing
- * `CharacteristicsModule`, which imports this module.
+ * group `CharacteristicsModule` imports and re-exports. It imports
+ * `ConnectivityModule` for the one shared `ConnectivityService` rather than
+ * providing its own.
  */
 @Module({
   controllers: [],
@@ -21,9 +20,8 @@ import { TileCrossingCycleCountCharacteristicService } from "./tile-crossing-cyc
     TileCrossingCountCharacteristicService,
     TileCrossingCycleCountCharacteristicService,
   ],
-  imports: [GraphModule],
+  imports: [ConnectivityModule],
   providers: [
-    ConnectivityService,
     TileCrossingComponentDeltaCountCharacteristicService,
     TileCrossingCountCharacteristicService,
     TileCrossingCycleCountCharacteristicService,

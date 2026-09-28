@@ -1,5 +1,7 @@
 import { Module } from "@nestjs/common";
 
+import { SubmatrixUtilitiesModule } from "../submatrix-utilities.module";
+
 import { EastForkCountCharacteristicService } from "./east-fork-count-characteristic.service";
 import { ForkCountCharacteristicService } from "./fork-count-characteristic.service";
 import { NorthForkCountCharacteristicService } from "./north-fork-count-characteristic.service";
@@ -20,7 +22,7 @@ import { WestForkCountCharacteristicService } from "./west-fork-count-characteri
     SouthForkCountCharacteristicService,
     WestForkCountCharacteristicService,
   ],
-  imports: [],
+  imports: [SubmatrixUtilitiesModule],
   providers: [
     EastForkCountCharacteristicService,
     ForkCountCharacteristicService,

@@ -4,6 +4,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { CodeModule } from "../../../code/code.module";
 import { MatrixModule } from "../../../matrix/matrix.module";
 import { CharacteristicContextService } from "../../characteristic-context.service";
+import { SubmatrixUtilitiesService } from "../submatrix-utilities.service";
 
 import { ALetterCountCharacteristicService } from "./a-letter-count-characteristic.service";
 
@@ -15,8 +16,9 @@ describe(ALetterCountCharacteristicService, () => {
     const module = await Test.createTestingModule({
       imports: [CodeModule, MatrixModule],
       providers: [
-        CharacteristicContextService,
         ALetterCountCharacteristicService,
+        CharacteristicContextService,
+        SubmatrixUtilitiesService,
       ],
     }).compile();
 

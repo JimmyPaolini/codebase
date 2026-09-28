@@ -177,8 +177,12 @@ describe(LetterCharacteristicsModule, () => {
   });
 
   describe.each(
-    LETTERS.map(({ fixture, service }) => ({ fixture, name: service.name })),
-  )("$name's glyph", ({ fixture }) => {
+    LETTERS.map(({ fixture, service }) => ({
+      fixture,
+      name: service.name,
+      service,
+    })),
+  )("$name's glyph", ({ fixture, service }) => {
     it("is counted by its own evaluator alone", () => {
       const context = contextService.create(fixture);
       const counts = LETTERS.map(({ service }) =>
@@ -189,6 +193,22 @@ describe(LetterCharacteristicsModule, () => {
       );
 
       expect(counts).toStrictEqual(expected);
+    });
+
+    it("sets its evaluator's submatrix window to the glyph's inked extent", () => {
+      const inked = contextService
+        .create(fixture)
+        .matrix.flatMap((points, row) =>
+          points.flatMap((point, column) =>
+            Object.values(point).includes(true) ? [{ column, row }] : [],
+          ),
+        );
+      const window = {
+        columns: new Set(inked.map(({ column }) => column)).size,
+        rows: new Set(inked.map(({ row }) => row)).size,
+      };
+
+      expect(evaluators.get(service)?.metadata.submatrix).toStrictEqual(window);
     });
   });
 });

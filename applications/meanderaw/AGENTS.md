@@ -76,7 +76,7 @@ measurements behind it, is in [README.md](./README.md), under "Meander Charter".
 
 **The property test that gated them is gone with the corpus it swept.** It measured every
 drawing the per-family sweep produced, and that sweep no longer exists; the structural
-facts it asserted are now computed per row by `MeanderCharacteristicsService` and stored as
+facts it asserted are now computed per row by `CharacteristicsService` and stored as
 columns, so they are queryable rather than gated. Rebuilding a gate over the database is
 open work, not something this project claims to have.
 
@@ -87,8 +87,9 @@ The three invariants that most often catch a change:
   grid unit for this reason; setting either independently breaks the invariant silently.
 - **No branching and no crossing.** These are the charter's two negotiable invariants, and
   the lattice-first corpus relaxes both wholesale: the enumerated space is every subset of
-  a repeat's edges, junctions and crossings included. `hasBranching` and `hasCrossing`, and
-  the four raw junction counts behind them, are recorded per row rather than forbidden.
+  a repeat's edges, junctions and crossings included. `forkCount` and `crossCount`, and the
+  four directional fork counts behind them (`northForkCount`/`southForkCount`/
+  `eastForkCount`/`westForkCount`), are recorded per row rather than forbidden.
 - **Band, not field.** Canvas height is fixed and `rows` sets density, not size. These
   patterns are meant for borders.
 

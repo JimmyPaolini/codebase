@@ -12,7 +12,6 @@ import { EnumerationService } from "../enumeration/enumeration.service";
 
 import { CORPUS_FAMILIES, DuplicateCorpusCodeError } from "./corpus.constants";
 
-import type { MeanderRecord } from "../database/database.types";
 import type { Meander } from "../database/entities/Meander.entity";
 import type { CorpusEntry, CorpusFamily } from "./corpus.types";
 
@@ -49,10 +48,10 @@ import type { CorpusEntry, CorpusFamily } from "./corpus.types";
  * an Enumerated row, so nothing derived is stored in the corpus alongside
  * what was extracted.
  *
- * `pitch` is recorded equal to `columns`, the same convention
- * `DrawCodeService` follows: a historical entry is extracted as one true
- * repeat span, with no wider drawing behind it for a database row to record
- * a separate pitch for.
+ * The stored Characteristics are `DrawRecordService`'s: every numeric one
+ * of `CharacteristicsService.compute` under its own column, and every
+ * boolean one that holds in `characteristics`, then `"isReducible"` when the
+ * filed Code is wider than its unit.
  *
  * A Code that collides with one already committed — an Enumerated row, or
  * another entry ingested earlier in the same sweep — fails loudly through
@@ -93,7 +92,7 @@ export class CorpusService {
     const { code, columns, rows } = entry;
     const parsed = this.codeService.parse(code, rows, columns);
     const canonical = this.codeService.canonicalPhase(parsed, (phase) =>
-      this.characteristicsService.seamComponents(phase),
+      this.characteristicsService.tileCrossingComponentDeltaCount(phase),
     );
 
     const svg = this.drawingService.render(canonical);
@@ -102,16 +101,10 @@ export class CorpusService {
     const drawingHash = crypto.createHash("sha256").update(svg).digest("hex");
 
     const characteristics = this.characteristicsService.compute(canonical);
-    const booleanKeys = (
-      Object.entries(characteristics) as [string, boolean | number][]
-    )
-      .filter(([, value]) => typeof value === "boolean" && value)
-      .map(([key]) => key);
-
-    const numericCharacteristics = Object.fromEntries(
-      (Object.entries(characteristics) as [string, boolean | number][]).filter(
-        ([, value]) => typeof value === "number",
-      ),
+    const isReducible = this.characteristicsService.isReducible(canonical);
+    const booleanKeys = this.characteristicsService.trueBooleanKeys(
+      characteristics,
+      isReducible,
     );
 
     try {
@@ -130,21 +123,19 @@ export class CorpusService {
           ? "unclassified"
           : filedFamily === "branch"
             ? this.classificationService.classify(characteristics, {
-                columns,
+                isReducible,
                 rows,
               })
             : filedFamily;
 
       return await this.databaseService.save({
-        // type-coverage:ignore-next-line
-        ...(numericCharacteristics as unknown as MeanderRecord),
+        ...this.characteristicsService.numericRecord(characteristics),
         characteristics: booleanKeys,
         code: this.codeService.format(canonical),
         columns,
         drawingHash,
         family: entityFamily,
         lattice: canonical.digits,
-        pitch: columns,
         provenance: "hardcoded" as const,
         repeats: canonical.repeats,
         rows,

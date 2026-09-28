@@ -1,7 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
 
-import { ConnectivityService } from "../../connectivity.service";
-import { neighborPairs, strands } from "../path.utilities";
+import { ConnectivityService } from "../../connectivity/connectivity.service";
+import { PathUtilitiesService } from "../path-utilities.service";
 
 import type {
   CharacteristicContext,
@@ -22,6 +22,8 @@ export class TightestTurnCountCharacteristicService implements CharacteristicEva
   constructor(
     @Inject(ConnectivityService)
     private readonly connectivityService: ConnectivityService,
+    @Inject(PathUtilitiesService)
+    private readonly pathUtilitiesService: PathUtilitiesService,
   ) {}
 
   // 🔐 Private Fields
@@ -45,15 +47,16 @@ export class TightestTurnCountCharacteristicService implements CharacteristicEva
 
   /** Counts neighboring points that both turn the same way across every strand. */
   public compute(context: CharacteristicContext): number {
-    return strands(
-      this.connectivityService.edges(context.matrix, false),
-    ).reduce(
-      (total, strand) =>
-        total +
-        neighborPairs(strand.turns, strand.closed).filter(
-          ([previous, next]) => previous !== 0 && previous === next,
-        ).length,
-      0,
-    );
+    return this.pathUtilitiesService
+      .strands(this.connectivityService.edges(context.matrix, false))
+      .reduce(
+        (total, strand) =>
+          total +
+          this.pathUtilitiesService
+            .neighborPairs(strand.turns, strand.closed)
+            .filter(([previous, next]) => previous !== 0 && previous === next)
+            .length,
+        0,
+      );
   }
 }

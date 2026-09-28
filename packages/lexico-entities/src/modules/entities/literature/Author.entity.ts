@@ -3,7 +3,7 @@ import { Column, Entity, OneToMany } from "typeorm";
 
 import { AuditableEntity } from "../base/Auditable.entity";
 
-import type { Text } from "./Text.entity";
+import { Text } from "./Text.entity";
 
 /**
  * Represents an author of Latin literature.
@@ -16,7 +16,6 @@ import type { Text } from "./Text.entity";
 @ObjectType()
 export class Author extends AuditableEntity {
   @Column("jsonb", { comment: "Unstructured metadata", nullable: true })
-  @Field(() => Object, { nullable: true })
   metadata?: null | Record<string, unknown>;
 
   @Column("varchar", { comment: "The display name of the author", length: 64 })
@@ -31,7 +30,7 @@ export class Author extends AuditableEntity {
   @Field()
   slug!: string;
 
-  @Field(() => [Object])
+  @Field(() => [Text])
   @OneToMany("Text", "author", { cascade: true })
   texts!: Text[];
 }

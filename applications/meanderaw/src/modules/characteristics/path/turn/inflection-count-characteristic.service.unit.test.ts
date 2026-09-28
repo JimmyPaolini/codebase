@@ -5,7 +5,8 @@ import { CodeModule } from "../../../code/code.module";
 import { GraphModule } from "../../../graph/graph.module";
 import { MatrixModule } from "../../../matrix/matrix.module";
 import { CharacteristicContextService } from "../../characteristic-context.service";
-import { ConnectivityService } from "../../connectivity.service";
+import { ConnectivityService } from "../../connectivity/connectivity.service";
+import { PathUtilitiesService } from "../path-utilities.service";
 
 import { InflectionCountCharacteristicService } from "./inflection-count-characteristic.service";
 
@@ -20,6 +21,7 @@ describe(InflectionCountCharacteristicService, () => {
         CharacteristicContextService,
         ConnectivityService,
         InflectionCountCharacteristicService,
+        PathUtilitiesService,
       ],
     }).compile();
 

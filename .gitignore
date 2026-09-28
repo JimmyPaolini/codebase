@@ -81,3 +81,8 @@ projectStructure.cache.json
 
 # ESLint incremental cache (restored in CI by the Lint Codebase workflow)
 .eslintcache/
+
+.worktrees/
+
+# Scratch plan artifacts
+.scratch/
