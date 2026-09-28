@@ -59,6 +59,7 @@ import { AoHanziLetterCharacteristicsService } from "./submatrix/letter/ao-hanzi
 import { BLatinLetterCharacteristicsService } from "./submatrix/letter/b-latin-letter-characteristics.service";
 import { CLatinLetterCharacteristicsService } from "./submatrix/letter/c-latin-letter-characteristics.service";
 import { DaletHebrewLetterCharacteristicsService } from "./submatrix/letter/dalet-hebrew-letter-characteristics.service";
+import { DeltaGreekLetterCharacteristicsService } from "./submatrix/letter/delta-greek-letter-characteristics.service";
 import { ELatinLetterCharacteristicsService } from "./submatrix/letter/e-latin-letter-characteristics.service";
 import { FLatinLetterCharacteristicsService } from "./submatrix/letter/f-latin-letter-characteristics.service";
 import { GanHanziLetterCharacteristicsService } from "./submatrix/letter/gan-hanzi-letter-characteristics.service";
@@ -66,8 +67,10 @@ import { HLatinLetterCharacteristicsService } from "./submatrix/letter/h-latin-l
 import { ILatinLetterCharacteristicsService } from "./submatrix/letter/i-latin-letter-characteristics.service";
 import { JiaHanziLetterCharacteristicsService } from "./submatrix/letter/jia-hanzi-letter-characteristics.service";
 import { JingHanziLetterCharacteristicsService } from "./submatrix/letter/jing-hanzi-letter-characteristics.service";
+import { KappaGreekLetterCharacteristicsService } from "./submatrix/letter/kappa-greek-letter-characteristics.service";
 import { KieukHangulLetterCharacteristicsService } from "./submatrix/letter/kieuk-hangul-letter-characteristics.service";
 import { LLatinLetterCharacteristicsService } from "./submatrix/letter/l-latin-letter-characteristics.service";
+import { LambdaGreekLetterCharacteristicsService } from "./submatrix/letter/lambda-greek-letter-characteristics.service";
 import { LamedHebrewLetterCharacteristicsService } from "./submatrix/letter/lamed-hebrew-letter-characteristics.service";
 import {
   LETTER_ORIENTATION_NAMES,
@@ -77,6 +80,7 @@ import { MLatinLetterCharacteristicsService } from "./submatrix/letter/m-latin-l
 import { MuHanziLetterCharacteristicsService } from "./submatrix/letter/mu-hanzi-letter-characteristics.service";
 import { NLatinLetterCharacteristicsService } from "./submatrix/letter/n-latin-letter-characteristics.service";
 import { OLatinLetterCharacteristicsService } from "./submatrix/letter/o-latin-letter-characteristics.service";
+import { OmegaGreekLetterCharacteristicsService } from "./submatrix/letter/omega-greek-letter-characteristics.service";
 import { PhiGreekLetterCharacteristicsService } from "./submatrix/letter/phi-greek-letter-characteristics.service";
 import { PieupHangulLetterCharacteristicsService } from "./submatrix/letter/pieup-hangul-letter-characteristics.service";
 import { PsiGreekLetterCharacteristicsService } from "./submatrix/letter/psi-greek-letter-characteristics.service";
@@ -84,6 +88,7 @@ import { RhoGreekLetterCharacteristicsService } from "./submatrix/letter/rho-gre
 import { SLatinLetterCharacteristicsService } from "./submatrix/letter/s-latin-letter-characteristics.service";
 import { ShangHanziLetterCharacteristicsService } from "./submatrix/letter/shang-hanzi-letter-characteristics.service";
 import { ShenHanziLetterCharacteristicsService } from "./submatrix/letter/shen-hanzi-letter-characteristics.service";
+import { SigmaGreekLetterCharacteristicsService } from "./submatrix/letter/sigma-greek-letter-characteristics.service";
 import { TLatinLetterCharacteristicsService } from "./submatrix/letter/t-latin-letter-characteristics.service";
 import { TavHebrewLetterCharacteristicsService } from "./submatrix/letter/tav-hebrew-letter-characteristics.service";
 import { TianHanziLetterCharacteristicsService } from "./submatrix/letter/tian-hanzi-letter-characteristics.service";
@@ -130,6 +135,7 @@ const LETTER_SERVICES: readonly Type<CharacteristicEvaluatorGroup<number>>[] = [
   BLatinLetterCharacteristicsService,
   CLatinLetterCharacteristicsService,
   DaletHebrewLetterCharacteristicsService,
+  DeltaGreekLetterCharacteristicsService,
   ELatinLetterCharacteristicsService,
   FLatinLetterCharacteristicsService,
   GanHanziLetterCharacteristicsService,
@@ -137,13 +143,16 @@ const LETTER_SERVICES: readonly Type<CharacteristicEvaluatorGroup<number>>[] = [
   ILatinLetterCharacteristicsService,
   JiaHanziLetterCharacteristicsService,
   JingHanziLetterCharacteristicsService,
+  KappaGreekLetterCharacteristicsService,
   KieukHangulLetterCharacteristicsService,
   LLatinLetterCharacteristicsService,
+  LambdaGreekLetterCharacteristicsService,
   LamedHebrewLetterCharacteristicsService,
   MLatinLetterCharacteristicsService,
   MuHanziLetterCharacteristicsService,
   NLatinLetterCharacteristicsService,
   OLatinLetterCharacteristicsService,
+  OmegaGreekLetterCharacteristicsService,
   PhiGreekLetterCharacteristicsService,
   PieupHangulLetterCharacteristicsService,
   PsiGreekLetterCharacteristicsService,
@@ -151,6 +160,7 @@ const LETTER_SERVICES: readonly Type<CharacteristicEvaluatorGroup<number>>[] = [
   SLatinLetterCharacteristicsService,
   ShangHanziLetterCharacteristicsService,
   ShenHanziLetterCharacteristicsService,
+  SigmaGreekLetterCharacteristicsService,
   TLatinLetterCharacteristicsService,
   TavHebrewLetterCharacteristicsService,
   TianHanziLetterCharacteristicsService,

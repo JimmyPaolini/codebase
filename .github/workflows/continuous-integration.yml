@@ -129,10 +129,19 @@ jobs:
               --configuration=check --parallel=4
           fi
 
+      - name: 🕸️ Codependix
+        if: >-
+          !cancelled() &&
+          steps.check-skip.outputs.skip != 'true' &&
+          matrix.check.target == 'guard-code'
+        env:
+          NX_VERBOSE_LOGGING: ${{ inputs.verbose || false }}
+        run: pnpm exec nx run codebase:codependix:check
+
       # `gate` is inferred by the callidescope Nx plugin with no
       # configurations, so it runs as its own step rather than under
-      # `guard-code`'s `--configuration=check`, and still runs when the
-      # guard step above fails so one push reports both.
+      # `guard-code`'s `--configuration=check`, and still runs when a
+      # step above it fails so one push reports every failure.
       - name: 🔭 Callidescope
         if: >-
           !cancelled() &&

@@ -8,6 +8,8 @@ import { Author } from "./Author.entity";
 import { Line } from "./Line.entity";
 import { Text } from "./Text.entity";
 
+import type { Relation } from "typeorm";
+
 /**
  * Represents a single token (word or punctuation) parsed from a line of text.
  */
@@ -24,7 +26,7 @@ export class Token extends AuditableEntity {
   @Field(() => Author)
   @Index()
   @ManyToOne("Author", { eager: false, onDelete: "CASCADE" })
-  author!: Author;
+  author!: Relation<Author>;
 
   @Column("varchar", { comment: "The raw string value of the token" })
   @Field()
@@ -46,15 +48,15 @@ export class Token extends AuditableEntity {
 
   @Field(() => Line)
   @ManyToOne("Line", "tokens", { eager: false, onDelete: "CASCADE" })
-  line!: Line;
+  line!: Relation<Line>;
 
   @Field(() => Text)
   @ManyToOne("Text", { eager: false, onDelete: "CASCADE" })
-  text!: Text;
+  text!: Relation<Text>;
 
   @Field(() => Word, { nullable: true })
   @Index()
   @JoinColumn()
   @ManyToOne("Word", { eager: false, nullable: true })
-  word?: null | Word;
+  word?: null | Relation<Word>;
 }

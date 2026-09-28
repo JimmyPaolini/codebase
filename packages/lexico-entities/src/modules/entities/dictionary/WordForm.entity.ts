@@ -6,6 +6,8 @@ import { AuditableEntity } from "../base/Auditable.entity";
 import { Form } from "./form/Form.entity";
 import { Word } from "./Word.entity";
 
+import type { Relation } from "typeorm";
+
 /**
  * Explicit junction entity linking a normalized Latin word string to the
  * morphological form it can surface as. Replaces an implicit TypeORM join
@@ -31,7 +33,7 @@ export class WordForm extends AuditableEntity {
     onDelete: "CASCADE",
     onUpdate: "CASCADE",
   })
-  form!: Form;
+  form!: Relation<Form>;
 
   /** The word string side of the junction. */
   @Field(() => Word)
@@ -41,5 +43,5 @@ export class WordForm extends AuditableEntity {
     onDelete: "CASCADE",
     onUpdate: "CASCADE",
   })
-  word!: Word;
+  word!: Relation<Word>;
 }
