@@ -17,6 +17,12 @@ inputs:
   nx-cache:
     description: Restore and save the Nx task cache
     default: "true"
+  nx-cache-scope:
+    description: |
+      What the Nx task cache key is partitioned by. Defaults to the job id,
+      which is shared by every leg of a matrix job, so a matrix job must pass
+      something unique to each leg, such as the target that leg runs.
+    default: ${{ github.job }}
   nx-graph-cache:
     description: |
       Restore and save the Nx project graph (.nx/workspace-data, minus the
@@ -133,8 +139,11 @@ runs:
       run: echo "/home/linuxbrew/.linuxbrew/bin" >> "$GITHUB_PATH"
       shell: bash
 
-    # Keyed per job: one shared key made concurrent jobs race, leaving the
-    # cache write-only.
+    # Keyed per check, via `nx-cache-scope`: one shared key made concurrent
+    # jobs race, leaving the cache write-only. `github.job` alone is not per
+    # check, because every leg of a matrix job shares its job id. The first
+    # leg to finish saved the key, every other leg failed to reserve it, and
+    # the Test leg restored a tarball holding no test results.
     #
     # The task-result database is cached here rather than with the graph
     # because it indexes these files, and the two must never come from
@@ -163,12 +172,12 @@ runs:
           .nx/cache
           .nx/workspace-data/*.db*
         key: |
-          nx-cache-${{ github.job }}-${{ runner.os }}-${{ hashFiles(
+          nx-cache-${{ inputs.nx-cache-scope }}-${{ runner.os }}-${{ hashFiles(
           'pnpm-lock.yaml') }}-${{ github.sha }}
         restore-keys: |
-          nx-cache-${{ github.job }}-${{ runner.os }}-${{ hashFiles(
+          nx-cache-${{ inputs.nx-cache-scope }}-${{ runner.os }}-${{ hashFiles(
           'pnpm-lock.yaml') }}-
-          nx-cache-${{ github.job }}-${{ runner.os }}-
+          nx-cache-${{ inputs.nx-cache-scope }}-${{ runner.os }}-
 
     # Restored databases can be left structurally valid but page-corrupt by a
     # cancelled save. Nx fails hard on those, so discard them before the first
