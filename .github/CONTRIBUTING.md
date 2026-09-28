@@ -56,7 +56,7 @@ The fastest way to get started on macOS is the setup script, which installs ever
 **Setup:**
 
 ```bash
-git clone https://github.com/JimmyPaolini/codebase.git
+git clone https://github.com/Organizzolini/codebase.git
 ```
 
 ```bash
@@ -96,7 +96,7 @@ Alternatively, use the included dev container for a fully configured environment
 
 **Setup:**
 
-1. Clone the repository: `git clone https://github.com/JimmyPaolini/codebase.git`
+1. Clone the repository: `git clone https://github.com/Organizzolini/codebase.git`
 2. Open the folder in VS Code
 3. Open the command palette (`Ctrl/Cmd+Shift+P`) → **Dev Containers: Reopen in Container**
 4. Select a configuration when prompted:
@@ -478,7 +478,7 @@ This is also why one project or module per pull request is the rule: the fewer c
 
 ## Issues and Planning
 
-Issues and specs live as GitHub issues in [JimmyPaolini/codebase](https://github.com/JimmyPaolini/codebase/issues). Blank issues are disabled, so a human-filed issue goes through the single template, whose Type and Scope dropdowns are kept in step with `configuration/conventional.config.cjs` by a synchronization target:
+Issues and specs live as GitHub issues in [Organizzolini/codebase](https://github.com/Organizzolini/codebase/issues). Blank issues are disabled, so a human-filed issue goes through the single template, whose Type and Scope dropdowns are kept in step with `configuration/conventional.config.cjs` by a synchronization target:
 
 ```bash
 gh issue create --template issue.yml
@@ -626,8 +626,8 @@ pnpm add -w <package>
 
 ## Getting Help
 
-- **Issues:** [GitHub Issues](https://github.com/JimmyPaolini/codebase/issues)
-- **Discussions:** [GitHub Discussions](https://github.com/JimmyPaolini/codebase/discussions)
+- **Issues:** [GitHub Issues](https://github.com/Organizzolini/codebase/issues)
+- **Discussions:** [GitHub Discussions](https://github.com/Organizzolini/codebase/discussions)
 - **Security:** [SECURITY.md](SECURITY.md)
 - **Owner:** [@JimmyPaolini](https://github.com/JimmyPaolini)
 

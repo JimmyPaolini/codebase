@@ -4,7 +4,7 @@
     "conformetry-nx-bootstrap": "./src/main.mjs"
   },
   "bugs": {
-    "url": "https://github.com/JimmyPaolini/codebase/issues"
+    "url": "https://github.com/Organizzolini/codebase/issues"
   },
   "dependencies": {
     "@conformetry/configuration": "workspace:*",
@@ -50,7 +50,7 @@
     "README.md"
   ],
   "generators": "./generators.json",
-  "homepage": "https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/conformetry/conformetry-nx#readme",
+  "homepage": "https://github.com/Organizzolini/codebase/tree/main/packages/ic-suite/conformetry/conformetry-nx#readme",
   "keywords": [
     "conformance",
     "conformetry",
@@ -86,7 +86,7 @@
   "repository": {
     "directory": "packages/ic-suite/conformetry/conformetry-nx",
     "type": "git",
-    "url": "git+https://github.com/JimmyPaolini/codebase.git"
+    "url": "git+https://github.com/Organizzolini/codebase.git"
   },
   "type": "module",
   "typeCoverage": {

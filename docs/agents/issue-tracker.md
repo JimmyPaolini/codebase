@@ -1,6 +1,6 @@
 # Issue tracker: GitHub
 
-Issues and specs for this repository live as GitHub issues in [JimmyPaolini/codebase](https://github.com/JimmyPaolini/codebase). Use the `gh` CLI for all operations.
+Issues and specs for this repository live as GitHub issues in [Organizzolini/codebase](https://github.com/Organizzolini/codebase). Use the `gh` CLI for all operations.
 
 ## This repository's conventions
 
@@ -78,8 +78,8 @@ gh issue create --title "feat(lexico): ✨ add user profile page" --body "..."
 
 # Child issue — one per planned commit, then linked as a native sub-issue
 gh issue create --title "feat(lexico): ✨ add profile route" --body "..."
-gh api repos/JimmyPaolini/codebase/issues/<parent>/sub_issues \
-  --method POST -F sub_issue_id="$(gh api repos/JimmyPaolini/codebase/issues/<child> --jq .id)"
+gh api repos/Organizzolini/codebase/issues/<parent>/sub_issues \
+  --method POST -F sub_issue_id="$(gh api repos/Organizzolini/codebase/issues/<child> --jq .id)"
 ```
 
 `sub_issue_id` takes the child's numeric **database id** (`gh api ... --jq .id`),

@@ -15,7 +15,7 @@ If you discover a security vulnerability, please report it responsibly.
 
 **Do not open a public issue.** Instead, use one of these methods:
 
-1. **GitHub Security Advisories** (preferred): [Report a vulnerability](https://github.com/JimmyPaolini/codebase/security/advisories/new) through GitHub's private reporting feature.
+1. **GitHub Security Advisories** (preferred): [Report a vulnerability](https://github.com/Organizzolini/codebase/security/advisories/new) through GitHub's private reporting feature.
 2. **Email**: Contact the maintainer directly at the email address listed in the repository profile.
 
 ### What to Include
