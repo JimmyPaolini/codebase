@@ -163,7 +163,8 @@ export class LoggerService extends ConsoleLogger {
   private getConventionalMessageViolation(
     parsed: ParsedLogMessage,
   ): string | undefined {
-    const { emoji, text } = parsed;
+    const emoji = parsed.emoji;
+    const text = parsed.text;
 
     if (emoji === undefined) {
       return `Log message must start with an emoji naming its subject, then a verb: "${text}"`;
