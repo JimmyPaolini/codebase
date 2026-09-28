@@ -16,6 +16,12 @@ describe("token word data loader suite", () => {
 
     const tokenNoWord = { data: "et", id: "token-2" } as Token;
 
+    const tokenUndefinedWord = {
+      data: "null",
+      id: "token-3",
+      word: undefined,
+    } as unknown as Token;
+
     const mockLiteratureService = createMock<LiteratureService>({
       findTokensByIds: vi
         .fn<LiteratureService["findTokensByIds"]>()
@@ -28,6 +34,9 @@ describe("token word data loader suite", () => {
           if (ids.includes("token-2")) {
             result.push(tokenNoWord);
           }
+          if (ids.includes("token-3")) {
+            result.push(tokenUndefinedWord);
+          }
           return result;
         }),
     });
@@ -36,6 +45,7 @@ describe("token word data loader suite", () => {
 
     await expect(loader.loadTokenWord("token-1")).resolves.toBe(word);
     await expect(loader.loadTokenWord("token-2")).resolves.toBeNull();
+    await expect(loader.loadTokenWord("token-3")).resolves.toBeNull();
     await expect(loader.loadTokenWord("token-missing")).resolves.toBeNull();
 
     await expect(loader.byTokenId.load("token-1")).resolves.toBe(word);
@@ -53,19 +63,38 @@ describe("token word data loader suite", () => {
 
     const token2 = { data: "et", id: "token-2" } as Token;
 
-    const tokenWithoutWord = { id: "token-4" } as Token;
+    const tokenWithUndefinedWord = {
+      id: "token-3",
+      word: undefined,
+    } as unknown as Token;
+
+    const tokenWithNullWord = {
+      id: "token-4",
+      word: null,
+    } as unknown as Token;
 
     const mockLiteratureService = createMock<LiteratureService>({
       findTokensByIds: vi
         .fn<LiteratureService["findTokensByIds"]>()
-        .mockResolvedValue([token1, token2, tokenWithoutWord]),
+        .mockResolvedValue([
+          token1,
+          token2,
+          tokenWithUndefinedWord,
+          tokenWithNullWord,
+        ]),
     });
 
     const loader = new TokenWordDataLoader(mockLiteratureService);
 
     await expect(loader.loadTokenWords([])).resolves.toStrictEqual([]);
     await expect(
-      loader.loadTokenWords(["token-1", "token-2", "token-3", "token-4"]),
-    ).resolves.toStrictEqual([word1, null, null, null]);
+      loader.loadTokenWords([
+        "token-1",
+        "token-2",
+        "token-3",
+        "token-4",
+        "token-5",
+      ]),
+    ).resolves.toStrictEqual([word1, null, null, null, null]);
   });
 });
