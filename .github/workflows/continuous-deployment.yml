@@ -152,9 +152,9 @@ jobs:
         uses: devcontainers/ci@v0.3
         with:
           configFile: .devcontainer/cloud/devcontainer.json
-          imageName: ghcr.io/jimmypaolini/codebase-devcontainer
+          imageName: ghcr.io/organizzolini/codebase-devcontainer
           cacheFrom: |
-            ghcr.io/jimmypaolini/codebase-devcontainer:latest
+            ghcr.io/organizzolini/codebase-devcontainer:latest
           push: filter
           refFilterForPush: |
             refs/heads/main
@@ -173,9 +173,9 @@ jobs:
         uses: devcontainers/ci@v0.3
         with:
           configFile: .devcontainer/cloud/devcontainer.json
-          imageName: ghcr.io/jimmypaolini/codebase-devcontainer
+          imageName: ghcr.io/organizzolini/codebase-devcontainer
           cacheFrom: |
-            ghcr.io/jimmypaolini/codebase-devcontainer:latest
+            ghcr.io/organizzolini/codebase-devcontainer:latest
           push: never
           env: |
             CI=true

@@ -37,9 +37,9 @@
 [![Kubernetes](https://img.shields.io/badge/Kubernetes-K8s-326CE5?logo=kubernetes)](https://kubernetes.io/)
 [![Terraform](https://img.shields.io/badge/Terraform-IaC-844FBA?logo=terraform)](https://www.terraform.io/)
 
-[![Continuous Integration](https://github.com/JimmyPaolini/codebase/actions/workflows/continuous-integration.yml/badge.svg)](https://github.com/JimmyPaolini/codebase/actions/workflows/continuous-integration.yml)
-[![Continuous Deployment](https://github.com/JimmyPaolini/codebase/actions/workflows/continuous-deployment.yml/badge.svg)](https://github.com/JimmyPaolini/codebase/actions/workflows/continuous-deployment.yml)
-[![Continuous Compliance](https://github.com/JimmyPaolini/codebase/actions/workflows/continuous-compliance.yml/badge.svg)](https://github.com/JimmyPaolini/codebase/actions/workflows/continuous-compliance.yml)
+[![Continuous Integration](https://github.com/Organizzolini/codebase/actions/workflows/continuous-integration.yml/badge.svg)](https://github.com/Organizzolini/codebase/actions/workflows/continuous-integration.yml)
+[![Continuous Deployment](https://github.com/Organizzolini/codebase/actions/workflows/continuous-deployment.yml/badge.svg)](https://github.com/Organizzolini/codebase/actions/workflows/continuous-deployment.yml)
+[![Continuous Compliance](https://github.com/Organizzolini/codebase/actions/workflows/continuous-compliance.yml/badge.svg)](https://github.com/Organizzolini/codebase/actions/workflows/continuous-compliance.yml)
 
 A modern TypeScript codebase with Nx, featuring automated releases, comprehensive code quality tools, and strict type safety.
 
