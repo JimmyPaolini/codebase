@@ -1,6 +1,6 @@
 import { Field, InputType, Int } from "@nestjs/graphql";
 
-/** GraphQL range filters for literature line queries. */
+/** GraphQL range input for literature line queries. */
 @InputType()
 export class LinesRangeInput {
   @Field(() => Int, { nullable: true })

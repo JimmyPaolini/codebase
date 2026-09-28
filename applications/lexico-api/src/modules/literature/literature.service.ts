@@ -18,7 +18,7 @@ import {
 } from "../../lexico-api.utilities";
 
 import type { Connection } from "../../lexico-api.types";
-import type { PaginationArguments } from "../search/search-pagination.entities";
+import type { PaginationArguments } from "../search/pagination-arguments.entities";
 
 /**
  * Service for author, text, line, and token literature resolution.

@@ -1,8 +1,8 @@
 import { Field, ID, InputType } from "@nestjs/graphql";
 
-/** GraphQL lookup arguments for a literature entity. */
+/** GraphQL lookup input for a literature text by ID or slug. */
 @InputType()
-export class EntityLookupInput {
+export class TextLookupInput {
   @Field(() => ID, { nullable: true })
   public id?: string;
 

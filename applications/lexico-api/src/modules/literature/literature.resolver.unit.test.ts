@@ -8,11 +8,13 @@ import { describe, expect, it, vi } from "vitest";
 
 import { Author, Line, Text, Token, Word } from "@codebase/lexico-entities";
 
-import { LiteratureLineResolver } from "./literature-line.resolver";
-import { LiteratureTextResolver } from "./literature-text.resolver";
+import { AuthorsResolver } from "./authors.resolver";
+import { LinesResolver } from "./lines.resolver";
 import { LiteratureResolver } from "./literature.resolver";
 import { LiteratureService } from "./literature.service";
+import { TextsResolver } from "./texts.resolver";
 import { TokenWordDataLoader } from "./token-word-loader.service";
+import { TokensResolver } from "./tokens.resolver";
 
 describe("literature resolver suite", () => {
   it("resolves a single author and text by lookup, including nested field data", async () => {
@@ -38,19 +40,32 @@ describe("literature resolver suite", () => {
         .mockResolvedValue([text]),
     });
 
-    const mockLoader = createMock<TokenWordDataLoader>({
-      byTokenId: {
-        load: vi.fn<() => Promise<Word>>().mockResolvedValue(new Word()),
-      },
-    });
+    const authorsResolver = new AuthorsResolver(mockService);
+    const textsResolver = new TextsResolver(mockService);
 
-    const resolver = new LiteratureResolver(mockService, mockLoader);
-
-    await expect(resolver.author({ id: "author-1" })).resolves.toBe(author);
-    await expect(resolver.text({ id: "text-1" })).resolves.toBe(text);
-    await expect(resolver.resolveAuthorTexts(author)).resolves.toStrictEqual([
-      text,
-    ]);
+    await expect(authorsResolver.author({ id: "author-1" })).resolves.toBe(
+      author,
+    );
+    await expect(authorsResolver.author({ slug: "virgil" })).resolves.toBe(
+      author,
+    );
+    await expect(
+      authorsResolver.author({ lookup: { id: "author-1" } }),
+    ).resolves.toBe(author);
+    await expect(
+      authorsResolver.author({ lookup: { slug: "virgil" } }),
+    ).resolves.toBe(author);
+    await expect(textsResolver.text({ id: "text-1" })).resolves.toBe(text);
+    await expect(textsResolver.text({ slug: "aeneid" })).resolves.toBe(text);
+    await expect(
+      textsResolver.text({ lookup: { id: "text-1" } }),
+    ).resolves.toBe(text);
+    await expect(
+      textsResolver.text({ lookup: { slug: "aeneid" } }),
+    ).resolves.toBe(text);
+    await expect(
+      authorsResolver.resolveAuthorTexts(author),
+    ).resolves.toStrictEqual([text]);
   });
 
   it("returns paginated connections for authors, texts, lines, and tokens", async () => {
@@ -119,29 +134,77 @@ describe("literature resolver suite", () => {
         }),
     });
 
-    const resolver = new LiteratureResolver(
+    const authorsResolver = new AuthorsResolver(mockService);
+    const textsResolver = new TextsResolver(mockService);
+    const linesResolver = new LinesResolver(mockService);
+    const tokensResolver = new TokensResolver(
       mockService,
       createMock<TokenWordDataLoader>(),
     );
 
-    await expect(resolver.authors({ first: 10 })).resolves.toMatchObject({
+    await expect(
+      authorsResolver.authors({
+        after: "cursor-1",
+        before: "cursor-0",
+        first: 10,
+        last: 5,
+        query: "",
+      }),
+    ).resolves.toMatchObject({
       edges: [{ node: author }],
       totalCount: 1,
     });
     await expect(
-      resolver.texts("author-1", undefined, { first: 10 }),
+      textsResolver.texts({
+        after: "cursor-1",
+        authorId: "author-1",
+        before: "cursor-0",
+        first: 10,
+        last: 5,
+      }),
     ).resolves.toMatchObject({
       edges: [{ node: text }],
       totalCount: 1,
     });
     await expect(
-      resolver.lines("text-1", { endIndex: 5, startIndex: 1 }, { first: 10 }),
+      textsResolver.texts({ first: 10, parentTextId: "parent-1" }),
+    ).resolves.toMatchObject({
+      edges: [{ node: text }],
+      totalCount: 1,
+    });
+    await expect(textsResolver.texts({ first: 10 })).resolves.toMatchObject({
+      edges: [{ node: text }],
+      totalCount: 1,
+    });
+    await expect(
+      linesResolver.lines({
+        after: "cursor-1",
+        before: "cursor-0",
+        first: 10,
+        last: 5,
+        range: { endIndex: 5, startIndex: 1 },
+        textId: "text-1",
+      }),
     ).resolves.toMatchObject({
       edges: [{ node: line }],
       totalCount: 1,
     });
     await expect(
-      resolver.tokens("line-1", { first: 10 }),
+      linesResolver.lines({
+        first: 10,
+      }),
+    ).resolves.toMatchObject({
+      edges: [{ node: line }],
+      totalCount: 1,
+    });
+    await expect(
+      tokensResolver.tokens({
+        after: "cursor-1",
+        before: "cursor-0",
+        first: 10,
+        last: 5,
+        lineId: "line-1",
+      }),
     ).resolves.toMatchObject({
       edges: [{ node: token }],
       totalCount: 1,
@@ -206,46 +269,85 @@ describe("literature resolver suite", () => {
       }),
     });
 
-    const resolver = new LiteratureResolver(
-      mockService,
-      createMock<TokenWordDataLoader>(),
-    );
+    const authorsResolver = new AuthorsResolver(mockService);
+    const textsResolver = new TextsResolver(mockService);
+    const linesResolver = new LinesResolver(mockService);
+    const literatureResolver = new LiteratureResolver(mockService);
 
     await expect(
-      resolver.searchAuthors("vir", { first: 5 }),
+      authorsResolver.searchAuthors({
+        after: "c-1",
+        before: "c-0",
+        first: 5,
+        last: 2,
+        query: "vir",
+      }),
     ).resolves.toMatchObject({
       edges: [{ node: author }],
       totalCount: 1,
     });
     await expect(
-      resolver.searchTexts("ene", "author-1", { first: 5 }),
+      textsResolver.searchTexts({
+        after: "c-1",
+        authorId: "author-1",
+        before: "c-0",
+        first: 5,
+        last: 2,
+        query: "ene",
+      }),
     ).resolves.toMatchObject({
       edges: [{ node: text }],
       totalCount: 1,
     });
     await expect(
-      resolver.searchLines("arma", "text-1", { first: 5 }),
+      textsResolver.searchTexts({ first: 5, query: "ene" }),
+    ).resolves.toMatchObject({
+      edges: [{ node: text }],
+      totalCount: 1,
+    });
+    await expect(
+      linesResolver.searchLines({
+        after: "c-1",
+        before: "c-0",
+        first: 5,
+        last: 2,
+        query: "arma",
+        textId: "text-1",
+      }),
     ).resolves.toMatchObject({
       edges: [{ node: line }],
       totalCount: 1,
     });
     await expect(
-      resolver.searchLiterature("vir", "author-1"),
+      linesResolver.searchLines({ first: 5, query: "arma" }),
+    ).resolves.toMatchObject({
+      edges: [{ node: line }],
+      totalCount: 1,
+    });
+    await expect(
+      literatureResolver.searchLiterature({
+        authorId: "author-1",
+        query: "vir",
+      }),
+    ).resolves.toStrictEqual({
+      authors: [author],
+      lines: [line],
+      texts: [text],
+    });
+    await expect(
+      literatureResolver.searchLiterature({ query: "vir" }),
     ).resolves.toStrictEqual({
       authors: [author],
       lines: [line],
       texts: [text],
     });
 
-    const textResolver = new LiteratureTextResolver();
+    expect(textsResolver.childTexts(text)).toStrictEqual(text.childTexts);
+    expect(textsResolver.parentText(text)).toBe(text.parentText);
+    expect(textsResolver.parentText(new Text())).toBeNull();
+    expect(textsResolver.linesForText(text)).toStrictEqual(text.lines);
 
-    expect(textResolver.childTexts(text)).toStrictEqual(text.childTexts);
-    expect(textResolver.parentText(text)).toBe(text.parentText);
-    expect(textResolver.linesForText(text)).toStrictEqual(text.lines);
-
-    const lineResolver = new LiteratureLineResolver();
-
-    expect(lineResolver.tokensForLine(line)).toStrictEqual(line.tokens);
+    expect(linesResolver.tokensForLine(line)).toStrictEqual(line.tokens);
   });
 
   it("resolves nullable lookups and the token data loader batch contract", async () => {
@@ -261,42 +363,55 @@ describe("literature resolver suite", () => {
     token.isPunctuation = false;
     token.word = word;
 
+    const tokenWithoutWord = new Token();
+    tokenWithoutWord.id = "token-2";
+    tokenWithoutWord.data = "et";
+    tokenWithoutWord.isPunctuation = false;
+
     const mockService = createMock<LiteratureService>({
       findTokensByIds: vi
         .fn<(ids: string[]) => Promise<Token[]>>()
         .mockImplementation(async (ids) => {
           await Promise.resolve();
 
+          const result: Token[] = [];
           if (ids.includes("token-1")) {
-            return [token];
+            result.push(token);
+          }
+          if (ids.includes("token-2")) {
+            result.push(tokenWithoutWord);
           }
 
-          return [];
+          return result;
         }),
     });
 
     const loader = new TokenWordDataLoader(mockService);
 
     await expect(loader.loadTokenWord("token-1")).resolves.toBe(word);
+    await expect(loader.loadTokenWord("token-2")).resolves.toBeNull();
+    await expect(loader.loadTokenWord("missing")).resolves.toBeNull();
 
     await expect(
-      loader.loadTokenWords(["token-1", "missing"]),
-    ).resolves.toStrictEqual([word, null]);
+      loader.loadTokenWords(["token-1", "token-2", "missing"]),
+    ).resolves.toStrictEqual([word, null, null]);
 
     await expect(loader.loadTokenWords([])).resolves.toStrictEqual([]);
 
-    const resolver = new LiteratureResolver(mockService, loader);
+    const authorsResolver = new AuthorsResolver(mockService);
+    const textsResolver = new TextsResolver(mockService);
+    const tokensResolver = new TokensResolver(mockService, loader);
 
-    await expect(
-      resolver.author(undefined, undefined, undefined),
-    ).resolves.toBeNull();
+    await expect(authorsResolver.author({})).resolves.toBeNull();
 
-    await expect(
-      resolver.text(undefined, undefined, undefined),
-    ).resolves.toBeNull();
+    await expect(authorsResolver.author({ lookup: {} })).resolves.toBeNull();
 
-    await expect(resolver.resolveTokenWord(token)).resolves.toBe(word);
-    expect(resolver).toBeInstanceOf(LiteratureResolver);
+    await expect(textsResolver.text({})).resolves.toBeNull();
+
+    await expect(textsResolver.text({ lookup: {} })).resolves.toBeNull();
+
+    await expect(tokensResolver.resolveTokenWord(token)).resolves.toBe(word);
+    expect(authorsResolver).toBeInstanceOf(AuthorsResolver);
   });
 
   it("generates a schema containing the literature queries and field resolvers", async () => {
@@ -305,9 +420,11 @@ describe("literature resolver suite", () => {
     const module = await Test.createTestingModule({
       imports: [GraphQLSchemaBuilderModule],
       providers: [
+        AuthorsResolver,
+        TextsResolver,
+        LinesResolver,
+        TokensResolver,
         LiteratureResolver,
-        LiteratureTextResolver,
-        LiteratureLineResolver,
         {
           provide: LiteratureService,
           useValue: createMock<LiteratureService>(),
@@ -321,9 +438,11 @@ describe("literature resolver suite", () => {
 
     const schemaFactory = module.get(GraphQLSchemaFactory);
     const schema = await schemaFactory.create([
+      AuthorsResolver,
+      TextsResolver,
+      LinesResolver,
+      TokensResolver,
       LiteratureResolver,
-      LiteratureTextResolver,
-      LiteratureLineResolver,
     ]);
 
     expect(schema).toBeDefined();
@@ -333,5 +452,8 @@ describe("literature resolver suite", () => {
     expect(schema.getQueryType()?.getFields()["texts"]).toBeDefined();
     expect(schema.getQueryType()?.getFields()["lines"]).toBeDefined();
     expect(schema.getQueryType()?.getFields()["tokens"]).toBeDefined();
+    expect(
+      schema.getQueryType()?.getFields()["searchLiterature"],
+    ).toBeDefined();
   });
 });

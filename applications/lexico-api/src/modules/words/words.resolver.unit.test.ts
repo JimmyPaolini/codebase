@@ -24,7 +24,7 @@ describe("words resolver suite", () => {
     });
 
     const resolver = new WordsResolver(mockService);
-    const result = await resolver.word("amo");
+    const result = await resolver.word({ data: "amo" });
 
     expect(mockService.findByData).toHaveBeenCalledWith("amo");
     expect(result).toBe(word);
@@ -48,7 +48,7 @@ describe("words resolver suite", () => {
     });
 
     const resolver = new WordsResolver(mockService);
-    const result = await resolver.words(["amo", "amare"]);
+    const result = await resolver.words({ data: ["amo", "amare"] });
 
     expect(mockService.findByDataList).toHaveBeenCalledWith(["amo", "amare"]);
     expect(result).toStrictEqual(words);

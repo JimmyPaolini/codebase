@@ -113,7 +113,11 @@ describe("words service suite", () => {
     mockWord.wordLexemes = [new WordLexeme()];
 
     const wordRepo = createRepositoryMock<Word>();
-    vi.spyOn(wordRepo, "findOne").mockResolvedValue(mockWord);
+    vi.spyOn(wordRepo, "findOne")
+      .mockResolvedValueOnce(mockWord)
+      .mockResolvedValueOnce(mockWord)
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce(null);
 
     const service = new WordsService(
       wordRepo,
@@ -127,6 +131,10 @@ describe("words service suite", () => {
     await expect(service.findLexemeLinksByData("amo")).resolves.toStrictEqual(
       mockWord.wordLexemes,
     );
+    await expect(service.findFormsByData("unknown")).resolves.toStrictEqual([]);
+    await expect(
+      service.findLexemeLinksByData("unknown"),
+    ).resolves.toStrictEqual([]);
   });
 
   it("loads rows by ids and nested form and lexeme rows by word id", async () => {

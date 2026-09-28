@@ -3,6 +3,8 @@ import { Args as Arguments, Query, Resolver } from "@nestjs/graphql";
 
 import { Word } from "@codebase/lexico-entities";
 
+import { WordArguments } from "./word-arguments.entities";
+import { WordsArguments } from "./words-arguments.entities";
 import { WordsService } from "./words.service";
 
 /**
@@ -23,9 +25,9 @@ export class WordsResolver {
     nullable: true,
   })
   public async word(
-    @Arguments("data", { type: () => String }) data: string,
+    @Arguments() arguments_: WordArguments,
   ): Promise<null | Word> {
-    return this.wordsService.findByData(data);
+    return this.wordsService.findByData(arguments_.data);
   }
 
   /**
@@ -35,9 +37,7 @@ export class WordsResolver {
     description: "Retrieves multiple surface Latin words and their links.",
     name: "words",
   })
-  public async words(
-    @Arguments("data", { type: () => [String] }) data: string[],
-  ): Promise<Word[]> {
-    return this.wordsService.findByDataList(data);
+  public async words(@Arguments() arguments_: WordsArguments): Promise<Word[]> {
+    return this.wordsService.findByDataList(arguments_.data);
   }
 }

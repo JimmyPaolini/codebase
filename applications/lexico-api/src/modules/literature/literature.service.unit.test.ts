@@ -30,6 +30,8 @@ describe("literature service suite", () => {
     await expect(service.findAuthorByLookup(null, "virgil")).resolves.toBe(
       author,
     );
+    await expect(service.findAuthorByLookup(null, null)).resolves.toBeNull();
+    await expect(service.findAuthorByLookup("", "")).resolves.toBeNull();
 
     expect(authorRepo.findOne).toHaveBeenCalledWith({
       relations: { texts: true },
@@ -83,6 +85,8 @@ describe("literature service suite", () => {
 
     await expect(service.findTextByLookup("text-1")).resolves.toBe(text);
     await expect(service.findTextByLookup(null, "aeneid")).resolves.toBe(text);
+    await expect(service.findTextByLookup(null, null)).resolves.toBeNull();
+    await expect(service.findTextByLookup("", "")).resolves.toBeNull();
     await expect(
       service.listTextsConnection(undefined, undefined, { first: 5 }),
     ).resolves.toMatchObject({
@@ -125,11 +129,39 @@ describe("literature service suite", () => {
       },
       { first: 10 },
     );
+    const linesWithOnlyStart = await service.listLinesConnection(
+      "text-1",
+      {
+        startIndex: 1,
+      },
+      { first: 10 },
+    );
+    const linesWithOnlyEnd = await service.listLinesConnection(
+      "text-1",
+      {
+        endIndex: 5,
+      },
+      { first: 10 },
+    );
+    const linesWithNoBounds = await service.listLinesConnection(
+      "text-1",
+      {},
+      { first: 10 },
+    );
+    const linesWithNoText = await service.listLinesConnection(
+      undefined,
+      {},
+      { first: 10 },
+    );
     const tokens = await service.listTokensForLineConnection("line-1", {
       first: 1,
     });
 
     expect(lines.edges).toHaveLength(1);
+    expect(linesWithOnlyStart.edges).toHaveLength(1);
+    expect(linesWithOnlyEnd.edges).toHaveLength(1);
+    expect(linesWithNoBounds.edges).toHaveLength(1);
+    expect(linesWithNoText.edges).toHaveLength(0);
     expect(lines.edges[0]?.node).toBe(line);
     expect(tokens.edges).toHaveLength(1);
     expect(tokens.edges[0]?.node).toBe(token);
@@ -180,10 +212,18 @@ describe("literature service suite", () => {
       word: token.word,
     });
 
+    const noDataToken = Object.assign(new Token(), {
+      data: undefined as unknown as string,
+      id: token.id,
+      isPunctuation: false,
+      word: token.word,
+    });
+
     await expect(service.resolveTokenWord(emptyToken)).resolves.toBeNull();
     await expect(
       service.resolveTokenWord(punctuationToken),
     ).resolves.toBeNull();
+    await expect(service.resolveTokenWord(noDataToken)).resolves.toBeNull();
 
     expect(wordRepo.findOne).toHaveBeenCalledWith({
       where: { data: "amo" },
@@ -229,10 +269,14 @@ describe("literature service suite", () => {
     );
 
     const result = await service.searchLiterature("vir", "author-1");
+    const resultWithoutAuthor = await service.searchLiterature("vir");
 
     expect(result.authors).toStrictEqual([author]);
     expect(result.texts).toStrictEqual([text]);
     expect(result.lines).toStrictEqual([line]);
+    expect(resultWithoutAuthor.authors).toStrictEqual([author]);
+    expect(resultWithoutAuthor.texts).toStrictEqual([text]);
+    expect(resultWithoutAuthor.lines).toStrictEqual([line]);
   });
 
   it("handles empty queries and null lookups across literature search helpers", async () => {
@@ -277,6 +321,12 @@ describe("literature service suite", () => {
     });
     await expect(
       service.listTexts("author-1", "parent-1"),
+    ).resolves.toStrictEqual([]);
+    await expect(
+      service.listTexts(undefined, "parent-1"),
+    ).resolves.toStrictEqual([]);
+    await expect(
+      service.listTexts(undefined, undefined),
     ).resolves.toStrictEqual([]);
   });
 
@@ -374,6 +424,13 @@ describe("literature service suite", () => {
     ).resolves.toStrictEqual({
       authors: [],
       lines: [],
+      texts: [],
+    });
+    await expect(
+      service.searchLiterature("arma", "author-1"),
+    ).resolves.toStrictEqual({
+      authors: [],
+      lines: [line],
       texts: [],
     });
   });
