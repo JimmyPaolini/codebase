@@ -6,6 +6,8 @@ import { AuditableEntity } from "../base/Auditable.entity";
 import { Lexeme } from "./Lexeme.entity";
 import { Word } from "./Word.entity";
 
+import type { Relation } from "typeorm";
+
 /**
  * Explicit junction entity linking a normalized Latin word string to the
  * lexeme (dictionary entry) it can represent. Replaces an implicit TypeORM
@@ -28,7 +30,7 @@ export class WordLexeme extends AuditableEntity {
     onDelete: "CASCADE",
     onUpdate: "CASCADE",
   })
-  lexeme!: Lexeme;
+  lexeme!: Relation<Lexeme>;
 
   /** The word string side of the junction. */
   @Field(() => Word)
@@ -38,5 +40,5 @@ export class WordLexeme extends AuditableEntity {
     onDelete: "CASCADE",
     onUpdate: "CASCADE",
   })
-  word!: Word;
+  word!: Relation<Word>;
 }
