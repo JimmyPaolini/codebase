@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.27.0](https://github.com/JimmyPaolini/codebase/compare/v2.26.0...v2.27.0) (2026-09-28)
+
+### ✨ Features
+
+* **meanderaw:** ✨ implement topological betti numbers and path dynamic characteristic services ([#1161](https://github.com/JimmyPaolini/codebase/issues/1161)) ([ac45a21](https://github.com/JimmyPaolini/codebase/commit/ac45a21d8b01ed7e3033633f4098736ab6c944ac)), closes [#1150](https://github.com/JimmyPaolini/codebase/issues/1150) [#1151](https://github.com/JimmyPaolini/codebase/issues/1151) [#1152](https://github.com/JimmyPaolini/codebase/issues/1152) [#1153](https://github.com/JimmyPaolini/codebase/issues/1153) [#1140](https://github.com/JimmyPaolini/codebase/issues/1140) [#1160](https://github.com/JimmyPaolini/codebase/issues/1160)
+
 ## [2.26.0](https://github.com/JimmyPaolini/codebase/compare/v2.25.0...v2.26.0) (2026-09-28)
 
 ### ✨ Features
