@@ -1,7 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
 
 import { ConnectivityService } from "../../connectivity/connectivity.service";
-import { longestRun, signedTurns, strands } from "../path.utilities";
+import { PathUtilitiesService } from "../path-utilities.service";
 
 import type {
   CharacteristicContext,
@@ -21,6 +21,8 @@ export class MaxMonotonicTurnLengthCharacteristicService implements Characterist
   constructor(
     @Inject(ConnectivityService)
     private readonly connectivityService: ConnectivityService,
+    @Inject(PathUtilitiesService)
+    private readonly pathUtilitiesService: PathUtilitiesService,
   ) {}
 
   // 🔐 Private Fields
@@ -46,9 +48,14 @@ export class MaxMonotonicTurnLengthCharacteristicService implements Characterist
   public compute(context: CharacteristicContext): number {
     return Math.max(
       0,
-      ...strands(this.connectivityService.edges(context.matrix, false)).map(
-        (strand) => longestRun(signedTurns(strand), strand.closed),
-      ),
+      ...this.pathUtilitiesService
+        .strands(this.connectivityService.edges(context.matrix, false))
+        .map((strand) =>
+          this.pathUtilitiesService.longestRun(
+            this.pathUtilitiesService.signedTurns(strand),
+            strand.closed,
+          ),
+        ),
     );
   }
 }

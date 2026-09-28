@@ -1,5 +1,7 @@
 import { Module } from "@nestjs/common";
 
+import { SubmatrixUtilitiesModule } from "../submatrix-utilities.module";
+
 import { EmbeddedUCountCharacteristicService } from "./embedded-u-count-characteristic.service";
 
 /**
@@ -10,7 +12,7 @@ import { EmbeddedUCountCharacteristicService } from "./embedded-u-count-characte
 @Module({
   controllers: [],
   exports: [EmbeddedUCountCharacteristicService],
-  imports: [],
+  imports: [SubmatrixUtilitiesModule],
   providers: [EmbeddedUCountCharacteristicService],
 })
 export class EmbeddedCharacteristicsModule {}

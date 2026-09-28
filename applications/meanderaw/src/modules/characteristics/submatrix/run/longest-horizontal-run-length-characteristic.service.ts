@@ -34,6 +34,7 @@ export class LongestHorizontalRunLengthCharacteristicService implements Characte
     formula: String.raw`\min\!\left(\text{columns},\ \max_{r} \max \left\{\, k : \text{east}(r, c), \dots, \text{east}(r, c+k-1) \,\right\}\right)`,
     key: "longestHorizontalRunLength",
     name: "Longest Horizontal Run Length",
+    submatrix: { columns: 2, rows: 1, variable: true },
     valueType: "number",
   };
 

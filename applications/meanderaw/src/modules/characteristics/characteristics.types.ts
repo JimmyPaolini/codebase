@@ -77,11 +77,26 @@ export type CharacteristicKeyOf<T extends CharacteristicValue> =
  * fills), a display `name`, a one-sentence `description`, its tier, and the
  * type of value it yields. `formula` is a LaTeX expression of the definition,
  * and `documentationUrl` links a fuller explanation where one exists.
+ *
+ * A `submatrix` characteristic must also declare the `submatrix` window it
+ * reads; a `path` or `compound` one reads no window and must not.
  */
-export interface CharacteristicMetadata<
+export type CharacteristicMetadata<
+  T extends CharacteristicValue = CharacteristicValue,
+> =
+  | (CharacteristicMetadataFields<T> & {
+      readonly category: "submatrix";
+      readonly submatrix: SubmatrixWindow;
+    })
+  | (CharacteristicMetadataFields<T> & {
+      readonly category: Exclude<CharacteristicCategory, "submatrix">;
+      readonly submatrix?: never;
+    });
+
+/** The {@link CharacteristicMetadata} fields every category shares. */
+export interface CharacteristicMetadataFields<
   T extends CharacteristicValue = CharacteristicValue,
 > {
-  readonly category: CharacteristicCategory;
   readonly description: string;
   readonly documentationUrl?: string;
   readonly formula?: string;
@@ -117,3 +132,14 @@ export type NumericCharacteristicKey =
 export type NumericCharacteristicRecord = Readonly<
   Record<NumericCharacteristicKey, number>
 >;
+
+/**
+ * The window a `submatrix` characteristic reads, in lattice points: a fixed
+ * glyph's exact template size, 1×1 for a point scan, or — marked `variable` —
+ * the smallest window a variable-size scan such as a rectangle can match.
+ */
+export interface SubmatrixWindow {
+  readonly columns: number;
+  readonly rows: number;
+  readonly variable?: true;
+}

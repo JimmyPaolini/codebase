@@ -29,13 +29,14 @@ export const LEGACY_FIELD_KEYS = [
   "crossCount",
   "density",
   "dotCount",
+  "doubleHorizontalEdgeCount",
+  "doubleVerticalEdgeCount",
   "edgeCount",
   "embeddedUCount",
   "endsAreLatticeNeighbors",
   "endsOnBorderRules",
   "forkCount",
   "freeEndCount",
-  "horizontalEdgeCount",
   "inkPointCount",
   "isArcade",
   "isBars",
@@ -54,103 +55,102 @@ export const LEGACY_FIELD_KEYS = [
   "tileCrossing",
   "tileCrossingComponentDeltaCount",
   "tileCrossingCycleCount",
-  "verticalEdgeCount",
 ] as const;
 
 /** Every legacy field of each fixture Code, in {@link LEGACY_FIELD_KEYS} order. */
 export const LEGACY_FIELDS: Readonly<Record<string, string>> = {
   "01x02y00":
-    "2 0 0 0 0 2 0 0 false false 0 0 0 0 false false false false true false false false false false false 0 0 false false 0 0 0",
+    "2 0 0 0 0 2 0 0 0 0 false false 0 0 0 false false false false true false false false false false false 0 0 false false 0 0",
   "01x02y03":
-    "2 1 0 0 0.5 1 1 0 false false 0 0 1 1 false false false false false false false false false false false 1 0 false true 0 1 0",
+    "2 1 0 0 0.5 1 1 0 1 0 false false 0 0 1 false false false false false false false false false false false 1 0 false true 0 1",
   "01x02y4b":
-    "1 1 0 0 1 0 2 1 false false 1 1 0 2 false false false true false false false false false false false 1 1 false true 0 1 0",
+    "1 1 0 0 1 0 0 0 2 1 false false 1 1 2 false false false true false false false false false false false 1 1 false true 0 1",
   "01x02y7b":
-    "1 2 0 0 1 0 3 1 false false 2 0 0 2 false false false false false false false true false false false 1 1 false true 0 2 0",
+    "1 2 0 0 1 0 0 0 3 1 false false 2 0 2 false false false false false false false true false false false 1 1 false true 0 2",
   "01x02y33":
-    "2 2 0 0 1 0 2 0 false false 0 0 2 2 false false false false false false true false false false false 1 0 false true 0 2 0",
+    "2 2 0 0 1 0 2 0 2 0 false false 0 0 2 false false false false false false true false false false false 1 0 false true 0 2",
   "01x02y48":
-    "1 0 0 0 1 0 1 0 true true 0 2 0 2 false true false false false false false false false true false 0 1 false false 0 0 0",
+    "1 0 0 0 1 0 0 0 1 0 true true 0 2 2 false true false false false false false false false true false 0 1 false false 0 0",
   "01x03y04b":
-    "2 1 0 0 0.6666666666666666 1 2 1 false false 1 1 0 2 false false false false false false false false false false true 1 1 false true 0 1 0",
+    "2 1 0 0 0.6666666666666666 1 0 0 2 1 false false 1 1 2 false false false false false false false false false false true 1 1 false true 0 1",
   "01x06y0004f8":
-    "4 1 0 1 0.5 3 3 2 false false 0 2 0 3 false false false false false false false false false false false 1 2 false true 0 1 0",
+    "4 1 0 1 0.5 3 0 0 3 2 false false 0 2 3 false false false false false false false false false false false 1 2 false true 0 1",
   "01x08y07c87830":
-    "5 3 0 0 0.75 2 6 2 false false 2 2 1 6 false false false false false false false false false false true 1 2 false true 0 3 1",
+    "5 3 0 0 0.75 2 1 1 6 2 false false 2 2 6 false false false false false false false false false false true 1 2 false true 0 3",
   "01x08y07fb7fb3":
-    "4 7 0 2 0.875 1 11 4 false false 4 0 1 7 false false false false false false false false false false true 1 2 false true 0 7 0",
+    "4 7 0 2 0.875 1 1 0 11 4 false false 4 0 7 false false false false false false false false false false true 1 2 false true 0 7",
   "01x08y7fff87fb":
-    "2 7 0 4 1 0 13 6 false false 3 1 0 8 false false false false false false false false false false false 1 4 false true 0 7 0",
+    "2 7 0 4 1 0 0 0 13 6 false false 3 1 8 false false false false false false false false false false false 1 4 false true 0 7",
   "02x02y0000":
-    "2 0 0 0 0 2 0 0 false false 0 0 0 0 false false false false true false false false false false false 0 0 false false 0 0 0",
+    "2 0 0 0 0 2 0 0 0 0 false false 0 0 0 false false false false true false false false false false false 0 0 false false 0 0",
   "02x02y77bb":
-    "1 2 0 0 1 0 3 1 false false 2 0 0 2 false false false false false false false true false false false 1 1 false true 0 2 0",
+    "1 2 0 0 1 0 0 0 3 1 false false 2 0 2 false false false false false false false true false false false 1 1 false true 0 2",
   "02x02y1221":
-    "2 0 0 0 1 0 2 0 false false 0 4 0 4 false false false false false false false false false false false 1 0 false true 1 0 0",
+    "2 0 0 0 1 0 0 0 2 0 false false 0 4 4 false false false false false false false false false false false 1 0 false true 1 0",
   "02x02y3333":
-    "2 2 0 0 1 0 2 0 false false 0 0 2 2 false false false false false false true false false false false 1 0 false true 0 2 0",
+    "2 2 0 0 1 0 2 0 2 0 false false 0 0 2 false false false false false false true false false false false 1 0 false true 0 2",
   "02x02y4488":
-    "1 0 0 0 1 0 1 0 true true 0 2 0 2 false true false false false false false false false true false 0 1 false false 0 0 0",
+    "1 0 0 0 1 0 0 0 1 0 true true 0 2 2 false true false false false false false false false true false 0 1 false false 0 0",
   "02x03y44ad1a":
-    "1 0 2 0 1 0 5 1 false false 1 3 0 6 false false false false false true false false false false false 1 2 false true 1 0 0",
+    "1 0 2 0 1 0 0 0 5 1 false false 1 3 6 false false false false false true false false false false false 1 2 false true 1 0",
   "02x03y44ed88":
-    "1 0 0 0 1 0 5 2 false false 2 4 0 6 false false false false false false false false true false false 1 2 false false 0 0 0",
+    "1 0 0 0 1 0 0 0 5 2 false false 2 4 6 false false false false false false false false true false false 1 2 false false 0 0",
   "02x03y56cca9":
-    "1 1 4 0 1 0 6 2 false false 0 0 0 6 true false true false false false false false false false false 1 2 true true 0 1 2",
+    "1 1 4 0 1 0 0 2 6 2 false false 0 0 6 true false true false false false false false false false false 1 2 true true 0 1",
   "02x03y255aa1":
-    "1 0 4 0 1 0 5 0 false true 0 2 0 6 false false false false false false false false false true false 1 1 true true 1 0 0",
+    "1 0 4 0 1 0 0 0 5 0 false true 0 2 6 false false false false false false false false false true false 1 1 true true 1 0",
   "02x04y44a944a9":
-    "2 0 4 0 1 0 6 2 false false 0 4 0 8 false false false false false false false false false false false 1 1 true false 0 0 0",
+    "2 0 4 0 1 0 0 0 6 2 false false 0 4 8 false false false false false false false false false false false 1 1 true false 0 0",
   "02x04y255e8821":
-    "2 0 2 0 1 0 6 1 false false 1 5 0 8 false false false false false false false false false false false 1 2 false true 1 0 0",
+    "2 0 2 0 1 0 0 0 6 1 false false 1 5 8 false false false false false false false false false false false 1 2 false true 1 0",
   "03x02y6548a9":
-    "1 0 4 0 1 0 5 2 false true 0 2 0 6 false false false true false false false false false true false 1 1 true false 0 0 0",
+    "1 0 4 0 1 0 0 0 5 2 false true 0 2 6 false false false true false false false false false true false 1 1 true false 0 0",
   "03x03y752ca1a31":
-    "1 0 3 0 1 0 8 1 false false 1 3 1 9 false false false false false true false false false false false 2 2 false true 1 0 1",
+    "1 0 3 0 1 0 1 1 8 1 false false 1 3 9 false false false false false true false false false false false 2 2 false true 1 0",
   "03x03y777c8cb1a":
-    "1 2 1 0 1 0 10 4 true false 4 2 0 9 true false false false false false false false false false false 3 2 false true 0 2 2",
+    "1 2 1 0 1 0 0 2 10 4 true false 4 2 9 true false false false false false false false false false false 3 2 false true 0 2",
   "03x03y2752d81a3":
-    "1 0 2 0 1 0 8 2 false false 2 4 1 9 false false false false false false false false true false false 2 2 false true 1 0 0",
+    "1 0 2 0 1 0 1 0 8 2 false false 2 4 9 false false false false false false false false true false false 2 2 false true 1 0",
   "03x03y2754c89a3":
-    "1 0 3 0 1 0 8 1 false false 1 3 1 9 false false false false false true false false false false false 2 2 false true 1 0 1",
+    "1 0 3 0 1 0 1 1 8 1 false false 1 3 9 false false false false false true false false false false false 2 2 false true 1 0",
   "03x03y4658cc3bb":
-    "2 2 2 0 1 0 9 2 true false 2 2 1 9 true false false false false false false false false false false 3 2 false true 0 1 2",
+    "2 2 2 0 1 0 1 2 9 2 true false 2 2 9 true false false false false false false false false false false 3 2 false true 0 1",
   "03x03y7528e12b1":
-    "1 0 1 0 1 0 8 2 false false 3 5 0 9 false false false false false false false false true false false 2 2 false true 1 0 0",
+    "1 0 1 0 1 0 0 0 8 2 false false 3 5 9 false false false false false false false false true false false 2 2 false true 1 0",
   "03x03y23535a1a3":
-    "1 0 4 0 1 0 8 0 false true 0 2 3 9 false false false false false false false false false true false 2 1 true true 2 0 0",
+    "1 0 4 0 1 0 3 0 8 0 false true 0 2 9 false false false false false false false false false true false 2 1 true true 2 0",
   "04x02y444488a9":
-    "3 0 2 0 1 0 5 1 false false 0 6 0 8 false false false false false false false false false false false 1 1 true false 0 0 0",
+    "3 0 2 0 1 0 0 0 5 1 false false 0 6 8 false false false false false false false false false false false 1 1 true false 0 0",
   "04x03y6354c48c8a39":
-    "2 0 4 0 1 0 10 0 false false 0 4 2 12 false false false false false false false false false false false 2 2 true false 0 0 2",
+    "2 0 4 0 1 0 2 2 10 0 false false 0 4 12 false false false false false false false false false false false 2 2 true false 0 0",
   "04x03y6354c69c8a39":
-    "1 0 6 0 1 0 11 2 false true 0 2 2 12 false false false false false false false false false true false 2 2 true false 0 0 2",
+    "1 0 6 0 1 0 2 2 11 2 false true 0 2 12 false false false false false false false false false true false 2 2 true false 0 0",
   "04x03y37375a5ab3b3":
-    "1 2 2 0 1 0 7 2 false false 2 0 2 6 false false false false false false false false false false false 2 1 false true 1 2 0",
+    "1 2 2 0 1 0 2 0 7 2 false false 2 0 6 false false false false false false false false false false false 2 1 false true 1 2",
   "04x03y356369a5a339":
-    "1 1 8 0 1 0 12 4 false false 0 0 4 12 false false true false false false false false false false false 3 1 true true 0 1 0",
+    "1 1 8 0 1 0 4 0 12 4 false false 0 0 12 false false true false false false false false false false false 3 1 true true 0 1",
   "04x03y35634884a339":
-    "2 0 4 0 1 0 10 0 false false 0 4 4 12 false false false false false false false false false false false 3 1 true true 1 0 0",
+    "2 0 4 0 1 0 4 0 10 0 false false 0 4 12 false false false false false false false false false false false 3 1 true true 1 0",
   "04x04y4040b7b75a5ab3b3":
-    "2 2 2 0 0.875 1 8 2 false false 3 1 1 7 false false false false false false false false false false true 2 1 false true 1 2 0",
+    "2 2 2 0 0.875 1 1 0 8 2 false false 3 1 7 false false false false false false false false false false true 2 1 false true 1 2",
   "04x04y5252f3f396963b3b":
-    "1 2 3 1 1 0 9 3 false false 1 1 2 8 false false false false false false false false false false false 2 2 false true 2 2 0",
+    "1 2 3 1 1 0 2 0 9 3 false false 1 1 8 false false false false false false false false false false false 2 2 false true 2 2",
   "04x04y2335635cc29ca339":
-    "1 0 6 0 1 0 15 1 false false 0 2 5 16 false false false false false false false false false true false 3 3 true false 0 0 3",
+    "1 0 6 0 1 0 5 3 15 1 false false 0 2 16 false false false false false false false false false true false 3 3 true false 0 0",
   "05x02y67565a9ab9":
-    "1 2 8 0 1 0 11 4 false false 2 0 0 10 false false false false false false false false false false false 2 1 false false 0 0 0",
+    "1 2 8 0 1 0 0 0 11 4 false false 2 0 10 false false false false false false false false false false false 2 1 false false 0 0",
   "05x02y67710abb31":
-    "2 2 2 0 0.9 1 10 3 false true 4 2 1 9 false false false false false false false false false false true 4 1 false false 0 0 0",
+    "2 2 2 0 0.9 1 1 0 10 3 false true 4 2 9 false false false false false false false false false false true 4 1 false false 0 0",
   "05x02y6754488ab9":
-    "1 0 4 0 1 0 9 4 false false 2 4 0 10 false false false true false false false false false false false 2 1 false false 0 0 0",
+    "1 0 4 0 1 0 0 0 9 4 false false 2 4 10 false false false true false false false false false false false 2 1 false false 0 0",
   "05x02y233353331a":
-    "1 0 2 0 1 0 9 0 false true 0 2 6 10 false false false false false false false false false true false 4 1 false true 1 0 0",
+    "1 0 2 0 1 0 6 0 9 0 false true 0 2 10 false false false false false false false false false true false 4 1 false true 1 0",
   "05x02y4444488888":
-    "1 0 0 0 1 0 1 0 true true 0 2 0 2 false true false false false false false false false true false 0 1 false false 0 0 0",
+    "1 0 0 0 1 0 0 0 1 0 true true 0 2 2 false true false false false false false false false true false 0 1 false false 0 0",
   "05x03y65635c8c4ca39a9":
-    "1 0 8 0 1 0 14 2 false false 0 2 2 15 true false false false false false false false false true false 2 2 true false 0 0 3",
+    "1 0 8 0 1 0 2 3 14 2 false false 0 2 15 true false false false false false false false false true false 2 2 true false 0 0",
   "06x02y2525251a1a1a":
-    "1 0 2 0 1 0 3 0 true true 0 2 0 4 false false false false false false false false false true false 1 1 true true 1 0 0",
+    "1 0 2 0 1 0 0 0 3 0 true true 0 2 4 false false false false false false false false false true false 1 1 true true 1 0",
 };
 
 /**

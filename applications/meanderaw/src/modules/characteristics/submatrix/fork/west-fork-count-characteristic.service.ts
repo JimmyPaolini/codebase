@@ -1,6 +1,6 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 
-import { countPointsWithExactArms } from "../submatrix.utilities";
+import { SubmatrixUtilitiesService } from "../submatrix-utilities.service";
 
 import type {
   CharacteristicContext,
@@ -17,7 +17,10 @@ import type {
 export class WestForkCountCharacteristicService implements CharacteristicEvaluator<number> {
   // 🏗 Dependency Injection
 
-  constructor() {}
+  constructor(
+    @Inject(SubmatrixUtilitiesService)
+    private readonly submatrixUtilitiesService: SubmatrixUtilitiesService,
+  ) {}
 
   // 🔐 Private Fields
 
@@ -31,6 +34,7 @@ export class WestForkCountCharacteristicService implements CharacteristicEvaluat
     formula: String.raw`\left|\{\, p \in M : \text{arms}(p) = \{N, S, W\} \,\}\right|`,
     key: "westForkCount",
     name: "West Fork Count",
+    submatrix: { columns: 1, rows: 1 },
     valueType: "number",
   };
 
@@ -40,6 +44,9 @@ export class WestForkCountCharacteristicService implements CharacteristicEvaluat
 
   /** Counts the points whose only arms are north, south, and west. */
   public compute(context: CharacteristicContext): number {
-    return countPointsWithExactArms(context.matrix, ["north", "south", "west"]);
+    return this.submatrixUtilitiesService.countPointsWithExactArms(
+      context.matrix,
+      ["north", "south", "west"],
+    );
   }
 }

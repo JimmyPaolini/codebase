@@ -44,6 +44,7 @@ export class CornerCountCharacteristicService implements CharacteristicEvaluator
     formula: String.raw`n_{\text{NE}} + n_{\text{NW}} + n_{\text{SE}} + n_{\text{SW}}`,
     key: "cornerCount",
     name: "Corner Count",
+    submatrix: { columns: 1, rows: 1 },
     valueType: "number",
   };
 

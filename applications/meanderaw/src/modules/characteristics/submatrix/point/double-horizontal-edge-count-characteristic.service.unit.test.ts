@@ -4,24 +4,28 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { CodeModule } from "../../../code/code.module";
 import { MatrixModule } from "../../../matrix/matrix.module";
 import { CharacteristicContextService } from "../../characteristic-context.service";
+import { SubmatrixUtilitiesService } from "../submatrix-utilities.service";
 
-import { HorizontalEdgeCountCharacteristicService } from "./horizontal-edge-count-characteristic.service";
+import { DoubleHorizontalEdgeCountCharacteristicService } from "./double-horizontal-edge-count-characteristic.service";
 
-describe(HorizontalEdgeCountCharacteristicService, () => {
+describe(DoubleHorizontalEdgeCountCharacteristicService, () => {
   let contextService: CharacteristicContextService;
-  let service: HorizontalEdgeCountCharacteristicService;
+  let service: DoubleHorizontalEdgeCountCharacteristicService;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
       imports: [CodeModule, MatrixModule],
       providers: [
         CharacteristicContextService,
-        HorizontalEdgeCountCharacteristicService,
+        DoubleHorizontalEdgeCountCharacteristicService,
+        SubmatrixUtilitiesService,
       ],
     }).compile();
 
     contextService = await module.resolve(CharacteristicContextService);
-    service = await module.resolve(HorizontalEdgeCountCharacteristicService);
+    service = await module.resolve(
+      DoubleHorizontalEdgeCountCharacteristicService,
+    );
   });
 
   it("is defined", () => {

@@ -1,6 +1,6 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 
-import { countIsolatedGlyphs, glyphFormula } from "../submatrix.utilities";
+import { SubmatrixUtilitiesService } from "../submatrix-utilities.service";
 
 import type {
   CharacteristicContext,
@@ -23,7 +23,21 @@ import type {
 export class HLetterCountCharacteristicService implements CharacteristicEvaluator<number> {
   // 🏗 Dependency Injection
 
-  constructor() {}
+  constructor(
+    @Inject(SubmatrixUtilitiesService)
+    private readonly submatrixUtilitiesService: SubmatrixUtilitiesService,
+  ) {
+    this.metadata = {
+      category: "submatrix",
+      description:
+        "The number of minimal isolated H glyphs — two parallel posts joined at their middles, posts vertical.",
+      formula: this.submatrixUtilitiesService.glyphFormula(this.template),
+      key: "hLetterCount",
+      name: "H Letter Count",
+      submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
+      valueType: "number",
+    };
+  }
 
   // 🔐 Private Fields
 
@@ -33,15 +47,7 @@ export class HLetterCountCharacteristicService implements CharacteristicEvaluato
   // 🔑 Public Fields
 
   /** Names and explains `hLetterCount` for catalogs and inspectors. */
-  public readonly metadata: CharacteristicMetadata<number> = {
-    category: "submatrix",
-    description:
-      "The number of minimal isolated H glyphs — two parallel posts joined at their middles, posts vertical.",
-    formula: glyphFormula(this.template),
-    key: "hLetterCount",
-    name: "H Letter Count",
-    valueType: "number",
-  };
+  public readonly metadata: CharacteristicMetadata<number>;
 
   // 🔏 Private Methods
 
@@ -49,6 +55,9 @@ export class HLetterCountCharacteristicService implements CharacteristicEvaluato
 
   /** Counts the pieces of ink drawn exactly as the template. */
   public compute(context: CharacteristicContext): number {
-    return countIsolatedGlyphs(context.matrix, this.template);
+    return this.submatrixUtilitiesService.countIsolatedGlyphs(
+      context.matrix,
+      this.template,
+    );
   }
 }

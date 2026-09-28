@@ -4,6 +4,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { CodeModule } from "../../../code/code.module";
 import { MatrixModule } from "../../../matrix/matrix.module";
 import { CharacteristicContextService } from "../../characteristic-context.service";
+import { SubmatrixUtilitiesService } from "../submatrix-utilities.service";
 
 import { EDownLetterCountCharacteristicService } from "./e-down-letter-count-characteristic.service";
 
@@ -17,6 +18,7 @@ describe(EDownLetterCountCharacteristicService, () => {
       providers: [
         CharacteristicContextService,
         EDownLetterCountCharacteristicService,
+        SubmatrixUtilitiesService,
       ],
     }).compile();
 

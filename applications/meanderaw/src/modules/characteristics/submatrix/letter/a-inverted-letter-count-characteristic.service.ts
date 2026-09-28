@@ -1,6 +1,6 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 
-import { countIsolatedGlyphs, glyphFormula } from "../submatrix.utilities";
+import { SubmatrixUtilitiesService } from "../submatrix-utilities.service";
 
 import type {
   CharacteristicContext,
@@ -23,7 +23,21 @@ import type {
 export class AInvertedLetterCountCharacteristicService implements CharacteristicEvaluator<number> {
   // 🏗 Dependency Injection
 
-  constructor() {}
+  constructor(
+    @Inject(SubmatrixUtilitiesService)
+    private readonly submatrixUtilitiesService: SubmatrixUtilitiesService,
+  ) {
+    this.metadata = {
+      category: "submatrix",
+      description:
+        "The number of minimal isolated A glyphs — a closed end, a crossbar, and two legs, legs pointing north.",
+      formula: this.submatrixUtilitiesService.glyphFormula(this.template),
+      key: "aInvertedLetterCount",
+      name: "A Inverted Letter Count",
+      submatrix: this.submatrixUtilitiesService.glyphWindow(this.template),
+      valueType: "number",
+    };
+  }
 
   // 🔐 Private Fields
 
@@ -33,15 +47,7 @@ export class AInvertedLetterCountCharacteristicService implements Characteristic
   // 🔑 Public Fields
 
   /** Names and explains `aInvertedLetterCount` for catalogs and inspectors. */
-  public readonly metadata: CharacteristicMetadata<number> = {
-    category: "submatrix",
-    description:
-      "The number of minimal isolated A glyphs — a closed end, a crossbar, and two legs, legs pointing north.",
-    formula: glyphFormula(this.template),
-    key: "aInvertedLetterCount",
-    name: "A Inverted Letter Count",
-    valueType: "number",
-  };
+  public readonly metadata: CharacteristicMetadata<number>;
 
   // 🔏 Private Methods
 
@@ -49,6 +55,9 @@ export class AInvertedLetterCountCharacteristicService implements Characteristic
 
   /** Counts the pieces of ink drawn exactly as the template. */
   public compute(context: CharacteristicContext): number {
-    return countIsolatedGlyphs(context.matrix, this.template);
+    return this.submatrixUtilitiesService.countIsolatedGlyphs(
+      context.matrix,
+      this.template,
+    );
   }
 }

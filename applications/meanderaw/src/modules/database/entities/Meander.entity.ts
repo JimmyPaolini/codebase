@@ -86,8 +86,17 @@ export class Meander implements NumericCharacteristicRecord {
   @Column({ default: 0, type: "int" })
   dotCount!: number;
 
+  @Column({ default: 0, type: "int" })
+  doubleHorizontalEdgeCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  doubleVerticalEdgeCount!: number;
+
   @Column({ type: "text" })
   drawingHash!: string;
+
+  @Column({ default: 0, type: "int" })
+  eastEdgeCount!: number;
 
   @Column({ default: 0, type: "int" })
   eastForkCount!: number;
@@ -133,9 +142,6 @@ export class Meander implements NumericCharacteristicRecord {
 
   @Column({ default: 0, type: "int" })
   hLetterCount!: number;
-
-  @Column({ default: 0, type: "int" })
-  horizontalEdgeCount!: number;
 
   @Column({ default: 0, type: "int" })
   horizontalRectangleCount!: number;
@@ -198,6 +204,9 @@ export class Meander implements NumericCharacteristicRecord {
   northEastCornerCount!: number;
 
   @Column({ default: 0, type: "int" })
+  northEdgeCount!: number;
+
+  @Column({ default: 0, type: "int" })
   northForkCount!: number;
 
   @Column({ default: 0, type: "int" })
@@ -223,6 +232,9 @@ export class Meander implements NumericCharacteristicRecord {
 
   @Column({ default: 0, type: "int" })
   southEastCornerCount!: number;
+
+  @Column({ default: 0, type: "int" })
+  southEdgeCount!: number;
 
   @Column({ default: 0, type: "int" })
   southForkCount!: number;
@@ -270,10 +282,10 @@ export class Meander implements NumericCharacteristicRecord {
   uLetterCount!: number;
 
   @Column({ default: 0, type: "int" })
-  verticalEdgeCount!: number;
+  verticalRectangleCount!: number;
 
   @Column({ default: 0, type: "int" })
-  verticalRectangleCount!: number;
+  westEdgeCount!: number;
 
   @Column({ default: 0, type: "int" })
   westForkCount!: number;

@@ -33,6 +33,7 @@ export class InkPointCountCharacteristicService implements CharacteristicEvaluat
     formula: String.raw`\left|\{\, p \in M : \text{arms}(p) \neq \varnothing \,\}\right|`,
     key: "inkPointCount",
     name: "Ink Point Count",
+    submatrix: { columns: 1, rows: 1 },
     valueType: "number",
   };
 

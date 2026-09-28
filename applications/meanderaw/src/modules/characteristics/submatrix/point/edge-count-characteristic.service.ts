@@ -36,6 +36,7 @@ export class EdgeCountCharacteristicService implements CharacteristicEvaluator<n
     formula: String.raw`\frac{1}{2} \sum_{p \in M} \left|\text{arms}(p)\right|`,
     key: "edgeCount",
     name: "Edge Count",
+    submatrix: { columns: 1, rows: 1 },
     valueType: "number",
   };
 
