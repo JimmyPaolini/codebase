@@ -146,8 +146,6 @@ joining stroke on every side it connects. A form a letter never takes, such as
 a non-connecting letter's initial or medial, is left out rather than drawn.
 _Avoid_: Contextual form, allograph, position
 
-<!-- cspell:words dotless rasm -->
-
 **Skeleton (rasm)**:
 A letter's dotless shape, which letters differing only by dots or by other
 marks such as hamza share. A skeleton is drawn once, as one letter, and every

@@ -1,7 +1,9 @@
 describal
+dotless
 lexicalized
 nonword
 phonotactic
 pseudoword
+rasm
 sempientor
 stratifiability
