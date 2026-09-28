@@ -12,7 +12,9 @@ import type {
  * glyph — a unit loop whose southeast corner drops into a one-step staircase
  * that falls west to a unit tail, its curve drawn as an orthogonal zig-zag —
  * one per corner and clockwise rotation, each counting the base template drawn
- * that way. The base faces Southwest, drawn:
+ * that way. Its Southwest orientation also reads as the isolated Arabic ؤ (waw
+ * with hamza above), which differs from it only by its hamza. The base faces
+ * Southwest, drawn:
  *
  * ```text
  * ┌┐
@@ -30,6 +32,9 @@ export class WawIsolatedArabicLetterCharacteristicsService implements Characteri
     private readonly letterUtilitiesService: LetterUtilitiesService,
   ) {
     this.evaluators = this.letterUtilitiesService.evaluators({
+      aliases: {
+        Southwest: "the isolated Arabic ؤ (waw with hamza above)",
+      },
       glyph: "و (isolated Arabic waw)",
       key: (name) => `wawIsolated${name}ArabicCount`,
       script: "Arabic",

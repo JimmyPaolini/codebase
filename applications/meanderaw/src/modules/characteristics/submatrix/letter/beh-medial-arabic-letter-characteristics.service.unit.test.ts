@@ -54,7 +54,7 @@ const ORIENTATIONS: readonly LetterOrientationFixture[] = [
 const ALIASES: readonly LetterAliasFixture[] = [
   {
     alias:
-      "the medial Arabic ب (beh), ت (teh), ث (theh), ن (noon), and ي (yeh)",
+      "the medial Arabic ب (beh), ت (teh), ث (theh), ن (noon), ي (yeh), and ئ (yeh with hamza above)",
     names: ["Southeast", "Southwest", "NortheastHalf", "NorthwestHalf"],
   },
 ];

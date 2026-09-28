@@ -6,7 +6,10 @@ import { expectedCounts, letterHarness } from "../../../../../testing/letters";
 import { AlefFinalArabicLetterCharacteristicsService } from "./alef-final-arabic-letter-characteristics.service";
 import { LETTER_ORIENTATION_NAMES } from "./letter.constants";
 
-import type { LetterOrientationFixture } from "../../../../../testing/letters";
+import type {
+  LetterAliasFixture,
+  LetterOrientationFixture,
+} from "../../../../../testing/letters";
 
 /**
  * Each distinct orientation of the ا (final Arabic alef) as a Code holding one
@@ -58,6 +61,19 @@ const ORIENTATIONS: readonly LetterOrientationFixture[] = [
   },
 ];
 
+const ALIASES: readonly LetterAliasFixture[] = [
+  {
+    alias:
+      "the final Arabic أ (alef with hamza above), إ (alef with hamza below), and آ (alef with madda above)",
+    names: [
+      "SoutheastQuarter",
+      "Southwest",
+      "NortheastHalf",
+      "NorthwestThreeQuarter",
+    ],
+  },
+];
+
 describe(AlefFinalArabicLetterCharacteristicsService, () => {
   const letter = letterHarness(
     AlefFinalArabicLetterCharacteristicsService,
@@ -98,4 +114,8 @@ describe(AlefFinalArabicLetterCharacteristicsService, () => {
       );
     },
   );
+
+  it.each(ALIASES)("lists $alias on exactly $names", ({ alias, names }) => {
+    expect(letter.namesDescribing(alias)).toStrictEqual(names);
+  });
 });

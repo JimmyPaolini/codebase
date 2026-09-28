@@ -13,7 +13,8 @@ import type {
  * a reversed hook over a three-unit bowl with a unit tip rising at its west end
  * — one per corner and clockwise rotation, each counting the base template
  * drawn that way. Its Southwest orientation also reads as the final Arabic ي
- * (yeh), which differs from it only by dots. The base faces Southwest, drawn:
+ * (yeh), which differs from it only by dots, and ئ (yeh with hamza above),
+ * which differs from it only by its hamza. The base faces Southwest, drawn:
  *
  * ```text
  *   ┌─╴
@@ -31,7 +32,7 @@ export class YehFinalArabicLetterCharacteristicsService implements Characteristi
   ) {
     this.evaluators = this.letterUtilitiesService.evaluators({
       aliases: {
-        Southwest: "the final Arabic ي (yeh)",
+        Southwest: "the final Arabic ي (yeh) and ئ (yeh with hamza above)",
       },
       glyph: "ى (final Arabic alef maksura, the dotless yeh)",
       key: (name) => `yehFinal${name}ArabicCount`,

@@ -11,7 +11,10 @@ import type {
  * Provides the sixteen orientation evaluators of the ا (final Arabic alef)
  * glyph — a two-unit stem whose foot runs two units east to join — one per
  * corner and clockwise rotation, each counting the base template drawn that
- * way. The base faces Southwest, drawn:
+ * way. Its Southwest orientation also reads as the final Arabic أ (alef with
+ * hamza above), إ (alef with hamza below), and آ (alef with madda above),
+ * which differ from it only by their hamza or madda. The base faces Southwest,
+ * drawn:
  *
  * ```text
  * ╷
@@ -28,6 +31,10 @@ export class AlefFinalArabicLetterCharacteristicsService implements Characterist
     private readonly letterUtilitiesService: LetterUtilitiesService,
   ) {
     this.evaluators = this.letterUtilitiesService.evaluators({
+      aliases: {
+        Southwest:
+          "the final Arabic أ (alef with hamza above), إ (alef with hamza below), and آ (alef with madda above)",
+      },
       glyph: "ا (final Arabic alef)",
       key: (name) => `alefFinal${name}ArabicCount`,
       script: "Arabic",

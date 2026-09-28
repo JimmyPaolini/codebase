@@ -5,12 +5,14 @@ ghain
 jeem
 khah
 lexicalized
+madda
 maksura
 marbuta
 meem
 nonword
 phonotactic
 pseudoword
+rasm
 sempientor
 stratifiability
 thal

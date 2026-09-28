@@ -13,7 +13,8 @@ import type {
  * joins both east and west — one per corner and clockwise rotation, each
  * counting the base template drawn that way. Its Southwest orientation also
  * reads as the medial Arabic ب (beh), ت (teh), ث (theh), ن (noon), and ي (yeh),
- * which differ from it only by dots. The base faces Southwest, drawn:
+ * which differ from it only by dots, and ئ (yeh with hamza above), which
+ * differs from it only by its hamza. The base faces Southwest, drawn:
  *
  * ```text
  *  ╷
@@ -31,7 +32,7 @@ export class BehMedialArabicLetterCharacteristicsService implements Characterist
     this.evaluators = this.letterUtilitiesService.evaluators({
       aliases: {
         Southwest:
-          "the medial Arabic ب (beh), ت (teh), ث (theh), ن (noon), and ي (yeh)",
+          "the medial Arabic ب (beh), ت (teh), ث (theh), ن (noon), ي (yeh), and ئ (yeh with hamza above)",
       },
       glyph: "ٮ (medial Arabic dotless beh)",
       key: (name) => `behMedial${name}ArabicCount`,

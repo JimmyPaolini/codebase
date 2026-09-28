@@ -29,7 +29,7 @@ export class ILatinLetterCharacteristicsService implements CharacteristicEvaluat
     this.evaluators = this.letterUtilitiesService.evaluators({
       aliases: {
         Southeast:
-          "the Greek Ι (iota), the hangul ㅣ (i), the Hebrew ו (vav), the Hebrew ן (final nun), and the isolated Arabic ا (alef)",
+          "the Greek Ι (iota), the hangul ㅣ (i), the Hebrew ו (vav), the Hebrew ן (final nun), and the isolated Arabic ا (alef), أ (alef with hamza above), إ (alef with hamza below), and آ (alef with madda above)",
         SoutheastQuarter: "the hangul ㅡ (eu) and the hanzi 一 (yi)",
       },
       glyph: "I",

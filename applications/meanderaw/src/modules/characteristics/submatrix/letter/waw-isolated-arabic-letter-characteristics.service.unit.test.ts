@@ -6,7 +6,10 @@ import { expectedCounts, letterHarness } from "../../../../../testing/letters";
 import { LETTER_ORIENTATION_NAMES } from "./letter.constants";
 import { WawIsolatedArabicLetterCharacteristicsService } from "./waw-isolated-arabic-letter-characteristics.service";
 
-import type { LetterOrientationFixture } from "../../../../../testing/letters";
+import type {
+  LetterAliasFixture,
+  LetterOrientationFixture,
+} from "../../../../../testing/letters";
 
 /**
  * Each distinct orientation of the و (isolated Arabic waw) as a Code holding
@@ -55,6 +58,13 @@ const ORIENTATIONS: readonly LetterOrientationFixture[] = [
   },
 ];
 
+const ALIASES: readonly LetterAliasFixture[] = [
+  {
+    alias: "the isolated Arabic ؤ (waw with hamza above)",
+    names: ["Southwest", "NortheastHalf"],
+  },
+];
+
 describe(WawIsolatedArabicLetterCharacteristicsService, () => {
   const letter = letterHarness(
     WawIsolatedArabicLetterCharacteristicsService,
@@ -95,4 +105,8 @@ describe(WawIsolatedArabicLetterCharacteristicsService, () => {
       );
     },
   );
+
+  it.each(ALIASES)("lists $alias on exactly $names", ({ alias, names }) => {
+    expect(letter.namesDescribing(alias)).toStrictEqual(names);
+  });
 });

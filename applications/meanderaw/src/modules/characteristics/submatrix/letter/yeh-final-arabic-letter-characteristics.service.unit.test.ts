@@ -60,7 +60,7 @@ const ORIENTATIONS: readonly LetterOrientationFixture[] = [
 /** Each alias, beside every orientation name drawing the ink it reads as. */
 const ALIASES: readonly LetterAliasFixture[] = [
   {
-    alias: "the final Arabic ي (yeh)",
+    alias: "the final Arabic ي (yeh) and ئ (yeh with hamza above)",
     names: ["Southwest", "NortheastHalf"],
   },
 ];

@@ -9,12 +9,12 @@ import type {
 
 /**
  * Provides the sixteen orientation evaluators of the ح (initial Arabic hah)
- * glyph — a unit head stroke running east from a staircase that drops west in
- * two steps to a unit joining stroke, its curve drawn as an orthogonal zig-zag
- * — one per corner and clockwise rotation, each counting the base template
- * drawn that way. Its Southwest orientation also reads as the initial Arabic ج
- * (jeem) and خ (khah), which differ from it only by dots. The base faces
- * Southwest, drawn:
+ * glyph — a unit head stroke running east from a one-step staircase that drops
+ * west onto a unit joining stroke, its curve drawn as an orthogonal zig-zag —
+ * one per corner and clockwise rotation, each counting the base template drawn
+ * that way. Its Southwest orientation also reads as the initial Arabic ج (jeem)
+ * and خ (khah), which differ from it only by dots. The base faces Southwest,
+ * drawn:
  *
  * ```text
  *   ┌╴
@@ -38,7 +38,7 @@ export class HahInitialArabicLetterCharacteristicsService implements Characteris
       key: (name) => `hahInitial${name}ArabicCount`,
       script: "Arabic",
       shape:
-        "a unit head stroke running east from a staircase that drops west in two steps to a unit joining stroke, its curve drawn as an orthogonal zig-zag",
+        "a unit head stroke running east from a one-step staircase that drops west onto a unit joining stroke, its curve drawn as an orthogonal zig-zag",
       template: this.template,
     });
   }
