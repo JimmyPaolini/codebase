@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.28.0](https://github.com/Organizzolini/codebase/compare/v2.27.0...v2.28.0) (2026-09-28)
+
+### ✨ Features
+
+* **meanderaw:** ✨ implement compound characteristics, entity schema update, and orchestrator refactor ([#1187](https://github.com/Organizzolini/codebase/issues/1187)) ([3df164e](https://github.com/Organizzolini/codebase/commit/3df164e7e8273f180492d458c75bc71a49b08c2f)), closes [#1154](https://github.com/Organizzolini/codebase/issues/1154) [#1155](https://github.com/Organizzolini/codebase/issues/1155) [#1156](https://github.com/Organizzolini/codebase/issues/1156) [#1157](https://github.com/Organizzolini/codebase/issues/1157) [#1158](https://github.com/Organizzolini/codebase/issues/1158) [#1140](https://github.com/Organizzolini/codebase/issues/1140) [#1161](https://github.com/Organizzolini/codebase/issues/1161)
+
 ## [2.27.0](https://github.com/JimmyPaolini/codebase/compare/v2.26.0...v2.27.0) (2026-09-28)
 
 ### ✨ Features
