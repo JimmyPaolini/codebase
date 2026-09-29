@@ -1,7 +1,7 @@
 {
   "author": "Jimmy Paolini",
   "bugs": {
-    "url": "https://github.com/JimmyPaolini/codebase/issues"
+    "url": "https://github.com/Organizzolini/codebase/issues"
   },
   "dependencies": {
     "@nestjs/common": "catalog:",
@@ -26,7 +26,7 @@
     "LICENSE",
     "README.md"
   ],
-  "homepage": "https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/callidescope/callidescope-core#readme",
+  "homepage": "https://github.com/Organizzolini/codebase/tree/main/packages/ic-suite/callidescope/callidescope-core#readme",
   "keywords": [
     "call-graph",
     "call-stack",
@@ -54,7 +54,7 @@
   "repository": {
     "directory": "packages/ic-suite/callidescope/callidescope-core",
     "type": "git",
-    "url": "git+https://github.com/JimmyPaolini/codebase.git"
+    "url": "git+https://github.com/Organizzolini/codebase.git"
   },
   "type": "module",
   "typeCoverage": {

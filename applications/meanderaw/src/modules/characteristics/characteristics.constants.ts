@@ -1,144 +1,369 @@
-// cspell:ignore ccab ccbb
+import { LETTER_ORIENTATION_NAMES } from "./submatrix/letter/letter.constants";
 
 // ♟️ Constants
 
-import type { Characteristics } from "./characteristics.types";
+/**
+ * The key of every numeric characteristic stored under a column of its own
+ * on a meander row, in alphabetical order: every numeric key but a letter's.
+ *
+ * A letter glyph count — any script, hanzi and hangul included — is instead
+ * marked `letter: true` in its evaluator's metadata and stored in the row's
+ * `glyphs` map, because the letters alone outnumber the columns one table
+ * holds. `CharacteristicsService` refuses to boot unless the two agree: a
+ * numeric evaluator is marked a letter exactly when its key is missing here.
+ * So a new letter needs keys in `LETTER_CHARACTERISTIC_KEYS` and no storage
+ * change, and a new non-letter numeric characteristic needs an entry here and a `Meander`
+ * column, which the entity's `implements` clause holds complete.
+ */
+export const COLUMN_CHARACTERISTIC_KEYS = [
+  "bettiNumber0Count",
+  "bettiNumber1Count",
+  "bottomBorderTouchCount",
+  "cornerCount",
+  "crossCount",
+  "density",
+  "dotCount",
+  "doubleHorizontalEdgeCount",
+  "doubleVerticalEdgeCount",
+  "eastEdgeCount",
+  "eastForkCount",
+  "edgeCount",
+  "embeddedUCount",
+  "forkCount",
+  "freeEndCount",
+  "horizontalRectangleCount",
+  "inflectionCount",
+  "inkPointCount",
+  "longestHorizontalRunLength",
+  "longestVerticalRunLength",
+  "maxMonotonicTurnLength",
+  "northEastCornerCount",
+  "northEdgeCount",
+  "northForkCount",
+  "northWestCornerCount",
+  "southEastCornerCount",
+  "southEdgeCount",
+  "southForkCount",
+  "southWestCornerCount",
+  "tightestTurnCount",
+  "tileCrossingComponentDeltaCount",
+  "tileCrossingCount",
+  "tileCrossingCycleCount",
+  "topBorderTouchCount",
+  "totalTurnCount",
+  "verticalRectangleCount",
+  "westEdgeCount",
+  "westForkCount",
+] as const;
 
 /**
- * Records whether each characteristic is derived from a pattern in the Code
- * or by walking the grid as a graph.
+ * The key of every letter glyph count, sixteen per letter: the letter's
+ * transliteration, its positional form for an Arabic letter, one of its
+ * sixteen orientation names, and its script —
+ * `<letter>[<Form>]<Corner>[Quarter|Half|ThreeQuarter]<Script>Count`, such as
+ * `aSoutheastLatinCount`, `daletSouthwestHalfHebrewCount`, or
+ * `behIsolatedSouthwestArabicCount`. Letters run alphabetically, and each
+ * letter's keys in `LETTER_ORIENTATION_NAMES` order.
+ * Each is the `metadata.key` of one evaluator a letter service provides.
  */
-export const CHARACTERISTIC_SOURCES: Record<
-  keyof Characteristics,
-  "pattern" | "walk"
-> = {
-  // Graph
-  arcadePillarCount: "pattern",
-  bifurcationCount: "pattern",
-  combSpineCount: "pattern",
-  componentCount: "walk",
-  components: "walk",
-  cornerCount: "pattern",
-  // Seam
-  crossesTheSeam: "walk",
-  cycleCount: "walk",
-  cycles: "walk",
-  density: "pattern",
-  // Digit histogram
-  dotCount: "pattern",
-  edgeCount: "pattern",
-  embeddedOCount: "pattern",
-  // Embedded unit shapes
-  embeddedUCount: "pattern",
-  endsAreLatticeNeighbors: "walk",
-  endsOnBorderRules: "walk",
-  freeEnds: "walk",
-  hasArcadePillars: "pattern",
-  hasBranching: "pattern",
-  hasCombSpine: "pattern",
-  hasCrossing: "pattern",
-  hasDots: "pattern",
-  hasTJunctions: "pattern",
-  hasXJunctions: "pattern",
-  // Isolated unit shapes
-  horizontalDashCount: "pattern",
-  horizontalPointCount: "pattern",
-  inkPointCount: "pattern",
-  inkTJunctions: "pattern",
-  inkXJunctions: "pattern",
-  // Family-defining
-  isArcade: "pattern",
-  isBars: "pattern",
-  isClosedLoop: "walk",
-  isComb: "pattern",
-  isConnected: "walk",
-  isDots: "pattern",
-  isFlipSymmetric: "pattern",
-  isFork: "walk",
-  isJunctionFree: "pattern",
-  isLines: "pattern",
-  isMesh: "pattern",
-  isMirrorSymmetric: "pattern",
-  isPureTree: "walk",
-  // Structure
-  isReducible: "pattern",
-  isSingleArc: "walk",
-  isStippled: "walk",
-  lCount: "pattern",
-  // Runs
-  longestHorizontalRun: "pattern",
-  longestVerticalRun: "pattern",
-  oCount: "pattern",
-  pitch: "pattern",
-  plusCount: "pattern",
-  reversesAtItsTightestTurn: "walk",
-  seamComponents: "walk",
-  seamCycles: "walk",
-  seamTJunctions: "walk",
-  seamXJunctions: "walk",
-  shapeICount: "pattern",
-  tCount: "pattern",
-  turnsMonotonically: "walk",
-  uCount: "pattern",
-  verticalDashCount: "pattern",
-  verticalPointCount: "pattern",
-  xCount: "pattern",
-};
+export const LETTER_CHARACTERISTIC_KEYS = [
+  ...LETTER_ORIENTATION_NAMES.map((name) => `a${name}LatinCount` as const),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `ainFinal${name}ArabicCount` as const,
+  ),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `ainInitial${name}ArabicCount` as const,
+  ),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `ainIsolated${name}ArabicCount` as const,
+  ),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `ainMedial${name}ArabicCount` as const,
+  ),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `alefFinal${name}ArabicCount` as const,
+  ),
+  ...LETTER_ORIENTATION_NAMES.map((name) => `ao${name}HanziCount` as const),
+  ...LETTER_ORIENTATION_NAMES.map((name) => `b${name}LatinCount` as const),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `behFinal${name}ArabicCount` as const,
+  ),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `behInitial${name}ArabicCount` as const,
+  ),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `behIsolated${name}ArabicCount` as const,
+  ),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `behMedial${name}ArabicCount` as const,
+  ),
+  ...LETTER_ORIENTATION_NAMES.map((name) => `c${name}LatinCount` as const),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `dalFinal${name}ArabicCount` as const,
+  ),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `dalIsolated${name}ArabicCount` as const,
+  ),
+  ...LETTER_ORIENTATION_NAMES.map((name) => `dalet${name}HebrewCount` as const),
+  ...LETTER_ORIENTATION_NAMES.map((name) => `delta${name}GreekCount` as const),
+  ...LETTER_ORIENTATION_NAMES.map((name) => `e${name}LatinCount` as const),
+  ...LETTER_ORIENTATION_NAMES.map((name) => `f${name}LatinCount` as const),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `fehFinal${name}ArabicCount` as const,
+  ),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `fehInitial${name}ArabicCount` as const,
+  ),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `fehIsolated${name}ArabicCount` as const,
+  ),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `fehMedial${name}ArabicCount` as const,
+  ),
+  ...LETTER_ORIENTATION_NAMES.map((name) => `gan${name}HanziCount` as const),
+  ...LETTER_ORIENTATION_NAMES.map((name) => `h${name}LatinCount` as const),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `hahFinal${name}ArabicCount` as const,
+  ),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `hahInitial${name}ArabicCount` as const,
+  ),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `hahIsolated${name}ArabicCount` as const,
+  ),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `hahMedial${name}ArabicCount` as const,
+  ),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `hehFinal${name}ArabicCount` as const,
+  ),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `hehInitial${name}ArabicCount` as const,
+  ),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `hehMedial${name}ArabicCount` as const,
+  ),
+  ...LETTER_ORIENTATION_NAMES.map((name) => `i${name}LatinCount` as const),
+  ...LETTER_ORIENTATION_NAMES.map((name) => `jia${name}HanziCount` as const),
+  ...LETTER_ORIENTATION_NAMES.map((name) => `jing${name}HanziCount` as const),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `kafFinal${name}ArabicCount` as const,
+  ),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `kafInitial${name}ArabicCount` as const,
+  ),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `kafIsolated${name}ArabicCount` as const,
+  ),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `kafMedial${name}ArabicCount` as const,
+  ),
+  ...LETTER_ORIENTATION_NAMES.map((name) => `kappa${name}GreekCount` as const),
+  ...LETTER_ORIENTATION_NAMES.map((name) => `kieuk${name}HangulCount` as const),
+  ...LETTER_ORIENTATION_NAMES.map((name) => `l${name}LatinCount` as const),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `lamFinal${name}ArabicCount` as const,
+  ),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `lamInitial${name}ArabicCount` as const,
+  ),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `lamIsolated${name}ArabicCount` as const,
+  ),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `lamMedial${name}ArabicCount` as const,
+  ),
+  ...LETTER_ORIENTATION_NAMES.map((name) => `lambda${name}GreekCount` as const),
+  ...LETTER_ORIENTATION_NAMES.map((name) => `lamed${name}HebrewCount` as const),
+  ...LETTER_ORIENTATION_NAMES.map((name) => `m${name}LatinCount` as const),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `meemFinal${name}ArabicCount` as const,
+  ),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `meemInitial${name}ArabicCount` as const,
+  ),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `meemMedial${name}ArabicCount` as const,
+  ),
+  ...LETTER_ORIENTATION_NAMES.map((name) => `mu${name}HanziCount` as const),
+  ...LETTER_ORIENTATION_NAMES.map((name) => `n${name}LatinCount` as const),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `noonFinal${name}ArabicCount` as const,
+  ),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `noonIsolated${name}ArabicCount` as const,
+  ),
+  ...LETTER_ORIENTATION_NAMES.map((name) => `o${name}LatinCount` as const),
+  ...LETTER_ORIENTATION_NAMES.map((name) => `omega${name}GreekCount` as const),
+  ...LETTER_ORIENTATION_NAMES.map((name) => `phi${name}GreekCount` as const),
+  ...LETTER_ORIENTATION_NAMES.map((name) => `pieup${name}HangulCount` as const),
+  ...LETTER_ORIENTATION_NAMES.map((name) => `psi${name}GreekCount` as const),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `qafFinal${name}ArabicCount` as const,
+  ),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `qafIsolated${name}ArabicCount` as const,
+  ),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `rehFinal${name}ArabicCount` as const,
+  ),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `rehIsolated${name}ArabicCount` as const,
+  ),
+  ...LETTER_ORIENTATION_NAMES.map((name) => `rho${name}GreekCount` as const),
+  ...LETTER_ORIENTATION_NAMES.map((name) => `s${name}LatinCount` as const),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `sadFinal${name}ArabicCount` as const,
+  ),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `sadInitial${name}ArabicCount` as const,
+  ),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `sadIsolated${name}ArabicCount` as const,
+  ),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `sadMedial${name}ArabicCount` as const,
+  ),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `seenFinal${name}ArabicCount` as const,
+  ),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `seenInitial${name}ArabicCount` as const,
+  ),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `seenIsolated${name}ArabicCount` as const,
+  ),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `seenMedial${name}ArabicCount` as const,
+  ),
+  ...LETTER_ORIENTATION_NAMES.map((name) => `shang${name}HanziCount` as const),
+  ...LETTER_ORIENTATION_NAMES.map((name) => `shen${name}HanziCount` as const),
+  ...LETTER_ORIENTATION_NAMES.map((name) => `sigma${name}GreekCount` as const),
+  ...LETTER_ORIENTATION_NAMES.map((name) => `t${name}LatinCount` as const),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `tahFinal${name}ArabicCount` as const,
+  ),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `tahInitial${name}ArabicCount` as const,
+  ),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `tahIsolated${name}ArabicCount` as const,
+  ),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `tahMedial${name}ArabicCount` as const,
+  ),
+  ...LETTER_ORIENTATION_NAMES.map((name) => `tav${name}HebrewCount` as const),
+  ...LETTER_ORIENTATION_NAMES.map((name) => `tian${name}HanziCount` as const),
+  ...LETTER_ORIENTATION_NAMES.map((name) => `tu${name}HanziCount` as const),
+  ...LETTER_ORIENTATION_NAMES.map((name) => `tuSoil${name}HanziCount` as const),
+  ...LETTER_ORIENTATION_NAMES.map((name) => `u${name}LatinCount` as const),
+  ...LETTER_ORIENTATION_NAMES.map((name) => `w${name}LatinCount` as const),
+  ...LETTER_ORIENTATION_NAMES.map((name) => `wang${name}HanziCount` as const),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `wawFinal${name}ArabicCount` as const,
+  ),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `wawIsolated${name}ArabicCount` as const,
+  ),
+  ...LETTER_ORIENTATION_NAMES.map((name) => `x${name}LatinCount` as const),
+  ...LETTER_ORIENTATION_NAMES.map((name) => `y${name}LatinCount` as const),
+  ...LETTER_ORIENTATION_NAMES.map((name) => `ya${name}HangulCount` as const),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `yehFinal${name}ArabicCount` as const,
+  ),
+  ...LETTER_ORIENTATION_NAMES.map(
+    (name) => `yehIsolated${name}ArabicCount` as const,
+  ),
+  ...LETTER_ORIENTATION_NAMES.map((name) => `yeo${name}HangulCount` as const),
+  ...LETTER_ORIENTATION_NAMES.map((name) => `yo${name}HangulCount` as const),
+  ...LETTER_ORIENTATION_NAMES.map((name) => `you${name}HanziCount` as const),
+  ...LETTER_ORIENTATION_NAMES.map((name) => `yu${name}HangulCount` as const),
+  ...LETTER_ORIENTATION_NAMES.map((name) => `yu${name}KatakanaCount` as const),
+  ...LETTER_ORIENTATION_NAMES.map((name) => `z${name}LatinCount` as const),
+] as const;
 
 /**
- * Maps 4-digit hexadecimal 2x2 window strings to the corresponding unit shape count key.
+ * The key of every numeric characteristic an evaluator under `submatrix/`,
+ * `path/`, or `compound/` fills — every column key and every letter key — in
+ * alphabetical order. Each is the `metadata.key` of exactly one registered
+ * evaluator whose `valueType` is `"number"`, and `CharacteristicsModule`'s
+ * own test holds the two sets equal in both directions.
  */
-export const ISOLATED_SHAPE_MAP: Readonly<
-  Record<
-    string,
-    | "arcadePillarCount"
-    | "bifurcationCount"
-    | "combSpineCount"
-    | "horizontalDashCount"
-    | "lCount"
-    | "oCount"
-    | "plusCount"
-    | "shapeICount"
-    | "uCount"
-    | "verticalDashCount"
-  >
-> = {
-  "00bb": "combSpineCount",
-  "2d2d": "combSpineCount",
-  "9a56": "plusCount",
-  "1e1e": "combSpineCount",
-  "0021": "horizontalDashCount",
-  "40a1": "lCount",
-  "44a9": "uCount",
-  "44ad": "bifurcationCount",
-  "44da": "bifurcationCount",
-  "46cc": "arcadePillarCount",
-  "54cc": "arcadePillarCount",
-  "61a1": "uCount",
-  "65a9": "oCount",
-  "67cc": "arcadePillarCount",
-  "75cc": "arcadePillarCount",
-  "77cc": "combSpineCount",
-  "0408": "verticalDashCount",
-  "0429": "lCount",
-  "2100": "horizontalDashCount",
-  "2121": "shapeICount",
-  "2508": "lCount",
-  "2529": "uCount",
-  "4080": "verticalDashCount",
-  "4488": "shapeICount",
-  "6180": "lCount",
-  "6588": "uCount",
-  "7700": "combSpineCount",
-  ad44: "bifurcationCount",
-  cc8a: "arcadePillarCount",
-  cc98: "arcadePillarCount",
-  ccab: "arcadePillarCount",
-  ccb9: "arcadePillarCount",
-  ccbb: "combSpineCount",
-  d2d2: "combSpineCount",
-  da44: "bifurcationCount",
-  e1e1: "combSpineCount",
-  ed8a: "bifurcationCount",
-  eda8: "bifurcationCount",
-};
+export const NUMERIC_CHARACTERISTIC_KEYS = [
+  ...COLUMN_CHARACTERISTIC_KEYS,
+  ...LETTER_CHARACTERISTIC_KEYS,
+].toSorted();
+
+/**
+ * The key of every boolean characteristic, in alphabetical order — the
+ * `metadata.key` of exactly one registered evaluator whose `valueType` is
+ * `"boolean"`.
+ */
+export const BOOLEAN_CHARACTERISTIC_KEYS = [
+  "endsAreLatticeNeighbors",
+  "endsOnBorderRules",
+  "isArcade",
+  "isBars",
+  "isBoxes",
+  "isChain",
+  "isClasps",
+  "isClosedLoop",
+  "isComb",
+  "isCross",
+  "isDots",
+  "isDoubleChain",
+  "isFork",
+  "isLines",
+  "isMesh",
+  "isParallel",
+  "isPureTree",
+  "isSingleArc",
+  "isSnake",
+  "isStippled",
+  "isSwirl",
+  "isWaterfalls",
+  "isWhirl",
+  "reversesAtItsTightestTurn",
+] as const;
+
+/**
+ * Every characteristic key, numeric keys first and boolean keys after, each
+ * run alphabetical — the order `CharacteristicsService` lists
+ * metadata in and fills a record in.
+ */
+export const CHARACTERISTIC_KEYS = [
+  ...NUMERIC_CHARACTERISTIC_KEYS,
+  ...BOOLEAN_CHARACTERISTIC_KEYS,
+] as const;
+
+/**
+ * {@link BOOLEAN_CHARACTERISTIC_KEYS} as a set of plain strings, so an
+ * unchecked key read off a discovered provider can be looked up without
+ * first being narrowed to the key union it is being checked against.
+ */
+export const BOOLEAN_CHARACTERISTIC_KEY_SET: ReadonlySet<string> = new Set(
+  BOOLEAN_CHARACTERISTIC_KEYS,
+);
+
+/** {@link COLUMN_CHARACTERISTIC_KEYS} as a set of plain strings, for the same reason as {@link BOOLEAN_CHARACTERISTIC_KEY_SET}. */
+export const COLUMN_CHARACTERISTIC_KEY_SET: ReadonlySet<string> = new Set(
+  COLUMN_CHARACTERISTIC_KEYS,
+);
+
+/** {@link CHARACTERISTIC_KEYS} as a set of plain strings, for the same reason. */
+export const CHARACTERISTIC_KEY_SET: ReadonlySet<string> = new Set(
+  CHARACTERISTIC_KEYS,
+);
+
+/**
+ * Thrown when the evaluators registered with `CharacteristicsModule`
+ * disagree with the key lists above — a key with no evaluator, an evaluator
+ * whose key is unknown or claimed twice, or a value of the wrong type — so
+ * a record is never filled with a field missing or mistyped.
+ */
+export class CharacteristicRegistryError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "CharacteristicRegistryError";
+  }
+}

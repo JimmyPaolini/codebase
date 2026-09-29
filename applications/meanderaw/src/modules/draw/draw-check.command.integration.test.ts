@@ -6,6 +6,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { LoggerService } from "@codebase/logger";
 
+import { meanderRecord } from "../../../testing/meanders";
 import { CorpusService } from "../corpus/corpus.service";
 import { HISTORICAL_CORPUS } from "../corpus/historical-corpus.constants";
 import { DatabaseService } from "../database/database.service";
@@ -136,23 +137,15 @@ describe("drawCommand --check mode", () => {
   it(
     "throws naming the Code when the committed database holds a row the regenerated sweep cannot produce",
     async () => {
-      await repository.save({
-        characteristics: [],
-        code: "not-a-real-lattice-address",
-        columns: 999,
-        components: 1,
-        cycles: 0,
-        drawingHash: "hash",
-        family: "unclassified",
-        freeEnds: 0,
-        inkTJunctions: 0,
-        inkXJunctions: 0,
-        lattice: "not-a-real-lattice-address",
-        pitch: 999,
-        provenance: "hardcoded",
-        repeats: 1,
-        rows: 999,
-      });
+      await repository.save(
+        meanderRecord({
+          bettiNumber0Count: 1,
+          code: "not-a-real-lattice-address",
+          columns: 999,
+          lattice: "not-a-real-lattice-address",
+          rows: 999,
+        }),
+      );
 
       await expect(command.run([], { check: true })).rejects.toThrow(
         /not-a-real-lattice-address/,
@@ -176,23 +169,14 @@ describe("drawCommand --check mode", () => {
 
       expect(entry.columns * (2 * entry.rows - 3)).toBeGreaterThan(EDGE_BUDGET);
 
-      await repository.save({
-        code: entry.code,
-        columns: entry.columns,
-        components: 1,
-        cycles: 0,
-        family: "unclassified",
-        freeEnds: 0,
-
-        inkTJunctions: 0,
-        inkXJunctions: 0,
-
-        characteristics: [],
-        drawingHash: "hash",
-        pitch: entry.columns,
-        provenance: "hardcoded",
-        rows: entry.rows,
-      });
+      await repository.save(
+        meanderRecord({
+          bettiNumber0Count: 1,
+          code: entry.code,
+          columns: entry.columns,
+          rows: entry.rows,
+        }),
+      );
 
       await expect(command.run([], { check: true })).rejects.toThrow(
         new RegExp(`${entry.code}.*svg`),

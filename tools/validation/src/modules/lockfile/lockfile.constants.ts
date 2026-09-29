@@ -9,8 +9,17 @@ export const PACKAGE_MANAGER_BINARY = "pnpm";
  * `--frozen-lockfile` is the whole check: it resolves every manifest against
  * the lockfile and refuses rather than rewriting, so pnpm's own verdict is the
  * verdict, and "in sync" never means something this check invented.
+ *
+ * `--lockfile-only` keeps it from touching `node_modules`. The pre-commit hook
+ * runs this beside eslint, knip, and typecheck, and a real install re-links
+ * whatever is out of step while they read it: each then dies on a different
+ * missing module. Resolution alone still refuses a stale lockfile.
  */
-export const FROZEN_INSTALL_ARGUMENTS = ["install", "--frozen-lockfile"];
+export const FROZEN_INSTALL_ARGUMENTS = [
+  "install",
+  "--frozen-lockfile",
+  "--lockfile-only",
+];
 
 /** Said when the lockfile and the manifests agree. */
 export const LOCKFILE_IN_SYNC_MESSAGE = "🔒 pnpm-lock.yaml is in sync";

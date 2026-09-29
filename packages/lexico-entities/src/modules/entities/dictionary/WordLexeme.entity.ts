@@ -1,9 +1,12 @@
+import { Field, ObjectType } from "@nestjs/graphql";
 import { Entity, Index, ManyToOne } from "typeorm";
 
 import { AuditableEntity } from "../base/Auditable.entity";
 
-import type { Lexeme } from "./Lexeme.entity";
-import type { Word } from "./Word.entity";
+import { Lexeme } from "./Lexeme.entity";
+import { Word } from "./Word.entity";
+
+import type { Relation } from "typeorm";
 
 /**
  * Explicit junction entity linking a normalized Latin word string to the
@@ -17,22 +20,25 @@ import type { Word } from "./Word.entity";
   schema: "public",
 })
 @Index(["word", "lexeme"], { unique: true })
+@ObjectType()
 export class WordLexeme extends AuditableEntity {
   /** The dictionary entry side of the junction. */
+  @Field(() => Lexeme)
   @Index()
   @ManyToOne("Lexeme", "wordLexemes", {
     nullable: false,
     onDelete: "CASCADE",
     onUpdate: "CASCADE",
   })
-  lexeme!: Lexeme;
+  lexeme!: Relation<Lexeme>;
 
   /** The word string side of the junction. */
+  @Field(() => Word)
   @Index()
   @ManyToOne("Word", "wordLexemes", {
     nullable: false,
     onDelete: "CASCADE",
     onUpdate: "CASCADE",
   })
-  word!: Word;
+  word!: Relation<Word>;
 }

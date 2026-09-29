@@ -7,6 +7,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { LoggerService } from "@codebase/logger";
 
+import { meanderRecord } from "../../../testing/meanders";
 import { environmentSchema } from "../../constants";
 import { CharacteristicsModule } from "../characteristics/characteristics.module";
 import { MEANDER_FAMILIES } from "../classification/classification.constants";
@@ -264,26 +265,17 @@ describe("drawCommand sweep mode", () => {
         );
       }
 
-      await repository.save({
-        characteristics: [],
-        code: `${String(duplicated.columns).padStart(2, "0")}x${String(duplicated.rows).padStart(2, "0")}y${duplicated.code}`,
-        columns: duplicated.columns,
-        components: 1,
-        cycles: 0,
-        drawingHash: "hash",
-        family: "unclassified",
-        freeEnds: 2,
-        hasBranching: false,
-        hasCrossing: false,
-        inkTJunctions: 0,
-        inkXJunctions: 0,
-        lattice: duplicated.code,
-        pitch: duplicated.columns,
-        provenance: "enumerated",
-        repeats: 1,
-        rows: duplicated.rows,
-        svg: "<svg>fixture</svg>\n",
-      });
+      await repository.save(
+        meanderRecord({
+          bettiNumber0Count: 1,
+          code: `${String(duplicated.columns).padStart(2, "0")}x${String(duplicated.rows).padStart(2, "0")}y${duplicated.code}`,
+          columns: duplicated.columns,
+          freeEndCount: 2,
+          lattice: duplicated.code,
+          provenance: "enumerated",
+          rows: duplicated.rows,
+        }),
+      );
 
       await expect(command.run([], { write: true })).resolves.not.toThrow();
     },

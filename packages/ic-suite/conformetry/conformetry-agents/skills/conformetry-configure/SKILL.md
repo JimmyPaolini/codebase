@@ -200,7 +200,7 @@ result, and `conformetry-generate` for the generation step itself.
 
 ## Seeing it rather than reading about it
 
-[`conformetry-examples`](https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/conformetry/conformetry-examples) is eleven self-contained examples, each
+[`conformetry-examples`](https://github.com/Organizzolini/codebase/tree/main/packages/ic-suite/conformetry/conformetry-examples) is eleven self-contained examples, each
 a complete configuration small enough to read in one sitting. The ones that
 answer configuration questions:
 
@@ -215,4 +215,4 @@ answer configuration questions:
 - **`failure-modes`** — a placeholder nobody supplied, rendered as an empty
   string on both sides of the loop rather than as an error.
 
-See [its AGENTS.md](https://github.com/JimmyPaolini/codebase/blob/main/packages/ic-suite/conformetry/conformetry-examples/AGENTS.md) for the full index.
+See [its AGENTS.md](https://github.com/Organizzolini/codebase/blob/main/packages/ic-suite/conformetry/conformetry-examples/AGENTS.md) for the full index.

@@ -3,6 +3,7 @@ import { getRepositoryToken, TypeOrmModule } from "@nestjs/typeorm";
 import { DataSource, type Repository } from "typeorm";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
+import { meanderRecord } from "../../../testing/meanders";
 import { CodeService } from "../code/code.service";
 import { DatabaseService } from "../database/database.service";
 import { Meander } from "../database/entities/Meander.entity";
@@ -67,54 +68,7 @@ describe(DrawIndexService, () => {
   /** Every field besides `code` a fixture row does not care about, defaulted so a case only spells out what it means to test. */
   const record = (
     overrides: Partial<MeanderRecord> & Pick<MeanderRecord, "code">,
-  ): MeanderRecord => ({
-    arcadePillarCount: 0,
-    bifurcationCount: 0,
-    columns: 1,
-    combSpineCount: 0,
-    componentCount: 0,
-    components: 1,
-    cornerCount: 0,
-    cycleCount: 0,
-    cycles: 0,
-    density: 0,
-    dotCount: 0,
-    edgeCount: 0,
-    embeddedOCount: 0,
-    embeddedUCount: 0,
-    family: "unclassified",
-    freeEnds: 0,
-    horizontalDashCount: 0,
-    horizontalPointCount: 0,
-    inkPointCount: 0,
-    lattice: "0",
-    lCount: 0,
-    longestHorizontalRun: 0,
-    longestVerticalRun: 0,
-    oCount: 0,
-    plusCount: 0,
-    repeats: 1,
-    seamComponents: 0,
-    seamCycles: 0,
-    seamTJunctions: 0,
-    seamXJunctions: 0,
-    shapeICount: 0,
-    tCount: 0,
-    uCount: 0,
-    verticalDashCount: 0,
-    verticalPointCount: 0,
-    xCount: 0,
-
-    inkTJunctions: 0,
-    inkXJunctions: 0,
-
-    characteristics: [],
-    drawingHash: "hash",
-    pitch: 1,
-    provenance: "hardcoded",
-    rows: 1,
-    ...overrides,
-  });
+  ): MeanderRecord => meanderRecord({ rows: 1, ...overrides });
 
   it("is defined", () => {
     expect(service).toBeDefined();

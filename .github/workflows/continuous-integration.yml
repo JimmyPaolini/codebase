@@ -104,30 +104,44 @@ jobs:
             ${{ matrix.check.target != 'build-projects' && 'true' || 'false' }}
           uv: "true"
           nx-cache: "true"
+          nx-cache-scope: ${{ github.job }}-${{ matrix.check.target }}
           nx-graph-cache: "true"
           nx-shas: "true"
           eslint-cache: ${{ matrix.check.target == 'lint-code' && 'true' || 'false' }}
 
       - name: ${{ matrix.check.emoji }} ${{ matrix.check.name }}
+        if: >-
+          steps.check-skip.outputs.skip != 'true' &&
+          matrix.check.target == 'secure-code'
+        env:
+          NX_VERBOSE_LOGGING: ${{ inputs.verbose || false }}
+        run: pnpm exec nx run codebase:secure-code-ci
+
+      - name: ${{ matrix.check.emoji }} ${{ matrix.check.name }}
         id: run-check
-        if: steps.check-skip.outputs.skip != 'true'
+        if: >-
+          steps.check-skip.outputs.skip != 'true' &&
+          matrix.check.target != 'secure-code'
         continue-on-error: ${{ matrix.check.target == 'build-projects' }}
         env:
           NX_VERBOSE_LOGGING: ${{ inputs.verbose || false }}
-        run: |
-          TARGET="${{ matrix.check.target }}"
-          if [ "${TARGET}" == "secure-code" ]; then
-            pnpm exec nx run codebase:secure-code-ci
-          elif [ "${TARGET}" == "test-code" ]; then
-            pnpm exec nx affected --target=test-code \
-              --configuration=coverage --parallel=4
-          elif [ "${TARGET}" == "build-projects" ]; then
-            pnpm exec nx affected --target=build-projects \
-              --parallel=4
-          else
-            pnpm exec nx affected --target="${TARGET}" \
-              --configuration=check --parallel=4
-          fi
+        uses: ./.github/actions/run-affected
+        with:
+          target: ${{ matrix.check.target }}
+          include-spelling: ${{ matrix.check.target == 'format-code' }}
+          arguments: >-
+            ${{ matrix.check.target == 'test-code' && '--configuration=coverage'
+            || matrix.check.target != 'build-projects' && '--configuration=check'
+            || '' }} --parallel=4
+
+      - name: 🕸️ Codependix
+        if: >-
+          !cancelled() &&
+          steps.check-skip.outputs.skip != 'true' &&
+          matrix.check.target == 'guard-code'
+        env:
+          NX_VERBOSE_LOGGING: ${{ inputs.verbose || false }}
+        run: pnpm exec nx run codebase:codependix:check
 
       - name: 📊 Report Integration
         if: >-

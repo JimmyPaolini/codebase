@@ -1,176 +1,187 @@
 // 🏷️ Types
 
+import type { CodeObject } from "../code/code.types";
+import type { Matrix } from "../matrix/matrix.types";
+import type {
+  BOOLEAN_CHARACTERISTIC_KEYS,
+  CHARACTERISTIC_KEYS,
+  COLUMN_CHARACTERISTIC_KEYS,
+  NUMERIC_CHARACTERISTIC_KEYS,
+} from "./characteristics.constants";
+
+/** The key of a characteristic whose value is a boolean: see {@link BOOLEAN_CHARACTERISTIC_KEYS}. */
+export type BooleanCharacteristicKey =
+  (typeof BOOLEAN_CHARACTERISTIC_KEYS)[number];
+
 /**
- * Every fact `CharacteristicsService.compute` derives directly from a
- * Code: the raw ink junction counts, the boolean Characteristics built from them,
- * and the three {@link Connectivity} counts that say what shape the
- * ink is as a graph.
+ * A discovered provider shaped like an evaluator — a `compute` method and a
+ * `metadata` object naming a string key and value type — before its key and
+ * value type are checked against the key lists.
  */
-export interface Characteristics extends Connectivity {
-  // Graph
-  readonly arcadePillarCount: number;
-  readonly bifurcationCount: number;
-  readonly combSpineCount: number;
-  readonly componentCount: number;
-  readonly cornerCount: number;
-  // Seam
-  readonly crossesTheSeam: boolean;
-  readonly cycleCount: number;
-  readonly density: number;
-  // Digit histogram
-  readonly dotCount: number;
-
-  readonly edgeCount: number;
-  readonly embeddedOCount: number;
-  // Embedded unit shapes
-  readonly embeddedUCount: number;
-  readonly endsAreLatticeNeighbors: boolean;
-  readonly endsOnBorderRules: boolean;
-  readonly hasArcadePillars: boolean;
-  readonly hasBranching: boolean;
-  readonly hasCombSpine: boolean;
-  readonly hasCrossing: boolean;
-  readonly hasDots: boolean;
-  readonly hasTJunctions: boolean;
-
-  readonly hasXJunctions: boolean;
-  // Isolated unit shapes
-  readonly horizontalDashCount: number;
-  readonly horizontalPointCount: number;
-  readonly inkPointCount: number;
-  readonly inkTJunctions: number;
-  readonly inkXJunctions: number;
-  // Family-defining
-  readonly isArcade: boolean;
-  readonly isBars: boolean;
-  readonly isClosedLoop: boolean;
-
-  readonly isComb: boolean;
-  readonly isConnected: boolean;
-  readonly isDots: boolean;
-  readonly isFlipSymmetric: boolean;
-
-  readonly isFork: boolean;
-  readonly isJunctionFree: boolean;
-  readonly isLines: boolean;
-  readonly isMesh: boolean;
-  readonly isMirrorSymmetric: boolean;
-
-  readonly isPureTree: boolean;
-  // Structure
-  readonly isReducible: boolean;
-  readonly isSingleArc: boolean;
-  readonly isStippled: boolean;
-  readonly lCount: number;
-  // Runs
-  readonly longestHorizontalRun: number;
-  readonly longestVerticalRun: number;
-
-  readonly oCount: number;
-  readonly pitch: number;
-
-  readonly plusCount: number;
-  readonly reversesAtItsTightestTurn: boolean;
-  readonly seamComponents: number;
-  readonly seamCycles: number;
-  readonly seamTJunctions: number;
-  readonly seamXJunctions: number;
-  readonly shapeICount: number;
-
-  readonly tCount: number;
-  readonly turnsMonotonically: boolean;
-  readonly uCount: number;
-  readonly verticalDashCount: number;
-  readonly verticalPointCount: number;
-  readonly xCount: number;
-}
-
-/** One edge a Code holds, named by the two points it joins — `from` and `to` are the same point for a single-column Code's wrapped eastward edge. */
-export interface CodeEdge {
-  readonly from: string;
-  readonly to: string;
+export interface CandidateEvaluator {
+  compute(context: CharacteristicContext): unknown;
+  readonly metadata: {
+    readonly key: string;
+    readonly valueType: unknown;
+  };
 }
 
 /**
- * One repeat's ink counted as a graph: how many connected pieces it falls
- * into, how many independent loops it closes, and how many of its points
- * carry exactly one arm.
- *
- * The same three numbers `InkConnectivity` reports for a rendered document,
- * stated over a Code instead — see
- * `ConnectivityService` for how the
- * grid is read as a repeating band and why an edge is claimed by either of
- * its ends.
- *
- * `edges` and `nodes` are deliberately absent where `InkConnectivity` has
- * them: they exist there so a caller can do the forest and tree arithmetic
- * itself, and {@link cycles} is that arithmetic already done. A family is
- * told from another by how many loops it closes rather than by the two
- * counts the number is derived from.
+ * The tier a characteristic is measured in: `submatrix` reads local windows
+ * of the grid (a single point or an M×N sliding window), `path` walks the ink
+ * as a graph over the cyclic band, and `compound` combines other
+ * characteristics' values rather than reading the grid itself.
  */
-export interface Connectivity {
-  readonly components: number;
-  readonly cycles: number;
-  readonly freeEnds: number;
-}
+export type CharacteristicCategory = "compound" | "path" | "submatrix";
 
-/** Tally of digit character occurrences across the Code's points. */
-export interface HistogramCounts {
-  cornerCount: number;
-  density: number;
-  dotCount: number;
-  edgeCount: number;
-  freeEnds: number;
-  hasDots: boolean;
-  hasTJunctions: boolean;
-  hasXJunctions: boolean;
-  horizontalPointCount: number;
-  inkPointCount: number;
-  isJunctionFree: boolean;
-  tCount: number;
-  verticalPointCount: number;
-  xCount: number;
+/**
+ * Everything an evaluator may read about one meander, prepared once by the
+ * caller and shared by every evaluator — so no evaluator depends on another
+ * having run first.
+ *
+ * `matrix` is the decoded grid indexed `[row][column]`; its columns wrap
+ * cyclically, which `MatrixService.pointAt` and `MatrixService.submatrices`
+ * already honour. `rows` and `columns` restate its shape so an evaluator need
+ * not guard an empty first row.
+ */
+export interface CharacteristicContext {
+  readonly code: CodeObject;
+  readonly columns: number;
+  readonly matrix: Matrix;
+  readonly rows: number;
 }
 
 /**
- * A running count of three-armed and four-armed junctions, read directly
- * off a Code.
+ * One characteristic as a self-describing service: the metadata that names
+ * and explains it, and the pure computation of its value from a context.
  *
- * A retired reader counted the same two kinds of junction off a *rendered*
- * document, by rebuilding a lattice from its path data. Nothing does that
- * any more: a Code is what a meander is, and measuring it does not require
- * rendering it first.
+ * An evaluator that needs another characteristic's value injects that
+ * evaluator's service and calls its `compute` with the same context.
  */
-export interface JunctionCounts {
-  tJunctions: number;
-  xJunctions: number;
+export interface CharacteristicEvaluator<
+  T extends CharacteristicValue = CharacteristicValue,
+> {
+  compute(context: CharacteristicContext): T;
+  readonly metadata: CharacteristicMetadata<T>;
 }
 
-/** Fields that are mutated while calculating a histogram. */
-export type MutableHistogram = Pick<
-  HistogramCounts,
-  | "cornerCount"
-  | "dotCount"
-  | "edgeCount"
-  | "freeEnds"
-  | "horizontalPointCount"
-  | "tCount"
-  | "verticalPointCount"
-  | "xCount"
+/**
+ * A provider holding several evaluators rather than being one — a letter
+ * service, whose sixteen orientations are each an evaluator with its own key
+ * and metadata. `CharacteristicsService` registers every member of every
+ * group it discovers exactly as it registers a lone evaluator.
+ */
+export interface CharacteristicEvaluatorGroup<
+  T extends CharacteristicValue = CharacteristicValue,
+> {
+  readonly evaluators: readonly CharacteristicEvaluator<T>[];
+}
+
+/** The key of any registered characteristic: see {@link CHARACTERISTIC_KEYS}. */
+export type CharacteristicKey = (typeof CHARACTERISTIC_KEYS)[number];
+
+/** The key a characteristic yielding `T` may carry, derived from the value type so a numeric evaluator cannot claim a boolean key. */
+export type CharacteristicKeyOf<T extends CharacteristicValue> =
+  T extends boolean ? BooleanCharacteristicKey : NumericCharacteristicKey;
+
+/**
+ * What a characteristic is, for people and catalogs rather than for the
+ * computation: its camelCase `key` (the record field and database column it
+ * fills), a display `name`, a one-sentence `description`, its tier, and the
+ * type of value it yields. `formula` is a LaTeX expression of the definition,
+ * and `documentationUrl` links a fuller explanation where one exists.
+ *
+ * A `submatrix` characteristic must also declare the `submatrix` window it
+ * reads; a `path` or `compound` one reads no window and must not.
+ */
+export type CharacteristicMetadata<
+  T extends CharacteristicValue = CharacteristicValue,
+> =
+  | (CharacteristicMetadataFields<T> & {
+      readonly category: "submatrix";
+      readonly submatrix: SubmatrixWindow;
+    })
+  | (CharacteristicMetadataFields<T> & {
+      readonly category: Exclude<CharacteristicCategory, "submatrix">;
+      readonly submatrix?: never;
+    });
+
+/**
+ * The {@link CharacteristicMetadata} fields every category shares. `letter`
+ * marks a letter glyph count, which a meander row stores in its `glyphs` map
+ * rather than a column of its own: see {@link COLUMN_CHARACTERISTIC_KEYS}.
+ */
+export interface CharacteristicMetadataFields<
+  T extends CharacteristicValue = CharacteristicValue,
+> {
+  readonly description: string;
+  readonly documentationUrl?: string;
+  readonly formula?: string;
+  readonly key: CharacteristicKeyOf<T>;
+  readonly letter?: true;
+  readonly name: string;
+  readonly valueType: CharacteristicValueType<T>;
+}
+
+/**
+ * Every Characteristic of one meander as a single record, one field per
+ * registered evaluator: a number under each numeric key and a boolean under
+ * each boolean key. `CharacteristicsService.compute` fills it.
+ */
+export type Characteristics = NumericCharacteristicRecord &
+  Readonly<Record<BooleanCharacteristicKey, boolean>>;
+
+/** Every value a characteristic may yield. */
+export type CharacteristicValue = boolean | number;
+
+/** The name of a characteristic value's runtime type, derived from the value type itself so metadata cannot disagree with `compute`. */
+export type CharacteristicValueType<T extends CharacteristicValue> =
+  T extends boolean ? "boolean" : "number";
+
+/** The key of a numeric characteristic stored under a column of its own: see {@link COLUMN_CHARACTERISTIC_KEYS}. */
+export type ColumnCharacteristicKey =
+  (typeof COLUMN_CHARACTERISTIC_KEYS)[number];
+
+/** A number under each {@link ColumnCharacteristicKey}: the characteristic columns a stored meander row carries. */
+export type ColumnCharacteristicRecord = Readonly<
+  Record<ColumnCharacteristicKey, number>
 >;
 
-/** Counts for exactly matched shapes in 2x2 windows. */
-export interface UnitShapeCounts {
-  arcadePillarCount: number;
-  bifurcationCount: number;
-  combSpineCount: number;
-  embeddedOCount: number;
-  embeddedUCount: number;
-  horizontalDashCount: number;
-  lCount: number;
-  oCount: number;
-  plusCount: number;
-  shapeICount: number;
-  uCount: number;
-  verticalDashCount: number;
+/**
+ * A meander's letter glyph counts, holding only the letters it contains: a
+ * count of zero is left out, so a reader takes a missing letter as zero.
+ * This is the whole of a stored row's `glyphs` map; raw SQL reads a letter
+ * as `COALESCE(json_extract(glyphs, '$.key'), 0)` for the same reason.
+ */
+export type GlyphCounts = Readonly<
+  Partial<Record<LetterCharacteristicKey, number>>
+>;
+
+/** The key of a letter glyph count: every numeric key without a column of its own. */
+export type LetterCharacteristicKey = Exclude<
+  NumericCharacteristicKey,
+  ColumnCharacteristicKey
+>;
+
+/** The key of a characteristic whose value is a number: see {@link NUMERIC_CHARACTERISTIC_KEYS}. */
+export type NumericCharacteristicKey =
+  (typeof NUMERIC_CHARACTERISTIC_KEYS)[number];
+
+/**
+ * The numeric half of a {@link Characteristics} record: a number under each
+ * numeric key, letters included.
+ */
+export type NumericCharacteristicRecord = Readonly<
+  Record<NumericCharacteristicKey, number>
+>;
+
+/**
+ * The window a `submatrix` characteristic reads, in lattice points: a fixed
+ * glyph's exact template size, 1×1 for a point scan, or — marked `variable` —
+ * the smallest window a variable-size scan such as a rectangle can match.
+ */
+export interface SubmatrixWindow {
+  readonly columns: number;
+  readonly rows: number;
+  readonly variable?: true;
 }

@@ -5,11 +5,7 @@ import { DataSource, type Repository } from "typeorm";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import { environmentSchema } from "../../constants";
-import { CharacteristicsFamilyService } from "../characteristics/characteristics-family.service";
-import { CharacteristicsPathService } from "../characteristics/characteristics-path.service";
-import { CharacteristicsShapeService } from "../characteristics/characteristics-shape.service";
-import { CharacteristicsService } from "../characteristics/characteristics.service";
-import { ConnectivityService } from "../characteristics/connectivity.service";
+import { CharacteristicsModule } from "../characteristics/characteristics.module";
 import { ClassificationService } from "../classification/classification.service";
 import { CodeService } from "../code/code.service";
 import { DatabaseService } from "../database/database.service";
@@ -69,6 +65,7 @@ describe(DrawEnumerationService, () => {
           type: "better-sqlite3",
         }),
         TypeOrmModule.forFeature([Meander]),
+        CharacteristicsModule,
       ],
       providers: [
         DrawEnumerationService,
@@ -76,12 +73,7 @@ describe(DrawEnumerationService, () => {
         GeometryService,
         CodeService,
         MatrixService,
-        CharacteristicsService,
-        CharacteristicsFamilyService,
         ClassificationService,
-        ConnectivityService,
-        CharacteristicsPathService,
-        CharacteristicsShapeService,
         DatabaseService,
         CodeService,
         EnumerationService,
@@ -182,27 +174,22 @@ describe(DrawEnumerationService, () => {
       const row = await repository.findOneByOrFail({ lattice: "4488" });
 
       expect(row).toMatchObject({
-        code: "02x02y4488",
-        columns: 2,
-        components: 1,
-        cycles: 0,
-        family: "bars",
-        freeEnds: 2,
-
-        // cspell:ignore Neighbours
+        bettiNumber0Count: 1,
+        bettiNumber1Count: 0,
         characteristics: [
-          "isJunctionFree",
-          "isBars",
           "endsAreLatticeNeighbors",
           "endsOnBorderRules",
-          "isConnected",
-          "isReducible",
+          "isBars",
           "isSingleArc",
+          "isReducible",
         ],
-        inkTJunctions: 0,
-        inkXJunctions: 0,
+        code: "02x02y4488",
+        columns: 2,
+        crossCount: 0,
+        family: "bars",
+        forkCount: 0,
+        freeEndCount: 2,
         lattice: "4488",
-        pitch: 2,
         provenance: "enumerated",
         repeats: 1,
         rows: 2,

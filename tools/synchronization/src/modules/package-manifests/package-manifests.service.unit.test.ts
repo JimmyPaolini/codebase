@@ -42,7 +42,7 @@ describe(PackageManifestsService, () => {
   const mockRootManifest: RootPackageManifest = {
     author: "Jimmy Paolini",
     license: "MIT",
-    repository: "JimmyPaolini/codebase.git",
+    repository: "Organizzolini/codebase.git",
   };
 
   beforeAll(async () => {
@@ -92,7 +92,7 @@ describe(PackageManifestsService, () => {
 
       expect(manifest.author).toBe("Jimmy Paolini");
       expect(manifest.license).toBe("MIT");
-      expect(manifest.repository).toBe("JimmyPaolini/codebase.git");
+      expect(manifest.repository).toBe("Organizzolini/codebase.git");
     });
 
     it("throws when root package.json is missing required fields", () => {

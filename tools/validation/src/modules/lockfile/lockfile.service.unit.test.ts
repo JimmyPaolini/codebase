@@ -88,6 +88,20 @@ describe(LockfileService, () => {
       );
     });
 
+    it("resolves against the lockfile without writing node_modules", () => {
+      expect.hasAssertions();
+
+      completeWith(() => ({ stdout: "Already up to date" }));
+
+      service.checkLockfile();
+
+      expect(spawnSync).toHaveBeenCalledExactlyOnceWith(
+        PACKAGE_MANAGER_BINARY,
+        ["install", "--frozen-lockfile", "--lockfile-only"],
+        { encoding: "utf8" },
+      );
+    });
+
     it("merges both streams into the reported output", () => {
       expect.hasAssertions();
 

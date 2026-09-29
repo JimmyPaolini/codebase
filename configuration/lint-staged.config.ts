@@ -58,7 +58,8 @@ const config = {
   // there is nothing left here to neutralize.
   //
   // What it checks is not a file's contents but whether a resolution still
-  // holds: a real `pnpm install --frozen-lockfile`, which no Nx target models.
+  // holds: `pnpm install --frozen-lockfile --lockfile-only`, which no Nx target
+  // models. It never writes node_modules, so it is safe to run beside the rest.
   "{**/package.json,pnpm-workspace.yaml}": (): string[] => [
     "node --import @swc-node/register/esm-register tools/validation/src/main.ts lockfile",
   ],

@@ -2,11 +2,13 @@ import { Field, ObjectType } from "@nestjs/graphql";
 import { Column, Entity, Index, JoinColumn, ManyToOne } from "typeorm";
 
 import { AuditableEntity } from "../base/Auditable.entity";
+import { Word } from "../dictionary/Word.entity";
 
-import type { Word } from "../dictionary/Word.entity";
-import type { Author } from "./Author.entity";
-import type { Line } from "./Line.entity";
-import type { Text } from "./Text.entity";
+import { Author } from "./Author.entity";
+import { Line } from "./Line.entity";
+import { Text } from "./Text.entity";
+
+import type { Relation } from "typeorm";
 
 /**
  * Represents a single token (word or punctuation) parsed from a line of text.
@@ -21,10 +23,10 @@ import type { Text } from "./Text.entity";
 @Index(["text", "index"])
 @ObjectType()
 export class Token extends AuditableEntity {
-  @Field(() => Object)
+  @Field(() => Author)
   @Index()
   @ManyToOne("Author", { eager: false, onDelete: "CASCADE" })
-  author!: Author;
+  author!: Relation<Author>;
 
   @Column("varchar", { comment: "The raw string value of the token" })
   @Field()
@@ -44,17 +46,17 @@ export class Token extends AuditableEntity {
   @Field()
   isPunctuation!: boolean;
 
-  @Field(() => Object)
+  @Field(() => Line)
   @ManyToOne("Line", "tokens", { eager: false, onDelete: "CASCADE" })
-  line!: Line;
+  line!: Relation<Line>;
 
-  @Field(() => Object)
+  @Field(() => Text)
   @ManyToOne("Text", { eager: false, onDelete: "CASCADE" })
-  text!: Text;
+  text!: Relation<Text>;
 
-  @Field(() => Object, { nullable: true })
+  @Field(() => Word, { nullable: true })
   @Index()
   @JoinColumn()
   @ManyToOne("Word", { eager: false, nullable: true })
-  word?: null | Word;
+  word?: null | Relation<Word>;
 }
