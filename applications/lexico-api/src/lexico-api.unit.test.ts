@@ -1,5 +1,6 @@
 import { createMock } from "@golevelup/ts-vitest";
 import { NestFactory } from "@nestjs/core";
+import { ExpressAdapter } from "@nestjs/platform-express";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { INestApplication } from "@nestjs/common";
@@ -75,6 +76,11 @@ describe("lexico api bootstrap suite", () => {
       expect(createSpy).toHaveBeenCalledTimes(1);
     });
 
+    expect(createSpy).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.any(ExpressAdapter),
+      expect.anything(),
+    );
     expect(createLightshipMock).toHaveBeenCalledWith({ port: 9000 });
     expect(loggerConstructorMock).toHaveBeenCalledTimes(1);
     expect(setContextMock).toHaveBeenCalledWith("NestApplication");

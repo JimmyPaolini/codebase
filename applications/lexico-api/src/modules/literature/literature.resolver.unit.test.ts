@@ -346,8 +346,28 @@ describe("literature resolver suite", () => {
     expect(textsResolver.parentText(text)).toBe(text.parentText);
     expect(textsResolver.parentText(new Text())).toBeNull();
     expect(textsResolver.linesForText(text)).toStrictEqual(text.lines);
+  });
 
-    expect(linesResolver.tokensForLine(line)).toStrictEqual(line.tokens);
+  it("loads a line's tokens through the service when the relation was not joined", async () => {
+    expect.hasAssertions();
+
+    const line = new Line();
+    line.id = "line-1";
+
+    const token = new Token();
+    token.id = "token-1";
+
+    const listTokensForLine = vi
+      .fn<LiteratureService["listTokensForLine"]>()
+      .mockResolvedValue([token]);
+    const linesResolver = new LinesResolver(
+      createMock<LiteratureService>({ listTokensForLine }),
+    );
+
+    await expect(linesResolver.tokensForLine(line)).resolves.toStrictEqual([
+      token,
+    ]);
+    expect(listTokensForLine).toHaveBeenCalledWith("line-1");
   });
 
   it("resolves nullable lookups and the token data loader batch contract", async () => {

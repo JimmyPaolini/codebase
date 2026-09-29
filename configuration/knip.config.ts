@@ -58,6 +58,10 @@ const config: KnipConfig = {
     // where nothing imports this.
     "@nx/js",
     "@nx/web", // Nx web plugin (auto-detected by Nx)
+    // Declared at the root only so pnpm resolves @nestjs/core's optional peer
+    // the same way for every workspace package; without it lexico-api and
+    // lexico-entities load two copies of @nestjs/core and DI breaks.
+    "@nestjs/platform-express",
     "@semantic-release/commit-analyzer", // semantic-release plugin, referenced in release.config.cjs
     "@semantic-release/github", // semantic-release plugin
     "@semantic-release/npm", // semantic-release plugin
@@ -172,6 +176,9 @@ const config: KnipConfig = {
     // lexico-api: NestJS GraphQL API
     "applications/lexico-api": {
       ignoreDependencies: [
+        // Apollo 5's Express integration, which @nestjs/apollo resolves by
+        // name at startup; without it GraphQLModule refuses to boot.
+        "@as-integrations/express5",
         "typeorm", // Used by testing/mocks.ts for repository mocks
       ],
       project: "src/**/*.ts",

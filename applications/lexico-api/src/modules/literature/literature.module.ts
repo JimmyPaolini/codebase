@@ -6,6 +6,7 @@ import {
   Text,
   Token,
   TypeOrmModule,
+  Word,
 } from "@codebase/lexico-entities";
 
 import { AuthorsResolver } from "./authors.resolver";
@@ -21,7 +22,7 @@ import { TokensResolver } from "./tokens.resolver";
  */
 @Module({
   exports: [LiteratureService, TokenWordDataLoader],
-  imports: [TypeOrmModule.forFeature([Author, Text, Line, Token])],
+  imports: [TypeOrmModule.forFeature([Author, Text, Line, Token, Word])],
   providers: [
     AuthorsResolver,
     TextsResolver,
