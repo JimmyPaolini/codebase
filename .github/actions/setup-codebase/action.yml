@@ -192,6 +192,57 @@ runs:
           fi
         done
 
+    # Nx names the task-result database after the machine it runs on,
+    # `<machine-id>-v<schema>.db`, with the id read from
+    # `/var/lib/dbus/machine-id` or `/etc/machine-id` on Linux. Every hosted
+    # runner is a fresh VM with a fresh id, so Nx opened an empty database of
+    # its own beside the restored one and never found a row: no CI log had a
+    # single `[local cache]` hit, however much the tarball carried.
+    #
+    # Adopting the newest restored database under this runner's id is what
+    # makes the restore count. Older ones are earlier runners' leftovers and
+    # are dropped, so the tarball stops growing by one database per job. The
+    # schema suffix is kept as restored: a newer Nx ignores an older schema
+    # rather than misreading it.
+    - name: 🪪 Adopt Nx Cache Database
+      if: inputs.nx-cache == 'true'
+      shell: bash
+      run: |
+        shopt -s nullglob
+        databases=(.nx/workspace-data/*-v*.db)
+        if (( ${#databases[@]} == 0 )); then
+          echo "🪪 No Nx cache database was restored"
+          exit 0
+        fi
+
+        machine="$(cat /var/lib/dbus/machine-id 2>/dev/null \
+          || cat /etc/machine-id 2>/dev/null || true)"
+        machine="${machine//[[:space:]]/}"
+        if [[ -z "${machine}" ]]; then
+          echo "::warning::No machine id to adopt the Nx cache database under"
+          exit 0
+        fi
+
+        newest="$(ls -t "${databases[@]}" | head -n 1)"
+        adopted=".nx/workspace-data/${machine}-v${newest##*-v}"
+        for datastore in "${databases[@]}"; do
+          if [[ "${datastore}" != "${newest}" ]]; then
+            rm -f "${datastore}" "${datastore}-wal" "${datastore}-shm" \
+              "${datastore}-journal"
+          fi
+        done
+        if [[ "${newest}" != "${adopted}" ]]; then
+          for suffix in "" -wal -shm -journal; do
+            if [[ -e "${newest}${suffix}" ]]; then
+              mv "${newest}${suffix}" "${adopted}${suffix}"
+            fi
+          done
+        fi
+
+        rows="$(sqlite3 "${adopted}" 'SELECT count(*) FROM cache_outputs;' \
+          2>/dev/null || echo "an unknown number of")"
+        echo "🪪 Adopted ${newest##*/} as ${adopted##*/} (${rows} cached results)"
+
     # Exact match only, and no restore-keys: a partially stale project graph
     # is worse than rebuilding one. `nx reset` clears it if it ever misbehaves.
     #

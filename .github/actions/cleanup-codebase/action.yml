@@ -47,6 +47,32 @@ runs:
           fi
         done
 
+    # `setup-codebase` renames the restored database to this runner's machine
+    # id, so Nx should have written into that one file. A second database
+    # means Nx opened a name of its own again (a changed naming scheme or
+    # machine-id source) and every hit was lost. That is worth a warning
+    # rather than a quiet return to zero hits. Only the newest is saved, since
+    # it holds this job's results, so the tarball never carries more than one.
+    - name: 🪪 Keep One Nx Cache Database
+      if: always() && inputs.nx-cache == 'true'
+      shell: bash
+      run: |
+        shopt -s nullglob
+        databases=(.nx/workspace-data/*-v*.db)
+        if (( ${#databases[@]} <= 1 )); then
+          exit 0
+        fi
+
+        newest="$(ls -t "${databases[@]}" | head -n 1)"
+        echo "::warning::Nx wrote a database beside the adopted one;" \
+          "keeping ${newest##*/} of: ${databases[*]##*/}"
+        for datastore in "${databases[@]}"; do
+          if [[ "${datastore}" != "${newest}" ]]; then
+            rm -f "${datastore}" "${datastore}-wal" "${datastore}-shm" \
+              "${datastore}-journal"
+          fi
+        done
+
     # `.nx/cache` and `.nx/workspace-data/*.db*` hold a result for every task
     # that finished before a job was cut off, whether by a failure or a
     # `timeout-minutes` cancellation — Nx writes each task's result as it
