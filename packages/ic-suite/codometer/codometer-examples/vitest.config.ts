@@ -14,15 +14,17 @@ export default mergeConfig(
         // by omission.
         include: [],
       },
-      // Both test files spawn the codometer command line for nearly every
-      // assertion, and each spawn bootstraps Nest and reaches an interpreter
-      // for the Python samples. Running the files in parallel doubles that
-      // concurrency without making anything faster — the work is process-bound
-      // rather than waiting on an idle core — and on a loaded machine it is
-      // what turns a slow run into a failing one.
-      fileParallelism: false,
-      // Every test here spawns the codometer CLI over the corpus, which
-      // bootstraps Nest and reaches an interpreter for the Python samples.
+      // Every test here spawns the codometer command line, and each spawn
+      // compiles the tool through swc, bootstraps Nest, and reaches a Python
+      // interpreter through uv — seconds of work on one core, repeated for
+      // every run. The suites are split so the runner can hand them to
+      // separate workers: on a runner whose other tasks have finished, those
+      // cores are idle, and a single serial file left them that way.
+      //
+      // Hooks share the test budget because a `beforeAll` here is where one
+      // run is spawned for several cases to read, and on a loaded runner a
+      // single spawn can outlast the ten-second hook default.
+      hookTimeout: 180_000,
       testTimeout: 180_000,
     },
   }),
