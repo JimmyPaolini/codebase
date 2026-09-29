@@ -183,11 +183,14 @@ export const runCodometer = (
  * The guides promise `codometer --format json | …` produces a stream something can
  * parse. What makes that promise true is the **split**: the report goes to
  * standard output and every diagnostic goes to standard error, so a consumer
- * reading the one gets data and nothing else. This runs the command line, takes
- * the bytes it wrote to standard output and **only** those, and hands them
- * unaltered to a second process's standard input — which is what a shell pipe
- * does, minus the shell. A log line leaking into the data stream fails it, and
- * a report assembled in-process would not.
+ * reading the one gets data and nothing else. This takes the bytes a finished
+ * run wrote to standard output and **only** those, and hands them unaltered to
+ * a second process's standard input — which is what a shell pipe does, minus
+ * the shell. A log line leaking into the data stream fails it, and a report
+ * assembled in-process would not.
+ *
+ * The upstream run is handed in rather than spawned here, so a suite that
+ * asserts on the same console run some other way pays for one spawn, not two.
  *
  * There is deliberately no `sh -c` here. Every path involved — the interpreter,
  * the command line's entry point, the measured directory — is absolute and
@@ -209,9 +212,8 @@ export const runCodometer = (
  * back together.
  */
 export const runPipeline = (
-  args: readonly string[],
+  upstream: CodometerRun,
   readReport: string,
-  cwd: string = workspaceDirectory,
 ): CodometerRun => {
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), "codometer-pipe-"));
   const downstream = path.join(directory, "downstream.mjs");
@@ -243,7 +245,6 @@ export const runPipeline = (
   );
 
   try {
-    const upstream = runCodometer(args, cwd);
     // Only what the run wrote to standard output crosses over. Its standard
     // error is held back deliberately: that separation is the property under
     // test, and merging the streams here would test nothing.
@@ -280,6 +281,53 @@ export const measure = (
   const run = runCodometer([...args, "--format", "json"], cwd);
 
   return JSON.parse(run.standardOutput) as CodometerReport;
+};
+
+// 🧪 Example shorthands
+
+/** Runs one example configuration over the committed corpus. */
+export const measureExample = (
+  ...segments: readonly string[]
+): CodometerReport =>
+  measure(["--config", exampleConfiguration(...segments)], corpusDirectory);
+
+/** Runs one example configuration as a gate, and returns what it produced. */
+export const gateExample = (...segments: readonly string[]): CodometerRun =>
+  runCodometer(
+    ["--config", exampleConfiguration(...segments), "--check", "limits"],
+    corpusDirectory,
+  );
+
+/** What one gating run produced, and the report it printed while gating. */
+export interface GatedMeasurement {
+  report: CodometerReport;
+  run: CodometerRun;
+}
+
+/**
+ * Runs one example configuration as a gate and reads its report, in one spawn.
+ *
+ * A guide that quotes both an example's exit code and a number from its report
+ * would otherwise pay for two runs of the same measurement. The gate verdict
+ * does not depend on the output format, and a gating run still prints its
+ * report before it exits, so asking for JSON on the same run answers both.
+ */
+export const gateAndMeasureExample = (
+  ...segments: readonly string[]
+): GatedMeasurement => {
+  const run = runCodometer(
+    [
+      "--config",
+      exampleConfiguration(...segments),
+      "--check",
+      "limits",
+      "--format",
+      "json",
+    ],
+    corpusDirectory,
+  );
+
+  return { report: JSON.parse(run.standardOutput) as CodometerReport, run };
 };
 
 /** Reads one measured target from a report by name. */

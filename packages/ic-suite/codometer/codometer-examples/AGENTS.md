@@ -72,7 +72,8 @@ codometer-examples/
     ├── codometer.ts                   the command-line driver every test goes through
     ├── run-examples.ts                the `examples` target's runner
     ├── corpus.integration.test.ts     the corpus contents the guides quote
-    └── examples.integration.test.ts   every example, asserted against its guide
+    ├── examples.integration.test.ts   targets, compression, and discovery, asserted against their guides
+    └── <topic>.integration.test.ts    every other example, one or two guides per suite
 ```
 
 - `examples/corpus/` and `examples/compiled/` are **fixtures, not examples**.
@@ -98,8 +99,13 @@ codometer-examples/
   `## Next` link from the example before it in that order.
 - An entry in `EXPECTED_EXIT_CODES` in `testing/run-examples.ts`. A
   configuration with no entry fails the `examples` target.
-- The assertion goes in `testing/examples.integration.test.ts` in the same
-  change. An example with no test is a claim, not an example.
+- The assertion goes in the `testing/*.integration.test.ts` suite for its
+  topic in the same change, or a new suite beside them for a new topic — the
+  runner spreads suites across workers, so a suite is the unit of parallelism.
+  An example with no test is a claim, not an example.
+- Spawn each configuration once. Where several cases read the same run, spawn
+  it in a `beforeAll`; where a case wants both the exit code and the report,
+  `gateAndMeasureExample` returns both from one run.
 - If the example writes anything, run it through `withCorpusCopy` — the
   committed corpus must never be written to, or every other test's counts move.
 
