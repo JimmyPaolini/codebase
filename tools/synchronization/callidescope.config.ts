@@ -6,9 +6,9 @@ import { projectDefaults } from "../../configuration/callidescope.config.js";
  * Ten frames down `SynchronizationCommand.run`, the top-level command every
  * synchronizer runs beneath.
  *
- * Ten direct callees at the widest, where `SynchronizationCommand.synchronize`
+ * Eleven direct callees at the widest, where `SynchronizationCommand.synchronize`
  * dispatches to one `synchronize` method per registered synchronizer — a fixed
- * roster of seven commands, plus `getCommands`, `reportResults`, and Array `every`.
+ * roster of eight commands, plus `getCommands`, `reportResults`, and Array `every`.
  * Every traced project gates breadth now, the orchestrator included, so the next
  * step or synchronizer it gains is what moves this number.
  *
@@ -23,7 +23,7 @@ import { projectDefaults } from "../../configuration/callidescope.config.js";
 export default {
   ...projectDefaults,
   limits: {
-    maximumBreadth: 10,
+    maximumBreadth: 11,
     maximumDepth: 10,
   },
 };
