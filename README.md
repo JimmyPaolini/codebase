@@ -1,4 +1,4 @@
-# Codebase v2.30.0
+# Codebase v2.30.1
 
 [![Nx](https://img.shields.io/badge/Nx-Codebase-143055?logo=nx)](https://nx.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Strict-3178C6?logo=typescript)](https://www.typescriptlang.org/)
@@ -2622,9 +2622,15 @@ graph LR
   file_codometer_examples_examples_write_check_codometer_config_ts["codometer-examples/examples/write-check/codometer.config.ts"]
   file_codometer_examples_testing_codometer_ts["codometer-examples/testing/codometer.ts"]
   file_codometer_examples_testing_corpus_integration_test_ts["codometer-examples/testing/corpus.integration.test.ts"]
+  file_codometer_examples_testing_documentation_integration_test_ts["codometer-examples/testing/documentation.integration.test.ts"]
   file_codometer_examples_testing_examples_integration_test_ts["codometer-examples/testing/examples.integration.test.ts"]
+  file_codometer_examples_testing_limit_paths_integration_test_ts["codometer-examples/testing/limit-paths.integration.test.ts"]
+  file_codometer_examples_testing_limits_integration_test_ts["codometer-examples/testing/limits.integration.test.ts"]
+  file_codometer_examples_testing_output_integration_test_ts["codometer-examples/testing/output.integration.test.ts"]
   file_codometer_examples_testing_run_examples_ts["codometer-examples/testing/run-examples.ts"]
   file_codometer_examples_testing_setup_ts["codometer-examples/testing/setup.ts"]
+  file_codometer_examples_testing_write_check_integration_test_ts["codometer-examples/testing/write-check.integration.test.ts"]
+  file_codometer_examples_testing_written_reports_integration_test_ts["codometer-examples/testing/written-reports.integration.test.ts"]
   file_codometer_examples_vitest_config_ts["codometer-examples/vitest.config.ts"]
   file_codometer_languages_callidescope_config_ts["codometer-languages/callidescope.config.ts"]
   file_codometer_languages_codependix_config_ts["codometer-languages/codependix.config.ts"]
@@ -3336,7 +3342,6 @@ graph LR
   file_lexico_entities_src_index_ts["lexico-entities/src/index.ts"]
   file_lexico_entities_src_modules_database_data_source_constants_ts["lexico-entities/src/modules/database/data-source.constants.ts"]
   file_lexico_entities_src_modules_database_data_source_constants_unit_test_ts["lexico-entities/src/modules/database/data-source.constants.unit.test.ts"]
-  file_lexico_entities_src_modules_database_data_source_utilities_unit_test_ts["lexico-entities/src/modules/database/data-source.utilities.unit.test.ts"]
   file_lexico_entities_src_modules_database_database_constants_ts["lexico-entities/src/modules/database/database.constants.ts"]
   file_lexico_entities_src_modules_database_database_module_ts["lexico-entities/src/modules/database/database.module.ts"]
   file_lexico_entities_src_modules_database_database_service_ts["lexico-entities/src/modules/database/database.service.ts"]
@@ -3980,6 +3985,7 @@ graph LR
   file_meanderaw_src_modules_draw_draw_index_types_ts["meanderaw/src/modules/draw/draw-index.types.ts"]
   file_meanderaw_src_modules_draw_draw_record_service_ts["meanderaw/src/modules/draw/draw-record.service.ts"]
   file_meanderaw_src_modules_draw_draw_record_service_unit_test_ts["meanderaw/src/modules/draw/draw-record.service.unit.test.ts"]
+  file_meanderaw_src_modules_draw_draw_sweep_collision_command_integration_test_ts["meanderaw/src/modules/draw/draw-sweep-collision.command.integration.test.ts"]
   file_meanderaw_src_modules_draw_draw_sweep_command_integration_test_ts["meanderaw/src/modules/draw/draw-sweep.command.integration.test.ts"]
   file_meanderaw_src_modules_draw_draw_command_integration_test_ts["meanderaw/src/modules/draw/draw.command.integration.test.ts"]
   file_meanderaw_src_modules_draw_draw_command_ts["meanderaw/src/modules/draw/draw.command.ts"]
@@ -4030,6 +4036,7 @@ graph LR
   file_meanderaw_src_modules_tile_tile_service_unit_test_ts["meanderaw/src/modules/tile/tile.service.unit.test.ts"]
   file_meanderaw_src_modules_tile_tile_types_ts["meanderaw/src/modules/tile/tile.types.ts"]
   file_meanderaw_src_repl_ts["meanderaw/src/repl.ts"]
+  file_meanderaw_testing_draw_sweep_ts["meanderaw/testing/draw-sweep.ts"]
   file_meanderaw_testing_legacy_characteristics_ts["meanderaw/testing/legacy-characteristics.ts"]
   file_meanderaw_testing_letters_ts["meanderaw/testing/letters.ts"]
   file_meanderaw_testing_meanders_ts["meanderaw/testing/meanders.ts"]
@@ -6357,8 +6364,14 @@ graph LR
   file_codometer_core_src_modules_codometer_core_codometer_core_module_ts --> file_codometer_core_src_modules_codometer_core_codometer_core_service_ts
   file_codometer_core_src_modules_codometer_core_codometer_core_service_unit_test_ts --> file_codometer_core_src_modules_codometer_core_codometer_core_service_ts
   file_codometer_examples_testing_corpus_integration_test_ts --> file_codometer_examples_testing_codometer_ts
+  file_codometer_examples_testing_documentation_integration_test_ts --> file_codometer_examples_testing_codometer_ts
   file_codometer_examples_testing_examples_integration_test_ts --> file_codometer_examples_testing_codometer_ts
+  file_codometer_examples_testing_limit_paths_integration_test_ts --> file_codometer_examples_testing_codometer_ts
+  file_codometer_examples_testing_limits_integration_test_ts --> file_codometer_examples_testing_codometer_ts
+  file_codometer_examples_testing_output_integration_test_ts --> file_codometer_examples_testing_codometer_ts
   file_codometer_examples_testing_run_examples_ts --> file_codometer_examples_testing_codometer_ts
+  file_codometer_examples_testing_write_check_integration_test_ts --> file_codometer_examples_testing_codometer_ts
+  file_codometer_examples_testing_written_reports_integration_test_ts --> file_codometer_examples_testing_codometer_ts
   file_codometer_languages_src_modules_comments_comments_module_ts --> file_codometer_languages_src_modules_comments_comments_service_ts
   file_codometer_languages_src_modules_comments_comments_module_ts --> file_codometer_languages_src_modules_comments_css_comments_service_ts
   file_codometer_languages_src_modules_comments_comments_module_ts --> file_codometer_languages_src_modules_comments_hash_comments_service_ts
@@ -7449,6 +7462,7 @@ graph LR
   file_lexico_entities_src_modules_database_data_source_constants_ts --> file_lexico_entities_src_modules_entities_literature_Line_entity_ts
   file_lexico_entities_src_modules_database_data_source_constants_ts --> file_lexico_entities_src_modules_entities_literature_Text_entity_ts
   file_lexico_entities_src_modules_database_data_source_constants_ts --> file_lexico_entities_src_modules_entities_literature_Token_entity_ts
+  file_lexico_entities_src_modules_database_data_source_constants_unit_test_ts --> file_lexico_entities_src_modules_database_data_source_constants_ts
   file_lexico_entities_src_modules_database_database_module_ts --> file_lexico_entities_src_modules_database_data_source_constants_ts
   file_lexico_entities_src_modules_database_database_module_ts --> file_lexico_entities_src_modules_database_database_constants_ts
   file_lexico_entities_src_modules_database_database_module_ts --> file_lexico_entities_src_modules_database_database_service_ts
@@ -9558,26 +9572,16 @@ graph LR
   file_meanderaw_src_modules_draw_draw_record_service_unit_test_ts --> file_meanderaw_src_modules_code_code_service_ts
   file_meanderaw_src_modules_draw_draw_record_service_unit_test_ts --> file_meanderaw_src_modules_draw_draw_record_service_ts
   file_meanderaw_src_modules_draw_draw_record_service_unit_test_ts --> file_meanderaw_src_modules_drawing_drawing_module_ts
-  file_meanderaw_src_modules_draw_draw_sweep_command_integration_test_ts --> file_meanderaw_src_constants_ts
-  file_meanderaw_src_modules_draw_draw_sweep_command_integration_test_ts --> file_meanderaw_src_modules_characteristics_characteristics_module_ts
+  file_meanderaw_src_modules_draw_draw_sweep_collision_command_integration_test_ts --> file_meanderaw_src_modules_corpus_historical_corpus_constants_ts
+  file_meanderaw_src_modules_draw_draw_sweep_collision_command_integration_test_ts --> file_meanderaw_src_modules_draw_draw_check_service_ts
+  file_meanderaw_src_modules_draw_draw_sweep_collision_command_integration_test_ts --> file_meanderaw_src_modules_draw_draw_code_service_ts
+  file_meanderaw_src_modules_draw_draw_sweep_collision_command_integration_test_ts --> file_meanderaw_testing_draw_sweep_ts
+  file_meanderaw_src_modules_draw_draw_sweep_collision_command_integration_test_ts --> file_meanderaw_testing_meanders_ts
   file_meanderaw_src_modules_draw_draw_sweep_command_integration_test_ts --> file_meanderaw_src_modules_classification_classification_constants_ts
-  file_meanderaw_src_modules_draw_draw_sweep_command_integration_test_ts --> file_meanderaw_src_modules_classification_classification_module_ts
-  file_meanderaw_src_modules_draw_draw_sweep_command_integration_test_ts --> file_meanderaw_src_modules_code_code_module_ts
-  file_meanderaw_src_modules_draw_draw_sweep_command_integration_test_ts --> file_meanderaw_src_modules_corpus_corpus_service_ts
   file_meanderaw_src_modules_draw_draw_sweep_command_integration_test_ts --> file_meanderaw_src_modules_corpus_historical_corpus_constants_ts
-  file_meanderaw_src_modules_draw_draw_sweep_command_integration_test_ts --> file_meanderaw_src_modules_database_database_service_ts
-  file_meanderaw_src_modules_draw_draw_sweep_command_integration_test_ts --> file_meanderaw_src_modules_database_entities_Meander_entity_ts
   file_meanderaw_src_modules_draw_draw_sweep_command_integration_test_ts --> file_meanderaw_src_modules_draw_draw_check_service_ts
   file_meanderaw_src_modules_draw_draw_sweep_command_integration_test_ts --> file_meanderaw_src_modules_draw_draw_code_service_ts
-  file_meanderaw_src_modules_draw_draw_sweep_command_integration_test_ts --> file_meanderaw_src_modules_draw_draw_enumeration_service_ts
-  file_meanderaw_src_modules_draw_draw_sweep_command_integration_test_ts --> file_meanderaw_src_modules_draw_draw_index_service_ts
-  file_meanderaw_src_modules_draw_draw_sweep_command_integration_test_ts --> file_meanderaw_src_modules_draw_draw_record_service_ts
-  file_meanderaw_src_modules_draw_draw_sweep_command_integration_test_ts --> file_meanderaw_src_modules_draw_draw_command_ts
-  file_meanderaw_src_modules_draw_draw_sweep_command_integration_test_ts --> file_meanderaw_src_modules_drawing_drawing_module_ts
-  file_meanderaw_src_modules_draw_draw_sweep_command_integration_test_ts --> file_meanderaw_src_modules_enumeration_enumeration_module_ts
-  file_meanderaw_src_modules_draw_draw_sweep_command_integration_test_ts --> file_meanderaw_src_modules_enumeration_enumeration_service_ts
-  file_meanderaw_src_modules_draw_draw_sweep_command_integration_test_ts --> file_meanderaw_src_modules_geometry_geometry_module_ts
-  file_meanderaw_src_modules_draw_draw_sweep_command_integration_test_ts --> file_meanderaw_testing_meanders_ts
+  file_meanderaw_src_modules_draw_draw_sweep_command_integration_test_ts --> file_meanderaw_testing_draw_sweep_ts
   file_meanderaw_src_modules_draw_draw_command_integration_test_ts --> file_meanderaw_src_modules_characteristics_characteristics_module_ts
   file_meanderaw_src_modules_draw_draw_command_integration_test_ts --> file_meanderaw_src_modules_classification_classification_module_ts
   file_meanderaw_src_modules_draw_draw_command_integration_test_ts --> file_meanderaw_src_modules_code_code_module_ts
@@ -9717,6 +9721,21 @@ graph LR
   file_meanderaw_src_modules_tile_tile_service_unit_test_ts --> file_meanderaw_src_modules_tile_tile_types_ts
   file_meanderaw_src_modules_tile_tile_service_unit_test_ts --> file_meanderaw_testing_tiles_ts
   file_meanderaw_src_repl_ts --> file_meanderaw_src_main_module_ts
+  file_meanderaw_testing_draw_sweep_ts --> file_meanderaw_src_constants_ts
+  file_meanderaw_testing_draw_sweep_ts --> file_meanderaw_src_modules_characteristics_characteristics_module_ts
+  file_meanderaw_testing_draw_sweep_ts --> file_meanderaw_src_modules_classification_classification_module_ts
+  file_meanderaw_testing_draw_sweep_ts --> file_meanderaw_src_modules_code_code_module_ts
+  file_meanderaw_testing_draw_sweep_ts --> file_meanderaw_src_modules_corpus_corpus_service_ts
+  file_meanderaw_testing_draw_sweep_ts --> file_meanderaw_src_modules_database_database_service_ts
+  file_meanderaw_testing_draw_sweep_ts --> file_meanderaw_src_modules_database_entities_Meander_entity_ts
+  file_meanderaw_testing_draw_sweep_ts --> file_meanderaw_src_modules_draw_draw_enumeration_service_ts
+  file_meanderaw_testing_draw_sweep_ts --> file_meanderaw_src_modules_draw_draw_index_service_ts
+  file_meanderaw_testing_draw_sweep_ts --> file_meanderaw_src_modules_draw_draw_record_service_ts
+  file_meanderaw_testing_draw_sweep_ts --> file_meanderaw_src_modules_draw_draw_command_ts
+  file_meanderaw_testing_draw_sweep_ts --> file_meanderaw_src_modules_drawing_drawing_module_ts
+  file_meanderaw_testing_draw_sweep_ts --> file_meanderaw_src_modules_enumeration_enumeration_module_ts
+  file_meanderaw_testing_draw_sweep_ts --> file_meanderaw_src_modules_enumeration_enumeration_service_ts
+  file_meanderaw_testing_draw_sweep_ts --> file_meanderaw_src_modules_geometry_geometry_module_ts
   file_meanderaw_testing_letters_ts --> file_meanderaw_src_modules_characteristics_characteristic_context_service_ts
   file_meanderaw_testing_letters_ts --> file_meanderaw_src_modules_characteristics_characteristics_types_ts
   file_meanderaw_testing_letters_ts --> file_meanderaw_src_modules_characteristics_submatrix_letter_letter_utilities_service_ts
@@ -10120,7 +10139,7 @@ Repository statistics measured by [codometer](packages/ic-suite/codometer/codome
 
 ### Repository
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-6044-22c55e?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-6040-22c55e?style=flat-square)
 ![Repository Size](https://img.shields.io/badge/Repository_Size-2.08_MB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-75-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-24-3178c6?style=flat-square)
@@ -10170,27 +10189,27 @@ Repository statistics measured by [codometer](packages/ic-suite/codometer/codome
 ### JSON
 
 ![JSON Files](https://img.shields.io/badge/JSON_Files-23-a16207?style=flat-square)
-![JSON Lines](https://img.shields.io/badge/JSON_Lines-5679-ca8a04?style=flat-square)
-![JSON Objects](https://img.shields.io/badge/JSON_Objects-717-7c3aed?style=flat-square)
-![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-263-8b5cf6?style=flat-square)
-![JSON Properties](https://img.shields.io/badge/JSON_Properties-1816-0284c7?style=flat-square)
-![JSON Strings](https://img.shields.io/badge/JSON_Strings-1854-16a34a?style=flat-square)
+![JSON Lines](https://img.shields.io/badge/JSON_Lines-5685-ca8a04?style=flat-square)
+![JSON Objects](https://img.shields.io/badge/JSON_Objects-718-7c3aed?style=flat-square)
+![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-264-8b5cf6?style=flat-square)
+![JSON Properties](https://img.shields.io/badge/JSON_Properties-1819-0284c7?style=flat-square)
+![JSON Strings](https://img.shields.io/badge/JSON_Strings-1858-16a34a?style=flat-square)
 ![JSON Numbers](https://img.shields.io/badge/JSON_Numbers-37-059669?style=flat-square)
 ![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-125-0ea5e9?style=flat-square)
 ![JSON Nulls](https://img.shields.io/badge/JSON_Nulls-0-64748b?style=flat-square)
-![JSON Items](https://img.shields.io/badge/JSON_Items-1164-475569?style=flat-square)
-![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-2996-dc2626?style=flat-square)
+![JSON Items](https://img.shields.io/badge/JSON_Items-1167-475569?style=flat-square)
+![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-3002-dc2626?style=flat-square)
 ![JSON Max Depth](https://img.shields.io/badge/JSON_Max_Depth-11-ea580c?style=flat-square)
 
 ### YAML
 
 ![YAML Files](https://img.shields.io/badge/YAML_Files-22-cb171e?style=flat-square)
-![YAML Lines](https://img.shields.io/badge/YAML_Lines-2936-e34c26?style=flat-square)
+![YAML Lines](https://img.shields.io/badge/YAML_Lines-2927-e34c26?style=flat-square)
 ![YAML Documents](https://img.shields.io/badge/YAML_Documents-22-f97316?style=flat-square)
-![YAML Mappings](https://img.shields.io/badge/YAML_Mappings-424-7c3aed?style=flat-square)
+![YAML Mappings](https://img.shields.io/badge/YAML_Mappings-422-7c3aed?style=flat-square)
 ![YAML Sequences](https://img.shields.io/badge/YAML_Sequences-89-8b5cf6?style=flat-square)
-![YAML Keys](https://img.shields.io/badge/YAML_Keys-1447-0284c7?style=flat-square)
-![YAML Scalars](https://img.shields.io/badge/YAML_Scalars-2891-16a34a?style=flat-square)
+![YAML Keys](https://img.shields.io/badge/YAML_Keys-1442-0284c7?style=flat-square)
+![YAML Scalars](https://img.shields.io/badge/YAML_Scalars-2882-16a34a?style=flat-square)
 ![YAML Anchors](https://img.shields.io/badge/YAML_Anchors-0-059669?style=flat-square)
 ![YAML Aliases](https://img.shields.io/badge/YAML_Aliases-0-10b981?style=flat-square)
 ![YAML Comments](https://img.shields.io/badge/YAML_Comments-404-64748b?style=flat-square)
@@ -10305,7 +10324,7 @@ Repository statistics measured by [codometer](packages/ic-suite/codometer/codome
 ### Markdown
 
 ![Markdown Files](https://img.shields.io/badge/Markdown_Files-106-083fa1?style=flat-square)
-![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-18512-1f6feb?style=flat-square)
+![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-18511-1f6feb?style=flat-square)
 ![H1](https://img.shields.io/badge/H1-105-7c3aed?style=flat-square)
 ![H2](https://img.shields.io/badge/H2-637-8b5cf6?style=flat-square)
 ![H3](https://img.shields.io/badge/H3-524-a78bfa?style=flat-square)
@@ -10321,7 +10340,7 @@ Repository statistics measured by [codometer](packages/ic-suite/codometer/codome
 ![Links](https://img.shields.io/badge/Links-665-059669?style=flat-square)
 ![Images](https://img.shields.io/badge/Images-22-10b981?style=flat-square)
 ![Code Blocks](https://img.shields.io/badge/Code_Blocks-397-dc2626?style=flat-square)
-![Inline Code](https://img.shields.io/badge/Inline_Code-10223-ef4444?style=flat-square)
+![Inline Code](https://img.shields.io/badge/Inline_Code-10228-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-21-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-28-a16207?style=flat-square)
 <!-- codometer:end -->
@@ -10401,11 +10420,8 @@ The workspace's call graph, traced by [callidescope](packages/ic-suite/callidesc
 
 None.
 
-### Callables over the breadth limit (2)
+### Callables over the breadth limit (0)
 
-| Callable | Breadth | Calls directly | Location |
-| --- | --- | --- | --- |
-| `SynchronizationCommand.synchronize` | 11 | `SynchronizationCommand.getCommands`, `ConformetryGeneratorsCommand.synchronize`, `ConventionalConfigCommand.synchronize`, `DevcontainerConfigurationCommand.synchronize`, `PackageManifestsCommand.synchronize`, `PullRequestLabelsCommand.synchronize`, `PullRequestTemplateCommand.synchronize`, `ReadmeVersionCommand.synchronize`, `SkillExclusionsCommand.synchronize`, `SynchronizationCommand.reportResults`, `SynchronizationCommand.every(…)` | `tools/synchronization/src/modules/synchronization/synchronization.command.ts:145` |
-| `ModuleGraphService.buildGraph` | 7 | `ModuleGraphService.findAmbientModuleNames`, `ModuleGraphService.collectEdgesAndNodes`, `ModuleGraphService.toSorted(…)`, `ModuleGraphService.sortNames`, `ModuleGraphService.map(…)`, `ModuleGraphService.toSorted(…)`, `ModuleGraphService.filter(…)` | `packages/ic-suite/codependix/codependix-nestjs-modules/src/modules/module-graph/module-graph.service.ts:169` |
+None.
 
 <!-- callidescope:end -->

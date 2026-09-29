@@ -207,7 +207,7 @@ What this project is judged against, as declared in its own `callidescope.config
 | Limit | Value |
 | --- | --- |
 | `maximumDepth` | 10 |
-| `maximumBreadth` | 10 |
+| `maximumBreadth` | 11 |
 
 ### Call stacks (depth)
 

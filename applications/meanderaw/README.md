@@ -5176,6 +5176,7 @@ graph LR
   file_src_modules_draw_draw_index_types_ts["src/modules/draw/draw-index.types.ts"]
   file_src_modules_draw_draw_record_service_ts["src/modules/draw/draw-record.service.ts"]
   file_src_modules_draw_draw_record_service_unit_test_ts["src/modules/draw/draw-record.service.unit.test.ts"]
+  file_src_modules_draw_draw_sweep_collision_command_integration_test_ts["src/modules/draw/draw-sweep-collision.command.integration.test.ts"]
   file_src_modules_draw_draw_sweep_command_integration_test_ts["src/modules/draw/draw-sweep.command.integration.test.ts"]
   file_src_modules_draw_draw_command_integration_test_ts["src/modules/draw/draw.command.integration.test.ts"]
   file_src_modules_draw_draw_command_ts["src/modules/draw/draw.command.ts"]
@@ -5226,6 +5227,7 @@ graph LR
   file_src_modules_tile_tile_service_unit_test_ts["src/modules/tile/tile.service.unit.test.ts"]
   file_src_modules_tile_tile_types_ts["src/modules/tile/tile.types.ts"]
   file_src_repl_ts["src/repl.ts"]
+  file_testing_draw_sweep_ts["testing/draw-sweep.ts"]
   file_testing_legacy_characteristics_ts["testing/legacy-characteristics.ts"]
   file_testing_letters_ts["testing/letters.ts"]
   file_testing_meanders_ts["testing/meanders.ts"]
@@ -6903,26 +6905,16 @@ graph LR
   file_src_modules_draw_draw_record_service_unit_test_ts --> file_src_modules_code_code_service_ts
   file_src_modules_draw_draw_record_service_unit_test_ts --> file_src_modules_draw_draw_record_service_ts
   file_src_modules_draw_draw_record_service_unit_test_ts --> file_src_modules_drawing_drawing_module_ts
-  file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_constants_ts
-  file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_characteristics_characteristics_module_ts
+  file_src_modules_draw_draw_sweep_collision_command_integration_test_ts --> file_src_modules_corpus_historical_corpus_constants_ts
+  file_src_modules_draw_draw_sweep_collision_command_integration_test_ts --> file_src_modules_draw_draw_check_service_ts
+  file_src_modules_draw_draw_sweep_collision_command_integration_test_ts --> file_src_modules_draw_draw_code_service_ts
+  file_src_modules_draw_draw_sweep_collision_command_integration_test_ts --> file_testing_draw_sweep_ts
+  file_src_modules_draw_draw_sweep_collision_command_integration_test_ts --> file_testing_meanders_ts
   file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_classification_classification_constants_ts
-  file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_classification_classification_module_ts
-  file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_code_code_module_ts
-  file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_corpus_corpus_service_ts
   file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_corpus_historical_corpus_constants_ts
-  file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_database_database_service_ts
-  file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_database_entities_Meander_entity_ts
   file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_draw_draw_check_service_ts
   file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_draw_draw_code_service_ts
-  file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_draw_draw_enumeration_service_ts
-  file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_draw_draw_index_service_ts
-  file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_draw_draw_record_service_ts
-  file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_draw_draw_command_ts
-  file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_drawing_drawing_module_ts
-  file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_enumeration_enumeration_module_ts
-  file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_enumeration_enumeration_service_ts
-  file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_geometry_geometry_module_ts
-  file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_testing_meanders_ts
+  file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_testing_draw_sweep_ts
   file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_characteristics_characteristics_module_ts
   file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_classification_classification_module_ts
   file_src_modules_draw_draw_command_integration_test_ts --> file_src_modules_code_code_module_ts
@@ -7064,6 +7056,21 @@ graph LR
   file_src_modules_tile_tile_service_unit_test_ts --> file_src_modules_tile_tile_types_ts
   file_src_modules_tile_tile_service_unit_test_ts --> file_testing_tiles_ts
   file_src_repl_ts --> file_src_main_module_ts
+  file_testing_draw_sweep_ts --> file_src_constants_ts
+  file_testing_draw_sweep_ts --> file_src_modules_characteristics_characteristics_module_ts
+  file_testing_draw_sweep_ts --> file_src_modules_classification_classification_module_ts
+  file_testing_draw_sweep_ts --> file_src_modules_code_code_module_ts
+  file_testing_draw_sweep_ts --> file_src_modules_corpus_corpus_service_ts
+  file_testing_draw_sweep_ts --> file_src_modules_database_database_service_ts
+  file_testing_draw_sweep_ts --> file_src_modules_database_entities_Meander_entity_ts
+  file_testing_draw_sweep_ts --> file_src_modules_draw_draw_enumeration_service_ts
+  file_testing_draw_sweep_ts --> file_src_modules_draw_draw_index_service_ts
+  file_testing_draw_sweep_ts --> file_src_modules_draw_draw_record_service_ts
+  file_testing_draw_sweep_ts --> file_src_modules_draw_draw_command_ts
+  file_testing_draw_sweep_ts --> file_src_modules_drawing_drawing_module_ts
+  file_testing_draw_sweep_ts --> file_src_modules_enumeration_enumeration_module_ts
+  file_testing_draw_sweep_ts --> file_src_modules_enumeration_enumeration_service_ts
+  file_testing_draw_sweep_ts --> file_src_modules_geometry_geometry_module_ts
   file_testing_letters_ts --> file_src_modules_characteristics_characteristic_context_service_ts
   file_testing_letters_ts --> file_src_modules_characteristics_characteristics_types_ts
   file_testing_letters_ts --> file_src_modules_characteristics_submatrix_letter_letter_utilities_service_ts
@@ -7087,10 +7094,10 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-46519-22c55e?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-46684-22c55e?style=flat-square)
 ![Repository Size](https://img.shields.io/badge/Repository_Size-41.81_MB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-38-4a4a4a?style=flat-square)
-![Source Files](https://img.shields.io/badge/Source_Files-439-3178c6?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-441-3178c6?style=flat-square)
 
 ### Measured Targets
 
@@ -7098,29 +7105,29 @@ graph LR
 
 ### TypeScript
 
-![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-439-3178c6?style=flat-square)
-![Interfaces](https://img.shields.io/badge/Interfaces-55-0ea5e9?style=flat-square)
+![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-441-3178c6?style=flat-square)
+![Interfaces](https://img.shields.io/badge/Interfaces-56-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-7-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
 ![Decorators](https://img.shields.io/badge/Decorators-502-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-878-6366f1?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-888-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-5-166534?style=flat-square)
 
 ### JavaScript
 
 ![JavaScript Files](https://img.shields.io/badge/JavaScript_Files-0-f7df1e?style=flat-square)
-![Test Files](https://img.shields.io/badge/Test_Files-177-10b981?style=flat-square)
+![Test Files](https://img.shields.io/badge/Test_Files-178-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-15-8b5cf6?style=flat-square)
 ![Classes](https://img.shields.io/badge/Classes-204-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-2515-16a34a?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-2529-16a34a?style=flat-square)
 ![Methods](https://img.shields.io/badge/Methods-545-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-2670-4ade80?style=flat-square)
-![Async Functions](https://img.shields.io/badge/Async_Functions-390-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-1362-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-2540-0284c7?style=flat-square)
-![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-350-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-1644-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-5062-475569?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-2677-4ade80?style=flat-square)
+![Async Functions](https://img.shields.io/badge/Async_Functions-397-059669?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-1368-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-2552-0284c7?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-354-ea580c?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-1654-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-5110-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python
@@ -7239,7 +7246,7 @@ graph LR
 ![Utilities Files](https://img.shields.io/badge/Utilities_Files-0-0ea5e9?style=flat-square)
 ![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-1-059669?style=flat-square)
 ![Unit Tests](https://img.shields.io/badge/Unit_Tests-168-ca8a04?style=flat-square)
-![Integration Tests](https://img.shields.io/badge/Integration_Tests-8-7c3aed?style=flat-square)
+![Integration Tests](https://img.shields.io/badge/Integration_Tests-9-7c3aed?style=flat-square)
 ![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-1-0284c7?style=flat-square)
 ![CSS Comment Budget](https://img.shields.io/badge/CSS_Comment_Budget-0-16a34a?style=flat-square)
 ![HCL Comment Budget](https://img.shields.io/badge/HCL_Comment_Budget-0-ea580c?style=flat-square)
