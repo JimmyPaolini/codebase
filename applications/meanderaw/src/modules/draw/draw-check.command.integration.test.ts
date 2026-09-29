@@ -1,8 +1,18 @@
 import { createMock } from "@golevelup/ts-vitest";
+import { NestFactory } from "@nestjs/core";
 import { Test } from "@nestjs/testing";
 import { getRepositoryToken, TypeOrmModule } from "@nestjs/typeorm";
 import { DataSource, type Repository } from "typeorm";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import {
+  afterAll,
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
 
 import { LoggerService } from "@codebase/logger";
 
@@ -19,12 +29,14 @@ import { DrawEnumerationService } from "./draw-enumeration.service";
 import { DrawIndexService } from "./draw-index.service";
 import { DrawCommand } from "./draw.command";
 
+import type { INestApplicationContext } from "@nestjs/common";
+
 /**
  * Five minutes per case, the number
  * `draw-sweep.command.integration.test.ts` already declares for the same
  * work, rather than the minute this file undercut it by.
  *
- * Each case regenerates the whole corpus: 41–47 seconds on a CI runner,
+ * A regeneration covers the whole corpus: 41–47 seconds on a CI runner,
  * measured at 122.6s across the three in a passing run and 140.0s in a
  * failing one. A minute left less margin than ordinary runner variance, and
  * 🧑‍🔬 Test Coverage timed out here on four pushes to `main`.
@@ -37,6 +49,10 @@ import { DrawCommand } from "./draw.command";
  */
 const SWEEP_TIMEOUT_MILLISECONDS = 300_000;
 
+/** The real factory, bound before the suite spies on it so a spy can still call through. */
+const createApplicationContext =
+  NestFactory.createApplicationContext.bind(NestFactory);
+
 /**
  * Drives `DrawCommand`'s `--check` mode against a real TypeORM connection to
  * an in-memory `better-sqlite3` database, per spec #813's Testing Decisions:
@@ -44,8 +60,9 @@ const SWEEP_TIMEOUT_MILLISECONDS = 300_000;
  * `command.run` does — resolve or throw — against a real committed
  * repository.
  *
- * `DrawCheckService` is real rather than mocked, which means every case here
+ * `DrawCheckService` is real rather than mocked, which means this suite
  * regenerates through the actual, full enumeration and hardcoded ingestion —
+ * once, shared across its cases as the `beforeAll` below describes —
  * `DrawCheckService.check` bootstraps its own throwaway application context
  * inline (see its own doc comment for why that call cannot go through a
  * separately-mockable service without breaking this project's `callidescope`
@@ -71,7 +88,47 @@ const SWEEP_TIMEOUT_MILLISECONDS = 300_000;
 describe("drawCommand --check mode", () => {
   let command: DrawCommand;
   let dataSource: DataSource;
+  let regeneration:
+    | Promise<{ close: () => Promise<void>; context: INestApplicationContext }>
+    | undefined;
   let repository: Repository<Meander>;
+
+  /**
+   * One regeneration, replayed by every case after the first. The sweep is
+   * deterministic and each case varies only the committed side, so a second
+   * run would diff against identical rows. The first `check` boots the real
+   * context and keeps it open; each later one gets that same context back,
+   * its database still holding the rows, with only `sweep` and `ingest`
+   * skipped. Whichever case runs first, filtered or not, regenerates for real.
+   */
+  beforeAll(() => {
+    vi.spyOn(NestFactory, "createApplicationContext").mockImplementation(
+      async (module, options) => {
+        if (regeneration === undefined) {
+          regeneration = createApplicationContext(module, options).then(
+            (context) => {
+              const close = context.close.bind(context);
+              vi.spyOn(context, "close").mockResolvedValue();
+              return { close, context };
+            },
+          );
+
+          const { context } = await regeneration;
+
+          return context;
+        }
+
+        const { context } = await regeneration;
+        vi.spyOn(
+          context.get(DrawEnumerationService),
+          "sweep",
+        ).mockResolvedValue(0);
+        vi.spyOn(context.get(CorpusService), "ingest").mockResolvedValue([]);
+
+        return context;
+      },
+    );
+  });
 
   beforeEach(async () => {
     const module = await Test.createTestingModule({
@@ -122,6 +179,12 @@ describe("drawCommand --check mode", () => {
 
   afterEach(async () => {
     await dataSource.destroy();
+  });
+
+  afterAll(async () => {
+    const replayed = await regeneration;
+
+    await replayed?.close();
   });
 
   it(
