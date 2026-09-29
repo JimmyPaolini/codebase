@@ -1,3 +1,5 @@
+import path from "node:path";
+
 import { createMock } from "@golevelup/ts-vitest";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
@@ -8,14 +10,19 @@ import { LoggerService } from "@codebase/logger";
 import {
   createCommandTestHarness,
   resetCommandTestHarness,
+  runCommandLine,
 } from "../../../testing/command-harness";
-import { setPromptsMockResponse } from "../../../testing/mocks";
+import {
+  mockStandardInputTerminal,
+  setPromptsMockResponse,
+} from "../../../testing/mocks";
 import { LexemesService } from "../lexemes/lexemes.service";
 import { ManualService } from "../manual/manual.service";
 import { TranslationsService } from "../translations/translations.service";
 
 import { DictionaryCommand } from "./dictionary.command";
 
+import type { WiktionaryPage } from "../lexico-ingestion/lexico-ingestion.types";
 import type { DeepMocked } from "@golevelup/ts-vitest";
 
 const { promptsMock } = vi.hoisted(() => ({
@@ -33,7 +40,7 @@ const {
   existsSyncMock: vi.fn<() => boolean>(),
   mkdirSyncMock: vi.fn<(...parameters: unknown[]) => void>(),
   readdirSyncMock: vi.fn<() => string[]>(),
-  readFileSyncMock: vi.fn<() => string>(),
+  readFileSyncMock: vi.fn<(filePath?: unknown) => string>(),
 }));
 
 vi.mock("prompts", () => ({
@@ -57,7 +64,7 @@ describe(DictionaryCommand, () => {
     existsByLemma: vi.fn<(lemma: string) => Promise<boolean>>(),
     findLexemesByLemmaWithTranslations:
       vi.fn<(lemma: string) => Promise<Lexeme[]>>(),
-    parseLexemes: vi.fn<() => Promise<Lexeme[]>>(),
+    parseLexemes: vi.fn<(page: WiktionaryPage) => Promise<Lexeme[]>>(),
     saveParsedLexeme: vi.fn<(lexeme: Lexeme) => Promise<Lexeme | null>>(),
   };
 
@@ -209,59 +216,6 @@ describe(DictionaryCommand, () => {
     );
   });
 
-  it.each([["amo", "amo"]] as const)(
-    "should parse valid start lemma option",
-    async (lemma, expectedLemma) => {
-      readdirSyncMock.mockReturnValue(["amo.json", "bellum.json", "cano.json"]);
-
-      await expect(command.parseStartLemma(lemma)).resolves.toBe(expectedLemma);
-    },
-  );
-
-  it.each([["cano", "amo", "cano"]] as const)(
-    "should parse valid end lemma option",
-    async (lemma, startLemma, expectedLemma) => {
-      readdirSyncMock.mockReturnValue(["amo.json", "bellum.json", "cano.json"]);
-
-      await expect(command.parseEndLemma(lemma, startLemma)).resolves.toBe(
-        expectedLemma,
-      );
-    },
-  );
-
-  it.each([
-    ["missing", 'Start lemma "missing" not found in the dataset.'],
-  ] as const)(
-    "should throw for invalid start lemma option",
-    async (lemma, expectedMessage) => {
-      readdirSyncMock.mockReturnValue(["amo.json", "bellum.json", "cano.json"]);
-
-      await expect(command.parseStartLemma(lemma)).rejects.toThrow(
-        expectedMessage,
-      );
-    },
-  );
-
-  it.each([
-    ["missing", "amo", 'End lemma "missing" not found in the dataset.'],
-  ] as const)(
-    "should throw for invalid end lemma option",
-    async (lemma, startLemma, expectedMessage) => {
-      readdirSyncMock.mockReturnValue(["amo.json", "bellum.json", "cano.json"]);
-
-      await expect(command.parseEndLemma(lemma, startLemma)).rejects.toThrow(
-        expectedMessage,
-      );
-    },
-  );
-
-  it("should return undefined for empty start and end lemma options", async () => {
-    await expect(command.parseStartLemma(undefined)).resolves.toBeUndefined();
-    await expect(
-      command.parseEndLemma(undefined, undefined),
-    ).resolves.toBeUndefined();
-  });
-
   it("should return empty lemma choices when data directory does not exist", () => {
     existsSyncMock.mockImplementation((inputPath?: unknown) => {
       if (
@@ -372,6 +326,29 @@ describe(DictionaryCommand, () => {
     expect(filePath).toStrictEqual(expect.stringContaining("_amo.json"));
   });
 
+  it("should build the fallback index once, skipping non-json files", () => {
+    existsSyncMock.mockImplementation(
+      (inputPath?: unknown) =>
+        typeof inputPath === "string" && !/\/_\w+\.json$/.test(inputPath),
+    );
+    readdirSyncMock.mockReturnValue(["notes.txt", "amo.json", "bellum.json"]);
+
+    const getWiktionaryFilePathForWord = (
+      command as unknown as {
+        getWiktionaryFilePathForWord: (word: string) => null | string;
+      }
+    ).getWiktionaryFilePathForWord.bind(command);
+
+    expect(getWiktionaryFilePathForWord("Amo")).toStrictEqual(
+      expect.stringMatching(/\/amo\.json$/),
+    );
+    expect(getWiktionaryFilePathForWord("Bellum")).toStrictEqual(
+      expect.stringMatching(/\/bellum\.json$/),
+    );
+    expect(getWiktionaryFilePathForWord("Notes")).toBeNull();
+    expect(readdirSyncMock).toHaveBeenCalledTimes(1);
+  });
+
   it("should return null wiktionary file path when index cannot be built", () => {
     existsSyncMock.mockImplementation((inputPath?: unknown) => {
       if (typeof inputPath !== "string") {
@@ -392,38 +369,6 @@ describe(DictionaryCommand, () => {
     ).getWiktionaryFilePathForWord("Amo");
 
     expect(filePath).toBeNull();
-  });
-
-  it("should resolve start and end lemmas through prompt selection", async () => {
-    readdirSyncMock.mockReturnValue(["amo.json", "bellum.json", "cano.json"]);
-    promptsMock
-      .mockResolvedValueOnce({ startLemma: "amo" })
-      .mockResolvedValueOnce({ endLemma: "cano" });
-
-    const startLemma = await command.parseStartLemma({} as unknown as string);
-    const endLemma = await command.parseEndLemma(
-      {} as unknown as string,
-      startLemma ?? null,
-    );
-
-    expect(startLemma).toBe("amo");
-    expect(endLemma).toBe("cano");
-  });
-
-  it("should return undefined when prompt returns null", async () => {
-    readdirSyncMock.mockReturnValue(["amo.json"]);
-    promptsMock
-      .mockResolvedValueOnce({ startLemma: null })
-      .mockResolvedValueOnce({ startLemma: null });
-
-    const startLemma = await command.parseStartLemma({} as unknown as string);
-    const endLemma = await command.parseEndLemma(
-      {} as unknown as string,
-      startLemma ?? null,
-    );
-
-    expect(startLemma).toBeUndefined();
-    expect(endLemma).toBeUndefined();
   });
 
   it("should ingest all files in configured lemma range", async () => {
@@ -1035,48 +980,119 @@ describe(DictionaryCommand, () => {
     ).rejects.toThrow("Missing HTML data in file for word: amo");
   });
 
-  it("should run dictionary ingestion and manual ingestion", async () => {
-    const parseStartLemmaSpy = vi
-      .spyOn(command, "parseStartLemma")
-      .mockResolvedValueOnce("amo");
+  describe("command line", () => {
+    const setStandardInputTerminal = mockStandardInputTerminal();
 
-    const parseEndLemmaSpy = vi
-      .spyOn(command, "parseEndLemma")
-      .mockResolvedValueOnce("bellum");
-
-    const ingestAllSpy = vi
-      .spyOn(command, "ingestAll")
-      .mockResolvedValue(undefined);
-
-    await command.run([], {
-      endLemma: "bellum",
-      startLemma: "amo",
+    beforeEach(() => {
+      promptsMock.mockReset();
+      readdirSyncMock.mockReturnValue([
+        "amo.json",
+        "aqua.json",
+        "bellum.json",
+        "cano.json",
+        "terra.json",
+      ]);
+      readFileSyncMock.mockImplementation((filePath) =>
+        JSON.stringify({
+          category: "Latin",
+          href: "/wiki/lemma",
+          html: "<p></p>",
+          word: path.basename(String(filePath), ".json"),
+        }),
+      );
+      setStandardInputTerminal(false);
     });
 
-    expect(parseStartLemmaSpy).toHaveBeenCalledWith("amo");
-    expect(parseEndLemmaSpy).toHaveBeenCalledWith("bellum", "amo");
-    expect(ingestAllSpy).toHaveBeenCalledWith("amo", "bellum");
-    expect(manualService.ingestManual).toHaveBeenCalledTimes(1);
-  });
+    /** Runs `dictionary` with `flags` exactly as the CLI would. */
+    async function runDictionary(...flags: string[]): Promise<void> {
+      await runCommandLine({
+        argv: ["dictionary", ...flags],
+        providers: [
+          DictionaryCommand,
+          { provide: LoggerService, useValue: createMock<LoggerService>() },
+          { provide: LexemesService, useValue: lexemesService },
+          { provide: TranslationsService, useValue: translationsService },
+          { provide: ManualService, useValue: manualService },
+        ],
+      });
+    }
 
-  it("should pass undefined options through run option parsing", async () => {
-    const parseStartLemmaSpy = vi
-      .spyOn(command, "parseStartLemma")
-      .mockResolvedValueOnce(undefined);
+    /** The words of every Wiktionary page handed to lexeme parsing. */
+    function ingestedWords(): string[] {
+      return lexemesService.parseLexemes.mock.calls.map(([page]) => page.word);
+    }
 
-    const parseEndLemmaSpy = vi
-      .spyOn(command, "parseEndLemma")
-      .mockResolvedValueOnce(undefined);
+    it("ingests only the lemmas between --startLemma and --endLemma without prompting", async () => {
+      await runDictionary("--startLemma=aqua", "--endLemma=cano");
 
-    const ingestAllSpy = vi
-      .spyOn(command, "ingestAll")
-      .mockResolvedValue(undefined);
+      expect(ingestedWords()).toStrictEqual(["aqua", "bellum", "cano"]);
+      expect(promptsMock).not.toHaveBeenCalled();
+      expect(manualService.ingestManual).toHaveBeenCalledTimes(1);
+    });
 
-    await command.run([], {});
+    it("rejects a --startLemma missing from the dataset before ingesting anything", async () => {
+      await expect(runDictionary("--startLemma=nope")).rejects.toThrow(
+        'Start lemma "nope" not found in the dataset.',
+      );
 
-    expect(parseStartLemmaSpy).toHaveBeenCalledWith(undefined);
-    expect(parseEndLemmaSpy).toHaveBeenCalledWith(undefined, undefined);
-    expect(ingestAllSpy).toHaveBeenCalledWith(undefined, undefined);
+      expect(ingestedWords()).toStrictEqual([]);
+      expect(manualService.ingestManual).not.toHaveBeenCalled();
+    });
+
+    it("rejects an --endLemma that falls before --startLemma", async () => {
+      await expect(
+        runDictionary("--startLemma=cano", "--endLemma=aqua"),
+      ).rejects.toThrow('End lemma "aqua" not found in the dataset.');
+
+      expect(ingestedWords()).toStrictEqual([]);
+    });
+
+    it("ingests every page without prompting when no bound is given, even on a terminal", async () => {
+      setStandardInputTerminal(true);
+
+      await runDictionary();
+
+      expect(ingestedWords()).toHaveLength(5);
+      expect(promptsMock).not.toHaveBeenCalled();
+    });
+
+    it("takes no bound for a bare --startLemma when standard input is not a terminal", async () => {
+      await runDictionary("--startLemma");
+
+      expect(ingestedWords()).toHaveLength(5);
+      expect(promptsMock).not.toHaveBeenCalled();
+    });
+
+    it("prompts for a bare --startLemma when standard input is a terminal", async () => {
+      setStandardInputTerminal(true);
+      promptsMock.mockResolvedValueOnce({ choice: "cano" });
+
+      await runDictionary("--startLemma");
+
+      expect(promptsMock).toHaveBeenCalledTimes(1);
+      expect(ingestedWords()).toStrictEqual(["cano", "terra"]);
+    });
+
+    it("fails instead of ingesting when the lemma prompt is cancelled", async () => {
+      setStandardInputTerminal(true);
+      promptsMock.mockResolvedValueOnce({});
+
+      await expect(runDictionary("--endLemma")).rejects.toThrow(
+        "Prompt cancelled: Select the ending lemma",
+      );
+
+      expect(ingestedWords()).toStrictEqual([]);
+    });
+
+    it("fails when the manual lexemes fail", async () => {
+      manualService.ingestManual.mockRejectedValueOnce(
+        new Error('null value in column "lexeme_id"'),
+      );
+
+      await expect(
+        runDictionary("--startLemma=terra", "--endLemma=terra"),
+      ).rejects.toThrow('null value in column "lexeme_id"');
+    });
   });
 
   describe("error handling and branch guard behavior", () => {
