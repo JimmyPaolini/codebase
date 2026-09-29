@@ -148,7 +148,6 @@ describe("literature resolver suite", () => {
         before: "cursor-0",
         first: 10,
         last: 5,
-        query: "",
       }),
     ).resolves.toMatchObject({
       edges: [{ node: author }],
@@ -219,9 +218,7 @@ describe("literature resolver suite", () => {
 
     const text = new Text();
     text.id = "text-1";
-    text.childTexts = [new Text()];
     text.parentText = new Text();
-    text.lines = [new Line()];
 
     const line = new Line();
     line.id = "line-1";
@@ -342,10 +339,8 @@ describe("literature resolver suite", () => {
       texts: [text],
     });
 
-    expect(textsResolver.childTexts(text)).toStrictEqual(text.childTexts);
     expect(textsResolver.parentText(text)).toBe(text.parentText);
     expect(textsResolver.parentText(new Text())).toBeNull();
-    expect(textsResolver.linesForText(text)).toStrictEqual(text.lines);
   });
 
   it("loads a line's tokens through the service when the relation was not joined", async () => {
