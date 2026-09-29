@@ -79,7 +79,7 @@ staged `package.json` matches all three, so all four commands run.
 | --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `{**/package.json,pnpm-workspace.yaml}` | `validation lockfile`, run as the CLI directly rather than through its Nx target                                                                                                                                                                                                                                     |
 | `**/package.json`                       | `nx run-many --projects=codebase --targets=check-catalog-manifests,sherif,syncpack`                                                                                                                                                                                                                                  |
-| `*` (every staged path)                 | `nx affected --target=lint-code --target=gate --target=conformetry-generators --target=conventional-config --target=devcontainer-configuration --target=pull-request-template --target=skill-exclusions --configuration=check --parallel=8 --files=…`, then `nx run-many --targets=conformetry-validate`             |
+| `*` (every staged path)                 | `nx affected --target=typecheck-code,lint-code,format-code,deprecate-code,guard-code --configuration=check --parallel=… --files=…`, then `nx run-many --targets=conformetry-validate`                                                                                                                                |
 
 There is deliberately no per-file-type row any more. `lint-code` is an
 `nx:noop` aggregator whose `dependsOn` list holds every static check, and each
@@ -95,13 +95,12 @@ branch, and Nx forwards an explicit configuration down `dependsOn` — so an
 edge there would let `lint-code --configuration=write` publish from a
 branch.
 
-`gate` is named the same way, but for a different reason: the callidescope Nx
-plugin infers it with no configuration at all, so it has nothing for
-`dependsOn` to forward in the first place. It stays a named sibling because
-`nx affected` scopes it to the projects a commit actually touched, the same
-way it scopes `lint-code` itself — a commit that deepens one project's
-call stacks fails that project's own task, which the workspace-wide
-`callidescope --check depth` run this replaced never could name.
+`callidescope-gate` and `codebase:codependix` are reached through
+`guard-code`'s `dependsOn` rather than named here, so `--configuration=check`
+forwards to codependix's `--check boundaries`. `nx affected` still scopes
+`callidescope-gate` to the projects a commit actually touched — a commit that
+deepens one project's call stacks fails that project's own task, which the
+workspace-wide `callidescope --check depth` run this replaced never could name.
 
 There is no aggregate `synchronize` target: each synchronization command is its
 own Nx target on the `synchronization` project, named here directly. Naming

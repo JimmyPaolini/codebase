@@ -93,16 +93,12 @@ const config = {
   // forwards an explicit configuration down `dependsOn`, so an edge there
   // would let `lint-code --configuration=write` publish from a branch.
 
-  // `gate` is named the same way, but for a different reason: the callidescope
-  // Nx plugin infers it with no configuration at all, so it has nothing for
-  // `dependsOn` to forward in the first place. It stays a sibling target
-  // because `nx affected` scopes it to the projects a commit actually
-  // touched, the same way it scopes `lint-code` itself — a commit that
-  // deepens one project's call stacks fails that project's own task, which
-  // the workspace-wide `callidescope --check depth` run this replaced never
-  // named. Naming both in this same invocation is what keeps a commit gating
-  // call-stack depth and derivation drift; a second `nx affected` call would
-  // have cost another project graph build for nothing.
+  // `callidescope-gate` and `codebase:codependix` reach a commit through
+  // `guard-code`'s `dependsOn` instead of being named here, so the `check`
+  // configuration below forwards to codependix's `--check boundaries`.
+  // `nx affected` still scopes `callidescope-gate` to the projects a commit
+  // touched, so a commit that deepens one project's call stacks fails that
+  // project's own task.
 
   // There is no aggregate `synchronize` target to name instead: each
   // synchronization is its own Nx target on the `synchronization` project, run

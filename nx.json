@@ -85,7 +85,8 @@
     },
     {
       "options": {
-        "configurationPath": "configuration/callidescope.config.ts"
+        "configurationPath": "configuration/callidescope.config.ts",
+        "gateTargetName": "callidescope-gate"
       },
       "plugin": "@callidescope/nx"
     }
@@ -474,14 +475,19 @@
       },
       "defaultConfiguration": "check",
       "dependsOn": [
+        "callidescope-gate",
         "check-catalog-manifests",
+        {
+          "projects": ["codebase"],
+          "target": "codependix"
+        },
         "check-lockfile",
         "check-readme-projects",
         "conformetry-validate",
         "meanderaw-check",
         "sync-vscode-extensions"
       ],
-      "description": "Aggregator for guard-code",
+      "description": "Aggregator for guard-code. `callidescope-gate` is callidescope's inferred per-project call-stack gate; it has no configurations, so the one `guard-code` is run with falls through to its defaults. `codependix` is pinned to the `codebase` project so every project's guard reaches the one workspace-wide boundary check, which Nx runs once however many projects are affected; `check` forwards to its `--check boundaries`.",
       "executor": "nx:noop"
     },
     "knip": [
