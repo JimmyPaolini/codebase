@@ -91,8 +91,6 @@ export class LiteratureService {
       return this.textRepository.findOne({
         relations: {
           author: true,
-          childTexts: true,
-          lines: true,
           parentText: true,
         },
         where: { id },
@@ -102,8 +100,6 @@ export class LiteratureService {
       return this.textRepository.findOne({
         relations: {
           author: true,
-          childTexts: true,
-          lines: true,
           parentText: true,
         },
         where: { slug },
@@ -200,8 +196,6 @@ export class LiteratureService {
       order: { title: "ASC" },
       relations: {
         author: true,
-        childTexts: true,
-        lines: true,
         parentText: true,
       },
       where: {
