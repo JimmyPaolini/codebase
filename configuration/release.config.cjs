@@ -1,13 +1,15 @@
 /**
  * Semantic Release Configuration
  *
- * Automated changelog and GitHub release notes using semantic-release
+ * Automated versioning and changelog generation using semantic-release
  * with Conventional Commits (https://www.conventionalcommits.org/).
  *
  * Branch strategy: Only `main` triggers releases.
- * NPM publishing: Not handled here — Nx release publishes workspace packages.
- * Versioning authority: Nx release (semantic-release is notes/changelog only).
- * Auto-committed files: CHANGELOG.md plus generated README/AGENTS artifacts
+ * NPM publishing: Not handled here — Nx release publishes the ic-suite packages.
+ * Versioning: The root codebase version is semantic-release's; each ic-suite
+ * package's independent version is Nx release's.
+ * Auto-committed files: CHANGELOG.md, package.json, and generated
+ * README/AGENTS artifacts
  *
  * Usage:
  *   pnpm semantic-release            # Manual release (requires GITHUB_TOKEN)
@@ -133,7 +135,23 @@ module.exports = {
       },
     ],
 
-    // Commits generated release artifacts back to the repository
+    // Updates package.json version field without publishing to npm
+    [
+      "@semantic-release/npm",
+      {
+        npmPublish: false,
+      },
+    ],
+
+    // Synchronizes the version in root README.md title right after package.json is bumped
+    [
+      "@semantic-release/exec",
+      {
+        prepareCmd: "pnpm exec nx run synchronization:readme-version:write",
+      },
+    ],
+
+    // Commits version-bumped files back to the repository
     [
       "@semantic-release/git",
       {
