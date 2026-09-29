@@ -264,11 +264,17 @@ jobs:
           matrix.target.id == 'push-releases'
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           GIT_COMMITTER_EMAIL: jimmypaolini@gmail.com
           GIT_COMMITTER_NAME: Jimmy Paolini
+        # Checkout persists no credentials, and semantic-release authenticates
+        # its own push, so `nx release version --git-push` needs the remote to
+        # carry the release token. `setup-node` writes no registry `.npmrc`, so
+        # the npm token is written to the user config that pnpm and npm read.
         run: |
+          git remote set-url origin \
+            "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >> ~/.npmrc
           pnpm exec nx release version --git-commit --git-tag --git-push
           pnpm exec nx release publish --registry=https://registry.npmjs.org
           pnpm semantic-release
