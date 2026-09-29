@@ -3,7 +3,16 @@ import { ConfigModule } from "@nestjs/config";
 import { Test } from "@nestjs/testing";
 import { getRepositoryToken, TypeOrmModule } from "@nestjs/typeorm";
 import { DataSource, type Repository } from "typeorm";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  afterAll,
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
 
 import { LoggerService } from "@codebase/logger";
 
@@ -78,108 +87,117 @@ const HISTORICAL_CORPUS_BEYOND_ENUMERATION = 1026;
  * here: this suite's own in-memory database is disposable, but the
  * committed `output/index.html` a real write would land on is not.
  */
+const SWEEP_TIMEOUT_MILLISECONDS = 300_000;
+
+interface SweepFixture {
+  command: DrawCommand;
+  corpus: CorpusService;
+  dataSource: DataSource;
+  enumeration: EnumerationService;
+  repository: Repository<Meander>;
+}
+
+async function compileSweep(): Promise<SweepFixture> {
+  const module = await Test.createTestingModule({
+    imports: [
+      ConfigModule.forRoot({
+        isGlobal: true,
+        validate: (config: Record<string, unknown>) =>
+          environmentSchema.parse(config),
+      }),
+      TypeOrmModule.forRoot({
+        database: ":memory:",
+        entities: [Meander],
+        logging: false,
+        synchronize: true,
+        type: "better-sqlite3",
+      }),
+      TypeOrmModule.forFeature([Meander]),
+      GeometryModule,
+      CharacteristicsModule,
+      ClassificationModule,
+      CodeModule,
+      EnumerationModule,
+      DrawingModule,
+    ],
+    providers: [
+      DrawCommand,
+      DrawEnumerationService,
+      DrawIndexService,
+      DrawRecordService,
+      CorpusService,
+      DatabaseService,
+      {
+        provide: DrawCheckService,
+        useValue: createMock<DrawCheckService>(),
+      },
+      {
+        provide: DrawCodeService,
+        useValue: createMock<DrawCodeService>(),
+      },
+      {
+        provide: LoggerService,
+        useValue: createMock<LoggerService>(),
+      },
+    ],
+  }).compile();
+
+  return {
+    command: await module.resolve(DrawCommand),
+    corpus: module.get(CorpusService),
+    dataSource: module.get(DataSource),
+    enumeration: module.get(EnumerationService),
+    repository: module.get(getRepositoryToken(Meander)),
+  };
+}
+
 describe("drawCommand sweep mode", () => {
-  const SWEEP_TIMEOUT_MILLISECONDS = 300_000;
+  /**
+   * One sweep, shared by every case that only reads what an empty database
+   * ends up holding. Each sweep costs 45–90 seconds on a CI runner, and
+   * running it once per case made this file the whole of 🧑‍🔬 Test's critical
+   * path. None of these cases writes to the database, and the `writeFile`
+   * calls are copied out before `testing/setup.ts` clears every mock, so
+   * sharing the run changes no assertion.
+   */
+  describe("over an empty database", () => {
+    let sweep: SweepFixture;
+    let writes: [path: string, data: string][];
 
-  let command: DrawCommand;
-  let corpus: CorpusService;
-  let dataSource: DataSource;
-  let enumeration: EnumerationService;
-  let repository: Repository<Meander>;
+    beforeAll(async () => {
+      writeFileMock.mockClear();
+      sweep = await compileSweep();
+      await sweep.command.run([], {});
+      writes = [...writeFileMock.mock.calls];
+    }, SWEEP_TIMEOUT_MILLISECONDS);
 
-  beforeEach(async () => {
-    writeFileMock.mockClear();
+    afterAll(async () => {
+      await sweep.dataSource.destroy();
+    });
 
-    const module = await Test.createTestingModule({
-      imports: [
-        ConfigModule.forRoot({
-          isGlobal: true,
-          validate: (config: Record<string, unknown>) =>
-            environmentSchema.parse(config),
-        }),
-        TypeOrmModule.forRoot({
-          database: ":memory:",
-          entities: [Meander],
-          logging: false,
-          synchronize: true,
-          type: "better-sqlite3",
-        }),
-        TypeOrmModule.forFeature([Meander]),
-        GeometryModule,
-        CharacteristicsModule,
-        ClassificationModule,
-        CodeModule,
-        EnumerationModule,
-        DrawingModule,
-      ],
-      providers: [
-        DrawCommand,
-        DrawEnumerationService,
-        DrawIndexService,
-        DrawRecordService,
-        CorpusService,
-        DatabaseService,
-        {
-          provide: DrawCheckService,
-          useValue: createMock<DrawCheckService>(),
-        },
-        {
-          provide: DrawCodeService,
-          useValue: createMock<DrawCodeService>(),
-        },
-        {
-          provide: LoggerService,
-          useValue: createMock<LoggerService>(),
-        },
-      ],
-    }).compile();
-
-    command = await module.resolve(DrawCommand);
-    dataSource = module.get(DataSource);
-    corpus = module.get(CorpusService);
-    enumeration = module.get(EnumerationService);
-    repository = module.get(getRepositoryToken(Meander));
-  });
-
-  afterEach(async () => {
-    await dataSource.destroy();
-  });
-
-  it(
-    "persists both halves of the corpus, with neither provenance colliding with the other",
-    async () => {
-      const expectedEnumerated = enumeration
+    it("persists both halves of the corpus, with neither provenance colliding with the other", async () => {
+      const expectedEnumerated = sweep.enumeration
         .shapes()
         .reduce(
-          (total, shape) => total + enumeration.enumerate(shape).length,
+          (total, shape) => total + sweep.enumeration.enumerate(shape).length,
           0,
         );
       const expectedHardcoded = 963;
 
-      await command.run([], {});
-
       await expect(
-        repository.countBy({ provenance: "enumerated" }),
+        sweep.repository.countBy({ provenance: "enumerated" }),
       ).resolves.toBe(expectedEnumerated);
       await expect(
-        repository.countBy({ provenance: "hardcoded" }),
+        sweep.repository.countBy({ provenance: "hardcoded" }),
       ).resolves.toBe(expectedHardcoded);
-    },
-    SWEEP_TIMEOUT_MILLISECONDS,
-  );
+    });
 
-  it(
-    "rebuilds output/index.html and family pages from the sweep's own rows once both halves have committed",
-    async () => {
-      await command.run([], {});
+    it("rebuilds output/index.html and family pages from the sweep's own rows once both halves have committed", async () => {
+      const total = await sweep.repository.count();
 
-      const total = await repository.count();
+      expect(writes.length).toBeGreaterThan(1);
 
-      expect(writeFileMock.mock.calls.length).toBeGreaterThan(1);
-
-      const indexCall = writeFileMock.mock.calls.find(
-        (c) => c[0] === "output/index.html",
-      );
+      const indexCall = writes.find((c) => c[0] === "output/index.html");
 
       if (indexCall === undefined) {
         throw new Error("expected the index page to have been written");
@@ -189,79 +207,80 @@ describe("drawCommand sweep mode", () => {
 
       expect(indexPath).toBe("output/index.html");
       expect(page).toContain(`${total} meanders across`);
-    },
-    SWEEP_TIMEOUT_MILLISECONDS,
-  );
+    });
 
-  it(
-    "ingests exactly the 1026 entries the retired constants files held, computed from the sweep's own reach rather than listed",
-    () => {
+    it("ingests exactly the 1026 entries the retired constants files held, computed from the sweep's own reach rather than listed", () => {
       expect(
-        HISTORICAL_CORPUS.filter((entry) => corpus.isBeyondEnumeration(entry)),
+        HISTORICAL_CORPUS.filter((entry) =>
+          sweep.corpus.isBeyondEnumeration(entry),
+        ),
       ).toHaveLength(HISTORICAL_CORPUS_BEYOND_ENUMERATION);
-    },
-    SWEEP_TIMEOUT_MILLISECONDS,
-  );
+    });
 
-  it(
-    "keeps every ingested entry outside the shapes the enumeration already covers",
-    () => {
+    it("keeps every ingested entry outside the shapes the enumeration already covers", () => {
       const swept = new Set(
-        enumeration.shapes().map((shape) => `${shape.rows}x${shape.columns}`),
+        sweep.enumeration
+          .shapes()
+          .map((shape) => `${shape.rows}x${shape.columns}`),
       );
       const covered = HISTORICAL_CORPUS.filter(
         (entry) =>
-          corpus.isBeyondEnumeration(entry) &&
+          sweep.corpus.isBeyondEnumeration(entry) &&
           swept.has(`${entry.rows}x${entry.columns}`),
       );
 
       expect(covered).toStrictEqual([]);
-    },
-    SWEEP_TIMEOUT_MILLISECONDS,
-  );
+    });
 
-  it(
-    "carries the family it was filed under, and a hardcoded provenance, on every ingested corpus entry",
-    async () => {
-      await command.run([], {});
-
-      const rows = await repository.findBy({ provenance: "hardcoded" });
+    it("carries the family it was filed under, and a hardcoded provenance, on every ingested corpus entry", async () => {
+      const rows = await sweep.repository.findBy({ provenance: "hardcoded" });
 
       const filed = new Set<string>(MEANDER_FAMILIES);
 
       expect(rows.length).toBeGreaterThan(0);
       expect(rows.every((row) => filed.has(row.family))).toBe(true);
-    },
-    SWEEP_TIMEOUT_MILLISECONDS,
-  );
+    });
+  });
 
-  it(
-    "ignores the sweep quietly when a hardcoded entry's lattice address is already committed",
-    async () => {
-      const duplicated = HISTORICAL_CORPUS.find((entry) =>
-        corpus.isBeyondEnumeration(entry),
-      );
+  describe("over a database already holding a hardcoded entry's address", () => {
+    let sweep: SweepFixture;
 
-      if (duplicated === undefined) {
-        throw new Error(
-          "no hardcoded entry is committed to collide a duplicate against",
+    beforeEach(async () => {
+      sweep = await compileSweep();
+    });
+
+    afterEach(async () => {
+      await sweep.dataSource.destroy();
+    });
+
+    it(
+      "ignores the sweep quietly when a hardcoded entry's lattice address is already committed",
+      async () => {
+        const duplicated = HISTORICAL_CORPUS.find((entry) =>
+          sweep.corpus.isBeyondEnumeration(entry),
         );
-      }
 
-      await repository.save(
-        meanderRecord({
-          bettiNumber0Count: 1,
-          code: `${String(duplicated.columns).padStart(2, "0")}x${String(duplicated.rows).padStart(2, "0")}y${duplicated.code}`,
-          columns: duplicated.columns,
-          freeEndCount: 2,
-          lattice: duplicated.code,
-          provenance: "enumerated",
-          rows: duplicated.rows,
-        }),
-      );
+        if (duplicated === undefined) {
+          throw new Error(
+            "no hardcoded entry is committed to collide a duplicate against",
+          );
+        }
 
-      await expect(command.run([], {})).resolves.not.toThrow();
-    },
-    SWEEP_TIMEOUT_MILLISECONDS,
-  );
+        await sweep.repository.save(
+          meanderRecord({
+            bettiNumber0Count: 1,
+            code: `${String(duplicated.columns).padStart(2, "0")}x${String(duplicated.rows).padStart(2, "0")}y${duplicated.code}`,
+            columns: duplicated.columns,
+            freeEndCount: 2,
+            lattice: duplicated.code,
+            provenance: "enumerated",
+            rows: duplicated.rows,
+          }),
+        );
+
+        await expect(sweep.command.run([], {})).resolves.not.toThrow();
+      },
+      SWEEP_TIMEOUT_MILLISECONDS,
+    );
+  });
 });
