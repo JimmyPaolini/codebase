@@ -12,6 +12,7 @@ export default [
         "error",
         {
           ignoredDependencies: [
+            "@as-integrations/express5",
             "@golevelup/ts-vitest",
             "graphql",
             "typeorm",

@@ -7,16 +7,21 @@ nx run meanderaw:start
 ## 🖌️ One Command
 
 Meanderaw has one command, `draw`, and it is the default — so the target above runs it
-with no arguments. What it draws is decided by whether a Code was named:
+with no arguments. **Nothing writes `output/meanders.sqlite` without `--write`**: with no
+flag the command is a read-only drift check, and what `--write` draws is decided by
+whether a Code was named:
 
-| Invocation | What it draws |
-| ---------- | ------------- |
-| `nx run meanderaw:start` | Every meander the application can draw, as rows in `output/meanders.sqlite` |
-| `nx run meanderaw:start --args="--rows <n> --columns <n> --code <code>"` | That one, as a single row in the same database |
+| Invocation | What it does |
+| ---------- | ------------ |
+| `nx run meanderaw:start` | Writes nothing — regenerates the sweep into a throwaway database and fails if it disagrees with the committed one. `guard-code` runs this on every commit |
+| `nx run meanderaw:start --args="--check"` | The same read-only check, named explicitly |
+| `nx run meanderaw:start --args="--write"` | Regenerates every meander the application can draw, as rows in `output/meanders.sqlite` — clearing the rows already there first, so it runs against the committed database as-is |
+| `nx run meanderaw:start --args="--write --rows <n> --columns <n> --code <code>"` | That one, as a single row in the same database |
 
-The three flags of the single-drawing mode go together: `--code` is what selects that
-mode over the sweep, and it is refused without both `--rows` and `--columns`, since
-passing none of the three is how the sweep is asked for.
+`--check` with `--write` is refused, and so is `--code` without `--write`; either exits
+non-zero. The three flags of the single-drawing mode go together: `--code` is what
+selects that mode over the sweep, and it is refused without both `--rows` and
+`--columns`, since passing none of the three is how the sweep is asked for.
 
 **There is nothing else to pass.** `--type`, `--modifier` and the parameters it carried
 (`--strands`, `--branches`, `--direction`, `--flip`, `--offset`), `--sub-family`,
@@ -832,7 +837,7 @@ look through. The recommendation is to **leave the asymmetry**, and this section
 the measurements behind that.
 
 This was a spike. It changed no code, and everything below is measurement on the sweep
-`nx run meanderaw:start` already writes.
+`nx run meanderaw:start --args="--write"` already writes.
 
 > **What changed since, and what did not.** `mosaic` has since moved onto that shared
 > degree-bounded lattice rule — its tiles are four direction bits per point, junctions
@@ -2004,13 +2009,13 @@ Call stacks traced through `applications/meanderaw`, deepest first. Each frame s
 
 | Measure | Value |
 | --- | --- |
-| Callables | 819 |
+| Callables | 825 |
 | Files | 255 |
-| Calls traced | 717 |
+| Calls traced | 721 |
 | Call stacks | 111 |
 | Deepest stack | 16 |
 | Stacks through recursion | 0 |
-| Unfollowable calls | 20 |
+| Unfollowable calls | 22 |
 
 ### Limits
 
@@ -2026,8 +2031,8 @@ What this project is judged against, as declared in its own `callidescope.config
 **1. `DrawCommand.run`** — depth ≥ 16 · decorated-method
 
 ```text
-🚀 DrawCommand.run(_passedParameters: string[], options: DrawCommandOptions): Promise<void> [applications/meanderaw/src/modules/draw/draw.command.ts:229]
-   ↳ Checks for drift when `--check` is given, sweeps every meander into the database when no Code is named, or draws the…
+🚀 DrawCommand.run(_passedParameters: string[], options: DrawCommandOptions): Promise<void> [applications/meanderaw/src/modules/draw/draw.command.ts:263]
+   ↳ Checks for drift unless `--write` is given; with `--write`, sweeps every meander into the database when no Code is…
   └─> DrawCheckService.check(): Promise<MeanderDriftReport> [applications/meanderaw/src/modules/draw/draw-check.service.ts:186]
      ↳ Regenerates the whole corpus into a throwaway database, diffs it against the committed one, and throws {@link…
     └─> DrawEnumerationService.sweep(): Promise<number> [applications/meanderaw/src/modules/draw/draw-enumeration.service.ts:80]
@@ -4272,7 +4277,7 @@ What this project is judged against, as declared in its own `callidescope.config
 | `IsCombCharacteristicService.compute` | 8 | `FamilyUtilitiesService.hasValidDimensions`, `IsBarsCharacteristicService.compute`, `IsLinesCharacteristicService.compute`, `IsMeshCharacteristicService.compute`, `FamilyUtilitiesService.grid`, `IsCombCharacteristicService.isVerticalComb`, `IsCombCharacteristicService.isHorizontalComb`, `IsCombCharacteristicService.isReversingComb` | `applications/meanderaw/src/modules/characteristics/compound/family/is-comb-characteristic.service.ts:161` |
 
 <details>
-<summary>364 more callables</summary>
+<summary>365 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
@@ -4292,6 +4297,7 @@ What this project is judged against, as declared in its own `callidescope.config
 | `DrawCheckService.check` | 5 | `DrawEnumerationService.sweep`, `CorpusService.ingest`, `DrawCheckService.diff`, `DrawCheckService.hasDrift`, `MeanderDriftDetectedError.constructor` | `applications/meanderaw/src/modules/draw/draw-check.service.ts:186` |
 | `DrawIndexService.renderBand` | 5 | `GeometryService.compute`, `DrawIndexService.format`, `CodeService.parse`, `DrawingService.render`, `DrawIndexService.renderRepeats` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:151` |
 | `DrawIndexService.render` | 5 | `DrawIndexService.groupByFamily`, `DrawIndexService.renderContents`, `DrawIndexService.label`, `DrawIndexService.escape`, `DrawIndexService.renderSection` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:274` |
+| `DrawCommand.run` | 5 | `ConflictingDrawModeError.constructor`, `CodeDrawingNeedsWriteError.constructor`, `DrawCheckService.check`, `DrawCommand.sweep`, `DrawCommand.runCodeDrawing` | `applications/meanderaw/src/modules/draw/draw.command.ts:263` |
 | `SymmetryService.transform` | 4 | `TileService.edges`, `TileService.blankEdges`, `SymmetryService.place`, `TileService.build` | `applications/meanderaw/src/modules/symmetry/symmetry.service.ts:143` |
 | `ConnectivityService.connectivity` | 4 | `ConnectivityService.edges`, `ConnectivityService.adjacency`, `GraphService.components`, `ConnectivityService.freeEnds` | `applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:133` |
 | `CharacteristicsService.verify` | 4 | `CharacteristicsService.isCharacteristicEvaluator`, `CharacteristicsService.isCharacteristicKey`, `CharacteristicRegistryError.constructor`, `CharacteristicsService.valueTypeOf` | `applications/meanderaw/src/modules/characteristics/characteristics.service.ts:255` |
@@ -4309,6 +4315,7 @@ What this project is judged against, as declared in its own `callidescope.config
 | `CornerCountCharacteristicService.compute` | 4 | `NorthEastCornerCountCharacteristicService.compute`, `NorthWestCornerCountCharacteristicService.compute`, `SouthEastCornerCountCharacteristicService.compute`, `SouthWestCornerCountCharacteristicService.compute` | `applications/meanderaw/src/modules/characteristics/submatrix/corner/corner-count-characteristic.service.ts:56` |
 | `TileEnumerationService.assign` | 4 | `TileEnumerationService.edges`, `TileEnumerationService.record`, `TileEnumerationService.set`, `TileEnumerationService.clear` | `applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:113` |
 | `DrawIndexService.renderSection` | 4 | `DrawIndexService.escape`, `DrawIndexService.label`, `DrawIndexService.renderUnclassifiedSection`, `DrawIndexService.map(…)` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:196` |
+| `DrawCommand.sweep` | 4 | `DatabaseService.clear`, `DrawEnumerationService.sweep`, `CorpusService.ingest`, `DrawIndexService.build` | `applications/meanderaw/src/modules/draw/draw.command.ts:153` |
 | `CodeService.parse` | 3 | `CodeService.parseFormatted`, `CodeService.parseBare`, `InvalidCodeFormatError.constructor` | `applications/meanderaw/src/modules/code/code.service.ts:215` |
 | `CharacteristicContextService.create` | 3 | `CharacteristicContextService.build`, `CodeService.reduceToUnit`, `CharacteristicContextService.parse` | `applications/meanderaw/src/modules/characteristics/characteristic-context.service.ts:66` |
 | `ConnectivityService.edges` | 3 | `ConnectivityService.key`, `ConnectivityService.joinsEast`, `ConnectivityService.joinsSouth` | `applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:152` |
@@ -4337,8 +4344,6 @@ What this project is judged against, as declared in its own `callidescope.config
 | `MeanderDriftDetectedError.describe` | 3 | `MeanderDriftDetectedError.map(…)`, `MeanderDriftDetectedError.map(…)`, `MeanderDriftDetectedError.map(…)` | `applications/meanderaw/src/modules/draw/draw-check.constants.ts:77` |
 | `DrawCheckService.differingGlyphs` | 3 | `DrawCheckService.map(…)`, `DrawCheckService.toSorted(…)`, `DrawCheckService.filter(…)` | `applications/meanderaw/src/modules/draw/draw-check.service.ts:83` |
 | `DrawCheckService.diff` | 3 | `DrawCheckService.index`, `DrawCheckService.findNewAndChanged`, `DrawCheckService.findMissing` | `applications/meanderaw/src/modules/draw/draw-check.service.ts:228` |
-| `DrawCommand.sweep` | 3 | `DrawEnumerationService.sweep`, `CorpusService.ingest`, `DrawIndexService.build` | `applications/meanderaw/src/modules/draw/draw.command.ts:138` |
-| `DrawCommand.run` | 3 | `DrawCheckService.check`, `DrawCommand.sweep`, `DrawCommand.runCodeDrawing` | `applications/meanderaw/src/modules/draw/draw.command.ts:229` |
 | `ClassificationService.rules` | 2 | `ClassificationService.rule`, `ClassificationService.unitRule` | `applications/meanderaw/src/modules/classification/classification.service.ts:107` |
 | `TileService.assertPointAgrees` | 2 | `MalformedTileError.constructor`, `TileService.assertPointJoinsBelow` | `applications/meanderaw/src/modules/tile/tile.service.ts:50` |
 | `TileService.assertWellFormed` | 2 | `MalformedTileError.constructor`, `TileService.assertPointAgrees` | `applications/meanderaw/src/modules/tile/tile.service.ts:120` |
@@ -4413,7 +4418,7 @@ What this project is judged against, as declared in its own `callidescope.config
 | `DrawIndexService.renderUnclassifiedSection` | 2 | `DrawIndexService.toSorted(…)`, `DrawIndexService.map(…)` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:217` |
 | `DrawIndexService.map(…)` | 2 | `DrawIndexService.toSorted(…)`, `DrawIndexService.map(…)` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:240` |
 | `DrawIndexService.build` | 2 | `DrawIndexService.render`, `DatabaseService.findAll` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:266` |
-| `DrawCommand.runCodeDrawing` | 2 | `IncompleteCodeDrawingError.constructor`, `DrawCodeService.draw` | `applications/meanderaw/src/modules/draw/draw.command.ts:104` |
+| `DrawCommand.runCodeDrawing` | 2 | `IncompleteCodeDrawingError.constructor`, `DrawCodeService.draw` | `applications/meanderaw/src/modules/draw/draw.command.ts:115` |
 | `ClassificationService.matches` | 1 | `ClassificationService.holds` | `applications/meanderaw/src/modules/classification/classification.service.ts:64` |
 | `ClassificationService.matches` | 1 | `ClassificationService.holds` | `applications/meanderaw/src/modules/classification/classification.service.ts:75` |
 | `ClassificationService.classify` | 1 | `ClassificationService.rules` | `applications/meanderaw/src/modules/classification/classification.service.ts:86` |
@@ -4607,7 +4612,8 @@ What this project is judged against, as declared in its own `callidescope.config
 | `RectangleUtilitiesService.from(…)` | 1 | `SubmatrixUtilitiesService.pointDigitAt` | `applications/meanderaw/src/modules/characteristics/submatrix/rectangle/rectangle-utilities.service.ts:87` |
 | `RectangleUtilitiesService.sideLength` | 1 | `SubmatrixUtilitiesService.pointDigitAt` | `applications/meanderaw/src/modules/characteristics/submatrix/rectangle/rectangle-utilities.service.ts:112` |
 | `RectangleUtilitiesService.countIsolatedRectangles` | 1 | `RectangleUtilitiesService.isIsolatedRectangleAt` | `applications/meanderaw/src/modules/characteristics/submatrix/rectangle/rectangle-utilities.service.ts:158` |
-| `DatabaseService.saveAll` | 1 | `DatabaseService.transaction(…)` | `applications/meanderaw/src/modules/database/database.service.ts:98` |
+| `DatabaseService.clear` | 1 | `DatabaseService.transaction(…)` | `applications/meanderaw/src/modules/database/database.service.ts:44` |
+| `DatabaseService.saveAll` | 1 | `DatabaseService.transaction(…)` | `applications/meanderaw/src/modules/database/database.service.ts:120` |
 | `GeometryService.borderPath` | 1 | `GeometryService.formatCoordinate` | `applications/meanderaw/src/modules/geometry/geometry.service.ts:41` |
 | `SvgService.render` | 1 | `SvgService.map(…)` | `applications/meanderaw/src/modules/svg/svg.service.ts:27` |
 | `DrawingService.format` | 1 | `GeometryService.formatCoordinate` | `applications/meanderaw/src/modules/drawing/drawing.service.ts:85` |
@@ -6796,6 +6802,7 @@ graph LR
   file_src_modules_draw_draw_check_sweep_module_ts --> file_src_modules_enumeration_enumeration_module_ts
   file_src_modules_draw_draw_check_command_integration_test_ts --> file_src_modules_corpus_corpus_service_ts
   file_src_modules_draw_draw_check_command_integration_test_ts --> file_src_modules_corpus_historical_corpus_constants_ts
+  file_src_modules_draw_draw_check_command_integration_test_ts --> file_src_modules_database_database_service_ts
   file_src_modules_draw_draw_check_command_integration_test_ts --> file_src_modules_database_entities_Meander_entity_ts
   file_src_modules_draw_draw_check_command_integration_test_ts --> file_src_modules_draw_draw_check_service_ts
   file_src_modules_draw_draw_check_command_integration_test_ts --> file_src_modules_draw_draw_code_service_ts
@@ -6929,6 +6936,7 @@ graph LR
   file_src_modules_draw_draw_command_ts --> file_src_modules_code_code_constants_ts
   file_src_modules_draw_draw_command_ts --> file_src_modules_corpus_corpus_service_ts
   file_src_modules_draw_draw_command_ts --> file_src_modules_corpus_historical_corpus_constants_ts
+  file_src_modules_draw_draw_command_ts --> file_src_modules_database_database_service_ts
   file_src_modules_draw_draw_command_ts --> file_src_modules_draw_draw_check_service_ts
   file_src_modules_draw_draw_command_ts --> file_src_modules_draw_draw_code_service_ts
   file_src_modules_draw_draw_command_ts --> file_src_modules_draw_draw_enumeration_service_ts
@@ -6936,6 +6944,7 @@ graph LR
   file_src_modules_draw_draw_command_ts --> file_src_modules_draw_draw_constants_ts
   file_src_modules_draw_draw_command_ts --> file_src_modules_draw_draw_types_ts
   file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_corpus_corpus_service_ts
+  file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_database_database_service_ts
   file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_database_entities_Meander_entity_ts
   file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_draw_draw_check_service_ts
   file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_draw_draw_check_types_ts
