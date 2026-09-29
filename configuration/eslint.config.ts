@@ -1486,6 +1486,25 @@ export default [
     },
   },
 
+  // 🧩 nx.json project patterns
+  // Nx reads a `projects` pattern list in order, and one that opens with a
+  // `!` exclusion starts from every project in the workspace. Sorting moves
+  // every exclusion ahead of the include it narrows, so `release.projects`
+  // would silently match all projects instead of the publishable ones.
+  {
+    files: ["**/nx.json"],
+    rules: {
+      "jsonc/sort-array-values": [
+        "error",
+        {
+          minValues: 2,
+          order: { caseSensitive: false, natural: true, type: "asc" },
+          pathPattern: String.raw`^(?!(?:.*\.)?(?:commands?|projects)$)`,
+        },
+      ],
+    },
+  },
+
   // 🕸️ codependix graph JSON files
   // Emitted from the Nx project graph, a NestJS container, or a `ts.Program`,
   // in whichever order each source discovers its projects, modules, or
