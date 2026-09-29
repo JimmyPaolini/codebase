@@ -19,6 +19,7 @@ import { LoggerService } from "@codebase/logger";
 import { meanderRecord } from "../../../testing/meanders";
 import { CorpusService } from "../corpus/corpus.service";
 import { HISTORICAL_CORPUS } from "../corpus/historical-corpus.constants";
+import { DatabaseService } from "../database/database.service";
 import { Meander } from "../database/entities/Meander.entity";
 import { EDGE_BUDGET } from "../enumeration/enumeration.constants";
 
@@ -40,8 +41,8 @@ import type { INestApplicationContext } from "@nestjs/common";
  * failing one. A minute left less margin than ordinary runner variance, and
  * 🧑‍🔬 Test Coverage timed out here on four pushes to `main`.
  *
- * Not a hang, and not work that grew — `meanderaw-check` runs the same
- * regeneration in six seconds locally. The runner is saturated: the job
+ * Not a hang, and not work that grew — `nx run meanderaw:start` runs
+ * the same regeneration in six seconds locally. The runner is saturated: the job
  * takes `--parallel=4`, and vitest gives each process
  * `availableParallelism() - 1` workers. Neither multiplier can drop; serially
  * the suites need 20.5 minutes against a 12-minute limit.
@@ -159,6 +160,10 @@ describe("drawCommand --check mode", () => {
         {
           provide: CorpusService,
           useValue: createMock<CorpusService>(),
+        },
+        {
+          provide: DatabaseService,
+          useValue: createMock<DatabaseService>(),
         },
         {
           provide: LoggerService,

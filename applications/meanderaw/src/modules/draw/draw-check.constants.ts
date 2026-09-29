@@ -33,7 +33,7 @@ export const DRAW_CHECK_SWEEP_CONNECTION_NAME = "draw-check-sweep";
  * Every numeric characteristic column is spread in from
  * `COLUMN_CHARACTERISTIC_KEYS` rather than named one at a time, so a
  * Characteristic added to the record is covered by this list the moment it
- * is added there — no stale committed database can pass `meanderaw-check`
+ * is added there — no stale committed database can pass the `start` drift check
  * merely because the column drift went unnamed here. Every letter is
  * covered through `glyphs`, which `diff` compares letter by letter, so a
  * new or renamed letter needs no entry here either.

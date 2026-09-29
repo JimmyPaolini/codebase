@@ -10,8 +10,6 @@ import {
   sweepFixture,
   sweepModuleMetadata,
 } from "../../../testing/draw-sweep";
-import { meanderRecord } from "../../../testing/meanders";
-import { HISTORICAL_CORPUS } from "../corpus/historical-corpus.constants";
 
 import { DrawCheckService } from "./draw-check.service";
 import { DrawCodeService } from "./draw-code.service";
@@ -35,16 +33,15 @@ async function compileSweep(): Promise<SweepFixture> {
 }
 
 /**
- * `DrawCommand`'s sweep over a database that already commits one hardcoded
- * entry's lattice address, split from
- * `draw-sweep.command.integration.test.ts` only for time. This case writes
- * before it sweeps, so it cannot share that file's sweep over an empty
- * database; in its own file vitest runs the two sweeps in parallel rather
- * than one after the other. `node:fs/promises` stays mocked for the same
+ * `DrawCommand`'s `--write` sweep over a database an earlier `--write` already
+ * filled, split from `draw-sweep.command.integration.test.ts` only for time.
+ * This case sweeps twice and compares the rows, so it cannot share that
+ * file's sweep over an empty database; in its own file vitest runs it in
+ * parallel rather than after it. `node:fs/promises` stays mocked for the same
  * reason it is there: the committed `output/index.html` is not disposable.
  */
 describe("drawCommand sweep mode", () => {
-  describe("over a database already holding a hardcoded entry's address", () => {
+  describe("over an already-populated database", () => {
     let sweep: SweepFixture;
 
     beforeEach(async () => {
@@ -56,33 +53,22 @@ describe("drawCommand sweep mode", () => {
     });
 
     it(
-      "ignores the sweep quietly when a hardcoded entry's lattice address is already committed",
+      "regenerates an already-populated database into exactly the rows a fresh sweep writes",
       async () => {
-        const duplicated = HISTORICAL_CORPUS.find((entry) =>
-          sweep.corpus.isBeyondEnumeration(entry),
-        );
+        await sweep.command.run([], { write: true });
 
-        if (duplicated === undefined) {
-          throw new Error(
-            "no hardcoded entry is committed to collide a duplicate against",
-          );
-        }
-
-        await sweep.repository.save(
-          meanderRecord({
-            bettiNumber0Count: 1,
-            code: `${String(duplicated.columns).padStart(2, "0")}x${String(duplicated.rows).padStart(2, "0")}y${duplicated.code}`,
-            columns: duplicated.columns,
-            freeEndCount: 2,
-            lattice: duplicated.code,
-            provenance: "enumerated",
-            rows: duplicated.rows,
-          }),
-        );
+        const fresh = await sweep.repository.find({ order: { id: "ASC" } });
 
         await expect(
           sweep.command.run([], { write: true }),
         ).resolves.not.toThrow();
+
+        const regenerated = await sweep.repository.find({
+          order: { id: "ASC" },
+        });
+
+        expect(regenerated).toHaveLength(fresh.length);
+        expect(regenerated).toStrictEqual(fresh);
       },
       SWEEP_TIMEOUT_MILLISECONDS,
     );

@@ -278,4 +278,21 @@ describe(DatabaseService, () => {
       expect(row.characteristics).toStrictEqual([]);
     });
   });
+
+  describe("clear", () => {
+    it("deletes every meander row and restarts id assignment, so a regenerated sweep numbers its rows as a fresh one would", async () => {
+      await service.save(meanderRecord({ code: "clear-first-row" }));
+      await service.save(meanderRecord({ code: "clear-second-row" }));
+
+      await service.clear();
+
+      await expect(service.findAll()).resolves.toStrictEqual([]);
+
+      const saved = await service.save(
+        meanderRecord({ code: "clear-first-row" }),
+      );
+
+      expect(saved.id).toBe(1);
+    });
+  });
 });
