@@ -4,8 +4,14 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { LoggerService } from "@codebase/logger";
 
-import { resetCommandTestHarness } from "../../../testing/command-harness";
-import { setPromptsMockResponse } from "../../../testing/mocks";
+import {
+  resetCommandTestHarness,
+  runCommandLine,
+} from "../../../testing/command-harness";
+import {
+  mockStandardInputTerminal,
+  setPromptsMockResponse,
+} from "../../../testing/mocks";
 
 import { LiteratureCommand } from "./literature.command";
 import { LiteratureService } from "./literature.service";
@@ -103,139 +109,6 @@ describe(LiteratureCommand, () => {
     const logger = await module.resolve(LoggerService);
 
     expect(logger.setContext).toHaveBeenCalledWith("LiteratureCommand");
-  });
-
-  it.each([["perseus", "perseus"]] as const)(
-    "should parse explicit provider option %s",
-    async (providerInput, expectedProvider) => {
-      literatureService.scanLibrary.mockResolvedValue(library);
-
-      await expect(command.parseProvider(providerInput)).resolves.toBe(
-        expectedProvider,
-      );
-      expect(promptsMock).not.toHaveBeenCalled();
-    },
-  );
-
-  it.each([
-    [
-      "invalid-provider",
-      'Provider "invalid-provider" not found in the dataset.',
-    ],
-  ] as const)(
-    "should throw for invalid explicit provider option %s",
-    async (providerInput, expectedErrorMessage) => {
-      literatureService.scanLibrary.mockResolvedValue(library);
-
-      await expect(command.parseProvider(providerInput)).rejects.toThrow(
-        expectedErrorMessage,
-      );
-    },
-  );
-
-  it("should return undefined when interactive provider selects all", async () => {
-    literatureService.scanLibrary.mockResolvedValue(library);
-    setPromptsMockResponse(promptsMock, { provider: "ALL" });
-
-    const provider = await command.parseProvider(undefined);
-
-    expect(provider).toBeUndefined();
-    expect(promptsMock).toHaveBeenCalledTimes(1);
-  });
-
-  it("should return undefined when provider prompt returns non-string", async () => {
-    literatureService.scanLibrary.mockResolvedValue(library);
-    setPromptsMockResponse(promptsMock, { provider: 123 });
-
-    const provider = await command.parseProvider(undefined);
-
-    expect(provider).toBeUndefined();
-  });
-
-  it("should parse author constrained by provider", async () => {
-    literatureService.scanLibrary.mockResolvedValue(library);
-
-    const author = await command.parseAuthor("ovid", "perseus");
-
-    expect(author).toBe("ovid");
-  });
-
-  it("should return selected author from interactive prompt", async () => {
-    literatureService.scanLibrary.mockResolvedValue(library);
-    setPromptsMockResponse(promptsMock, { author: "vergil" });
-
-    const author = await command.parseAuthor(undefined, undefined);
-
-    expect(author).toBe("vergil");
-  });
-
-  it("should return undefined when interactive author selects all", async () => {
-    literatureService.scanLibrary.mockResolvedValue(library);
-    setPromptsMockResponse(promptsMock, { author: "ALL" });
-
-    const author = await command.parseAuthor(undefined, undefined);
-
-    expect(author).toBeUndefined();
-  });
-
-  it("should throw for invalid author in constrained provider", async () => {
-    literatureService.scanLibrary.mockResolvedValue(library);
-
-    await expect(
-      command.parseAuthor("ovid", "thelatinlibrary"),
-    ).rejects.toThrow('Author "ovid" not found in the dataset.');
-  });
-
-  it("should parse explicit text option", async () => {
-    literatureService.scanLibrary.mockResolvedValue(library);
-
-    const text = await command.parseText(
-      "vergil/vergil/aeneid",
-      "perseus",
-      "vergil",
-    );
-
-    expect(text).toBe("vergil/vergil/aeneid");
-  });
-
-  it("should return selected text from interactive prompt", async () => {
-    literatureService.scanLibrary.mockResolvedValue(library);
-    setPromptsMockResponse(promptsMock, { text: "vergil/vergil/aeneid" });
-
-    const text = await command.parseText(undefined, "perseus", "vergil");
-
-    expect(text).toBe("vergil/vergil/aeneid");
-  });
-
-  it("should return undefined when interactive text selects all", async () => {
-    literatureService.scanLibrary.mockResolvedValue(library);
-    setPromptsMockResponse(promptsMock, { text: "ALL" });
-
-    const text = await command.parseText(undefined, "perseus", "vergil");
-
-    expect(text).toBeUndefined();
-  });
-
-  it("should return undefined when text prompt returns non-string", async () => {
-    literatureService.scanLibrary.mockResolvedValue(library);
-    setPromptsMockResponse(promptsMock, { text: 999 });
-
-    const text = await command.parseText(undefined, "perseus", "vergil");
-
-    expect(text).toBeUndefined();
-  });
-
-  it("should normalize non-string provider and author arguments in parseText", async () => {
-    literatureService.scanLibrary.mockResolvedValue(library);
-    setPromptsMockResponse(promptsMock, { text: "ALL" });
-
-    const text = await command.parseText(
-      undefined,
-      123 as unknown as string,
-      null as unknown as string,
-    );
-
-    expect(text).toBeUndefined();
   });
 
   it("should get text choices filtered by provider only", async () => {
@@ -359,57 +232,6 @@ describe(LiteratureCommand, () => {
     expect(result[0]?.provider).toBe("perseus");
   });
 
-  it("should throw for invalid text option", async () => {
-    literatureService.scanLibrary.mockResolvedValue(library);
-
-    await expect(
-      command.parseText("missing/text", "perseus", "vergil"),
-    ).rejects.toThrow('Text "missing/text" not found in the dataset.');
-  });
-
-  it("should run and ingest selected deduplicated texts", async () => {
-    literatureService.scanLibrary.mockResolvedValue(library);
-    literatureService.ingestAllAuthors.mockResolvedValue(undefined);
-
-    const parseProviderSpy = vi
-      .spyOn(command, "parseProvider")
-      .mockResolvedValue("perseus");
-    const parseAuthorSpy = vi
-      .spyOn(command, "parseAuthor")
-      .mockResolvedValue("vergil");
-    const parseTextSpy = vi
-      .spyOn(command, "parseText")
-      .mockResolvedValue(undefined);
-
-    await command.run([], {});
-
-    expect(parseProviderSpy).toHaveBeenCalledWith(undefined);
-    expect(parseAuthorSpy).toHaveBeenCalledWith(undefined, "perseus");
-    expect(parseTextSpy).toHaveBeenCalledWith(undefined, "perseus", "vergil");
-
-    expect(literatureService.ingestAllAuthors).toHaveBeenCalledTimes(1);
-
-    const ingestedTexts = literatureService.ingestAllAuthors.mock.calls[0]?.[0];
-
-    expect(ingestedTexts).toBeDefined();
-    expect(ingestedTexts).toHaveLength(1);
-    expect(ingestedTexts?.[0]?.provider).toBe("perseus");
-
-    expect(logger.info).toHaveBeenCalledWith(
-      "📚 Starting literature ingestion",
-    );
-    expect(logger.info).toHaveBeenCalledWith(
-      "📚 Selected texts for ingestion",
-      undefined,
-      { count: 1 },
-    );
-    expect(logger.info).toHaveBeenCalledWith(
-      "📚 Ingested literature",
-      undefined,
-      expect.any(Object),
-    );
-  });
-
   it("should stop early when library is empty", async () => {
     literatureService.scanLibrary.mockResolvedValue([]);
 
@@ -419,5 +241,96 @@ describe(LiteratureCommand, () => {
       "📚 Missing texts in the data/library directory",
     );
     expect(literatureService.ingestAllAuthors).not.toHaveBeenCalled();
+  });
+
+  describe("command line", () => {
+    const setStandardInputTerminal = mockStandardInputTerminal();
+
+    beforeEach(() => {
+      promptsMock.mockReset();
+      literatureService.scanLibrary.mockResolvedValue(library);
+      literatureService.ingestAllAuthors.mockResolvedValue(undefined);
+      setStandardInputTerminal(false);
+    });
+
+    /** Runs `literature` with `flags` exactly as the CLI would. */
+    async function runLiterature(...flags: string[]): Promise<void> {
+      await runCommandLine({
+        argv: ["literature", ...flags],
+        providers: [
+          LiteratureCommand,
+          { provide: LoggerService, useValue: createMock<LoggerService>() },
+          { provide: LiteratureService, useValue: literatureService },
+        ],
+      });
+    }
+
+    /** The markdown files of every text handed to ingestion. */
+    function ingestedPaths(): string[] {
+      return literatureService.ingestAllAuthors.mock.calls.flatMap(([texts]) =>
+        texts.map((text) => text.fullPath),
+      );
+    }
+
+    it("ingests only the text named by --provider, --author and --text without prompting", async () => {
+      await runLiterature(
+        "--provider=perseus",
+        "--author=vergil",
+        "--text=vergil/vergil/aeneid",
+      );
+
+      expect(ingestedPaths()).toStrictEqual(["/tmp/vergil/aeneid-alt.md"]);
+      expect(promptsMock).not.toHaveBeenCalled();
+    });
+
+    it("ingests every text without prompting when standard input is not a terminal", async () => {
+      await runLiterature();
+
+      expect(ingestedPaths()).toStrictEqual([
+        "/tmp/ovid/metamorphoses.md",
+        "/tmp/vergil/aeneid-alt.md",
+      ]);
+      expect(promptsMock).not.toHaveBeenCalled();
+    });
+
+    it("prompts for the provider, author and text a terminal run leaves out", async () => {
+      setStandardInputTerminal(true);
+      promptsMock
+        .mockResolvedValueOnce({ choice: "perseus" })
+        .mockResolvedValueOnce({ choice: "ovid" })
+        .mockResolvedValueOnce({ choice: "ovid/ovid/metamorphoses" });
+
+      await runLiterature();
+
+      expect(promptsMock).toHaveBeenCalledTimes(3);
+      expect(ingestedPaths()).toStrictEqual(["/tmp/ovid/metamorphoses.md"]);
+    });
+
+    it("rejects an --author missing from the given provider", async () => {
+      await expect(
+        runLiterature("--provider=thelatinlibrary", "--author=ovid"),
+      ).rejects.toThrow('Author "ovid" not found in the dataset.');
+
+      expect(ingestedPaths()).toStrictEqual([]);
+    });
+
+    it("rejects a --text missing from the dataset", async () => {
+      await expect(runLiterature("--text=missing/text")).rejects.toThrow(
+        'Text "missing/text" not found in the dataset.',
+      );
+
+      expect(ingestedPaths()).toStrictEqual([]);
+    });
+
+    it("fails instead of ingesting when a prompt is cancelled", async () => {
+      setStandardInputTerminal(true);
+      promptsMock.mockResolvedValueOnce({});
+
+      await expect(runLiterature()).rejects.toThrow(
+        "Prompt cancelled: Select the provider",
+      );
+
+      expect(ingestedPaths()).toStrictEqual([]);
+    });
   });
 });

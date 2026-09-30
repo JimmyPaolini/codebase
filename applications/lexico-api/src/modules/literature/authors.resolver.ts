@@ -9,6 +9,8 @@ import {
 
 import { Author, Text } from "@codebase/lexico-entities";
 
+import { PaginationArguments } from "../search/pagination-arguments.entities";
+
 import { AuthorArguments } from "./author-argument.entities";
 import { AuthorConnectionType } from "./literature-connection.entities";
 import { LiteratureService } from "./literature.service";
@@ -52,7 +54,7 @@ export class AuthorsResolver {
    */
   @Query(() => AuthorConnectionType, { name: "authors" })
   public async authors(
-    @Arguments() arguments_: SearchAuthorsArguments,
+    @Arguments() arguments_: PaginationArguments,
   ): Promise<Connection<Author>> {
     return this.literatureService.listAuthorsConnection(arguments_);
   }

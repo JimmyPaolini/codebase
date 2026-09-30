@@ -79,7 +79,6 @@ describe(LinesResolver, () => {
 
     const line = new Line();
     line.id = "line-1";
-    line.tokens = [new Token()];
 
     const mockService = createMock<LiteratureService>({
       searchLines: vi.fn<LiteratureService["searchLines"]>().mockResolvedValue({
@@ -115,7 +114,27 @@ describe(LinesResolver, () => {
       edges: [{ node: line }],
       totalCount: 1,
     });
+  });
 
-    expect(linesResolver.tokensForLine(line)).toStrictEqual(line.tokens);
+  it("loads a line's tokens through the service when the relation was not joined", async () => {
+    expect.hasAssertions();
+
+    const line = new Line();
+    line.id = "line-1";
+
+    const token = new Token();
+    token.id = "token-1";
+
+    const listTokensForLine = vi
+      .fn<LiteratureService["listTokensForLine"]>()
+      .mockResolvedValue([token]);
+    const linesResolver = new LinesResolver(
+      createMock<LiteratureService>({ listTokensForLine }),
+    );
+
+    await expect(linesResolver.tokensForLine(line)).resolves.toStrictEqual([
+      token,
+    ]);
+    expect(listTokensForLine).toHaveBeenCalledWith("line-1");
   });
 });

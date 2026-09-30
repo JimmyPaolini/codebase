@@ -8,10 +8,13 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { LoggerService } from "@codebase/logger";
 
-import { resetCommandTestHarness } from "../../../testing/command-harness";
 import {
+  resetCommandTestHarness,
+  runCommandLine,
+} from "../../../testing/command-harness";
+import {
+  mockStandardInputTerminal,
   setPromptsMockResponse,
-  setPromptsMockResponseOnce,
 } from "../../../testing/mocks";
 
 import { LibraryCommand } from "./library.command";
@@ -131,247 +134,6 @@ describe(LibraryCommand, () => {
     const logger = await module.resolve(LoggerService);
 
     expect(logger.setContext).toHaveBeenCalledWith("LibraryCommand");
-  });
-
-  it.each([["perseus", "perseus"]] as const)(
-    "should parse explicit provider option %s",
-    async (providerInput, expectedProvider) => {
-      await expect(command.parseProvider(providerInput)).resolves.toBe(
-        expectedProvider,
-      );
-      expect(promptsMock).not.toHaveBeenCalled();
-    },
-  );
-
-  it.each([["invalid", 'Provider "invalid" not found.']] as const)(
-    "should throw for invalid explicit provider option %s",
-    async (providerInput, expectedErrorMessage) => {
-      await expect(command.parseProvider(providerInput)).rejects.toThrow(
-        expectedErrorMessage,
-      );
-    },
-  );
-
-  it("should parse provider interactively and support all option", async () => {
-    setPromptsMockResponseOnce(promptsMock, { provider: "ALL" });
-    const providerAll = await command.parseProvider(undefined);
-
-    setPromptsMockResponseOnce(promptsMock, { provider: "perseus" });
-    const providerSelected = await command.parseProvider(undefined);
-
-    expect(providerAll).toBeUndefined();
-    expect(providerSelected).toBe("perseus");
-  });
-
-  it("should parse author and text explicit values without validation", async () => {
-    vi.spyOn(
-      command as unknown as {
-        getAuthorChoices: (
-          provider?: string,
-        ) => Promise<{ title: string; value: string }[]>;
-      },
-      "getAuthorChoices",
-    ).mockResolvedValue([{ title: "vergil", value: "vergil" }]);
-
-    vi.spyOn(
-      command as unknown as {
-        getTextChoices: (
-          provider?: string,
-          authorSlug?: string,
-        ) => Promise<{ title: string; value: string }[]>;
-      },
-      "getTextChoices",
-    ).mockResolvedValue([{ title: "vergil/aeneid", value: "vergil/aeneid" }]);
-
-    const author = await command.parseAuthor("custom-author", "perseus");
-    const text = await command.parseText(
-      "custom/text",
-      "perseus",
-      "custom-author",
-    );
-
-    expect(author).toBe("custom-author");
-    expect(text).toBe("custom/text");
-  });
-
-  it("should prompt for author when explicit author is empty", async () => {
-    const getAuthorChoicesSpy = vi
-      .spyOn(
-        command as unknown as {
-          getAuthorChoices: (
-            provider?: string,
-          ) => Promise<{ title: string; value: string }[]>;
-        },
-        "getAuthorChoices",
-      )
-      .mockResolvedValue([{ title: "vergil", value: "vergil" }]);
-    setPromptsMockResponseOnce(promptsMock, { author: "vergil" });
-
-    const author = await command.parseAuthor("", "perseus");
-
-    expect(getAuthorChoicesSpy).toHaveBeenCalledWith("perseus");
-    expect(author).toBe("vergil");
-  });
-
-  it("should prompt for text when explicit text is empty", async () => {
-    const getTextChoicesSpy = vi
-      .spyOn(
-        command as unknown as {
-          getTextChoices: (
-            provider?: string,
-            authorSlug?: string,
-          ) => Promise<{ title: string; value: string }[]>;
-        },
-        "getTextChoices",
-      )
-      .mockResolvedValue([
-        { title: "vergil/epic/aeneid", value: "vergil/epic/aeneid" },
-      ]);
-    setPromptsMockResponseOnce(promptsMock, { text: "vergil/epic/aeneid" });
-
-    const text = await command.parseText("", "perseus", "vergil");
-
-    expect(getTextChoicesSpy).toHaveBeenCalledWith("perseus", "vergil");
-    expect(text).toBe("vergil/epic/aeneid");
-  });
-
-  it("should normalize non-string provider parameter for parseAuthor", async () => {
-    const getAuthorChoicesSpy = vi
-      .spyOn(
-        command as unknown as {
-          getAuthorChoices: (
-            provider?: string,
-          ) => Promise<{ title: string; value: string }[]>;
-        },
-        "getAuthorChoices",
-      )
-      .mockResolvedValue([]);
-
-    setPromptsMockResponseOnce(promptsMock, { author: "ALL" });
-
-    await (
-      command as unknown as {
-        parseAuthor: (
-          author?: string,
-          provider?: unknown,
-        ) => Promise<string | undefined>;
-      }
-    ).parseAuthor(undefined, { invalid: true });
-
-    expect(getAuthorChoicesSpy).toHaveBeenCalledWith(undefined);
-  });
-
-  it("should parse author and text interactively", async () => {
-    vi.spyOn(
-      command as unknown as {
-        getAuthorChoices: (
-          provider?: string,
-        ) => Promise<{ title: string; value: string }[]>;
-      },
-      "getAuthorChoices",
-    ).mockResolvedValue([{ title: "vergil", value: "vergil" }]);
-
-    vi.spyOn(
-      command as unknown as {
-        getTextChoices: (
-          provider?: string,
-          authorSlug?: string,
-        ) => Promise<{ title: string; value: string }[]>;
-      },
-      "getTextChoices",
-    ).mockResolvedValue([{ title: "vergil/aeneid", value: "vergil/aeneid" }]);
-
-    setPromptsMockResponseOnce(promptsMock, { author: "ALL" });
-    const authorAll = await command.parseAuthor(undefined, "perseus");
-
-    setPromptsMockResponseOnce(promptsMock, { author: "vergil" });
-    const authorSelected = await command.parseAuthor(undefined, "perseus");
-
-    setPromptsMockResponseOnce(promptsMock, { text: "ALL" });
-    const textAll = await command.parseText(undefined, "perseus", "vergil");
-
-    setPromptsMockResponseOnce(promptsMock, { text: "vergil/aeneid" });
-    const textSelected = await command.parseText(
-      undefined,
-      "perseus",
-      "vergil",
-    );
-
-    expect(authorAll).toBeUndefined();
-    expect(authorSelected).toBe("vergil");
-    expect(textAll).toBeUndefined();
-    expect(textSelected).toBe("vergil/aeneid");
-  });
-
-  it("should return undefined when interactive author response is not a string", async () => {
-    vi.spyOn(
-      command as unknown as {
-        getAuthorChoices: (
-          provider?: string,
-        ) => Promise<{ title: string; value: string }[]>;
-      },
-      "getAuthorChoices",
-    ).mockResolvedValue([{ title: "vergil", value: "vergil" }]);
-
-    setPromptsMockResponseOnce(promptsMock, { author: 123 });
-
-    const parsed = await command.parseAuthor(undefined, "perseus");
-
-    expect(parsed).toBeUndefined();
-  });
-
-  it("should return undefined when interactive provider response is not a string", async () => {
-    setPromptsMockResponseOnce(promptsMock, { provider: 123 });
-
-    const parsed = await command.parseProvider(undefined);
-
-    expect(parsed).toBeUndefined();
-  });
-
-  it("should return undefined when interactive text response is not a string", async () => {
-    vi.spyOn(
-      command as unknown as {
-        getTextChoices: (
-          provider?: string,
-          authorSlug?: string,
-        ) => Promise<{ title: string; value: string }[]>;
-      },
-      "getTextChoices",
-    ).mockResolvedValue([{ title: "vergil/aeneid", value: "vergil/aeneid" }]);
-
-    setPromptsMockResponseOnce(promptsMock, { text: 123 });
-
-    const parsed = await command.parseText(undefined, "perseus", "vergil");
-
-    expect(parsed).toBeUndefined();
-  });
-
-  it("should normalize non-string provider and author parameters for parseText", async () => {
-    const getTextChoicesSpy = vi
-      .spyOn(
-        command as unknown as {
-          getTextChoices: (
-            provider?: string,
-            authorSlug?: string,
-          ) => Promise<{ title: string; value: string }[]>;
-        },
-        "getTextChoices",
-      )
-      .mockResolvedValue([]);
-
-    setPromptsMockResponseOnce(promptsMock, { text: "ALL" });
-
-    await (
-      command as unknown as {
-        parseText: (
-          text?: string,
-          provider?: unknown,
-          authorSlug?: unknown,
-        ) => Promise<string | undefined>;
-      }
-    ).parseText(undefined, { invalid: true }, 42);
-
-    expect(getTextChoicesSpy).toHaveBeenCalledWith(undefined, undefined);
   });
 
   it("should build ingest parameters with filtering", () => {
@@ -646,75 +408,6 @@ describe(LibraryCommand, () => {
       },
       { title: "vergil/epic/aeneid", value: "vergil/epic/aeneid" },
     ]);
-  });
-
-  it("should parse ingest options by delegating provider, author, and text parsing", async () => {
-    vi.spyOn(command, "parseProvider").mockResolvedValueOnce("perseus");
-    vi.spyOn(command, "parseAuthor").mockResolvedValueOnce("vergil");
-    vi.spyOn(command, "parseText").mockResolvedValueOnce("vergil/aeneid");
-
-    const parsed = await (
-      command as unknown as {
-        parseIngestOptions: (options: {
-          author?: null | string;
-          provider?: null | string;
-          text?: null | string;
-        }) => Promise<{
-          author: string | undefined;
-          providerName: string | undefined;
-          text: string | undefined;
-        }>;
-      }
-    ).parseIngestOptions({
-      author: "vergil",
-      provider: "perseus",
-      text: "vergil/aeneid",
-    });
-
-    expect(parsed).toStrictEqual({
-      author: "vergil",
-      providerName: "perseus",
-      text: "vergil/aeneid",
-    });
-  });
-
-  it("should parse ingest options by normalizing null values to undefined", async () => {
-    const parseProviderSpy = vi
-      .spyOn(command, "parseProvider")
-      .mockResolvedValueOnce(undefined);
-    const parseAuthorSpy = vi
-      .spyOn(command, "parseAuthor")
-      .mockResolvedValueOnce(undefined);
-    const parseTextSpy = vi
-      .spyOn(command, "parseText")
-      .mockResolvedValueOnce(undefined);
-
-    const parsed = await (
-      command as unknown as {
-        parseIngestOptions: (options: {
-          author?: null | string;
-          provider?: null | string;
-          text?: null | string;
-        }) => Promise<{
-          author: string | undefined;
-          providerName: string | undefined;
-          text: string | undefined;
-        }>;
-      }
-    ).parseIngestOptions({
-      author: null,
-      provider: null,
-      text: null,
-    });
-
-    expect(parseProviderSpy).toHaveBeenCalledWith(undefined);
-    expect(parseAuthorSpy).toHaveBeenCalledWith(undefined, undefined);
-    expect(parseTextSpy).toHaveBeenCalledWith(undefined, undefined, undefined);
-    expect(parsed).toStrictEqual({
-      author: undefined,
-      providerName: undefined,
-      text: undefined,
-    });
   });
 
   it("should process provider and log completion on success", async () => {
@@ -1257,5 +950,98 @@ describe(LibraryCommand, () => {
       process.chdir(previousWorkingDirectory);
       rmSync(temporaryDirectory, { force: true, recursive: true });
     }
+  });
+
+  describe("command line", () => {
+    const setStandardInputTerminal = mockStandardInputTerminal();
+
+    beforeEach(() => {
+      promptsMock.mockReset();
+      readdirMock.mockResolvedValue([]);
+      setStandardInputTerminal(false);
+    });
+
+    /** Runs `library` with `flags` exactly as the CLI would. */
+    async function runLibrary(...flags: string[]): Promise<void> {
+      await runCommandLine({
+        argv: ["library", ...flags],
+        providers: [
+          LibraryCommand,
+          { provide: LoggerService, useValue: createMock<LoggerService>() },
+          { provide: LIBRARY_PROVIDERS_TOKEN, useValue: providers },
+        ],
+      });
+    }
+
+    /** The ingest options each provider was run with, keyed by provider name. */
+    function ingestCalls(): Record<string, unknown[]> {
+      return Object.fromEntries(
+        providers.map((provider) => [
+          provider.name,
+          vi.mocked(provider.ingest).mock.calls.map(([options]) => options),
+        ]),
+      );
+    }
+
+    it("runs only --provider with the given --author and --text without prompting", async () => {
+      await runLibrary(
+        "--provider=perseus",
+        "--author=not-downloaded-yet",
+        "--text=not-downloaded-yet/text",
+      );
+
+      expect(ingestCalls()).toStrictEqual({
+        perseus: [
+          { author: "not-downloaded-yet", text: "not-downloaded-yet/text" },
+        ],
+        thelatinlibrary: [],
+      });
+      expect(promptsMock).not.toHaveBeenCalled();
+    });
+
+    it("rejects an unknown --provider before running any provider", async () => {
+      await expect(runLibrary("--provider=invalid")).rejects.toThrow(
+        'Provider "invalid" not found.',
+      );
+
+      expect(ingestCalls()).toStrictEqual({ perseus: [], thelatinlibrary: [] });
+    });
+
+    it("runs every provider without prompting when standard input is not a terminal", async () => {
+      await runLibrary();
+
+      expect(ingestCalls()).toStrictEqual({
+        perseus: [{}],
+        thelatinlibrary: [{}],
+      });
+      expect(promptsMock).not.toHaveBeenCalled();
+    });
+
+    it("prompts for the provider, author and text a terminal run leaves out", async () => {
+      setStandardInputTerminal(true);
+      promptsMock
+        .mockResolvedValueOnce({ choice: "thelatinlibrary" })
+        .mockResolvedValueOnce({ choice: "cicero" })
+        .mockResolvedValueOnce({ choice: "cicero/de-oratore" });
+
+      await runLibrary();
+
+      expect(promptsMock).toHaveBeenCalledTimes(3);
+      expect(ingestCalls()).toStrictEqual({
+        perseus: [],
+        thelatinlibrary: [{ author: "cicero", text: "cicero/de-oratore" }],
+      });
+    });
+
+    it("fails instead of running providers when a prompt is cancelled", async () => {
+      setStandardInputTerminal(true);
+      promptsMock.mockResolvedValueOnce({});
+
+      await expect(runLibrary()).rejects.toThrow(
+        "Prompt cancelled: Select the provider",
+      );
+
+      expect(ingestCalls()).toStrictEqual({ perseus: [], thelatinlibrary: [] });
+    });
   });
 });

@@ -1,4 +1,8 @@
 import { createMock } from "@golevelup/ts-vitest";
+import {
+  GraphQLSchemaBuilderModule,
+  GraphQLSchemaFactory,
+} from "@nestjs/graphql";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
@@ -6,6 +10,7 @@ import { Author, Text } from "@codebase/lexico-entities";
 
 import { AuthorsResolver } from "./authors.resolver";
 import { LiteratureService } from "./literature.service";
+import { TextsResolver } from "./texts.resolver";
 
 describe(AuthorsResolver, () => {
   let resolver: AuthorsResolver;
@@ -96,7 +101,6 @@ describe(AuthorsResolver, () => {
         before: "cursor-0",
         first: 10,
         last: 5,
-        query: "",
       }),
     ).resolves.toMatchObject({
       edges: [{ node: author }],
@@ -153,5 +157,33 @@ describe(AuthorsResolver, () => {
     await expect(authorsResolver.author({ lookup: {} })).resolves.toBeNull();
 
     expect(authorsResolver).toBeInstanceOf(AuthorsResolver);
+  });
+
+  it("exposes authors as a pagination-only listing without a query argument", async () => {
+    expect.hasAssertions();
+
+    const module = await Test.createTestingModule({
+      imports: [GraphQLSchemaBuilderModule],
+      providers: [
+        AuthorsResolver,
+        TextsResolver,
+        {
+          provide: LiteratureService,
+          useValue: createMock<LiteratureService>(),
+        },
+      ],
+    }).compile();
+
+    const schema = await module
+      .get(GraphQLSchemaFactory)
+      .create([AuthorsResolver, TextsResolver]);
+    const fields = schema.getQueryType()?.getFields();
+
+    expect(
+      fields?.["authors"]?.args.map((argument) => argument.name).toSorted(),
+    ).toStrictEqual(["after", "before", "first", "last"]);
+    expect(
+      fields?.["searchAuthors"]?.args.map((argument) => argument.name),
+    ).toContain("query");
   });
 });

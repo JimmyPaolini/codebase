@@ -65,7 +65,7 @@ export class LinesResolver {
 
   /** Resolves every token attached to a line. */
   @ResolveField(() => [Token], { name: "tokens" })
-  public tokensForLine(@Parent() line: Line): Token[] {
-    return line.tokens;
+  public async tokensForLine(@Parent() line: Line): Promise<Token[]> {
+    return this.literatureService.listTokensForLine(line.id);
   }
 }

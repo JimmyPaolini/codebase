@@ -1,14 +1,21 @@
 import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
-import prompts from "prompts";
 
 import { LoggerService } from "@codebase/logger";
 
+import {
+  getOptionText,
+  requireChoice,
+  selectChoice,
+} from "../lexico-ingestion/lexico-ingestion.utilities";
+
 import { LiteratureService } from "./literature.service";
 
+import type { CommandOptionChoice } from "../lexico-ingestion/lexico-ingestion.types";
 import type {
   LibraryEntry,
   LiteratureCommandOptions,
+  LiteratureFilterArguments,
 } from "./literature.types";
 
 /**
@@ -74,7 +81,7 @@ export class LiteratureCommand extends CommandRunner {
    */
   private async getAuthorChoices(
     provider?: string,
-  ): Promise<{ title: string; value: string }[]> {
+  ): Promise<CommandOptionChoice[]> {
     const library = await this.helper.scanLibrary();
     const filtered = provider
       ? library.filter((entry) => entry.provider === provider)
@@ -88,9 +95,7 @@ export class LiteratureCommand extends CommandRunner {
   /**
    * Gets provider choices used by literature ingestion.
    */
-  private async getProviderChoices(): Promise<
-    { title: string; value: string }[]
-  > {
+  private async getProviderChoices(): Promise<CommandOptionChoice[]> {
     const library = await this.helper.scanLibrary();
     const providers = [
       ...new Set(library.map((entry) => entry.provider)),
@@ -104,7 +109,7 @@ export class LiteratureCommand extends CommandRunner {
   private async getTextChoices(
     provider?: string,
     authorSlug?: string,
-  ): Promise<{ title: string; value: string }[]> {
+  ): Promise<CommandOptionChoice[]> {
     const library = await this.helper.scanLibrary();
     let filtered = library;
     if (provider)
@@ -120,6 +125,28 @@ export class LiteratureCommand extends CommandRunner {
       ),
     ].toSorted();
     return textSlugs.map((textSlug) => ({ title: textSlug, value: textSlug }));
+  }
+
+  /**
+   * Resolves one optional filter: given text must be one of `choices`, while a
+   * missing value is asked for on a terminal and otherwise means "All".
+   */
+  private async resolveFilter({
+    choices,
+    label,
+    message,
+    value,
+  }: LiteratureFilterArguments): Promise<string | undefined> {
+    const text = getOptionText(value);
+    if (text) {
+      return requireChoice(
+        text,
+        choices,
+        `${label} "${text}" not found in the dataset.`,
+      );
+    }
+
+    return selectChoice({ choices, message, noSelectionTitle: "All" });
   }
 
   /**
@@ -147,109 +174,43 @@ export class LiteratureCommand extends CommandRunner {
     return this.deduplicateByProvider(filtered);
   }
 
+  // 🌎 Public Methods
+
   /**
-   * Resolves the optional `--author` filter from CLI input or interactive selection.
+   * Passes the `--author` text through to `run`, which validates it against
+   * the provider's authors.
    */
   @Option({
-    description: "The author to ingest",
+    description: "The author to ingest (omit to pick one, or all)",
     flags: "-a, --author [author]",
   })
-  async parseAuthor(
-    author?: string,
-    provider?: string,
-  ): Promise<string | undefined> {
-    const choices = await this.getAuthorChoices(
-      typeof provider === "string" ? provider : undefined,
-    );
-    if (typeof author === "string" && author.trim() !== "") {
-      if (choices.some((choice) => choice.value === author)) {
-        return author;
-      }
-      throw new Error(`Author "${author}" not found in the dataset.`);
-    }
-
-    const response = (await prompts({
-      choices: [{ title: "All", value: "ALL" }, ...choices],
-      message: "Select the author",
-      name: "author",
-      type: "autocomplete",
-    })) as { author: string };
-
-    if (response.author === "ALL" || typeof response.author !== "string") {
-      return undefined;
-    }
-
-    return response.author;
+  parseAuthor(author: string): string {
+    return author;
   }
 
   /**
-   * Resolves the optional `--provider` filter from CLI input or interactive selection.
+   * Passes the `--provider` text through to `run`, which validates it against
+   * the providers in `data/library`.
    */
   @Option({
-    description: "The provider to ingest from",
+    description: "The provider to ingest from (omit to pick one, or all)",
     flags: "-p, --provider [provider]",
   })
-  async parseProvider(provider?: string): Promise<string | undefined> {
-    const choices = await this.getProviderChoices();
-    if (typeof provider === "string" && provider.trim() !== "") {
-      if (choices.some((choice) => choice.value === provider)) {
-        return provider;
-      }
-      throw new Error(`Provider "${provider}" not found in the dataset.`);
-    }
-
-    const response = (await prompts({
-      choices: [{ title: "All", value: "ALL" }, ...choices],
-      message: "Select the provider",
-      name: "provider",
-      type: "autocomplete",
-    })) as { provider: string };
-
-    if (response.provider === "ALL" || typeof response.provider !== "string") {
-      return undefined;
-    }
-
-    return response.provider;
+  parseProvider(provider: string): string {
+    return provider;
   }
 
   /**
-   * Resolves the optional `--text` filter from CLI input or interactive selection.
+   * Passes the `--text` text through to `run`, which validates it against the
+   * texts left by the provider and author filters.
    */
   @Option({
-    description: "The specific text to ingest",
+    description: "The specific text to ingest (omit to pick one, or all)",
     flags: "-t, --text [text]",
   })
-  async parseText(
-    text?: string,
-    provider?: string,
-    authorSlug?: string,
-  ): Promise<string | undefined> {
-    const choices = await this.getTextChoices(
-      typeof provider === "string" ? provider : undefined,
-      typeof authorSlug === "string" ? authorSlug : undefined,
-    );
-    if (typeof text === "string" && text.trim() !== "") {
-      if (choices.some((choice) => choice.value === text)) {
-        return text;
-      }
-      throw new Error(`Text "${text}" not found in the dataset.`);
-    }
-
-    const response = (await prompts({
-      choices: [{ title: "All", value: "ALL" }, ...choices],
-      message: "Select the text",
-      name: "text",
-      type: "autocomplete",
-    })) as { text: string };
-
-    if (response.text === "ALL" || typeof response.text !== "string") {
-      return undefined;
-    }
-
-    return response.text;
+  parseText(text: string): string {
+    return text;
   }
-
-  // 🌎 Public Methods
 
   /**
    * Runs literature ingestion for the selected provider/author/text scope.
@@ -266,16 +227,24 @@ export class LiteratureCommand extends CommandRunner {
       this.logger.warn("📚 Missing texts in the data/library directory");
       return;
     }
-    const provider = await this.parseProvider(options.provider ?? undefined);
-    const author = await this.parseAuthor(
-      options.author ?? undefined,
-      provider,
-    );
-    const text = await this.parseText(
-      options.text ?? undefined,
-      provider,
-      author,
-    );
+    const provider = await this.resolveFilter({
+      choices: await this.getProviderChoices(),
+      label: "Provider",
+      message: "Select the provider",
+      value: options.provider,
+    });
+    const author = await this.resolveFilter({
+      choices: await this.getAuthorChoices(provider),
+      label: "Author",
+      message: "Select the author",
+      value: options.author,
+    });
+    const text = await this.resolveFilter({
+      choices: await this.getTextChoices(provider, author),
+      label: "Text",
+      message: "Select the text",
+      value: options.text,
+    });
     const textsToIngest = this.selectTextsToIngest({
       author,
       library,

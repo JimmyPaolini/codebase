@@ -7,6 +7,11 @@ import { Line, Text } from "@codebase/lexico-entities";
 import { LiteratureService } from "./literature.service";
 import { TextsResolver } from "./texts.resolver";
 
+/** Builds a line with the given index under a text. */
+function createLine(index: number): Line {
+  return Object.assign(new Line(), { id: `line-${String(index)}`, index });
+}
+
 describe(TextsResolver, () => {
   let resolver: TextsResolver;
 
@@ -105,9 +110,7 @@ describe(TextsResolver, () => {
 
     const text = new Text();
     text.id = "text-1";
-    text.childTexts = [new Text()];
     text.parentText = new Text();
-    text.lines = [new Line()];
 
     const mockService = createMock<LiteratureService>({
       searchTexts: vi.fn<LiteratureService["searchTexts"]>().mockResolvedValue({
@@ -144,10 +147,8 @@ describe(TextsResolver, () => {
       totalCount: 1,
     });
 
-    expect(textsResolver.childTexts(text)).toStrictEqual(text.childTexts);
     expect(textsResolver.parentText(text)).toBe(text.parentText);
     expect(textsResolver.parentText(new Text())).toBeNull();
-    expect(textsResolver.linesForText(text)).toStrictEqual(text.lines);
   });
 
   it("resolves nullable text lookups", async () => {
@@ -158,5 +159,50 @@ describe(TextsResolver, () => {
     await expect(textsResolver.text({})).resolves.toBeNull();
 
     await expect(textsResolver.text({ lookup: {} })).resolves.toBeNull();
+  });
+
+  it("resolves a text's lines in index order even when the relation was joined out of order", async () => {
+    expect.hasAssertions();
+
+    const text = Object.assign(new Text(), {
+      id: "text-1",
+      lines: [createLine(34), createLine(49), createLine(10), createLine(0)],
+    });
+    const orderedLines = [0, 10, 34, 49].map((index) => createLine(index));
+    const listLines = vi
+      .fn<LiteratureService["listLines"]>()
+      .mockResolvedValue(orderedLines);
+    const textsResolver = new TextsResolver(
+      createMock<LiteratureService>({ listLines }),
+    );
+
+    const lines = await textsResolver.linesForText(text);
+
+    expect(lines.map((line) => line.index)).toStrictEqual([0, 10, 34, 49]);
+    expect(listLines).toHaveBeenCalledWith("text-1");
+  });
+
+  it("resolves lines and child texts for a text loaded without those relations", async () => {
+    expect.hasAssertions();
+
+    const text = Object.assign(new Text(), { id: "text-1" });
+    const child = Object.assign(new Text(), { id: "text-2", title: "Liber I" });
+    const listLines = vi
+      .fn<LiteratureService["listLines"]>()
+      .mockResolvedValue([createLine(0)]);
+    const listTexts = vi
+      .fn<LiteratureService["listTexts"]>()
+      .mockResolvedValue([child]);
+    const textsResolver = new TextsResolver(
+      createMock<LiteratureService>({ listLines, listTexts }),
+    );
+
+    await expect(textsResolver.linesForText(text)).resolves.toStrictEqual([
+      createLine(0),
+    ]);
+    await expect(textsResolver.childTexts(text)).resolves.toStrictEqual([
+      child,
+    ]);
+    expect(listTexts).toHaveBeenCalledWith(undefined, "text-1");
   });
 });

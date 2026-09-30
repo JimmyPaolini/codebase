@@ -31,16 +31,22 @@ export class TextsResolver {
 
   // 🔎 Queries
 
-  /** Lists all child texts under the current text. */
+  /**
+   * Lists the child texts under the current text, ordered like the `texts` query.
+   * Loaded here rather than from the parent's relation, which not every query joins.
+   */
   @ResolveField(() => [Text], { name: "childTexts" })
-  public childTexts(@Parent() text: Text): Text[] {
-    return text.childTexts;
+  public async childTexts(@Parent() text: Text): Promise<Text[]> {
+    return this.literatureService.listTexts(undefined, text.id);
   }
 
-  /** Lists all lines attached to the current text. */
+  /**
+   * Lists the current text's lines in index order. A joined relation carries no
+   * order, and not every query joins it, so the lines are always loaded here.
+   */
   @ResolveField(() => [Line], { name: "lines" })
-  public linesForText(@Parent() text: Text): Line[] {
-    return text.lines;
+  public async linesForText(@Parent() text: Text): Promise<Line[]> {
+    return this.literatureService.listLines(text.id);
   }
 
   /** Resolves the parent text for a nested text. */

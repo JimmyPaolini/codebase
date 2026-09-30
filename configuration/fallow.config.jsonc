@@ -161,6 +161,10 @@
     "license-checker",
     // Invoked by the openwiki target rather than imported.
     "openwiki",
+    // Apollo 5's Express integration, which @nestjs/apollo resolves by name
+    // when lexico-api's GraphQLModule starts. lexico-api's eslint.config.ts
+    // and knip workspace carve it out for the same reason.
+    "@as-integrations/express5",
     // TypeORM's postgres driver, which TypeORM resolves by name at runtime.
     // Both manifests declaring it also carve it out of `@nx/dependency-checks`
     // in their own eslint.config.ts, for this same reason.

@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "@apollo/server": "catalog:",
+    "@as-integrations/express5": "catalog:",
     "@codebase/lexico-entities": "workspace:*",
     "@codebase/logger": "workspace:*",
     "@nestjs/apollo": "catalog:",
@@ -8,6 +9,7 @@
     "@nestjs/config": "catalog:",
     "@nestjs/core": "catalog:",
     "@nestjs/graphql": "catalog:",
+    "@nestjs/platform-express": "catalog:",
     "graphql": "catalog:",
     "lightship": "catalog:",
     "reflect-metadata": "catalog:",

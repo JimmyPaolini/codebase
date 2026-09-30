@@ -10,6 +10,8 @@ export interface PublishablePackage {
   readonly name: string;
   /** Tarball base filename without extension or version, e.g. `conformetry-cli`. */
   readonly tarball: string;
+  /** Manifest version, which `pnpm pack` appends to the tarball filename. */
+  readonly version: string;
 }
 
 /**

@@ -176,21 +176,26 @@ Outputs structured JSON in production (`NODE_ENV=production`) and pretty-printed
 Always prefer running tasks through Nx rather than calling the underlying tools directly.
 
 ```bash
-nx run meanderaw:start           # Run the command-line application
+nx run meanderaw:start                    # Read-only: regenerate the sweep into a throwaway database and fail on drift from the committed one; `guard-code` runs this on every commit
+nx run meanderaw:start --args="--write"   # Clear output/meanders.sqlite's meander rows, then regenerate the sweep into it
 nx run meanderaw:typecheck-code,lint-code,format-code,deprecate-code,guard-code   # Every static check, in one graph
 nx run meanderaw:typecheck       # tsc --noEmit
 nx run meanderaw:oxfmt           # Formatting
 ```
 
 This application has **one command, `draw`**, and it is the default — so `start` runs it.
-With no arguments it sweeps every meander the application can draw into
-`output/meanders.sqlite`: the whole lattice's unit space, enumerated and classified, then
-the historical corpus's hardcoded Codes beyond that budget. With `--rows`, `--columns`,
-and `--code` it decodes, renders, and persists that one:
+With no arguments (or `--check`) it is a read-only drift check: it regenerates the sweep
+into a throwaway database and fails if it disagrees with the committed one. **Nothing
+writes `output/meanders.sqlite` without `--write`.** With `--write` it clears that
+database's meander rows and sweeps every meander the application can draw back into it: the whole lattice's unit space, enumerated
+and classified, then the historical corpus's hardcoded Codes beyond that budget. With
+`--write`, `--rows`, `--columns`, and `--code` it decodes, renders, and persists that one:
 
 ```bash
-nx run meanderaw:start --args="--rows 3 --columns 2 --code 3c9a"
+nx run meanderaw:start --args="--write --rows 3 --columns 2 --code 3c9a"
 ```
+
+`--check` with `--write`, or `--code` without `--write`, exits non-zero.
 
 There is deliberately no second command, and no other flag — see "One Command" and
 "Output Layout" in [README.md](./README.md).
