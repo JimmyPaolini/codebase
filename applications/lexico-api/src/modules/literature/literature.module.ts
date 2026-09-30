@@ -6,6 +6,7 @@ import {
   Text,
   Token,
   TypeOrmModule,
+  Word,
 } from "@codebase/lexico-entities";
 
 import { AuthorsResolver } from "./authors.resolver";
@@ -13,15 +14,16 @@ import { LinesResolver } from "./lines.resolver";
 import { LiteratureResolver } from "./literature.resolver";
 import { LiteratureService } from "./literature.service";
 import { TextsResolver } from "./texts.resolver";
-import { TokenWordDataLoader } from "./token-word-loader.service";
+import { TokenWordLoader } from "./token-word.loader";
 import { TokensResolver } from "./tokens.resolver";
 
 /**
  * Module providing literature browsing, hierarchy, and search endpoints.
  */
 @Module({
-  exports: [LiteratureService, TokenWordDataLoader],
-  imports: [TypeOrmModule.forFeature([Author, Text, Line, Token])],
+  controllers: [],
+  exports: [LiteratureService, TokenWordLoader],
+  imports: [TypeOrmModule.forFeature([Author, Text, Line, Token, Word])],
   providers: [
     AuthorsResolver,
     TextsResolver,
@@ -29,7 +31,7 @@ import { TokensResolver } from "./tokens.resolver";
     TokensResolver,
     LiteratureResolver,
     LiteratureService,
-    TokenWordDataLoader,
+    TokenWordLoader,
   ],
 })
 export class LiteratureModule {}

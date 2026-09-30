@@ -171,6 +171,7 @@ Template-driven code generation and conformance validation, templates synced fro
 | `nestjs-dataloader-module` | A GraphQL dataloader module template — dataloader, module, types, and unit test — for batching lookups inside an existing NestJS project |
 | `nestjs-graphql-module` | A GraphQL module template — resolver, entities, args/input types, factories, constants, and unit test — for an existing NestJS project |
 | `nestjs-service-file` | A service and unit test file template for an existing NestJS module, without the surrounding module files |
+| `nestjs-resolver-file` | A resolver and unit test file template for an existing NestJS module, without the surrounding module files |
 | `nestjs-service-module` | A plain service module template — module, service, constants, types, and unit test — for an existing NestJS project |
 | `react-component` | A React component and test file template for an existing React project |
 <!-- conformetry:end -->
@@ -735,6 +736,17 @@ graph LR
   module_conformetry_validation_TextModule["conformetry-validation/TextModule"]
   module_conformetry_validation_TypescriptModule["conformetry-validation/TypescriptModule"]
   module_conformetry_validation_ValidationModule["conformetry-validation/ValidationModule"]
+  module_lexico_api_DatabaseModule["lexico-api/DatabaseModule"]
+  module_lexico_api_GraphQLModule["lexico-api/GraphQLModule"]
+  module_lexico_api_GraphQLSchemaBuilderModule["lexico-api/GraphQLSchemaBuilderModule"]
+  module_lexico_api_HealthModule["lexico-api/HealthModule"]
+  module_lexico_api_LexemesModule["lexico-api/LexemesModule"]
+  module_lexico_api_LexicoApiModule["lexico-api/LexicoApiModule"]
+  module_lexico_api_LiteratureModule["lexico-api/LiteratureModule"]
+  module_lexico_api_LoggerModule["lexico-api/LoggerModule"]
+  module_lexico_api_SearchModule["lexico-api/SearchModule"]
+  module_lexico_api_TypeOrmModule["lexico-api/TypeOrmModule"]
+  module_lexico_api_WordsModule["lexico-api/WordsModule"]
   module_lexico_entities_DatabaseModule["lexico-entities/DatabaseModule"]
   module_lexico_entities_EntitiesModule["lexico-entities/EntitiesModule"]
   module_lexico_entities_TypeOrmModule["lexico-entities/TypeOrmModule"]
@@ -1439,6 +1451,19 @@ graph LR
   module_conformetry_validation_ValidationModule --> module_conformetry_validation_LanguagesModule
   module_conformetry_validation_ValidationModule --> module_conformetry_validation_RunnerModule
   module_conformetry_validation_ValidationModule --> module_conformetry_validation_ScoringModule
+  module_lexico_api_DatabaseModule --> module_lexico_api_TypeOrmModule
+  module_lexico_api_GraphQLModule --> module_lexico_api_GraphQLSchemaBuilderModule
+  module_lexico_api_LexemesModule --> module_lexico_api_TypeOrmModule
+  module_lexico_api_LexicoApiModule --> module_lexico_api_DatabaseModule
+  module_lexico_api_LexicoApiModule --> module_lexico_api_GraphQLModule
+  module_lexico_api_LexicoApiModule --> module_lexico_api_HealthModule
+  module_lexico_api_LexicoApiModule --> module_lexico_api_LexemesModule
+  module_lexico_api_LexicoApiModule --> module_lexico_api_LiteratureModule
+  module_lexico_api_LexicoApiModule --> module_lexico_api_SearchModule
+  module_lexico_api_LexicoApiModule --> module_lexico_api_WordsModule
+  module_lexico_api_LiteratureModule --> module_lexico_api_TypeOrmModule
+  module_lexico_api_SearchModule --> module_lexico_api_TypeOrmModule
+  module_lexico_api_WordsModule --> module_lexico_api_TypeOrmModule
   module_lexico_entities_DatabaseModule --> module_lexico_entities_TypeOrmModule
   module_lexico_ingestion_ClearModule --> module_lexico_ingestion_DatabaseModule
   module_lexico_ingestion_ClearModule --> module_lexico_ingestion_TypeOrmModule
@@ -3204,14 +3229,17 @@ graph LR
   file_lexico_api_src_lexico_api_unit_test_ts["lexico-api/src/lexico-api.unit.test.ts"]
   file_lexico_api_src_lexico_api_utilities_ts["lexico-api/src/lexico-api.utilities.ts"]
   file_lexico_api_src_lexico_api_utilities_unit_test_ts["lexico-api/src/lexico-api.utilities.unit.test.ts"]
+  file_lexico_api_src_modules_health_health_constants_ts["lexico-api/src/modules/health/health.constants.ts"]
   file_lexico_api_src_modules_health_health_module_ts["lexico-api/src/modules/health/health.module.ts"]
   file_lexico_api_src_modules_health_health_module_unit_test_ts["lexico-api/src/modules/health/health.module.unit.test.ts"]
   file_lexico_api_src_modules_health_health_resolver_ts["lexico-api/src/modules/health/health.resolver.ts"]
   file_lexico_api_src_modules_health_health_resolver_unit_test_ts["lexico-api/src/modules/health/health.resolver.unit.test.ts"]
   file_lexico_api_src_modules_health_health_service_ts["lexico-api/src/modules/health/health.service.ts"]
   file_lexico_api_src_modules_health_health_service_unit_test_ts["lexico-api/src/modules/health/health.service.unit.test.ts"]
+  file_lexico_api_src_modules_health_health_types_ts["lexico-api/src/modules/health/health.types.ts"]
   file_lexico_api_src_modules_lexemes_lexeme_arguments_entities_ts["lexico-api/src/modules/lexemes/lexeme-arguments.entities.ts"]
   file_lexico_api_src_modules_lexemes_lexemes_arguments_entities_ts["lexico-api/src/modules/lexemes/lexemes-arguments.entities.ts"]
+  file_lexico_api_src_modules_lexemes_lexemes_constants_ts["lexico-api/src/modules/lexemes/lexemes.constants.ts"]
   file_lexico_api_src_modules_lexemes_lexemes_module_ts["lexico-api/src/modules/lexemes/lexemes.module.ts"]
   file_lexico_api_src_modules_lexemes_lexemes_module_unit_test_ts["lexico-api/src/modules/lexemes/lexemes.module.unit.test.ts"]
   file_lexico_api_src_modules_lexemes_lexemes_resolver_ts["lexico-api/src/modules/lexemes/lexemes.resolver.ts"]
@@ -3219,20 +3247,25 @@ graph LR
   file_lexico_api_src_modules_lexemes_lexemes_service_integration_test_ts["lexico-api/src/modules/lexemes/lexemes.service.integration.test.ts"]
   file_lexico_api_src_modules_lexemes_lexemes_service_ts["lexico-api/src/modules/lexemes/lexemes.service.ts"]
   file_lexico_api_src_modules_lexemes_lexemes_service_unit_test_ts["lexico-api/src/modules/lexemes/lexemes.service.unit.test.ts"]
+  file_lexico_api_src_modules_lexemes_lexemes_types_ts["lexico-api/src/modules/lexemes/lexemes.types.ts"]
   file_lexico_api_src_modules_literature_author_argument_entities_ts["lexico-api/src/modules/literature/author-argument.entities.ts"]
   file_lexico_api_src_modules_literature_author_lookup_input_entities_ts["lexico-api/src/modules/literature/author-lookup-input.entities.ts"]
   file_lexico_api_src_modules_literature_authors_resolver_ts["lexico-api/src/modules/literature/authors.resolver.ts"]
+  file_lexico_api_src_modules_literature_authors_resolver_unit_test_ts["lexico-api/src/modules/literature/authors.resolver.unit.test.ts"]
   file_lexico_api_src_modules_literature_line_arguments_entities_ts["lexico-api/src/modules/literature/line-arguments.entities.ts"]
   file_lexico_api_src_modules_literature_lines_range_input_entities_ts["lexico-api/src/modules/literature/lines-range-input.entities.ts"]
   file_lexico_api_src_modules_literature_lines_resolver_ts["lexico-api/src/modules/literature/lines.resolver.ts"]
+  file_lexico_api_src_modules_literature_lines_resolver_unit_test_ts["lexico-api/src/modules/literature/lines.resolver.unit.test.ts"]
   file_lexico_api_src_modules_literature_literature_arguments_entities_unit_test_ts["lexico-api/src/modules/literature/literature-arguments.entities.unit.test.ts"]
   file_lexico_api_src_modules_literature_literature_connection_entities_ts["lexico-api/src/modules/literature/literature-connection.entities.ts"]
   file_lexico_api_src_modules_literature_literature_search_result_entities_ts["lexico-api/src/modules/literature/literature-search-result.entities.ts"]
+  file_lexico_api_src_modules_literature_literature_constants_ts["lexico-api/src/modules/literature/literature.constants.ts"]
   file_lexico_api_src_modules_literature_literature_module_ts["lexico-api/src/modules/literature/literature.module.ts"]
   file_lexico_api_src_modules_literature_literature_resolver_ts["lexico-api/src/modules/literature/literature.resolver.ts"]
   file_lexico_api_src_modules_literature_literature_resolver_unit_test_ts["lexico-api/src/modules/literature/literature.resolver.unit.test.ts"]
   file_lexico_api_src_modules_literature_literature_service_ts["lexico-api/src/modules/literature/literature.service.ts"]
   file_lexico_api_src_modules_literature_literature_service_unit_test_ts["lexico-api/src/modules/literature/literature.service.unit.test.ts"]
+  file_lexico_api_src_modules_literature_literature_types_ts["lexico-api/src/modules/literature/literature.types.ts"]
   file_lexico_api_src_modules_literature_search_authors_arguments_entities_ts["lexico-api/src/modules/literature/search-authors-arguments.entities.ts"]
   file_lexico_api_src_modules_literature_search_lines_arguments_entities_ts["lexico-api/src/modules/literature/search-lines-arguments.entities.ts"]
   file_lexico_api_src_modules_literature_search_literature_arguments_entities_ts["lexico-api/src/modules/literature/search-literature-arguments.entities.ts"]
@@ -3241,10 +3274,12 @@ graph LR
   file_lexico_api_src_modules_literature_text_lookup_input_entities_ts["lexico-api/src/modules/literature/text-lookup-input.entities.ts"]
   file_lexico_api_src_modules_literature_texts_arguments_entities_ts["lexico-api/src/modules/literature/texts-arguments.entities.ts"]
   file_lexico_api_src_modules_literature_texts_resolver_ts["lexico-api/src/modules/literature/texts.resolver.ts"]
-  file_lexico_api_src_modules_literature_token_word_loader_service_ts["lexico-api/src/modules/literature/token-word-loader.service.ts"]
-  file_lexico_api_src_modules_literature_token_word_loader_service_unit_test_ts["lexico-api/src/modules/literature/token-word-loader.service.unit.test.ts"]
+  file_lexico_api_src_modules_literature_texts_resolver_unit_test_ts["lexico-api/src/modules/literature/texts.resolver.unit.test.ts"]
+  file_lexico_api_src_modules_literature_token_word_loader_ts["lexico-api/src/modules/literature/token-word.loader.ts"]
+  file_lexico_api_src_modules_literature_token_word_loader_unit_test_ts["lexico-api/src/modules/literature/token-word.loader.unit.test.ts"]
   file_lexico_api_src_modules_literature_tokens_arguments_entities_ts["lexico-api/src/modules/literature/tokens-arguments.entities.ts"]
   file_lexico_api_src_modules_literature_tokens_resolver_ts["lexico-api/src/modules/literature/tokens.resolver.ts"]
+  file_lexico_api_src_modules_literature_tokens_resolver_unit_test_ts["lexico-api/src/modules/literature/tokens.resolver.unit.test.ts"]
   file_lexico_api_src_modules_search_pagination_arguments_entities_ts["lexico-api/src/modules/search/pagination-arguments.entities.ts"]
   file_lexico_api_src_modules_search_pagination_arguments_entities_unit_test_ts["lexico-api/src/modules/search/pagination-arguments.entities.unit.test.ts"]
   file_lexico_api_src_modules_search_search_english_arguments_entities_ts["lexico-api/src/modules/search/search-english-arguments.entities.ts"]
@@ -3264,11 +3299,13 @@ graph LR
   file_lexico_api_src_modules_search_search_utilities_unit_test_ts["lexico-api/src/modules/search/search.utilities.unit.test.ts"]
   file_lexico_api_src_modules_words_word_arguments_entities_ts["lexico-api/src/modules/words/word-arguments.entities.ts"]
   file_lexico_api_src_modules_words_words_arguments_entities_ts["lexico-api/src/modules/words/words-arguments.entities.ts"]
+  file_lexico_api_src_modules_words_words_constants_ts["lexico-api/src/modules/words/words.constants.ts"]
   file_lexico_api_src_modules_words_words_module_ts["lexico-api/src/modules/words/words.module.ts"]
   file_lexico_api_src_modules_words_words_resolver_ts["lexico-api/src/modules/words/words.resolver.ts"]
   file_lexico_api_src_modules_words_words_resolver_unit_test_ts["lexico-api/src/modules/words/words.resolver.unit.test.ts"]
   file_lexico_api_src_modules_words_words_service_ts["lexico-api/src/modules/words/words.service.ts"]
   file_lexico_api_src_modules_words_words_service_unit_test_ts["lexico-api/src/modules/words/words.service.unit.test.ts"]
+  file_lexico_api_src_modules_words_words_types_ts["lexico-api/src/modules/words/words.types.ts"]
   file_lexico_api_testing_mocks_ts["lexico-api/testing/mocks.ts"]
   file_lexico_api_testing_setup_ts["lexico-api/testing/setup.ts"]
   file_lexico_api_vitest_config_ts["lexico-api/vitest.config.ts"]
@@ -7258,12 +7295,16 @@ graph LR
   file_lexico_api_src_modules_literature_authors_resolver_ts --> file_lexico_api_src_modules_literature_literature_connection_entities_ts
   file_lexico_api_src_modules_literature_authors_resolver_ts --> file_lexico_api_src_modules_literature_literature_service_ts
   file_lexico_api_src_modules_literature_authors_resolver_ts --> file_lexico_api_src_modules_literature_search_authors_arguments_entities_ts
+  file_lexico_api_src_modules_literature_authors_resolver_unit_test_ts --> file_lexico_api_src_modules_literature_authors_resolver_ts
+  file_lexico_api_src_modules_literature_authors_resolver_unit_test_ts --> file_lexico_api_src_modules_literature_literature_service_ts
   file_lexico_api_src_modules_literature_line_arguments_entities_ts --> file_lexico_api_src_modules_literature_lines_range_input_entities_ts
   file_lexico_api_src_modules_literature_lines_resolver_ts --> file_lexico_api_src_lexico_api_types_ts
   file_lexico_api_src_modules_literature_lines_resolver_ts --> file_lexico_api_src_modules_literature_line_arguments_entities_ts
   file_lexico_api_src_modules_literature_lines_resolver_ts --> file_lexico_api_src_modules_literature_literature_connection_entities_ts
   file_lexico_api_src_modules_literature_lines_resolver_ts --> file_lexico_api_src_modules_literature_literature_service_ts
   file_lexico_api_src_modules_literature_lines_resolver_ts --> file_lexico_api_src_modules_literature_search_lines_arguments_entities_ts
+  file_lexico_api_src_modules_literature_lines_resolver_unit_test_ts --> file_lexico_api_src_modules_literature_lines_resolver_ts
+  file_lexico_api_src_modules_literature_lines_resolver_unit_test_ts --> file_lexico_api_src_modules_literature_literature_service_ts
   file_lexico_api_src_modules_literature_literature_arguments_entities_unit_test_ts --> file_lexico_api_src_modules_literature_author_argument_entities_ts
   file_lexico_api_src_modules_literature_literature_arguments_entities_unit_test_ts --> file_lexico_api_src_modules_literature_author_lookup_input_entities_ts
   file_lexico_api_src_modules_literature_literature_arguments_entities_unit_test_ts --> file_lexico_api_src_modules_literature_line_arguments_entities_ts
@@ -7284,7 +7325,7 @@ graph LR
   file_lexico_api_src_modules_literature_literature_module_ts --> file_lexico_api_src_modules_literature_literature_resolver_ts
   file_lexico_api_src_modules_literature_literature_module_ts --> file_lexico_api_src_modules_literature_literature_service_ts
   file_lexico_api_src_modules_literature_literature_module_ts --> file_lexico_api_src_modules_literature_texts_resolver_ts
-  file_lexico_api_src_modules_literature_literature_module_ts --> file_lexico_api_src_modules_literature_token_word_loader_service_ts
+  file_lexico_api_src_modules_literature_literature_module_ts --> file_lexico_api_src_modules_literature_token_word_loader_ts
   file_lexico_api_src_modules_literature_literature_module_ts --> file_lexico_api_src_modules_literature_tokens_resolver_ts
   file_lexico_api_src_modules_literature_literature_resolver_ts --> file_lexico_api_src_modules_literature_literature_search_result_entities_ts
   file_lexico_api_src_modules_literature_literature_resolver_ts --> file_lexico_api_src_modules_literature_literature_service_ts
@@ -7294,7 +7335,7 @@ graph LR
   file_lexico_api_src_modules_literature_literature_resolver_unit_test_ts --> file_lexico_api_src_modules_literature_literature_resolver_ts
   file_lexico_api_src_modules_literature_literature_resolver_unit_test_ts --> file_lexico_api_src_modules_literature_literature_service_ts
   file_lexico_api_src_modules_literature_literature_resolver_unit_test_ts --> file_lexico_api_src_modules_literature_texts_resolver_ts
-  file_lexico_api_src_modules_literature_literature_resolver_unit_test_ts --> file_lexico_api_src_modules_literature_token_word_loader_service_ts
+  file_lexico_api_src_modules_literature_literature_resolver_unit_test_ts --> file_lexico_api_src_modules_literature_token_word_loader_ts
   file_lexico_api_src_modules_literature_literature_resolver_unit_test_ts --> file_lexico_api_src_modules_literature_tokens_resolver_ts
   file_lexico_api_src_modules_literature_literature_service_ts --> file_lexico_api_src_lexico_api_types_ts
   file_lexico_api_src_modules_literature_literature_service_ts --> file_lexico_api_src_lexico_api_utilities_ts
@@ -7308,14 +7349,19 @@ graph LR
   file_lexico_api_src_modules_literature_texts_resolver_ts --> file_lexico_api_src_modules_literature_search_texts_arguments_entities_ts
   file_lexico_api_src_modules_literature_texts_resolver_ts --> file_lexico_api_src_modules_literature_text_argument_entities_ts
   file_lexico_api_src_modules_literature_texts_resolver_ts --> file_lexico_api_src_modules_literature_texts_arguments_entities_ts
-  file_lexico_api_src_modules_literature_token_word_loader_service_ts --> file_lexico_api_src_modules_literature_literature_service_ts
-  file_lexico_api_src_modules_literature_token_word_loader_service_unit_test_ts --> file_lexico_api_src_modules_literature_literature_service_ts
-  file_lexico_api_src_modules_literature_token_word_loader_service_unit_test_ts --> file_lexico_api_src_modules_literature_token_word_loader_service_ts
+  file_lexico_api_src_modules_literature_texts_resolver_unit_test_ts --> file_lexico_api_src_modules_literature_literature_service_ts
+  file_lexico_api_src_modules_literature_texts_resolver_unit_test_ts --> file_lexico_api_src_modules_literature_texts_resolver_ts
+  file_lexico_api_src_modules_literature_token_word_loader_ts --> file_lexico_api_src_modules_literature_literature_service_ts
+  file_lexico_api_src_modules_literature_token_word_loader_unit_test_ts --> file_lexico_api_src_modules_literature_literature_service_ts
+  file_lexico_api_src_modules_literature_token_word_loader_unit_test_ts --> file_lexico_api_src_modules_literature_token_word_loader_ts
   file_lexico_api_src_modules_literature_tokens_resolver_ts --> file_lexico_api_src_lexico_api_types_ts
   file_lexico_api_src_modules_literature_tokens_resolver_ts --> file_lexico_api_src_modules_literature_literature_connection_entities_ts
   file_lexico_api_src_modules_literature_tokens_resolver_ts --> file_lexico_api_src_modules_literature_literature_service_ts
-  file_lexico_api_src_modules_literature_tokens_resolver_ts --> file_lexico_api_src_modules_literature_token_word_loader_service_ts
+  file_lexico_api_src_modules_literature_tokens_resolver_ts --> file_lexico_api_src_modules_literature_token_word_loader_ts
   file_lexico_api_src_modules_literature_tokens_resolver_ts --> file_lexico_api_src_modules_literature_tokens_arguments_entities_ts
+  file_lexico_api_src_modules_literature_tokens_resolver_unit_test_ts --> file_lexico_api_src_modules_literature_literature_service_ts
+  file_lexico_api_src_modules_literature_tokens_resolver_unit_test_ts --> file_lexico_api_src_modules_literature_token_word_loader_ts
+  file_lexico_api_src_modules_literature_tokens_resolver_unit_test_ts --> file_lexico_api_src_modules_literature_tokens_resolver_ts
   file_lexico_api_src_modules_search_pagination_arguments_entities_unit_test_ts --> file_lexico_api_src_modules_search_pagination_arguments_entities_ts
   file_lexico_api_src_modules_search_pagination_arguments_entities_unit_test_ts --> file_lexico_api_src_modules_search_search_english_arguments_entities_ts
   file_lexico_api_src_modules_search_pagination_arguments_entities_unit_test_ts --> file_lexico_api_src_modules_search_search_latin_arguments_entities_ts

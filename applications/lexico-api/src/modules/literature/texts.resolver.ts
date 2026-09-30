@@ -22,10 +22,14 @@ import type { Connection } from "../../lexico-api.types";
  */
 @Resolver(() => Text)
 export class TextsResolver {
+  // 🏗 Dependency Injection
+
   public constructor(
     @Inject(LiteratureService)
     private readonly literatureService: LiteratureService,
   ) {}
+
+  // 🔎 Queries
 
   /** Lists all child texts under the current text. */
   @ResolveField(() => [Text], { name: "childTexts" })
@@ -44,6 +48,10 @@ export class TextsResolver {
   public parentText(@Parent() text: Text): null | Text {
     return text.parentText ?? null;
   }
+
+  // 🖋️ Mutations
+
+  // 🔗 Relations
 
   /** Searches texts by title or slug. */
   @Query(() => TextConnectionType, { name: "searchTexts" })
