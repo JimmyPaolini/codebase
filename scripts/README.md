@@ -8,6 +8,7 @@ This directory contains shell scripts for:
 
 - **Local setup** - macOS-specific initial codebase configuration (in `local/`)
 - **Shell utilities** - Common terminal operations
+- **Nx cache** - Maintenance of the Nx task-result database that CI caches (in `nx/`)
 
 ## Quick Start
 
@@ -383,6 +384,35 @@ See script for specific netstat usage patterns.
 ```
 
 See script for specific sed usage patterns and examples.
+
+## Nx Cache Scripts
+
+These scripts live in `scripts/nx/`. The `setup-codebase` and
+`cleanup-codebase` actions run them around CI's Nx cache restore and save. Each
+script is its own command, and all of them source `task-database.sh` for the
+shared helpers.
+
+Nx decides a cache hit only from its task-result database,
+`.nx/workspace-data/<machine-id>-v<schema>.db`. That file is named after the
+machine, and every hosted runner is a fresh VM, so a restored database goes
+unread unless it is adopted under the current machine's id.
+
+| Script | Runs in | What it does |
+| ------ | ------- | ------------ |
+| `verify-task-database.sh` | setup and cleanup | Discards any database that fails `PRAGMA integrity_check` |
+| `adopt-task-database.sh` | setup, after the restore | Renames the newest restored database to this machine's id and discards the rest |
+| `keep-task-database.sh` | cleanup, before the save | Keeps only the newest database, and warns if there was more than one |
+| `task-database.sh` | sourced by the above | Lists, picks, and discards databases along with their `-wal`, `-shm`, and `-journal` files |
+
+All of them honour `NX_WORKSPACE_DATA_DIRECTORY`. `adopt-task-database.sh`
+also reads `MACHINE_ID_FILES`, a space-separated list of files to take the id
+from, in priority order. So the scripts can be exercised locally against a
+scratch directory and a fake id:
+
+```bash
+NX_WORKSPACE_DATA_DIRECTORY=/tmp/nx-data MACHINE_ID_FILES=/tmp/machine-id \
+  bash scripts/nx/adopt-task-database.sh
+```
 
 ## Notepads
 
