@@ -86,29 +86,16 @@ runs:
       if: inputs.nx-shas == 'true'
       uses: nrwl/nx-set-shas@v5
 
-    # On a push, `nx-set-shas` bases the run on the last commit whose whole
-    # workflow succeeded. One red run on main — a flaky test, a timeout — then
-    # widens the next run to every merge since, which runs longer, times out
-    # in turn, and widens the one after: 19 of 40 main runs covered the whole
-    # workspace. Continuous Integration does not need that retry, because each
-    # commit reaching main already passed the merge queue against main's tip,
-    # so it asks for the push's own previous tip. Continuous Deployment keeps
-    # the default, so a failed build is rebuilt by the next deploy.
+    # CI only (`nx-base: push-before`): bases a push on its own previous tip
+    # rather than the last green commit, so one red main run cannot widen the
+    # next. `scripts/nx/bound-base-to-push.sh` explains why, and its fallbacks.
     - name: 🎯 Bound Nx Base To The Push
       if: |
         inputs.nx-shas == 'true' && inputs.nx-base == 'push-before'
         && github.event_name == 'push'
       env:
         BEFORE: ${{ github.event.before }}
-      run: |
-        if [[ -z "${BEFORE}" || "${BEFORE}" =~ ^0+$ ]]; then
-          echo "🎯 No previous tip for this push; keeping NX_BASE=${NX_BASE}"
-        elif ! git merge-base --is-ancestor "${BEFORE}" "${NX_HEAD}" 2>/dev/null; then
-          echo "🎯 ${BEFORE} is not an ancestor of ${NX_HEAD}; keeping NX_BASE=${NX_BASE}"
-        else
-          echo "🎯 Bounding NX_BASE to the push: ${NX_BASE} → ${BEFORE}"
-          echo "NX_BASE=${BEFORE}" >> "$GITHUB_ENV"
-        fi
+      run: bash scripts/nx/bound-base-to-push.sh
       shell: bash
 
     - name: 🗃️ Configure Nx Cache
