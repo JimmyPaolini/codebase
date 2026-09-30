@@ -243,13 +243,13 @@ What this project is judged against, as declared in its own `callidescope.config
 ```text
 🚀 PublishablePackagesCommand.run(): Promise<void> [tools/validation/src/modules/publishable-packages/publishable-packages.command.ts:40]
    ↳ Executes the publishable package tarball verification and exits 0 on success, 1 on failure.
-  └─> PublishablePackagesService.verifyPublishablePackages(workspaceRoot: string): PublishablePackagesVerificationResult [tools/validation/src/modules/publishable-packages/publishable-packages.service.ts:449]
+  └─> PublishablePackagesService.verifyPublishablePackages(workspaceRoot: string): PublishablePackagesVerificationResult [tools/validation/src/modules/publishable-packages/publishable-packages.service.ts:455]
      ↳ Verifies that all publishable package tarballs install and typecheck cleanly, and that all CLI binaries execute…
-    └─> PublishablePackagesService.resolvePublishablePackages(workspaceRoot: string): PublishablePackage[] [tools/validation/src/modules/publishable-packages/publishable-packages.service.ts:412]
+    └─> PublishablePackagesService.resolvePublishablePackages(workspaceRoot: string): PublishablePackage[] [tools/validation/src/modules/publishable-packages/publishable-packages.service.ts:418]
        ↳ Dynamically resolves all publishable packages in `packages/ic-suite`.
-      └─> PublishablePackagesService.resolveFamilyPackages(familyDirectory: string): PublishablePackage[] [tools/validation/src/modules/publishable-packages/publishable-packages.service.ts:166]
+      └─> PublishablePackagesService.resolveFamilyPackages(familyDirectory: string): PublishablePackage[] [tools/validation/src/modules/publishable-packages/publishable-packages.service.ts:172]
          ↳ Resolves publishable packages under a single toolchain family directory.
-        └─> PublishablePackagesService.parsePackageCandidate(familyDirectory: string, childName: string): null | PublishablePackage [tools/validation/src/modules/publishable-packages/publishable-packages.service.ts:95]
+        └─> PublishablePackagesService.parsePackageCandidate(familyDirectory: string, childName: string): null | PublishablePackage [tools/validation/src/modules/publishable-packages/publishable-packages.service.ts:98]
            ↳ Inspects a child directory and parses a PublishablePackage if publishable.
 ```
 
@@ -291,7 +291,7 @@ What this project is judged against, as declared in its own `callidescope.config
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
 | `IssueMetadataCommand.runBulkAudit` | 7 | `IssueMetadataGithubService.isAvailable`, `IssueMetadataCommand.failWithUsageError`, `IssueMetadataGithubService.listOpenIssues`, `IssueMetadataCommand.failWithMessage`, `IssueMetadataService.checkBulkIssues`, `IssueMetadataCommand.appendToReport`, `IssueMetadataCommand.mirrorToStepSummary` | `tools/validation/src/modules/issue-metadata/issue-metadata.command.ts:257` |
-| `PublishablePackagesService.verifyPublishablePackages` | 6 | `PublishablePackagesService.resolvePublishablePackages`, `PublishablePackagesService.filter(…)`, `PublishablePackagesService.createScratchDirectories`, `PublishablePackagesService.unpackTarballs`, `PublishablePackagesService.verifyAllTypechecks`, `PublishablePackagesService.verifyAllCliBinaries` | `tools/validation/src/modules/publishable-packages/publishable-packages.service.ts:449` |
+| `PublishablePackagesService.verifyPublishablePackages` | 6 | `PublishablePackagesService.resolvePublishablePackages`, `PublishablePackagesService.filter(…)`, `PublishablePackagesService.createScratchDirectories`, `PublishablePackagesService.unpackTarballs`, `PublishablePackagesService.verifyAllTypechecks`, `PublishablePackagesService.verifyAllCliBinaries` | `tools/validation/src/modules/publishable-packages/publishable-packages.service.ts:455` |
 | `IssueMetadataCommand.readLiveMetadata` | 5 | `IssueMetadataGithubService.isAvailable`, `IssueMetadataCommand.failWithUsageError`, `IssueMetadataGithubService.run`, `IssueMetadataGithubService.describeFailure`, `IssueMetadataService.resolveFromDocument` | `tools/validation/src/modules/issue-metadata/issue-metadata.command.ts:153` |
 | `PullRequestMetadataService.checkMetadata` | 5 | `PullRequestMetadataService.groupLabels`, `PullRequestMetadataService.checkTypeLabel`, `PullRequestMetadataService.checkScopeLabels`, `PullRequestMetadataService.record`, `PullRequestMetadataService.checkSourceLabel` | `tools/validation/src/modules/pull-request-metadata/pull-request-metadata.service.ts:213` |
 | `PullRequestMetadataCommand.readLiveMetadata` | 5 | `PullRequestMetadataGithubService.isAvailable`, `PullRequestMetadataCommand.failWithUsageError`, `PullRequestMetadataGithubService.run`, `PullRequestMetadataGithubService.describeFailure`, `PullRequestMetadataService.resolveFromDocument` | `tools/validation/src/modules/pull-request-metadata/pull-request-metadata.command.ts:154` |
@@ -308,7 +308,7 @@ What this project is judged against, as declared in its own `callidescope.config
 | `IssueMetadataService.groupLabels` | 3 | `IssueMetadataService.filter(…)`, `IssueMetadataService.filter(…)`, `IssueMetadataService.filter(…)` | `tools/validation/src/modules/issue-metadata/issue-metadata.service.ts:401` |
 | `IssueMetadataService.resolveFromDocument` | 3 | `IssueMetadataService.describeError`, `IssueMetadataService.isRecord`, `IssueMetadataService.readLabelNames` | `tools/validation/src/modules/issue-metadata/issue-metadata.service.ts:427` |
 | `IssueMetadataCommand.resolveMetadata` | 3 | `IssueMetadataCommand.failWithUsageError`, `IssueMetadataCommand.readEnvironmentMetadata`, `IssueMetadataCommand.readLiveMetadata` | `tools/validation/src/modules/issue-metadata/issue-metadata.command.ts:229` |
-| `PublishablePackagesService.verifyCliBinary` | 3 | `PublishablePackagesService.unpackCliTarball`, `PublishablePackagesService.readPackageManifestBin`, `PublishablePackagesService.executeSpawnedBinary` | `tools/validation/src/modules/publishable-packages/publishable-packages.service.ts:294` |
+| `PublishablePackagesService.verifyCliBinary` | 3 | `PublishablePackagesService.unpackCliTarball`, `PublishablePackagesService.readPackageManifestBin`, `PublishablePackagesService.executeSpawnedBinary` | `tools/validation/src/modules/publishable-packages/publishable-packages.service.ts:300` |
 | `PullRequestBodyService.checkBody` | 3 | `PullRequestBodyService.findEmptySections`, `PullRequestBodyService.findMissingHeadings`, `PullRequestBodyService.findUnfilledComments` | `tools/validation/src/modules/pull-request-body/pull-request-body.service.ts:64` |
 | `PullRequestMetadataService.groupLabels` | 3 | `PullRequestMetadataService.filter(…)`, `PullRequestMetadataService.filter(…)`, `PullRequestMetadataService.filter(…)` | `tools/validation/src/modules/pull-request-metadata/pull-request-metadata.service.ts:254` |
 | `PullRequestMetadataService.resolveFromDocument` | 3 | `PullRequestMetadataService.describeError`, `PullRequestMetadataService.isRecord`, `PullRequestMetadataService.readNames` | `tools/validation/src/modules/pull-request-metadata/pull-request-metadata.service.ts:297` |
@@ -331,7 +331,7 @@ What this project is judged against, as declared in its own `callidescope.config
 | `IssueMetadataCommand.failWithUsageError` | 2 | `IssueMetadataCommand.appendToReport`, `IssueMetadataCommand.mirrorToStepSummary` | `tools/validation/src/modules/issue-metadata/issue-metadata.command.ts:87` |
 | `IssueMetadataCommand.readEnvironmentMetadata` | 2 | `IssueMetadataCommand.failWithUsageError`, `IssueMetadataService.resolveFromEnvironment` | `tools/validation/src/modules/issue-metadata/issue-metadata.command.ts:133` |
 | `IssueMetadataCommand.reportFailures` | 2 | `IssueMetadataCommand.appendToReport`, `IssueMetadataCommand.mirrorToStepSummary` | `tools/validation/src/modules/issue-metadata/issue-metadata.command.ts:183` |
-| `PublishablePackagesService.resolvePublishablePackages` | 2 | `PublishablePackagesService.resolveFamilyPackages`, `PublishablePackagesService.toSorted(…)` | `tools/validation/src/modules/publishable-packages/publishable-packages.service.ts:412` |
+| `PublishablePackagesService.resolvePublishablePackages` | 2 | `PublishablePackagesService.resolveFamilyPackages`, `PublishablePackagesService.toSorted(…)` | `tools/validation/src/modules/publishable-packages/publishable-packages.service.ts:418` |
 | `PublishablePackagesCommand.run` | 2 | `PublishablePackagesService.verifyPublishablePackages`, `formatPublishablePackagesSuccessMessage` | `tools/validation/src/modules/publishable-packages/publishable-packages.command.ts:40` |
 | `PullRequestBodyService.cleanSectionContent` | 2 | `PullRequestBodyService.filter(…)`, `PullRequestBodyService.map(…)` | `tools/validation/src/modules/pull-request-body/pull-request-body.service.ts:38` |
 | `PullRequestBodyService.findMissingHeadings` | 2 | `PullRequestBodyService.map(…)`, `PullRequestBodyService.filter(…)` | `tools/validation/src/modules/pull-request-body/pull-request-body.service.ts:120` |
@@ -366,10 +366,10 @@ What this project is judged against, as declared in its own `callidescope.config
 | `IssueMetadataService.parseFormAnswers` | 1 | `IssueMetadataService.extractFormField` | `tools/validation/src/modules/issue-metadata/issue-metadata.service.ts:416` |
 | `LockfileService.checkLockfile` | 1 | `LockfileService.runFrozenInstall` | `tools/validation/src/modules/lockfile/lockfile.service.ts:60` |
 | `LockfileCommand.run` | 1 | `LockfileService.checkLockfile` | `tools/validation/src/modules/lockfile/lockfile.command.ts:50` |
-| `PublishablePackagesService.resolveFamilyPackages` | 1 | `PublishablePackagesService.parsePackageCandidate` | `tools/validation/src/modules/publishable-packages/publishable-packages.service.ts:166` |
-| `PublishablePackagesService.unpackTarballs` | 1 | `PublishablePackagesService.filter(…)` | `tools/validation/src/modules/publishable-packages/publishable-packages.service.ts:209` |
-| `PublishablePackagesService.verifyAllCliBinaries` | 1 | `PublishablePackagesService.verifyCliBinary` | `tools/validation/src/modules/publishable-packages/publishable-packages.service.ts:244` |
-| `PublishablePackagesService.verifyAllTypechecks` | 1 | `PublishablePackagesService.verifyPackageTypecheck` | `tools/validation/src/modules/publishable-packages/publishable-packages.service.ts:269` |
+| `PublishablePackagesService.resolveFamilyPackages` | 1 | `PublishablePackagesService.parsePackageCandidate` | `tools/validation/src/modules/publishable-packages/publishable-packages.service.ts:172` |
+| `PublishablePackagesService.unpackTarballs` | 1 | `PublishablePackagesService.filter(…)` | `tools/validation/src/modules/publishable-packages/publishable-packages.service.ts:215` |
+| `PublishablePackagesService.verifyAllCliBinaries` | 1 | `PublishablePackagesService.verifyCliBinary` | `tools/validation/src/modules/publishable-packages/publishable-packages.service.ts:250` |
+| `PublishablePackagesService.verifyAllTypechecks` | 1 | `PublishablePackagesService.verifyPackageTypecheck` | `tools/validation/src/modules/publishable-packages/publishable-packages.service.ts:275` |
 | `PullRequestBodyService.extractTemplateComments` | 1 | `PullRequestBodyService.map(…)` | `tools/validation/src/modules/pull-request-body/pull-request-body.service.ts:76` |
 | `PullRequestBodyService.findEmptySections` | 1 | `PullRequestBodyService.filter(…)` | `tools/validation/src/modules/pull-request-body/pull-request-body.service.ts:83` |
 | `PullRequestBodyService.filter(…)` | 1 | `PullRequestBodyService.cleanSectionContent` | `tools/validation/src/modules/pull-request-body/pull-request-body.service.ts:106` |
@@ -733,8 +733,8 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-11942-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-372.15_kB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-12001-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-374.19_kB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-12-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-92-3178c6?style=flat-square)
 
@@ -745,7 +745,7 @@ graph LR
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-0-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
 ![Decorators](https://img.shields.io/badge/Decorators-41-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-263-6366f1?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-264-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-0-166534?style=flat-square)
 
 ### JavaScript
@@ -754,15 +754,15 @@ graph LR
 ![Test Files](https://img.shields.io/badge/Test_Files-33-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-14-8b5cf6?style=flat-square)
 ![Classes](https://img.shields.io/badge/Classes-32-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-607-16a34a?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-614-16a34a?style=flat-square)
 ![Methods](https://img.shields.io/badge/Methods-205-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-682-4ade80?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-689-4ade80?style=flat-square)
 ![Async Functions](https://img.shields.io/badge/Async_Functions-130-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-524-dc2626?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-527-dc2626?style=flat-square)
 ![Imports](https://img.shields.io/badge/Imports-375-0284c7?style=flat-square)
-![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-147-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-387-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-827-475569?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-148-ea580c?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-388-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-828-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python

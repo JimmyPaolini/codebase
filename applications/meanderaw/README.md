@@ -7,16 +7,21 @@ nx run meanderaw:start
 ## 🖌️ One Command
 
 Meanderaw has one command, `draw`, and it is the default — so the target above runs it
-with no arguments. What it draws is decided by whether a Code was named:
+with no arguments. **Nothing writes `output/meanders.sqlite` without `--write`**: with no
+flag the command is a read-only drift check, and what `--write` draws is decided by
+whether a Code was named:
 
-| Invocation | What it draws |
-| ---------- | ------------- |
-| `nx run meanderaw:start` | Every meander the application can draw, as rows in `output/meanders.sqlite` |
-| `nx run meanderaw:start --args="--rows <n> --columns <n> --code <code>"` | That one, as a single row in the same database |
+| Invocation | What it does |
+| ---------- | ------------ |
+| `nx run meanderaw:start` | Writes nothing — regenerates the sweep into a throwaway database and fails if it disagrees with the committed one. `guard-code` runs this on every commit |
+| `nx run meanderaw:start --args="--check"` | The same read-only check, named explicitly |
+| `nx run meanderaw:start --args="--write"` | Regenerates every meander the application can draw, as rows in `output/meanders.sqlite` — clearing the rows already there first, so it runs against the committed database as-is |
+| `nx run meanderaw:start --args="--write --rows <n> --columns <n> --code <code>"` | That one, as a single row in the same database |
 
-The three flags of the single-drawing mode go together: `--code` is what selects that
-mode over the sweep, and it is refused without both `--rows` and `--columns`, since
-passing none of the three is how the sweep is asked for.
+`--check` with `--write` is refused, and so is `--code` without `--write`; either exits
+non-zero. The three flags of the single-drawing mode go together: `--code` is what
+selects that mode over the sweep, and it is refused without both `--rows` and
+`--columns`, since passing none of the three is how the sweep is asked for.
 
 **There is nothing else to pass.** `--type`, `--modifier` and the parameters it carried
 (`--strands`, `--branches`, `--direction`, `--flip`, `--offset`), `--sub-family`,
@@ -832,7 +837,7 @@ look through. The recommendation is to **leave the asymmetry**, and this section
 the measurements behind that.
 
 This was a spike. It changed no code, and everything below is measurement on the sweep
-`nx run meanderaw:start` already writes.
+`nx run meanderaw:start --args="--write"` already writes.
 
 > **What changed since, and what did not.** `mosaic` has since moved onto that shared
 > degree-bounded lattice rule — its tiles are four direction bits per point, junctions
@@ -2004,13 +2009,13 @@ Call stacks traced through `applications/meanderaw`, deepest first. Each frame s
 
 | Measure | Value |
 | --- | --- |
-| Callables | 819 |
+| Callables | 825 |
 | Files | 255 |
-| Calls traced | 717 |
+| Calls traced | 721 |
 | Call stacks | 111 |
 | Deepest stack | 16 |
 | Stacks through recursion | 0 |
-| Unfollowable calls | 20 |
+| Unfollowable calls | 22 |
 
 ### Limits
 
@@ -2026,8 +2031,8 @@ What this project is judged against, as declared in its own `callidescope.config
 **1. `DrawCommand.run`** — depth ≥ 16 · decorated-method
 
 ```text
-🚀 DrawCommand.run(_passedParameters: string[], options: DrawCommandOptions): Promise<void> [applications/meanderaw/src/modules/draw/draw.command.ts:229]
-   ↳ Checks for drift when `--check` is given, sweeps every meander into the database when no Code is named, or draws the…
+🚀 DrawCommand.run(_passedParameters: string[], options: DrawCommandOptions): Promise<void> [applications/meanderaw/src/modules/draw/draw.command.ts:263]
+   ↳ Checks for drift unless `--write` is given; with `--write`, sweeps every meander into the database when no Code is…
   └─> DrawCheckService.check(): Promise<MeanderDriftReport> [applications/meanderaw/src/modules/draw/draw-check.service.ts:186]
      ↳ Regenerates the whole corpus into a throwaway database, diffs it against the committed one, and throws {@link…
     └─> DrawEnumerationService.sweep(): Promise<number> [applications/meanderaw/src/modules/draw/draw-enumeration.service.ts:80]
@@ -4272,7 +4277,7 @@ What this project is judged against, as declared in its own `callidescope.config
 | `IsCombCharacteristicService.compute` | 8 | `FamilyUtilitiesService.hasValidDimensions`, `IsBarsCharacteristicService.compute`, `IsLinesCharacteristicService.compute`, `IsMeshCharacteristicService.compute`, `FamilyUtilitiesService.grid`, `IsCombCharacteristicService.isVerticalComb`, `IsCombCharacteristicService.isHorizontalComb`, `IsCombCharacteristicService.isReversingComb` | `applications/meanderaw/src/modules/characteristics/compound/family/is-comb-characteristic.service.ts:161` |
 
 <details>
-<summary>364 more callables</summary>
+<summary>365 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
@@ -4292,6 +4297,7 @@ What this project is judged against, as declared in its own `callidescope.config
 | `DrawCheckService.check` | 5 | `DrawEnumerationService.sweep`, `CorpusService.ingest`, `DrawCheckService.diff`, `DrawCheckService.hasDrift`, `MeanderDriftDetectedError.constructor` | `applications/meanderaw/src/modules/draw/draw-check.service.ts:186` |
 | `DrawIndexService.renderBand` | 5 | `GeometryService.compute`, `DrawIndexService.format`, `CodeService.parse`, `DrawingService.render`, `DrawIndexService.renderRepeats` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:151` |
 | `DrawIndexService.render` | 5 | `DrawIndexService.groupByFamily`, `DrawIndexService.renderContents`, `DrawIndexService.label`, `DrawIndexService.escape`, `DrawIndexService.renderSection` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:274` |
+| `DrawCommand.run` | 5 | `ConflictingDrawModeError.constructor`, `CodeDrawingNeedsWriteError.constructor`, `DrawCheckService.check`, `DrawCommand.sweep`, `DrawCommand.runCodeDrawing` | `applications/meanderaw/src/modules/draw/draw.command.ts:263` |
 | `SymmetryService.transform` | 4 | `TileService.edges`, `TileService.blankEdges`, `SymmetryService.place`, `TileService.build` | `applications/meanderaw/src/modules/symmetry/symmetry.service.ts:143` |
 | `ConnectivityService.connectivity` | 4 | `ConnectivityService.edges`, `ConnectivityService.adjacency`, `GraphService.components`, `ConnectivityService.freeEnds` | `applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:133` |
 | `CharacteristicsService.verify` | 4 | `CharacteristicsService.isCharacteristicEvaluator`, `CharacteristicsService.isCharacteristicKey`, `CharacteristicRegistryError.constructor`, `CharacteristicsService.valueTypeOf` | `applications/meanderaw/src/modules/characteristics/characteristics.service.ts:255` |
@@ -4309,6 +4315,7 @@ What this project is judged against, as declared in its own `callidescope.config
 | `CornerCountCharacteristicService.compute` | 4 | `NorthEastCornerCountCharacteristicService.compute`, `NorthWestCornerCountCharacteristicService.compute`, `SouthEastCornerCountCharacteristicService.compute`, `SouthWestCornerCountCharacteristicService.compute` | `applications/meanderaw/src/modules/characteristics/submatrix/corner/corner-count-characteristic.service.ts:56` |
 | `TileEnumerationService.assign` | 4 | `TileEnumerationService.edges`, `TileEnumerationService.record`, `TileEnumerationService.set`, `TileEnumerationService.clear` | `applications/meanderaw/src/modules/enumeration/tile-enumeration.service.ts:113` |
 | `DrawIndexService.renderSection` | 4 | `DrawIndexService.escape`, `DrawIndexService.label`, `DrawIndexService.renderUnclassifiedSection`, `DrawIndexService.map(…)` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:196` |
+| `DrawCommand.sweep` | 4 | `DatabaseService.clear`, `DrawEnumerationService.sweep`, `CorpusService.ingest`, `DrawIndexService.build` | `applications/meanderaw/src/modules/draw/draw.command.ts:153` |
 | `CodeService.parse` | 3 | `CodeService.parseFormatted`, `CodeService.parseBare`, `InvalidCodeFormatError.constructor` | `applications/meanderaw/src/modules/code/code.service.ts:215` |
 | `CharacteristicContextService.create` | 3 | `CharacteristicContextService.build`, `CodeService.reduceToUnit`, `CharacteristicContextService.parse` | `applications/meanderaw/src/modules/characteristics/characteristic-context.service.ts:66` |
 | `ConnectivityService.edges` | 3 | `ConnectivityService.key`, `ConnectivityService.joinsEast`, `ConnectivityService.joinsSouth` | `applications/meanderaw/src/modules/characteristics/connectivity/connectivity.service.ts:152` |
@@ -4337,8 +4344,6 @@ What this project is judged against, as declared in its own `callidescope.config
 | `MeanderDriftDetectedError.describe` | 3 | `MeanderDriftDetectedError.map(…)`, `MeanderDriftDetectedError.map(…)`, `MeanderDriftDetectedError.map(…)` | `applications/meanderaw/src/modules/draw/draw-check.constants.ts:77` |
 | `DrawCheckService.differingGlyphs` | 3 | `DrawCheckService.map(…)`, `DrawCheckService.toSorted(…)`, `DrawCheckService.filter(…)` | `applications/meanderaw/src/modules/draw/draw-check.service.ts:83` |
 | `DrawCheckService.diff` | 3 | `DrawCheckService.index`, `DrawCheckService.findNewAndChanged`, `DrawCheckService.findMissing` | `applications/meanderaw/src/modules/draw/draw-check.service.ts:228` |
-| `DrawCommand.sweep` | 3 | `DrawEnumerationService.sweep`, `CorpusService.ingest`, `DrawIndexService.build` | `applications/meanderaw/src/modules/draw/draw.command.ts:138` |
-| `DrawCommand.run` | 3 | `DrawCheckService.check`, `DrawCommand.sweep`, `DrawCommand.runCodeDrawing` | `applications/meanderaw/src/modules/draw/draw.command.ts:229` |
 | `ClassificationService.rules` | 2 | `ClassificationService.rule`, `ClassificationService.unitRule` | `applications/meanderaw/src/modules/classification/classification.service.ts:107` |
 | `TileService.assertPointAgrees` | 2 | `MalformedTileError.constructor`, `TileService.assertPointJoinsBelow` | `applications/meanderaw/src/modules/tile/tile.service.ts:50` |
 | `TileService.assertWellFormed` | 2 | `MalformedTileError.constructor`, `TileService.assertPointAgrees` | `applications/meanderaw/src/modules/tile/tile.service.ts:120` |
@@ -4413,7 +4418,7 @@ What this project is judged against, as declared in its own `callidescope.config
 | `DrawIndexService.renderUnclassifiedSection` | 2 | `DrawIndexService.toSorted(…)`, `DrawIndexService.map(…)` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:217` |
 | `DrawIndexService.map(…)` | 2 | `DrawIndexService.toSorted(…)`, `DrawIndexService.map(…)` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:240` |
 | `DrawIndexService.build` | 2 | `DrawIndexService.render`, `DatabaseService.findAll` | `applications/meanderaw/src/modules/draw/draw-index.service.ts:266` |
-| `DrawCommand.runCodeDrawing` | 2 | `IncompleteCodeDrawingError.constructor`, `DrawCodeService.draw` | `applications/meanderaw/src/modules/draw/draw.command.ts:104` |
+| `DrawCommand.runCodeDrawing` | 2 | `IncompleteCodeDrawingError.constructor`, `DrawCodeService.draw` | `applications/meanderaw/src/modules/draw/draw.command.ts:115` |
 | `ClassificationService.matches` | 1 | `ClassificationService.holds` | `applications/meanderaw/src/modules/classification/classification.service.ts:64` |
 | `ClassificationService.matches` | 1 | `ClassificationService.holds` | `applications/meanderaw/src/modules/classification/classification.service.ts:75` |
 | `ClassificationService.classify` | 1 | `ClassificationService.rules` | `applications/meanderaw/src/modules/classification/classification.service.ts:86` |
@@ -4607,7 +4612,8 @@ What this project is judged against, as declared in its own `callidescope.config
 | `RectangleUtilitiesService.from(…)` | 1 | `SubmatrixUtilitiesService.pointDigitAt` | `applications/meanderaw/src/modules/characteristics/submatrix/rectangle/rectangle-utilities.service.ts:87` |
 | `RectangleUtilitiesService.sideLength` | 1 | `SubmatrixUtilitiesService.pointDigitAt` | `applications/meanderaw/src/modules/characteristics/submatrix/rectangle/rectangle-utilities.service.ts:112` |
 | `RectangleUtilitiesService.countIsolatedRectangles` | 1 | `RectangleUtilitiesService.isIsolatedRectangleAt` | `applications/meanderaw/src/modules/characteristics/submatrix/rectangle/rectangle-utilities.service.ts:158` |
-| `DatabaseService.saveAll` | 1 | `DatabaseService.transaction(…)` | `applications/meanderaw/src/modules/database/database.service.ts:98` |
+| `DatabaseService.clear` | 1 | `DatabaseService.transaction(…)` | `applications/meanderaw/src/modules/database/database.service.ts:44` |
+| `DatabaseService.saveAll` | 1 | `DatabaseService.transaction(…)` | `applications/meanderaw/src/modules/database/database.service.ts:120` |
 | `GeometryService.borderPath` | 1 | `GeometryService.formatCoordinate` | `applications/meanderaw/src/modules/geometry/geometry.service.ts:41` |
 | `SvgService.render` | 1 | `SvgService.map(…)` | `applications/meanderaw/src/modules/svg/svg.service.ts:27` |
 | `DrawingService.format` | 1 | `GeometryService.formatCoordinate` | `applications/meanderaw/src/modules/drawing/drawing.service.ts:85` |
@@ -5171,6 +5177,7 @@ graph LR
   file_src_modules_draw_draw_record_service_ts["src/modules/draw/draw-record.service.ts"]
   file_src_modules_draw_draw_record_service_unit_test_ts["src/modules/draw/draw-record.service.unit.test.ts"]
   file_src_modules_draw_draw_sweep_collision_command_integration_test_ts["src/modules/draw/draw-sweep-collision.command.integration.test.ts"]
+  file_src_modules_draw_draw_sweep_regeneration_command_integration_test_ts["src/modules/draw/draw-sweep-regeneration.command.integration.test.ts"]
   file_src_modules_draw_draw_sweep_command_integration_test_ts["src/modules/draw/draw-sweep.command.integration.test.ts"]
   file_src_modules_draw_draw_command_integration_test_ts["src/modules/draw/draw.command.integration.test.ts"]
   file_src_modules_draw_draw_command_ts["src/modules/draw/draw.command.ts"]
@@ -6796,6 +6803,7 @@ graph LR
   file_src_modules_draw_draw_check_sweep_module_ts --> file_src_modules_enumeration_enumeration_module_ts
   file_src_modules_draw_draw_check_command_integration_test_ts --> file_src_modules_corpus_corpus_service_ts
   file_src_modules_draw_draw_check_command_integration_test_ts --> file_src_modules_corpus_historical_corpus_constants_ts
+  file_src_modules_draw_draw_check_command_integration_test_ts --> file_src_modules_database_database_service_ts
   file_src_modules_draw_draw_check_command_integration_test_ts --> file_src_modules_database_entities_Meander_entity_ts
   file_src_modules_draw_draw_check_command_integration_test_ts --> file_src_modules_draw_draw_check_service_ts
   file_src_modules_draw_draw_check_command_integration_test_ts --> file_src_modules_draw_draw_code_service_ts
@@ -6903,6 +6911,9 @@ graph LR
   file_src_modules_draw_draw_sweep_collision_command_integration_test_ts --> file_src_modules_draw_draw_code_service_ts
   file_src_modules_draw_draw_sweep_collision_command_integration_test_ts --> file_testing_draw_sweep_ts
   file_src_modules_draw_draw_sweep_collision_command_integration_test_ts --> file_testing_meanders_ts
+  file_src_modules_draw_draw_sweep_regeneration_command_integration_test_ts --> file_src_modules_draw_draw_check_service_ts
+  file_src_modules_draw_draw_sweep_regeneration_command_integration_test_ts --> file_src_modules_draw_draw_code_service_ts
+  file_src_modules_draw_draw_sweep_regeneration_command_integration_test_ts --> file_testing_draw_sweep_ts
   file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_classification_classification_constants_ts
   file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_corpus_historical_corpus_constants_ts
   file_src_modules_draw_draw_sweep_command_integration_test_ts --> file_src_modules_draw_draw_check_service_ts
@@ -6929,6 +6940,7 @@ graph LR
   file_src_modules_draw_draw_command_ts --> file_src_modules_code_code_constants_ts
   file_src_modules_draw_draw_command_ts --> file_src_modules_corpus_corpus_service_ts
   file_src_modules_draw_draw_command_ts --> file_src_modules_corpus_historical_corpus_constants_ts
+  file_src_modules_draw_draw_command_ts --> file_src_modules_database_database_service_ts
   file_src_modules_draw_draw_command_ts --> file_src_modules_draw_draw_check_service_ts
   file_src_modules_draw_draw_command_ts --> file_src_modules_draw_draw_code_service_ts
   file_src_modules_draw_draw_command_ts --> file_src_modules_draw_draw_enumeration_service_ts
@@ -6936,6 +6948,7 @@ graph LR
   file_src_modules_draw_draw_command_ts --> file_src_modules_draw_draw_constants_ts
   file_src_modules_draw_draw_command_ts --> file_src_modules_draw_draw_types_ts
   file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_corpus_corpus_service_ts
+  file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_database_database_service_ts
   file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_database_entities_Meander_entity_ts
   file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_draw_draw_check_service_ts
   file_src_modules_draw_draw_command_unit_test_ts --> file_src_modules_draw_draw_check_types_ts
@@ -7085,40 +7098,40 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-46684-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-41.81_MB-6b7280?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-47004-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-41.83_MB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-38-4a4a4a?style=flat-square)
-![Source Files](https://img.shields.io/badge/Source_Files-441-3178c6?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-442-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-246.90_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-248.09_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
-![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-441-3178c6?style=flat-square)
-![Interfaces](https://img.shields.io/badge/Interfaces-56-0ea5e9?style=flat-square)
+![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-442-3178c6?style=flat-square)
+![Interfaces](https://img.shields.io/badge/Interfaces-57-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-7-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
-![Decorators](https://img.shields.io/badge/Decorators-502-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-888-6366f1?style=flat-square)
+![Decorators](https://img.shields.io/badge/Decorators-504-db2777?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-894-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-5-166534?style=flat-square)
 
 ### JavaScript
 
 ![JavaScript Files](https://img.shields.io/badge/JavaScript_Files-0-f7df1e?style=flat-square)
-![Test Files](https://img.shields.io/badge/Test_Files-178-10b981?style=flat-square)
+![Test Files](https://img.shields.io/badge/Test_Files-179-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-15-8b5cf6?style=flat-square)
-![Classes](https://img.shields.io/badge/Classes-204-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-2529-16a34a?style=flat-square)
-![Methods](https://img.shields.io/badge/Methods-545-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-2677-4ade80?style=flat-square)
-![Async Functions](https://img.shields.io/badge/Async_Functions-397-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-1368-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-2552-0284c7?style=flat-square)
-![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-354-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-1654-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-5110-475569?style=flat-square)
+![Classes](https://img.shields.io/badge/Classes-206-7c3aed?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-2546-16a34a?style=flat-square)
+![Methods](https://img.shields.io/badge/Methods-548-15803d?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-2684-4ade80?style=flat-square)
+![Async Functions](https://img.shields.io/badge/Async_Functions-410-059669?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-1380-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-2562-0284c7?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-356-ea580c?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-1663-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-5159-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python
@@ -7139,16 +7152,16 @@ graph LR
 ### JSON
 
 ![JSON Files](https://img.shields.io/badge/JSON_Files-4-a16207?style=flat-square)
-![JSON Lines](https://img.shields.io/badge/JSON_Lines-178-ca8a04?style=flat-square)
-![JSON Objects](https://img.shields.io/badge/JSON_Objects-46-7c3aed?style=flat-square)
-![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-15-8b5cf6?style=flat-square)
-![JSON Properties](https://img.shields.io/badge/JSON_Properties-116-0284c7?style=flat-square)
-![JSON Strings](https://img.shields.io/badge/JSON_Strings-88-16a34a?style=flat-square)
+![JSON Lines](https://img.shields.io/badge/JSON_Lines-171-ca8a04?style=flat-square)
+![JSON Objects](https://img.shields.io/badge/JSON_Objects-44-7c3aed?style=flat-square)
+![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-16-8b5cf6?style=flat-square)
+![JSON Properties](https://img.shields.io/badge/JSON_Properties-110-0284c7?style=flat-square)
+![JSON Strings](https://img.shields.io/badge/JSON_Strings-86-16a34a?style=flat-square)
 ![JSON Numbers](https://img.shields.io/badge/JSON_Numbers-1-059669?style=flat-square)
-![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-10-0ea5e9?style=flat-square)
+![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-9-0ea5e9?style=flat-square)
 ![JSON Nulls](https://img.shields.io/badge/JSON_Nulls-0-64748b?style=flat-square)
-![JSON Items](https://img.shields.io/badge/JSON_Items-40-475569?style=flat-square)
-![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-160-dc2626?style=flat-square)
+![JSON Items](https://img.shields.io/badge/JSON_Items-42-475569?style=flat-square)
+![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-156-dc2626?style=flat-square)
 ![JSON Max Depth](https://img.shields.io/badge/JSON_Max_Depth-7-ea580c?style=flat-square)
 
 ### YAML
@@ -7237,7 +7250,7 @@ graph LR
 ![Utilities Files](https://img.shields.io/badge/Utilities_Files-0-0ea5e9?style=flat-square)
 ![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-1-059669?style=flat-square)
 ![Unit Tests](https://img.shields.io/badge/Unit_Tests-168-ca8a04?style=flat-square)
-![Integration Tests](https://img.shields.io/badge/Integration_Tests-9-7c3aed?style=flat-square)
+![Integration Tests](https://img.shields.io/badge/Integration_Tests-10-7c3aed?style=flat-square)
 ![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-1-0284c7?style=flat-square)
 ![CSS Comment Budget](https://img.shields.io/badge/CSS_Comment_Budget-0-16a34a?style=flat-square)
 ![HCL Comment Budget](https://img.shields.io/badge/HCL_Comment_Budget-0-ea580c?style=flat-square)
@@ -7274,14 +7287,14 @@ graph LR
 ### Markdown
 
 ![Markdown Files](https://img.shields.io/badge/Markdown_Files-1-083fa1?style=flat-square)
-![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-359-1f6feb?style=flat-square)
+![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-364-1f6feb?style=flat-square)
 ![H1](https://img.shields.io/badge/H1-1-7c3aed?style=flat-square)
 ![H2](https://img.shields.io/badge/H2-8-8b5cf6?style=flat-square)
 ![H3](https://img.shields.io/badge/H3-16-a78bfa?style=flat-square)
 ![H4](https://img.shields.io/badge/H4-0-c4b5fd?style=flat-square)
 ![H5](https://img.shields.io/badge/H5-0-ddd6fe?style=flat-square)
 ![H6](https://img.shields.io/badge/H6-0-ede9fe?style=flat-square)
-![Paragraphs](https://img.shields.io/badge/Paragraphs-68-64748b?style=flat-square)
+![Paragraphs](https://img.shields.io/badge/Paragraphs-69-64748b?style=flat-square)
 ![Lists](https://img.shields.io/badge/Lists-8-16a34a?style=flat-square)
 ![List Items](https://img.shields.io/badge/List_Items-33-22c55e?style=flat-square)
 ![Task List Items](https://img.shields.io/badge/Task_List_Items-0-4ade80?style=flat-square)
@@ -7290,7 +7303,7 @@ graph LR
 ![Links](https://img.shields.io/badge/Links-15-059669?style=flat-square)
 ![Images](https://img.shields.io/badge/Images-0-10b981?style=flat-square)
 ![Code Blocks](https://img.shields.io/badge/Code_Blocks-15-dc2626?style=flat-square)
-![Inline Code](https://img.shields.io/badge/Inline_Code-122-ef4444?style=flat-square)
+![Inline Code](https://img.shields.io/badge/Inline_Code-130-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-0-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-0-a16207?style=flat-square)
 <!-- codometer:end -->

@@ -1,4 +1,4 @@
-# Codebase v2.30.1
+# Codebase v2.30.2
 
 [![Nx](https://img.shields.io/badge/Nx-Codebase-143055?logo=nx)](https://nx.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Strict-3178C6?logo=typescript)](https://www.typescriptlang.org/)
@@ -3222,6 +3222,7 @@ graph LR
   file_lexico_api_src_modules_literature_author_argument_entities_ts["lexico-api/src/modules/literature/author-argument.entities.ts"]
   file_lexico_api_src_modules_literature_author_lookup_input_entities_ts["lexico-api/src/modules/literature/author-lookup-input.entities.ts"]
   file_lexico_api_src_modules_literature_authors_resolver_ts["lexico-api/src/modules/literature/authors.resolver.ts"]
+  file_lexico_api_src_modules_literature_authors_resolver_unit_test_ts["lexico-api/src/modules/literature/authors.resolver.unit.test.ts"]
   file_lexico_api_src_modules_literature_line_arguments_entities_ts["lexico-api/src/modules/literature/line-arguments.entities.ts"]
   file_lexico_api_src_modules_literature_lines_range_input_entities_ts["lexico-api/src/modules/literature/lines-range-input.entities.ts"]
   file_lexico_api_src_modules_literature_lines_resolver_ts["lexico-api/src/modules/literature/lines.resolver.ts"]
@@ -3241,6 +3242,7 @@ graph LR
   file_lexico_api_src_modules_literature_text_lookup_input_entities_ts["lexico-api/src/modules/literature/text-lookup-input.entities.ts"]
   file_lexico_api_src_modules_literature_texts_arguments_entities_ts["lexico-api/src/modules/literature/texts-arguments.entities.ts"]
   file_lexico_api_src_modules_literature_texts_resolver_ts["lexico-api/src/modules/literature/texts.resolver.ts"]
+  file_lexico_api_src_modules_literature_texts_resolver_unit_test_ts["lexico-api/src/modules/literature/texts.resolver.unit.test.ts"]
   file_lexico_api_src_modules_literature_token_word_loader_service_ts["lexico-api/src/modules/literature/token-word-loader.service.ts"]
   file_lexico_api_src_modules_literature_token_word_loader_service_unit_test_ts["lexico-api/src/modules/literature/token-word-loader.service.unit.test.ts"]
   file_lexico_api_src_modules_literature_tokens_arguments_entities_ts["lexico-api/src/modules/literature/tokens-arguments.entities.ts"]
@@ -3455,6 +3457,8 @@ graph LR
   file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_constants_ts["lexico-ingestion/src/modules/lexico-ingestion/lexico-ingestion.constants.ts"]
   file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_module_ts["lexico-ingestion/src/modules/lexico-ingestion/lexico-ingestion.module.ts"]
   file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_types_ts["lexico-ingestion/src/modules/lexico-ingestion/lexico-ingestion.types.ts"]
+  file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_utilities_ts["lexico-ingestion/src/modules/lexico-ingestion/lexico-ingestion.utilities.ts"]
+  file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_utilities_unit_test_ts["lexico-ingestion/src/modules/lexico-ingestion/lexico-ingestion.utilities.unit.test.ts"]
   file_lexico_ingestion_src_modules_library_library_command_ts["lexico-ingestion/src/modules/library/library.command.ts"]
   file_lexico_ingestion_src_modules_library_library_command_unit_test_ts["lexico-ingestion/src/modules/library/library.command.unit.test.ts"]
   file_lexico_ingestion_src_modules_library_library_constants_ts["lexico-ingestion/src/modules/library/library.constants.ts"]
@@ -3986,6 +3990,7 @@ graph LR
   file_meanderaw_src_modules_draw_draw_record_service_ts["meanderaw/src/modules/draw/draw-record.service.ts"]
   file_meanderaw_src_modules_draw_draw_record_service_unit_test_ts["meanderaw/src/modules/draw/draw-record.service.unit.test.ts"]
   file_meanderaw_src_modules_draw_draw_sweep_collision_command_integration_test_ts["meanderaw/src/modules/draw/draw-sweep-collision.command.integration.test.ts"]
+  file_meanderaw_src_modules_draw_draw_sweep_regeneration_command_integration_test_ts["meanderaw/src/modules/draw/draw-sweep-regeneration.command.integration.test.ts"]
   file_meanderaw_src_modules_draw_draw_sweep_command_integration_test_ts["meanderaw/src/modules/draw/draw-sweep.command.integration.test.ts"]
   file_meanderaw_src_modules_draw_draw_command_integration_test_ts["meanderaw/src/modules/draw/draw.command.integration.test.ts"]
   file_meanderaw_src_modules_draw_draw_command_ts["meanderaw/src/modules/draw/draw.command.ts"]
@@ -7258,6 +7263,10 @@ graph LR
   file_lexico_api_src_modules_literature_authors_resolver_ts --> file_lexico_api_src_modules_literature_literature_connection_entities_ts
   file_lexico_api_src_modules_literature_authors_resolver_ts --> file_lexico_api_src_modules_literature_literature_service_ts
   file_lexico_api_src_modules_literature_authors_resolver_ts --> file_lexico_api_src_modules_literature_search_authors_arguments_entities_ts
+  file_lexico_api_src_modules_literature_authors_resolver_ts --> file_lexico_api_src_modules_search_pagination_arguments_entities_ts
+  file_lexico_api_src_modules_literature_authors_resolver_unit_test_ts --> file_lexico_api_src_modules_literature_authors_resolver_ts
+  file_lexico_api_src_modules_literature_authors_resolver_unit_test_ts --> file_lexico_api_src_modules_literature_literature_service_ts
+  file_lexico_api_src_modules_literature_authors_resolver_unit_test_ts --> file_lexico_api_src_modules_literature_texts_resolver_ts
   file_lexico_api_src_modules_literature_line_arguments_entities_ts --> file_lexico_api_src_modules_literature_lines_range_input_entities_ts
   file_lexico_api_src_modules_literature_lines_resolver_ts --> file_lexico_api_src_lexico_api_types_ts
   file_lexico_api_src_modules_literature_lines_resolver_ts --> file_lexico_api_src_modules_literature_line_arguments_entities_ts
@@ -7308,6 +7317,8 @@ graph LR
   file_lexico_api_src_modules_literature_texts_resolver_ts --> file_lexico_api_src_modules_literature_search_texts_arguments_entities_ts
   file_lexico_api_src_modules_literature_texts_resolver_ts --> file_lexico_api_src_modules_literature_text_argument_entities_ts
   file_lexico_api_src_modules_literature_texts_resolver_ts --> file_lexico_api_src_modules_literature_texts_arguments_entities_ts
+  file_lexico_api_src_modules_literature_texts_resolver_unit_test_ts --> file_lexico_api_src_modules_literature_literature_service_ts
+  file_lexico_api_src_modules_literature_texts_resolver_unit_test_ts --> file_lexico_api_src_modules_literature_texts_resolver_ts
   file_lexico_api_src_modules_literature_token_word_loader_service_ts --> file_lexico_api_src_modules_literature_literature_service_ts
   file_lexico_api_src_modules_literature_token_word_loader_service_unit_test_ts --> file_lexico_api_src_modules_literature_literature_service_ts
   file_lexico_api_src_modules_literature_token_word_loader_service_unit_test_ts --> file_lexico_api_src_modules_literature_token_word_loader_service_ts
@@ -7565,10 +7576,12 @@ graph LR
   file_lexico_ingestion_src_modules_dictionary_dictionary_command_ts --> file_lexico_ingestion_src_modules_dictionary_dictionary_types_ts
   file_lexico_ingestion_src_modules_dictionary_dictionary_command_ts --> file_lexico_ingestion_src_modules_lexemes_lexemes_service_ts
   file_lexico_ingestion_src_modules_dictionary_dictionary_command_ts --> file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_types_ts
+  file_lexico_ingestion_src_modules_dictionary_dictionary_command_ts --> file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_utilities_ts
   file_lexico_ingestion_src_modules_dictionary_dictionary_command_ts --> file_lexico_ingestion_src_modules_manual_manual_service_ts
   file_lexico_ingestion_src_modules_dictionary_dictionary_command_ts --> file_lexico_ingestion_src_modules_translations_translations_service_ts
   file_lexico_ingestion_src_modules_dictionary_dictionary_command_unit_test_ts --> file_lexico_ingestion_src_modules_dictionary_dictionary_command_ts
   file_lexico_ingestion_src_modules_dictionary_dictionary_command_unit_test_ts --> file_lexico_ingestion_src_modules_lexemes_lexemes_service_ts
+  file_lexico_ingestion_src_modules_dictionary_dictionary_command_unit_test_ts --> file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_types_ts
   file_lexico_ingestion_src_modules_dictionary_dictionary_command_unit_test_ts --> file_lexico_ingestion_src_modules_manual_manual_service_ts
   file_lexico_ingestion_src_modules_dictionary_dictionary_command_unit_test_ts --> file_lexico_ingestion_src_modules_translations_translations_service_ts
   file_lexico_ingestion_src_modules_dictionary_dictionary_command_unit_test_ts --> file_lexico_ingestion_testing_command_harness_ts
@@ -7581,6 +7594,7 @@ graph LR
   file_lexico_ingestion_src_modules_dictionary_dictionary_module_ts --> file_lexico_ingestion_src_modules_pronunciation_pronunciation_module_ts
   file_lexico_ingestion_src_modules_dictionary_dictionary_module_ts --> file_lexico_ingestion_src_modules_translations_translations_module_ts
   file_lexico_ingestion_src_modules_dictionary_dictionary_module_ts --> file_lexico_ingestion_src_modules_words_words_module_ts
+  file_lexico_ingestion_src_modules_dictionary_dictionary_types_ts --> file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_types_ts
   file_lexico_ingestion_src_modules_epigraphik_datenbank_clauss_slaby_epigraphik_datenbank_clauss_slaby_command_ts --> file_lexico_ingestion_src_modules_epigraphik_datenbank_clauss_slaby_epigraphik_datenbank_clauss_slaby_constants_ts
   file_lexico_ingestion_src_modules_epigraphik_datenbank_clauss_slaby_epigraphik_datenbank_clauss_slaby_command_ts --> file_lexico_ingestion_src_modules_epigraphik_datenbank_clauss_slaby_epigraphik_datenbank_clauss_slaby_types_ts
   file_lexico_ingestion_src_modules_epigraphik_datenbank_clauss_slaby_epigraphik_datenbank_clauss_slaby_command_unit_test_ts --> file_lexico_ingestion_src_modules_epigraphik_datenbank_clauss_slaby_epigraphik_datenbank_clauss_slaby_command_ts
@@ -7684,6 +7698,13 @@ graph LR
   file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_module_ts --> file_lexico_ingestion_src_modules_perseus_perseus_module_ts
   file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_module_ts --> file_lexico_ingestion_src_modules_wiktionary_wiktionary_module_ts
   file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_module_ts --> file_lexico_ingestion_src_modules_words_words_module_ts
+  file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_utilities_ts --> file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_constants_ts
+  file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_utilities_ts --> file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_types_ts
+  file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_utilities_unit_test_ts --> file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_constants_ts
+  file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_utilities_unit_test_ts --> file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_utilities_ts
+  file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_utilities_unit_test_ts --> file_lexico_ingestion_testing_mocks_ts
+  file_lexico_ingestion_src_modules_library_library_command_ts --> file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_types_ts
+  file_lexico_ingestion_src_modules_library_library_command_ts --> file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_utilities_ts
   file_lexico_ingestion_src_modules_library_library_command_ts --> file_lexico_ingestion_src_modules_library_library_constants_ts
   file_lexico_ingestion_src_modules_library_library_command_ts --> file_lexico_ingestion_src_modules_library_library_types_ts
   file_lexico_ingestion_src_modules_library_library_command_unit_test_ts --> file_lexico_ingestion_src_modules_library_library_command_ts
@@ -7700,6 +7721,7 @@ graph LR
   file_lexico_ingestion_src_modules_library_library_module_ts --> file_lexico_ingestion_src_modules_library_providers_latin_library_provider_ts
   file_lexico_ingestion_src_modules_library_library_module_ts --> file_lexico_ingestion_src_modules_library_providers_perseus_library_text_extraction_provider_ts
   file_lexico_ingestion_src_modules_library_library_module_ts --> file_lexico_ingestion_src_modules_library_providers_perseus_library_provider_ts
+  file_lexico_ingestion_src_modules_library_library_types_ts --> file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_types_ts
   file_lexico_ingestion_src_modules_library_library_utilities_unit_test_ts --> file_lexico_ingestion_src_modules_library_library_utilities_ts
   file_lexico_ingestion_src_modules_library_providers_corpus_scriptorum_ecclesiasticorum_latinorum_library_provider_ts --> file_lexico_ingestion_src_modules_library_library_utilities_ts
   file_lexico_ingestion_src_modules_library_providers_corpus_scriptorum_ecclesiasticorum_latinorum_library_provider_unit_test_ts --> file_lexico_ingestion_src_modules_library_providers_corpus_scriptorum_ecclesiasticorum_latinorum_library_provider_ts
@@ -7723,6 +7745,8 @@ graph LR
   file_lexico_ingestion_src_modules_literature_literature_text_ingestion_service_unit_test_ts --> file_lexico_ingestion_src_modules_literature_literature_types_ts
   file_lexico_ingestion_src_modules_literature_literature_word_normalization_service_ts --> file_lexico_ingestion_src_modules_literature_literature_constants_ts
   file_lexico_ingestion_src_modules_literature_literature_word_normalization_service_unit_test_ts --> file_lexico_ingestion_src_modules_literature_literature_word_normalization_service_ts
+  file_lexico_ingestion_src_modules_literature_literature_command_ts --> file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_types_ts
+  file_lexico_ingestion_src_modules_literature_literature_command_ts --> file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_utilities_ts
   file_lexico_ingestion_src_modules_literature_literature_command_ts --> file_lexico_ingestion_src_modules_literature_literature_service_ts
   file_lexico_ingestion_src_modules_literature_literature_command_ts --> file_lexico_ingestion_src_modules_literature_literature_types_ts
   file_lexico_ingestion_src_modules_literature_literature_command_unit_test_ts --> file_lexico_ingestion_src_modules_literature_literature_command_ts
@@ -7749,6 +7773,7 @@ graph LR
   file_lexico_ingestion_src_modules_literature_literature_service_unit_test_ts --> file_lexico_ingestion_src_modules_literature_literature_types_ts
   file_lexico_ingestion_src_modules_literature_literature_service_unit_test_ts --> file_lexico_ingestion_src_modules_numerals_numerals_service_ts
   file_lexico_ingestion_src_modules_literature_literature_service_unit_test_ts --> file_lexico_ingestion_testing_mocks_ts
+  file_lexico_ingestion_src_modules_literature_literature_types_ts --> file_lexico_ingestion_src_modules_lexico_ingestion_lexico_ingestion_types_ts
   file_lexico_ingestion_src_modules_manual_manual_constants_ts --> file_lexico_ingestion_src_modules_manual_manual_types_ts
   file_lexico_ingestion_src_modules_manual_manual_module_ts --> file_lexico_ingestion_src_modules_manual_manual_service_ts
   file_lexico_ingestion_src_modules_manual_manual_module_ts --> file_lexico_ingestion_src_modules_numerals_numerals_module_ts
@@ -9470,6 +9495,7 @@ graph LR
   file_meanderaw_src_modules_draw_draw_check_sweep_module_ts --> file_meanderaw_src_modules_enumeration_enumeration_module_ts
   file_meanderaw_src_modules_draw_draw_check_command_integration_test_ts --> file_meanderaw_src_modules_corpus_corpus_service_ts
   file_meanderaw_src_modules_draw_draw_check_command_integration_test_ts --> file_meanderaw_src_modules_corpus_historical_corpus_constants_ts
+  file_meanderaw_src_modules_draw_draw_check_command_integration_test_ts --> file_meanderaw_src_modules_database_database_service_ts
   file_meanderaw_src_modules_draw_draw_check_command_integration_test_ts --> file_meanderaw_src_modules_database_entities_Meander_entity_ts
   file_meanderaw_src_modules_draw_draw_check_command_integration_test_ts --> file_meanderaw_src_modules_draw_draw_check_service_ts
   file_meanderaw_src_modules_draw_draw_check_command_integration_test_ts --> file_meanderaw_src_modules_draw_draw_code_service_ts
@@ -9577,6 +9603,9 @@ graph LR
   file_meanderaw_src_modules_draw_draw_sweep_collision_command_integration_test_ts --> file_meanderaw_src_modules_draw_draw_code_service_ts
   file_meanderaw_src_modules_draw_draw_sweep_collision_command_integration_test_ts --> file_meanderaw_testing_draw_sweep_ts
   file_meanderaw_src_modules_draw_draw_sweep_collision_command_integration_test_ts --> file_meanderaw_testing_meanders_ts
+  file_meanderaw_src_modules_draw_draw_sweep_regeneration_command_integration_test_ts --> file_meanderaw_src_modules_draw_draw_check_service_ts
+  file_meanderaw_src_modules_draw_draw_sweep_regeneration_command_integration_test_ts --> file_meanderaw_src_modules_draw_draw_code_service_ts
+  file_meanderaw_src_modules_draw_draw_sweep_regeneration_command_integration_test_ts --> file_meanderaw_testing_draw_sweep_ts
   file_meanderaw_src_modules_draw_draw_sweep_command_integration_test_ts --> file_meanderaw_src_modules_classification_classification_constants_ts
   file_meanderaw_src_modules_draw_draw_sweep_command_integration_test_ts --> file_meanderaw_src_modules_corpus_historical_corpus_constants_ts
   file_meanderaw_src_modules_draw_draw_sweep_command_integration_test_ts --> file_meanderaw_src_modules_draw_draw_check_service_ts
@@ -9603,6 +9632,7 @@ graph LR
   file_meanderaw_src_modules_draw_draw_command_ts --> file_meanderaw_src_modules_code_code_constants_ts
   file_meanderaw_src_modules_draw_draw_command_ts --> file_meanderaw_src_modules_corpus_corpus_service_ts
   file_meanderaw_src_modules_draw_draw_command_ts --> file_meanderaw_src_modules_corpus_historical_corpus_constants_ts
+  file_meanderaw_src_modules_draw_draw_command_ts --> file_meanderaw_src_modules_database_database_service_ts
   file_meanderaw_src_modules_draw_draw_command_ts --> file_meanderaw_src_modules_draw_draw_check_service_ts
   file_meanderaw_src_modules_draw_draw_command_ts --> file_meanderaw_src_modules_draw_draw_code_service_ts
   file_meanderaw_src_modules_draw_draw_command_ts --> file_meanderaw_src_modules_draw_draw_enumeration_service_ts
@@ -9610,6 +9640,7 @@ graph LR
   file_meanderaw_src_modules_draw_draw_command_ts --> file_meanderaw_src_modules_draw_draw_constants_ts
   file_meanderaw_src_modules_draw_draw_command_ts --> file_meanderaw_src_modules_draw_draw_types_ts
   file_meanderaw_src_modules_draw_draw_command_unit_test_ts --> file_meanderaw_src_modules_corpus_corpus_service_ts
+  file_meanderaw_src_modules_draw_draw_command_unit_test_ts --> file_meanderaw_src_modules_database_database_service_ts
   file_meanderaw_src_modules_draw_draw_command_unit_test_ts --> file_meanderaw_src_modules_database_entities_Meander_entity_ts
   file_meanderaw_src_modules_draw_draw_command_unit_test_ts --> file_meanderaw_src_modules_draw_draw_check_service_ts
   file_meanderaw_src_modules_draw_draw_command_unit_test_ts --> file_meanderaw_src_modules_draw_draw_check_types_ts
@@ -10139,9 +10170,9 @@ Repository statistics measured by [codometer](packages/ic-suite/codometer/codome
 
 ### Repository
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-6040-22c55e?style=flat-square)
-![Repository Size](https://img.shields.io/badge/Repository_Size-2.08_MB-6b7280?style=flat-square)
-![Folders](https://img.shields.io/badge/Folders-75-4a4a4a?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-6047-22c55e?style=flat-square)
+![Repository Size](https://img.shields.io/badge/Repository_Size-2.09_MB-6b7280?style=flat-square)
+![Folders](https://img.shields.io/badge/Folders-76-4a4a4a?style=flat-square)
 ![Source Files](https://img.shields.io/badge/Source_Files-24-3178c6?style=flat-square)
 
 ### TypeScript
@@ -10167,8 +10198,8 @@ Repository statistics measured by [codometer](packages/ic-suite/codometer/codome
 ![Constants](https://img.shields.io/badge/Constants-87-dc2626?style=flat-square)
 ![Imports](https://img.shields.io/badge/Imports-50-0284c7?style=flat-square)
 ![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-12-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-666-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-1381-475569?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-671-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-1386-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-0-ca8a04?style=flat-square)
 
 ### Python
@@ -10189,27 +10220,27 @@ Repository statistics measured by [codometer](packages/ic-suite/codometer/codome
 ### JSON
 
 ![JSON Files](https://img.shields.io/badge/JSON_Files-23-a16207?style=flat-square)
-![JSON Lines](https://img.shields.io/badge/JSON_Lines-5685-ca8a04?style=flat-square)
-![JSON Objects](https://img.shields.io/badge/JSON_Objects-718-7c3aed?style=flat-square)
+![JSON Lines](https://img.shields.io/badge/JSON_Lines-5691-ca8a04?style=flat-square)
+![JSON Objects](https://img.shields.io/badge/JSON_Objects-719-7c3aed?style=flat-square)
 ![JSON Arrays](https://img.shields.io/badge/JSON_Arrays-264-8b5cf6?style=flat-square)
-![JSON Properties](https://img.shields.io/badge/JSON_Properties-1819-0284c7?style=flat-square)
+![JSON Properties](https://img.shields.io/badge/JSON_Properties-1821-0284c7?style=flat-square)
 ![JSON Strings](https://img.shields.io/badge/JSON_Strings-1858-16a34a?style=flat-square)
 ![JSON Numbers](https://img.shields.io/badge/JSON_Numbers-37-059669?style=flat-square)
 ![JSON Booleans](https://img.shields.io/badge/JSON_Booleans-125-0ea5e9?style=flat-square)
 ![JSON Nulls](https://img.shields.io/badge/JSON_Nulls-0-64748b?style=flat-square)
-![JSON Items](https://img.shields.io/badge/JSON_Items-1167-475569?style=flat-square)
-![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-3002-dc2626?style=flat-square)
+![JSON Items](https://img.shields.io/badge/JSON_Items-1166-475569?style=flat-square)
+![JSON Nodes](https://img.shields.io/badge/JSON_Nodes-3003-dc2626?style=flat-square)
 ![JSON Max Depth](https://img.shields.io/badge/JSON_Max_Depth-11-ea580c?style=flat-square)
 
 ### YAML
 
 ![YAML Files](https://img.shields.io/badge/YAML_Files-22-cb171e?style=flat-square)
-![YAML Lines](https://img.shields.io/badge/YAML_Lines-2927-e34c26?style=flat-square)
+![YAML Lines](https://img.shields.io/badge/YAML_Lines-2921-e34c26?style=flat-square)
 ![YAML Documents](https://img.shields.io/badge/YAML_Documents-22-f97316?style=flat-square)
-![YAML Mappings](https://img.shields.io/badge/YAML_Mappings-422-7c3aed?style=flat-square)
+![YAML Mappings](https://img.shields.io/badge/YAML_Mappings-424-7c3aed?style=flat-square)
 ![YAML Sequences](https://img.shields.io/badge/YAML_Sequences-89-8b5cf6?style=flat-square)
-![YAML Keys](https://img.shields.io/badge/YAML_Keys-1442-0284c7?style=flat-square)
-![YAML Scalars](https://img.shields.io/badge/YAML_Scalars-2882-16a34a?style=flat-square)
+![YAML Keys](https://img.shields.io/badge/YAML_Keys-1452-0284c7?style=flat-square)
+![YAML Scalars](https://img.shields.io/badge/YAML_Scalars-2902-16a34a?style=flat-square)
 ![YAML Anchors](https://img.shields.io/badge/YAML_Anchors-0-059669?style=flat-square)
 ![YAML Aliases](https://img.shields.io/badge/YAML_Aliases-0-10b981?style=flat-square)
 ![YAML Comments](https://img.shields.io/badge/YAML_Comments-404-64748b?style=flat-square)
@@ -10227,17 +10258,17 @@ Repository statistics measured by [codometer](packages/ic-suite/codometer/codome
 
 ### Shell
 
-![Shell Files](https://img.shields.io/badge/Shell_Files-35-89e051?style=flat-square)
-![Shell Lines](https://img.shields.io/badge/Shell_Lines-2513-4eaa25?style=flat-square)
-![Shell Functions](https://img.shields.io/badge/Shell_Functions-23-16a34a?style=flat-square)
-![Shell Variables](https://img.shields.io/badge/Shell_Variables-228-0284c7?style=flat-square)
+![Shell Files](https://img.shields.io/badge/Shell_Files-39-89e051?style=flat-square)
+![Shell Lines](https://img.shields.io/badge/Shell_Lines-2678-4eaa25?style=flat-square)
+![Shell Functions](https://img.shields.io/badge/Shell_Functions-28-16a34a?style=flat-square)
+![Shell Variables](https://img.shields.io/badge/Shell_Variables-238-0284c7?style=flat-square)
 ![Shell Exports](https://img.shields.io/badge/Shell_Exports-12-ea580c?style=flat-square)
-![Shell Conditionals](https://img.shields.io/badge/Shell_Conditionals-173-7c3aed?style=flat-square)
-![Shell Loops](https://img.shields.io/badge/Shell_Loops-17-8b5cf6?style=flat-square)
-![Shell Pipelines](https://img.shields.io/badge/Shell_Pipelines-103-059669?style=flat-square)
-![Shebangs](https://img.shields.io/badge/Shebangs-35-6b7280?style=flat-square)
-![Shell Comments](https://img.shields.io/badge/Shell_Comments-551-64748b?style=flat-square)
-![Shell Comment Lines](https://img.shields.io/badge/Shell_Comment_Lines-551-475569?style=flat-square)
+![Shell Conditionals](https://img.shields.io/badge/Shell_Conditionals-184-7c3aed?style=flat-square)
+![Shell Loops](https://img.shields.io/badge/Shell_Loops-24-8b5cf6?style=flat-square)
+![Shell Pipelines](https://img.shields.io/badge/Shell_Pipelines-104-059669?style=flat-square)
+![Shebangs](https://img.shields.io/badge/Shebangs-39-6b7280?style=flat-square)
+![Shell Comments](https://img.shields.io/badge/Shell_Comments-599-64748b?style=flat-square)
+![Shell Comment Lines](https://img.shields.io/badge/Shell_Comment_Lines-599-475569?style=flat-square)
 
 ### SQL
 
@@ -10324,23 +10355,23 @@ Repository statistics measured by [codometer](packages/ic-suite/codometer/codome
 ### Markdown
 
 ![Markdown Files](https://img.shields.io/badge/Markdown_Files-106-083fa1?style=flat-square)
-![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-18511-1f6feb?style=flat-square)
+![Markdown Lines](https://img.shields.io/badge/Markdown_Lines-18541-1f6feb?style=flat-square)
 ![H1](https://img.shields.io/badge/H1-105-7c3aed?style=flat-square)
-![H2](https://img.shields.io/badge/H2-637-8b5cf6?style=flat-square)
+![H2](https://img.shields.io/badge/H2-638-8b5cf6?style=flat-square)
 ![H3](https://img.shields.io/badge/H3-524-a78bfa?style=flat-square)
 ![H4](https://img.shields.io/badge/H4-78-c4b5fd?style=flat-square)
 ![H5](https://img.shields.io/badge/H5-0-ddd6fe?style=flat-square)
 ![H6](https://img.shields.io/badge/H6-0-ede9fe?style=flat-square)
-![Paragraphs](https://img.shields.io/badge/Paragraphs-5282-64748b?style=flat-square)
+![Paragraphs](https://img.shields.io/badge/Paragraphs-5286-64748b?style=flat-square)
 ![Lists](https://img.shields.io/badge/Lists-841-16a34a?style=flat-square)
-![List Items](https://img.shields.io/badge/List_Items-4085-22c55e?style=flat-square)
+![List Items](https://img.shields.io/badge/List_Items-4086-22c55e?style=flat-square)
 ![Task List Items](https://img.shields.io/badge/Task_List_Items-57-4ade80?style=flat-square)
-![Tables](https://img.shields.io/badge/Tables-219-0284c7?style=flat-square)
-![Table Rows](https://img.shields.io/badge/Table_Rows-1893-0ea5e9?style=flat-square)
+![Tables](https://img.shields.io/badge/Tables-220-0284c7?style=flat-square)
+![Table Rows](https://img.shields.io/badge/Table_Rows-1898-0ea5e9?style=flat-square)
 ![Links](https://img.shields.io/badge/Links-665-059669?style=flat-square)
 ![Images](https://img.shields.io/badge/Images-22-10b981?style=flat-square)
-![Code Blocks](https://img.shields.io/badge/Code_Blocks-397-dc2626?style=flat-square)
-![Inline Code](https://img.shields.io/badge/Inline_Code-10228-ef4444?style=flat-square)
+![Code Blocks](https://img.shields.io/badge/Code_Blocks-398-dc2626?style=flat-square)
+![Inline Code](https://img.shields.io/badge/Inline_Code-10245-ef4444?style=flat-square)
 ![Block Quotes](https://img.shields.io/badge/Block_Quotes-21-ca8a04?style=flat-square)
 ![Thematic Breaks](https://img.shields.io/badge/Thematic_Breaks-28-a16207?style=flat-square)
 <!-- codometer:end -->
@@ -10353,13 +10384,13 @@ The workspace's call graph, traced by [callidescope](packages/ic-suite/callidesc
 
 | Measure | Value |
 | --- | --- |
-| Callables | 5869 |
-| Files | 1680 |
-| Calls traced | 6168 |
-| Call stacks | 1852 |
+| Callables | 5878 |
+| Files | 1681 |
+| Calls traced | 6184 |
+| Call stacks | 1855 |
 | Deepest stack | 17 |
 | Stacks through recursion | 12 |
-| Unfollowable calls | 352 |
+| Unfollowable calls | 354 |
 
 ### Projects
 

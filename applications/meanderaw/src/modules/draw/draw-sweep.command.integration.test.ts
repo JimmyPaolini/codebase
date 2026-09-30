@@ -61,10 +61,11 @@ async function compileSweep(): Promise<SweepFixture> {
  * `node:fs/promises` while the per-family procedural pipeline still wrote
  * one.
  *
- * The case over a database already holding a hardcoded entry's address runs
- * a sweep of its own, so it lives in
- * `draw-sweep-collision.command.integration.test.ts`, where vitest runs it
- * beside this file's shared sweep rather than after it.
+ * The cases over a database already holding a hardcoded entry's address and
+ * over an already-populated one run sweeps of their own, so they live in
+ * `draw-sweep-collision.command.integration.test.ts` and
+ * `draw-sweep-regeneration.command.integration.test.ts`, where vitest runs
+ * them beside this file's shared sweep rather than after it.
  *
  * **This is what proves the two provenances do not collide.** Both halves
  * write through the same unique index over a meander's lattice address, and
@@ -99,7 +100,7 @@ describe("drawCommand sweep mode", () => {
     beforeAll(async () => {
       writeFileMock.mockClear();
       sweep = await compileSweep();
-      await sweep.command.run([], {});
+      await sweep.command.run([], { write: true });
       writes = [...writeFileMock.mock.calls];
     }, SWEEP_TIMEOUT_MILLISECONDS);
 

@@ -489,7 +489,6 @@
         "check-lockfile",
         "check-readme-projects",
         "conformetry-validate",
-        "meanderaw-check",
         "sync-vscode-extensions"
       ],
       "description": "Aggregator for guard-code. `callidescope-gate` is callidescope's inferred per-project call-stack gate; it has no configurations, so the one `guard-code` is run with falls through to its defaults. `codependix` is pinned to the `codebase` project so every project's guard reaches the one workspace-wide boundary check, which Nx runs once however many projects are affected; `check` forwards to its `--check boundaries`.",

@@ -1,5 +1,8 @@
 {
   "author": "Jimmy Paolini",
+  "dependencies": {
+    "@nestjs/platform-express": "catalog:"
+  },
   "description": "",
   "devDependencies": {
     "@callidescope/configuration": "workspace:*",
@@ -125,5 +128,5 @@
     ]
   },
   "type": "module",
-  "version": "2.30.1"
+  "version": "2.30.2"
 }

@@ -5,12 +5,18 @@ import path from "node:path";
 import { Inject, Injectable } from "@nestjs/common";
 import _ from "lodash";
 import { Command, CommandRunner, Option } from "nest-commander";
-import prompts from "prompts";
 
 import { LoggerService } from "@codebase/logger";
 
+import {
+  getOptionText,
+  requireChoice,
+  selectChoice,
+} from "../lexico-ingestion/lexico-ingestion.utilities";
+
 import { LIBRARY_PROVIDERS_TOKEN } from "./library.constants";
 
+import type { CommandOptionChoice } from "../lexico-ingestion/lexico-ingestion.types";
 import type {
   LibraryCommandOptions,
   LibrarySourceProvider,
@@ -78,7 +84,7 @@ export class LibraryCommand extends CommandRunner {
    */
   private async getAuthorChoices(
     provider?: string,
-  ): Promise<{ title: string; value: string }[]> {
+  ): Promise<CommandOptionChoice[]> {
     const library = await this.scanLibrary();
     const filtered = provider
       ? library.filter((t) => t.provider === provider)
@@ -90,7 +96,7 @@ export class LibraryCommand extends CommandRunner {
   /**
    * Resolves derived values needed by library provider orchestration.
    */
-  private getProviderChoices(): { title: string; value: string }[] {
+  private getProviderChoices(): CommandOptionChoice[] {
     const providers = this.providers.map((p) => p.name).toSorted();
     return providers.map((p) => ({ title: p, value: p }));
   }
@@ -101,7 +107,7 @@ export class LibraryCommand extends CommandRunner {
   private async getTextChoices(
     provider?: string,
     authorSlug?: string,
-  ): Promise<{ title: string; value: string }[]> {
+  ): Promise<CommandOptionChoice[]> {
     const library = await this.scanLibrary();
     let filtered = library;
     if (provider) filtered = filtered.filter((t) => t.provider === provider);
@@ -129,25 +135,43 @@ export class LibraryCommand extends CommandRunner {
   }
 
   /**
-   * Parses and normalizes inputs for library provider orchestration.
+   * Resolves the provider, author and text filters. A given provider must be
+   * configured; a given author or text is taken as-is, since it may not be
+   * downloaded yet. A missing value is asked for on a terminal and otherwise
+   * means "All".
    */
   private async parseIngestOptions(options: LibraryCommandOptions): Promise<{
     author: string | undefined;
     providerName: string | undefined;
     text: string | undefined;
   }> {
-    const providerName = await this.parseProvider(
-      options.provider ?? undefined,
-    );
-    const author = await this.parseAuthor(
-      options.author ?? undefined,
-      providerName,
-    );
-    const text = await this.parseText(
-      options.text ?? undefined,
-      providerName,
-      author,
-    );
+    const providerChoices = this.getProviderChoices();
+    const providerText = getOptionText(options.provider);
+    const providerName = providerText
+      ? requireChoice(
+          providerText,
+          providerChoices,
+          `Provider "${providerText}" not found.`,
+        )
+      : await selectChoice({
+          choices: providerChoices,
+          message: "Select the provider",
+          noSelectionTitle: "All",
+        });
+    const author =
+      getOptionText(options.author) ??
+      (await selectChoice({
+        choices: await this.getAuthorChoices(providerName),
+        message: "Select the author",
+        noSelectionTitle: "All",
+      }));
+    const text =
+      getOptionText(options.text) ??
+      (await selectChoice({
+        choices: await this.getTextChoices(providerName, author),
+        message: "Select the text",
+        noSelectionTitle: "All",
+      }));
     return { author, providerName, text };
   }
 
@@ -363,101 +387,39 @@ export class LibraryCommand extends CommandRunner {
   }
 
   /**
-   * Resolves the optional `--author` filter from CLI input or interactive selection.
+   * Passes the `--author` text through to `run`, which takes it as-is since
+   * the author may not be downloaded yet.
    */
   @Option({
-    description: "The author to ingest",
+    description: "The author to ingest (omit to pick one, or all)",
     flags: "-a, --author [author]",
   })
-  async parseAuthor(
-    author?: string,
-    provider?: string,
-  ): Promise<string | undefined> {
-    const choices = await this.getAuthorChoices(
-      typeof provider === "string" ? provider : undefined,
-    );
-    if (typeof author === "string" && author.trim() !== "") {
-      // Allow custom input in case it's not downloaded yet
-      return author;
-    }
-
-    const response = (await prompts({
-      choices: [{ title: "All", value: "ALL" }, ...choices],
-      message: "Select the author",
-      name: "author",
-      type: "autocomplete",
-    })) as { author: string };
-
-    if (response.author === "ALL" || typeof response.author !== "string") {
-      return undefined;
-    }
-
-    return response.author;
+  parseAuthor(author: string): string {
+    return author;
   }
 
   /**
-   * Resolves the optional `--provider` filter from CLI input or interactive selection.
+   * Passes the `--provider` text through to `run`, which validates it against
+   * the configured providers.
    */
   @Option({
-    description: "The provider to ingest from",
+    description: "The provider to ingest from (omit to pick one, or all)",
     flags: "-p, --provider [provider]",
   })
-  async parseProvider(provider?: string): Promise<string | undefined> {
-    const choices = this.getProviderChoices();
-    if (typeof provider === "string" && provider.trim() !== "") {
-      if (choices.some((choice) => choice.value === provider)) {
-        return provider;
-      }
-      throw new Error(`Provider "${provider}" not found.`);
-    }
-
-    const response = (await prompts({
-      choices: [{ title: "All", value: "ALL" }, ...choices],
-      message: "Select the provider",
-      name: "provider",
-      type: "autocomplete",
-    })) as { provider: string };
-
-    if (response.provider === "ALL" || typeof response.provider !== "string") {
-      return undefined;
-    }
-
-    return response.provider;
+  parseProvider(provider: string): string {
+    return provider;
   }
 
   /**
-   * Resolves the optional `--text` filter from CLI input or interactive selection.
+   * Passes the `--text` text through to `run`, which takes it as-is since the
+   * text may not be downloaded yet.
    */
   @Option({
-    description: "The specific text to ingest",
+    description: "The specific text to ingest (omit to pick one, or all)",
     flags: "-t, --text [text]",
   })
-  async parseText(
-    text?: string,
-    provider?: string,
-    authorSlug?: string,
-  ): Promise<string | undefined> {
-    const choices = await this.getTextChoices(
-      typeof provider === "string" ? provider : undefined,
-      typeof authorSlug === "string" ? authorSlug : undefined,
-    );
-    if (typeof text === "string" && text.trim() !== "") {
-      // Allow custom input in case it's not downloaded yet
-      return text;
-    }
-
-    const response = (await prompts({
-      choices: [{ title: "All", value: "ALL" }, ...choices],
-      message: "Select the text",
-      name: "text",
-      type: "autocomplete",
-    })) as { text: string };
-
-    if (response.text === "ALL" || typeof response.text !== "string") {
-      return undefined;
-    }
-
-    return response.text;
+  parseText(text: string): string {
+    return text;
   }
 
   /**

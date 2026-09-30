@@ -1,4 +1,4 @@
-import { spawnSync } from "node:child_process";
+import { execFileSync, spawnSync } from "node:child_process";
 
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
@@ -249,6 +249,50 @@ describe(PublishablePackagesService, () => {
 
       expect(result.succeeded).toBe(true);
       expect(result.messages).toStrictEqual([]);
+    });
+
+    it("unpacks a tarball of any version into its scoped package directory", () => {
+      expect.hasAssertions();
+
+      existingPaths.add("/mock-workspace/dist/tarballs");
+      mockTarballFiles = ["conformetry-cli-1.2.3.tgz"];
+
+      service.verifyPublishablePackages("/mock-workspace");
+
+      const extractionTargets = vi
+        .mocked(execFileSync)
+        .mock.calls.filter(([command]) => command === "tar")
+        .map(([, args]) => args?.[args.indexOf("-C") + 1]);
+
+      expect(extractionTargets).toContainEqual(
+        expect.stringMatching(/\/node_modules\/@conformetry\/cli$/),
+      );
+    });
+
+    it("runs each CLI binary from the tarball named for its manifest version", () => {
+      expect.hasAssertions();
+
+      existingPaths.add("/mock-workspace/dist/tarballs");
+      mockTarballFiles = ["conformetry-cli-1.2.3.tgz"];
+      mockManifestJson = JSON.stringify({
+        bin: { conformetry: "bin/cli" },
+        name: "@conformetry/cli",
+        publishConfig: { access: "public" },
+        version: "1.2.3",
+      });
+
+      service.verifyPublishablePackages("/mock-workspace");
+
+      const cliTarballs = vi
+        .mocked(execFileSync)
+        .mock.calls.filter(([, args]) =>
+          args?.some((argument) => argument.includes("cli-bin-verify")),
+        )
+        .map(([, args]) => args?.[args.indexOf("-xzf") + 1]);
+
+      expect(cliTarballs).toStrictEqual([
+        "/mock-workspace/dist/tarballs/conformetry-cli-1.2.3.tgz",
+      ]);
     });
 
     it("uses process.cwd when workspaceRoot is passed", () => {
