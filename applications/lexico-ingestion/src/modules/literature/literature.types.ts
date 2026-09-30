@@ -1,5 +1,9 @@
 // 🏷️ Types
 
+import type {
+  CommandOptionChoice,
+  CommandOptionValue,
+} from "../lexico-ingestion/lexico-ingestion.types";
 import type { Author, Text } from "@codebase/lexico-entities";
 import type { PhrasingContent } from "mdast";
 
@@ -27,12 +31,23 @@ export interface LibraryEntry {
 }
 
 /**
- * Optional CLI filters that scope literature ingestion.
+ * Optional CLI filters that scope literature ingestion. Each is the value
+ * given, `true` for a bare flag, or absent when omitted.
  */
 export interface LiteratureCommandOptions {
-  author?: null | string;
-  provider?: null | string;
-  text?: null | string;
+  author?: CommandOptionValue;
+  provider?: CommandOptionValue;
+  text?: CommandOptionValue;
+}
+
+/**
+ * Inputs for resolving one literature filter from its flag or a prompt.
+ */
+export interface LiteratureFilterArguments {
+  choices: CommandOptionChoice[];
+  label: string;
+  message: string;
+  value: CommandOptionValue;
 }
 
 /**
