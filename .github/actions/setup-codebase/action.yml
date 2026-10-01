@@ -17,6 +17,12 @@ inputs:
   nx-cache:
     description: Restore and save the Nx task cache
     default: "true"
+  nx-cache-scope:
+    description: |
+      What the Nx task cache key is partitioned by. Defaults to the job id,
+      which is shared by every leg of a matrix job, so a matrix job must pass
+      something unique to each leg, such as the target that leg runs.
+    default: ${{ github.job }}
   nx-graph-cache:
     description: |
       Restore and save the Nx project graph (.nx/workspace-data, minus the
@@ -133,19 +139,18 @@ runs:
       run: echo "/home/linuxbrew/.linuxbrew/bin" >> "$GITHUB_PATH"
       shell: bash
 
-    # Keyed per job: one shared key made concurrent jobs race, leaving the
-    # cache write-only.
+    # Keyed per check via `nx-cache-scope`, not `github.job`, which every
+    # matrix leg shares: under one key the first leg saved it and the Test
+    # leg restored a tarball holding no test results.
     #
-    # The task-result database is cached here rather than with the graph
-    # because it indexes these files, and the two must never come from
-    # different tarballs. Nx splits a cached task across `.nx/cache/<hash>`
-    # for outputs and `.nx/cache/terminalOutputs/<hash>` for the log, while
-    # the row saying it is cached lives in `.nx/workspace-data/*.db`. Nx
-    # decides a hit from that row alone, so a job holding a row whose files
-    # it never restored reports `[local cache]`, restores nothing, exits 0 —
-    # a build leaving no `dist/` behind. Which tasks hit hollow is a lottery,
-    # so a green re-run is luck. The reverse mismatch is safe: files with no
-    # row are an ordinary miss.
+    # The task-result database travels with these files, not the graph,
+    # because it indexes them: both must come from one tarball. Nx keeps a
+    # task's outputs in `.nx/cache/<hash>` and its log in
+    # `.nx/cache/terminalOutputs/<hash>`, but decides a hit from the row in
+    # `.nx/workspace-data/*.db` alone. A row without its files reports
+    # `[local cache]`, restores nothing, and exits 0 — a build with no
+    # `dist/`, hit at random, so a green re-run is luck. Files with no row
+    # are an ordinary miss.
 
     # Restore only, saving is `cleanup-codebase`'s job. The combined
     # `actions/cache` action only saves on a clean exit, and its documented
@@ -163,12 +168,12 @@ runs:
           .nx/cache
           .nx/workspace-data/*.db*
         key: |
-          nx-cache-${{ github.job }}-${{ runner.os }}-${{ hashFiles(
+          nx-cache-${{ inputs.nx-cache-scope }}-${{ runner.os }}-${{ hashFiles(
           'pnpm-lock.yaml') }}-${{ github.sha }}
         restore-keys: |
-          nx-cache-${{ github.job }}-${{ runner.os }}-${{ hashFiles(
+          nx-cache-${{ inputs.nx-cache-scope }}-${{ runner.os }}-${{ hashFiles(
           'pnpm-lock.yaml') }}-
-          nx-cache-${{ github.job }}-${{ runner.os }}-
+          nx-cache-${{ inputs.nx-cache-scope }}-${{ runner.os }}-
 
     # Restored databases can be left structurally valid but page-corrupt by a
     # cancelled save. Nx fails hard on those, so discard them before the first
@@ -176,16 +181,15 @@ runs:
     - name: 🩺 Verify Nx Cache Database
       if: inputs.nx-cache == 'true'
       shell: bash
-      run: |
-        shopt -s nullglob
-        for datastore in .nx/workspace-data/*.db; do
-          result="$(sqlite3 "${datastore}" 'PRAGMA integrity_check;' 2>&1 || true)"
-          if [[ "${result}" != "ok" ]]; then
-            echo "::warning::Discarding corrupt cache (${datastore}): ${result}"
-            rm -f "${datastore}" "${datastore}-wal" "${datastore}-shm" \
-              "${datastore}-journal"
-          fi
-        done
+      run: bash scripts/nx/verify-task-database.sh
+
+    # Nx names its database after the machine, and every hosted runner has a
+    # fresh id, so the restored one is renamed to this runner's or it is never
+    # read. See the script for the full reasoning.
+    - name: 🪪 Adopt Nx Cache Database
+      if: inputs.nx-cache == 'true'
+      shell: bash
+      run: bash scripts/nx/adopt-task-database.sh
 
     # Exact match only, and no restore-keys: a partially stale project graph
     # is worse than rebuilding one. `nx reset` clears it if it ever misbehaves.

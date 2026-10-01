@@ -217,7 +217,7 @@ describe(ManualService, () => {
       );
     });
 
-    it("should save the lexeme to repository", async () => {
+    it("should save the lexeme with reloading left on so cascaded forms receive its generated id", async () => {
       const lexeme = new Lexeme();
       lexeme.lemma = "rosa";
       lexeme.disambiguator = 0;
@@ -226,9 +226,8 @@ describe(ManualService, () => {
 
       await service.createManual(lexeme);
 
-      expect(lexemesRepository.save).toHaveBeenCalledWith(lexeme, {
-        reload: false,
-      });
+      expect(lexemesRepository.save).toHaveBeenCalledTimes(1);
+      expect(lexemesRepository.save.mock.calls[0]).toStrictEqual([lexeme]);
     });
 
     it("should ingest words for the created lexeme", async () => {

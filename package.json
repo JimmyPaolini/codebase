@@ -1,7 +1,7 @@
 {
   "author": "Jimmy Paolini",
   "dependencies": {
-    "pino-pretty": "catalog:"
+    "@nestjs/platform-express": "catalog:"
   },
   "description": "",
   "devDependencies": {
@@ -74,6 +74,7 @@
     "openwiki": "catalog:",
     "oxfmt": "catalog:",
     "oxlint": "catalog:",
+    "pino-pretty": "catalog:",
     "prettier": "catalog:",
     "semantic-release": "catalog:",
     "skills": "catalog:",
@@ -95,7 +96,7 @@
     "zod": "catalog:"
   },
   "engines": {
-    "node": ">=",
+    "node": ">=24.16.0",
     "vscode": "^1.22.0"
   },
   "exports": {
@@ -108,7 +109,7 @@
   "release": {
     "extends": "./configuration/release.config.cjs"
   },
-  "repository": "JimmyPaolini/codebase.git",
+  "repository": "Organizzolini/codebase.git",
   "scripts": {
     "postinstall": "conformetry-nx-bootstrap && bash scripts/install-skills.sh",
     "prepare": "husky configuration/.husky",
@@ -121,10 +122,11 @@
       "./applications/JimmyPaolini"
     ],
     "ignoreRule": [
+      "packages-without-package-json",
       "root-package-private-field",
       "unordered-dependencies"
     ]
   },
   "type": "module",
-  "version": "2.24.0"
+  "version": "2.30.2"
 }

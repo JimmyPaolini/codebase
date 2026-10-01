@@ -49,7 +49,7 @@ export class LockfileService {
   // 🌎 Public Methods
 
   /**
-   * Runs `pnpm install --frozen-lockfile`, wherever pnpm can be found.
+   * Runs `pnpm install --frozen-lockfile --lockfile-only`, wherever pnpm is.
    *
    * The bare name first, then the directory holding the Node that is running
    * this. A git hook runs without a login shell, so the terminal's pnpm may

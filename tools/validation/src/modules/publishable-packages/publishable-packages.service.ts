@@ -13,7 +13,10 @@ import { Injectable } from "@nestjs/common";
 
 import { LoggerService } from "@codebase/logger";
 
-import { TARBALLS_DIRECTORY_MISSING_MESSAGE } from "./publishable-packages.constants";
+import {
+  TARBALL_VERSION_SUFFIX_PATTERN,
+  TARBALLS_DIRECTORY_MISSING_MESSAGE,
+} from "./publishable-packages.constants";
 
 import type {
   PublishablePackage,
@@ -108,6 +111,7 @@ export class PublishablePackagesService {
       readonly bin?: Record<string, string> | string;
       readonly name: string;
       readonly publishConfig?: unknown;
+      readonly version: string;
     };
     const project = JSON.parse(readFileSync(projectPath, "utf8")) as {
       readonly name: string;
@@ -131,12 +135,14 @@ export class PublishablePackagesService {
         binary: binaryName,
         name: manifest.name,
         tarball: project.name,
+        version: manifest.version,
       };
     }
 
     return {
       name: manifest.name,
       tarball: project.name,
+      version: manifest.version,
     };
   }
 
@@ -187,13 +193,13 @@ export class PublishablePackagesService {
   private unpackCliTarball(
     targetDirectory: string,
     tarballsDirectory: string,
-    tarballName: string,
+    publishablePackage: PublishablePackage,
   ): void {
     mkdirSync(targetDirectory, { recursive: true });
 
     const tarballPath = path.resolve(
       tarballsDirectory,
-      `${tarballName}-0.0.1.tgz`,
+      `${publishablePackage.tarball}-${publishablePackage.version}.tgz`,
     );
 
     execFileSync(
@@ -215,7 +221,7 @@ export class PublishablePackagesService {
     );
 
     for (const file of tarballFiles) {
-      const rawName = file.replace(/-0\.0\.1\.tgz$/, "");
+      const rawName = file.replace(TARBALL_VERSION_SUFFIX_PATTERN, "");
       const slashIndex = rawName.indexOf("-");
       const scope = rawName.slice(0, slashIndex);
       const unscopedPackageName = rawName.slice(slashIndex + 1);
@@ -323,7 +329,7 @@ export class PublishablePackagesService {
       this.unpackCliTarball(
         targetDirectory,
         tarballsDirectory,
-        publishablePackage.tarball,
+        publishablePackage,
       );
 
       const binRelative = this.readPackageManifestBin(

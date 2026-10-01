@@ -361,7 +361,7 @@ describe(PullRequestReleaseSignificanceService, () => {
       expect(verdict.failures[0]).toContain("major");
     });
 
-    it("fails once per scope a commit uses that the title omits", () => {
+    it("fails when no commit scope overlaps the title", () => {
       expect.hasAssertions();
 
       const verdict = service.checkSignificance({
@@ -393,6 +393,37 @@ describe(PullRequestReleaseSignificanceService, () => {
       expect(verdict.failures[0]).toContain(
         'Scope "synchronization" is used in commits bbb2222, ccc3333',
       );
+    });
+
+    it("passes when at least one commit scope overlaps the title", () => {
+      expect.hasAssertions();
+
+      const verdict = service.checkSignificance({
+        commits: [
+          commit(
+            service,
+            "aaa1111",
+            "feat(validation): add the release-significance check",
+          ),
+          commit(
+            service,
+            "bbb2222",
+            "feat(synchronization): reconcile pull request labels",
+          ),
+          commit(
+            service,
+            "ccc3333",
+            "fix(synchronization): patch pull request labels",
+          ),
+        ],
+        releaseRules: RELEASE_RULES,
+        titleConvention: title(
+          service,
+          "feat(validation,synchronization): add the release-significance check",
+        ),
+      });
+
+      expect(verdict.failures).toStrictEqual([]);
     });
 
     it("ignores a commit whose subject does not parse as conventional", () => {

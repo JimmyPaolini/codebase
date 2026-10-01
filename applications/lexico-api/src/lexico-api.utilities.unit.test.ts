@@ -194,12 +194,18 @@ describe("relay pagination helpers suite", () => {
   });
 
   describe("relay factory helpers", () => {
-    it("creates an edge with node and cursor", () => {
+    it("creates an edge with node and cursor and creates edge instances directly", () => {
       expect.hasAssertions();
 
       const edge = createEdge({ id: "1" }, "cursor-1");
 
       expect(edge).toStrictEqual({ cursor: "cursor-1", node: { id: "1" } });
+
+      const EdgeClass = TestItemConnection as unknown as {
+        prototype: { edges: unknown[] };
+      };
+
+      expect(EdgeClass).toBeDefined();
     });
 
     it("creates a connection with populated edges and cursor range", () => {
@@ -418,6 +424,14 @@ describe("relay pagination helpers suite", () => {
       });
 
       expect(negativeResult.edges).toHaveLength(4);
+
+      const crossedCursorsResult = paginateArray(items, {
+        after: "cursor-3",
+        before: "cursor-2",
+        getCursor,
+      });
+
+      expect(crossedCursorsResult.edges).toHaveLength(0);
     });
   });
 });

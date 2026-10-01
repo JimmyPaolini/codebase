@@ -1,9 +1,12 @@
+import { Field, ObjectType } from "@nestjs/graphql";
 import { Entity, Index, ManyToOne } from "typeorm";
 
 import { AuditableEntity } from "../base/Auditable.entity";
 
-import type { Form } from "./form/Form.entity";
-import type { Word } from "./Word.entity";
+import { Form } from "./form/Form.entity";
+import { Word } from "./Word.entity";
+
+import type { Relation } from "typeorm";
 
 /**
  * Explicit junction entity linking a normalized Latin word string to the
@@ -20,22 +23,25 @@ import type { Word } from "./Word.entity";
   schema: "public",
 })
 @Index(["word", "form"], { unique: true })
+@ObjectType()
 export class WordForm extends AuditableEntity {
   /** The morphological form side of the junction. Cascade-deletes with the Form. */
+  @Field(() => Form)
   @Index()
   @ManyToOne("Form", "wordForms", {
     nullable: false,
     onDelete: "CASCADE",
     onUpdate: "CASCADE",
   })
-  form!: Form;
+  form!: Relation<Form>;
 
   /** The word string side of the junction. */
+  @Field(() => Word)
   @Index()
   @ManyToOne("Word", "wordForms", {
     nullable: false,
     onDelete: "CASCADE",
     onUpdate: "CASCADE",
   })
-  word!: Word;
+  word!: Relation<Word>;
 }

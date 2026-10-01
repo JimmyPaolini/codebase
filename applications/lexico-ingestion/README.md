@@ -53,6 +53,12 @@ The lemma range on `dictionary` is what makes a long scrape restartable: a run
 that stops partway is resumed by pointing `--startLemma` at where it left off
 rather than starting over.
 
+A value given to a flag is validated, and an unknown one fails the run. A
+missing value — a bare `--startLemma`, or an omitted `--provider`, `--author`,
+or `--text` on `library` and `literature` — is asked for only when standard
+input is a terminal; otherwise the command takes its default of no bound or
+"All". A cancelled prompt, like any error a command throws, exits non-zero.
+
 ## How it works
 
 Each source has its own module under `src/modules/`, holding the fetcher, the
@@ -111,10 +117,10 @@ Call stacks traced through `applications/lexico-ingestion`, deepest first. Each 
 
 | Measure | Value |
 | --- | --- |
-| Callables | 574 |
-| Files | 110 |
-| Calls traced | 633 |
-| Call stacks | 34 |
+| Callables | 577 |
+| Files | 111 |
+| Calls traced | 642 |
+| Call stacks | 26 |
 | Deepest stack | 17 |
 | Stacks through recursion | 3 |
 | Unfollowable calls | 103 |
@@ -137,13 +143,13 @@ What this project is judged against, as declared in its own `callidescope.config
    ↳ Executes the selected stage sequence after prompting for any unspecified toggles.
   └─> LexicoIngestionCommand.executeStages(options: LexicoIngestionCommandOptions): Promise<void> [applications/lexico-ingestion/src/modules/lexico-ingestion/lexico-ingestion.command.ts:54]
      ↳ Processes one workflow step for root ingestion pipeline execution.
-    └─> DictionaryCommand.ingestAll(startLemma?: string, endLemma?: string): Promise<void> [applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:319]
+    └─> DictionaryCommand.ingestAll(startLemma?: string, endLemma?: string): Promise<void> [applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:381]
        ↳ Iterates cached `data/wiktionary/*.json` pages within an optional lemma range and ingests each file into persisted…
-      └─> DictionaryCommand.processFile(file: string, current: number, total: number): Promise<void> [applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:222]
+      └─> DictionaryCommand.processFile(file: string, current: number, total: number): Promise<void> [applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:230]
          ↳ Processes one workflow step for dictionary ingestion.
-        └─> DictionaryCommand.ingestLexeme(…): Promise<void> (cycle) [applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:353]
+        └─> DictionaryCommand.ingestLexeme(…): Promise<void> (cycle) [applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:415]
            ↳ Ingests one lemma by parsing its Wiktionary HTML into lexemes, saving relations, and recursively resolving…
-          └─> DictionaryCommand.processTranslationReferences(saved: Lexeme): Promise<void> (cycle) [applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:282]
+          └─> DictionaryCommand.processTranslationReferences(saved: Lexeme): Promise<void> (cycle) [applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:290]
              ↳ Processes one workflow step for dictionary ingestion.
             └─> LexemesService.parseLexemes(wiktionaryPage: WiktionaryPage): Promise<Lexeme[]> [applications/lexico-ingestion/src/modules/lexemes/lexemes.service.ts:307]
                ↳ Parses one Wiktionary page into lexemes by iterating `p:has(strong.Latn.headword)` sections and enriching each accepted…
@@ -172,15 +178,15 @@ What this project is judged against, as declared in its own `callidescope.config
 **2. `DictionaryCommand.run`** — depth ≥ 16 · decorated-method
 
 ```text
-🚀 DictionaryCommand.run(_arguments: string[], options: DictionaryCommandOptions): Promise<void> [applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:472]
+🚀 DictionaryCommand.run(_arguments: string[], options: DictionaryCommandOptions): Promise<void> [applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:485]
    ↳ Runs full dictionary ingestion for the selected lemma range, then applies manual entries.
-  └─> DictionaryCommand.ingestAll(startLemma?: string, endLemma?: string): Promise<void> [applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:319]
+  └─> DictionaryCommand.ingestAll(startLemma?: string, endLemma?: string): Promise<void> [applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:381]
      ↳ Iterates cached `data/wiktionary/*.json` pages within an optional lemma range and ingests each file into persisted…
-    └─> DictionaryCommand.processFile(file: string, current: number, total: number): Promise<void> [applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:222]
+    └─> DictionaryCommand.processFile(file: string, current: number, total: number): Promise<void> [applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:230]
        ↳ Processes one workflow step for dictionary ingestion.
-      └─> DictionaryCommand.ingestLexeme(…): Promise<void> (cycle) [applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:353]
+      └─> DictionaryCommand.ingestLexeme(…): Promise<void> (cycle) [applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:415]
          ↳ Ingests one lemma by parsing its Wiktionary HTML into lexemes, saving relations, and recursively resolving…
-        └─> DictionaryCommand.processTranslationReferences(saved: Lexeme): Promise<void> (cycle) [applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:282]
+        └─> DictionaryCommand.processTranslationReferences(saved: Lexeme): Promise<void> (cycle) [applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:290]
            ↳ Processes one workflow step for dictionary ingestion.
           └─> LexemesService.parseLexemes(wiktionaryPage: WiktionaryPage): Promise<Lexeme[]> [applications/lexico-ingestion/src/modules/lexemes/lexemes.service.ts:307]
              ↳ Parses one Wiktionary page into lexemes by iterating `p:has(strong.Latn.headword)` sections and enriching each accepted…
@@ -209,9 +215,9 @@ What this project is judged against, as declared in its own `callidescope.config
 **3. `LibraryCommand.run`** — depth ≥ 15 · decorated-method
 
 ```text
-🚀 LibraryCommand.run(_arguments: string[], options: LibraryCommandOptions): Promise<void> [applications/lexico-ingestion/src/modules/library/library.command.ts:466]
+🚀 LibraryCommand.run(_arguments: string[], options: LibraryCommandOptions): Promise<void> [applications/lexico-ingestion/src/modules/library/library.command.ts:428]
    ↳ Orchestrates provider execution with optional author/text scoping and progress logging.
-  └─> LibraryCommand.processProvider(…): Promise<void> [applications/lexico-ingestion/src/modules/library/library.command.ts:157]
+  └─> LibraryCommand.processProvider(…): Promise<void> [applications/lexico-ingestion/src/modules/library/library.command.ts:181]
      ↳ Processes one workflow step for library provider orchestration.
     └─> PerseusLibraryProvider.ingest(options?: { author?: string; text?: string; }): Promise<Author[]> [applications/lexico-ingestion/src/modules/library/providers/perseus-library.provider.ts:371]
        ↳ Fetch authors, works, and output markdown files to the data directory.
@@ -240,7 +246,7 @@ What this project is judged against, as declared in its own `callidescope.config
 ```
 
 <details>
-<summary>31 more call stacks</summary>
+<summary>23 more call stacks</summary>
 
 **4. `LatinLibraryCommand.run`** — depth ≥ 10 · decorated-method
 
@@ -302,62 +308,24 @@ What this project is judged against, as declared in its own `callidescope.config
                  ↳ Parses a Roman numeral string into its decimal integer value.
 ```
 
-**7. `LibraryCommand.parseAuthor`** — depth 7 · decorated-method
+**7. `LiteratureCommand.run`** — depth ≥ 6 · decorated-method
 
 ```text
-🚀 LibraryCommand.parseAuthor(author?: string, provider?: string): Promise<string | undefined> [applications/lexico-ingestion/src/modules/library/library.command.ts:368]
-   ↳ Resolves the optional `--author` filter from CLI input or interactive selection.
-  └─> LibraryCommand.getAuthorChoices(provider?: string): Promise<{ title: string; value: string; }[]> [applications/lexico-ingestion/src/modules/library/library.command.ts:79]
-     ↳ Resolves derived values needed by library provider orchestration.
-    └─> LibraryCommand.scanLibrary(…): Promise<{ authorSlug: string; fullPath: string; pathParts: string[]; provider: string; textSlug: string; title: string; }[]> [applications/lexico-ingestion/src/modules/library/library.command.ts:227]
-       ↳ Handles an internal workflow step for library provider orchestration.
-      └─> LibraryCommand.scanLibraryProvider(…): Promise<void> [applications/lexico-ingestion/src/modules/library/library.command.ts:297]
-         ↳ Handles an internal workflow step for library provider orchestration.
-        └─> LibraryCommand.scanLibraryAuthor(…): Promise<void> [applications/lexico-ingestion/src/modules/library/library.command.ts:271]
-           ↳ Handles an internal workflow step for library provider orchestration.
-          └─> LibraryCommand.walkLibraryDirectory(…): Promise<void> [applications/lexico-ingestion/src/modules/library/library.command.ts:326]
-             ↳ Processes one workflow step for library provider orchestration.
-            └─> LibraryCommand.pushTextEntry(…): void [applications/lexico-ingestion/src/modules/library/library.command.ts:191]
-               ↳ Handles an internal workflow step for library provider orchestration.
-```
-
-**8. `LibraryCommand.parseText`** — depth 7 · decorated-method
-
-```text
-🚀 LibraryCommand.parseText(…): Promise<string | undefined> [applications/lexico-ingestion/src/modules/library/library.command.ts:431]
-   ↳ Resolves the optional `--text` filter from CLI input or interactive selection.
-  └─> LibraryCommand.getTextChoices(…): Promise<{ title: string; value: string; }[]> [applications/lexico-ingestion/src/modules/library/library.command.ts:101]
-     ↳ Resolves derived values needed by library provider orchestration.
-    └─> LibraryCommand.scanLibrary(…): Promise<{ authorSlug: string; fullPath: string; pathParts: string[]; provider: string; textSlug: string; title: string; }[]> [applications/lexico-ingestion/src/modules/library/library.command.ts:227]
-       ↳ Handles an internal workflow step for library provider orchestration.
-      └─> LibraryCommand.scanLibraryProvider(…): Promise<void> [applications/lexico-ingestion/src/modules/library/library.command.ts:297]
-         ↳ Handles an internal workflow step for library provider orchestration.
-        └─> LibraryCommand.scanLibraryAuthor(…): Promise<void> [applications/lexico-ingestion/src/modules/library/library.command.ts:271]
-           ↳ Handles an internal workflow step for library provider orchestration.
-          └─> LibraryCommand.walkLibraryDirectory(…): Promise<void> [applications/lexico-ingestion/src/modules/library/library.command.ts:326]
-             ↳ Processes one workflow step for library provider orchestration.
-            └─> LibraryCommand.pushTextEntry(…): void [applications/lexico-ingestion/src/modules/library/library.command.ts:191]
-               ↳ Handles an internal workflow step for library provider orchestration.
-```
-
-**9. `LiteratureCommand.run`** — depth ≥ 6 · decorated-method
-
-```text
-🚀 LiteratureCommand.run(_arguments: string[], options: LiteratureCommandOptions): Promise<void> [applications/lexico-ingestion/src/modules/literature/literature.command.ts:257]
+🚀 LiteratureCommand.run(_arguments: string[], options: LiteratureCommandOptions): Promise<void> [applications/lexico-ingestion/src/modules/literature/literature.command.ts:218]
    ↳ Runs literature ingestion for the selected provider/author/text scope.
-  └─> LiteratureCommand.parseProvider(provider?: string): Promise<string | undefined> [applications/lexico-ingestion/src/modules/literature/literature.command.ts:188]
-     ↳ Resolves the optional `--provider` filter from CLI input or interactive selection.
-    └─> LiteratureCommand.getProviderChoices(): Promise<{ title: string; value: string; }[]> [applications/lexico-ingestion/src/modules/literature/literature.command.ts:91]
-       ↳ Gets provider choices used by literature ingestion.
-      └─> LiteratureService.scanLibrary(): Promise<LibraryEntry[]> [applications/lexico-ingestion/src/modules/literature/literature.service.ts:507]
-         ↳ Scans the local library directory and returns discovered text entries.
-        └─> LiteratureLibraryScanService.scanLibrary(): Promise<LibraryEntry[]> [applications/lexico-ingestion/src/modules/literature/literature-library-scan.service.ts:84]
-           ↳ Walks the library data directory and collects text file metadata.
-          └─> LiteratureLibraryScanService.walkLibraryDirectory(…): Promise<void> [applications/lexico-ingestion/src/modules/literature/literature-library-scan.service.ts:41]
-             ↳ Recursively walks one provider directory and collects markdown entries.
+  └─> LiteratureService.ingestAllAuthors(textsToIngest: LibraryEntry[]): Promise<void> [applications/lexico-ingestion/src/modules/literature/literature.service.ts:489]
+     ↳ Ingests all selected texts grouped by author.
+    └─> LiteratureService.ingestAuthorGroup(authorSlug: string, texts: LibraryEntry[]): Promise<void> [applications/lexico-ingestion/src/modules/literature/literature.service.ts:211]
+       ↳ Ingests author group in the literature ingestion pipeline.
+      └─> LiteratureService.ingestTextChunks(…): Promise<void> [applications/lexico-ingestion/src/modules/literature/literature.service.ts:298]
+         ↳ Ingests text chunks in the literature ingestion pipeline.
+        └─> LiteratureTextIngestionService.ingestTextWithLogging(…): Promise<void> [applications/lexico-ingestion/src/modules/literature/literature-text-ingestion.service.ts:57]
+           ↳ Runs ingestion for one text entry with standardized start, error, and completion logs.
+          └─> LiteratureTextIngestionService.resolveParentText(…): Text | undefined [applications/lexico-ingestion/src/modules/literature/literature-text-ingestion.service.ts:40]
+             ↳ Resolves the parent text for the current entry path, if present.
 ```
 
-**10. `PartOfSpeechService.generic`** — depth ≥ 6 · orphan-root
+**8. `PartOfSpeechService.generic`** — depth ≥ 6 · orphan-root
 
 ```text
 🚀 PartOfSpeechService.generic(): unknown [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:445]
@@ -373,7 +341,7 @@ What this project is judged against, as declared in its own `callidescope.config
              ↳ Checks whether generic form cell in part-of-speech parsing logic.
 ```
 
-**11. `PartOfSpeechService.verb`** — depth ≥ 6 · orphan-root
+**9. `PartOfSpeechService.verb`** — depth ≥ 6 · orphan-root
 
 ```text
 🚀 PartOfSpeechService.verb(): unknown [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:447]
@@ -389,7 +357,7 @@ What this project is judged against, as declared in its own `callidescope.config
              ↳ Checks whether verb form cell in part-of-speech parsing logic.
 ```
 
-**12. `EpigraphikDatenbankClaussSlabyCommand.run`** — depth 5 · decorated-method
+**10. `EpigraphikDatenbankClaussSlabyCommand.run`** — depth 5 · decorated-method
 
 ```text
 🚀 EpigraphikDatenbankClaussSlabyCommand.run(): Promise<void> [applications/lexico-ingestion/src/modules/epigraphik-datenbank-clauss-slaby/epigraphik-datenbank-clauss-slaby.command.ts:137]
@@ -403,52 +371,7 @@ What this project is judged against, as declared in its own `callidescope.config
         └─> EpigraphikDatenbankClaussSlabyCommand.anonymous(resolve: (value: unknown) => void): void [applications/lexico-ingestion/src/modules/epigraphik-datenbank-clauss-slaby/epigraphik-datenbank-clauss-slaby.command.ts:128]
 ```
 
-**13. `LiteratureCommand.parseAuthor`** — depth 5 · decorated-method
-
-```text
-🚀 LiteratureCommand.parseAuthor(author?: string, provider?: string): Promise<string | undefined> [applications/lexico-ingestion/src/modules/literature/literature.command.ts:153]
-   ↳ Resolves the optional `--author` filter from CLI input or interactive selection.
-  └─> LiteratureCommand.getAuthorChoices(provider?: string): Promise<{ title: string; value: string; }[]> [applications/lexico-ingestion/src/modules/literature/literature.command.ts:75]
-     ↳ Gets author choices used by literature ingestion.
-    └─> LiteratureService.scanLibrary(): Promise<LibraryEntry[]> [applications/lexico-ingestion/src/modules/literature/literature.service.ts:507]
-       ↳ Scans the local library directory and returns discovered text entries.
-      └─> LiteratureLibraryScanService.scanLibrary(): Promise<LibraryEntry[]> [applications/lexico-ingestion/src/modules/literature/literature-library-scan.service.ts:84]
-         ↳ Walks the library data directory and collects text file metadata.
-        └─> LiteratureLibraryScanService.walkLibraryDirectory(…): Promise<void> [applications/lexico-ingestion/src/modules/literature/literature-library-scan.service.ts:41]
-           ↳ Recursively walks one provider directory and collects markdown entries.
-```
-
-**14. `LiteratureCommand.parseProvider`** — depth 5 · decorated-method
-
-```text
-🚀 LiteratureCommand.parseProvider(provider?: string): Promise<string | undefined> [applications/lexico-ingestion/src/modules/literature/literature.command.ts:188]
-   ↳ Resolves the optional `--provider` filter from CLI input or interactive selection.
-  └─> LiteratureCommand.getProviderChoices(): Promise<{ title: string; value: string; }[]> [applications/lexico-ingestion/src/modules/literature/literature.command.ts:91]
-     ↳ Gets provider choices used by literature ingestion.
-    └─> LiteratureService.scanLibrary(): Promise<LibraryEntry[]> [applications/lexico-ingestion/src/modules/literature/literature.service.ts:507]
-       ↳ Scans the local library directory and returns discovered text entries.
-      └─> LiteratureLibraryScanService.scanLibrary(): Promise<LibraryEntry[]> [applications/lexico-ingestion/src/modules/literature/literature-library-scan.service.ts:84]
-         ↳ Walks the library data directory and collects text file metadata.
-        └─> LiteratureLibraryScanService.walkLibraryDirectory(…): Promise<void> [applications/lexico-ingestion/src/modules/literature/literature-library-scan.service.ts:41]
-           ↳ Recursively walks one provider directory and collects markdown entries.
-```
-
-**15. `LiteratureCommand.parseText`** — depth 5 · decorated-method
-
-```text
-🚀 LiteratureCommand.parseText(…): Promise<string | undefined> [applications/lexico-ingestion/src/modules/literature/literature.command.ts:218]
-   ↳ Resolves the optional `--text` filter from CLI input or interactive selection.
-  └─> LiteratureCommand.getTextChoices(…): Promise<{ title: string; value: string; }[]> [applications/lexico-ingestion/src/modules/literature/literature.command.ts:104]
-     ↳ Gets text choices used by literature ingestion.
-    └─> LiteratureService.scanLibrary(): Promise<LibraryEntry[]> [applications/lexico-ingestion/src/modules/literature/literature.service.ts:507]
-       ↳ Scans the local library directory and returns discovered text entries.
-      └─> LiteratureLibraryScanService.scanLibrary(): Promise<LibraryEntry[]> [applications/lexico-ingestion/src/modules/literature/literature-library-scan.service.ts:84]
-         ↳ Walks the library data directory and collects text file metadata.
-        └─> LiteratureLibraryScanService.walkLibraryDirectory(…): Promise<void> [applications/lexico-ingestion/src/modules/literature/literature-library-scan.service.ts:41]
-           ↳ Recursively walks one provider directory and collects markdown entries.
-```
-
-**16. `PartOfSpeechService.adjective`** — depth ≥ 5 · orphan-root
+**11. `PartOfSpeechService.adjective`** — depth ≥ 5 · orphan-root
 
 ```text
 🚀 PartOfSpeechService.adjective(): Inflection [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:418]
@@ -461,7 +384,7 @@ What this project is judged against, as declared in its own `callidescope.config
         └─> PartOfSpeechService.find(…)(value: ValueType): value is ValueType [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:133]
 ```
 
-**17. `PartOfSpeechService.noun`** — depth ≥ 5 · orphan-root
+**12. `PartOfSpeechService.noun`** — depth ≥ 5 · orphan-root
 
 ```text
 🚀 PartOfSpeechService.noun(): Inflection [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:420]
@@ -474,7 +397,7 @@ What this project is judged against, as declared in its own `callidescope.config
         └─> PartOfSpeechService.find(…)(value: ValueType): value is ValueType [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:133]
 ```
 
-**18. `CorpusScriptorumEcclesiasticorumLatinorumCommand.run`** — depth 4 · decorated-method
+**13. `CorpusScriptorumEcclesiasticorumLatinorumCommand.run`** — depth 4 · decorated-method
 
 ```text
 🚀 CorpusScriptorumEcclesiasticorumLatinorumCommand.run(): Promise<void> [applications/lexico-ingestion/src/modules/corpus-scriptorum-ecclesiasticorum-latinorum/corpus-scriptorum-ecclesiasticorum-latinorum.command.ts:127]
@@ -486,7 +409,7 @@ What this project is judged against, as declared in its own `callidescope.config
       └─> CorpusScriptorumEcclesiasticorumLatinorumCommand.anonymous(resolve: (value: unknown) => void): void [applications/lexico-ingestion/src/modules/corpus-scriptorum-ecclesiasticorum-latinorum/corpus-scriptorum-ecclesiasticorum-latinorum.command.ts:88]
 ```
 
-**19. `PerseusCommand.run`** — depth 4 · decorated-method
+**14. `PerseusCommand.run`** — depth 4 · decorated-method
 
 ```text
 🚀 PerseusCommand.run(): Promise<void> [applications/lexico-ingestion/src/modules/perseus/perseus.command.ts:133]
@@ -498,7 +421,7 @@ What this project is judged against, as declared in its own `callidescope.config
       └─> PerseusCommand.anonymous(resolve: (value: unknown) => void): void [applications/lexico-ingestion/src/modules/perseus/perseus.command.ts:92]
 ```
 
-**20. `PartOfSpeechService.preposition`** — depth ≥ 4 · orphan-root
+**15. `PartOfSpeechService.preposition`** — depth ≥ 4 · orphan-root
 
 ```text
 🚀 PartOfSpeechService.preposition(): Inflection [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:422]
@@ -509,7 +432,7 @@ What this project is judged against, as declared in its own `callidescope.config
       └─> PartOfSpeechService.find(…)(value: ValueType): value is ValueType [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:133]
 ```
 
-**21. `PartOfSpeechService.pronoun`** — depth ≥ 4 · orphan-root
+**16. `PartOfSpeechService.pronoun`** — depth ≥ 4 · orphan-root
 
 ```text
 🚀 PartOfSpeechService.pronoun(): Inflection [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:423]
@@ -520,7 +443,7 @@ What this project is judged against, as declared in its own `callidescope.config
       └─> PartOfSpeechService.find(…)(value: ValueType): value is ValueType [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:133]
 ```
 
-**22. `PartOfSpeechService.verb`** — depth ≥ 4 · orphan-root
+**17. `PartOfSpeechService.verb`** — depth ≥ 4 · orphan-root
 
 ```text
 🚀 PartOfSpeechService.verb(): Inflection [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:425]
@@ -531,37 +454,7 @@ What this project is judged against, as declared in its own `callidescope.config
       └─> PartOfSpeechService.find(…)(value: ValueType): value is ValueType [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:133]
 ```
 
-**23. `DictionaryCommand.parseEndLemma`** — depth 3 · decorated-method
-
-```text
-🚀 DictionaryCommand.parseEndLemma(endLemma?: string, startLemma?: null | string): Promise<string | undefined> [applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:399]
-   ↳ Resolves the optional end-lemma boundary, validating it against available cache files.
-  └─> DictionaryCommand.getLemmaChoices(): { title: string; value: string; }[] [applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:75]
-     ↳ Resolves derived values needed by dictionary ingestion.
-    └─> DictionaryCommand.map(…)(file: string): { title: string; value: string; } [applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:82]
-```
-
-**24. `DictionaryCommand.parseStartLemma`** — depth 3 · decorated-method
-
-```text
-🚀 DictionaryCommand.parseStartLemma(startLemma?: string): Promise<string | undefined> [applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:437]
-   ↳ Resolves the optional start-lemma boundary, validating it against available cache files.
-  └─> DictionaryCommand.getLemmaChoices(): { title: string; value: string; }[] [applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:75]
-     ↳ Resolves derived values needed by dictionary ingestion.
-    └─> DictionaryCommand.map(…)(file: string): { title: string; value: string; } [applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:82]
-```
-
-**25. `LibraryCommand.parseProvider`** — depth 3 · decorated-method
-
-```text
-🚀 LibraryCommand.parseProvider(provider?: string): Promise<string | undefined> [applications/lexico-ingestion/src/modules/library/library.command.ts:401]
-   ↳ Resolves the optional `--provider` filter from CLI input or interactive selection.
-  └─> LibraryCommand.getProviderChoices(): { title: string; value: string; }[] [applications/lexico-ingestion/src/modules/library/library.command.ts:93]
-     ↳ Resolves derived values needed by library provider orchestration.
-    └─> LibraryCommand.map(…)(p: LibrarySourceProvider): string [applications/lexico-ingestion/src/modules/library/library.command.ts:94]
-```
-
-**26. `PartOfSpeechService.adverb`** — depth 3 · orphan-root
+**18. `PartOfSpeechService.adverb`** — depth 3 · orphan-root
 
 ```text
 🚀 PartOfSpeechService.adverb(): unknown [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:444]
@@ -571,7 +464,7 @@ What this project is judged against, as declared in its own `callidescope.config
        ↳ Gets text or empty used by part-of-speech parsing.
 ```
 
-**27. `ClearCommand.run`** — depth 2 · decorated-method
+**19. `ClearCommand.run`** — depth 2 · decorated-method
 
 ```text
 🚀 ClearCommand.run(_passedParameters: string[], options: ClearCommandOptions): Promise<void> [applications/lexico-ingestion/src/modules/clear/clear.command.ts:138]
@@ -580,14 +473,14 @@ What this project is judged against, as declared in its own `callidescope.config
      ↳ Parses prompt output into strongly typed clear options.
 ```
 
-**28. `normalizeStringArray`** — depth 2 · orphan-root
+**20. `normalizeStringArray`** — depth 2 · orphan-root
 
 ```text
 🚀 normalizeStringArray(…): string[] [applications/lexico-ingestion/src/modules/forms/forms.constants.ts:21]
   └─> isNormalizableStringArray(…): boolean [applications/lexico-ingestion/src/modules/forms/forms.constants.ts:17]
 ```
 
-**29. `FormsService.setTransientWords`** — depth 2 · orphan-root
+**21. `FormsService.setTransientWords`** — depth 2 · orphan-root
 
 ```text
 🚀 FormsService.setTransientWords(form: Form, words: string[]): void [applications/lexico-ingestion/src/modules/forms/forms.service.ts:159]
@@ -596,14 +489,14 @@ What this project is judged against, as declared in its own `callidescope.config
      ↳ Associates a list of transient words with a given Form entity.
 ```
 
-**30. `compactStringValues`** — depth 2 · orphan-root
+**22. `compactStringValues`** — depth 2 · orphan-root
 
 ```text
 🚀 compactStringValues(…): string[] [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.constants.ts:17]
   └─> isCompactStringArray(…): boolean [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.constants.ts:13]
 ```
 
-**31. `PartOfSpeechService.adverb`** — depth 2 · orphan-root
+**23. `PartOfSpeechService.adverb`** — depth 2 · orphan-root
 
 ```text
 🚀 PartOfSpeechService.adverb(): Inflection [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:419]
@@ -611,7 +504,7 @@ What this project is judged against, as declared in its own `callidescope.config
      ↳ Ingests adverb inflection in the part-of-speech parsing pipeline.
 ```
 
-**32. `PartOfSpeechService.prefix`** — depth 2 · orphan-root
+**24. `PartOfSpeechService.prefix`** — depth 2 · orphan-root
 
 ```text
 🚀 PartOfSpeechService.prefix(): Inflection [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:421]
@@ -619,7 +512,7 @@ What this project is judged against, as declared in its own `callidescope.config
      ↳ Ingests prefix inflection in the part-of-speech parsing pipeline.
 ```
 
-**33. `PartOfSpeechService.uninflected`** — depth 2 · orphan-root
+**25. `PartOfSpeechService.uninflected`** — depth 2 · orphan-root
 
 ```text
 🚀 PartOfSpeechService.uninflected(): Inflection [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:424]
@@ -627,7 +520,7 @@ What this project is judged against, as declared in its own `callidescope.config
      ↳ Ingests conjunction inflection in the part-of-speech parsing pipeline.
 ```
 
-**34. `PartOfSpeechService.anonymous`** — depth 2 · orphan-root
+**26. `PartOfSpeechService.anonymous`** — depth 2 · orphan-root
 
 ```text
 🚀 PartOfSpeechService.anonymous(): Inflection [applications/lexico-ingestion/src/modules/part-of-speech/part-of-speech.service.ts:427]
@@ -646,27 +539,29 @@ What this project is judged against, as declared in its own `callidescope.config
 | `LexemesService.enrichLexeme` | 7 | `PrincipalPartsService.parsePrincipalParts`, `PartOfSpeechService.ingestInflection`, `TranslationsService.parseTranslations`, `EtymologyService.parse`, `PronunciationService.parse`, `PartOfSpeechService.parseForms`, `FormsBuilderService.buildFormsForPartOfSpeech` | `applications/lexico-ingestion/src/modules/lexemes/lexemes.service.ts:73` |
 
 <details>
-<summary>280 more callables</summary>
+<summary>277 more callables</summary>
 
 | Callable | Breadth | Calls directly | Location |
 | --- | --- | --- | --- |
-| `ManualService.ingestManual` | 7 | `ManualService.deleteManual`, `ManualService.createManual`, `buildHicTemplate`, `buildIlleTemplate`, `buildOmnisTemplate`, `ManualService.ingestPraenomenAbbreviations`, `ManualService.ingestRomanNumerals` | `applications/lexico-ingestion/src/modules/manual/manual.service.ts:190` |
+| `ManualService.ingestManual` | 7 | `ManualService.deleteManual`, `ManualService.createManual`, `buildHicTemplate`, `buildIlleTemplate`, `buildOmnisTemplate`, `ManualService.ingestPraenomenAbbreviations`, `ManualService.ingestRomanNumerals` | `applications/lexico-ingestion/src/modules/manual/manual.service.ts:191` |
+| `LiteratureCommand.run` | 7 | `LiteratureService.scanLibrary`, `LiteratureCommand.resolveFilter`, `LiteratureCommand.getProviderChoices`, `LiteratureCommand.getAuthorChoices`, `LiteratureCommand.getTextChoices`, `LiteratureCommand.selectTextsToIngest`, `LiteratureService.ingestAllAuthors` | `applications/lexico-ingestion/src/modules/literature/literature.command.ts:218` |
 | `FormsService.ingestLexemeForms` | 6 | `FormsService.findExistingFormsByLexemeId`, `FormsService.preserveMatchingExistingFormIdentity`, `FormsService.map(…)`, `FormsService.saveFormsForLexeme`, `FormsService.buildFormsByNormalizedWordMap`, `WordsService.upsertWordsAndJunctions` | `applications/lexico-ingestion/src/modules/forms/forms.service.ts:129` |
 | `PronunciationClassicalService.processClassicalCharacter` | 6 | `PronunciationClassicalService.classifyClassicalH`, `PronunciationClassicalService.classifyClassicalI`, `PronunciationClassicalService.classifyClassicalJ`, `PronunciationClassicalService.classifyClassicalN`, `PronunciationClassicalService.lookupClassicalDevocalizeCharacter`, `PronunciationClassicalService.lookupMultiCharacterPhoneme` | `applications/lexico-ingestion/src/modules/pronunciation/pronunciation-classical.service.ts:140` |
 | `LexemesService.saveLexemeRelations` | 6 | `LexemesService.saveInflection`, `PrincipalPartsService.ingestLexemePrincipalParts`, `PronunciationService.ingestLexemePronunciations`, `LexemesService.saveTranslations`, `FormsService.ingestLexemeForms`, `WordsService.ingestLexemeWords` | `applications/lexico-ingestion/src/modules/lexemes/lexemes.service.ts:218` |
+| `LibraryCommand.parseIngestOptions` | 6 | `LibraryCommand.getProviderChoices`, `getOptionText`, `requireChoice`, `selectChoice`, `LibraryCommand.getAuthorChoices`, `LibraryCommand.getTextChoices` | `applications/lexico-ingestion/src/modules/library/library.command.ts:143` |
 | `LatinLibraryProvider.processTextLink` | 6 | `LatinLibraryBuilder.isSkippedHref`, `LatinLibraryBuilder.isTextFileHref`, `LatinLibraryBuilder.isExternalOrSelfLink`, `LatinLibraryBuilder.findRawBookHeading`, `LatinLibraryBuilder.buildTextEntityForLink`, `LatinLibraryProvider.addTextToBook` | `applications/lexico-ingestion/src/modules/library/providers/latin-library.provider.ts:211` |
 | `LatinLibraryProvider.writeWorkText` | 6 | `LatinLibraryProvider.getMetadataString`, `LatinLibraryProvider.readSourceCacheFile`, `LatinLibraryBuilder.parseWorkParagraphs`, `hasValidTextContent`, `LatinLibraryBuilder.buildWorkMarkdownContent`, `LatinLibraryProvider.saveWorkTextMarkdown` | `applications/lexico-ingestion/src/modules/library/providers/latin-library.provider.ts:368` |
 | `LiteratureService.ingestLines` | 6 | `LiteratureService.getWordsCache`, `LiteratureService.filter(…)`, `LiteratureService.map(…)`, `LiteratureService.upsertAndFetchLines`, `LiteratureService.extractTokensFromLine`, `LiteratureService.upsertTokens` | `applications/lexico-ingestion/src/modules/literature/literature.service.ts:241` |
-| `LiteratureCommand.run` | 6 | `LiteratureService.scanLibrary`, `LiteratureCommand.parseProvider`, `LiteratureCommand.parseAuthor`, `LiteratureCommand.parseText`, `LiteratureCommand.selectTextsToIngest`, `LiteratureService.ingestAllAuthors` | `applications/lexico-ingestion/src/modules/literature/literature.command.ts:257` |
 | `WordsService.ingestLexemeWords` | 5 | `WordsService.getLexemeWords`, `WordsService.filter(…)`, `WordsService.map(…)`, `WordsService.map(…)`, `WordsService.map(…)` | `applications/lexico-ingestion/src/modules/words/words.service.ts:127` |
 | `WordsService.upsertWordsAndJunctions` | 5 | `WordsService.map(…)`, `WordsService.map(…)`, `WordsService.map(…)`, `WordsService.insertWordFormChunks`, `WordsService.buildWordFormValues` | `applications/lexico-ingestion/src/modules/words/words.service.ts:175` |
 | `FormsBuilderService.buildVerbFormsFromRaw` | 5 | `FormsBuilderGuardsService.isRecord`, `FormsBuilderGuardsService.isFormMood`, `FormsBuilderService.buildFiniteVoiceForms`, `FormsBuilderService.buildVerbNonFiniteForms`, `FormsBuilderService.buildVerbNounForms` | `applications/lexico-ingestion/src/modules/forms/forms-builder.service.ts:394` |
-| `DictionaryCommand.processTranslationReferences` | 5 | `TranslationsService.extractTranslationReferences`, `LexemesService.existsByLemma`, `DictionaryCommand.ingestLexeme`, `TranslationsService.findTranslationsWithReferences`, `DictionaryCommand.ingestTranslationReference` | `applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:282` |
+| `DictionaryCommand.processTranslationReferences` | 5 | `TranslationsService.extractTranslationReferences`, `LexemesService.existsByLemma`, `DictionaryCommand.ingestLexeme`, `TranslationsService.findTranslationsWithReferences`, `DictionaryCommand.ingestTranslationReference` | `applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:290` |
+| `DictionaryCommand.resolveEndLemma` | 5 | `DictionaryCommand.filter(…)`, `DictionaryCommand.getLemmaChoices`, `getOptionText`, `requireChoice`, `selectChoice` | `applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:328` |
 | `LatinLibraryCommand.run` | 5 | `LatinLibraryCommand.fetchAndCachePage`, `LatinLibraryCommand.getAuthorUrls`, `LatinLibraryCommand.getFinalAuthorUrls`, `LatinLibraryCommand.enqueueAuthorUrls`, `LatinLibraryCommand.from(…)` | `applications/lexico-ingestion/src/modules/latin-library/latin-library.command.ts:381` |
-| `LibraryCommand.getTextChoices` | 5 | `LibraryCommand.scanLibrary`, `LibraryCommand.filter(…)`, `LibraryCommand.filter(…)`, `LibraryCommand.map(…)`, `LibraryCommand.map(…)` | `applications/lexico-ingestion/src/modules/library/library.command.ts:101` |
+| `LibraryCommand.getTextChoices` | 5 | `LibraryCommand.scanLibrary`, `LibraryCommand.filter(…)`, `LibraryCommand.filter(…)`, `LibraryCommand.map(…)`, `LibraryCommand.map(…)` | `applications/lexico-ingestion/src/modules/library/library.command.ts:107` |
 | `CorpusScriptorumEcclesiasticorumLatinorumLibraryProvider.processSourceXmlFile` | 5 | `CorpusScriptorumEcclesiasticorumLatinorumLibraryProvider.parseSourceXmlFile`, `CorpusScriptorumEcclesiasticorumLatinorumLibraryProvider.getOrCreateAuthor`, `CorpusScriptorumEcclesiasticorumLatinorumLibraryProvider.writeSourceTextForAuthor`, `CorpusScriptorumEcclesiasticorumLatinorumLibraryProvider.anonymous`, `CorpusScriptorumEcclesiasticorumLatinorumLibraryProvider.logSourceProgress` | `applications/lexico-ingestion/src/modules/library/providers/corpus-scriptorum-ecclesiasticorum-latinorum-library.provider.ts:238` |
 | `PerseusLibraryProvider.processSourceXmlFile` | 5 | `PerseusLibraryProvider.loadSourceXmlFile`, `PerseusLibraryProvider.isFilteredOut`, `PerseusLibraryProvider.extractPerseusMetadata`, `PerseusLibraryProvider.getOrCreatePerseusAuthor`, `PerseusLibraryProvider.writeSourceTextForAuthor` | `applications/lexico-ingestion/src/modules/library/providers/perseus-library.provider.ts:219` |
-| `LiteratureCommand.getTextChoices` | 5 | `LiteratureService.scanLibrary`, `LiteratureCommand.filter(…)`, `LiteratureCommand.filter(…)`, `LiteratureCommand.map(…)`, `LiteratureCommand.map(…)` | `applications/lexico-ingestion/src/modules/literature/literature.command.ts:104` |
+| `LiteratureCommand.getTextChoices` | 5 | `LiteratureService.scanLibrary`, `LiteratureCommand.filter(…)`, `LiteratureCommand.filter(…)`, `LiteratureCommand.map(…)`, `LiteratureCommand.map(…)` | `applications/lexico-ingestion/src/modules/literature/literature.command.ts:109` |
 | `LexicoIngestionCommand.executeStages` | 5 | `WiktionaryCommand.run`, `DictionaryCommand.ingestAll`, `LexicoIngestionCommand.runLibrarySourcesStage`, `LibraryCommand.run`, `LiteratureCommand.run` | `applications/lexico-ingestion/src/modules/lexico-ingestion/lexico-ingestion.command.ts:54` |
 | `CorpusScriptorumEcclesiasticorumLatinorumCommand.run` | 4 | `CorpusScriptorumEcclesiasticorumLatinorumCommand.fetchTree`, `CorpusScriptorumEcclesiasticorumLatinorumCommand.map(…)`, `CorpusScriptorumEcclesiasticorumLatinorumCommand.filter(…)`, `CorpusScriptorumEcclesiasticorumLatinorumCommand.downloadSourceXmlFileIfMissing` | `applications/lexico-ingestion/src/modules/corpus-scriptorum-ecclesiasticorum-latinorum/corpus-scriptorum-ecclesiasticorum-latinorum.command.ts:127` |
 | `FormsBuilderService.buildAdjectivalNumberForms` | 4 | `FormsBuilderGuardsService.isFormCase`, `FormsBuilderGuardsService.isFormNumber`, `FormsBuilderGuardsService.isStringArray`, `FormsBuilderService.createAdjectivalForm` | `applications/lexico-ingestion/src/modules/forms/forms-builder.service.ts:112` |
@@ -679,17 +574,18 @@ What this project is judged against, as declared in its own `callidescope.config
 | `TranslationsService.parseTranslations` | 4 | `TranslationsService.capitalizeFirstLetter`, `TranslationsService.map(…)`, `Translation.constructor`, `TranslationsService.filter(…)` | `applications/lexico-ingestion/src/modules/translations/translations.service.ts:96` |
 | `LexemesService.parseLexemeFromElement` | 4 | `PartOfSpeechService.getPartOfSpeech`, `PartOfSpeechService.getFirstPrincipalPartName`, `LexemesService.buildLexeme`, `LexemesService.enrichLexeme` | `applications/lexico-ingestion/src/modules/lexemes/lexemes.service.ts:146` |
 | `ManualService.ingestRomanNumerals` | 4 | `NumeralsService.toRoman`, `buildRomanNumeralTemplate`, `Translation.constructor`, `ManualService.createManual` | `applications/lexico-ingestion/src/modules/manual/manual.service.ts:117` |
-| `DictionaryCommand.processTranslationMatch` | 4 | `LexemesService.findLexemesByLemmaWithTranslations`, `DictionaryCommand.normalize`, `DictionaryCommand.find(…)`, `DictionaryCommand.map(…)` | `applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:247` |
-| `DictionaryCommand.ingestLexeme` | 4 | `DictionaryCommand.getPageForLexeme`, `LexemesService.parseLexemes`, `LexemesService.saveParsedLexeme`, `DictionaryCommand.processTranslationReferences` | `applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:353` |
-| `DictionaryCommand.run` | 4 | `DictionaryCommand.parseStartLemma`, `DictionaryCommand.parseEndLemma`, `DictionaryCommand.ingestAll`, `ManualService.ingestManual` | `applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:472` |
+| `DictionaryCommand.processTranslationMatch` | 4 | `LexemesService.findLexemesByLemmaWithTranslations`, `DictionaryCommand.normalize`, `DictionaryCommand.find(…)`, `DictionaryCommand.map(…)` | `applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:255` |
+| `DictionaryCommand.resolveStartLemma` | 4 | `DictionaryCommand.getLemmaChoices`, `getOptionText`, `requireChoice`, `selectChoice` | `applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:356` |
+| `DictionaryCommand.ingestLexeme` | 4 | `DictionaryCommand.getPageForLexeme`, `LexemesService.parseLexemes`, `LexemesService.saveParsedLexeme`, `DictionaryCommand.processTranslationReferences` | `applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:415` |
+| `DictionaryCommand.run` | 4 | `DictionaryCommand.resolveStartLemma`, `DictionaryCommand.resolveEndLemma`, `DictionaryCommand.ingestAll`, `ManualService.ingestManual` | `applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:485` |
 | `LatinLibraryCommand.processQueueUrl` | 4 | `LatinLibraryCommand.fetchAndCachePage`, `LatinLibraryCommand.isParsableHtmlExtension`, `LatinLibraryCommand.getBaseUrl`, `LatinLibraryCommand.parseHtmlForLinks` | `applications/lexico-ingestion/src/modules/latin-library/latin-library.command.ts:345` |
-| `LibraryCommand.getAuthorChoices` | 4 | `LibraryCommand.scanLibrary`, `LibraryCommand.filter(…)`, `LibraryCommand.map(…)`, `LibraryCommand.map(…)` | `applications/lexico-ingestion/src/modules/library/library.command.ts:79` |
-| `LibraryCommand.processProvider` | 4 | `CorpusScriptorumEcclesiasticorumLatinorumLibraryProvider.ingest`, `EpigraphikDatenbankClaussSlabyLibraryProvider.ingest`, `LatinLibraryProvider.ingest`, `PerseusLibraryProvider.ingest` | `applications/lexico-ingestion/src/modules/library/library.command.ts:157` |
+| `LibraryCommand.getAuthorChoices` | 4 | `LibraryCommand.scanLibrary`, `LibraryCommand.filter(…)`, `LibraryCommand.map(…)`, `LibraryCommand.map(…)` | `applications/lexico-ingestion/src/modules/library/library.command.ts:85` |
+| `LibraryCommand.processProvider` | 4 | `CorpusScriptorumEcclesiasticorumLatinorumLibraryProvider.ingest`, `EpigraphikDatenbankClaussSlabyLibraryProvider.ingest`, `LatinLibraryProvider.ingest`, `PerseusLibraryProvider.ingest` | `applications/lexico-ingestion/src/modules/library/library.command.ts:181` |
 | `EpigraphikDatenbankClaussSlabyLibraryProvider.ingest` | 4 | `EpigraphikDatenbankClaussSlabyLibraryProvider.createSourceAuthor`, `EpigraphikDatenbankClaussSlabyLibraryProvider.readSourceChunkFiles`, `EpigraphikDatenbankClaussSlabyLibraryProvider.processSourceChunkPhase`, `EpigraphikDatenbankClaussSlabyLibraryProvider.saveEdcsProvincePhase` | `applications/lexico-ingestion/src/modules/library/providers/epigraphik-datenbank-clauss-slaby-library.provider.ts:305` |
 | `LatinLibraryProvider.processAuthorPage` | 4 | `LatinLibraryProvider.getMetadataString`, `LatinLibraryProvider.readSourceCacheFile`, `LatinLibraryBuilder.extractAuthorPageMetadata`, `LatinLibraryProvider.collectAuthorTexts` | `applications/lexico-ingestion/src/modules/library/providers/latin-library.provider.ts:180` |
 | `LiteratureService.ingestText` | 4 | `LiteratureService.parseFrontmatter`, `LiteratureService.getMetadataRecord`, `LiteratureService.saveTextToDatabase`, `LiteratureService.ingestLines` | `applications/lexico-ingestion/src/modules/literature/literature.service.ts:270` |
-| `LiteratureCommand.getAuthorChoices` | 4 | `LiteratureService.scanLibrary`, `LiteratureCommand.filter(…)`, `LiteratureCommand.map(…)`, `LiteratureCommand.map(…)` | `applications/lexico-ingestion/src/modules/literature/literature.command.ts:75` |
-| `LiteratureCommand.selectTextsToIngest` | 4 | `LiteratureCommand.filter(…)`, `LiteratureCommand.filter(…)`, `LiteratureCommand.filter(…)`, `LiteratureCommand.deduplicateByProvider` | `applications/lexico-ingestion/src/modules/literature/literature.command.ts:128` |
+| `LiteratureCommand.getAuthorChoices` | 4 | `LiteratureService.scanLibrary`, `LiteratureCommand.filter(…)`, `LiteratureCommand.map(…)`, `LiteratureCommand.map(…)` | `applications/lexico-ingestion/src/modules/literature/literature.command.ts:82` |
+| `LiteratureCommand.selectTextsToIngest` | 4 | `LiteratureCommand.filter(…)`, `LiteratureCommand.filter(…)`, `LiteratureCommand.filter(…)`, `LiteratureCommand.deduplicateByProvider` | `applications/lexico-ingestion/src/modules/literature/literature.command.ts:155` |
 | `LexicoIngestionCommand.runLibrarySourcesStage` | 4 | `PerseusCommand.run`, `LatinLibraryCommand.run`, `CorpusScriptorumEcclesiasticorumLatinorumCommand.run`, `EpigraphikDatenbankClaussSlabyCommand.run` | `applications/lexico-ingestion/src/modules/lexico-ingestion/lexico-ingestion.command.ts:149` |
 | `ClearCommand.run` | 3 | `ClearCommand.parsePromptResponse`, `ClearCommand.clearLiterature`, `ClearCommand.clearDictionary` | `applications/lexico-ingestion/src/modules/clear/clear.command.ts:138` |
 | `FormsBuilderVerbService.collectParticipleFormsForTense` | 3 | `FormsBuilderGuardsService.isFormNonFiniteTense`, `FormsBuilderGuardsService.isRecord`, `FormsBuilderGuardsService.isFormGender` | `applications/lexico-ingestion/src/modules/forms/forms-builder-verb.service.ts:77` |
@@ -715,11 +611,9 @@ What this project is judged against, as declared in its own `callidescope.config
 | `buildIlleTemplate` | 3 | `buildGenderedPrincipalParts`, `Translation.constructor`, `buildAdjectivalForms` | `applications/lexico-ingestion/src/modules/manual/manual.utilities.ts:116` |
 | `buildOmnisTemplate` | 3 | `buildGenderedPrincipalParts`, `Translation.constructor`, `buildAdjectivalForms` | `applications/lexico-ingestion/src/modules/manual/manual.utilities.ts:169` |
 | `ManualService.buildPraenomenLexeme` | 3 | `buildPraenomenAbbreviationTemplate`, `ManualService.buildPraenomenTranslations`, `ManualService.resolvePraenomenGender` | `applications/lexico-ingestion/src/modules/manual/manual.service.ts:52` |
-| `DictionaryCommand.ingestAll` | 3 | `DictionaryCommand.filter(…)`, `DictionaryCommand.getLemmaFileRange`, `DictionaryCommand.processFile` | `applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:319` |
-| `DictionaryCommand.parseEndLemma` | 3 | `DictionaryCommand.filter(…)`, `DictionaryCommand.getLemmaChoices`, `DictionaryCommand.some(…)` | `applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:399` |
+| `DictionaryCommand.ingestAll` | 3 | `DictionaryCommand.filter(…)`, `DictionaryCommand.getLemmaFileRange`, `DictionaryCommand.processFile` | `applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:381` |
 | `LatinLibraryCommand.shouldSkipLink` | 3 | `LatinLibraryCommand.isIgnoredLinkFileName`, `LatinLibraryCommand.isIgnoredProtocol`, `LatinLibraryCommand.isInvalidExtension` | `applications/lexico-ingestion/src/modules/latin-library/latin-library.command.ts:370` |
-| `LibraryCommand.parseIngestOptions` | 3 | `LibraryCommand.parseProvider`, `LibraryCommand.parseAuthor`, `LibraryCommand.parseText` | `applications/lexico-ingestion/src/modules/library/library.command.ts:134` |
-| `LibraryCommand.run` | 3 | `LibraryCommand.parseIngestOptions`, `LibraryCommand.buildIngestParameters`, `LibraryCommand.processProvider` | `applications/lexico-ingestion/src/modules/library/library.command.ts:466` |
+| `LibraryCommand.run` | 3 | `LibraryCommand.parseIngestOptions`, `LibraryCommand.buildIngestParameters`, `LibraryCommand.processProvider` | `applications/lexico-ingestion/src/modules/library/library.command.ts:428` |
 | `CorpusScriptorumEcclesiasticorumLatinorumLibraryProvider.writeSourceTextForAuthor` | 3 | `CorpusScriptorumEcclesiasticorumLatinorumLibraryProvider.createCselTextEntity`, `CorpusScriptorumEcclesiasticorumLatinorumLibraryProvider.extractParagraphs`, `CorpusScriptorumEcclesiasticorumLatinorumLibraryProvider.buildCselTextContent` | `applications/lexico-ingestion/src/modules/library/providers/corpus-scriptorum-ecclesiasticorum-latinorum-library.provider.ts:341` |
 | `LatinLibraryBuilder.extractLinesFromParagraph` | 3 | `cleanBoilerplate`, `LatinLibraryBuilder.parseParagraphHtml`, `LatinLibraryBuilder.extractParagraphLines` | `applications/lexico-ingestion/src/modules/library/providers/latin-library.builder.ts:63` |
 | `LatinLibraryBuilder.extractParagraphLines` | 3 | `cleanBoilerplate`, `isEnglishBoilerplate`, `formatLineNumber` | `applications/lexico-ingestion/src/modules/library/providers/latin-library.builder.ts:87` |
@@ -727,7 +621,8 @@ What this project is judged against, as declared in its own `callidescope.config
 | `PerseusLibraryTextExtractionProvider.processLeafTextPart` | 3 | `PerseusLibraryTextExtractionProvider.collectParagraphsFromElements`, `formatLineNumber`, `hasValidTextContent` | `applications/lexico-ingestion/src/modules/library/providers/perseus-library-text-extraction.provider.ts:110` |
 | `PerseusLibraryTextExtractionProvider.processTextPartChildren` | 3 | `PerseusLibraryTextExtractionProvider.extractChildTextParts`, `PerseusLibraryTextExtractionProvider.collectParagraphsFromElements`, `hasValidTextContent` | `applications/lexico-ingestion/src/modules/library/providers/perseus-library-text-extraction.provider.ts:150` |
 | `PerseusLibraryProvider.writeSourceMarkdownFiles` | 3 | `PerseusLibraryTextExtractionProvider.extractTextNodes`, `PerseusLibraryProvider.writeTextFiles`, `PerseusLibraryProvider.anonymous` | `applications/lexico-ingestion/src/modules/library/providers/perseus-library.provider.ts:263` |
-| `LiteratureCommand.getProviderChoices` | 3 | `LiteratureService.scanLibrary`, `LiteratureCommand.map(…)`, `LiteratureCommand.map(…)` | `applications/lexico-ingestion/src/modules/literature/literature.command.ts:91` |
+| `LiteratureCommand.getProviderChoices` | 3 | `LiteratureService.scanLibrary`, `LiteratureCommand.map(…)`, `LiteratureCommand.map(…)` | `applications/lexico-ingestion/src/modules/literature/literature.command.ts:98` |
+| `LiteratureCommand.resolveFilter` | 3 | `getOptionText`, `requireChoice`, `selectChoice` | `applications/lexico-ingestion/src/modules/literature/literature.command.ts:134` |
 | `WiktionaryCommand.ingestCategory` | 3 | `WiktionaryCommand.fetchCategoryPage`, `WiktionaryCommand.processWiktionaryCategoryLink`, `WiktionaryCommand.handleCategoryError` | `applications/lexico-ingestion/src/modules/wiktionary/wiktionary.command.ts:139` |
 | `WordsService.map(…)` | 2 | `WordsService.escapeCapitals`, `WordsService.normalize` | `applications/lexico-ingestion/src/modules/words/words.service.ts:136` |
 | `normalizeStringArray` | 2 | `isNormalizableStringArray`, `filter(…)` | `applications/lexico-ingestion/src/modules/forms/forms.constants.ts:21` |
@@ -747,19 +642,17 @@ What this project is judged against, as declared in its own `callidescope.config
 | `PronunciationService.getEcclesiasticalPronunciations` | 2 | `PronunciationService.buildPronunciations`, `PronunciationService.getEcclesiasticalPhonemes` | `applications/lexico-ingestion/src/modules/pronunciation/pronunciation.service.ts:150` |
 | `LexemesService.parseLexemes` | 2 | `LexemesService.normalize`, `LexemesService.parseLexemeFromElement` | `applications/lexico-ingestion/src/modules/lexemes/lexemes.service.ts:307` |
 | `ManualService.ingestPraenomenAbbreviations` | 2 | `ManualService.createManual`, `ManualService.buildPraenomenLexeme` | `applications/lexico-ingestion/src/modules/manual/manual.service.ts:102` |
-| `ManualService.createManual` | 2 | `ManualService.deleteManual`, `WordsService.ingestLexemeWords` | `applications/lexico-ingestion/src/modules/manual/manual.service.ts:160` |
-| `DictionaryCommand.getLemmaChoices` | 2 | `DictionaryCommand.map(…)`, `DictionaryCommand.filter(…)` | `applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:75` |
-| `DictionaryCommand.getLemmaFileRange` | 2 | `DictionaryCommand.findIndex(…)`, `DictionaryCommand.findIndex(…)` | `applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:91` |
-| `DictionaryCommand.ingestTranslationReference` | 2 | `DictionaryCommand.processTranslationMatch`, `TranslationsService.saveTranslations` | `applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:166` |
-| `DictionaryCommand.loadWiktionaryPageForWord` | 2 | `DictionaryCommand.getWiktionaryFilePathForWord`, `DictionaryCommand.readWiktionaryPageFromFile` | `applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:194` |
-| `DictionaryCommand.processFile` | 2 | `DictionaryCommand.readWiktionaryPageFromFile`, `DictionaryCommand.ingestLexeme` | `applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:222` |
-| `DictionaryCommand.parseStartLemma` | 2 | `DictionaryCommand.getLemmaChoices`, `DictionaryCommand.some(…)` | `applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:437` |
+| `ManualService.createManual` | 2 | `ManualService.deleteManual`, `WordsService.ingestLexemeWords` | `applications/lexico-ingestion/src/modules/manual/manual.service.ts:161` |
+| `DictionaryCommand.getLemmaChoices` | 2 | `DictionaryCommand.map(…)`, `DictionaryCommand.filter(…)` | `applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:83` |
+| `DictionaryCommand.getLemmaFileRange` | 2 | `DictionaryCommand.findIndex(…)`, `DictionaryCommand.findIndex(…)` | `applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:99` |
+| `DictionaryCommand.ingestTranslationReference` | 2 | `DictionaryCommand.processTranslationMatch`, `TranslationsService.saveTranslations` | `applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:174` |
+| `DictionaryCommand.loadWiktionaryPageForWord` | 2 | `DictionaryCommand.getWiktionaryFilePathForWord`, `DictionaryCommand.readWiktionaryPageFromFile` | `applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:202` |
+| `DictionaryCommand.processFile` | 2 | `DictionaryCommand.readWiktionaryPageFromFile`, `DictionaryCommand.ingestLexeme` | `applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:230` |
 | `LatinLibraryCommand.fetchAndCachePage` | 2 | `LatinLibraryCommand.getRelativePath`, `LatinLibraryCommand.downloadAndSaveLatinLibraryFile` | `applications/lexico-ingestion/src/modules/latin-library/latin-library.command.ts:86` |
 | `LatinLibraryCommand.processCategoryHref` | 2 | `LatinLibraryCommand.fetchAndCachePage`, `LatinLibraryCommand.each(…)` | `applications/lexico-ingestion/src/modules/latin-library/latin-library.command.ts:290` |
 | `LatinLibraryCommand.processLink` | 2 | `LatinLibraryCommand.shouldSkipLink`, `LatinLibraryCommand.isSkipPath` | `applications/lexico-ingestion/src/modules/latin-library/latin-library.command.ts:324` |
-| `LibraryCommand.getProviderChoices` | 2 | `LibraryCommand.map(…)`, `LibraryCommand.map(…)` | `applications/lexico-ingestion/src/modules/library/library.command.ts:93` |
-| `LibraryCommand.scanLibrary` | 2 | `LibraryCommand.scanLibraryProvider`, `LibraryCommand.isMissingDirectoryError` | `applications/lexico-ingestion/src/modules/library/library.command.ts:227` |
-| `LibraryCommand.parseProvider` | 2 | `LibraryCommand.getProviderChoices`, `LibraryCommand.some(…)` | `applications/lexico-ingestion/src/modules/library/library.command.ts:401` |
+| `LibraryCommand.getProviderChoices` | 2 | `LibraryCommand.map(…)`, `LibraryCommand.map(…)` | `applications/lexico-ingestion/src/modules/library/library.command.ts:99` |
+| `LibraryCommand.scanLibrary` | 2 | `LibraryCommand.scanLibraryProvider`, `LibraryCommand.isMissingDirectoryError` | `applications/lexico-ingestion/src/modules/library/library.command.ts:251` |
 | `CorpusScriptorumEcclesiasticorumLatinorumLibraryProvider.collectSourceXmlPaths` | 2 | `CorpusScriptorumEcclesiasticorumLatinorumLibraryProvider.map(…)`, `CorpusScriptorumEcclesiasticorumLatinorumLibraryProvider.filter(…)` | `applications/lexico-ingestion/src/modules/library/providers/corpus-scriptorum-ecclesiasticorum-latinorum-library.provider.ts:70` |
 | `CorpusScriptorumEcclesiasticorumLatinorumLibraryProvider.resolveSourceXmlMetadata` | 2 | `CorpusScriptorumEcclesiasticorumLatinorumLibraryProvider.getMetadata`, `CorpusScriptorumEcclesiasticorumLatinorumLibraryProvider.checkTextFilter` | `applications/lexico-ingestion/src/modules/library/providers/corpus-scriptorum-ecclesiasticorum-latinorum-library.provider.ts:301` |
 | `CorpusScriptorumEcclesiasticorumLatinorumLibraryProvider.ingest` | 2 | `CorpusScriptorumEcclesiasticorumLatinorumLibraryProvider.collectSourceXmlPaths`, `CorpusScriptorumEcclesiasticorumLatinorumLibraryProvider.processSourceXmlFile` | `applications/lexico-ingestion/src/modules/library/providers/corpus-scriptorum-ecclesiasticorum-latinorum-library.provider.ts:385` |
@@ -779,9 +672,6 @@ What this project is judged against, as declared in its own `callidescope.config
 | `LiteratureService.ingestAuthorGroup` | 2 | `LiteratureService.ensureParentTexts`, `LiteratureService.ingestTextChunks` | `applications/lexico-ingestion/src/modules/literature/literature.service.ts:211` |
 | `LiteratureService.parseFrontmatter` | 2 | `LiteratureService.find(…)`, `LiteratureService.isRecord` | `applications/lexico-ingestion/src/modules/literature/literature.service.ts:338` |
 | `LiteratureService.parseLabelFromStrongNode` | 2 | `LiteratureService.parseStandardLabel`, `LiteratureService.parseNonStandardLabel` | `applications/lexico-ingestion/src/modules/literature/literature.service.ts:355` |
-| `LiteratureCommand.parseAuthor` | 2 | `LiteratureCommand.getAuthorChoices`, `LiteratureCommand.some(…)` | `applications/lexico-ingestion/src/modules/literature/literature.command.ts:153` |
-| `LiteratureCommand.parseProvider` | 2 | `LiteratureCommand.getProviderChoices`, `LiteratureCommand.some(…)` | `applications/lexico-ingestion/src/modules/literature/literature.command.ts:188` |
-| `LiteratureCommand.parseText` | 2 | `LiteratureCommand.getTextChoices`, `LiteratureCommand.some(…)` | `applications/lexico-ingestion/src/modules/literature/literature.command.ts:218` |
 | `PerseusCommand.downloadSourceXmlFileIfMissing` | 2 | `PerseusCommand.fetchAndWriteXmlFile`, `PerseusCommand.appendSourceDownloadErrorLog` | `applications/lexico-ingestion/src/modules/perseus/perseus.command.ts:58` |
 | `PerseusCommand.fetchSourceXmlPaths` | 2 | `PerseusCommand.map(…)`, `PerseusCommand.filter(…)` | `applications/lexico-ingestion/src/modules/perseus/perseus.command.ts:100` |
 | `PerseusCommand.run` | 2 | `PerseusCommand.fetchSourceXmlPaths`, `PerseusCommand.downloadSourceXmlFileIfMissing` | `applications/lexico-ingestion/src/modules/perseus/perseus.command.ts:133` |
@@ -849,10 +739,12 @@ What this project is judged against, as declared in its own `callidescope.config
 | `flatMap(…)` | 1 | `flatMap(…)` | `applications/lexico-ingestion/src/modules/manual/manual.utilities.ts:21` |
 | `flatMap(…)` | 1 | `createAdjectivalForm` | `applications/lexico-ingestion/src/modules/manual/manual.utilities.ts:22` |
 | `ManualService.buildPraenomenTranslations` | 1 | `Translation.constructor` | `applications/lexico-ingestion/src/modules/manual/manual.service.ts:75` |
-| `DictionaryCommand.escapeCapitals` | 1 | `DictionaryCommand.replaceAll(…)` | `applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:65` |
-| `DictionaryCommand.getPageForLexeme` | 1 | `DictionaryCommand.loadWiktionaryPageForWord` | `applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:114` |
-| `DictionaryCommand.getWiktionaryFilePathForWord` | 1 | `DictionaryCommand.escapeCapitals` | `applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:130` |
-| `DictionaryCommand.map(…)` | 1 | `Translation.constructor` | `applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:274` |
+| `requireChoice` | 1 | `some(…)` | `applications/lexico-ingestion/src/modules/lexico-ingestion/lexico-ingestion.utilities.ts:33` |
+| `selectChoice` | 1 | `isInteractiveTerminal` | `applications/lexico-ingestion/src/modules/lexico-ingestion/lexico-ingestion.utilities.ts:50` |
+| `DictionaryCommand.escapeCapitals` | 1 | `DictionaryCommand.replaceAll(…)` | `applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:73` |
+| `DictionaryCommand.getPageForLexeme` | 1 | `DictionaryCommand.loadWiktionaryPageForWord` | `applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:122` |
+| `DictionaryCommand.getWiktionaryFilePathForWord` | 1 | `DictionaryCommand.escapeCapitals` | `applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:138` |
+| `DictionaryCommand.map(…)` | 1 | `Translation.constructor` | `applications/lexico-ingestion/src/modules/dictionary/dictionary.command.ts:282` |
 | `EpigraphikDatenbankClaussSlabyCommand.downloadChunkData` | 1 | `EpigraphikDatenbankClaussSlabyCommand.saveChunkData` | `applications/lexico-ingestion/src/modules/epigraphik-datenbank-clauss-slaby/epigraphik-datenbank-clauss-slaby.command.ts:50` |
 | `EpigraphikDatenbankClaussSlabyCommand.downloadChunkIfMissing` | 1 | `EpigraphikDatenbankClaussSlabyCommand.downloadChunkData` | `applications/lexico-ingestion/src/modules/epigraphik-datenbank-clauss-slaby/epigraphik-datenbank-clauss-slaby.command.ts:75` |
 | `EpigraphikDatenbankClaussSlabyCommand.saveChunkData` | 1 | `EpigraphikDatenbankClaussSlabyCommand.anonymous` | `applications/lexico-ingestion/src/modules/epigraphik-datenbank-clauss-slaby/epigraphik-datenbank-clauss-slaby.command.ts:97` |
@@ -867,12 +759,10 @@ What this project is judged against, as declared in its own `callidescope.config
 | `LatinLibraryCommand.each(…)` | 1 | `LatinLibraryCommand.processLink` | `applications/lexico-ingestion/src/modules/latin-library/latin-library.command.ts:279` |
 | `LatinLibraryCommand.worker` | 1 | `LatinLibraryCommand.processQueueUrl` | `applications/lexico-ingestion/src/modules/latin-library/latin-library.command.ts:419` |
 | `LatinLibraryCommand.from(…)` | 1 | `LatinLibraryCommand.worker` | `applications/lexico-ingestion/src/modules/latin-library/latin-library.command.ts:428` |
-| `LibraryCommand.buildIngestParameters` | 1 | `LibraryCommand.filter(…)` | `applications/lexico-ingestion/src/modules/library/library.command.ts:59` |
-| `LibraryCommand.scanLibraryAuthor` | 1 | `LibraryCommand.walkLibraryDirectory` | `applications/lexico-ingestion/src/modules/library/library.command.ts:271` |
-| `LibraryCommand.scanLibraryProvider` | 1 | `LibraryCommand.scanLibraryAuthor` | `applications/lexico-ingestion/src/modules/library/library.command.ts:297` |
-| `LibraryCommand.walkLibraryDirectory` | 1 | `LibraryCommand.pushTextEntry` | `applications/lexico-ingestion/src/modules/library/library.command.ts:326` |
-| `LibraryCommand.parseAuthor` | 1 | `LibraryCommand.getAuthorChoices` | `applications/lexico-ingestion/src/modules/library/library.command.ts:368` |
-| `LibraryCommand.parseText` | 1 | `LibraryCommand.getTextChoices` | `applications/lexico-ingestion/src/modules/library/library.command.ts:431` |
+| `LibraryCommand.buildIngestParameters` | 1 | `LibraryCommand.filter(…)` | `applications/lexico-ingestion/src/modules/library/library.command.ts:65` |
+| `LibraryCommand.scanLibraryAuthor` | 1 | `LibraryCommand.walkLibraryDirectory` | `applications/lexico-ingestion/src/modules/library/library.command.ts:295` |
+| `LibraryCommand.scanLibraryProvider` | 1 | `LibraryCommand.scanLibraryAuthor` | `applications/lexico-ingestion/src/modules/library/library.command.ts:321` |
+| `LibraryCommand.walkLibraryDirectory` | 1 | `LibraryCommand.pushTextEntry` | `applications/lexico-ingestion/src/modules/library/library.command.ts:350` |
 | `CorpusScriptorumEcclesiasticorumLatinorumLibraryProvider.buildCselTextContent` | 1 | `hasValidTextContent` | `applications/lexico-ingestion/src/modules/library/providers/corpus-scriptorum-ecclesiasticorum-latinorum-library.provider.ts:26` |
 | `CorpusScriptorumEcclesiasticorumLatinorumLibraryProvider.extractParagraphs` | 1 | `CorpusScriptorumEcclesiasticorumLatinorumLibraryProvider.each(…)` | `applications/lexico-ingestion/src/modules/library/providers/corpus-scriptorum-ecclesiasticorum-latinorum-library.provider.ts:110` |
 | `CorpusScriptorumEcclesiasticorumLatinorumLibraryProvider.each(…)` | 1 | `formatLineNumber` | `applications/lexico-ingestion/src/modules/library/providers/corpus-scriptorum-ecclesiasticorum-latinorum-library.provider.ts:114` |
@@ -936,7 +826,7 @@ What this project is judged against, as declared in its own `callidescope.config
 
 ## 🕸️ Codependix
 
-Dependency graphs exported by [codependix](https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/codependix/codependix-cli), regenerated by `nx run codebase:codependix:write`.
+Dependency graphs exported by [codependix](https://github.com/Organizzolini/codebase/tree/main/packages/ic-suite/codependix/codependix-cli), regenerated by `nx run codebase:codependix:write`.
 
 ### Nx Neighborhood
 
@@ -1102,6 +992,8 @@ graph LR
   file_src_modules_lexico_ingestion_lexico_ingestion_constants_ts["src/modules/lexico-ingestion/lexico-ingestion.constants.ts"]
   file_src_modules_lexico_ingestion_lexico_ingestion_module_ts["src/modules/lexico-ingestion/lexico-ingestion.module.ts"]
   file_src_modules_lexico_ingestion_lexico_ingestion_types_ts["src/modules/lexico-ingestion/lexico-ingestion.types.ts"]
+  file_src_modules_lexico_ingestion_lexico_ingestion_utilities_ts["src/modules/lexico-ingestion/lexico-ingestion.utilities.ts"]
+  file_src_modules_lexico_ingestion_lexico_ingestion_utilities_unit_test_ts["src/modules/lexico-ingestion/lexico-ingestion.utilities.unit.test.ts"]
   file_src_modules_library_library_command_ts["src/modules/library/library.command.ts"]
   file_src_modules_library_library_command_unit_test_ts["src/modules/library/library.command.unit.test.ts"]
   file_src_modules_library_library_constants_ts["src/modules/library/library.constants.ts"]
@@ -1213,10 +1105,12 @@ graph LR
   file_src_modules_dictionary_dictionary_command_ts --> file_src_modules_dictionary_dictionary_types_ts
   file_src_modules_dictionary_dictionary_command_ts --> file_src_modules_lexemes_lexemes_service_ts
   file_src_modules_dictionary_dictionary_command_ts --> file_src_modules_lexico_ingestion_lexico_ingestion_types_ts
+  file_src_modules_dictionary_dictionary_command_ts --> file_src_modules_lexico_ingestion_lexico_ingestion_utilities_ts
   file_src_modules_dictionary_dictionary_command_ts --> file_src_modules_manual_manual_service_ts
   file_src_modules_dictionary_dictionary_command_ts --> file_src_modules_translations_translations_service_ts
   file_src_modules_dictionary_dictionary_command_unit_test_ts --> file_src_modules_dictionary_dictionary_command_ts
   file_src_modules_dictionary_dictionary_command_unit_test_ts --> file_src_modules_lexemes_lexemes_service_ts
+  file_src_modules_dictionary_dictionary_command_unit_test_ts --> file_src_modules_lexico_ingestion_lexico_ingestion_types_ts
   file_src_modules_dictionary_dictionary_command_unit_test_ts --> file_src_modules_manual_manual_service_ts
   file_src_modules_dictionary_dictionary_command_unit_test_ts --> file_src_modules_translations_translations_service_ts
   file_src_modules_dictionary_dictionary_command_unit_test_ts --> file_testing_command_harness_ts
@@ -1229,6 +1123,7 @@ graph LR
   file_src_modules_dictionary_dictionary_module_ts --> file_src_modules_pronunciation_pronunciation_module_ts
   file_src_modules_dictionary_dictionary_module_ts --> file_src_modules_translations_translations_module_ts
   file_src_modules_dictionary_dictionary_module_ts --> file_src_modules_words_words_module_ts
+  file_src_modules_dictionary_dictionary_types_ts --> file_src_modules_lexico_ingestion_lexico_ingestion_types_ts
   file_src_modules_epigraphik_datenbank_clauss_slaby_epigraphik_datenbank_clauss_slaby_command_ts --> file_src_modules_epigraphik_datenbank_clauss_slaby_epigraphik_datenbank_clauss_slaby_constants_ts
   file_src_modules_epigraphik_datenbank_clauss_slaby_epigraphik_datenbank_clauss_slaby_command_ts --> file_src_modules_epigraphik_datenbank_clauss_slaby_epigraphik_datenbank_clauss_slaby_types_ts
   file_src_modules_epigraphik_datenbank_clauss_slaby_epigraphik_datenbank_clauss_slaby_command_unit_test_ts --> file_src_modules_epigraphik_datenbank_clauss_slaby_epigraphik_datenbank_clauss_slaby_command_ts
@@ -1332,6 +1227,13 @@ graph LR
   file_src_modules_lexico_ingestion_lexico_ingestion_module_ts --> file_src_modules_perseus_perseus_module_ts
   file_src_modules_lexico_ingestion_lexico_ingestion_module_ts --> file_src_modules_wiktionary_wiktionary_module_ts
   file_src_modules_lexico_ingestion_lexico_ingestion_module_ts --> file_src_modules_words_words_module_ts
+  file_src_modules_lexico_ingestion_lexico_ingestion_utilities_ts --> file_src_modules_lexico_ingestion_lexico_ingestion_constants_ts
+  file_src_modules_lexico_ingestion_lexico_ingestion_utilities_ts --> file_src_modules_lexico_ingestion_lexico_ingestion_types_ts
+  file_src_modules_lexico_ingestion_lexico_ingestion_utilities_unit_test_ts --> file_src_modules_lexico_ingestion_lexico_ingestion_constants_ts
+  file_src_modules_lexico_ingestion_lexico_ingestion_utilities_unit_test_ts --> file_src_modules_lexico_ingestion_lexico_ingestion_utilities_ts
+  file_src_modules_lexico_ingestion_lexico_ingestion_utilities_unit_test_ts --> file_testing_mocks_ts
+  file_src_modules_library_library_command_ts --> file_src_modules_lexico_ingestion_lexico_ingestion_types_ts
+  file_src_modules_library_library_command_ts --> file_src_modules_lexico_ingestion_lexico_ingestion_utilities_ts
   file_src_modules_library_library_command_ts --> file_src_modules_library_library_constants_ts
   file_src_modules_library_library_command_ts --> file_src_modules_library_library_types_ts
   file_src_modules_library_library_command_unit_test_ts --> file_src_modules_library_library_command_ts
@@ -1348,6 +1250,7 @@ graph LR
   file_src_modules_library_library_module_ts --> file_src_modules_library_providers_latin_library_provider_ts
   file_src_modules_library_library_module_ts --> file_src_modules_library_providers_perseus_library_text_extraction_provider_ts
   file_src_modules_library_library_module_ts --> file_src_modules_library_providers_perseus_library_provider_ts
+  file_src_modules_library_library_types_ts --> file_src_modules_lexico_ingestion_lexico_ingestion_types_ts
   file_src_modules_library_library_utilities_unit_test_ts --> file_src_modules_library_library_utilities_ts
   file_src_modules_library_providers_corpus_scriptorum_ecclesiasticorum_latinorum_library_provider_ts --> file_src_modules_library_library_utilities_ts
   file_src_modules_library_providers_corpus_scriptorum_ecclesiasticorum_latinorum_library_provider_unit_test_ts --> file_src_modules_library_providers_corpus_scriptorum_ecclesiasticorum_latinorum_library_provider_ts
@@ -1371,6 +1274,8 @@ graph LR
   file_src_modules_literature_literature_text_ingestion_service_unit_test_ts --> file_src_modules_literature_literature_types_ts
   file_src_modules_literature_literature_word_normalization_service_ts --> file_src_modules_literature_literature_constants_ts
   file_src_modules_literature_literature_word_normalization_service_unit_test_ts --> file_src_modules_literature_literature_word_normalization_service_ts
+  file_src_modules_literature_literature_command_ts --> file_src_modules_lexico_ingestion_lexico_ingestion_types_ts
+  file_src_modules_literature_literature_command_ts --> file_src_modules_lexico_ingestion_lexico_ingestion_utilities_ts
   file_src_modules_literature_literature_command_ts --> file_src_modules_literature_literature_service_ts
   file_src_modules_literature_literature_command_ts --> file_src_modules_literature_literature_types_ts
   file_src_modules_literature_literature_command_unit_test_ts --> file_src_modules_literature_literature_command_ts
@@ -1397,6 +1302,7 @@ graph LR
   file_src_modules_literature_literature_service_unit_test_ts --> file_src_modules_literature_literature_types_ts
   file_src_modules_literature_literature_service_unit_test_ts --> file_src_modules_numerals_numerals_service_ts
   file_src_modules_literature_literature_service_unit_test_ts --> file_testing_mocks_ts
+  file_src_modules_literature_literature_types_ts --> file_src_modules_lexico_ingestion_lexico_ingestion_types_ts
   file_src_modules_manual_manual_constants_ts --> file_src_modules_manual_manual_types_ts
   file_src_modules_manual_manual_module_ts --> file_src_modules_manual_manual_service_ts
   file_src_modules_manual_manual_module_ts --> file_src_modules_numerals_numerals_module_ts
@@ -1494,40 +1400,40 @@ graph LR
 
 ### Project
 
-![Lines of Code](https://img.shields.io/badge/Lines_of_Code-33553-22c55e?style=flat-square)
+![Lines of Code](https://img.shields.io/badge/Lines_of_Code-33568-22c55e?style=flat-square)
 ![Repository Size](https://img.shields.io/badge/Repository_Size-138.17_MB-6b7280?style=flat-square)
 ![Folders](https://img.shields.io/badge/Folders-219-4a4a4a?style=flat-square)
-![Source Files](https://img.shields.io/badge/Source_Files-157-3178c6?style=flat-square)
+![Source Files](https://img.shields.io/badge/Source_Files-159-3178c6?style=flat-square)
 
 ### Measured Targets
 
-![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-97.33_kB_gzip-6b7280?style=flat-square)
+![Compiled JavaScript Size](https://img.shields.io/badge/Compiled_JavaScript_Size-98.57_kB_gzip-6b7280?style=flat-square)
 
 ### TypeScript
 
-![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-157-3178c6?style=flat-square)
-![Interfaces](https://img.shields.io/badge/Interfaces-32-0ea5e9?style=flat-square)
+![TypeScript Files](https://img.shields.io/badge/TypeScript_Files-159-3178c6?style=flat-square)
+![Interfaces](https://img.shields.io/badge/Interfaces-36-0ea5e9?style=flat-square)
 ![Generic Declarations](https://img.shields.io/badge/Generic_Declarations-7-0369a1?style=flat-square)
 ![Enums](https://img.shields.io/badge/Enums-0-f97316?style=flat-square)
-![Decorators](https://img.shields.io/badge/Decorators-107-db2777?style=flat-square)
-![Doc Comments](https://img.shields.io/badge/Doc_Comments-356-6366f1?style=flat-square)
+![Decorators](https://img.shields.io/badge/Decorators-108-db2777?style=flat-square)
+![Doc Comments](https://img.shields.io/badge/Doc_Comments-367-6366f1?style=flat-square)
 ![Static Methods](https://img.shields.io/badge/Static_Methods-3-166534?style=flat-square)
 
 ### JavaScript
 
 ![JavaScript Files](https://img.shields.io/badge/JavaScript_Files-0-f7df1e?style=flat-square)
-![Test Files](https://img.shields.io/badge/Test_Files-44-10b981?style=flat-square)
+![Test Files](https://img.shields.io/badge/Test_Files-45-10b981?style=flat-square)
 ![External Packages](https://img.shields.io/badge/External_Packages-28-8b5cf6?style=flat-square)
-![Classes](https://img.shields.io/badge/Classes-61-7c3aed?style=flat-square)
-![Functions](https://img.shields.io/badge/Functions-1232-16a34a?style=flat-square)
-![Methods](https://img.shields.io/badge/Methods-513-15803d?style=flat-square)
-![Sync Functions](https://img.shields.io/badge/Sync_Functions-1203-4ade80?style=flat-square)
-![Async Functions](https://img.shields.io/badge/Async_Functions-542-059669?style=flat-square)
-![Constants](https://img.shields.io/badge/Constants-2460-dc2626?style=flat-square)
-![Imports](https://img.shields.io/badge/Imports-792-0284c7?style=flat-square)
-![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-166-ea580c?style=flat-square)
-![Comments](https://img.shields.io/badge/Comments-604-64748b?style=flat-square)
-![Comment Lines](https://img.shields.io/badge/Comment_Lines-1059-475569?style=flat-square)
+![Classes](https://img.shields.io/badge/Classes-62-7c3aed?style=flat-square)
+![Functions](https://img.shields.io/badge/Functions-1261-16a34a?style=flat-square)
+![Methods](https://img.shields.io/badge/Methods-510-15803d?style=flat-square)
+![Sync Functions](https://img.shields.io/badge/Sync_Functions-1243-4ade80?style=flat-square)
+![Async Functions](https://img.shields.io/badge/Async_Functions-528-059669?style=flat-square)
+![Constants](https://img.shields.io/badge/Constants-2427-dc2626?style=flat-square)
+![Imports](https://img.shields.io/badge/Imports-808-0284c7?style=flat-square)
+![Exported Symbols](https://img.shields.io/badge/Exported_Symbols-177-ea580c?style=flat-square)
+![Comments](https://img.shields.io/badge/Comments-614-64748b?style=flat-square)
+![Comment Lines](https://img.shields.io/badge/Comment_Lines-1111-475569?style=flat-square)
 ![TODO Comments](https://img.shields.io/badge/TODO_Comments-10-ca8a04?style=flat-square)
 
 ### Python
@@ -1643,9 +1549,9 @@ graph LR
 ![Command Files](https://img.shields.io/badge/Command_Files-10-16a34a?style=flat-square)
 ![Constants Files](https://img.shields.io/badge/Constants_Files-20-ea580c?style=flat-square)
 ![Types Files](https://img.shields.io/badge/Types_Files-20-db2777?style=flat-square)
-![Utilities Files](https://img.shields.io/badge/Utilities_Files-2-0ea5e9?style=flat-square)
+![Utilities Files](https://img.shields.io/badge/Utilities_Files-3-0ea5e9?style=flat-square)
 ![TypeORM Entities](https://img.shields.io/badge/TypeORM_Entities-0-059669?style=flat-square)
-![Unit Tests](https://img.shields.io/badge/Unit_Tests-43-ca8a04?style=flat-square)
+![Unit Tests](https://img.shields.io/badge/Unit_Tests-44-ca8a04?style=flat-square)
 ![Integration Tests](https://img.shields.io/badge/Integration_Tests-0-7c3aed?style=flat-square)
 ![End To End Tests](https://img.shields.io/badge/End_To_End_Tests-1-0284c7?style=flat-square)
 ![CSS Comment Budget](https://img.shields.io/badge/CSS_Comment_Budget-0-16a34a?style=flat-square)

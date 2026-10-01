@@ -3,10 +3,15 @@ import { Test } from "@nestjs/testing";
 import { getRepositoryToken } from "@nestjs/typeorm";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
+import { meanderRecord } from "../../../testing/meanders";
+import { COLUMN_CHARACTERISTIC_KEYS } from "../characteristics/characteristics.constants";
 import { CorpusService } from "../corpus/corpus.service";
 import { Meander } from "../database/entities/Meander.entity";
 
-import { MeanderDriftDetectedError } from "./draw-check.constants";
+import {
+  MEANDER_DRIFT_COMPARISON_COLUMNS,
+  MeanderDriftDetectedError,
+} from "./draw-check.constants";
 import { DrawCheckService } from "./draw-check.service";
 import { DrawEnumerationService } from "./draw-enumeration.service";
 
@@ -52,21 +57,7 @@ describe(DrawCheckService, () => {
     overrides: Partial<Meander> & Pick<Meander, "id">,
   ): Meander =>
     createMock<Meander>({
-      characteristics: [],
-      code: "code",
-      columns: 1,
-      components: 1,
-      cycles: 0,
-      drawingHash: "hash",
-      family: "unclassified",
-      freeEnds: 0,
-      inkTJunctions: 0,
-      inkXJunctions: 0,
-      lattice: "0",
-      pitch: 1,
-      provenance: "hardcoded",
-      repeats: 1,
-      rows: 2,
+      ...meanderRecord({ bettiNumber0Count: 1, code: "code" }),
       ...overrides,
     });
 
@@ -167,12 +158,12 @@ describe(DrawCheckService, () => {
 
     it("identifies array value differences in differingColumns", () => {
       const regeneratedRow = meander({
-        characteristics: ["hasBranching"],
+        characteristics: ["isArcade"],
         code: "a",
         id: 1,
       });
       const committedRow = meander({
-        characteristics: ["hasDots"],
+        characteristics: ["isDots"],
         code: "a",
         id: 2,
       });
@@ -226,12 +217,12 @@ describe(DrawCheckService, () => {
 
     it("identifies array length differences in differingColumns", () => {
       const regeneratedRow = meander({
-        characteristics: ["hasBranching"],
+        characteristics: ["isArcade"],
         code: "a",
         id: 1,
       });
       const committedRow = meander({
-        characteristics: ["hasBranching", "hasDots"],
+        characteristics: ["isArcade", "isDots"],
         code: "a",
         id: 2,
       });
@@ -250,12 +241,12 @@ describe(DrawCheckService, () => {
 
     it("identifies object drift with matching arrays (no difference)", () => {
       const regeneratedRow = meander({
-        characteristics: ["hasBranching"],
+        characteristics: ["isArcade"],
         code: "a",
         id: 1,
       });
       const committedRow = meander({
-        characteristics: ["hasBranching"],
+        characteristics: ["isArcade"],
         code: "a",
         id: 2,
       });
@@ -267,13 +258,13 @@ describe(DrawCheckService, () => {
 
     it("evaluates a primitive difference", () => {
       const regeneratedRow = meander({
+        bettiNumber0Count: 2,
         code: "a",
-        components: 2,
         id: 1,
       });
       const committedRow = meander({
+        bettiNumber0Count: 1,
         code: "a",
-        components: 1,
         id: 2,
       });
 
@@ -283,10 +274,160 @@ describe(DrawCheckService, () => {
         {
           code: "a",
           columns: 1,
-          differences: ["components"],
+          differences: ["bettiNumber0Count"],
           rows: 2,
         },
       ]);
+    });
+
+    it("compares every numeric characteristic column, along with characteristics, family, provenance, drawingHash, and glyphs", () => {
+      const committedRow = meander({ code: "a", id: 2 });
+      const everyNumericColumnChanged = Object.fromEntries(
+        COLUMN_CHARACTERISTIC_KEYS.map((key) => [key, 99]),
+      ) as Partial<Meander>;
+      const regeneratedRow = meander({
+        ...everyNumericColumnChanged,
+        characteristics: ["isArcade"],
+        code: "a",
+        drawingHash: "other",
+        family: "snake",
+        glyphs: { aSoutheastLatinCount: 1 },
+        id: 1,
+        provenance: "enumerated",
+      });
+
+      const report = service.diff([regeneratedRow], [committedRow]);
+
+      expect(report.changed).toStrictEqual([
+        {
+          code: "a",
+          columns: 1,
+          differences: [
+            ...MEANDER_DRIFT_COMPARISON_COLUMNS.filter(
+              (column) => column !== "glyphs",
+            ),
+            "glyphs.aSoutheastLatinCount",
+          ],
+          rows: 2,
+        },
+      ]);
+      expect(MEANDER_DRIFT_COMPARISON_COLUMNS).toStrictEqual([
+        ...COLUMN_CHARACTERISTIC_KEYS,
+        "characteristics",
+        "family",
+        "provenance",
+        "drawingHash",
+        "glyphs",
+      ]);
+    });
+
+    it("names each letter whose count differs, reading a letter missing from either glyph map as zero", () => {
+      const committedRow = meander({
+        code: "a",
+        glyphs: {
+          aSoutheastLatinCount: 1,
+          cSoutheastLatinCount: 0,
+          oSoutheastLatinCount: 2,
+        },
+        id: 2,
+      });
+      const regeneratedRow = meander({
+        code: "a",
+        glyphs: {
+          aSoutheastLatinCount: 1,
+          oSoutheastLatinCount: 3,
+          tSoutheastLatinCount: 1,
+        },
+        id: 1,
+      });
+
+      const report = service.diff([regeneratedRow], [committedRow]);
+
+      expect(report.changed).toStrictEqual([
+        {
+          code: "a",
+          columns: 1,
+          differences: [
+            "glyphs.oSoutheastLatinCount",
+            "glyphs.tSoutheastLatinCount",
+          ],
+          rows: 2,
+        },
+      ]);
+    });
+
+    it("reports drift when a letter the committed row counted disappears from the regenerated row", () => {
+      const committedRow = meander({
+        code: "a",
+        glyphs: { oSoutheastLatinCount: 2 },
+        id: 2,
+      });
+      const regeneratedRow = meander({ code: "a", glyphs: {}, id: 1 });
+
+      const report = service.diff([regeneratedRow], [committedRow]);
+
+      expect(report.changed).toStrictEqual([
+        {
+          code: "a",
+          columns: 1,
+          differences: ["glyphs.oSoutheastLatinCount"],
+          rows: 2,
+        },
+      ]);
+    });
+
+    it("lists differing letters in key order, whatever order either glyph map holds them in", () => {
+      const committedRow = meander({ code: "a", glyphs: {}, id: 2 });
+      const regeneratedRow = meander({
+        code: "a",
+        glyphs: Object.fromEntries(
+          [
+            "zSoutheastLatinCount",
+            "aSoutheastLatinCount",
+            "mSoutheastLatinCount",
+          ].map((key) => [key, 1]),
+        ),
+        id: 1,
+      });
+
+      const report = service.diff([regeneratedRow], [committedRow]);
+
+      expect(report.changed[0]?.differences).toStrictEqual([
+        "glyphs.aSoutheastLatinCount",
+        "glyphs.mSoutheastLatinCount",
+        "glyphs.zSoutheastLatinCount",
+      ]);
+    });
+
+    it("reports no drift between glyph maps that differ only in a zero count", () => {
+      const committedRow = meander({
+        code: "a",
+        glyphs: { aSoutheastLatinCount: 1, cSoutheastLatinCount: 0 },
+        id: 2,
+      });
+      const regeneratedRow = meander({
+        code: "a",
+        glyphs: { aSoutheastLatinCount: 1 },
+        id: 1,
+      });
+
+      expect(
+        service.diff([regeneratedRow], [committedRow]).changed,
+      ).toStrictEqual([]);
+    });
+
+    it("does not compare lattice or repeats, which are not drift comparison columns", () => {
+      const committedRow = meander({ code: "a", id: 2 });
+      const regeneratedRow = meander({
+        code: "a",
+        id: 1,
+        lattice: "different",
+        repeats: 2,
+      });
+
+      const report = service.diff([regeneratedRow], [committedRow]);
+
+      expect(report.changed).toStrictEqual([]);
     });
 
     it("returns report when check() detects no drift", async () => {

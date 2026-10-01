@@ -35,9 +35,9 @@ import {
  * A project's file also carries no type annotation, and so no import of
  * `CallidescopeConfiguration`. An `import type` is still an Nx dependency
  * edge: it puts `@callidescope/configuration` into that project's graph, it
- * widens what the project's own `gate` target has to trace, and it asks the
- * manifest of a project like `logger` to declare a toolchain package that
- * project does not use. What it would buy is a second check of something
+ * widens what the project's own `callidescope-gate` target has to trace, and it
+ * asks the manifest of a project like `logger` to declare a toolchain package
+ * that project does not use. What it would buy is a second check of something
  * already checked: the four fields a project may set are validated when the
  * file is read and a fifth is refused by name, and every project's
  * `tsconfig.json` names its own file, so the object literal is compiled either
@@ -105,8 +105,8 @@ import {
  * measured against — and it keeps being traced and published by the
  * workspace `write` run.
  *
- * `applications/JimmyPaolini` and `applications/affirmations` have no `gate`
- * target at all — a different fact from taking the default. Taking the default
+ * `applications/JimmyPaolini` and `applications/affirmations` have no
+ * `callidescope-gate` target at all — a different fact from taking the default. Taking the default
  * means a gate that runs and passes against the number below; these two have no
  * gate to pass. `JimmyPaolini` holds only a `package.json`, being the git
  * submodule this repository leaves deliberately uninitialized everywhere (see
@@ -291,10 +291,10 @@ export const projectDefaults = {
  *
  * So the two are split at the mechanism rather than by leaving the destination
  * unset. Depth — and, wherever a project declares `limits.maximumBreadth`,
- * breadth too — is gated by the inferred per-project `gate` target, an
- * executor of its own rather than a flag on this one, scoped by `nx affected`
- * to whatever a change touched. It reads no destination at all, so its exit
- * code is purely the depth (and, where judged, breadth) verdict.
+ * breadth too — is gated by the inferred per-project `callidescope-gate`
+ * target, an executor of its own rather than a flag on this one, scoped by
+ * `nx affected` to whatever a change touched. It reads no destination at all,
+ * so its exit code is purely the depth (and, where judged, breadth) verdict.
  * `nx run codebase:callidescope:write` passes `--write`, and the release
  * workflow runs it on main. That is the only configuration this target
  * carries now: `lint-code` does not depend on it, so no run of it ever

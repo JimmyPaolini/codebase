@@ -31,7 +31,7 @@ import { DrawCommand } from "./draw.command";
  * `DatabaseModule` is the committed sqlite database all of it
  * persists to and `DrawIndexService` reads back from, and `GeometryModule`
  * is the same scaling rule the renderer drew against, which the index page
- * reads back to step each repeat of a tile one pitch along its band. `CorpusModule`
+ * reads back to place each repeat of a tile one step along its band. `CorpusModule`
  * wraps the same decoder, renderer, and Characteristic computation beneath
  * one service `DrawCommand` calls once per sweep with the historical corpus,
  * trusting its family/subFamily rather than classifying them.

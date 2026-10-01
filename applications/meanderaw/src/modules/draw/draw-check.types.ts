@@ -2,9 +2,10 @@
 
 /**
  * A row present at the same lattice address in both the regenerated sweep
- * and the committed database, but disagreeing on at least one other column —
- * `svg`, `family`, `subFamily`, a junction count, `components`/`cycles`/
- * `freeEnds`, `hasBranching`/`hasCrossing`, or `provenance`.
+ * and the committed database, but disagreeing on at least one other column
+ * `MEANDER_DRIFT_COMPARISON_COLUMNS` lists — every numeric characteristic
+ * column, the `characteristics` array, `family`, `provenance`, or
+ * `drawingHash`.
  */
 export interface ChangedMeanderDrift extends MeanderKeySummary {
   readonly differences: readonly string[];

@@ -4,7 +4,7 @@ import type { MeanderFamily } from "./classification.types";
 
 /**
  * Supported meander families with precedence:
- * parallel -> cross -> arcade -> comb -> fork -> tree -> boxes -> chain -> double-chain -> waterfalls -> whirl -> swirl -> clasps -> snake -> stipple -> unclassified.
+ * dots -> lines -> bars -> mesh -> comb -> arcade -> parallel -> cross -> fork -> tree -> boxes -> chain -> double-chain -> waterfalls -> whirl -> swirl -> clasps -> snake -> stipple -> unclassified.
  */
 export const MEANDER_FAMILIES: readonly MeanderFamily[] = [
   "dots",

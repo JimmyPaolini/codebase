@@ -138,7 +138,7 @@ and the open border was the only thing telling them apart.
 - **The collapse was under-counted when it was predicted.** The spec named
   `plain` and `comb-upward` as the `branch` drawings that would merge and did
   not name `stagger-branches-3`, which merged with them — that third name is
-  [#682](https://github.com/JimmyPaolini/codebase/issues/682), found by
+  [#682](https://github.com/Organizzolini/codebase/issues/682), found by
   measurement afterwards rather than by reading. It also read `parallel` as
   branching everywhere, where the drawing that landed branches in 675 of the 819
   documents that then existed, and in 642 of the 786 that remain. It read the

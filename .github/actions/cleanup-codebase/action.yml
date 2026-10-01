@@ -25,27 +25,20 @@ inputs:
 runs:
   using: composite
   steps:
-    # A cancellation can hit mid-write to the SQLite task-result store,
-    # leaving a file whose own header claims it is fine but whose pages are
-    # not — `PRAGMA integrity_check` is what actually catches that, a plain
-    # file-exists check does not. Saving a corrupt one is worse than saving
-    # none: every later job's `restore-keys` fallback inherits it, and Nx
-    # fails outright trying to query it. Discard the whole triple (the store,
-    # its write-ahead log, and its shared-memory index) rather than trying to
-    # repair one in place.
+    # A cancellation can hit mid-write to the task-result database, and a
+    # corrupt one saved here is inherited by every later job's `restore-keys`
+    # fallback. See the script for why the whole database is discarded.
     - name: 🩺 Verify Nx Cache Database
       if: always() && inputs.nx-cache == 'true'
       shell: bash
-      run: |
-        shopt -s nullglob
-        for datastore in .nx/workspace-data/*.db; do
-          result="$(sqlite3 "${datastore}" 'PRAGMA integrity_check;' 2>&1 || true)"
-          if [[ "${result}" != "ok" ]]; then
-            echo "::warning::Discarding corrupt cache (${datastore}): ${result}"
-            rm -f "${datastore}" "${datastore}-wal" "${datastore}-shm" \
-              "${datastore}-journal"
-          fi
-        done
+      run: bash scripts/nx/verify-task-database.sh
+
+    # A second database means Nx stopped reading the adopted one, so warn and
+    # save only the newest. See the script for the details.
+    - name: 🪪 Keep One Nx Cache Database
+      if: always() && inputs.nx-cache == 'true'
+      shell: bash
+      run: bash scripts/nx/keep-task-database.sh
 
     # `.nx/cache` and `.nx/workspace-data/*.db*` hold a result for every task
     # that finished before a job was cut off, whether by a failure or a

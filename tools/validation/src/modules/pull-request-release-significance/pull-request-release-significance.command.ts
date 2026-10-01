@@ -26,8 +26,8 @@ import type {
  * ever sees; the commits behind it are discarded the moment they are
  * squashed away. This command reads both, ranks each against
  * `release.config.cjs`'s `releaseRules`, and fails when the title's own type
- * is less release-significant than its most significant commit, or when a
- * commit names a scope the title does not.
+ * is less release-significant than its most significant commit, or when the
+ * title shares no scope overlap with a commit.
  *
  * Always run live, through `gh pr view <number> --json title,commits` —
  * unlike pull-request-metadata there is no workflow-mode env-var path,
@@ -41,7 +41,7 @@ import type {
  */
 @Command({
   description:
-    "Check that a pull request's title is at least as release-significant as its commits, and names every scope they use",
+    "Check that a pull request's title is at least as release-significant as its commits, and shares a scope with them",
   name: "pull-request-release-significance",
 })
 @Injectable()

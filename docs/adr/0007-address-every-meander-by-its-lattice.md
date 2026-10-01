@@ -46,7 +46,7 @@ rather than asserted anywhere.
   groups and the 67 declared collisions below are all facts that could not be
   stated at all before there was an address to state them about.
 - **Move the encoding out of the mosaic module and take the symmetry group with
-  it.** Rejected, though [#671](https://github.com/JimmyPaolini/codebase/issues/671)
+  it.** Rejected, though [#671](https://github.com/Organizzolini/codebase/issues/671)
   listed `canonicalTile` and the orbit walk among the things that should move.
   `MosaicTilesService.enumerate` deduplicates the enumeration through
   `canonicalTile`, and `mosaic-tile` sits upstream of `lattice-identification`,

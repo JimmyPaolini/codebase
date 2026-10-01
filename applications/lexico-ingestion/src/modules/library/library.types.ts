@@ -1,14 +1,16 @@
+import type { CommandOptionValue } from "../lexico-ingestion/lexico-ingestion.types";
 import type { Author } from "@codebase/lexico-entities";
 
 // 🏷️ Types
 
 /**
- * Optional CLI filters applied before invoking library source providers.
+ * Optional CLI filters applied before invoking library source providers. Each
+ * is the value given, `true` for a bare flag, or absent when omitted.
  */
 export interface LibraryCommandOptions {
-  author?: null | string;
-  provider?: null | string;
-  text?: null | string;
+  author?: CommandOptionValue;
+  provider?: CommandOptionValue;
+  text?: CommandOptionValue;
 }
 
 /**
