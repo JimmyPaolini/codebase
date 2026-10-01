@@ -22,8 +22,8 @@ source ./scripts/local/dependencies.sh
 echo ""
 current_shell="$(basename "$SHELL")"
 case "$current_shell" in
-  zsh)  rc_file="~/.zshrc" ;;
-  bash) rc_file="~/.bashrc" ;;
+  zsh)  rc_file="$HOME/.zshrc" ;;
+  bash) rc_file="$HOME/.bashrc" ;;
   *)    rc_file="" ;;
 esac
 

@@ -233,6 +233,7 @@ if SYNC_OUTPUT=$(cd "${WORKSPACE_ROOT}" && pnpm exec nx run codebase:sync-vscode
   pass "VS Code extensions are in sync"
 else
   fail "VS Code extensions are out of sync — run: pnpm exec nx run codebase:sync-vscode-extensions:write"
+  printf '%s\n' "${SYNC_OUTPUT}" | sed 's/^/    /'
 fi
 
 # ⚙️ Devcontainer configuration structure
@@ -296,6 +297,7 @@ if SYNC_OUTPUT=$(cd "${WORKSPACE_ROOT}" && pnpm exec nx run codebase:sync-vscode
   pass "VS Code Machine settings are in sync"
 else
   fail "VS Code Machine settings are out of sync — run: pnpm exec nx run codebase:sync-vscode-settings:write"
+  printf '%s\n' "${SYNC_OUTPUT}" | sed 's/^/    /'
 fi
 
 # 🔐 GPG commit signing configuration

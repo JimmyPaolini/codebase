@@ -65,10 +65,10 @@ grep_all_cases() {
     shift # Remove the first argument (the query) so that $@ contains only grep options and files
 
     # Step 1: Insert a space before each uppercase letter (to split camelCase/PascalCase)
-    spaced_camel_pascal=$(echo "$query" | sed 's/\([A-Z]\)/ \1/g')
+    spaced_camel_pascal=$(awk '{ gsub(/[A-Z]/, " &"); print }' <<<"$query")
 
     # Step 2: Replace underscores and hyphens with spaces (to split snake_case/kebab-case)
-    spaced_all_separators=$(echo "$spaced_camel_pascal" | sed 's/[_-]/ /g')
+    spaced_all_separators=${spaced_camel_pascal//[_-]/ }
 
     # Step 3: Convert the entire string to lowercase
     lowercase_query=$(echo "$spaced_all_separators" | tr '[:upper:]' '[:lower:]')
@@ -81,7 +81,7 @@ grep_all_cases() {
 
     # Create a regex from the normalized words. This regex allows for different
     # separators (space, underscore, hyphen, or no separator) between words.
-    flexible_separator_regex=$(echo "$trimmed_query" | sed 's/ /[ _-]*/g')
+    flexible_separator_regex=${trimmed_query// /[ _-]*}
 
     # Run grep with the generated regex.
     # -i: case-insensitive search

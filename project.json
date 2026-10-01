@@ -723,6 +723,25 @@
         "cwd": "{projectRoot}"
       }
     },
+    "shellcheck": {
+      "cache": true,
+      "description": "Lint the workspace's own shell: every script under scripts/ and .devcontainer/, and the three husky hooks, which carry no extension and so are named one by one. The file list comes from `git ls-files`, whose `*` crosses directories, so a new script is linted without editing this target. Two shell files stay out on purpose: notepads/notepad.sh is a scratch list of commands rather than a script, and the codometer-examples corpus is a measurement fixture whose content its tests count. The installed skills under .agents/ are owned upstream and stay out too. configuration/shellcheckrc is passed explicitly, since shellcheck only looks for a .shellcheckrc beside each script. pyproject.toml and uv.lock are inputs because they pin shellcheck itself: without them, an upgrade replays a cached pass and stops linting. Defined here rather than in nx.json targetDefaults because no other project owns shell scripts.",
+      "executor": "nx:run-commands",
+      "inputs": [
+        "{workspaceRoot}/.devcontainer/**/*.sh",
+        "{workspaceRoot}/configuration/.husky/commit-msg",
+        "{workspaceRoot}/configuration/.husky/pre-commit",
+        "{workspaceRoot}/configuration/.husky/pre-push",
+        "{workspaceRoot}/configuration/shellcheckrc",
+        "{workspaceRoot}/pyproject.toml",
+        "{workspaceRoot}/scripts/**/*.sh",
+        "{workspaceRoot}/uv.lock"
+      ],
+      "options": {
+        "command": "uv run shellcheck --rcfile configuration/shellcheckrc $(git ls-files -- '.devcontainer/*.sh' 'scripts/*.sh' configuration/.husky/commit-msg configuration/.husky/pre-commit configuration/.husky/pre-push)",
+        "cwd": "{workspaceRoot}"
+      }
+    },
     "sherif": {
       "cache": true,
       "configurations": {

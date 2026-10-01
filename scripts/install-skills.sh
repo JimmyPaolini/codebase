@@ -45,7 +45,7 @@ fi
 # is never confused with "nothing could be read" — the old version swallowed
 # both into an empty result and then reported success over a corrupt lockfile.
 locked_skills_missing_from_disk() {
-  node -e '
+  node - <<'JS'
 const fs = require("fs");
 try {
   const parsed = JSON.parse(fs.readFileSync("skills-lock.json", "utf8"));
@@ -58,7 +58,7 @@ try {
   process.stderr.write(`⚠️  skills-lock.json could not be listed: ${error.message}\n`);
   process.exit(1);
 }
-'
+JS
 }
 
 if MISSING="$(locked_skills_missing_from_disk)"; then

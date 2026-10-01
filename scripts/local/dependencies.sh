@@ -31,7 +31,7 @@ echo "✅ Python dependencies installed (.venv)"
 # `terraform init` downloads the required providers (linode) and configures the
 # backend. This must run before any `terraform plan/apply` or state imports.
 echo "🏗  Initializing Terraform..."
-pushd infrastructure/terraform > /dev/null
+pushd infrastructure/terraform > /dev/null || exit 1
 terraform init
 echo "✅ Terraform initialized"
 
@@ -64,4 +64,4 @@ else
   echo "✅ kubeconfig saved to ~/.kube/config"
 fi
 
-popd > /dev/null
+popd > /dev/null || exit 1

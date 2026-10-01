@@ -3,6 +3,7 @@
 set -euo pipefail
 
 echo "🐘 Installing PostgreSQL 18 Client tools..."
+# shellcheck source=/dev/null
 . /etc/os-release
 echo "deb http://apt.postgresql.org/pub/repos/apt ${VERSION_CODENAME}-pgdg main" > /etc/apt/sources.list.d/pgdg.list
 curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor -o /etc/apt/trusted.gpg.d/postgresql.gpg || true

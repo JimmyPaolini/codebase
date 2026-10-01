@@ -18,7 +18,9 @@ BRANCH=$(git branch --show-current 2>/dev/null)
 # validate-branch-name resolves its config from the working directory, which is
 # not guaranteed to be the repository root when an agent harness invokes a hook.
 REPOSITORY_ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
-[ -n "$REPOSITORY_ROOT" ] && cd "$REPOSITORY_ROOT"
+if [ -n "$REPOSITORY_ROOT" ]; then
+  cd "$REPOSITORY_ROOT" || exit 1
+fi
 
 # ✅ Validation
 

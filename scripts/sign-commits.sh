@@ -37,7 +37,7 @@ if [[ "$branch_commit_count" == '0' ]]; then
 fi
 
 original_head_commit="$(git rev-parse HEAD)"
-original_head_tree="$(git rev-parse HEAD^{tree})"
+original_head_tree="$(git rev-parse "HEAD^{tree}")"
 
 first_unsigned_commit=''
 while read -r commit_sha signature_status; do
@@ -80,7 +80,7 @@ if ! GIT_SEQUENCE_EDITOR=: GIT_EDITOR=: git rebase --exec 'git commit --amend --
   exit 1
 fi
 
-rewritten_head_tree="$(git rev-parse HEAD^{tree})"
+rewritten_head_tree="$(git rev-parse "HEAD^{tree}")"
 if [[ "$rewritten_head_tree" != "$original_head_tree" ]]; then
   echo '🧾 Final tree differs from the original branch tip.' >&2
   git diff --stat "$original_head_commit"..HEAD >&2
@@ -110,7 +110,7 @@ if [[ "$unsigned_commit_count" != '0' ]]; then
 fi
 
 echo '🧾 Checking that the final tree still matches the original branch tip.'
-if [[ "$(git rev-parse HEAD^{tree})" != "$original_head_tree" ]]; then
+if [[ "$(git rev-parse "HEAD^{tree}")" != "$original_head_tree" ]]; then
   git diff --stat "$original_head_commit"..HEAD >&2
   echo "❌ Re-signing changed file contents unexpectedly. Recover with: git switch \"${backup_branch}\"" >&2
   exit 1

@@ -21,9 +21,11 @@ append_shell_block() {
     return 0
   fi
 
-  echo "" >> "$rc_file"
-  echo "$marker" >> "$rc_file"
-  echo "$block" >> "$rc_file"
+  {
+    echo ""
+    echo "$marker"
+    echo "$block"
+  } >> "$rc_file"
 }
 
 configure_shell_rc() {

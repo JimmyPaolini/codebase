@@ -35,8 +35,10 @@ setup_env_file "applications/caelundas" "Caelundas"
 # Ensure LOCAL_WORKSPACE_FOLDER is set for docker-compose volume mounts
 # (devcontainer sets this via remoteEnv; locally we derive it from pwd)
 if [ -f ".env" ] && ! grep -q '^LOCAL_WORKSPACE_FOLDER=' .env; then
-  echo "" >> .env
-  echo "# Local workspace path (used by docker-compose for volume mounts)" >> .env
-  echo "LOCAL_WORKSPACE_FOLDER=$(pwd)" >> .env
+  {
+    echo ""
+    echo "# Local workspace path (used by docker-compose for volume mounts)"
+    echo "LOCAL_WORKSPACE_FOLDER=$(pwd)"
+  } >> .env
   echo "✅ Added LOCAL_WORKSPACE_FOLDER to root .env"
 fi

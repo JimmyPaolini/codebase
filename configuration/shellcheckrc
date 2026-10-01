@@ -1,0 +1,11 @@
+# ShellCheck configuration for the workspace's shell scripts, passed explicitly
+# with `--rcfile` by the root project's `shellcheck` target, because shellcheck
+# would otherwise only look for a `.shellcheckrc` beside each script.
+
+# Follow `source`d files into the analysis rather than reporting SC1091, so a
+# helper library is checked through every script that uses it.
+external-sources=true
+
+# Resolve a relative `source` path against the sourcing script's own directory,
+# which is how `scripts/nx/` and the `scripts/git/` hooks find their helpers.
+source-path=SCRIPTDIR

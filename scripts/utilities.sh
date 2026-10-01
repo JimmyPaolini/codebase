@@ -19,6 +19,7 @@ set -e
 echo "🎛️  Exporting environment variables from .env file..."
 if [ -f ".env" ]; then
   set -a
+  # shellcheck source=/dev/null
   source .env
   set +a
 else

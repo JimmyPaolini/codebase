@@ -26,6 +26,7 @@ export NVM_DIR="$HOME/.nvm"
 mkdir -p "$NVM_DIR"
 NVM_SCRIPT_PATH="$(brew --prefix nvm)/nvm.sh"
 
+# shellcheck source=/dev/null
 . "$NVM_SCRIPT_PATH" --no-use
 
 # ── Node.js version from .nvmrc or .node-version ───────────────────────────
