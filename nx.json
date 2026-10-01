@@ -99,6 +99,9 @@
     }
   },
   "release": {
+    "git": {
+      "commitMessage": "chore(release): 🔖 publish"
+    },
     "projects": [
       "packages/ic-suite/*/*",
       "!callidescope-agents",
