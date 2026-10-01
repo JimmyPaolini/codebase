@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.30.2](https://github.com/Organizzolini/codebase/compare/v2.30.1...v2.30.2) (2026-09-30)
+
+### 🐛 Bug Fixes
+
+* **lexico-ingestion:** 🐛 honor command options and fail loudly ([#1232](https://github.com/Organizzolini/codebase/issues/1232)) ([db88c9e](https://github.com/Organizzolini/codebase/commit/db88c9e310a925bfcd646041984ef0f6e394140b))
+* **lexico:** 🐛 boot lexico-api as a real server and resolve line tokens ([#1228](https://github.com/Organizzolini/codebase/issues/1228)) ([828fb63](https://github.com/Organizzolini/codebase/commit/828fb63a1351536b58dfde2a07dcf4a6c630c369)), closes [#1128](https://github.com/Organizzolini/codebase/issues/1128) [#1201](https://github.com/Organizzolini/codebase/issues/1201) [#1170](https://github.com/Organizzolini/codebase/issues/1170) [#1171](https://github.com/Organizzolini/codebase/issues/1171) [#1175](https://github.com/Organizzolini/codebase/issues/1175)
+* **meanderaw:** 🐛 make start read-only by default with an explicit --write and exit non-zero on failure ([#1203](https://github.com/Organizzolini/codebase/issues/1203)) ([3b6591b](https://github.com/Organizzolini/codebase/commit/3b6591b7fd7613ecfbbbeca8c99af2d60aa5d7b4)), closes [#1187](https://github.com/Organizzolini/codebase/issues/1187) [#1188](https://github.com/Organizzolini/codebase/issues/1188) [#1204](https://github.com/Organizzolini/codebase/issues/1204) [#1205](https://github.com/Organizzolini/codebase/issues/1205) [#1206](https://github.com/Organizzolini/codebase/issues/1206)
+* **validation:** 🐛 find package tarballs by their real version instead of 0.0.1 ([#1233](https://github.com/Organizzolini/codebase/issues/1233)) ([892371b](https://github.com/Organizzolini/codebase/commit/892371bf743c6379f5bdb67162155f076a96ae17)), closes [#1168](https://github.com/Organizzolini/codebase/issues/1168)
+
 ## [2.30.1](https://github.com/Organizzolini/codebase/compare/v2.30.0...v2.30.1) (2026-09-29)
 
 ### 🐛 Bug Fixes
