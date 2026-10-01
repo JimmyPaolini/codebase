@@ -100,9 +100,6 @@
     }
   },
   "release": {
-    "git": {
-      "commitMessage": "chore(release): 🔖 publish"
-    },
     "projects": [
       "packages/ic-suite/*/*",
       "!callidescope-agents",
@@ -121,6 +118,9 @@
     "version": {
       "currentVersionResolver": "git-tag",
       "fallbackCurrentVersionResolver": "disk",
+      "git": {
+        "commitMessage": "chore(release): 🔖 publish"
+      },
       "specifierSource": "conventional-commits",
       "updateDependents": "auto"
     }
