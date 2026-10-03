@@ -170,7 +170,7 @@ describe(ChangesService, () => {
       "lexico",
       "codebase",
       "codometer-cli",
-      "logger",
+      "logging",
       "synchronization",
     ]);
     expect(rows.every((row) => row.measured)).toBe(true);
@@ -367,7 +367,7 @@ describe(ChangesService, () => {
       rows.map((row) => [row.project, row.empty, row.value]),
     ).toStrictEqual([
       ["lexico", true, 0],
-      ["logger", false, 0],
+      ["logging", false, 0],
     ]);
   });
 
@@ -541,7 +541,7 @@ describe(ChangesService, () => {
     expect(collection.failures).toStrictEqual([
       {
         kind: "target",
-        project: "logger",
+        project: "logging",
         reason: "the build output is missing",
         subject: "Compiled JavaScript",
       },

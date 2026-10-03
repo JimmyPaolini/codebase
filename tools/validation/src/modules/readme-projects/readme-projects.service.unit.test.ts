@@ -67,7 +67,7 @@ describe(ReadmeProjectsService, () => {
 
       existingPaths.add("/workspace/packages");
       existingPaths.add("/workspace/packages/logging/package.json");
-      scopeChildren.set("/workspace/packages", ["logger", "notes"]);
+      scopeChildren.set("/workspace/packages", ["logging", "notes"]);
 
       existingPaths.add("/workspace/tools");
       existingPaths.add("/workspace/tools/validation/package.json");
@@ -130,7 +130,7 @@ describe(ReadmeProjectsService, () => {
       expect.hasAssertions();
 
       existingPaths.add("/workspace/packages");
-      scopeChildren.set("/workspace/packages", ["logger"]);
+      scopeChildren.set("/workspace/packages", ["logging"]);
 
       existingPaths.add("/workspace/packages/logging/package.json");
       scopeChildren.set("/workspace/packages/logging", ["src"]);

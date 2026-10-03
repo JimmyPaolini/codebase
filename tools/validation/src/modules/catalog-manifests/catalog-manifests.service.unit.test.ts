@@ -69,7 +69,7 @@ describe(CatalogManifestsService, () => {
 
       existingPaths.add("/workspace/packages");
       existingPaths.add("/workspace/packages/logging/package.json");
-      scopeChildren.set("/workspace/packages", ["logger", "notes"]);
+      scopeChildren.set("/workspace/packages", ["logging", "notes"]);
 
       expect(service.resolveWorkspaceManifestPaths("/workspace")).toStrictEqual(
         ["/workspace/package.json", "/workspace/packages/logging/package.json"],
