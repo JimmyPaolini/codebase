@@ -2,11 +2,11 @@
 
 ## Quick Start
 
-**Type**: NestJS library package (`@codebase/logger`)
+**Type**: NestJS library package (`@codebase/logging`)
 
 **Purpose**: The single `LoggerService` every NestJS project in the codebase
 injects. Seventeen projects each carried an identical copy of
-`src/modules/logger`, so a change to log formatting had to land seventeen
+`src/modules/logging`, so a change to log formatting had to land seventeen
 times. This package owns that code; consumers import it and declare nothing
 about `pino`.
 
@@ -41,11 +41,11 @@ Add the dependency, then import `LoggerModule` once in the root module:
 
 ```jsonc
 // package.json
-"dependencies": { "@codebase/logger": "workspace:*" }
+"dependencies": { "@codebase/logging": "workspace:*" }
 ```
 
 ```ts
-import { LoggerModule } from "@codebase/logger";
+import { LoggerModule } from "@codebase/logging";
 
 @Module({
   imports: [ConfigModule.forRoot({ ... }), LoggerModule],
@@ -143,6 +143,6 @@ See the [triage-integration skill](../../.agents/skills/triage-integration/SKILL
 ## Key Files
 
 - [src/index.ts](src/index.ts): Public API
-- [src/modules/logger/logger.service.ts](src/modules/logger/logger.service.ts): pino-backed logger
-- [src/modules/logger/logger.module.ts](src/modules/logger/logger.module.ts): `@Global()` `LoggerModule`
+- [src/modules/logging/logging.service.ts](src/modules/logging/logging.service.ts): pino-backed logger
+- [src/modules/logging/logging.module.ts](src/modules/logging/logging.module.ts): `@Global()` `LoggerModule`
 - [project.json](project.json): Nx targets (`build`, `test`, `lint`, `typecheck`, `format`)

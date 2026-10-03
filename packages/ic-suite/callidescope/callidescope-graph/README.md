@@ -5,7 +5,7 @@
 This package is the leaf of the
 [`@callidescope/cli`](../callidescope-cli/README.md) package graph: it depends
 only on [`@callidescope/configuration`](../callidescope-configuration/README.md)
-and `@codebase/logger`, and nothing here reaches into
+and `@codebase/logging`, and nothing here reaches into
 [`@callidescope/output`](../callidescope-output/README.md).
 
 ```bash

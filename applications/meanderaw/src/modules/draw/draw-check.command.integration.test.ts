@@ -14,7 +14,7 @@ import {
   vi,
 } from "vitest";
 
-import { LoggerService } from "@codebase/logger";
+import { LoggerService } from "@codebase/logging";
 
 import { meanderRecord } from "../../../testing/meanders";
 import { CorpusService } from "../corpus/corpus.service";

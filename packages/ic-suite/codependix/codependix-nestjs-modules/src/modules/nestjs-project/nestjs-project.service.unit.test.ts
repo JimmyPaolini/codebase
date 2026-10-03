@@ -5,7 +5,7 @@ import { NestFactory } from "@nestjs/core";
 import { Test } from "@nestjs/testing";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { LoggerService } from "@codebase/logger";
+import { LoggerService } from "@codebase/logging";
 
 import { MainModule } from "../../../testing/main.module";
 
@@ -157,7 +157,7 @@ describe(NestjsProjectService, () => {
 
     it("leaves the root module file undefined for a library package", () => {
       expect(
-        service.describeProject("/workspace/packages/logger", "logger")
+        service.describeProject("/workspace/packages/logging", "logger")
           .rootModuleFile,
       ).toBeUndefined();
     });
@@ -186,7 +186,7 @@ describe(NestjsProjectService, () => {
     it("describes each discovered project", () => {
       const discovered = service.discoverProjects([
         {
-          absoluteRoot: "/workspace/packages/logger",
+          absoluteRoot: "/workspace/packages/logging",
           name: "logger",
           tags: ["framework:nestjs"],
         },
@@ -194,7 +194,7 @@ describe(NestjsProjectService, () => {
 
       expect(discovered).toStrictEqual([
         {
-          absoluteRoot: "/workspace/packages/logger",
+          absoluteRoot: "/workspace/packages/logging",
           name: "logger",
           rootModuleFile: undefined,
         },

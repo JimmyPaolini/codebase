@@ -118,7 +118,7 @@ A modern TypeScript codebase with Nx, featuring automated releases, comprehensiv
 
 </details>
 
-**🪵 [logger](packages/logger)** - Shared pino-backed NestJS `LoggerService` and `LoggerModule`\
+**🪵 [logger](packages/logging)** - Shared pino-backed NestJS `LoggerService` and `LoggerModule`\
 **🏺 [meanderaw](applications/meanderaw)** - CLI that generates Greek meander (key/fret) SVG patterns programmatically from a type, row count, and repeat count
 
 **[JimmyPaolini](applications/JimmyPaolini)** - GitHub profile site\
@@ -10449,7 +10449,7 @@ The workspace's call graph, traced by [callidescope](packages/ic-suite/callidesc
 | `packages/ic-suite/conformetry/conformetry-nx` | 15 | 15 | 0 | 9 |
 | `packages/lexico-components` | 3 | 3 | 0 | 7 |
 | `packages/lexico-entities` | 3 | 3 | 0 | 3 |
-| `packages/logger` | 4 | 4 | 0 | 2 |
+| `packages/logging` | 4 | 4 | 0 | 2 |
 | `tools/synchronization` | 10 | 10 | 0 | 11 |
 | `tools/validation` | 8 | 8 | 0 | 9 |
 | `packages/ic-suite/codependix/codependix-core` | 0 | 1 | 1 | 0 |
