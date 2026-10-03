@@ -1,5 +1,6 @@
 import "reflect-metadata";
 import { NestFactory } from "@nestjs/core";
+import { ExpressAdapter } from "@nestjs/platform-express";
 import { createLightship } from "lightship";
 
 import { LoggerService } from "@codebase/logging";
@@ -23,6 +24,7 @@ async function main(): Promise<void> {
 
   const application: INestApplication = await NestFactory.create(
     LexicoApiModule,
+    new ExpressAdapter(),
     {
       bufferLogs: true,
       logger,

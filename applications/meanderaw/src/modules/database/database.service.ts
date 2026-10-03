@@ -31,6 +31,28 @@ export class DatabaseService {
   // 🌎 Public Methods
 
   /**
+   * Deletes every meander row and restarts the table's id sequence, so a
+   * `--write` sweep regenerates the committed database rather than colliding
+   * with the rows it already holds.
+   *
+   * Only the `meanders` table the sweep writes is touched — any other table
+   * survives. Resetting its `sqlite_sequence` entry as well is what lets a
+   * regenerated sweep number its rows exactly as a sweep into an empty file
+   * would, rather than continuing from the old maximum id. One transaction,
+   * so a failure leaves the committed rows in place.
+   */
+  async clear(): Promise<void> {
+    const { tableName } = this.meanderRepository.metadata;
+
+    await this.meanderRepository.manager.transaction(async (manager) => {
+      await manager.clear(Meander);
+      await manager.query("DELETE FROM sqlite_sequence WHERE name = ?", [
+        tableName,
+      ]);
+    });
+  }
+
+  /**
    * Reads every meander row committed so far, for `DrawIndexService` to build
    * the static index page from.
    *
@@ -83,7 +105,7 @@ export class DatabaseService {
    * that hits a duplicate leaves no half-written shape behind.
    *
    * Chunked because a single statement's parameter count is bounded and a
-   * row here carries a dozen columns, so a whole shape's worth of rows in
+   * row here carries about fifty columns, so a whole shape's worth of rows in
    * one statement is a limit nobody declared being reached at some column
    * count nobody chose. The chunk size is a size, not a tuning knob: what
    * matters is that it is bounded.

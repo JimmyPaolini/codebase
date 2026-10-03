@@ -1,1 +1,4 @@
 # 🙈 Ignore
+
+# Emitted by GraphQLModule (autoSchemaFile) on every startup
+src/schema.gql

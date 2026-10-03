@@ -886,6 +886,10 @@ describe("callidescope examples (integration)", () => {
         ["FrameAnnotationsService.trace", 5],
         ["ProjectDepthLimitService.judge", 5],
         ["LoggerService.log", 4],
+        ["LoggerService.debug", 4],
+        ["LoggerService.error", 4],
+        ["LoggerService.verbose", 4],
+        ["LoggerService.warn", 4],
         ["GatedLeafService.read", 3],
       ]);
     });

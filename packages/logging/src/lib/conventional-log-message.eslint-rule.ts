@@ -156,7 +156,7 @@ const conventionalLogMessageMeta: {
 } = {
   documentation: {
     description:
-      "Require a log call's message to start with an emoji naming its subject, then a verb in present progressive or past tense.",
+      "Require a log call message to start with an emoji naming its subject, then a verb in present progressive or past tense.",
   },
   messages: {
     missingLeadingEmoji:

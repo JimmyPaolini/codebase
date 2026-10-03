@@ -76,7 +76,7 @@ measurements behind it, is in [README.md](./README.md), under "Meander Charter".
 
 **The property test that gated them is gone with the corpus it swept.** It measured every
 drawing the per-family sweep produced, and that sweep no longer exists; the structural
-facts it asserted are now computed per row by `MeanderCharacteristicsService` and stored as
+facts it asserted are now computed per row by `CharacteristicsService` and stored as
 columns, so they are queryable rather than gated. Rebuilding a gate over the database is
 open work, not something this project claims to have.
 
@@ -87,15 +87,16 @@ The three invariants that most often catch a change:
   grid unit for this reason; setting either independently breaks the invariant silently.
 - **No branching and no crossing.** These are the charter's two negotiable invariants, and
   the lattice-first corpus relaxes both wholesale: the enumerated space is every subset of
-  a repeat's edges, junctions and crossings included. `hasBranching` and `hasCrossing`, and
-  the four raw junction counts behind them, are recorded per row rather than forbidden.
+  a repeat's edges, junctions and crossings included. `forkCount` and `crossCount`, and the
+  four directional fork counts behind them (`northForkCount`/`southForkCount`/
+  `eastForkCount`/`westForkCount`), are recorded per row rather than forbidden.
 - **Band, not field.** Canvas height is fixed and `rows` sets density, not size. These
   patterns are meant for borders.
 
 Two things that look like defects and are not:
 
 - **Gaps wider than one stroke where a band terminates** are expected, and owned by
-  [#338](https://github.com/JimmyPaolini/codebase/issues/338). Do not chase them.
+  [#338](https://github.com/Organizzolini/codebase/issues/338). Do not chase them.
 - **Most enumerated rows carrying no family at all** is the design. Enumeration produces
   every structurally distinct repeat within budget, and membership is decided afterwards.
 
@@ -138,7 +139,7 @@ testing/                            # Shared test utilities
 ### Module Graph
 
 The modules this project defines and the imports between them are exported by
-[codependix](https://github.com/JimmyPaolini/codebase/tree/main/packages/ic-suite/codependix/codependix-cli)
+[codependix](https://github.com/Organizzolini/codebase/tree/main/packages/ic-suite/codependix/codependix-cli)
 into the `## 🕸️ Codependix` section of [README.md](README.md), alongside this
 project's Nx neighborhood and its file-level import graph. Regenerate all three
 with:
@@ -175,21 +176,26 @@ Outputs structured JSON in production (`NODE_ENV=production`) and pretty-printed
 Always prefer running tasks through Nx rather than calling the underlying tools directly.
 
 ```bash
-nx run meanderaw:start           # Run the command-line application
+nx run meanderaw:start                    # Read-only: regenerate the sweep into a throwaway database and fail on drift from the committed one; `guard-code` runs this on every commit
+nx run meanderaw:start --args="--write"   # Clear output/meanders.sqlite's meander rows, then regenerate the sweep into it
 nx run meanderaw:typecheck-code,lint-code,format-code,deprecate-code,guard-code   # Every static check, in one graph
 nx run meanderaw:typecheck       # tsc --noEmit
 nx run meanderaw:oxfmt           # Formatting
 ```
 
 This application has **one command, `draw`**, and it is the default — so `start` runs it.
-With no arguments it sweeps every meander the application can draw into
-`output/meanders.sqlite`: the whole lattice's unit space, enumerated and classified, then
-the historical corpus's hardcoded Codes beyond that budget. With `--rows`, `--columns`,
-and `--code` it decodes, renders, and persists that one:
+With no arguments (or `--check`) it is a read-only drift check: it regenerates the sweep
+into a throwaway database and fails if it disagrees with the committed one. **Nothing
+writes `output/meanders.sqlite` without `--write`.** With `--write` it clears that
+database's meander rows and sweeps every meander the application can draw back into it: the whole lattice's unit space, enumerated
+and classified, then the historical corpus's hardcoded Codes beyond that budget. With
+`--write`, `--rows`, `--columns`, and `--code` it decodes, renders, and persists that one:
 
 ```bash
-nx run meanderaw:start --args="--rows 3 --columns 2 --code 3c9a"
+nx run meanderaw:start --args="--write --rows 3 --columns 2 --code 3c9a"
 ```
+
+`--check` with `--write`, or `--code` without `--write`, exits non-zero.
 
 There is deliberately no second command, and no other flag — see "One Command" and
 "Output Layout" in [README.md](./README.md).

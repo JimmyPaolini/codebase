@@ -14,8 +14,8 @@ import {
  * This is the discoverable entry point the package lacked: one command that
  * exercises all of it and prints what each configuration prints. It is a smoke
  * gate rather than a semantic one — the exit code each guide promises, and
- * nothing about the numbers, which `examples.integration.test.ts` asserts in
- * the prose that explains them.
+ * nothing about the numbers, which the `*.integration.test.ts` suites assert
+ * in the prose that explains them.
  *
  * It also holds the two checks that keep the guides complete rather than
  * correct: every configuration must be named below, and every example must

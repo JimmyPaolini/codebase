@@ -102,12 +102,12 @@ band cut at a different column is the same meander in a different phase, so a
 meander has exactly one canonical phase rather than one Code.
 _Avoid_: Rotation, offset, cut
 
-**Seam**:
+**Tile crossing**:
 The join where a tile's last column meets its first when a Code is read as a
-repeating band rather than as a finite drawing. What crosses a seam — a stranded
+repeating band rather than as a finite drawing. What crosses it — a stranded
 end, a junction, a closed loop — is measured rather than assumed, and the
 measurement is what a canonical phase is chosen to minimize.
-_Avoid_: Wrap, edge, border
+_Avoid_: Seam (formerly this project's own term), wrap, edge, border
 
 **Characteristic**:
 A measured structural property of a meander, read as a pattern over the Code's
@@ -120,6 +120,38 @@ A combination of characteristics a meander's structure satisfies, possibly
 several at once, possibly none. Earned by what a meander measures as, never
 assigned by its proportions or carried over as metadata.
 _Avoid_: Style, kind, category, generative model
+
+**Corner**:
+The direction a letter glyph's strokes run toward — Southeast, Southwest,
+Northeast or Northwest. Reaching another corner means mirroring the glyph, never
+turning it.
+_Avoid_: Facing, side, handedness, East/West/Inverted
+
+**Base corner**:
+The corner a script's letters face as written, set by its reading direction:
+Southeast for left-to-right scripts, Southwest for right-to-left ones. Every other
+corner of a letter is a mirroring of its base corner.
+_Avoid_: Default orientation, upright corner
+
+**Orientation**:
+One of the sixteen ways a letter glyph can be drawn: a corner, then a clockwise
+turn of none, a quarter, a half, or three quarters. Orientations that draw the
+same ink are still distinct names for it, each counted alike.
+_Avoid_: Variant, rotation (for the whole), pose
+
+**Positional form**:
+The shape a joining script's letter takes from where it sits in a word —
+isolated, initial, medial, or final — each drawn as its own letter, with a unit
+joining stroke on every side it connects. A form a letter never takes, such as
+a non-connecting letter's initial or medial, is left out rather than drawn.
+_Avoid_: Contextual form, allograph, position
+
+**Skeleton (rasm)**:
+A letter's dotless shape, which letters differing only by dots or by other
+marks such as hamza share. A skeleton is drawn once, as one letter, and every
+other letter sharing it is an alias of that letter rather than a second copy
+of its ink.
+_Avoid_: Base letter, outline, stem
 
 **Tile**:
 One repeat unit's worth of the lattice a meander is drawn on — the grid of points

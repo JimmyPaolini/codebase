@@ -1,5 +1,7 @@
 // ♟️ Constants
 
+import { COLUMN_CHARACTERISTIC_KEYS } from "../characteristics/characteristics.constants";
+
 import type { MeanderRecord } from "../database/database.types";
 import type {
   ChangedMeanderDrift,
@@ -28,21 +30,24 @@ export const DRAW_CHECK_SWEEP_CONNECTION_NAME = "draw-check-sweep";
  * auto-generated `id`, which two independent rows for the same meander are
  * never expected to share.
  *
+ * Every numeric characteristic column is spread in from
+ * `COLUMN_CHARACTERISTIC_KEYS` rather than named one at a time, so a
+ * Characteristic added to the record is covered by this list the moment it
+ * is added there — no stale committed database can pass the `start` drift check
+ * merely because the column drift went unnamed here. Every letter is
+ * covered through `glyphs`, which `diff` compares letter by letter, so a
+ * new or renamed letter needs no entry here either.
+ *
  * Reads `MeanderRecord` rather than the `Meander` entity so the list can
- * never name a column the database itself does not have, and a
- * Characteristic column added later only has to be added here to be covered.
+ * never name a column the database itself does not have.
  */
 export const MEANDER_DRIFT_COMPARISON_COLUMNS = [
-  "components",
-  "cycles",
+  ...COLUMN_CHARACTERISTIC_KEYS,
   "characteristics",
   "family",
-  "freeEnds",
-  "inkTJunctions",
-  "inkXJunctions",
-  "pitch",
   "provenance",
   "drawingHash",
+  "glyphs",
 ] as const satisfies readonly (keyof MeanderRecord)[];
 
 /**

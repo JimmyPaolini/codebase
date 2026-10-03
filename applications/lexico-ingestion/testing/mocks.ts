@@ -5,7 +5,7 @@
 
 import { createMock } from "@golevelup/ts-vitest";
 import * as cheerio from "cheerio";
-import { afterEach, beforeEach, vi } from "vitest";
+import { afterEach, beforeEach, onTestFinished, vi } from "vitest";
 
 import type { AnyNode } from "domhandler";
 import type { ObjectLiteral, QueryBuilder, Repository } from "typeorm";
@@ -48,6 +48,38 @@ export function mockDates(date: Date = DEFAULT_TEST_DATE): void {
   afterEach(() => {
     vi.useRealTimers();
   });
+}
+
+/**
+ * Lets a test decide whether `process.stdin` reads as a terminal. The setter
+ * may be called from a test or its `beforeEach`; the real value captured here
+ * is restored when that test finishes.
+ *
+ * Usage in test files:
+ * ```ts
+ * const setStandardInputTerminal = mockStandardInputTerminal()
+ *
+ * it('prompts', () => { setStandardInputTerminal(true) })
+ * ```
+ */
+export function mockStandardInputTerminal(): (isTerminal: boolean) => void {
+  const original = Object.getOwnPropertyDescriptor(process.stdin, "isTTY");
+
+  return (isTerminal) => {
+    Object.defineProperty(process.stdin, "isTTY", {
+      configurable: true,
+      value: isTerminal,
+      writable: true,
+    });
+
+    onTestFinished(() => {
+      if (original) {
+        Object.defineProperty(process.stdin, "isTTY", original);
+      } else {
+        Reflect.deleteProperty(process.stdin, "isTTY");
+      }
+    });
+  };
 }
 
 /**

@@ -13,6 +13,7 @@ import {
 import { LoggerService } from "@codebase/logging";
 
 import { CorpusService } from "../corpus/corpus.service";
+import { DatabaseService } from "../database/database.service";
 
 import { DrawCheckService } from "./draw-check.service";
 import { DrawCodeService } from "./draw-code.service";
@@ -35,7 +36,8 @@ vi.mock("node:fs/promises", () => ({
 
 /**
  * Covers what `DrawCommand` decides rather than what it produces: which of
- * its two modes an option set selects, how each flag is parsed, and — since
+ * its modes an option set selects — the read-only drift check by default,
+ * and a write only when `--write` asks for one — how each flag is parsed, and — since
  * the sweep writes `output/index.html` again — that it does so with
  * `DrawIndexService`'s own built page, once, at the path spec #813's
  * committed artifact lives at.
@@ -51,6 +53,7 @@ vi.mock("node:fs/promises", () => ({
 describe(DrawCommand, () => {
   let build: Mock<() => Promise<Record<string, string>>>;
   let check: Mock<() => Promise<MeanderDriftReport>>;
+  let clear: Mock<() => Promise<void>>;
   let command: DrawCommand;
   let draw: Mock<() => Promise<Meander>>;
   let ingest: Mock<() => Promise<Meander[]>>;
@@ -66,6 +69,7 @@ describe(DrawCommand, () => {
       .mockResolvedValue(
         createMock<MeanderDriftReport>({ changed: [], missing: [], new: [] }),
       );
+    clear = vi.fn<() => Promise<void>>().mockResolvedValue(undefined);
     draw = vi
       .fn<() => Promise<Meander>>()
       .mockResolvedValue(createMock<Meander>({ id: 1 }));
@@ -96,6 +100,10 @@ describe(DrawCommand, () => {
           useValue: createMock<CorpusService>({ ingest }),
         },
         {
+          provide: DatabaseService,
+          useValue: createMock<DatabaseService>({ clear }),
+        },
+        {
           provide: LoggerService,
           useValue: createMock<LoggerService>(),
         },
@@ -108,6 +116,7 @@ describe(DrawCommand, () => {
   beforeEach(() => {
     build.mockClear();
     check.mockClear();
+    clear.mockClear();
     draw.mockClear();
     ingest.mockClear();
     sweep.mockClear();
@@ -144,6 +153,10 @@ describe(DrawCommand, () => {
           useValue: createMock<CorpusService>(),
         },
         {
+          provide: DatabaseService,
+          useValue: createMock<DatabaseService>(),
+        },
+        {
           provide: LoggerService,
           useValue: createMock<LoggerService>(),
         },
@@ -157,8 +170,30 @@ describe(DrawCommand, () => {
     expect(logger.setContext).toHaveBeenCalledWith("DrawCommand");
   });
 
-  it("sweeps both halves of the corpus when no Code is named", async () => {
+  it("checks for drift, writing nothing, when no flag is given at all", async () => {
     await command.run([], {});
+
+    expect(check).toHaveBeenCalledTimes(1);
+    expect(sweep).not.toHaveBeenCalled();
+    expect(ingest).not.toHaveBeenCalled();
+    expect(draw).not.toHaveBeenCalled();
+    expect(build).not.toHaveBeenCalled();
+    expect(clear).not.toHaveBeenCalled();
+    expect(writeFileMock).not.toHaveBeenCalled();
+  });
+
+  it("clears the committed rows before sweeping, so --write regenerates rather than colliding with them", async () => {
+    await command.run([], { write: true });
+
+    const [cleared] = clear.mock.invocationCallOrder;
+    const [enumerated] = sweep.mock.invocationCallOrder;
+
+    expect(clear).toHaveBeenCalledTimes(1);
+    expect(cleared ?? Infinity).toBeLessThan(enumerated ?? 0);
+  });
+
+  it("sweeps both halves of the corpus when --write is given and no Code is named", async () => {
+    await command.run([], { write: true });
 
     expect(sweep).toHaveBeenCalledTimes(1);
     expect(ingest).toHaveBeenCalledTimes(1);
@@ -166,7 +201,7 @@ describe(DrawCommand, () => {
   });
 
   it("enumerates before ingesting, so a hardcoded collision is refused rather than overwriting", async () => {
-    await command.run([], {});
+    await command.run([], { write: true });
 
     const [enumerated] = sweep.mock.invocationCallOrder;
     const [hardcoded] = ingest.mock.invocationCallOrder;
@@ -175,7 +210,7 @@ describe(DrawCommand, () => {
   });
 
   it("rebuilds the index page from the sweep's own rows, once both halves have committed", async () => {
-    await command.run([], {});
+    await command.run([], { write: true });
 
     expect(build).toHaveBeenCalledTimes(1);
     expect(writeFileMock).toHaveBeenCalledWith(
@@ -194,16 +229,17 @@ describe(DrawCommand, () => {
   });
 
   it("draws the one meander a Code names, sweeping nothing and never rebuilding the index page", async () => {
-    await command.run([], { code: "3c9a", columns: 2, rows: 3 });
+    await command.run([], { code: "3c9a", columns: 2, rows: 3, write: true });
 
     expect(draw).toHaveBeenCalledWith({ code: "3c9a", columns: 2, rows: 3 });
+    expect(clear).not.toHaveBeenCalled();
     expect(sweep).not.toHaveBeenCalled();
     expect(build).not.toHaveBeenCalled();
     expect(writeFileMock).not.toHaveBeenCalled();
   });
 
   it("draws a self-contained formatted Code without requiring --rows and --columns", async () => {
-    await command.run([], { code: "02x03y3c9a" });
+    await command.run([], { code: "02x03y3c9a", write: true });
 
     expect(draw).toHaveBeenCalledWith({
       code: "02x03y3c9a",
@@ -214,16 +250,39 @@ describe(DrawCommand, () => {
   });
 
   it("refuses a Code given without both --rows and --columns", async () => {
-    await expect(command.run([], { code: "0", rows: 2 })).rejects.toThrow(
-      /needs both --rows and --columns/,
-    );
-    await expect(command.run([], { code: "0", columns: 1 })).rejects.toThrow(
-      /needs both --rows and --columns/,
-    );
+    await expect(
+      command.run([], { code: "0", rows: 2, write: true }),
+    ).rejects.toThrow(/needs both --rows and --columns/);
+    await expect(
+      command.run([], { code: "0", columns: 1, write: true }),
+    ).rejects.toThrow(/needs both --rows and --columns/);
     expect(draw).not.toHaveBeenCalled();
   });
 
-  it("checks for drift instead of sweeping or drawing when --check is given", async () => {
+  it("refuses a Code given without --write, drawing and checking nothing", async () => {
+    await expect(
+      command.run([], { code: "3c9a", columns: 2, rows: 3 }),
+    ).rejects.toThrow(/needs --write/);
+    await expect(
+      command.run([], { check: true, code: "02x03y3c9a" }),
+    ).rejects.toThrow(/needs --write/);
+    expect(draw).not.toHaveBeenCalled();
+    expect(check).not.toHaveBeenCalled();
+    expect(sweep).not.toHaveBeenCalled();
+  });
+
+  it("refuses --check and --write together, checking and writing nothing", async () => {
+    await expect(command.run([], { check: true, write: true })).rejects.toThrow(
+      /--check and --write/,
+    );
+    expect(check).not.toHaveBeenCalled();
+    expect(sweep).not.toHaveBeenCalled();
+    expect(ingest).not.toHaveBeenCalled();
+    expect(draw).not.toHaveBeenCalled();
+    expect(writeFileMock).not.toHaveBeenCalled();
+  });
+
+  it("checks for drift instead of sweeping or drawing when --check is given explicitly", async () => {
     await command.run([], { check: true });
 
     expect(check).toHaveBeenCalledTimes(1);
@@ -248,5 +307,9 @@ describe(DrawCommand, () => {
     expect(command.parseCheck("false")).toBe(false);
     expect(command.parseCheck("0")).toBe(false);
     expect(command.parseCheck("true")).toBe(true);
+    expect(command.parseWrite(undefined)).toBe(true);
+    expect(command.parseWrite("false")).toBe(false);
+    expect(command.parseWrite("0")).toBe(false);
+    expect(command.parseWrite("true")).toBe(true);
   });
 });

@@ -333,6 +333,23 @@ describe(CodeService, () => {
     });
   });
 
+  describe("spellDigits", () => {
+    it("writes one lowercase digit per point in reading order, with no shape prefix", () => {
+      expect(service.spellDigits(singleColumn)).toBe("48030");
+      expect(service.spellDigits(buildTile(["b.", "..", ".."]))).toBe("618000");
+    });
+
+    it("is exactly the digits spell writes", () => {
+      const tile = buildTile(["e.", ".e", ".."]);
+
+      expect(service.spell(tile)).toBe(`02x03y${service.spellDigits(tile)}`);
+    });
+
+    it("writes nothing for a tile with no rows", () => {
+      expect(service.spellDigits({ columns: 1, points: [], rows: 0 })).toBe("");
+    });
+  });
+
   describe("spellCanonical", () => {
     it("gives a tile and its own top-to-bottom mirror the same name", () => {
       const flipped = buildTile([".", "e", ".", "s", "."]);

@@ -3,16 +3,24 @@ import path from "node:path";
 
 import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
-import prompts from "prompts";
 
 import { Lexeme, Translation } from "@codebase/lexico-entities";
 import { LoggerService } from "@codebase/logging";
 
 import { LexemesService } from "../lexemes/lexemes.service";
+import {
+  getOptionText,
+  requireChoice,
+  selectChoice,
+} from "../lexico-ingestion/lexico-ingestion.utilities";
 import { ManualService } from "../manual/manual.service";
 import { TranslationsService } from "../translations/translations.service";
 
-import type { WiktionaryPage } from "../lexico-ingestion/lexico-ingestion.types";
+import type {
+  CommandOptionChoice,
+  CommandOptionValue,
+  WiktionaryPage,
+} from "../lexico-ingestion/lexico-ingestion.types";
 import type { DictionaryCommandOptions } from "./dictionary.types";
 
 /**
@@ -72,7 +80,7 @@ export class DictionaryCommand extends CommandRunner {
   /**
    * Resolves derived values needed by dictionary ingestion.
    */
-  private getLemmaChoices(): { title: string; value: string }[] {
+  private getLemmaChoices(): CommandOptionChoice[] {
     const dataDirectory = path.join(process.cwd(), "./data/wiktionary");
     if (!fs.existsSync(dataDirectory)) return [];
 
@@ -313,6 +321,60 @@ export class DictionaryCommand extends CommandRunner {
   // 🌎 Public Methods
 
   /**
+   * Resolves the optional end-lemma bound: a given lemma must be a cached page at
+   * or after `startLemma`, a bare flag prompts on a terminal, and anything else is
+   * no bound.
+   */
+  private async resolveEndLemma(
+    endLemma: CommandOptionValue,
+    startLemma: string | undefined,
+  ): Promise<string | undefined> {
+    const choices = this.getLemmaChoices().filter(
+      (choice) => !startLemma || choice.value >= startLemma,
+    );
+    const text = getOptionText(endLemma);
+    if (text) {
+      return requireChoice(
+        text,
+        choices,
+        `End lemma "${text}" not found in the dataset.`,
+      );
+    }
+    if (endLemma !== true) return undefined;
+
+    return selectChoice({
+      choices,
+      message: "Select the ending lemma",
+      noSelectionTitle: "None",
+    });
+  }
+
+  /**
+   * Resolves the optional start-lemma bound: a given lemma must be a cached page,
+   * a bare flag prompts on a terminal, and anything else is no bound.
+   */
+  private async resolveStartLemma(
+    startLemma: CommandOptionValue,
+  ): Promise<string | undefined> {
+    const choices = this.getLemmaChoices();
+    const text = getOptionText(startLemma);
+    if (text) {
+      return requireChoice(
+        text,
+        choices,
+        `Start lemma "${text}" not found in the dataset.`,
+      );
+    }
+    if (startLemma !== true) return undefined;
+
+    return selectChoice({
+      choices,
+      message: "Select the starting lemma",
+      noSelectionTitle: "None",
+    });
+  }
+
+  /**
    * Iterates cached `data/wiktionary/*.json` pages within an optional lemma range
    * and ingests each file into persisted lexeme data.
    */
@@ -394,76 +456,27 @@ export class DictionaryCommand extends CommandRunner {
   }
 
   /**
-   * Resolves the optional end-lemma boundary, validating it against available cache files.
+   * Passes the `--endLemma` text through to `run`, which validates it; commander
+   * never calls this for a bare flag, which reaches `run` as `true` instead.
    */
   @Option({
-    description: "The lemma to end ingestion at",
+    description: "The lemma to end ingestion at (bare flag: pick one)",
     flags: "-e, --endLemma [lemma]",
   })
-  async parseEndLemma(
-    endLemma?: string,
-    startLemma?: null | string,
-  ): Promise<string | undefined> {
-    if (!endLemma) return undefined;
-
-    const choices = this.getLemmaChoices().filter((choice) => {
-      if (!startLemma) return true;
-      return choice.value >= startLemma;
-    });
-    if (typeof endLemma === "string") {
-      if (choices.some((choice) => choice.value === endLemma)) {
-        return endLemma;
-      }
-      throw new Error(`End lemma "${endLemma}" not found in the dataset.`);
-    }
-
-    const response = (await prompts({
-      choices: [{ title: "None", value: null }, ...choices],
-      message: "Select the ending lemma",
-      name: "endLemma",
-      type: "autocomplete",
-    })) as { endLemma: null | string };
-
-    if (response.endLemma === null || typeof response.endLemma !== "string") {
-      return undefined;
-    }
-
-    return response.endLemma;
+  parseEndLemma(endLemma: string): string {
+    return endLemma;
   }
 
   /**
-   * Resolves the optional start-lemma boundary, validating it against available cache files.
+   * Passes the `--startLemma` text through to `run`, which validates it; commander
+   * never calls this for a bare flag, which reaches `run` as `true` instead.
    */
   @Option({
-    description: "The lemma to start ingestion from",
+    description: "The lemma to start ingestion from (bare flag: pick one)",
     flags: "-s, --startLemma [lemma]",
   })
-  async parseStartLemma(startLemma?: string): Promise<string | undefined> {
-    if (!startLemma) return undefined;
-
-    const choices = this.getLemmaChoices();
-    if (typeof startLemma === "string") {
-      if (choices.some((choice) => choice.value === startLemma)) {
-        return startLemma;
-      }
-      throw new Error(`Start lemma "${startLemma}" not found in the dataset.`);
-    }
-
-    const response = (await prompts({
-      choices: [{ title: "None", value: null }, ...choices],
-      message: "Select the starting lemma",
-      name: "startLemma",
-      type: "autocomplete",
-    })) as { startLemma: null | string };
-
-    if (
-      response.startLemma === null ||
-      typeof response.startLemma !== "string"
-    ) {
-      return undefined;
-    }
-
-    return response.startLemma;
+  parseStartLemma(startLemma: string): string {
+    return startLemma;
   }
 
   /**
@@ -477,13 +490,8 @@ export class DictionaryCommand extends CommandRunner {
     this.logger.info("⚙️ Parsed command options", undefined, { options });
     const startTime = performance.now();
 
-    const startLemma = await this.parseStartLemma(
-      options.startLemma ?? undefined,
-    );
-    const endLemma = await this.parseEndLemma(
-      options.endLemma ?? undefined,
-      startLemma,
-    );
+    const startLemma = await this.resolveStartLemma(options.startLemma);
+    const endLemma = await this.resolveEndLemma(options.endLemma, startLemma);
 
     await this.ingestAll(startLemma, endLemma);
     await this.manualService.ingestManual();

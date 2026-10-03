@@ -2,6 +2,66 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.30.2](https://github.com/Organizzolini/codebase/compare/v2.30.1...v2.30.2) (2026-09-30)
+
+### 🐛 Bug Fixes
+
+* **lexico-ingestion:** 🐛 honor command options and fail loudly ([#1232](https://github.com/Organizzolini/codebase/issues/1232)) ([db88c9e](https://github.com/Organizzolini/codebase/commit/db88c9e310a925bfcd646041984ef0f6e394140b))
+* **lexico:** 🐛 boot lexico-api as a real server and resolve line tokens ([#1228](https://github.com/Organizzolini/codebase/issues/1228)) ([828fb63](https://github.com/Organizzolini/codebase/commit/828fb63a1351536b58dfde2a07dcf4a6c630c369)), closes [#1128](https://github.com/Organizzolini/codebase/issues/1128) [#1201](https://github.com/Organizzolini/codebase/issues/1201) [#1170](https://github.com/Organizzolini/codebase/issues/1170) [#1171](https://github.com/Organizzolini/codebase/issues/1171) [#1175](https://github.com/Organizzolini/codebase/issues/1175)
+* **meanderaw:** 🐛 make start read-only by default with an explicit --write and exit non-zero on failure ([#1203](https://github.com/Organizzolini/codebase/issues/1203)) ([3b6591b](https://github.com/Organizzolini/codebase/commit/3b6591b7fd7613ecfbbbeca8c99af2d60aa5d7b4)), closes [#1187](https://github.com/Organizzolini/codebase/issues/1187) [#1188](https://github.com/Organizzolini/codebase/issues/1188) [#1204](https://github.com/Organizzolini/codebase/issues/1204) [#1205](https://github.com/Organizzolini/codebase/issues/1205) [#1206](https://github.com/Organizzolini/codebase/issues/1206)
+* **validation:** 🐛 find package tarballs by their real version instead of 0.0.1 ([#1233](https://github.com/Organizzolini/codebase/issues/1233)) ([892371b](https://github.com/Organizzolini/codebase/commit/892371bf743c6379f5bdb67162155f076a96ae17)), closes [#1168](https://github.com/Organizzolini/codebase/issues/1168)
+
+## [2.30.1](https://github.com/Organizzolini/codebase/compare/v2.30.0...v2.30.1) (2026-09-29)
+
+### 🐛 Bug Fixes
+
+* **lexico-entities:** 🐛 warm the data source import outside the test timeout ([#1225](https://github.com/Organizzolini/codebase/issues/1225)) ([af39e4c](https://github.com/Organizzolini/codebase/commit/af39e4c203b9afeaa962090f23fb1b96f282dd97))
+
+## [2.30.0](https://github.com/Organizzolini/codebase/compare/v2.29.0...v2.30.0) (2026-09-28)
+
+### ✨ Features
+
+* **meanderaw:** ✨ add arabic letter skeletons in all positional forms ([#1206](https://github.com/Organizzolini/codebase/issues/1206)) ([007edad](https://github.com/Organizzolini/codebase/commit/007edad2e4767b31cd2122e7b13edc803c85b0df)), closes [#1205](https://github.com/Organizzolini/codebase/issues/1205) [#1205](https://github.com/Organizzolini/codebase/issues/1205) [#1204](https://github.com/Organizzolini/codebase/issues/1204) [#1198](https://github.com/Organizzolini/codebase/issues/1198) [#1197](https://github.com/Organizzolini/codebase/issues/1197) [#1204](https://github.com/Organizzolini/codebase/issues/1204) [#1198](https://github.com/Organizzolini/codebase/issues/1198) [#1192](https://github.com/Organizzolini/codebase/issues/1192) [#1197](https://github.com/Organizzolini/codebase/issues/1197) [#1198](https://github.com/Organizzolini/codebase/issues/1198) [#1189](https://github.com/Organizzolini/codebase/issues/1189) [#1205](https://github.com/Organizzolini/codebase/issues/1205)
+
+## [2.29.0](https://github.com/Organizzolini/codebase/compare/v2.28.0...v2.29.0) (2026-09-28)
+
+### ✨ Features
+
+* **lexico,callidescope:** ✨ add word and literature lookups ([#1201](https://github.com/Organizzolini/codebase/issues/1201)) ([6b08eca](https://github.com/Organizzolini/codebase/commit/6b08eca1720d2c3d283edea2f77b6af29ebf08d9)), closes [#1170](https://github.com/Organizzolini/codebase/issues/1170) [#1171](https://github.com/Organizzolini/codebase/issues/1171) [#1175](https://github.com/Organizzolini/codebase/issues/1175) [#1179](https://github.com/Organizzolini/codebase/issues/1179) [#1183](https://github.com/Organizzolini/codebase/issues/1183) [#1172](https://github.com/Organizzolini/codebase/issues/1172) [#1173](https://github.com/Organizzolini/codebase/issues/1173) [#1174](https://github.com/Organizzolini/codebase/issues/1174) [#1176](https://github.com/Organizzolini/codebase/issues/1176) [#1177](https://github.com/Organizzolini/codebase/issues/1177) [#1178](https://github.com/Organizzolini/codebase/issues/1178) [#1180](https://github.com/Organizzolini/codebase/issues/1180) [#1181](https://github.com/Organizzolini/codebase/issues/1181) [#1182](https://github.com/Organizzolini/codebase/issues/1182) [#1184](https://github.com/Organizzolini/codebase/issues/1184) [#1185](https://github.com/Organizzolini/codebase/issues/1185) [#1186](https://github.com/Organizzolini/codebase/issues/1186)
+* **meanderaw:** ✨ add directional edge counts, submatrix window metadata, and utilities services ([#1188](https://github.com/Organizzolini/codebase/issues/1188)) ([486a3f3](https://github.com/Organizzolini/codebase/commit/486a3f3d6a3753e0dc139750c87c0ee2fe22819f)), closes [#1164](https://github.com/Organizzolini/codebase/issues/1164) [#1165](https://github.com/Organizzolini/codebase/issues/1165) [#1166](https://github.com/Organizzolini/codebase/issues/1166) [#1204](https://github.com/Organizzolini/codebase/issues/1204) [#1204](https://github.com/Organizzolini/codebase/issues/1204) [#1204](https://github.com/Organizzolini/codebase/issues/1204) [#1204](https://github.com/Organizzolini/codebase/issues/1204) [#1204](https://github.com/Organizzolini/codebase/issues/1204) [#1166](https://github.com/Organizzolini/codebase/issues/1166) [#1165](https://github.com/Organizzolini/codebase/issues/1165) [#1163](https://github.com/Organizzolini/codebase/issues/1163) [#1164](https://github.com/Organizzolini/codebase/issues/1164) [#1165](https://github.com/Organizzolini/codebase/issues/1165) [#1166](https://github.com/Organizzolini/codebase/issues/1166) [#1140](https://github.com/Organizzolini/codebase/issues/1140) [#1187](https://github.com/Organizzolini/codebase/issues/1187) [#1167](https://github.com/Organizzolini/codebase/issues/1167) [#1204](https://github.com/Organizzolini/codebase/issues/1204)
+* **meanderaw:** ✨ add zig-zag greek letters lambda, sigma, delta, kappa, and omega ([#1205](https://github.com/Organizzolini/codebase/issues/1205)) ([900b8a4](https://github.com/Organizzolini/codebase/commit/900b8a46e7637f0337345944354a114c40bba98e)), closes [#1203](https://github.com/Organizzolini/codebase/issues/1203) [#1191](https://github.com/Organizzolini/codebase/issues/1191) [#1196](https://github.com/Organizzolini/codebase/issues/1196) [#1189](https://github.com/Organizzolini/codebase/issues/1189) [#1204](https://github.com/Organizzolini/codebase/issues/1204)
+* **meanderaw:** ✨ enumerate every letter in eight orientations and split out glyph storage ([#1204](https://github.com/Organizzolini/codebase/issues/1204)) ([cf6c8e8](https://github.com/Organizzolini/codebase/commit/cf6c8e8b53db45668e083e8a633a2985acb3e03b)), closes [#1167](https://github.com/Organizzolini/codebase/issues/1167) [#1188](https://github.com/Organizzolini/codebase/issues/1188) [#1188](https://github.com/Organizzolini/codebase/issues/1188) [#1188](https://github.com/Organizzolini/codebase/issues/1188) [#1167](https://github.com/Organizzolini/codebase/issues/1167) [#1195](https://github.com/Organizzolini/codebase/issues/1195) [#1188](https://github.com/Organizzolini/codebase/issues/1188) [#1167](https://github.com/Organizzolini/codebase/issues/1167) [#1188](https://github.com/Organizzolini/codebase/issues/1188) [#1193](https://github.com/Organizzolini/codebase/issues/1193) [#1195](https://github.com/Organizzolini/codebase/issues/1195) [#1194](https://github.com/Organizzolini/codebase/issues/1194) [#1195](https://github.com/Organizzolini/codebase/issues/1195) [#1193](https://github.com/Organizzolini/codebase/issues/1193) [#1195](https://github.com/Organizzolini/codebase/issues/1195) [#1194](https://github.com/Organizzolini/codebase/issues/1194) [#1195](https://github.com/Organizzolini/codebase/issues/1195) [#1193](https://github.com/Organizzolini/codebase/issues/1193) [#1195](https://github.com/Organizzolini/codebase/issues/1195) [#1194](https://github.com/Organizzolini/codebase/issues/1194) [#1194](https://github.com/Organizzolini/codebase/issues/1194) [#1195](https://github.com/Organizzolini/codebase/issues/1195) [#1167](https://github.com/Organizzolini/codebase/issues/1167) [#1190](https://github.com/Organizzolini/codebase/issues/1190) [#1193](https://github.com/Organizzolini/codebase/issues/1193) [#1194](https://github.com/Organizzolini/codebase/issues/1194) [#1195](https://github.com/Organizzolini/codebase/issues/1195) [#1189](https://github.com/Organizzolini/codebase/issues/1189) [#1188](https://github.com/Organizzolini/codebase/issues/1188)
+
+### 🐛 Bug Fixes
+
+* **lexico:** 🐛 type entity relations as Relation to break the Word import cycle ([#1218](https://github.com/Organizzolini/codebase/issues/1218)) ([ff96e72](https://github.com/Organizzolini/codebase/commit/ff96e72a831dc0b0bc1bf825ad45314f6c2fca13)), closes [#1201](https://github.com/Organizzolini/codebase/issues/1201) [#1201](https://github.com/Organizzolini/codebase/issues/1201) [#1217](https://github.com/Organizzolini/codebase/issues/1217) [#1201](https://github.com/Organizzolini/codebase/issues/1201)
+* **meanderaw:** 🐛 move glyph words into shared linguistics dictionary ([#1222](https://github.com/Organizzolini/codebase/issues/1222)) ([004d1f5](https://github.com/Organizzolini/codebase/commit/004d1f58c6a12a98bd7e4d35e119e7f79774d647)), closes [#1218](https://github.com/Organizzolini/codebase/issues/1218)
+* **validation,configuration:** 🐛 stop pre-commit checks re-linking node_modules ([#1212](https://github.com/Organizzolini/codebase/issues/1212)) ([da8fe64](https://github.com/Organizzolini/codebase/commit/da8fe6414e01dac392572d246076924b259da730)), closes [#1211](https://github.com/Organizzolini/codebase/issues/1211)
+
+## [2.28.0](https://github.com/Organizzolini/codebase/compare/v2.27.0...v2.28.0) (2026-09-28)
+
+### ✨ Features
+
+* **meanderaw:** ✨ implement compound characteristics, entity schema update, and orchestrator refactor ([#1187](https://github.com/Organizzolini/codebase/issues/1187)) ([3df164e](https://github.com/Organizzolini/codebase/commit/3df164e7e8273f180492d458c75bc71a49b08c2f)), closes [#1154](https://github.com/Organizzolini/codebase/issues/1154) [#1155](https://github.com/Organizzolini/codebase/issues/1155) [#1156](https://github.com/Organizzolini/codebase/issues/1156) [#1157](https://github.com/Organizzolini/codebase/issues/1157) [#1158](https://github.com/Organizzolini/codebase/issues/1158) [#1140](https://github.com/Organizzolini/codebase/issues/1140) [#1161](https://github.com/Organizzolini/codebase/issues/1161)
+
+## [2.27.0](https://github.com/JimmyPaolini/codebase/compare/v2.26.0...v2.27.0) (2026-09-28)
+
+### ✨ Features
+
+* **meanderaw:** ✨ implement topological betti numbers and path dynamic characteristic services ([#1161](https://github.com/JimmyPaolini/codebase/issues/1161)) ([ac45a21](https://github.com/JimmyPaolini/codebase/commit/ac45a21d8b01ed7e3033633f4098736ab6c944ac)), closes [#1150](https://github.com/JimmyPaolini/codebase/issues/1150) [#1151](https://github.com/JimmyPaolini/codebase/issues/1151) [#1152](https://github.com/JimmyPaolini/codebase/issues/1152) [#1153](https://github.com/JimmyPaolini/codebase/issues/1153) [#1140](https://github.com/JimmyPaolini/codebase/issues/1140) [#1160](https://github.com/JimmyPaolini/codebase/issues/1160)
+
+## [2.26.0](https://github.com/JimmyPaolini/codebase/compare/v2.25.0...v2.26.0) (2026-09-28)
+
+### ✨ Features
+
+* **meanderaw:** ✨ implement submatrix forks, rectangles, and minimal letter glyph services ([#1162](https://github.com/JimmyPaolini/codebase/issues/1162)) ([edaaed7](https://github.com/JimmyPaolini/codebase/commit/edaaed701d93b200ea21a6284d90b4ea5f7bb2f3)), closes [#1140](https://github.com/JimmyPaolini/codebase/issues/1140) [#1145](https://github.com/JimmyPaolini/codebase/issues/1145) [#1146](https://github.com/JimmyPaolini/codebase/issues/1146) [#1147](https://github.com/JimmyPaolini/codebase/issues/1147) [#1148](https://github.com/JimmyPaolini/codebase/issues/1148)
+
+## [2.25.0](https://github.com/JimmyPaolini/codebase/compare/v2.24.2...v2.25.0) (2026-09-28)
+
+### ✨ Features
+
+* **meanderaw:** ✨ establish characteristic evaluator contract and atomic submatrix point/corner services ([#1160](https://github.com/JimmyPaolini/codebase/issues/1160)) ([c4585bc](https://github.com/JimmyPaolini/codebase/commit/c4585bcc2d06aa4e7aed69f14c549ba67966ccee)), closes [#1141](https://github.com/JimmyPaolini/codebase/issues/1141) [#1142](https://github.com/JimmyPaolini/codebase/issues/1142) [#1143](https://github.com/JimmyPaolini/codebase/issues/1143) [#1144](https://github.com/JimmyPaolini/codebase/issues/1144) [#1140](https://github.com/JimmyPaolini/codebase/issues/1140) [#1145](https://github.com/JimmyPaolini/codebase/issues/1145) [#1150](https://github.com/JimmyPaolini/codebase/issues/1150)
+
 ## [2.24.2](https://github.com/JimmyPaolini/codebase/compare/v2.24.1...v2.24.2) (2026-09-27)
 
 ### 🐛 Bug Fixes

@@ -1,32 +1,20 @@
 import { createMock } from "@golevelup/ts-vitest";
-import { ConfigModule } from "@nestjs/config";
 import { Test } from "@nestjs/testing";
-import { getRepositoryToken, TypeOrmModule } from "@nestjs/typeorm";
-import { DataSource, type Repository } from "typeorm";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 
 import { LoggerService } from "@codebase/logging";
 
-import { environmentSchema } from "../../constants";
-import { CharacteristicsModule } from "../characteristics/characteristics.module";
+import {
+  SWEEP_TIMEOUT_MILLISECONDS,
+  type SweepFixture,
+  sweepFixture,
+  sweepModuleMetadata,
+} from "../../../testing/draw-sweep";
 import { MEANDER_FAMILIES } from "../classification/classification.constants";
-import { ClassificationModule } from "../classification/classification.module";
-import { CodeModule } from "../code/code.module";
-import { CorpusService } from "../corpus/corpus.service";
 import { HISTORICAL_CORPUS } from "../corpus/historical-corpus.constants";
-import { DatabaseService } from "../database/database.service";
-import { Meander } from "../database/entities/Meander.entity";
-import { DrawingModule } from "../drawing/drawing.module";
-import { EnumerationModule } from "../enumeration/enumeration.module";
-import { EnumerationService } from "../enumeration/enumeration.service";
-import { GeometryModule } from "../geometry/geometry.module";
 
 import { DrawCheckService } from "./draw-check.service";
 import { DrawCodeService } from "./draw-code.service";
-import { DrawEnumerationService } from "./draw-enumeration.service";
-import { DrawIndexService } from "./draw-index.service";
-import { DrawRecordService } from "./draw-record.service";
-import { DrawCommand } from "./draw.command";
 
 const { writeFileMock } = vi.hoisted(() => ({
   writeFileMock: vi.fn<(path: string, data: string) => Promise<void>>(),
@@ -50,6 +38,19 @@ vi.mock("node:fs/promises", () => ({
  */
 const HISTORICAL_CORPUS_BEYOND_ENUMERATION = 1026;
 
+/** Compiles a fresh sweep with `--check`, `--code`, and logging mocked out. */
+async function compileSweep(): Promise<SweepFixture> {
+  const module = await Test.createTestingModule(
+    sweepModuleMetadata([
+      { provide: DrawCheckService, useValue: createMock<DrawCheckService>() },
+      { provide: DrawCodeService, useValue: createMock<DrawCodeService>() },
+      { provide: LoggerService, useValue: createMock<LoggerService>() },
+    ]),
+  ).compile();
+
+  return sweepFixture(module);
+}
+
 /**
  * Drives the whole of `DrawCommand`'s sweep — the generalized enumeration,
  * the historical corpus's hardcoded ingestion, and the index page rebuilt
@@ -59,6 +60,12 @@ const HISTORICAL_CORPUS_BEYOND_ENUMERATION = 1026;
  * file-tree assertions `draw.command.unit.test.ts` made by mocking
  * `node:fs/promises` while the per-family procedural pipeline still wrote
  * one.
+ *
+ * The cases over a database already holding a hardcoded entry's address and
+ * over an already-populated one run sweeps of their own, so they live in
+ * `draw-sweep-collision.command.integration.test.ts` and
+ * `draw-sweep-regeneration.command.integration.test.ts`, where vitest runs
+ * them beside this file's shared sweep rather than after it.
  *
  * **This is what proves the two provenances do not collide.** Both halves
  * write through the same unique index over a meander's lattice address, and
@@ -78,107 +85,52 @@ const HISTORICAL_CORPUS_BEYOND_ENUMERATION = 1026;
  * committed `output/index.html` a real write would land on is not.
  */
 describe("drawCommand sweep mode", () => {
-  const SWEEP_TIMEOUT_MILLISECONDS = 300_000;
+  /**
+   * One sweep, shared by every case that only reads what an empty database
+   * ends up holding. Each sweep costs 45–90 seconds on a CI runner, and
+   * running it once per case made this file the whole of 🧑‍🔬 Test's critical
+   * path. None of these cases writes to the database, and the `writeFile`
+   * calls are copied out before `testing/setup.ts` clears every mock, so
+   * sharing the run changes no assertion.
+   */
+  describe("over an empty database", () => {
+    let sweep: SweepFixture;
+    let writes: [path: string, data: string][];
 
-  let command: DrawCommand;
-  let corpus: CorpusService;
-  let dataSource: DataSource;
-  let enumeration: EnumerationService;
-  let repository: Repository<Meander>;
+    beforeAll(async () => {
+      writeFileMock.mockClear();
+      sweep = await compileSweep();
+      await sweep.command.run([], { write: true });
+      writes = [...writeFileMock.mock.calls];
+    }, SWEEP_TIMEOUT_MILLISECONDS);
 
-  beforeEach(async () => {
-    writeFileMock.mockClear();
+    afterAll(async () => {
+      await sweep.dataSource.destroy();
+    });
 
-    const module = await Test.createTestingModule({
-      imports: [
-        ConfigModule.forRoot({
-          isGlobal: true,
-          validate: (config: Record<string, unknown>) =>
-            environmentSchema.parse(config),
-        }),
-        TypeOrmModule.forRoot({
-          database: ":memory:",
-          entities: [Meander],
-          logging: false,
-          synchronize: true,
-          type: "better-sqlite3",
-        }),
-        TypeOrmModule.forFeature([Meander]),
-        GeometryModule,
-        CharacteristicsModule,
-        ClassificationModule,
-        CodeModule,
-        EnumerationModule,
-        DrawingModule,
-      ],
-      providers: [
-        DrawCommand,
-        DrawEnumerationService,
-        DrawIndexService,
-        DrawRecordService,
-        CorpusService,
-        DatabaseService,
-        {
-          provide: DrawCheckService,
-          useValue: createMock<DrawCheckService>(),
-        },
-        {
-          provide: DrawCodeService,
-          useValue: createMock<DrawCodeService>(),
-        },
-        {
-          provide: LoggerService,
-          useValue: createMock<LoggerService>(),
-        },
-      ],
-    }).compile();
-
-    command = await module.resolve(DrawCommand);
-    dataSource = module.get(DataSource);
-    corpus = module.get(CorpusService);
-    enumeration = module.get(EnumerationService);
-    repository = module.get(getRepositoryToken(Meander));
-  });
-
-  afterEach(async () => {
-    await dataSource.destroy();
-  });
-
-  it(
-    "persists both halves of the corpus, with neither provenance colliding with the other",
-    async () => {
-      const expectedEnumerated = enumeration
+    it("persists both halves of the corpus, with neither provenance colliding with the other", async () => {
+      const expectedEnumerated = sweep.enumeration
         .shapes()
         .reduce(
-          (total, shape) => total + enumeration.enumerate(shape).length,
+          (total, shape) => total + sweep.enumeration.enumerate(shape).length,
           0,
         );
       const expectedHardcoded = 963;
 
-      await command.run([], {});
-
       await expect(
-        repository.countBy({ provenance: "enumerated" }),
+        sweep.repository.countBy({ provenance: "enumerated" }),
       ).resolves.toBe(expectedEnumerated);
       await expect(
-        repository.countBy({ provenance: "hardcoded" }),
+        sweep.repository.countBy({ provenance: "hardcoded" }),
       ).resolves.toBe(expectedHardcoded);
-    },
-    SWEEP_TIMEOUT_MILLISECONDS,
-  );
+    });
 
-  it(
-    "rebuilds output/index.html and family pages from the sweep's own rows once both halves have committed",
-    async () => {
-      await command.run([], {});
+    it("rebuilds output/index.html and family pages from the sweep's own rows once both halves have committed", async () => {
+      const total = await sweep.repository.count();
 
-      const total = await repository.count();
+      expect(writes.length).toBeGreaterThan(1);
 
-      expect(writeFileMock.mock.calls.length).toBeGreaterThan(1);
-
-      const indexCall = writeFileMock.mock.calls.find(
-        (c) => c[0] === "output/index.html",
-      );
+      const indexCall = writes.find((c) => c[0] === "output/index.html");
 
       if (indexCall === undefined) {
         throw new Error("expected the index page to have been written");
@@ -188,88 +140,38 @@ describe("drawCommand sweep mode", () => {
 
       expect(indexPath).toBe("output/index.html");
       expect(page).toContain(`${total} meanders across`);
-    },
-    SWEEP_TIMEOUT_MILLISECONDS,
-  );
+    });
 
-  it(
-    "ingests exactly the 1026 entries the retired constants files held, computed from the sweep's own reach rather than listed",
-    () => {
+    it("ingests exactly the 1026 entries the retired constants files held, computed from the sweep's own reach rather than listed", () => {
       expect(
-        HISTORICAL_CORPUS.filter((entry) => corpus.isBeyondEnumeration(entry)),
+        HISTORICAL_CORPUS.filter((entry) =>
+          sweep.corpus.isBeyondEnumeration(entry),
+        ),
       ).toHaveLength(HISTORICAL_CORPUS_BEYOND_ENUMERATION);
-    },
-    SWEEP_TIMEOUT_MILLISECONDS,
-  );
+    });
 
-  it(
-    "keeps every ingested entry outside the shapes the enumeration already covers",
-    () => {
+    it("keeps every ingested entry outside the shapes the enumeration already covers", () => {
       const swept = new Set(
-        enumeration.shapes().map((shape) => `${shape.rows}x${shape.columns}`),
+        sweep.enumeration
+          .shapes()
+          .map((shape) => `${shape.rows}x${shape.columns}`),
       );
       const covered = HISTORICAL_CORPUS.filter(
         (entry) =>
-          corpus.isBeyondEnumeration(entry) &&
+          sweep.corpus.isBeyondEnumeration(entry) &&
           swept.has(`${entry.rows}x${entry.columns}`),
       );
 
       expect(covered).toStrictEqual([]);
-    },
-    SWEEP_TIMEOUT_MILLISECONDS,
-  );
+    });
 
-  it(
-    "carries the family it was filed under, and a hardcoded provenance, on every ingested corpus entry",
-    async () => {
-      await command.run([], {});
-
-      const rows = await repository.findBy({ provenance: "hardcoded" });
+    it("carries the family it was filed under, and a hardcoded provenance, on every ingested corpus entry", async () => {
+      const rows = await sweep.repository.findBy({ provenance: "hardcoded" });
 
       const filed = new Set<string>(MEANDER_FAMILIES);
 
       expect(rows.length).toBeGreaterThan(0);
       expect(rows.every((row) => filed.has(row.family))).toBe(true);
-    },
-    SWEEP_TIMEOUT_MILLISECONDS,
-  );
-
-  it(
-    "ignores the sweep quietly when a hardcoded entry's lattice address is already committed",
-    async () => {
-      const duplicated = HISTORICAL_CORPUS.find((entry) =>
-        corpus.isBeyondEnumeration(entry),
-      );
-
-      if (duplicated === undefined) {
-        throw new Error(
-          "no hardcoded entry is committed to collide a duplicate against",
-        );
-      }
-
-      await repository.save({
-        characteristics: [],
-        code: `${String(duplicated.columns).padStart(2, "0")}x${String(duplicated.rows).padStart(2, "0")}y${duplicated.code}`,
-        columns: duplicated.columns,
-        components: 1,
-        cycles: 0,
-        drawingHash: "hash",
-        family: "unclassified",
-        freeEnds: 2,
-        hasBranching: false,
-        hasCrossing: false,
-        inkTJunctions: 0,
-        inkXJunctions: 0,
-        lattice: duplicated.code,
-        pitch: duplicated.columns,
-        provenance: "enumerated",
-        repeats: 1,
-        rows: duplicated.rows,
-        svg: "<svg>fixture</svg>\n",
-      });
-
-      await expect(command.run([], {})).resolves.not.toThrow();
-    },
-    SWEEP_TIMEOUT_MILLISECONDS,
-  );
+    });
+  });
 });

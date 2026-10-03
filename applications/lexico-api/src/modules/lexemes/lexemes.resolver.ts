@@ -1,8 +1,10 @@
 import { Inject } from "@nestjs/common";
-import { Args as Arguments, ID, Query, Resolver } from "@nestjs/graphql";
+import { Args as Arguments, Query, Resolver } from "@nestjs/graphql";
 
 import { Lexeme } from "@codebase/lexico-entities";
 
+import { LexemeArguments } from "./lexeme-arguments.entities";
+import { LexemesArguments } from "./lexemes-arguments.entities";
 import { LexemesService } from "./lexemes.service";
 
 /**
@@ -23,9 +25,9 @@ export class LexemesResolver {
     nullable: true,
   })
   public async lexeme(
-    @Arguments("id", { type: () => ID }) id: string,
+    @Arguments() arguments_: LexemeArguments,
   ): Promise<Lexeme | null> {
-    return this.lexemesService.findById(id);
+    return this.lexemesService.findById(arguments_.id);
   }
 
   /**
@@ -36,8 +38,8 @@ export class LexemesResolver {
     name: "lexemes",
   })
   public async lexemes(
-    @Arguments("ids", { type: () => [ID] }) ids: string[],
+    @Arguments() arguments_: LexemesArguments,
   ): Promise<Lexeme[]> {
-    return this.lexemesService.findByIds(ids);
+    return this.lexemesService.findByIds(arguments_.ids);
   }
 }

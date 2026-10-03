@@ -2,6 +2,14 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { DataSourceOptions } from "typeorm";
 
+/**
+ * Loads TypeORM, the postgres driver, and every entity once while the file is
+ * collected, outside any test's timeout. Each test still re-evaluates the
+ * module after `vi.resetModules()`, which costs milliseconds once warm; a
+ * cold first import took 4–6s on the saturated CI runner.
+ */
+import "./data-source.constants";
+
 type PostgresDataSourceOptions = Extract<
   DataSourceOptions,
   { type: "postgres" }
@@ -27,11 +35,11 @@ describe("lexico data source", () => {
     delete process.env["POSTGRES_PASSWORD"];
     delete process.env["POSTGRES_PORT"];
     delete process.env["POSTGRES_USER"];
+    vi.resetModules();
   });
 
   afterEach(() => {
     process.env = { ...originalEnvironment };
-    vi.resetModules();
   });
 
   it("should use default postgres configuration values", async () => {
@@ -46,7 +54,7 @@ describe("lexico data source", () => {
     expect(postgresDataSourceOptions.password).toBe("postgres");
     expect(postgresDataSourceOptions.username).toBe("postgres");
     expect(postgresDataSourceOptions.port).toBe(5432);
-  }, 15_000);
+  });
 
   it("should use environment postgres configuration values", async () => {
     process.env["POSTGRES_DB"] = "custom_database";
@@ -65,5 +73,5 @@ describe("lexico data source", () => {
     expect(postgresDataSourceOptions.password).toBe("custom_password");
     expect(postgresDataSourceOptions.username).toBe("custom_user");
     expect(postgresDataSourceOptions.port).toBe(6001);
-  }, 15_000);
+  });
 });
