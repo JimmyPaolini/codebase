@@ -21,6 +21,6 @@
     "atLeast": 100,
     "strict": true
   },
-  "types": "src/index.ts",
-  "version": "0.0.1"
+  "types": "src/index.ts"{{#packageVersion}},
+  "version": "{{packageVersion}}"{{/packageVersion}}
 }

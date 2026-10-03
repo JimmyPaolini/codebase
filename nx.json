@@ -101,6 +101,7 @@
   },
   "release": {
     "projects": [
+      "packages/ic-suite/*/*",
       "!callidescope-agents",
       "!callidescope-examples",
       "!codependix-agents",
@@ -108,8 +109,7 @@
       "!codometer-agents",
       "!codometer-examples",
       "!conformetry-agents",
-      "!conformetry-examples",
-      "packages/ic-suite/*/*"
+      "!conformetry-examples"
     ],
     "projectsRelationship": "independent",
     "releaseTag": {
@@ -118,6 +118,9 @@
     "version": {
       "currentVersionResolver": "git-tag",
       "fallbackCurrentVersionResolver": "disk",
+      "git": {
+        "commitMessage": "chore(release): 🔖 publish"
+      },
       "specifierSource": "conventional-commits",
       "updateDependents": "auto"
     }
